@@ -1,0 +1,26 @@
+###
+### Location of the Zelig assemblies.
+###
+-HostAssemblyDir   %DEPOTROOT%\ZeligBuild\Host\bin\Debug
+-DeviceAssemblyDir %DEPOTROOT%\ZeligBuild\Target\bin\Debug
+
+-CompilationSetup Microsoft.Zelig.Configuration.Environment.iMote2CompilationSetup
+
+###
+### We need to include this assembly to get the right drivers.
+###
+-Reference Microsoft.iMote2
+
+###
+### The program to compile.
+###
+%DEPOTROOT%\ZeligBuild\Target\bin\Debug\Microsoft.iMote2Tester.exe
+
+###
+### Where to put the results.
+###
+-OutputName tester_PXA
+-OutputDir  %DEPOTROOT%\ZeligUnitTestResults
+
+-DumpIR
+-DumpASM

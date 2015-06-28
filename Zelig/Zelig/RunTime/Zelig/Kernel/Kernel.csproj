@@ -1,0 +1,207 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{186F31A3-EF89-4A25-B2D5-20060509AA01}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Zelig.Runtime</RootNamespace>
+    <AssemblyName>Microsoft.Zelig.Runtime</AssemblyName>
+    <!-- ZELIG: Move intermediate data out of the source tree -->
+    <BaseIntermediateOutputPath>$(SolutionDir)\..\ZeligBuild\Host\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoStdLib>true</NoStdLib>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoStdLib>true</NoStdLib>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Instrumentation|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Instrumentation\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoStdLib>true</NoStdLib>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Bootstrap.cs" />
+    <Compile Include="FrameworkOverrides\ArrayImpl.cs" />
+    <Compile Include="FrameworkOverrides\ConsoleImpl.cs" />
+    <Compile Include="FrameworkOverrides\ActivatorImpl.cs" />
+    <Compile Include="FrameworkOverrides\BufferImpl.cs" />
+    <Compile Include="FrameworkOverrides\NumberImpl.cs" />
+    <Compile Include="FrameworkOverrides\WeakReferenceImpl.cs" />
+    <Compile Include="FrameworkOverrides\Diagnostics\DebuggerImpl.cs" />
+    <Compile Include="FrameworkOverrides\EnvironmentImpl.cs" />
+    <Compile Include="FrameworkOverrides\Globalization\TextInfoImpl.cs" />
+    <Compile Include="FrameworkOverrides\Reflection\MemberInfoImpl.cs" />
+    <Compile Include="FrameworkOverrides\RuntimeTypeImpl.cs" />
+    <Compile Include="FrameworkOverrides\DateTimeImpl.cs" />
+    <Compile Include="FrameworkOverrides\CurrentSystemTimeZoneImpl.cs" />
+    <Compile Include="FrameworkOverrides\Diagnostics\StopwatchImpl.cs" />
+    <Compile Include="FrameworkOverrides\GCImpl.cs" />
+    <Compile Include="FrameworkOverrides\MathImpl.cs" />
+    <Compile Include="FrameworkOverrides\ObjectImpl.cs" />
+    <Compile Include="FrameworkOverrides\Reflection\RuntimeFieldHandleImpl.cs" />
+    <Compile Include="FrameworkOverrides\Reflection\RuntimeMethodHandleImpl.cs" />
+    <Compile Include="FrameworkOverrides\Reflection\RuntimeTypeHandleImpl.cs" />
+    <Compile Include="FrameworkOverrides\Resources\ResourceManagerImpl.cs" />
+    <Compile Include="FrameworkOverrides\Runtime\CompilerServices\RuntimeHelpersImpl.cs" />
+    <Compile Include="FrameworkOverrides\Runtime\InteropServices\MarshalImpl.cs" />
+    <Compile Include="FrameworkOverrides\StringImpl.cs" />
+    <Compile Include="FrameworkOverrides\Threading\ThreadPoolImpl.cs" />
+    <Compile Include="FrameworkOverrides\Threading\TimerImpl.cs" />
+    <Compile Include="FrameworkOverrides\Threading\MonitorImpl.cs" />
+    <Compile Include="FrameworkOverrides\Threading\WaitHandleImpl.cs" />
+    <Compile Include="FrameworkOverrides\Threading\EventWaitHandleImpl.cs" />
+    <Compile Include="FrameworkOverrides\Threading\InterlockedImpl.cs" />
+    <Compile Include="FrameworkOverrides\Threading\ThreadImpl.cs" />
+    <Compile Include="FrameworkOverrides\TypeImpl.cs" />
+    <Compile Include="FrameworkOverrides_System\IO\MediaManagerImpl.cs" />
+    <Compile Include="FrameworkOverrides_System\IO\NativeFileImpl.cs" />
+    <Compile Include="FrameworkOverrides_System\IO\Ports\BaseSerialStream.cs" />
+    <Compile Include="FrameworkOverrides_System\IO\Ports\SerialStreamImpl.cs" />
+    <Compile Include="FrameworkOverrides_System\IO\Ports\SerialPortImpl.cs" />
+    <Compile Include="GarbageCollectors\MarkAndSweepCollector.cs" />
+    <Compile Include="HardwareModel\TargetPlatform\AbstractMethodWrapper.cs" />
+    <Compile Include="HardwareModel\TargetPlatform\ARMv5\ProcessorARMv5.cs" />
+    <Compile Include="HardwareModel\TargetPlatform\ARMv5\ProcessorARMv5_ContextSwitch.cs" />
+    <Compile Include="HardwareModel\TargetPlatform\LLVM\InterruptsSafeHandleLLVM.cs" />
+    <Compile Include="HardwareModel\TargetPlatform\LLVM\ProcessorLLVM.cs" />
+    <Compile Include="ManagedHeap\Finalizer.cs" />
+    <Compile Include="ManagedHeap\GarbageCollectionExtensionHandler.cs" />
+    <Compile Include="SelfTest.cs" />
+    <Compile Include="SystemServices\SerialPortsManager.cs" />
+    <Compile Include="HardwareModel\Storage.cs" />
+    <Compile Include="HardwareModel\Device.cs" />
+    <Compile Include="HardwareModel\Memory.cs" />
+    <Compile Include="HardwareModel\Peripherals.cs" />
+    <Compile Include="HardwareModel\Processor.cs" />
+    <Compile Include="HardwareModel\TargetPlatform\ARMv4\Coprocessor14.cs" />
+    <Compile Include="HardwareModel\TargetPlatform\ARMv4\Coprocessor15.cs" />
+    <Compile Include="HardwareModel\TargetPlatform\ARMv4\ProcessorARMv4_ContextSwitch.cs" />
+    <Compile Include="HardwareModel\TargetPlatform\ARMv4\MMUv4.cs" />
+    <Compile Include="HardwareModel\TargetPlatform\ARMv4\InterruptsSafeHandleARMv4.cs" />
+    <Compile Include="HardwareModel\TargetPlatform\ARMv4\ProcessorARMv4.cs" />
+    <Compile Include="HardwareModel\TargetPlatform\ARMv5_VFP\BinaryOperations.cs" />
+    <Compile Include="HardwareModel\TargetPlatform\ARMv5_VFP\ProcessorARMv5_VFP_ContextSwitch.cs" />
+    <Compile Include="HardwareModel\TargetPlatform\ARMv5_VFP\ProcessorARMv5_VFP.cs" />
+    <Compile Include="Helpers\BinaryOperations.cs" />
+    <Compile Include="Helpers\CompareAndSet.cs" />
+    <Compile Include="Helpers\Convert.cs" />
+    <Compile Include="HardwareModel\TargetPlatform\ARMv5_VFP\Convert.cs" />
+    <Compile Include="Helpers\DoubleImplementation.cs" />
+    <Compile Include="Helpers\FloatImplementation.cs" />
+    <Compile Include="Helpers\UnaryOperations.cs" />
+    <Compile Include="ManagedHeap\BrickTable.cs" />
+    <Compile Include="ManagedHeap\SyncBlockTable.cs" />
+    <Compile Include="ManagedHeap\SyncBlock.cs" />
+    <Compile Include="ManagedHeap\MemoryFreeBlock.cs" />
+    <Compile Include="ManagedHeap\MemorySegment.cs" />
+    <Compile Include="ManagedHeap\ObjectHeader.cs" />
+    <Compile Include="FrameworkOverrides\DelegateImpl.cs" />
+    <Compile Include="FrameworkOverrides\MulticastDelegateImpl.cs" />
+    <Compile Include="MemoryManagers\LinearMemoryManager.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SmartHandles\YieldLockHolder.cs" />
+    <Compile Include="SmartHandles\CriticalSectionHolder.cs" />
+    <Compile Include="SmartHandles\InterruptState.cs" />
+    <Compile Include="SmartHandles\SwapCurrentThread.cs" />
+    <Compile Include="SmartHandles\SwapCurrentThreadUnderInterrupt.cs" />
+    <Compile Include="Support\BugCheck.cs" />
+    <Compile Include="Support\KernelPerformanceCounter.cs" />
+    <Compile Include="Support\KernelCircularBuffer.cs" />
+    <Compile Include="Support\KernelList.cs" />
+    <Compile Include="Support\KernelNode.cs" />
+    <Compile Include="Synchronization\YieldLock.cs" />
+    <Compile Include="Synchronization\CriticalSection.cs" />
+    <Compile Include="Synchronization\WaitableObject.cs" />
+    <Compile Include="Synchronization\WaitingRecord.cs" />
+    <Compile Include="SystemServices\Configuration.cs" />
+    <Compile Include="SystemServices\SchedulerTimeSpan.cs" />
+    <Compile Include="SystemServices\SchedulerTime.cs" />
+    <Compile Include="SystemServices\GarbageCollectionManager.cs" />
+    <Compile Include="SystemServices\MemoryManager.cs" />
+    <Compile Include="SystemServices\ThreadManager.cs" />
+    <Compile Include="SystemServices\TypeSystemManager.cs" />
+    <Compile Include="TypeSystemManagers\DefaultTypeSystemManager.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\CompileTime\TargetModels\ArmProcessor\ArmProcessor.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20070519AA01}</Project>
+      <Name>ArmProcessor</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\RunTime\Framework\mscorlib\mscorlib.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060501AA01}</Project>
+      <Name>mscorlib</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\RunTime\Framework\system\system.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20070702AA01}</Project>
+      <Name>system</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\Common\Common.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20061218AA01}</Project>
+      <Name>Common</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\TypeSystem\TypeSystem.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060720AA01}</Project>
+      <Name>TypeSystem</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

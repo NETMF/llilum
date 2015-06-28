@@ -1,0 +1,31 @@
+###
+### Location of the Zelig assemblies.
+###
+-HostAssemblyDir   %DEPOTROOT%\ZeligBuild\Host\bin\Debug
+-DeviceAssemblyDir %DEPOTROOT%\ZeligBuild\Target\bin\Debug
+
+-CompilationSetup Microsoft.Zelig.Configuration.Environment.NohauLPC3180CompilationSetup
+
+###
+### We need to include this assembly to get the right drivers.
+###
+-Reference Microsoft.NohauLPC3180
+
+###
+### The program to compile.
+###
+
+-Include %DEPOTROOT%\SoloBuild\bin\Debug
+
+%DEPOTROOT%\SoloBuild\bin\Debug\Microsoft.Vox.Solo.CPU.LPC3180.Bootstrap.exe
+
+
+###
+### Where to put the results.
+###
+-OutputName soloTest_NXP
+-OutputDir  %DEPOTROOT%\ZeligUnitTestResults
+
+-DumpASMDIR
+#-DumpASM
+-DumpIR

@@ -1,0 +1,34 @@
+###
+### Location of the Zelig assemblies.
+###
+-HostAssemblyDir   %DEPOTROOT%\ZeligBuild\Host\bin\%flavor%
+-DeviceAssemblyDir %DEPOTROOT%\ZeligBuild\Target\bin\%flavor%
+
+###-CompilationSetup Microsoft.Zelig.Configuration.Environment.VoxSoloFormFactorCompilationSetup
+###-CompilationSetup Microsoft.Zelig.Configuration.Environment.NohauLPC3180CompilationSetup
+-CompilationSetup Microsoft.Zelig.Configuration.Environment.iMote2CompilationSetup
+
+###
+### We need to include this assembly to get the right drivers.
+###
+###-Reference Microsoft.VoxSoloFormFactor
+###-Reference Microsoft.NohauLPC3180
+-Reference Microsoft.iMote2
+
+###-ImportDirectory %DEPOTROOT%\ZeligInterop\Sample\FileSystemTest\LIB\
+###-ImportDirectory %DEPOTROOT%\..\client_v4_2_dev\tools\ads_v4_0\Lib\armlib\
+###-ImportDirectory %DEPOTROOT%\..\client_v4_2_dev\tools\ads_v4_0\Lib\cpplib\
+
+###
+### The program to compile.
+###
+%DEPOTROOT%\ZeligBuild\Target\bin\%flavor%\QuickTest.exe
+
+###
+### Where to put the results.
+###
+-OutputName QuickTest_Tester
+-OutputDir  %DEPOTROOT%\ZeligUnitTestResults
+#-DumpIR
+#-DumpASM
+

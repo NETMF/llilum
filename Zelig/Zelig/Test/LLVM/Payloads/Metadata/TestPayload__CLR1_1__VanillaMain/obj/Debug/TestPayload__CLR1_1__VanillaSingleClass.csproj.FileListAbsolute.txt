@@ -1,0 +1,5 @@
+E:\src\iot\zelig-pr\Zelig\ZeligBuild\Target\bin\Debug\TestPayload__CLR1_1__VanillaSingleClass.exe
+E:\src\iot\zelig-pr\Zelig\ZeligBuild\Target\bin\Debug\TestPayload__CLR1_1__VanillaSingleClass.pdb
+E:\src\iot\zelig-pr\Zelig\Zelig\Test\LLVM\Payloads\Metadata\TestPayload__CLR1_1__VanillaMain\obj\Debug\TestPayload__CLR1_1__VanillaSingleClass.csprojResolveAssemblyReference.cache
+E:\src\iot\zelig-pr\Zelig\Zelig\Test\LLVM\Payloads\Metadata\TestPayload__CLR1_1__VanillaMain\obj\Debug\TestPayload__CLR1_1__VanillaSingleClass.exe
+E:\src\iot\zelig-pr\Zelig\Zelig\Test\LLVM\Payloads\Metadata\TestPayload__CLR1_1__VanillaMain\obj\Debug\TestPayload__CLR1_1__VanillaSingleClass.pdb

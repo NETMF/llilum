@@ -1,0 +1,48 @@
+###
+###
+###
+
+#-MaxProcs 1
+
+-cfg %DEPOTROOT%\Zelig\CompileTime\CodeGenerator\FrontEnd\mscorlib_unittest_FF.FrontEndConfig
+#-cfg %DEPOTROOT%\Zelig\CompileTime\CodeGenerator\FrontEnd\mscorlib_unittest_NXP.FrontEndConfig
+#-cfg %DEPOTROOT%\Zelig\CompileTime\CodeGenerator\FrontEnd\mscorlib_unittest_PXA.FrontEndConfig
+
+#-cfg %DEPOTROOT%\Zelig\CompileTime\CodeGenerator\FrontEnd\tester_FF.FrontEndConfig
+#-cfg %DEPOTROOT%\Zelig\CompileTime\CodeGenerator\FrontEnd\tester_NXP.FrontEndConfig
+#-cfg %DEPOTROOT%\Zelig\CompileTime\CodeGenerator\FrontEnd\tester_PXA.FrontEndConfig
+
+#-DumpIL
+#-DumpIRpre
+
+#-cfg %DEPOTROOT%\Zelig\CompileTime\CodeGenerator\FrontEnd\VoxSoloFormFactorLoader.FrontEndConfig
+#-cfg %DEPOTROOT%\Zelig\CompileTime\CodeGenerator\FrontEnd\NohauLPC3180Loader.FrontEndConfig
+#-cfg %DEPOTROOT%\Zelig\CompileTime\CodeGenerator\FrontEnd\iMote2Loader.FrontEndConfig
+
+#-cfg %DEPOTROOT%\Zelig\CompileTime\CodeGenerator\FrontEnd\VoxSoloTest.FrontEndConfig
+
+#-cfg %DEPOTROOT%\Zelig\CompileTime\CodeGenerator\FrontEnd\VoxSolo_UnitTest_FF.FrontEndConfig
+#-cfg %DEPOTROOT%\Zelig\CompileTime\CodeGenerator\FrontEnd\VoxSolo_Bootstrap_FF.FrontEndConfig
+#-cfg %DEPOTROOT%\Zelig\CompileTime\CodeGenerator\FrontEnd\VoxSolo_Tester_FF.FrontEndConfig
+
+#-cfg %DEPOTROOT%\Zelig\CompileTime\CodeGenerator\FrontEnd\VoxSolo_UnitTest_NXP.FrontEndConfig
+#-cfg %DEPOTROOT%\Zelig\CompileTime\CodeGenerator\FrontEnd\VoxSolo_Bootstrap_NXP.FrontEndConfig
+#-cfg %DEPOTROOT%\Zelig\CompileTime\CodeGenerator\FrontEnd\VoxSolo_Tester_NXP.FrontEndConfig
+
+#-embedSourceCode %DEPOTROOT%\ZeligBuild\Target\bin\Debug\mscorlib_UnitTest.pdb
+#-embedSourceCodeAll %DEPOTROOT%\ZeligBuild\Target\bin\Debug
+
+#-cfg %DEPOTROOT%\Zelig\Test\CCR\ccr_FF.FrontEndConfig
+#-cfg %DEPOTROOT%\Zelig\Test\CCR\ccr_NXP.FrontEndConfig
+#-cfg %DEPOTROOT%\Zelig\Test\CCR\ccr_PXA.FrontEndConfig
+
+##################################
+# Tests for deployment
+#
+#-embedSourceCodeAll %ZELIGROOT%\BinaryDrop\Host
+#-embedSourceCodeAll %ZELIGROOT%\BinaryDrop\Target
+#-cfg %ZELIGROOT%\ConfigurationFiles\sample.FrontEndConfig
+#-cfg %ZELIGROOT%\ConfigurationFiles\ccr.FrontEndConfig
+
+-dumpRaw FLASH 0x10000000 0x10800000
+-dumpRaw RAM   0x08000000 0x08010000

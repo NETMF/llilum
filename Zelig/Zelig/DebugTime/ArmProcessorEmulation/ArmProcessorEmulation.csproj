@@ -1,0 +1,169 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{186F31A3-EF89-4A25-B2D5-20060704AA01}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Zelig.Emulation.ArmProcessor</RootNamespace>
+    <AssemblyName>Microsoft.Zelig.Emulation.ArmProcessor</AssemblyName>
+    <!-- ZELIG: Move intermediate data out of the source tree -->
+    <BaseIntermediateOutputPath>$(SolutionDir)\..\ZeligBuild\Host\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Instrumentation|AnyCPU'">
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Instrumentation\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Forms\BaseDebuggerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\BaseDebuggerForm.Designer.cs">
+      <DependentUpon>BaseDebuggerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Hosting\AbstractEngine.cs" />
+    <Compile Include="Hosting\BinaryBlob.cs" />
+    <Compile Include="Forms\HostingSite.cs" />
+    <Compile Include="Hosting\IAsynchronousSerialPort.cs" />
+    <Compile Include="Hosting\OutputSink.cs" />
+    <Compile Include="Hosting\ProcessorPerformance.cs" />
+    <Compile Include="Hosting\SimulatorControl.cs" />
+    <Compile Include="Hosting\Breakpoint.cs" />
+    <Compile Include="Hosting\AbstractPlugIn.cs" />
+    <Compile Include="Hosting\AbstractHardwarePlugIn.cs" />
+    <Compile Include="Hosting\AbstractUIPlugIn.cs" />
+    <Compile Include="Hosting\AbstractEngineException.cs" />
+    <Compile Include="Hosting\CodeCoverage.cs" />
+    <Compile Include="Hosting\ProcessorControl.cs" />
+    <Compile Include="Hosting\MonitorExecution.cs" />
+    <Compile Include="Hosting\ProcessorStatus.cs" />
+    <Compile Include="Hosting\SimulatedDeviceClockTicksTracking.cs" />
+    <Compile Include="Hosting\DeviceClockTicksTracking.cs" />
+    <Compile Include="Hosting\Interop.cs" />
+    <Compile Include="Hosting\ExtraDeploymentSteps.cs" />
+    <Compile Include="Hosting\JTagCustomer.cs" />
+    <Compile Include="Hosting\JTagConnector.cs" />
+    <Compile Include="Hosting\TypeSystem.cs" />
+    <Compile Include="Hosting\ISynchronousSerialInterfaceController.cs" />
+    <Compile Include="Hosting\ISynchronousSerialInterfaceBus.cs" />
+    <Compile Include="Hosting\DebugCommunicationChannel.cs" />
+    <Compile Include="Hosting\AbstractHost.cs" />
+    <Compile Include="Hosting\HalButtons.cs" />
+    <Compile Include="Hosting\HalEvents.cs" />
+    <Compile Include="Hosting\MemoryProvider.cs" />
+    <Compile Include="Hosting\SED15E0Sink.cs" />
+    <Compile Include="Models\Chipset\MM9691LP.cs" />
+    <Compile Include="Models\Chipset\PXA27x.cs" />
+    <Compile Include="Models\Display\SED15E0.cs" />
+    <Compile Include="Models\FlashMemory\S29WS128N.cs" />
+    <Compile Include="Models\FlashMemory\S29WS064.cs" />
+    <Compile Include="Models\VoxSoloFormFactor\Interops.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Simulator.cs" />
+    <Compile Include="SimulatorCore.cs" />
+    <Compile Include="SRecordParser.cs" />
+    <Compile Include="SymDef.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="JLinkInterface, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\External\Binaries\JTAG\Debug\JLinkInterface.dll</HintPath>
+    </Reference>
+    <Reference Include="MacraigorOCDInterface, Version=1.0.5435.18027, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\External\Binaries\JTAG\Debug\MacraigorOCDInterface.dll</HintPath>
+    </Reference>
+    <Reference Include="RemoteDebugInterfaceConnector, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\External\Binaries\JTAG\Debug\RemoteDebugInterfaceConnector.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="TargetAdapterAbstractionLayer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\External\Binaries\JTAG\Debug\TargetAdapterAbstractionLayer.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\CompileTime\CodeGenerator\CodeTransformation\CodeTransformation.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20070222AA01}</Project>
+      <Name>CodeTransformation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\CompileTime\MetaData\Normalized\Normalized.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060510AA01}</Project>
+      <Private>False</Private>
+      <Name>Normalized</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\CompileTime\TargetModels\ArmProcessor\ArmProcessor.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20070519AA01}</Project>
+      <Name>ArmProcessor</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\CommonPC\CommonPC.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20070601AA01}</Project>
+      <Name>CommonPC</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\Common\Common.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20061218AA01}</Project>
+      <Name>Common</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Forms\BaseDebuggerForm.resx">
+      <DependentUpon>BaseDebuggerForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

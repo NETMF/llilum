@@ -1,0 +1,26 @@
+###
+### Location of the Zelig assemblies.
+###
+-HostAssemblyDir   %DEPOTROOT%\ZeligBuild\Host\bin\Debug
+-DeviceAssemblyDir %DEPOTROOT%\ZeligBuild\Target\bin\Debug
+
+-CompilationSetup Microsoft.Zelig.Configuration.Environment.NohauLPC3180CompilationSetup
+
+###
+### We need to include this assembly to get the right drivers.
+###
+-Reference Microsoft.NohauLPC3180
+
+###
+### The program to compile.
+###
+%DEPOTROOT%\ZeligBuild\Target\bin\Debug\mscorlib_UnitTest.exe
+
+###
+### Where to put the results.
+###
+-OutputName mscorlib_UnitTest_NXP
+-OutputDir  %DEPOTROOT%\ZeligUnitTestResults
+
+-DumpIR
+-DumpASM

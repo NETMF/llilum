@@ -1,0 +1,53 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Help">
+
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)'==''">Debug</Configuration>
+    <ProjectMask>$(MSBuildProjectDirectory)\..\ext-tools\TargetAdapters\TargetAdapters.sln;$(MSBuildProjectDirectory)\..\ext-tools\binutils\binutils.sln;$(MSBuildProjectDirectory)\Zelig.sln;</ProjectMask>
+<!--    <ProjectExcludeMask>$(MSBuildProjectDirectory)\ExternalReleases\**\*.sln;$(MSBuildProjectDirectory)\**\*.CF.sln</ProjectExcludeMask> -->
+
+    <!-- ===== This help text should be appended to from each additional .targets file imported ===== -->
+    <HelpText>
+      Zelig MSBuild Targets Help
+        Available Targets
+          Build
+          Rebuild
+          Clean
+    </HelpText>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectFiles Include="$(ProjectMask)" Exclude="$(ProjectExcludeMask)"/>
+  </ItemGroup>
+
+  <Target Name="Build" DependsOnTargets="__Compile;__Test;__Deploy"/>
+
+  <Target Name="Rebuild" DependsOnTargets="Clean;Build"/>
+
+  <Target Name="Clean">
+    <MSBuild Projects="@(ProjectFiles)" Targets="Clean"/>
+  </Target>
+
+  <Target Name="Help">
+    <Message Text="$(HelpText)"/>
+  </Target>
+
+  <!-- ===== Targets that are meant for use only by MSBuild ===== -->
+
+  <Target Name="__Compile">
+    <MSBuild Projects="@(ProjectFiles)" Targets="Build">
+      <Output TaskParameter="TargetOutputs" ItemName="AssembliesBuilt"/>
+    </MSBuild>
+  </Target>
+
+  <Target Name="__Deploy">
+  </Target>
+
+  <Target Name="__Test">
+  </Target>
+
+  <!-- ===== This is where you import other .targets file or general msbuild .xml files ===== -->
+
+  <Import Project="scripts\AdditionalTargets.targets"/>
+
+</Project>

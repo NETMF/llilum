@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{186F31A3-EF89-4A25-B2D5-20060510AA01}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Zelig.MetaData.Normalized</RootNamespace>
+    <AssemblyName>Microsoft.Zelig.MetaData.Normalized</AssemblyName>
+    <!-- ZELIG: Move intermediate data out of the source tree -->
+    <BaseIntermediateOutputPath>$(SolutionDir)\..\ZeligBuild\Host\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Instrumentation|AnyCPU'">
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Instrumentation\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="EHClause.cs" />
+    <Compile Include="Instruction.cs" />
+    <Compile Include="MarshalSpec.cs" />
+    <Compile Include="MetaDataAssembly.cs" />
+    <Compile Include="MetaDataBits.cs" />
+    <Compile Include="MetaDataClassLayout.cs" />
+    <Compile Include="MetaDataConstant.cs" />
+    <Compile Include="MetaDataCustomAttribute.cs" />
+    <Compile Include="MetaDataDeclSecurity.cs" />
+    <Compile Include="MetaDataEvent.cs" />
+    <Compile Include="MetaDataField.cs" />
+    <Compile Include="MetaDataFieldAbstract.cs" />
+    <Compile Include="MetaDataFieldLayout.cs" />
+    <Compile Include="MetaDataFieldMarshal.cs" />
+    <Compile Include="MetaDataFieldRVA.cs" />
+    <Compile Include="MetaDataFieldWithContext.cs" />
+    <Compile Include="MetaDataFile.cs" />
+    <Compile Include="MetaDataGenericMethodParam.cs" />
+    <Compile Include="MetaDataGenericParam.cs" />
+    <Compile Include="MetaDataGenericTypeParam.cs" />
+    <Compile Include="MetaDataImplMap.cs" />
+    <Compile Include="MetaDataInterfaces.cs" />
+    <Compile Include="MetaDataManifestResource.cs" />
+    <Compile Include="MetaDataMethod.cs" />
+    <Compile Include="MetaDataMethodAbstract.cs" />
+    <Compile Include="MetaDataMethodBase.cs" />
+    <Compile Include="MetaDataMethodGeneric.cs" />
+    <Compile Include="MetaDataMethodGenericInstantiation.cs" />
+    <Compile Include="MetaDataMethodImpl.cs" />
+    <Compile Include="MetaDataMethodSemantics.cs" />
+    <Compile Include="MetaDataMethodWithContext.cs" />
+    <Compile Include="MetaDataModule.cs" />
+    <Compile Include="MetaDataObject.cs" />
+    <Compile Include="MetaDataParam.cs" />
+    <Compile Include="MetaDataProperty.cs" />
+    <Compile Include="MetaDataSignature.cs" />
+    <Compile Include="MetaDataTypeDefinition.cs" />
+    <Compile Include="MetaDataTypeDefinitionAbstract.cs" />
+    <Compile Include="MetaDataTypeDefinitionArray.cs" />
+    <Compile Include="MetaDataTypeDefinitionArrayMulti.cs" />
+    <Compile Include="MetaDataTypeDefinitionArraySz.cs" />
+    <Compile Include="MetaDataTypeDefinitionBase.cs" />
+    <Compile Include="MetaDataTypeDefinitionByRef.cs" />
+    <Compile Include="MetaDataTypeDefinitionDelayed.cs" />
+    <Compile Include="MetaDataTypeDefinitionGeneric.cs" />
+    <Compile Include="MetaDataTypeDefinitionGenericInstantiation.cs" />
+    <Compile Include="MetaDataTypeDefinitionPartiallyDelayedMethodParameter.cs" />
+    <Compile Include="MetaDataTypeDefinitionPartiallyDelayedTypeParameter.cs" />
+    <Compile Include="MetaDataVersion.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SignatureField.cs" />
+    <Compile Include="SignatureMethod.cs" />
+    <Compile Include="SignatureType.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\Common\Common.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20061218AA01}</Project>
+      <Name>Common</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

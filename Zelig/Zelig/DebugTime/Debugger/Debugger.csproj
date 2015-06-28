@@ -1,0 +1,361 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{186F31A3-EF89-4A25-B2D5-20070430AA01}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Zelig.Debugger.ArmProcessor</RootNamespace>
+    <AssemblyName>Microsoft.Zelig.Debugger.ArmProcessor</AssemblyName>
+    <!-- ZELIG: Move intermediate data out of the source tree -->
+    <BaseIntermediateOutputPath>$(SolutionDir)\..\ZeligBuild\Host\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Instrumentation|AnyCPU'">
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Instrumentation\</OutputPath>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CSharpParser, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\External\Binaries\CSharpParser\Debug\CSharpParser.dll</HintPath>
+    </Reference>
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="TargetAdapterAbstractionLayer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\External\Binaries\JTAG\Debug\TargetAdapterAbstractionLayer.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Execution\ValueHandles\AbstractValueHandle.cs" />
+    <Compile Include="Execution\ValueHandles\CompoundValueHandle.cs" />
+    <Compile Include="Execution\ValueHandles\BitFieldValueHandle.cs" />
+    <Compile Include="Execution\ValueHandles\MemoryValueHandle.cs" />
+    <Compile Include="Execution\ValueHandles\RegisterValueHandle.cs" />
+    <Compile Include="Execution\ValueHandles\SlicedValueHandle.cs" />
+    <Compile Include="Execution\Profiler.cs" />
+    <Compile Include="Execution\InteropHelper.cs" />
+    <Compile Include="Execution\MemoryDelta.cs" />
+    <Compile Include="Execution\DebugGarbageColllection.cs" />
+    <Compile Include="Execution\PerformanceCounter.cs" />
+    <Compile Include="Execution\RegisterContext.cs" />
+    <Compile Include="Execution\Session.cs" />
+    <Compile Include="Execution\ThreadStatus.cs" />
+    <Compile Include="Execution\StackFrame.cs" />
+    <Compile Include="Execution\WatchHelper.cs" />
+    <Compile Include="Forms\EnvironmentForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EnvironmentForm.Designer.cs">
+      <DependentUpon>EnvironmentForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\IMainForm.cs" />
+    <Compile Include="Forms\InputForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\InputForm.Designer.cs">
+      <DependentUpon>InputForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ProfilerMainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProfilerMainForm.Designer.cs">
+      <DependentUpon>ProfilerMainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SessionManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SessionManager.Designer.cs">
+      <DependentUpon>SessionManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\BreakpointsView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\BreakpointsView.Designer.cs">
+      <DependentUpon>BreakpointsView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\CodeView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\CodeView.Designer.cs">
+      <DependentUpon>CodeView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\CodeView.Parsers.cs">
+      <DependentUpon>CodeView.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\DebuggerMainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DebuggerMainForm.Actions.cs">
+      <DependentUpon>DebuggerMainForm.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DebuggerMainForm.Designer.cs">
+      <DependentUpon>DebuggerMainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\DebuggerMainForm.Worker.cs">
+      <DependentUpon>DebuggerMainForm.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DisplayForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DisplayForm.Designer.cs">
+      <DependentUpon>DisplayForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Execution\ImageInformation.cs" />
+    <Compile Include="Execution\ProcessorHost.cs" />
+    <Compile Include="UserControls\LocalsView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\LocalsView.Designer.cs">
+      <DependentUpon>LocalsView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\OutputForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\OutputForm.Designer.cs">
+      <DependentUpon>OutputForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Forms\EnvironmentForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>EnvironmentForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\InputForm.resx">
+      <DependentUpon>InputForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProfilerMainForm.resx">
+      <DependentUpon>ProfilerMainForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SessionManager.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>SessionManager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\BreakpointsView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>BreakpointsView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\CodeView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>CodeView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DebuggerMainForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DebuggerMainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DisplayForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DisplayForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\LocalsView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>LocalsView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\OutputForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>OutputForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\MemoryView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>MemoryView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\RegistersView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>RegistersView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\StackTraceView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>StackTraceView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\ThreadsView.resx">
+      <DependentUpon>ThreadsView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\TreeBasedGridView.resx">
+      <DependentUpon>TreeBasedGridView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="app.config" />
+    <None Include="test.DebuggerConfig" />
+    <None Include="SoloDebugOverDccUI_HW.DebuggerConfig" />
+    <None Include="SoloOverSerialUI_HW.DebuggerConfig" />
+    <None Include="SoloOverDccUI.DebuggerConfig" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="SoloOverDccUI_HW.DebuggerConfig" />
+    <None Include="SoloUI.DebuggerConfig" />
+    <None Include="test.ZeligDebugSession" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="UserControls\MemoryView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\MemoryView.Designer.cs">
+      <DependentUpon>MemoryView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\RegistersView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\RegistersView.Designer.cs">
+      <DependentUpon>RegistersView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\StackTraceView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\StackTraceView.Designer.cs">
+      <DependentUpon>StackTraceView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ThreadsView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\ThreadsView.Designer.cs">
+      <DependentUpon>ThreadsView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\TreeBasedGridView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\TreeBasedGridView.Designer.cs">
+      <DependentUpon>TreeBasedGridView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VisualTree\GraphicsContext.cs">
+    </Compile>
+    <Compile Include="VisualTree\VisualEffects\InlineDisassembly.cs" />
+    <Compile Include="VisualTree\VisualEffects\SourceCodeHighlight.cs" />
+    <Compile Include="VisualTree\VisualEffects\VisualEffect.cs" />
+    <Compile Include="VisualTree\VisualItems\AddressVisualItem.cs" />
+    <Compile Include="VisualTree\VisualItems\BackgroundVisualItem.cs" />
+    <Compile Include="VisualTree\VisualItems\BaseTextVisualItem.cs" />
+    <Compile Include="VisualTree\VisualItems\ByteVisualItem.cs" />
+    <Compile Include="VisualTree\VisualItems\CharsVisualItem.cs" />
+    <Compile Include="VisualTree\VisualItems\ContainerVisualItem.cs" />
+    <Compile Include="VisualTree\VisualItems\IconVisualItem.cs" />
+    <Compile Include="VisualTree\VisualItems\ShortVisualItem.cs" />
+    <Compile Include="VisualTree\VisualItems\TextVisualItem.cs" />
+    <Compile Include="VisualTree\VisualItems\VisualItem.cs" />
+    <Compile Include="VisualTree\VisualItems\WordVisualItem.cs" />
+    <Compile Include="VisualTree\VisualTreeInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\CompileTime\CodeGenerator\CodeTransformation\CodeTransformation.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20070222AA01}</Project>
+      <Name>CodeTransformation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\CompileTime\CodeGenerator\IntermediateRepresentation\IntermediateRepresentation.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060603AA01}</Project>
+      <Name>IntermediateRepresentation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\CompileTime\TargetModels\ArmProcessor\ArmProcessor.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20070519AA01}</Project>
+      <Name>ArmProcessor</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\CompileTime\TargetModels\ProductConfiguration\ProductConfiguration.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20070606AA01}</Project>
+      <Name>ProductConfiguration</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\CommonPC\CommonPC.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20070601AA01}</Project>
+      <Name>CommonPC</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\Common\Common.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20061218AA01}</Project>
+      <Name>Common</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\Kernel\Kernel.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060509AA01}</Project>
+      <Name>Kernel</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\TypeSystem\TypeSystem.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060720AA01}</Project>
+      <Name>TypeSystem</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\DebugTime\ArmProcessorEmulation\ArmProcessorEmulation.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060704AA01}</Project>
+      <Name>ArmProcessorEmulation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,9 @@
+E:\src\iot\zelig-pr\Zelig\ZeligBuild\Target\bin\Debug\CryptoTest.exe
+E:\src\iot\zelig-pr\Zelig\ZeligBuild\Target\bin\Debug\CryptoTest.pdb
+E:\src\iot\zelig-pr\Zelig\Zelig\RunTime\DeviceModels\Perf\v8\crypto\CryptoTest\obj\x86\Debug\CryptoTest.csprojResolveAssemblyReference.cache
+E:\src\iot\zelig-pr\Zelig\Zelig\RunTime\DeviceModels\Perf\v8\crypto\CryptoTest\obj\x86\Debug\CryptoTest.exe
+E:\src\iot\zelig-pr\Zelig\Zelig\RunTime\DeviceModels\Perf\v8\crypto\CryptoTest\obj\x86\Debug\CryptoTest.pdb
+E:\src\iot\llilum-pr\Zelig\ZeligBuild\Target\bin\Debug\CryptoTest.exe
+E:\src\iot\llilum-pr\Zelig\ZeligBuild\Target\bin\Debug\CryptoTest.pdb
+E:\src\iot\llilum-pr\Zelig\Zelig\RunTime\DeviceModels\Perf\v8\crypto\CryptoTest\obj\x86\Debug\CryptoTest.exe
+E:\src\iot\llilum-pr\Zelig\Zelig\RunTime\DeviceModels\Perf\v8\crypto\CryptoTest\obj\x86\Debug\CryptoTest.pdb

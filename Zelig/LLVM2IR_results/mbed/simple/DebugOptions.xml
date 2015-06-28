@@ -1,0 +1,5 @@
+<LocalLaunchOptions xmlns="http://schemas.microsoft.com/vstudio/MDDDebuggerOptions/2014"
+    MIDebuggerPath="debug.bat"
+    MIDebuggerServerAddress=":3333"
+    TargetArchitecture="arm">
+</LocalLaunchOptions>

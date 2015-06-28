@@ -1,0 +1,315 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{186F31A3-EF89-4A25-B2D5-20070222AA01}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Zelig.CodeGeneration.IR</RootNamespace>
+    <AssemblyName>Microsoft.Zelig.CodeGeneration.CodeTransformation</AssemblyName>
+    <!-- ZELIG: Move intermediate data out of the source tree -->
+    <BaseIntermediateOutputPath>$(SolutionDir)\..\ZeligBuild\Host\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Instrumentation|AnyCPU'">
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Instrumentation\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;DUMP_CONSTRAINTSYSTEM;TRACE_EVERY_SINGLE_IR_CHANGE;TRACE_EVERY_IR_CHANGE</DefineConstants>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Abstractions\CallingConvention.cs" />
+    <Compile Include="Abstractions\ExternalCallContext.cs" />
+    <Compile Include="Abstractions\PlacementRequirements.cs" />
+    <Compile Include="Abstractions\RegisterClass.cs" />
+    <Compile Include="Abstractions\RegisterDescriptor.cs" />
+    <Compile Include="Abstractions\Platform.cs" />
+    <Compile Include="Annotations\RegisterCouplingConstraintAnnotation.cs" />
+    <Compile Include="Annotations\RegisterAllocationConstraintAnnotation.cs" />
+    <Compile Include="Annotations\InliningPathAnnotation.cs" />
+    <Compile Include="BitFieldDefinition.cs" />
+    <Compile Include="CompilationSteps\Attributes\AbstractHandlerAttribute.cs" />
+    <Compile Include="CompilationSteps\Attributes\CallClosureHandlerAttribute.cs" />
+    <Compile Include="CompilationSteps\Attributes\CallToWellKnownMethodHandlerAttribute.cs" />
+    <Compile Include="CompilationSteps\Attributes\PhaseDisabledAttribute.cs" />
+    <Compile Include="CompilationSteps\Attributes\PrePhaseHandlerAttribute.cs" />
+    <Compile Include="CompilationSteps\Attributes\PostPhaseHandlerAttribute.cs" />
+    <Compile Include="CompilationSteps\Attributes\NewEntityNotificationAttribute.cs" />
+    <Compile Include="CompilationSteps\Attributes\MaximumOperatorLevelAfterPhaseExecutionAttribute.cs" />
+    <Compile Include="CompilationSteps\Attributes\PhaseOrderingAttribute.cs" />
+    <Compile Include="CompilationSteps\Attributes\CustomAttributeHandlerAttribute.cs" />
+    <Compile Include="CompilationSteps\Attributes\CustomAttributeNotificationAttribute.cs" />
+    <Compile Include="CompilationSteps\Attributes\OperatorArgumentHandlerAttribute.cs" />
+    <Compile Include="CompilationSteps\Attributes\OperatorHandlerAttribute.cs" />
+    <Compile Include="CompilationSteps\Attributes\OptimizationHandlerAttribute.cs" />
+    <Compile Include="CompilationSteps\Attributes\PhaseFilterAttribute.cs" />
+    <Compile Include="CompilationSteps\Attributes\PhaseLimitAttribute.cs" />
+    <Compile Include="CompilationSteps\Attributes\PostFlowGraphHandlerAttribute.cs" />
+    <Compile Include="CompilationSteps\Attributes\PreFlowGraphHandlerAttribute.cs" />
+    <Compile Include="CompilationSteps\Attributes\WellKnownFieldHandlerAttribute.cs" />
+    <Compile Include="CompilationSteps\Attributes\WellKnownMethodHandlerAttribute.cs" />
+    <Compile Include="CompilationSteps\Attributes\WellKnownTypeHandlerAttribute.cs" />
+    <Compile Include="CompilationSteps\Controller.cs" />
+    <Compile Include="CompilationSteps\Handlers\SoftwareFloatingPoint.cs" />
+    <Compile Include="CompilationSteps\Handlers\OperatorHandlers_ConvertUnsupportedOperatorsToMethodCalls.cs" />
+    <Compile Include="CompilationSteps\Handlers\MethodTransformations.cs" />
+    <Compile Include="CompilationSteps\Handlers\OperatorHandlers_ExpandAggregateTypes.cs" />
+    <Compile Include="CompilationSteps\Handlers\OperatorHandlers_FromImplicitToExplictExceptions.cs" />
+    <Compile Include="CompilationSteps\Handlers\OperatorHandlers_HighLevel.cs" />
+    <Compile Include="CompilationSteps\Handlers\OperatorHandlers_HighLevelToMidLevel.cs" />
+    <Compile Include="CompilationSteps\Handlers\OperatorHandlers_MidLevelToLowLevel.cs" />
+    <Compile Include="CompilationSteps\Handlers\Optimizations.cs" />
+    <Compile Include="CompilationSteps\Handlers\ProtectRequiredEntities.cs" />
+    <Compile Include="CompilationSteps\Handlers\WellKnownFieldHandlers.cs" />
+    <Compile Include="CompilationSteps\Handlers\WellKnownMethodHandlers.cs" />
+    <Compile Include="CompilationSteps\PhaseDrivers\ApplyClassExtensions.cs" />
+    <Compile Include="CompilationSteps\PhaseDrivers\ComputeCallsClosure.cs" />
+    <Compile Include="CompilationSteps\PhaseDrivers\CallsDatabase.cs" />
+    <Compile Include="CompilationSteps\PhaseDrivers\CallGraph.cs" />
+    <Compile Include="CompilationSteps\PhaseDrivers\ImplementExternalMethods.cs" />
+    <Compile Include="CompilationSteps\PhaseDrivers\ImplementInternalMethods_ExternalMethodStub.cs" />
+    <Compile Include="CompilationSteps\PhaseDrivers\PhaseDriver.cs" />
+    <Compile Include="CompilationSteps\PhaseDrivers\DetectFieldInvariants.cs" />
+    <Compile Include="CompilationSteps\PhaseDrivers\DelegationCache.cs" />
+    <Compile Include="CompilationSteps\PhaseDrivers\ImplementInternalMethods.cs" />
+    <Compile Include="CompilationSteps\PhaseDrivers\ImplementInternalMethods_Delegate.cs" />
+    <Compile Include="CompilationSteps\PhaseDrivers\ImplementInternalMethods_ObjectEquals.cs" />
+    <Compile Include="CompilationSteps\PhaseDrivers\ImplementInternalMethods_SingletonFactory.cs" />
+    <Compile Include="CompilationSteps\PhaseDrivers\OptimizationsPhaseExecution.cs" />
+    <Compile Include="CompilationSteps\PhaseDrivers\ParallelTransformationsHandler.cs" />
+    <Compile Include="CompilationSteps\PhaseDrivers\PhaseExecution.cs" />
+    <Compile Include="CompilationSteps\PhaseDrivers\SingleMethodPhaseExecution.cs" />
+    <Compile Include="CompilationSteps\Phases\AllocateRegisters.cs" />
+    <Compile Include="CompilationSteps\Phases\ApplyClassExtensions.cs" />
+    <Compile Include="CompilationSteps\Phases\ApplyConfigurationSettings.cs" />
+    <Compile Include="CompilationSteps\Phases\CollectRegisterAllocationConstraints.cs" />
+    <Compile Include="CompilationSteps\Phases\CompleteImplementationOfInternalMethods.cs" />
+    <Compile Include="CompilationSteps\Phases\ComputeCallsClosure.cs" />
+    <Compile Include="CompilationSteps\Phases\ConvertToSSA.cs" />
+    <Compile Include="CompilationSteps\Phases\ConvertUnsupportedOperatorsToMethodCalls.cs" />
+    <Compile Include="CompilationSteps\Phases\FuseOperators.cs" />
+    <Compile Include="CompilationSteps\Phases\PrepareExternalMethods.cs" />
+    <Compile Include="CompilationSteps\Phases\ResourceManagerOptimizations.cs" />
+    <Compile Include="CompilationSteps\Phases\CrossReferenceTypeSystem.cs" />
+    <Compile Include="CompilationSteps\Phases\DetectNonImplementedInternalCalls.cs" />
+    <Compile Include="CompilationSteps\Phases\Done.cs" />
+    <Compile Include="CompilationSteps\Phases\EstimateTypeSystemReduction.cs" />
+    <Compile Include="CompilationSteps\Phases\ExpandAggregateTypes.cs" />
+    <Compile Include="CompilationSteps\Phases\FromImplicitToExplictExceptions.cs" />
+    <Compile Include="CompilationSteps\Phases\GenerateImage.cs" />
+    <Compile Include="CompilationSteps\Phases\HighLevelToMidLevelConversion.cs" />
+    <Compile Include="CompilationSteps\Phases\HighLevelTransformations.cs" />
+    <Compile Include="CompilationSteps\Phases\LayoutTypes.cs" />
+    <Compile Include="CompilationSteps\Phases\MidLevelToLowLevelConversion.cs" />
+    <Compile Include="CompilationSteps\Phases\Optimizations.cs" />
+    <Compile Include="CompilationSteps\Phases\OrderStaticConstructors.cs" />
+    <Compile Include="CompilationSteps\Phases\PrepareForRegisterAllocation.cs" />
+    <Compile Include="CompilationSteps\Phases\PrepareImplementationOfInternalMethods.cs" />
+    <Compile Include="CompilationSteps\Phases\PropagateCompilationConstraints.cs" />
+    <Compile Include="CompilationSteps\Phases\ReduceNumberOfTemporaries.cs" />
+    <Compile Include="CompilationSteps\Phases\ReduceTypeSystem.cs" />
+    <Compile Include="CompilationSteps\Phases\SplitComplexOperators.cs" />
+    <Compile Include="CompilationSteps\Phases\TransformFinallyBlocksIntoTryBlocks.cs" />
+    <Compile Include="ControlFlowGraphState\ControlFlowGraphStateForCodeTransformation.cs" />
+    <Compile Include="ControlFlowGraphState\ControlFlowGraphStateForCodeTransformation_CompilationConstraintsLookup.cs" />
+    <Compile Include="ControlFlowGraphState\ControlFlowGraphStateForCodeTransformation_Dominance.cs" />
+    <Compile Include="ControlFlowGraphState\ControlFlowGraphStateForCodeTransformation_Liveness.cs" />
+    <Compile Include="ControlFlowGraphState\ControlFlowGraphStateForCodeTransformation_MapToMachine.cs" />
+    <Compile Include="ControlFlowGraphState\ControlFlowGraphStateForCodeTransformation_PostDominance.cs" />
+    <Compile Include="ControlFlowGraphState\ControlFlowGraphStateForCodeTransformation_PostOrderVisit.cs" />
+    <Compile Include="ControlFlowGraphState\ControlFlowGraphStateForCodeTransformation_PropertiesOfVariables.cs" />
+    <Compile Include="ControlFlowGraphState\ControlFlowGraphStateForCodeTransformation_ReachingDefinitions.cs" />
+    <Compile Include="ControlFlowGraphState\ControlFlowGraphStateForCodeTransformation_SpanningTree.cs" />
+    <Compile Include="ControlFlowGraphState\ControlFlowGraphStateForCodeTransformation_Trace.cs" />
+    <Compile Include="ControlFlowGraphState\ControlFlowGraphStateForCodeTransformation_UseDefinitionChains.cs" />
+    <Compile Include="ExternalDataDescriptor.cs" />
+    <Compile Include="ExternalMethodImporters\ArmElfContext.cs" />
+    <Compile Include="ExternalMethodImporters\ArmElfDataContext.cs" />
+    <Compile Include="ExternalMethodImporters\ArmElfMethodContext.cs" />
+    <Compile Include="ImageBuilders\CompilationState_Scheduling.cs" />
+    <Compile Include="ImageBuilders\ImageAnnotations\ExternalDataRelocation.cs" />
+    <Compile Include="ImageBuilders\ImageAnnotations\ExternMethodCallRelocation.cs" />
+    <Compile Include="LLVM\LLVMModuleManager.cs" />
+    <Compile Include="LLVM\LLVMModuleManager_Types.cs" />
+    <Compile Include="Operators\BinaryOperatorWithCarryOut.cs" />
+    <Compile Include="Operators\BitTestOperator.cs" />
+    <Compile Include="Operators\BinaryOperatorWithCarryIn.cs" />
+    <Compile Include="Operators\BinaryOperatorWithCarryInAndOut.cs" />
+    <Compile Include="Operators\UnaryOperatorWithCarryOut.cs" />
+    <Compile Include="SourceCodeTracker.cs" />
+    <Compile Include="DataFlow\ControlTree\Dominance.cs" />
+    <Compile Include="DataFlow\ControlTree\GenericDepthFirst.cs" />
+    <Compile Include="DataFlow\ControlTree\NaturalLoops.cs" />
+    <Compile Include="DataFlow\ControlTree\PostDominance.cs" />
+    <Compile Include="DataFlow\ControlTree\PostOrderVisit.cs" />
+    <Compile Include="DataFlow\ControlTree\SpanningTree.cs" />
+    <Compile Include="DataFlow\LivenessAnalysis.cs" />
+    <Compile Include="DataFlow\ReachingDefinitions.cs" />
+    <Compile Include="DataManager.cs" />
+    <Compile Include="Expressions\ConditionCodeExpression.cs" />
+    <Compile Include="Expressions\LowLevelVariableExpression.cs" />
+    <Compile Include="Expressions\PhiVariableExpression.cs" />
+    <Compile Include="Expressions\PhysicalRegisterExpression.cs" />
+    <Compile Include="Expressions\PseudoRegisterExpression.cs" />
+    <Compile Include="Expressions\StackLocationExpression.cs" />
+    <Compile Include="Expressions\TypedPhysicalRegisterExpression.cs" />
+    <Compile Include="ImageBuilders\CompilationState.cs" />
+    <Compile Include="ImageBuilders\CompilationState_EmitCode.cs" />
+    <Compile Include="ImageBuilders\CompilationState_Encoder.cs" />
+    <Compile Include="ImageBuilders\CompilationState_ExceptionMap.cs" />
+    <Compile Include="ImageBuilders\CodeConstant.cs" />
+    <Compile Include="ImageBuilders\ImageAnnotations\CodeRelocation.cs" />
+    <Compile Include="ImageBuilders\ImageAnnotations\DataRelocation.cs" />
+    <Compile Include="ImageBuilders\ImageAnnotations\TrackVariableLifetime.cs" />
+    <Compile Include="ImageBuilders\ImageAnnotations\GenericImageAnnotation.cs" />
+    <Compile Include="ImageBuilders\ImageAnnotations\ImageAnnotation.cs" />
+    <Compile Include="ImageBuilders\Core.cs" />
+    <Compile Include="ImageBuilders\SequentialRegion.cs" />
+    <Compile Include="IntermediateRepresentationDumper.cs" />
+    <Compile Include="Operators\Calls\DirectSubroutineOperator.cs" />
+    <Compile Include="Operators\Calls\IndirectSubroutineOperator.cs" />
+    <Compile Include="Operators\Calls\SubroutineOperator.cs" />
+    <Compile Include="Operators\CompareOperator.cs" />
+    <Compile Include="Operators\ConditionalCompareOperator.cs" />
+    <Compile Include="Operators\Control\ConditionCodeControlOperator.cs" />
+    <Compile Include="Operators\PiOperator.cs" />
+    <Compile Include="Operators\InitialValueOperator.cs" />
+    <Compile Include="Operators\LongCompareOperator.cs" />
+    <Compile Include="Operators\NewConstraintOperator.cs" />
+    <Compile Include="Operators\PhiOperator.cs" />
+    <Compile Include="Operators\SetIfConditionIsTrueOperator.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TransformationContextForCodeTransformation.cs" />
+    <Compile Include="Transformations\CommonMethodRedundancyElimination.cs" />
+    <Compile Include="Transformations\ConstraintSystemCollector.cs" />
+    <Compile Include="Transformations\GlobalCopyPropagation.cs" />
+    <Compile Include="Transformations\GlobalRegisterAllocation.cs" />
+    <Compile Include="Transformations\InlineCall.cs" />
+    <Compile Include="Transformations\MergeExtendedBasicBlocks.cs" />
+    <Compile Include="Transformations\PerformClassExtension.cs" />
+    <Compile Include="Transformations\ReduceNumberOfTemporaries.cs" />
+    <Compile Include="Transformations\RemoveDeadCode.cs" />
+    <Compile Include="Transformations\RemoveSimpleIndirections.cs" />
+    <Compile Include="Transformations\SimplifyConditionCodeChecks.cs" />
+    <Compile Include="Transformations\SplitBasicBlocksAtExceptionSites.cs" />
+    <Compile Include="Transformations\StaticSingleAssignmentForm.cs" />
+    <Compile Include="Transformations\TransformFinallyBlocksIntoTryBlocks.cs" />
+    <Compile Include="Transformations\TypeSystemIntrospection\CollectUsageContext.cs" />
+    <Compile Include="Transformations\TypeSystemIntrospection\LocateFieldsInCode.cs" />
+    <Compile Include="Transformations\TypeSystemIntrospection\LocateUsageInCode.cs" />
+    <Compile Include="Transformations\TypeSystemIntrospection\RemapTypeSystem.cs" />
+    <Compile Include="Transformations\TypeSystemIntrospection\ReverseIndexTypeSystem.cs" />
+    <Compile Include="Transformations\TypeSystemIntrospection\ScanCode.cs" />
+    <Compile Include="Transformations\TypeSystemIntrospection\ScanCodeWithCallback.cs" />
+    <Compile Include="Transformations\TypeSystemIntrospection\ScanTypeSystem.cs" />
+    <Compile Include="TypeSystemForCodeTransformation.cs" />
+    <Compile Include="TypeSystemForCodeTransformation_Notifications.cs" />
+    <Compile Include="TypeSystemSerializer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\CommonPC\CommonPC.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20070601AA01}</Project>
+      <Name>CommonPC</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\CompileTime\MetaData\Normalized\Normalized.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060510AA01}</Project>
+      <Name>Normalized</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\Common\Common.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20061218AA01}</Project>
+      <Name>Common</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\Kernel\Kernel.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060509AA01}</Project>
+      <Name>Kernel</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\TypeSystem\TypeSystem.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060720AA01}</Project>
+      <Name>TypeSystem</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\CompileTime\TargetModels\ArmProcessor\ArmProcessor.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20070519AA01}</Project>
+      <Name>ArmProcessor</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\CompileTime\CodeGenerator\IntermediateRepresentation\IntermediateRepresentation.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060603AA01}</Project>
+      <Name>IntermediateRepresentation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\RunTime\DeviceModels\LLVM\LLVM.csproj">
+      <Project>{0c522c6a-0f77-4af8-ad78-5b2415c98c51}</Project>
+      <Name>LLVM</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MetaData\Importer\Importer.csproj">
+      <Project>{186f31a3-ef89-4a25-b2d5-20060404aa01}</Project>
+      <Name>Importer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LLVMIR\LLVMIR.vcxproj">
+      <Project>{d18bf31d-ea7f-46a4-ad71-0c7a683e46c5}</Project>
+      <Name>LLVMIR</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="CSharpParser, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\External\Binaries\CSharpParser\Debug\CSharpParser.dll</HintPath>
+    </Reference>
+    <Reference Include="elflib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\External\Binaries\binutils\Debug\elflib.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

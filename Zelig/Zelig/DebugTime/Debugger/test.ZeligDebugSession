@@ -1,0 +1,211 @@
+<Session Id="5ade6dd3-017a-42fc-b2af-6c85104ef70f" Name="Unit Test FF 2" LastModified="2/14/2008 1:24:26 PM" DisplayDisassembly="False" PastOpcodesToDisassembly="0x00000005" FutureOpcodesToDisassembly="0x00000005">
+  <Engine>
+    <Value Type="Microsoft.Zelig.Configuration.Environment.ArmEmulator, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <Field Name="Model" />
+    </Value>
+  </Engine>
+  <Product>
+    <Value Type="Microsoft.Zelig.Configuration.Environment.VoxSoloFormFactor, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <Field Name="Loader">
+        <Value Type="Microsoft.Zelig.Configuration.Environment.VoxSoloFormFactor+VoxSoloFormFactorLoader, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <Field Name="DriverLocation" Value="%ProgramFiles%\ARM\Multi-ICE\Multi-ICE.dll" />
+          <Field Name="DriverName" Value="ARM7TDMI-S" />
+          <Field Name="CanSetBreakpointsDuringReset" Value="True" />
+          <Field Name="Model" />
+        </Value>
+      </Field>
+      <Field Name="Processor">
+        <Value Type="Microsoft.Zelig.Configuration.Environment.MM9691LP, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <Field Name="RamChip">
+            <Value Type="Microsoft.Zelig.Configuration.Environment.MM9691LP+InternalRAM768KB, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+              <Field Name="BaseAddress" Value="134217728" />
+              <Field Name="SizeInBytes" Value="786432" />
+              <Field Name="WordSize" Value="32" />
+              <Field Name="WaitStates" Value="0" />
+              <Field Name="Characteristics" Value="RAM, InternalMemory, RandomAccessMemory, ConfiguredAtEntryPoint" />
+              <Field Name="ConnectedToBus" Value="Microsoft.Zelig.Configuration.Environment.MM9691LP+CacheController, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+              <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.Chipset.MM9691LP+RamMemoryHandler, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+            </Value>
+          </Field>
+          <Field Name="Peripherals">
+            <Array Type="Microsoft.Zelig.Configuration.Environment.PeripheralCategory, Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" Length="21">
+              <Element>
+                <Value Type="Microsoft.Zelig.Configuration.Environment.PeripheralCategory, Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+                  <Field Name="ConnectedToBus" Value="Microsoft.Zelig.Configuration.Environment.MM9691LP+CacheController, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                  <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.Chipset.MM9691LP+BUSWATCHER, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                </Value>
+              </Element>
+              <Element>
+                <Value Type="Microsoft.Zelig.Configuration.Environment.PeripheralCategory, Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+                  <Field Name="ConnectedToBus" Value="Microsoft.Zelig.Configuration.Environment.MM9691LP+CacheController, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                  <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.Chipset.MM9691LP+EBIU, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                </Value>
+              </Element>
+              <Element>
+                <Value Type="Microsoft.Zelig.Configuration.Environment.PeripheralCategory, Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+                  <Field Name="ConnectedToBus" Value="Microsoft.Zelig.Configuration.Environment.MM9691LP+CacheController, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                  <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.Chipset.MM9691LP+DMAC, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                </Value>
+              </Element>
+              <Element>
+                <Value Type="Microsoft.Zelig.Configuration.Environment.PeripheralCategory, Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+                  <Field Name="ConnectedToBus" Value="Microsoft.Zelig.Configuration.Environment.MM9691LP+CacheController, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                  <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.Chipset.MM9691LP+VITERBI, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                </Value>
+              </Element>
+              <Element>
+                <Value Type="Microsoft.Zelig.Configuration.Environment.PeripheralCategory, Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+                  <Field Name="ConnectedToBus" Value="Microsoft.Zelig.Configuration.Environment.MM9691LP+CacheController, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                  <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.Chipset.MM9691LP+FILTERARCTAN, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                </Value>
+              </Element>
+              <Element>
+                <Value Type="Microsoft.Zelig.Configuration.Environment.PeripheralCategory, Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+                  <Field Name="ConnectedToBus" Value="Microsoft.Zelig.Configuration.Environment.MM9691LP+CacheController, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                  <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.Chipset.MM9691LP+INTC, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                </Value>
+              </Element>
+              <Element>
+                <Value Type="Microsoft.Zelig.Configuration.Environment.PeripheralCategory, Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+                  <Field Name="ConnectedToBus" Value="Microsoft.Zelig.Configuration.Environment.MM9691LP+CacheController, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                  <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.Chipset.MM9691LP+REMAP_PAUSE, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                </Value>
+              </Element>
+              <Element>
+                <Value Type="Microsoft.Zelig.Configuration.Environment.PeripheralCategory, Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+                  <Field Name="ConnectedToBus" Value="Microsoft.Zelig.Configuration.Environment.MM9691LP+CacheController, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                  <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.Chipset.MM9691LP+ARMTIMER0, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                </Value>
+              </Element>
+              <Element>
+                <Value Type="Microsoft.Zelig.Configuration.Environment.PeripheralCategory, Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+                  <Field Name="ConnectedToBus" Value="Microsoft.Zelig.Configuration.Environment.MM9691LP+CacheController, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                  <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.Chipset.MM9691LP+ARMTIMER1, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                </Value>
+              </Element>
+              <Element>
+                <Value Type="Microsoft.Zelig.Configuration.Environment.PeripheralCategory, Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+                  <Field Name="ConnectedToBus" Value="Microsoft.Zelig.Configuration.Environment.MM9691LP+CacheController, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                  <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.Chipset.MM9691LP+VTU32, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                </Value>
+              </Element>
+              <Element>
+                <Value Type="Microsoft.Zelig.Configuration.Environment.PeripheralCategory, Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+                  <Field Name="ConnectedToBus" Value="Microsoft.Zelig.Configuration.Environment.MM9691LP+CacheController, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                  <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.Chipset.MM9691LP+USART, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                </Value>
+              </Element>
+              <Element>
+                <Value Type="Microsoft.Zelig.Configuration.Environment.PeripheralCategory, Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+                  <Field Name="ConnectedToBus" Value="Microsoft.Zelig.Configuration.Environment.MM9691LP+CacheController, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                  <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.Chipset.MM9691LP+USART0, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                </Value>
+              </Element>
+              <Element>
+                <Value Type="Microsoft.Zelig.Configuration.Environment.PeripheralCategory, Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+                  <Field Name="ConnectedToBus" Value="Microsoft.Zelig.Configuration.Environment.MM9691LP+CacheController, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                  <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.Chipset.MM9691LP+USART1, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                </Value>
+              </Element>
+              <Element>
+                <Value Type="Microsoft.Zelig.Configuration.Environment.PeripheralCategory, Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+                  <Field Name="ConnectedToBus" Value="Microsoft.Zelig.Configuration.Environment.MM9691LP+CacheController, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                  <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.Chipset.MM9691LP+USB, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                </Value>
+              </Element>
+              <Element>
+                <Value Type="Microsoft.Zelig.Configuration.Environment.PeripheralCategory, Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+                  <Field Name="ConnectedToBus" Value="Microsoft.Zelig.Configuration.Environment.MM9691LP+CacheController, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                  <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.Chipset.MM9691LP+GPIO, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                </Value>
+              </Element>
+              <Element>
+                <Value Type="Microsoft.Zelig.Configuration.Environment.PeripheralCategory, Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+                  <Field Name="ConnectedToBus" Value="Microsoft.Zelig.Configuration.Environment.MM9691LP+CacheController, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                  <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.Chipset.MM9691LP+SECURITYKEY, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                </Value>
+              </Element>
+              <Element>
+                <Value Type="Microsoft.Zelig.Configuration.Environment.PeripheralCategory, Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+                  <Field Name="ConnectedToBus" Value="Microsoft.Zelig.Configuration.Environment.MM9691LP+CacheController, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                  <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.Chipset.MM9691LP+MWSPI, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                </Value>
+              </Element>
+              <Element>
+                <Value Type="Microsoft.Zelig.Configuration.Environment.PeripheralCategory, Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+                  <Field Name="ConnectedToBus" Value="Microsoft.Zelig.Configuration.Environment.MM9691LP+CacheController, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                  <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.Chipset.MM9691LP+CMU, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                </Value>
+              </Element>
+              <Element>
+                <Value Type="Microsoft.Zelig.Configuration.Environment.PeripheralCategory, Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+                  <Field Name="ConnectedToBus" Value="Microsoft.Zelig.Configuration.Environment.MM9691LP+CacheController, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                  <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.Chipset.MM9691LP+RTC, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                </Value>
+              </Element>
+              <Element>
+                <Value Type="Microsoft.Zelig.Configuration.Environment.PeripheralCategory, Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+                  <Field Name="ConnectedToBus" Value="Microsoft.Zelig.Configuration.Environment.MM9691LP+CacheController, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                  <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.Chipset.MM9691LP+EDMAIF, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                </Value>
+              </Element>
+              <Element>
+                <Value Type="Microsoft.Zelig.Configuration.Environment.PeripheralCategory, Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+                  <Field Name="ConnectedToBus" Value="Microsoft.Zelig.Configuration.Environment.MM9691LP+CacheController, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                  <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.Chipset.MM9691LP+PCU, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+                </Value>
+              </Element>
+            </Array>
+          </Field>
+          <Field Name="Cache">
+            <Value Type="Microsoft.Zelig.Configuration.Environment.MM9691LP+CacheController, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+              <Field Name="BaseAddress" Value="0" />
+              <Field Name="SizeInBytes" Value="4294967296" />
+              <Field Name="WordSize" Value="32" />
+              <Field Name="WaitStates" Value="0" />
+              <Field Name="Characteristics" Value="0" />
+              <Field Name="ConnectedToBus" Value="Microsoft.Zelig.Configuration.Environment.MM9691LP, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+              <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.Chipset.MM9691LP+CacheMemoryHandler, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+            </Value>
+          </Field>
+          <Field Name="ClockFrequency" Value="26000000" />
+          <Field Name="RealTimeClockFrequency" Value="32768" />
+          <Field Name="Model" />
+        </Value>
+      </Field>
+      <Field Name="FlashChip">
+        <Value Type="Microsoft.Zelig.Configuration.Environment.S29WS128N, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <Field Name="BaseAddress" Value="268435456" />
+          <Field Name="SizeInBytes" Value="16777216" />
+          <Field Name="WordSize" Value="16" />
+          <Field Name="WaitStates" Value="2" />
+          <Field Name="Characteristics" Value="FLASH, ExternalMemory, RandomAccessMemory" />
+          <Field Name="ConnectedToBus" Value="Microsoft.Zelig.Configuration.Environment.MM9691LP+CacheController, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.FlashMemory.S29WS128N, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+        </Value>
+      </Field>
+      <Field Name="Display">
+        <Value Type="Microsoft.Zelig.Configuration.Environment.SED15E0, Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <Field Name="BaseAddress" Value="536870912" />
+          <Field Name="SizeInBytes" Value="131072" />
+          <Field Name="WordSize" Value="8" />
+          <Field Name="WaitStates" Value="2" />
+          <Field Name="Characteristics" Value="0" />
+          <Field Name="ConnectedToBus" />
+          <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.Display.SED15E0, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+        </Value>
+      </Field>
+      <Field Name="Interops">
+        <Array Type="Microsoft.Zelig.Configuration.Environment.InteropCategory, Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" Length="1">
+          <Element>
+            <Value Type="Microsoft.Zelig.Configuration.Environment.InteropCategory, Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+              <Field Name="ConnectedToBus" />
+              <Field Name="Model" Value="Microsoft.Zelig.Emulation.ArmProcessor.VoxSoloFormFactor.Interop+InteropHandler_WaitForInterrupt, Microsoft.Zelig.Emulation.ArmProcessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+            </Value>
+          </Element>
+        </Array>
+      </Field>
+      <Field Name="Model" />
+    </Value>
+  </Product>
+</Session>

@@ -1,0 +1,49 @@
+###
+### Location of the Zelig assemblies.
+###
+-HostAssemblyDir   ..\..\..\..\ZeligBuild\Host\bin\Debug
+-DeviceAssemblyDir ..\..\..\..\ZeligBuild\Target\bin\Debug
+
+-CompilationSetup Microsoft.Zelig.Configuration.Environment.iMote2CompilationSetup
+
+###
+### Add compilation phases, in order
+###
+-CompilationPhase ReduceNumberOfTemporaries
+-CompilationPhase TransformFinallyBlocksIntoTryBlocks
+-CompilationPhase ApplyClassExtensions
+-CompilationPhase CrossReferenceTypeSystem
+-CompilationPhase ApplyConfigurationSettings
+-CompilationPhase HighLevelTransformations
+-CompilationPhase PropagateCompilationConstraints
+-CompilationPhase ComputeCallsClosure
+-CompilationPhase EstimateTypeSystemReduction
+-CompilationPhase ReduceTypeSystem
+#-CompilationPhase LayoutTypes
+#-CompilationPhase DetectNonImplementedInternalCalls
+-CompilationPhase ConvertToLLVMIntermediateRepresentation
+-CompilationPhase Done
+
+###
+### We need to include this assembly to get the right drivers.
+###
+-Reference Microsoft.iMote2
+
+###
+### The program to compile.
+###
+..\..\..\..\Zelig\Test\mbed\pong\pong\bin\Debug\pong.exe
+
+###
+### Where to put the results.
+###
+-OutputName pong
+-OutputDir  ..\..\..\..\LLVM2IR_results\mbed\pong
+
+-DumpIR
+-DumpLLVMIR
+-DumpLLVMIR_TextRepresentation
+#-ReloadState
+
+-MaxProcs 1
+

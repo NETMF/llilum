@@ -1,0 +1,5 @@
+E:\src\iot\llilum-pr\Zelig\ZeligBuild\Target\bin\Debug\TestUtilities.dll
+E:\src\iot\llilum-pr\Zelig\ZeligBuild\Target\bin\Debug\TestUtilities.pdb
+E:\src\iot\llilum-pr\Zelig\Zelig\Test\LLVM\Utilities\obj\Debug\Test_Common.csprojResolveAssemblyReference.cache
+E:\src\iot\llilum-pr\Zelig\Zelig\Test\LLVM\Utilities\obj\Debug\TestUtilities.dll
+E:\src\iot\llilum-pr\Zelig\Zelig\Test\LLVM\Utilities\obj\Debug\TestUtilities.pdb

@@ -1,0 +1,8 @@
+﻿-LoadAssembly %DEPOTROOT%\SoloBuild\bin\Debug\DebuggerPlugIn.dll
+
+-AddHandler Microsoft.Vox.Solo.Common.Windows.DebuggerPlugIn.UIOverSerial
+-AddHandler Microsoft.Vox.Solo.Common.Windows.DebuggerPlugIn.ProtocolOverSerial
+#-AddHandler Microsoft.Vox.Solo.Common.Windows.DebuggerPlugIn.Interop
+
+-Session "Solo Test NXP HW"
+#-Session "Solo Tester NXP HW"

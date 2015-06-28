@@ -1,0 +1,8 @@
+E:\src\iot\zelig-pr\Zelig\ZeligBuild\Target\bin\Debug\WhetstoneTest.exe
+E:\src\iot\zelig-pr\Zelig\ZeligBuild\Target\bin\Debug\WhetstoneTest.pdb
+E:\src\iot\zelig-pr\Zelig\Zelig\RunTime\DeviceModels\Perf\Whetstone\obj\x86\Debug\WhetstoneTest.exe
+E:\src\iot\zelig-pr\Zelig\Zelig\RunTime\DeviceModels\Perf\Whetstone\obj\x86\Debug\WhetstoneTest.pdb
+E:\src\iot\llilum-pr\Zelig\ZeligBuild\Target\bin\Debug\WhetstoneTest.exe
+E:\src\iot\llilum-pr\Zelig\ZeligBuild\Target\bin\Debug\WhetstoneTest.pdb
+E:\src\iot\llilum-pr\Zelig\Zelig\RunTime\DeviceModels\Perf\Whetstone\obj\x86\Debug\WhetstoneTest.exe
+E:\src\iot\llilum-pr\Zelig\Zelig\RunTime\DeviceModels\Perf\Whetstone\obj\x86\Debug\WhetstoneTest.pdb

@@ -1,0 +1,8 @@
+﻿-LoadAssembly %DEPOTROOT%\SoloBuild\bin\Debug\DebuggerPlugIn.dll
+
+-AddHandler Microsoft.Vox.Solo.Common.Windows.DebuggerPlugIn.UIOverDcc
+-AddHandler Microsoft.Vox.Solo.Common.Windows.DebuggerPlugIn.ProtocolOverDcc
+-AddHandler Microsoft.Vox.Solo.Common.Windows.DebuggerPlugIn.Interop
+
+#-Session "Solo Tester FF"
+-Session "Solo Test FF"

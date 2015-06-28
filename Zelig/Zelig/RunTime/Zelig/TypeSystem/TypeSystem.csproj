@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{186F31A3-EF89-4A25-B2D5-20060720AA01}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Zelig.Runtime.TypeSystem</RootNamespace>
+    <AssemblyName>Microsoft.Zelig.Runtime.TypeSystem</AssemblyName>
+    <!-- ZELIG: Move intermediate data out of the source tree -->
+    <BaseIntermediateOutputPath>$(SolutionDir)\..\ZeligBuild\Host\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Instrumentation|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Instrumentation\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;TRANSFORMATIONCONTEXT_SHOWALLMETHODSTODEBUGGER;</DefineConstants>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyRepresentation.cs" />
+    <Compile Include="BaseRepresentation.cs" />
+    <Compile Include="CodeMap.cs" />
+    <Compile Include="CodePointer.cs" />
+    <Compile Include="ConversionContext.cs" />
+    <Compile Include="CodeMapDecoderCallback.cs" />
+    <Compile Include="Environment\IConfigurationProvider.cs" />
+    <Compile Include="Environment\IEnvironmentProvider.cs" />
+    <Compile Include="ResourceRepresentation.cs" />
+    <Compile Include="EquivalenceSet.cs" />
+    <Compile Include="InstantiationContext.cs" />
+    <Compile Include="CustomAttributeAssociationRepresentation.cs" />
+    <Compile Include="CustomAttributeRepresentation.cs" />
+    <Compile Include="ExceptionMap.cs" />
+    <Compile Include="Fields\FieldRepresentation.cs" />
+    <Compile Include="Fields\InstanceFieldRepresentation.cs" />
+    <Compile Include="Fields\StaticFieldRepresentation.cs" />
+    <Compile Include="GCInfo.cs" />
+    <Compile Include="GenericInstantiationClosure.cs" />
+    <Compile Include="GenericParameterDefinition.cs" />
+    <Compile Include="GlobalRoot.cs" />
+    <Compile Include="Methods\ConstructorMethodRepresentation.cs" />
+    <Compile Include="Methods\FinalizerMethodRepresentation.cs" />
+    <Compile Include="Methods\FinalMethodRepresentation.cs" />
+    <Compile Include="Methods\InstanceMethodRepresentation.cs" />
+    <Compile Include="Methods\MethodImplRepresentation.cs" />
+    <Compile Include="Methods\MethodRepresentation.cs" />
+    <Compile Include="Methods\NotVirtualMethodRepresentation.cs" />
+    <Compile Include="Methods\RuntimeMethodRepresentation.cs" />
+    <Compile Include="Methods\StaticConstructorMethodRepresentation.cs" />
+    <Compile Include="Methods\StaticMethodRepresentation.cs" />
+    <Compile Include="Methods\VirtualMethodRepresentation.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StackEquivalentType.cs" />
+    <Compile Include="TransformationContext.cs" />
+    <Compile Include="TypeSystem.cs" />
+    <Compile Include="Types\AbstractReferenceTypeRepresentation.cs" />
+    <Compile Include="Types\ArrayReferenceTypeRepresentation.cs" />
+    <Compile Include="Types\BoxedValueTypeRepresentation.cs" />
+    <Compile Include="Types\ConcreteReferenceTypeRepresentation.cs" />
+    <Compile Include="Types\DelayedMethodParameterTypeRepresentation.cs" />
+    <Compile Include="Types\DelayedTypeParameterTypeRepresentation.cs" />
+    <Compile Include="Types\EnumerationTypeRepresentation.cs" />
+    <Compile Include="Types\InterfaceTypeRepresentation.cs" />
+    <Compile Include="Types\ManagedPointerTypeRepresentation.cs" />
+    <Compile Include="Types\MultiArrayReferenceTypeRepresentation.cs" />
+    <Compile Include="Types\PinnedPointerTypeRepresentation.cs" />
+    <Compile Include="Types\PointerTypeRepresentation.cs" />
+    <Compile Include="Types\ReferenceTypeRepresentation.cs" />
+    <Compile Include="Types\ScalarTypeRepresentation.cs" />
+    <Compile Include="Types\SzArrayReferenceTypeRepresentation.cs" />
+    <Compile Include="Types\TypeRepresentation.cs" />
+    <Compile Include="Types\UnmanagedPointerTypeRepresentation.cs" />
+    <Compile Include="Types\ValueTypeRepresentation.cs" />
+    <Compile Include="VTable.cs" />
+    <Compile Include="WellKnownFields.cs" />
+    <Compile Include="WellKnownMethods.cs" />
+    <Compile Include="WellKnownTypes.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\CompileTime\MetaData\Normalized\Normalized.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060510AA01}</Project>
+      <Name>Normalized</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\Common\Common.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20061218AA01}</Project>
+      <Name>Common</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{186F31A3-EF89-4A25-B2D5-20061218AA01}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Zelig.Runtime</RootNamespace>
+    <AssemblyName>Microsoft.Zelig.Runtime.Common</AssemblyName>
+    <!-- ZELIG: Move intermediate data out of the source tree -->
+    <BaseIntermediateOutputPath>$(SolutionDir)\..\ZeligBuild\Host\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Instrumentation|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Instrumentation\</OutputPath>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Attributes\CallQualifiers\ActivationRecordEvents.cs" />
+    <Compile Include="Attributes\CallQualifiers\BottomOfCallStackAttribute.cs" />
+    <Compile Include="Attributes\CallQualifiers\CanAllocateOnReturnAttribute.cs" />
+    <Compile Include="Attributes\CallQualifiers\CannotAllocateAttribute.cs" />
+    <Compile Include="Attributes\CallQualifiers\DebuggerHookHandlerAttribute.cs" />
+    <Compile Include="Attributes\CallQualifiers\DisableBoundsChecksAttribute.cs" />
+    <Compile Include="Attributes\CallQualifiers\DisableNullChecksAttribute.cs" />
+    <Compile Include="Attributes\CallQualifiers\ExportedMethodAttribute.cs" />
+    <Compile Include="Attributes\CallQualifiers\ImportedMethodReferenceAttribute.cs" />
+    <Compile Include="Attributes\CallQualifiers\InlineAttribute.cs" />
+    <Compile Include="Attributes\CallQualifiers\HardwareExceptionHandlerAttribute.cs" />
+    <Compile Include="Attributes\CallQualifiers\NoInlineAttribute.cs" />
+    <Compile Include="Attributes\CallQualifiers\NoReturnAttribute.cs" />
+    <Compile Include="Attributes\CallQualifiers\SaveFullProcessorContextAttribute.cs" />
+    <Compile Include="Attributes\CallQualifiers\StackAvailableOnReturnAttribute.cs" />
+    <Compile Include="Attributes\CallQualifiers\StackNotAvailableAttribute.cs" />
+    <Compile Include="Attributes\CompileTimeOptions\AlignmentRequirementsAttribute.cs" />
+    <Compile Include="Attributes\CompileTimeOptions\ForceDevirtualizationAttribute.cs" />
+    <Compile Include="Attributes\CompileTimeOptions\ImplicitInstanceAttribute.cs" />
+    <Compile Include="Attributes\CompileTimeOptions\MemoryRequirementsAttribute.cs" />
+    <Compile Include="Attributes\CompileTimeOptions\MemoryUsageAttribute.cs" />
+    <Compile Include="Attributes\CompileTimeOptions\SingletonFactoryAttribute.cs" />
+    <Compile Include="Attributes\HardwareModeling\BitFieldPeripheralAttribute.cs" />
+    <Compile Include="Attributes\HardwareModeling\BitFieldRegisterAttribute.cs" />
+    <Compile Include="Attributes\HardwareModeling\BitFieldSplitRegisterAttribute.cs" />
+    <Compile Include="Attributes\HardwareModeling\MemoryMappedPeripheralAttribute.cs" />
+    <Compile Include="Attributes\HardwareModeling\RegisterAttribute.cs" />
+    <Compile Include="Attributes\OpenClasses\AliasForBaseFieldAttribute.cs" />
+    <Compile Include="Attributes\OpenClasses\AliasForBaseMethodAttribute.cs" />
+    <Compile Include="Attributes\OpenClasses\AliasForSuperMethodAttribute.cs" />
+    <Compile Include="Attributes\OpenClasses\AliasForTargetMethodAttribute.cs" />
+    <Compile Include="Attributes\OpenClasses\InjectAtExitPointAttribute.cs" />
+    <Compile Include="Attributes\OpenClasses\InjectAtEntryPointAttribute.cs" />
+    <Compile Include="Attributes\OpenClasses\DiscardTargetImplementationAttribute.cs" />
+    <Compile Include="Attributes\OpenClasses\ExtendClassAttribute.cs" />
+    <Compile Include="Attributes\OpenClasses\MergeWithTargetImplementationAttribute.cs" />
+    <Compile Include="Attributes\TypeSystem\AllowCompileTimeIntrospectionAttribute.cs" />
+    <Compile Include="Attributes\TypeSystem\AssumeReferencedAttribute.cs" />
+    <Compile Include="Attributes\CompileTimeOptions\ConfigurationOptionAttribute.cs" />
+    <Compile Include="Attributes\TypeSystem\SkipDuringGarbageCollectionAttribute.cs" />
+    <Compile Include="Attributes\TypeSystem\GarbageCollectionExtensionAttribute.cs" />
+    <Compile Include="Attributes\TypeSystem\TypeDependencyAttribute.cs" />
+    <Compile Include="Attributes\TypeSystem\LinkToRuntimeTypeAttribute.cs" />
+    <Compile Include="Attributes\TypeSystem\GenerateUnsafeCastAttribute.cs" />
+    <Compile Include="Attributes\TypeSystem\NoVTableAttribute.cs" />
+    <Compile Include="Attributes\TypeSystem\WellKnownFieldAttribute.cs" />
+    <Compile Include="Attributes\TypeSystem\WellKnownMethodAttribute.cs" />
+    <Compile Include="Attributes\TypeSystem\WellKnownTypeAttribute.cs" />
+    <Compile Include="Attributes\TypeSystem\WellKnownTypeLookupAttribute.cs" />
+    <Compile Include="Collections\BitVector.cs" />
+    <Compile Include="Collections\GrowOnlyList.cs" />
+    <Compile Include="Collections\UniqueList.cs" />
+    <Compile Include="Collections\WeakEqualityComparer.cs" />
+    <Compile Include="Collections\GrowOnlyHashTable.cs" />
+    <Compile Include="Collections\GrowOnlySet.cs" />
+    <Compile Include="Collections\HashHelpers.cs" />
+    <Compile Include="Collections\ReferenceEqualityComparer.cs" />
+    <Compile Include="Configuration\Attributes\AllowedOptionsAttribute.cs" />
+    <Compile Include="Configuration\Attributes\AbstractDefaultsAttribute.cs" />
+    <Compile Include="Configuration\Attributes\LinkToConfigurationOptionAttribute.cs" />
+    <Compile Include="Configuration\Attributes\ReserveBlockAttribute.cs" />
+    <Compile Include="Configuration\Attributes\MergeEnumDefaultsAttribute.cs" />
+    <Compile Include="Configuration\Attributes\EnumDefaultsAttribute.cs" />
+    <Compile Include="Configuration\Attributes\DefaultsAttribute.cs" />
+    <Compile Include="Configuration\Attributes\DependsOnAttribute.cs" />
+    <Compile Include="Configuration\Attributes\DisplayNameAttribute.cs" />
+    <Compile Include="Configuration\Attributes\HardwareModelAttribute.cs" />
+    <Compile Include="Configuration\Attributes\MemorySectionAttribute.cs" />
+    <Compile Include="Configuration\Attributes\RequiresAttribute.cs" />
+    <Compile Include="Configuration\Categories\AbstractCategory.cs" />
+    <Compile Include="Configuration\Categories\CacheControllerCategory.cs" />
+    <Compile Include="Configuration\Categories\BusAttachedCategory.cs" />
+    <Compile Include="Configuration\Categories\BusControllerCategory.cs" />
+    <Compile Include="Configuration\Categories\CompilationSetupCategory.cs" />
+    <Compile Include="Configuration\Categories\LoaderCompilationSetupCategory.cs" />
+    <Compile Include="Configuration\Interfaces\IMemoryMapper.cs" />
+    <Compile Include="Configuration\Categories\FlashMemoryCategory.cs" />
+    <Compile Include="Configuration\Categories\InteropCategory.cs" />
+    <Compile Include="Configuration\Categories\PeripheralCategory.cs" />
+    <Compile Include="Configuration\Categories\JtagLoaderCategory.cs" />
+    <Compile Include="Configuration\Categories\DisplayCategory.cs" />
+    <Compile Include="Configuration\Categories\EngineCategory.cs" />
+    <Compile Include="Configuration\Categories\MemoryCategory.cs" />
+    <Compile Include="Configuration\Categories\MemoryMapCategory.cs" />
+    <Compile Include="Configuration\Categories\ProcessorCategory.cs" />
+    <Compile Include="Configuration\Categories\ProductCategory.cs" />
+    <Compile Include="Configuration\Categories\RamMemoryCategory.cs" />
+    <Compile Include="Configuration\ImageSection.cs" />
+    <Compile Include="Debugging\DebugInfo.cs" />
+    <Compile Include="Debugging\MethodDebugInfo.cs" />
+    <Compile Include="Exceptions\AssertionViolationException.cs" />
+    <Compile Include="Exceptions\IncorrectEncodingException.cs" />
+    <Compile Include="Exceptions\NotSupportedException.cs" />
+    <Compile Include="Exceptions\TypeConsistencyErrorException.cs" />
+    <Compile Include="Helpers\AddressMath.cs" />
+    <Compile Include="Helpers\ArrayUtility.cs" />
+    <Compile Include="Helpers\HashTableWithSetFactory.cs" />
+    <Compile Include="Helpers\ReflectionHelper.cs" />
+    <Compile Include="Helpers\Checks.cs" />
+    <Compile Include="Helpers\CRC32.cs" />
+    <Compile Include="Helpers\DataConversion.cs" />
+    <Compile Include="Helpers\HashTableFactory.cs" />
+    <Compile Include="Helpers\HashTableWithListFactory.cs" />
+    <Compile Include="Helpers\SetFactory.cs" />
+    <Compile Include="PerformanceCounters\ContextualTiming.cs" />
+    <Compile Include="PerformanceCounters\Timing.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\CompileTime\TargetModels\ArmProcessor\ArmProcessor.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20070519AA01}</Project>
+      <Name>ArmProcessor</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

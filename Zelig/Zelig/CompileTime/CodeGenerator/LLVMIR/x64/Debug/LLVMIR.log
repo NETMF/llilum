@@ -1,0 +1,111 @@
+﻿Build started 6/28/2015 11:46:51 AM.
+     1>Project "E:\src\iot\llilum-pr\Zelig\Zelig\CompileTime\CodeGenerator\LLVMIR\LLVMIR.vcxproj" on node 2 (Build target(s)).
+     1>C:\Program Files (x86)\MSBuild\12.0\bin\Microsoft.Common.CurrentVersion.targets(1492,5): warning : The referenced project '..\..\..\MetaData\Normalized\Normalized.csproj' does not exist.
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /I"E:\src\iot\llilum-pr\external\LLVM\include\\" /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\\" /AI"C:\Program Files (x86)\Windows Kits\8.1\References\CommonConfiguration\Neutral" /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\Facades\\" /Zi /clr /nologo /W3 /WX- /Od /D WIN32 /D _DEBUG /D _WINDLL /D _UNICODE /D UNICODE /D _CRT_SECURE_NO_WARNINGS /D _SCL_SECURE_NO_WARNINGS /EHa /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /TP /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\mscorlib.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Data.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Xml.dll" /errorReport:prompt /clr:nostdlib AssemblyInfo.cpp BasicBlock.cpp Module.cpp Type.cpp Value.cpp
+         AssemblyInfo.cpp
+         BasicBlock.cpp
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(396): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(404): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(412): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(420): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(453): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(459): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(466): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(472): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/ADT/APInt.h(1339): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/ADT/APInt.h(1517): warning C4244: 'return' : conversion from 'const uint64_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/Instructions.h(119): warning C4800: 'unsigned int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/Instructions.h(505): warning C4800: 'unsigned int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/Function.h(448): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/Operator.h(463): warning C4244: 'initializing' : conversion from 'uint64_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/IntrinsicInst.h(133): warning C4244: 'return' : conversion from 'uint64_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/DebugInfo.h(920): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/DebugInfo.h(921): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/DebugInfo.h(922): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/DebugInfo.h(923): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/DebugInfo.h(924): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>BasicBlock.cpp(202): warning C4267: 'argument' : conversion from 'size_t' to 'uint32_t', possible loss of data
+     1>BasicBlock.cpp(203): warning C4267: 'initializing' : conversion from 'size_t' to 'uint32_t', possible loss of data
+     1>BasicBlock.cpp(805): warning C4244: 'argument' : conversion from 'unsigned __int64' to 'uint32_t', possible loss of data
+         Module.cpp
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(396): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(404): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(412): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(420): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(453): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(459): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(466): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(472): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/ADT/APInt.h(1339): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/ADT/APInt.h(1517): warning C4244: 'return' : conversion from 'const uint64_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/Instructions.h(119): warning C4800: 'unsigned int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/Instructions.h(505): warning C4800: 'unsigned int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/Function.h(448): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/Operator.h(463): warning C4244: 'initializing' : conversion from 'uint64_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/IntrinsicInst.h(133): warning C4244: 'return' : conversion from 'uint64_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/DebugInfo.h(920): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/DebugInfo.h(921): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/DebugInfo.h(922): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/DebugInfo.h(923): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/DebugInfo.h(924): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>Module.cpp(330): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+         Type.cpp
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(396): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(404): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(412): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(420): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(453): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(459): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(466): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(472): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/ADT/APInt.h(1339): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/ADT/APInt.h(1517): warning C4244: 'return' : conversion from 'const uint64_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/Instructions.h(119): warning C4800: 'unsigned int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/Instructions.h(505): warning C4800: 'unsigned int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/Function.h(448): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/Operator.h(463): warning C4244: 'initializing' : conversion from 'uint64_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/IntrinsicInst.h(133): warning C4244: 'return' : conversion from 'uint64_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/DebugInfo.h(920): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/DebugInfo.h(921): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/DebugInfo.h(922): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/DebugInfo.h(923): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/DebugInfo.h(924): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+         Value.cpp
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(396): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(404): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(412): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(420): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(453): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(459): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(466): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/Support/MathExtras.h(472): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/ADT/APInt.h(1339): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/ADT/APInt.h(1517): warning C4244: 'return' : conversion from 'const uint64_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/Instructions.h(119): warning C4800: 'unsigned int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/Instructions.h(505): warning C4800: 'unsigned int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/Function.h(448): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/Operator.h(463): warning C4244: 'initializing' : conversion from 'uint64_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/IntrinsicInst.h(133): warning C4244: 'return' : conversion from 'uint64_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/DebugInfo.h(920): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/DebugInfo.h(921): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/DebugInfo.h(922): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/DebugInfo.h(923): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>E:\src\iot\llilum-pr\external\LLVM\include\llvm/IR/DebugInfo.h(924): warning C4267: 'return' : conversion from 'size_t' to 'unsigned int', possible loss of data
+         Generating Code...
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /I"E:\src\iot\llilum-pr\external\LLVM\include\\" /Zi /clr /nologo /W3 /WX- /Od /D WIN32 /D _DEBUG /D _WINDLL /D _UNICODE /D UNICODE /D _CRT_SECURE_NO_WARNINGS /D _SCL_SECURE_NO_WARNINGS /EHa /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /TP /errorReport:prompt "C:\Users\lorenzte\AppData\Local\Temp\.NETFramework,Version=v4.5.AssemblyAttributes.cpp"
+         .NETFramework,Version=v4.5.AssemblyAttributes.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"E:\src\iot\llilum-pr\Zelig\Zelig\..\ZeligBuild\Host\bin\x64\LLVMIR.dll" /INCREMENTAL /NOLOGO /LIBPATH:"E:\src\iot\llilum-pr\external\LLVM\Debug\lib" LLVMX86CodeGen.lib LLVMX86AsmParser.lib LLVMX86AsmPrinter.lib LLVMX86Desc.lib LLVMX86Disassembler.lib LLVMX86Info.lib LLVMX86Utils.lib LLVMVectorize.lib LLVMTransformUtils.lib LLVMTarget.lib LLVMTableGen.lib LLVMSupport.lib LLVMSelectionDAG.lib LLVMScalarOpts.lib LLVMRuntimeDyld.lib LLVMProfileData.lib LLVMOption.lib LLVMObject.lib LLVMObjCARCOpts.lib LLVMLTO.lib LLVMLinker.lib LLVMLineEditor.lib LLVMIRReader.lib LLVMipo.lib LLVMipa.lib LLVMInterpreter.lib LLVMInstrumentation.lib LLVMInstCombine.lib LLVMExecutionEngine.lib LLVMDebugInfo.lib LLVMCppBackendCodeGen.lib LLVMCppBackendInfo.lib LLVMCore.lib LLVMCodeGen.lib LLVMBitWriter.lib LLVMBitReader.lib LLVMAsmPrinter.lib LLVMAsmParser.lib LLVMAnalysis.lib LLVMMC.lib LLVMMCAnalysis.lib LLVMMCDisassembler.lib LLVMMCJIT.lib LLVMMCParser.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\src\iot\llilum-pr\Zelig\Zelig\..\ZeligBuild\Host\bin\x64\LLVMIR.pdb" /ASSEMBLYDEBUG /TLBID:1 /DYNAMICBASE /FIXED:NO /NXCOMPAT /MACHINE:X64 /DLL x64\Debug\AssemblyInfo.obj
+         x64\Debug\BasicBlock.obj
+         x64\Debug\Module.obj
+         x64\Debug\Type.obj
+         x64\Debug\Value.obj
+         "x64\Debug\.NETFramework,Version=v4.5.AssemblyAttributes.obj"
+     1>Module.obj : warning LNK4248: unresolved typeref token (01000038) for 'llvm.AssemblyAnnotationWriter'; image may not run
+         LLVMIR.vcxproj -> E:\src\iot\llilum-pr\Zelig\Zelig\..\ZeligBuild\Host\bin\x64\LLVMIR.dll
+     1>Done Building Project "E:\src\iot\llilum-pr\Zelig\Zelig\CompileTime\CodeGenerator\LLVMIR\LLVMIR.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:21.37

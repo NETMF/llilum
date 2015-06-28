@@ -1,0 +1,1 @@
+msbuild /p:platform=SAM9261_EK;DEVICE_TYPE=ARM926EJ-S;FLOATING_POINT_FLAG="--fpu vfpv2 " dotnetmf.proj

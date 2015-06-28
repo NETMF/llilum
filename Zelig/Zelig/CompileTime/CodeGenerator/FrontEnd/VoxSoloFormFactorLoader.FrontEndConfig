@@ -1,0 +1,27 @@
+###
+### Location of the Zelig assemblies.
+###
+-HostAssemblyDir   %DEPOTROOT%\ZeligBuild\Host\bin\Debug
+-DeviceAssemblyDir %DEPOTROOT%\ZeligBuild\Target\bin\Debug
+
+-CompilationSetup Microsoft.Zelig.Configuration.Environment.VoxSoloFormFactorLoaderCompilationSetup
+
+#-CompilationOption System.Boolean Test true
+
+###
+### We need to include this assembly to get the right drivers.
+###
+
+###
+### The program to compile.
+###
+%DEPOTROOT%\ZeligBuild\Target\bin\Debug\Microsoft.VoxSoloFormFactorLoader.exe
+
+###
+### Where to put the results.
+###
+-OutputDir %DEPOTROOT%\ZeligUnitTestResults
+
+-DumpHEX
+-DumpIR
+-DumpASM

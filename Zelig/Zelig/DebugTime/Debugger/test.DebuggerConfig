@@ -1,0 +1,30 @@
+﻿###
+###
+###
+
+#-session "Unit Test FF"
+#-session "Unit Test FF HW"
+#-session "Unit Test NXP HW"
+#-session "Unit Test PXA HW"
+
+#-session "Solo Tester FF HW"
+#-session "Solo Tester NXP HW"
+
+#-session "Tester FF"
+#-session "Tester FF HW"
+#-session "Tester PXA HW"
+
+#-session "Loader NXP"
+#-session "Loader iMote2"
+
+#-session "Solo Test FF"
+#-session "Solo Test NXP HW"
+
+#-cfg %DEPOTROOT%\Zelig\DebugTime\Debugger\SoloUI.DebuggerConfig
+#-cfg %DEPOTROOT%\Zelig\DebugTime\Debugger\SoloOverDccUI.DebuggerConfig
+#-cfg %DEPOTROOT%\Zelig\DebugTime\Debugger\SoloOverDccUI_HW.DebuggerConfig
+#-cfg %DEPOTROOT%\Zelig\DebugTime\Debugger\SoloDebugOverDccUI_HW.DebuggerConfig
+#-cfg %DEPOTROOT%\Zelig\DebugTime\Debugger\SoloOverSerialUI_HW.DebuggerConfig
+
+#-sessionFile %DEPOTROOT%\Zelig\DebugTime\Debugger\test.ZeligDebugSession
+#-imageFile   %DEPOTROOT%\ZeligUnitTestResults\mscorlib_UnitTest_FF.ZeligImage

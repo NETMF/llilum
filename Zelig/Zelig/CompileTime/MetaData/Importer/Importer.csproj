@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{186F31A3-EF89-4A25-B2D5-20060404AA01}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Zelig.MetaData.Importer</RootNamespace>
+    <AssemblyName>Microsoft.Zelig.MetaData.Importer</AssemblyName>
+    <!-- ZELIG: Move intermediate data out of the source tree -->
+    <BaseIntermediateOutputPath>$(SolutionDir)\..\ZeligBuild\Host\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Instrumentation|AnyCPU'">
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Instrumentation\</OutputPath>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="ArrayReader.cs" />
+    <Compile Include="ArrayWriter.cs" />
+    <Compile Include="AbstractMetaDataException.cs" />
+    <Compile Include="SilentCompilationAbortException.cs" />
+    <Compile Include="UnresolvedExternalReferenceException.cs" />
+    <Compile Include="IllegalMetaDataFormatException.cs" />
+    <Compile Include="EHClause.cs" />
+    <Compile Include="Instruction.cs" />
+    <Compile Include="LogWriter.cs" />
+    <Compile Include="MarshalSpec.cs" />
+    <Compile Include="MetaData.cs" />
+    <Compile Include="MetaDataAssembly.cs" />
+    <Compile Include="MetaDataAssemblyRef.cs" />
+    <Compile Include="MetaDataClassLayout.cs" />
+    <Compile Include="MetaDataConstant.cs" />
+    <Compile Include="MetaDataCustomAttribute.cs" />
+    <Compile Include="MetaDataDeclSecurity.cs" />
+    <Compile Include="MetaDataDumper.cs" />
+    <Compile Include="MetaDataEvent.cs" />
+    <Compile Include="MetaDataField.cs" />
+    <Compile Include="MetaDataFieldLayout.cs" />
+    <Compile Include="MetaDataFieldMarshal.cs" />
+    <Compile Include="MetaDataFieldRVA.cs" />
+    <Compile Include="MetaDataFile.cs" />
+    <Compile Include="MetaDataGenericParam.cs" />
+    <Compile Include="MetaDataImplMap.cs" />
+    <Compile Include="MetaDataManifestResource.cs" />
+    <Compile Include="MetaDataMemberRef.cs" />
+    <Compile Include="MetaDataMethod.cs" />
+    <Compile Include="MetaDataMethodImpl.cs" />
+    <Compile Include="MetaDataMethodSemantics.cs" />
+    <Compile Include="MetaDataMethodSpec.cs" />
+    <Compile Include="MetaDataMethod_Code.cs" />
+    <Compile Include="MetaDataModule.cs" />
+    <Compile Include="MetaDataModuleRef.cs" />
+    <Compile Include="MetaDataNormalizationContext.cs" />
+    <Compile Include="MetaDataObject.cs" />
+    <Compile Include="MetaDataParam.cs" />
+    <Compile Include="MetaDataProperty.cs" />
+    <Compile Include="MetaDataResolver.cs" />
+    <Compile Include="MetaDataStandAloneSig.cs" />
+    <Compile Include="MetaDataTypeDefinition.cs" />
+    <Compile Include="MetaDataTypeReference.cs" />
+    <Compile Include="MetaDataTypeSpec.cs" />
+    <Compile Include="Parser.cs" />
+    <Compile Include="PDBInfo\BitSet.cs" />
+    <Compile Include="PDBInfo\PdbWriter.cs" />
+    <Compile Include="PDBInfo\PdbStream.cs" />
+    <Compile Include="PDBInfo\CvInfo.cs" />
+    <Compile Include="PDBInfo\DataStream.cs" />
+    <Compile Include="PDBInfo\DbiHeader.cs" />
+    <Compile Include="PDBInfo\DbiModuleInfo.cs" />
+    <Compile Include="PDBInfo\DbiSecCon.cs" />
+    <Compile Include="PDBInfo\MsfDirectory.cs" />
+    <Compile Include="PDBInfo\PdbException.cs" />
+    <Compile Include="PDBInfo\PdbFile.cs" />
+    <Compile Include="PDBInfo\PdbFileHeader.cs" />
+    <Compile Include="PDBInfo\PdbFunction.cs" />
+    <Compile Include="PDBInfo\PdbLine.cs" />
+    <Compile Include="PDBInfo\PdbLines.cs" />
+    <Compile Include="PDBInfo\PdbReader.cs" />
+    <Compile Include="PDBInfo\PdbScope.cs" />
+    <Compile Include="PDBInfo\PdbSlot.cs" />
+    <Compile Include="PDBInfo\PdbSource.cs" />
+    <Compile Include="PELoader.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Signature.cs" />
+    <Compile Include="SignatureField.cs" />
+    <Compile Include="SignatureLocalVar.cs" />
+    <Compile Include="SignatureMethod.cs" />
+    <Compile Include="SignatureMethodSpec.cs" />
+    <Compile Include="SignatureProperty.cs" />
+    <Compile Include="SignatureTypeSpec.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\Common\Common.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20061218AA01}</Project>
+      <Name>Common</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\CompileTime\MetaData\Normalized\Normalized.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060510AA01}</Project>
+      <Name>Normalized</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

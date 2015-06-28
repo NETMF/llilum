@@ -1,0 +1,196 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{186F31A3-EF89-4A25-B2D5-20060603AA01}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Zelig.CodeGeneration.IR</RootNamespace>
+    <AssemblyName>Microsoft.Zelig.CodeGeneration.IntermediateRepresentation</AssemblyName>
+    <!-- ZELIG: Move intermediate data out of the source tree -->
+    <BaseIntermediateOutputPath>$(SolutionDir)\..\ZeligBuild\Host\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Instrumentation|AnyCPU'">
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Instrumentation\</OutputPath>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Annotations\Annotation.cs" />
+    <Compile Include="Annotations\ArrayLengthAnnotation.cs" />
+    <Compile Include="Annotations\BlockCopyPropagationAnnotation.cs" />
+    <Compile Include="Annotations\DontRemoveAnnotation.cs" />
+    <Compile Include="Annotations\ExternalCallArgumentAnnotation.cs" />
+    <Compile Include="Annotations\InvalidationAnnotation.cs" />
+    <Compile Include="Annotations\PostInvalidationAnnotation.cs" />
+    <Compile Include="Annotations\PreInvalidationAnnotation.cs" />
+    <Compile Include="Annotations\FixedLengthArrayAnnotation.cs" />
+    <Compile Include="Annotations\MemoryMappedPeripheralAnnotation.cs" />
+    <Compile Include="Annotations\NotNullAnnotation.cs" />
+    <Compile Include="BasicBlocks\BasicBlock.cs" />
+    <Compile Include="BasicBlocks\BasicBlockEdge.cs" />
+    <Compile Include="BasicBlocks\BasicBlockEdgeClass.cs" />
+    <Compile Include="BasicBlocks\Cloning\CloneForwardGraph.cs" />
+    <Compile Include="BasicBlocks\Cloning\CloneForwardGraphButLinkToExceptionHandlers.cs" />
+    <Compile Include="BasicBlocks\Cloning\CloneSingleBasicBlock.cs" />
+    <Compile Include="BasicBlocks\Cloning\CloningContext.cs" />
+    <Compile Include="BasicBlocks\CompilationConstraints.cs" />
+    <Compile Include="BasicBlocks\ControlFlowGraphState.cs" />
+    <Compile Include="BasicBlocks\EntryBasicBlock.cs" />
+    <Compile Include="BasicBlocks\ExceptionClause.cs" />
+    <Compile Include="BasicBlocks\ExceptionHandlerBasicBlock.cs" />
+    <Compile Include="BasicBlocks\ExitBasicBlock.cs" />
+    <Compile Include="BasicBlocks\NormalBasicBlock.cs" />
+    <Compile Include="ByteCode\ByteCodeBlock.cs" />
+    <Compile Include="ByteCode\ByteCodeConverter.cs" />
+    <Compile Include="ByteCode\ByteCodeConverter_Helpers.cs" />
+    <Compile Include="ByteCode\ByteCodeConverter_ProcessInstruction.cs" />
+    <Compile Include="Expressions\ArgumentVariableExpression.cs" />
+    <Compile Include="Expressions\ConstantExpression.cs" />
+    <Compile Include="Expressions\ExceptionObjectVariableExpression.cs" />
+    <Compile Include="Expressions\Expression.cs" />
+    <Compile Include="Expressions\LocalVariableExpression.cs" />
+    <Compile Include="Expressions\TemporaryVariableExpression.cs" />
+    <Compile Include="Expressions\VariableExpression.cs" />
+    <Compile Include="IIntermediateRepresentationDumper.cs" />
+    <Compile Include="Operators\BinaryOperator.cs" />
+    <Compile Include="Operators\Call\AddActivationRecordEventOperator.cs" />
+    <Compile Include="Operators\Call\CallOperator.cs" />
+    <Compile Include="Operators\Call\ExternalCallOperator.cs" />
+    <Compile Include="Operators\Call\IndirectCallOperator.cs" />
+    <Compile Include="Operators\Call\InstanceCallOperator.cs" />
+    <Compile Include="Operators\Call\StaticCallOperator.cs" />
+    <Compile Include="Operators\Checks\NullCheckOperator.cs" />
+    <Compile Include="Operators\Checks\OutOfBoundCheckOperator.cs" />
+    <Compile Include="Operators\Checks\OverflowCheckOperator.cs" />
+    <Compile Include="Operators\CompareAndSetOperator.cs" />
+    <Compile Include="Operators\CompilationConstraintsOperator.cs" />
+    <Compile Include="Operators\Control\BinaryConditionalControlOperator.cs" />
+    <Compile Include="Operators\Control\ConditionalControlOperator.cs" />
+    <Compile Include="Operators\Control\ControlOperator.cs" />
+    <Compile Include="Operators\Control\CompareConditionalControlOperator.cs" />
+    <Compile Include="Operators\Control\DeadControlOperator.cs" />
+    <Compile Include="Operators\Control\EndFinallyControlOperator.cs" />
+    <Compile Include="Operators\Control\LeaveControlOperator.cs" />
+    <Compile Include="Operators\Control\MultiWayConditionalControlOperator.cs" />
+    <Compile Include="Operators\Control\RethrowControlOperator.cs" />
+    <Compile Include="Operators\Control\ReturnControlOperator.cs" />
+    <Compile Include="Operators\Control\ThrowControlOperator.cs" />
+    <Compile Include="Operators\Control\UnconditionalControlOperator.cs" />
+    <Compile Include="Operators\ConversionOperator.cs" />
+    <Compile Include="Operators\ConvertOperator.cs" />
+    <Compile Include="Operators\AbstractAssignmentOperator.cs" />
+    <Compile Include="Operators\AbstractBinaryOperator.cs" />
+    <Compile Include="Operators\AbstractUnaryOperator.cs" />
+    <Compile Include="Operators\LongBinaryOperator.cs" />
+    <Compile Include="Operators\SingleAssignmentOperator.cs" />
+    <Compile Include="Operators\PartialAssignmentOperator.cs" />
+    <Compile Include="Operators\FetchExceptionOperator.cs" />
+    <Compile Include="Operators\Memory\AddressAssignmentOperator.cs" />
+    <Compile Include="Operators\Memory\ArgListOperator.cs" />
+    <Compile Include="Operators\Memory\ElementOperator.cs" />
+    <Compile Include="Operators\Memory\FieldOperator.cs" />
+    <Compile Include="Operators\Memory\IndirectOperator.cs" />
+    <Compile Include="Operators\Memory\LoadAddressOperator.cs" />
+    <Compile Include="Operators\Memory\LoadElementAddressOperator.cs" />
+    <Compile Include="Operators\Memory\LoadElementOperator.cs" />
+    <Compile Include="Operators\Memory\LoadFieldOperator.cs" />
+    <Compile Include="Operators\Memory\LoadIndirectOperator.cs" />
+    <Compile Include="Operators\Memory\LoadInstanceFieldAddressOperator.cs" />
+    <Compile Include="Operators\Memory\LoadInstanceFieldOperator.cs" />
+    <Compile Include="Operators\Memory\LoadStaticFieldAddressOperator.cs" />
+    <Compile Include="Operators\Memory\LoadStaticFieldOperator.cs" />
+    <Compile Include="Operators\Memory\StackAllocationOperator.cs" />
+    <Compile Include="Operators\Memory\StoreElementOperator.cs" />
+    <Compile Include="Operators\Memory\StoreFieldOperator.cs" />
+    <Compile Include="Operators\Memory\StoreIndirectOperator.cs" />
+    <Compile Include="Operators\Memory\StoreInstanceFieldOperator.cs" />
+    <Compile Include="Operators\Memory\StoreStaticFieldOperator.cs" />
+    <Compile Include="Operators\NopOperator.cs" />
+    <Compile Include="Operators\Object\ArrayAllocationOperator.cs" />
+    <Compile Include="Operators\Object\ArrayLengthOperator.cs" />
+    <Compile Include="Operators\Object\BoxOperator.cs" />
+    <Compile Include="Operators\Object\CastOperator.cs" />
+    <Compile Include="Operators\Object\IsInstanceOperator.cs" />
+    <Compile Include="Operators\Object\MethodRepresentationOperator.cs" />
+    <Compile Include="Operators\Object\ObjectAllocationOperator.cs" />
+    <Compile Include="Operators\Object\UnboxOperator.cs" />
+    <Compile Include="Operators\Operator.cs" />
+    <Compile Include="Operators\SignExtendOperator.cs" />
+    <Compile Include="Operators\TruncateOperator.cs" />
+    <Compile Include="Operators\TypedReference\MkRefAnyOperator.cs" />
+    <Compile Include="Operators\TypedReference\RefAnyTypeOperator.cs" />
+    <Compile Include="Operators\TypedReference\RefAnyValOperator.cs" />
+    <Compile Include="Operators\UnaryOperator.cs" />
+    <Compile Include="Operators\ZeroExtendOperator.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TransformationContextForIR.cs" />
+    <Compile Include="TypeSystemForIR.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\CompileTime\MetaData\Normalized\Normalized.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060510AA01}</Project>
+      <Name>Normalized</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\Common\Common.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20061218AA01}</Project>
+      <Name>Common</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\TypeSystem\TypeSystem.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060720AA01}</Project>
+      <Name>TypeSystem</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

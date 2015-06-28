@@ -1,0 +1,204 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{186F31A3-EF89-4A25-B2D5-20070606AA01}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Zelig.ProductConfiguration</RootNamespace>
+    <AssemblyName>Microsoft.Zelig.ProductConfiguration</AssemblyName>
+    <!-- ZELIG: Move intermediate data out of the source tree -->
+    <BaseIntermediateOutputPath>$(SolutionDir)\..\ZeligBuild\Host\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Instrumentation|AnyCPU'">
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Instrumentation\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Abstractions\ARM\ArchitectureVersions\ArmV5.cs" />
+    <Compile Include="Abstractions\ARM\ArchitectureVersions\ArmV5_VFP.cs" />
+    <Compile Include="Abstractions\ARM\ArchitectureVersions\ArmV4.cs" />
+    <Compile Include="Abstractions\ARM\ArchitectureVersions\ArmV5_VFP_Emulation.cs" />
+    <Compile Include="Abstractions\ARM\ArchitectureVersions\ArmV5_VFP_CollectRegisterAllocationConstraints.cs" />
+    <Compile Include="Abstractions\ARM\ArchitectureVersions\ArmV4_Optimizations.cs" />
+    <Compile Include="Abstractions\ARM\ArmCallingConvention.cs" />
+    <Compile Include="Abstractions\ARM\ArmPlatform.cs" />
+    <Compile Include="Abstractions\ARM\ArmPlatform_CompilationState.cs" />
+    <Compile Include="Abstractions\ARM\ArmPlatform_CompilationState_CodeMap.cs" />
+    <Compile Include="Abstractions\ARM\ArmPlatform_CompilationState_EmitCode.cs" />
+    <Compile Include="Abstractions\ARM\ArmPlatform_CompilationState_Encoder.cs" />
+    <Compile Include="Abstractions\ARM\ArmPlatform_EmitPrologueEpilogue.cs" />
+    <Compile Include="Abstractions\ARM\ArmPlatform_Handlers_HighLevel.cs" />
+    <Compile Include="Abstractions\ARM\ArmPlatform_OperatorConstraints.cs" />
+    <Compile Include="Abstractions\ARM\ArmPlatform_PrepareForRegisterAllocation.cs" />
+    <Compile Include="Abstractions\ARM\ArmPlatform_RegisterAllocation.cs" />
+    <Compile Include="Abstractions\ARM\ArmPlatform_SplitComplexOperators.cs" />
+    <Compile Include="Abstractions\ARM\ArmPlatform_Handlers_ExpandAggregateTypes.cs.cs" />
+    <Compile Include="Abstractions\ARM\ArmPlatform_CompilationState_Encoder_VFP.cs" />
+    <Compile Include="Abstractions\ARM\ArmPlatform_Optimizations.cs" />
+    <Compile Include="Abstractions\ARM\ImageAnnotations\ArmCodeRelocation_ExternMethod.cs" />
+    <Compile Include="Abstractions\ARM\ImageAnnotations\ArmCodeRelocation_MOV.cs" />
+    <Compile Include="Abstractions\ARM\ImageAnnotations\ArmCodeRelocation_FLD.cs" />
+    <Compile Include="Abstractions\ARM\ImageAnnotations\ArmCodeRelocation_LDR.cs" />
+    <Compile Include="Abstractions\ARM\ImageAnnotations\ArmCodeRelocation_Branch.cs" />
+    <Compile Include="Abstractions\ARM\Operators\BinaryOperatorWithShift.cs" />
+    <Compile Include="Abstractions\ARM\Operators\BreakpointOperator.cs" />
+    <Compile Include="Abstractions\ARM\Operators\MoveStackPointerOperator.cs" />
+    <Compile Include="Abstractions\ARM\Operators\MoveFloatingPointRegistersOperator.cs" />
+    <Compile Include="Abstractions\ARM\Operators\MoveIntegerRegistersOperator.cs" />
+    <Compile Include="Abstractions\ARM\Operators\StoreIndirectOperatorWithIndexUpdate.cs" />
+    <Compile Include="Abstractions\ARM\Operators\LoadIndirectOperatorWithIndexUpdate.cs" />
+    <Compile Include="Abstractions\ARM\Operators\IndirectOperatorWithIndexUpdate.cs" />
+    <Compile Include="Abstractions\ARM\Operators\VectorHack_Base.cs" />
+    <Compile Include="Abstractions\ARM\Operators\VectorHack_Cleanup.cs" />
+    <Compile Include="Abstractions\ARM\Operators\VectorHack_Finalize.cs" />
+    <Compile Include="Abstractions\ARM\Operators\VectorHack_MultiplyAndAccumulate.cs" />
+    <Compile Include="Abstractions\ARM\Operators\VectorHack_LoadData.cs" />
+    <Compile Include="Abstractions\ARM\Operators\VectorHack_Prepare.cs" />
+    <Compile Include="Abstractions\ARM\Operators\VectorHack_Initialize.cs" />
+    <Compile Include="Abstractions\ARM\Operators\GetStatusRegisterOperator.cs" />
+    <Compile Include="Abstractions\ARM\Operators\MoveFromCoprocessor.cs" />
+    <Compile Include="Abstractions\ARM\Operators\MoveToCoprocessor.cs" />
+    <Compile Include="Abstractions\ARM\Operators\SetStatusRegisterOperator.cs" />
+    <Compile Include="Abstractions\LLVM\LLVM.cs" />
+    <Compile Include="Abstractions\LLVM\LLVMCallingConvention.cs" />
+    <Compile Include="Abstractions\LLVM\LLVMCompilationState.cs" />
+    <Compile Include="Abstractions\LLVM\LLVMCompilationState_BasicBlocks.cs" />
+    <Compile Include="NandFlashJTagLoaderCategory.cs" />
+    <Compile Include="RamJTagLoaderCategory.cs" />
+    <Compile Include="NorFlashJTagLoaderCategory.cs" />
+    <Compile Include="Loaders.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Loaders.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Manager.cs" />
+    <Compile Include="Models\Displays.cs" />
+    <Compile Include="Models\Engines.cs" />
+    <Compile Include="Models\Memories.cs" />
+    <Compile Include="Models\Processors.cs" />
+    <Compile Include="Models\Products.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XScaleNorFlashJTagLoaderCategory.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\DebugTime\ArmProcessorEmulation\ArmProcessorEmulation.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060704AA01}</Project>
+      <Name>ArmProcessorEmulation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\CommonPC\CommonPC.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20070601AA01}</Project>
+      <Name>CommonPC</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\Kernel\Kernel.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060509AA01}</Project>
+      <Name>Kernel</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\TypeSystem\TypeSystem.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060720AA01}</Project>
+      <Name>TypeSystem</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\CompileTime\CodeGenerator\CodeTransformation\CodeTransformation.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20070222AA01}</Project>
+      <Name>CodeTransformation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\CompileTime\CodeGenerator\IntermediateRepresentation\IntermediateRepresentation.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060603AA01}</Project>
+      <Name>IntermediateRepresentation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\CompileTime\MetaData\Normalized\Normalized.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060510AA01}</Project>
+      <Name>Normalized</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\Common\Common.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20061218AA01}</Project>
+      <Name>Common</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\CompileTime\TargetModels\ArmProcessor\ArmProcessor.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20070519AA01}</Project>
+      <Name>ArmProcessor</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CodeGenerator\LLVMIR\LLVMIR.vcxproj">
+      <Project>{d18bf31d-ea7f-46a4-ad71-0c7a683e46c5}</Project>
+      <Name>LLVMIR</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MetaData\Importer\Importer.csproj">
+      <Project>{186f31a3-ef89-4a25-b2d5-20060404aa01}</Project>
+      <Name>Importer</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Loaders.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Loaders.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Microsoft.iMote2Loader.hex" />
+    <None Include="Resources\Microsoft.NohauLPC3180Loader.hex" />
+    <None Include="Resources\Microsoft.VoxSoloFormFactorLoader.hex" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

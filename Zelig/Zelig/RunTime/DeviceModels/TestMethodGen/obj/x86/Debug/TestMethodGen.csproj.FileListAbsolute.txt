@@ -1,0 +1,5 @@
+E:\src\iot\zelig-pr\Zelig\Zelig\RunTime\DeviceModels\TestMethodGen\bin\Debug\TestMethodGen.exe
+E:\src\iot\zelig-pr\Zelig\Zelig\RunTime\DeviceModels\TestMethodGen\bin\Debug\TestMethodGen.pdb
+E:\src\iot\zelig-pr\Zelig\Zelig\RunTime\DeviceModels\TestMethodGen\obj\x86\Debug\TestMethodGen.csprojResolveAssemblyReference.cache
+E:\src\iot\zelig-pr\Zelig\Zelig\RunTime\DeviceModels\TestMethodGen\obj\x86\Debug\TestMethodGen.exe
+E:\src\iot\zelig-pr\Zelig\Zelig\RunTime\DeviceModels\TestMethodGen\obj\x86\Debug\TestMethodGen.pdb
