@@ -1,5 +1,0 @@
-E:\src\iot\llilum-pr\Zelig\ZeligBuild\Target\bin\Debug\Microsoft.Zelig.Test.mbed.Simple.exe
-E:\src\iot\llilum-pr\Zelig\ZeligBuild\Target\bin\Debug\Microsoft.Zelig.Test.mbed.Simple.pdb
-E:\src\iot\llilum-pr\Zelig\Zelig\Test\mbed\simple\obj\Debug\simple.csprojResolveAssemblyReference.cache
-E:\src\iot\llilum-pr\Zelig\Zelig\Test\mbed\simple\obj\Debug\Microsoft.Zelig.Test.mbed.Simple.exe
-E:\src\iot\llilum-pr\Zelig\Zelig\Test\mbed\simple\obj\Debug\Microsoft.Zelig.Test.mbed.Simple.pdb

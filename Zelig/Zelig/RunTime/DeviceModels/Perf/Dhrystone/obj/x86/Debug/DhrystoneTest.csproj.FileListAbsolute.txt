@@ -1,9 +1,0 @@
-E:\src\iot\zelig-pr\Zelig\ZeligBuild\Target\bin\Debug\DhrystoneTest.exe
-E:\src\iot\zelig-pr\Zelig\ZeligBuild\Target\bin\Debug\DhrystoneTest.pdb
-E:\src\iot\zelig-pr\Zelig\Zelig\RunTime\DeviceModels\Perf\Dhrystone\obj\x86\Debug\DhrystoneTest.csprojResolveAssemblyReference.cache
-E:\src\iot\zelig-pr\Zelig\Zelig\RunTime\DeviceModels\Perf\Dhrystone\obj\x86\Debug\DhrystoneTest.exe
-E:\src\iot\zelig-pr\Zelig\Zelig\RunTime\DeviceModels\Perf\Dhrystone\obj\x86\Debug\DhrystoneTest.pdb
-E:\src\iot\llilum-pr\Zelig\ZeligBuild\Target\bin\Debug\DhrystoneTest.exe
-E:\src\iot\llilum-pr\Zelig\ZeligBuild\Target\bin\Debug\DhrystoneTest.pdb
-E:\src\iot\llilum-pr\Zelig\Zelig\RunTime\DeviceModels\Perf\Dhrystone\obj\x86\Debug\DhrystoneTest.exe
-E:\src\iot\llilum-pr\Zelig\Zelig\RunTime\DeviceModels\Perf\Dhrystone\obj\x86\Debug\DhrystoneTest.pdb
