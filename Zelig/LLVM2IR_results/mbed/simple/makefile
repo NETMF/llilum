@@ -4,7 +4,7 @@
 VERBOSE=1
 TARGET = LPC1768
 PROJECT = mbed_simple
-OBJECTS = $(TARGET)\Microsoft.Zelig.Test.mbed.Simple_opt.o $(TARGET)\temporary_helper.o
+OBJECTS = .\Microsoft.Zelig.Test.mbed.Simple_opt.o $(TARGET)\temporary_helper.o
 
 #
 # Paths and includes
@@ -27,13 +27,13 @@ DEPS = $(OBJECTS:.o=.d)
 # Build tools
 #
 
-AS      = $(GCC_BIN)arm-none-eabi-as
-CC      = $(GCC_BIN)arm-none-eabi-gcc
-CPP     = $(GCC_BIN)arm-none-eabi-g++
-LD      = $(GCC_BIN)arm-none-eabi-gcc
-OBJCOPY = $(GCC_BIN)arm-none-eabi-objcopy
-OBJDUMP = $(GCC_BIN)arm-none-eabi-objdump
-SIZE    = $(GCC_BIN)arm-none-eabi-size
+AS      = "$(GCC_BIN)arm-none-eabi-as"
+CC      = "$(GCC_BIN)arm-none-eabi-gcc"
+CPP     = "$(GCC_BIN)arm-none-eabi-g++"
+LD      = "$(GCC_BIN)arm-none-eabi-gcc"
+OBJCOPY = "$(GCC_BIN)arm-none-eabi-objcopy"
+OBJDUMP = "$(GCC_BIN)arm-none-eabi-objdump"
+SIZE    = "$(GCC_BIN)arm-none-eabi-size"
 
 #
 # Build flags
@@ -57,10 +57,15 @@ endif
 
 .PHONY: all clean lst size
 
-all: $(TARGET)\$(PROJECT).bin $(TARGET)\$(PROJECT).hex $(TARGET)\$(PROJECT).lst $(TARGET)\$(PROJECT).disasm size
+all: ${TARGET} $(TARGET)\$(PROJECT).bin $(TARGET)\$(PROJECT).hex $(TARGET)\$(PROJECT).lst $(TARGET)\$(PROJECT).disasm size
 
-clean:
-	@del /f /q $(TARGET)\$(PROJECT).bin $(TARGET)\$(PROJECT).elf $(TARGET)\$(PROJECT).hex $(TARGET)\$(PROJECT).map $(TARGET)\$(PROJECT).lst $(OBJECTS) $(DEPS)
+# Conditionals (ifeq/ifneq) are bugged on Windows. Instead, we'll just ensure the directory exists and remove it unconditionally.
+clean: ${TARGET}
+	@rmdir /q /s $(TARGET)
+
+# Ensures the target directory has been created.
+${TARGET}:
+	@mkdir $@
 
 $(TARGET)\\%.o: %.s
 	$(AS) $(CPU) -o $@ $<
@@ -70,10 +75,6 @@ $(TARGET)\\%.o: %.c
 
 $(TARGET)\\%.o: %.cpp
 	$(CPP) $(CC_FLAGS) $(CC_SYMBOLS) -std=gnu++98 -fno-rtti $(INCLUDE_PATHS) -o $@ $<
-
-# TODO: This recipe is only necessary to make the "clean" recipe easier to write; remove it when we can.
-$(TARGET)\\%.o: %.o
-	@copy /y $< $@
 
 $(TARGET)\$(PROJECT).elf: $(OBJECTS) $(SYS_OBJECTS)
 	$(LD) $(LD_FLAGS) -T$(LINKER_SCRIPT) $(LIBRARY_PATHS) -o $@ $^ $(LIBRARIES) $(LD_SYS_LIBS) $(LIBRARIES) $(LD_SYS_LIBS)
