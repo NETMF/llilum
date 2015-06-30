@@ -1,4 +1,4 @@
 # LLILUM
-LLVM -based code generator for MSIL and UWP apps targeting Micro Controllers 
+An LLVM -based code generator for MSIL and UWP apps targeting Micro Controller. 
 
 Please switch to [dev](https://github.com/NETMF/llilum-pr/tree/dev) branch for more information. 
