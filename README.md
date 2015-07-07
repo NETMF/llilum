@@ -33,5 +33,5 @@ Please see the following documents in our wiki:
 6. [Next steps](https://github.com/NETMF/llilum-pr/wiki/schedule) 
 
 
-# Acknowledgements
+# Acknowledgment
 A big thanks to Miguel Perez Martinez for helping bringing up this proof of concepts with exceptional dedication, perseverance and competency. An even bigger thanks to D.M., who created the vast majority of this codebase single-handedly. 
