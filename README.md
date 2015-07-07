@@ -15,7 +15,7 @@ LLILUM relies on the well known development experience in Visual Studio to trans
 Standard features of CLI environments, e.g. type system (TS) introspection, garbage collection (GC) and a full featured multi-threaded execution engine (MTEE) are provided. 
 
 ## State of the Art 
-LLILUM can generate runnable images for ARMv4 and ARMv5 ISA, with partial FP support. We could extend the code generator to support ARMv7-M but we decided to leverage LLVM instead, hoping we can get a wider set of targets over time. The current incarnation of the system successfully uses LLVM to target a Cortex-M3 ISA with a fully functional Type System. GC and MTEE are in the works. 
+LLILUM can generate runnable images for ARMv4 and ARMv5 ISA, with partial FP support. We could extend the code generator to support ARMv7-M but we decided to leverage LLVM instead, hoping we can get a wider set of targets over time. The current incarnation of the system successfully uses LLVM to target a Cortex-M ISA with a fully functional Type System. GC and MTEE are in the works. 
 
 # Supported Languages 
 Currrent target language is C#; extensions to Python and possibly TypeScript are in the works. We are also targeting [UWP](https://msdn.microsoft.com/en-us/library/dn894631.aspx) app development, so that it will be possible to share code between a Windows 10 device app and a Cortex-M micro processor. Welcome to One Core!
@@ -31,3 +31,7 @@ Please see the following documents in our wiki:
 4. [Build and run test demo](https://github.com/NETMF/llilum-pr/wiki/demo)
 5. [Performance considerations](https://github.com/NETMF/llilum-pr/wiki/perf)
 6. [Next steps](https://github.com/NETMF/llilum-pr/wiki/schedule) 
+
+
+# Acknowledgment
+A big thanks to Miguel Perez Martinez for helping bringing up this proof of concepts with exceptional dedication, perseverance and competency. An even bigger thanks to D.M., who created the vast majority of this codebase single-handedly. 
