@@ -31,3 +31,7 @@ Please see the following documents in our wiki:
 4. [Build and run test demo](https://github.com/NETMF/llilum-pr/wiki/demo)
 5. [Performance considerations](https://github.com/NETMF/llilum-pr/wiki/perf)
 6. [Next steps](https://github.com/NETMF/llilum-pr/wiki/schedule) 
+
+
+# Acknowledgements
+A big thanks to Miguel Perez Martinez for helping bringing up this proof of concepts with exceptional dedication, perseverance and competency. An even bigger thanks to D.M., who created the vast majority of this codebase single-handedly. 
