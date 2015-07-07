@@ -1,0 +1,5 @@
+you will need thje following binaries:
+
+libiconv2.dll
+libintl3.dll
+make.exe
