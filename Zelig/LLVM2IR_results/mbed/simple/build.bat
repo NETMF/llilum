@@ -29,7 +29,7 @@ ECHO Size Report...
 ECHO.
 ECHO Linking with mbed libs...
 make clean
-make
+make DEBUG=1
 
 GOTO :EXIT
 
