@@ -221,6 +221,26 @@ void _BasicBlock::InsertMemCpy( _Value ^dst, _Value ^src )
     _pimpl->builder->CreateMemCpy( dst->_pimpl->GetLLVMObject( ), src->_pimpl->GetLLVMObject( ), dst->Type( )->GetSizeInBits( ) / 8, 0, false );
 }
 
+void _BasicBlock::InsertMemCpy( _Value ^dst, _Value ^src, _Value ^size, bool overlapping )
+{
+    dst = LoadToImmediate(dst);
+    src = LoadToImmediate(src);
+
+    assert( src != nullptr && dst != nullptr && size != nullptr );
+    assert( src->IsPointer( ) );
+    assert( dst->IsPointer( ) );
+    assert( size->IsInteger( ) );
+
+    if (overlapping)
+    {
+        _pimpl->builder->CreateMemMove( dst->_pimpl->GetLLVMObject( ), src->_pimpl->GetLLVMObject( ), size->_pimpl->GetLLVMObject( ), 0, false );
+    }
+    else
+    {
+        _pimpl->builder->CreateMemCpy( dst->_pimpl->GetLLVMObject( ), src->_pimpl->GetLLVMObject( ), size->_pimpl->GetLLVMObject( ), 0, false );
+    }
+}
+
 void _BasicBlock::InsertMemSet( _Value ^dst, unsigned char value )
 {
     dst = RevertImmediate( dst );

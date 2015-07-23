@@ -713,9 +713,38 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
             m_basicBlock.InsertUnconditionalBranch( m_basicBlock );
         }
 
+        private bool ReplaceMethodCallWithIntrinsic( IR.CallOperator op )
+        {
+            TS.WellKnownMethods wkm = m_cfg.TypeSystem.WellKnownMethods;
+
+            // System.Buffer.InternalMemoryCopy(byte*, byte*, int) => llvm.memcpy
+            // System.Buffer.InternalBackwardMemoryCopy(byte*, byte*, int) => llvm.memmove
+            if ((op.TargetMethod == wkm.System_Buffer_InternalMemoryCopy) ||
+                (op.TargetMethod == wkm.System_Buffer_InternalBackwardMemoryCopy))
+            {
+                bool overlapping = false;
+                if (op.TargetMethod != wkm.System_Buffer_InternalMemoryCopy)
+                {
+                    overlapping = true;
+                }
+
+                LLVM._Value src = m_arguments[1];
+                LLVM._Value dst = m_arguments[2];
+                LLVM._Value size = ExtractFirstElementFromBasicType(m_arguments[3]);
+                m_basicBlock.InsertMemCpy(dst, src, size, overlapping);
+                return true;
+            }
+
+            return false;
+        }
 
         private void BuildMethodCallInstructions( IR.CallOperator op, bool callIndirect = false )
         {
+            if( ReplaceMethodCallWithIntrinsic( op ) )
+            {
+                return;
+            }
+
             LLVM._Function targetFunc=m_manager.GetOrInsertFunction( op.TargetMethod );
 
             if( op.TargetMethod.Flags.HasFlag( TS.MethodRepresentation.Attributes.PinvokeImpl ) )

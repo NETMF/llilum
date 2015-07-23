@@ -61,6 +61,9 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         public readonly MethodRepresentation Object_Equals;
         public readonly MethodRepresentation Object_GetHashCode;
 
+        public readonly MethodRepresentation System_Buffer_InternalMemoryCopy;
+        public readonly MethodRepresentation System_Buffer_InternalBackwardMemoryCopy;
+
         public readonly MethodRepresentation Helpers_BinaryOperations_IntDiv;
         public readonly MethodRepresentation Helpers_BinaryOperations_IntRem;
 
