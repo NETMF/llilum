@@ -169,6 +169,15 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
             return FindCustomAttribute( target, -1 );
         }
 
+        public List<CustomAttributeRepresentation> FindCustomAttributes( TypeRepresentation target )
+        {
+            var lst = new List<CustomAttributeRepresentation>();
+
+            FindCustomAttributes( target, lst );
+
+            return lst;
+        }
+
         public CustomAttributeRepresentation FindCustomAttribute( TypeRepresentation target ,
                                                                   int                index  )
         {
@@ -206,6 +215,17 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
             }
 
             return null;
+        }
+
+        protected void FindCustomAttributes( TypeRepresentation target, List<CustomAttributeRepresentation> lst )
+        {
+            foreach(CustomAttributeAssociationRepresentation caa in m_customAttributes)
+            {
+                if(caa.CustomAttribute.Constructor.OwnerType == target)
+                {
+                    lst.Add( caa.CustomAttribute );
+                }
+            }
         }
     
         //--//

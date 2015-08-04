@@ -274,17 +274,17 @@
       <Name>IntermediateRepresentation</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\RunTime\DeviceModels\LLVM\LLVM.csproj">
-      <Project>{0c522c6a-0f77-4af8-ad78-5b2415c98c51}</Project>
-      <Name>LLVM</Name>
+    <ProjectReference Include="..\..\Llvm.NET\Llvm.NET\Llvm.NET.csproj">
+      <Project>{0162c8ce-6641-4922-8664-f8a44356fbf7}</Project>
+      <Name>Llvm.NET</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\MetaData\Importer\Importer.csproj">
       <Project>{186f31a3-ef89-4a25-b2d5-20060404aa01}</Project>
       <Name>Importer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LLVMIR\LLVMIR.vcxproj">
-      <Project>{d18bf31d-ea7f-46a4-ad71-0c7a683e46c5}</Project>
-      <Name>LLVMIR</Name>
+    <ProjectReference Include="..\LLVMIR2\LLVMIR2.csproj">
+      <Project>{dd0552a9-e9be-47b3-a663-03191d4ae184}</Project>
+      <Name>LLVMIR2</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

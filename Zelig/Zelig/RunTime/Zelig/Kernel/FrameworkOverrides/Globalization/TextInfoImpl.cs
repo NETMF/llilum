@@ -44,9 +44,9 @@ namespace Microsoft.Zelig.Runtime
 
             System.Text.StringBuilder sb = new System.Text.StringBuilder( str.Length );
 
-            foreach(char c in str)
+            for( int i = 0; i < str.Length; ++i )
             {
-                sb.Append( ToLower( c ) );
+                sb.Append( ToLower( str[ i ] ) );
             }
 
             return sb.ToString();
@@ -71,9 +71,9 @@ namespace Microsoft.Zelig.Runtime
 
             System.Text.StringBuilder sb = new System.Text.StringBuilder( str.Length );
 
-            foreach(char c in str)
+            for(int i = 0; i < str.Length; ++i )
             {
-                sb.Append( ToUpper( c ) );
+                sb.Append( ToUpper( str[ i ] ) );
             }
 
             return sb.ToString();

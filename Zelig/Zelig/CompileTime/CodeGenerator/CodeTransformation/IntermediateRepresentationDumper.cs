@@ -332,7 +332,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             //
             m_sourceCodeTracker.ResetContext();
 
-            m_indent += 4;
+            m_indent += 2;
 
             if(bb is ExceptionHandlerBasicBlock)
             {
@@ -407,7 +407,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 DumpOperator( op );
             }
 
-            m_indent -= 4;
+            m_indent -= 2;
 
             m_indent -= 1;
 
@@ -441,7 +441,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
             foreach(string s2 in s.Split( '\n' ))
             {
-                WriteLine( "Op_{0,-4}:  {1}", op.SpanningTreeIndex, s2 );
+                WriteLine("Op_{0,-3} {1,-35}: {2}", op.SpanningTreeIndex, op.GetType().Name, s2);
             }
 
             foreach(Annotation an in op.Annotations)
@@ -642,6 +642,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 System.Xml.XmlNode subnode = XmlHelper.AddElement( node, "Operator" );
 
                 XmlHelper.AddAttribute( subnode, "Index", op.SpanningTreeIndex.ToString() );
+
+                XmlHelper.AddAttribute(subnode, "Type", op.GetType().Name);
 
                 if(op is CallOperator)
                 {

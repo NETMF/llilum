@@ -1,0 +1,26 @@
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+  <TemplateData>
+    <Name>LlilumNative</Name>
+    <Description>Native code for a Llilum embedded project</Description>
+    <ProjectType>VC</ProjectType>
+    <ProjectSubType>
+    </ProjectSubType>
+    <SortOrder>1000</SortOrder>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>LlilumNative</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+    <LocationField>Enabled</LocationField>
+    <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+    <Icon>__TemplateIcon.ico</Icon>
+    <PreviewImage>__PreviewImage.ico</PreviewImage>
+  </TemplateData>
+  <TemplateContent>
+    <Project TargetFileName="$projectname$.Native.vcxproj" File="Native.vcxproj" ReplaceParameters="true">
+      <ProjectItem ReplaceParameters="false" TargetFileName="main.cpp">main.cpp</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="pch.h">pch.h</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="mbed_simple.FrontEndConfig2">mbed_simple.FrontEndConfig2</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Llilum.props">Llilum.props</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="debug.bat">debug.bat</ProjectItem>
+    </Project>
+  </TemplateContent>
+</VSTemplate>

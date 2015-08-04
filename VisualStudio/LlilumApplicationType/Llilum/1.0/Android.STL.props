@@ -1,0 +1,84 @@
+<!--
+***********************************************************************************************
+Android.STL.props
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+Copyright (C) Microsoft Corporation. All rights reserved.
+***********************************************************************************************
+-->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_PropertySheetDisplayName>Use of STL</_PropertySheetDisplayName>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(StlLibraryPath)' == ''" Label="UserMacros">
+    <StlLibraryPath Condition="'$(UseOfStl)' == 'system' and '$(Platform)' == 'ARM'">$(VS_NdkRoot)\platforms\$(AndroidAPILevel)\arch-arm\usr\lib\libstdc++.a</StlLibraryPath>
+    <StlLibraryPath Condition="'$(UseOfStl)' == 'system' and '$(Platform)' == 'x86'">$(VS_NdkRoot)\platforms\$(AndroidAPILevel)\arch-x86\usr\lib\libstdc++.a</StlLibraryPath>
+    <StlLibraryName>stdc++</StlLibraryName>
+    <StlIsStaticLibrary>true</StlIsStaticLibrary>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(StlLibraryPath)' == '' and '$(Platform)' == 'ARM' and '$(ThumbMode)' == 'Thumb'" Label="UserMacros">    
+    <StlLibraryPath Condition="'$(UseOfStl)' == 'gabi++_static'">$(VS_NdkRoot)\sources\cxx-stl\gabi++\libs\$(TargetArchAbi)\thumb</StlLibraryPath>
+    <StlLibraryPath Condition="'$(UseOfStl)' == 'gabi++_shared'">$(VS_NdkRoot)\sources\cxx-stl\gabi++\libs\$(TargetArchAbi)\thumb</StlLibraryPath>
+    <StlLibraryPath Condition="'$(UseOfStl)' == 'stlport_static'">$(VS_NdkRoot)\sources\cxx-stl\stlport\libs\$(TargetArchAbi)\thumb</StlLibraryPath>
+    <StlLibraryPath Condition="'$(UseOfStl)' == 'stlport_shared'">$(VS_NdkRoot)\sources\cxx-stl\stlport\libs\$(TargetArchAbi)\thumb</StlLibraryPath>
+    <StlLibraryPath Condition="'$(UseOfStl)' == 'gnustl_static'">$(VS_NdkRoot)\sources\cxx-stl\gnu-libstdc++\$(ToolchainVersion)\libs\$(TargetArchAbi)\thumb</StlLibraryPath>
+    <StlLibraryPath Condition="'$(UseOfStl)' == 'gnustl_shared'">$(VS_NdkRoot)\sources\cxx-stl\gnu-libstdc++\$(ToolchainVersion)\libs\$(TargetArchAbi)\thumb</StlLibraryPath>
+    <StlLibraryPath Condition="'$(UseOfStl)' == 'c++_static'">$(VS_NdkRoot)\sources\cxx-stl\llvm-libc++\libs\$(TargetArchAbi)\thumb</StlLibraryPath>
+    <StlLibraryPath Condition="'$(UseOfStl)' == 'c++_shared'">$(VS_NdkRoot)\sources\cxx-stl\llvm-libc++\libs\$(TargetArchAbi)\thumb</StlLibraryPath>
+    
+    <StlLibraryName>$(UseOfStl)</StlLibraryName>
+    <StlIsStaticLibrary Condition="'$(UseOfStl)' == 'gabi++_static' or '$(UseOfStl)' == 'stlport_static' or '$(UseOfStl)' == 'gnustl_static' or '$(UseOfStl)' == 'c++_static'">true</StlIsStaticLibrary>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(StlLibraryPath)' == '' and ('$(Platform)' != 'ARM' or '$(ThumbMode)' != 'Thumb')" Label="UserMacros">
+    <StlLibraryPath Condition="'$(UseOfStl)' == 'gabi++_static'">$(VS_NdkRoot)\sources\cxx-stl\gabi++\libs\$(TargetArchAbi)</StlLibraryPath>
+    <StlLibraryPath Condition="'$(UseOfStl)' == 'gabi++_shared'">$(VS_NdkRoot)\sources\cxx-stl\gabi++\libs\$(TargetArchAbi)</StlLibraryPath>
+    <StlLibraryPath Condition="'$(UseOfStl)' == 'stlport_static'">$(VS_NdkRoot)\sources\cxx-stl\stlport\libs\$(TargetArchAbi)</StlLibraryPath>
+    <StlLibraryPath Condition="'$(UseOfStl)' == 'stlport_shared'">$(VS_NdkRoot)\sources\cxx-stl\stlport\libs\$(TargetArchAbi)</StlLibraryPath>
+    <StlLibraryPath Condition="'$(UseOfStl)' == 'gnustl_static'">$(VS_NdkRoot)\sources\cxx-stl\gnu-libstdc++\$(ToolchainVersion)\libs\$(TargetArchAbi)</StlLibraryPath>
+    <StlLibraryPath Condition="'$(UseOfStl)' == 'gnustl_shared'">$(VS_NdkRoot)\sources\cxx-stl\gnu-libstdc++\$(ToolchainVersion)\libs\$(TargetArchAbi)</StlLibraryPath>
+    <StlLibraryPath Condition="'$(UseOfStl)' == 'c++_static'">$(VS_NdkRoot)\sources\cxx-stl\llvm-libc++\libs\$(TargetArchAbi)</StlLibraryPath>
+    <StlLibraryPath Condition="'$(UseOfStl)' == 'c++_shared'">$(VS_NdkRoot)\sources\cxx-stl\llvm-libc++\libs\$(TargetArchAbi)</StlLibraryPath>
+    
+    <StlLibraryName>$(UseOfStl)</StlLibraryName>
+    <StlIsStaticLibrary Condition="'$(UseOfStl)' == 'gabi++_static' or '$(UseOfStl)' == 'stlport_static' or '$(UseOfStl)' == 'gnustl_static' or '$(UseOfStl)' == 'c++_static'">true</StlIsStaticLibrary>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <StlAdditionalDependencies Condition="'$(StlIsStaticLibrary)' != 'false'">$(StlLibraryPath)\lib$(StlLibraryName).a</StlAdditionalDependencies>
+    <StlAdditionalDependencies Condition="'$(StlIsStaticLibrary)' == 'false'">$(StlLibraryPath)\lib$(StlLibraryName).so</StlAdditionalDependencies>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(StlIncludeDirectories)' == ''" Label="UserMacros">
+    <StlIncludeDirectories Condition="'$(UseOfStl)' == 'system'">$(VS_NdkRoot)\sources\cxx-stl\system\include</StlIncludeDirectories>
+    <StlIncludeDirectories Condition="'$(UseOfStl)' == 'gabi++_static' or '$(UseOfStl)' == 'gabi++_shared'">$(VS_NdkRoot)\sources\cxx-stl\gabi++\include</StlIncludeDirectories>
+    <StlIncludeDirectories Condition="'$(UseOfStl)' == 'stlport_static' or '$(UseOfStl)' == 'stlport_shared'">$(VS_NdkRoot)\sources\cxx-stl\stlport\stlport;$(VS_NdkRoot)sources\cxx-stl\gabi++\include</StlIncludeDirectories>
+    <StlIncludeDirectories Condition="'$(UseOfStl)' == 'gnustl_static' or '$(UseOfStl)' == 'gnustl_shared'">$(VS_NdkRoot)\sources\cxx-stl\gnu-libstdc++\$(ToolchainVersion)\include;$(VS_NdkRoot)\sources\cxx-stl\gnu-libstdc++\$(ToolchainVersion)\libs\$(TargetArchAbi)\include;$(VS_NdkRoot)\sources\cxx-stl\gnu-libstdc++\$(ToolchainVersion)\include\backward</StlIncludeDirectories>
+
+    <!-- LLVM libraries uses Platform specific include directories -->
+    <StlIncludeDirectories Condition="'$(Platform)' == 'ARM' and ('$(UseOfStl)' == 'c++_static' or '$(UseOfStl)' == 'c++_shared')">$(VS_NdkRoot)\sources\cxx-stl\llvm-libc++\libcxx\include;$(VS_NdkRoot)\sources\cxx-stl\llvm-libc++abi\libcxxabi\include</StlIncludeDirectories>
+    <StlIncludeDirectories Condition="'$(Platform)' != 'ARM' and ('$(UseOfStl)' == 'c++_static' or '$(UseOfStl)' == 'c++_shared')">$(VS_NdkRoot)\sources\cxx-stl\llvm-libc++\libcxx\include;$(VS_NdkRoot)\sources\cxx-stl\gabi++\include</StlIncludeDirectories>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <ClCompile Condition="'$(UseOfStl)' == 'c++_static' or '$(UseOfStl)' == 'c++_shared'">
+      <CppLanguageStandard>c++11</CppLanguageStandard>
+      <StrictAliasing>false</StrictAliasing>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  
+  <ItemGroup>
+    <BuildMacro Include="StlAdditionalDependencies">
+      <Value>$(StlAdditionalDependencies)</Value>
+    </BuildMacro>
+    <BuildMacro Include="StlIncludeDirectories">
+      <Value>$(StlIncludeDirectories)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

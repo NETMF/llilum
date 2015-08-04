@@ -56,10 +56,7 @@ namespace System
         //We need to call the String constructor so that the compiler doesn't mark this as a literal.
         //Marking this as a literal would mean that it doesn't show up as a field which we can access
         //from native.
-
-        //MIGUEL: LT72: Switched to const to avoid calling .cctor until we fix it
-        //public static readonly String Empty = "";
-        public const String Empty = "";
+        public static readonly String Empty = "";
 
         //
         //NOTE NOTE NOTE NOTE
@@ -2876,8 +2873,9 @@ namespace System
         {
             StringBuilder sb = new StringBuilder( this.Length );
 
-            foreach(char c in this)
+            for(var i = 0; i< Length; ++i)
             {
+                char c = this[ i ];
                 sb.Append( c == oldChar ? newChar : c );
             }
 

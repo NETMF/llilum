@@ -104,13 +104,13 @@ namespace Microsoft.Zelig.Tools.IRCompare
         {
             if(m_lookupMethod != null)
             {
-                string filter = textBoxFilter.Text;
+                string filter = textBoxFilter.Text.ToLower();
 
                 List< string > lst = new List<string>();
 
                 foreach(string id in m_lookupMethod.Keys)
                 {
-                    if(string.IsNullOrEmpty( filter ) || id.Contains( filter ))
+                    if(string.IsNullOrEmpty( filter ) || id.ToLower().Contains( filter ))
                     {
                         lst.Add( id );
                     }

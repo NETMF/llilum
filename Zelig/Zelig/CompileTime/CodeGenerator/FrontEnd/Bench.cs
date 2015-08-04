@@ -93,6 +93,9 @@ namespace Microsoft.Zelig.FrontEnd
         private bool                                m_fDumpIRpre;
         private bool                                m_fDumpIRpost;
         private bool                                m_fDumpIR;
+        private bool                                m_fDumpIRXMLpre;
+        private bool                                m_fDumpIRXMLpost;
+        private bool                                m_fDumpIRXML;
         private bool                                m_fDumpCFG;
         private bool                                m_fDumpLLVMIR;
         private bool                                m_fDumpLLVMIR_TextRepresentation;
@@ -573,6 +576,26 @@ namespace Microsoft.Zelig.FrontEnd
             }
         }
 
+        private void DumpIRAsXML(string file)
+        {
+            // Collect all methods into a list
+            var allMethods = new List<TS.MethodRepresentation>();
+            m_typeSystem.EnumerateMethods(method => allMethods.Add(method));
+
+            // Initialize the XML IRDumper
+            var doc = new System.Xml.XmlDocument();
+            var node = XmlHelper.AddElement(doc, "Methods");
+            var irDumper = new IR.XmlIntermediateRepresentationDumper(doc, node);
+
+            // Dump each method alphabetically
+            foreach (var method in irDumper.Sort(allMethods))
+            {
+                IR.TypeSystemForCodeTransformation.GetCodeForMethod(method)?.Dump(irDumper);
+            }
+
+            doc.Save(file);
+        }
+
         //--//
 
         private void InitializeConfigurationManager( )
@@ -689,6 +712,18 @@ namespace Microsoft.Zelig.FrontEnd
                         else if( IsMatch( option, "DumpIR" ) )
                         {
                             m_fDumpIR = true;
+                        }
+                        else if (IsMatch(option, "DumpIRXMLpre"))
+                        {
+                            m_fDumpIRXMLpre = true;
+                        }
+                        else if (IsMatch(option, "DumpIRXMLpost"))
+                        {
+                            m_fDumpIRXMLpost = true;
+                        }
+                        else if (IsMatch(option, "DumpIRXML"))
+                        {
+                            m_fDumpIRXML = true;
                         }
                         else if( IsMatch( option, "DumpLLVMIR" ) )
                         {
@@ -1200,9 +1235,13 @@ namespace Microsoft.Zelig.FrontEnd
                 }
 
                 Console.WriteLine( "{0}: Done", GetTime( ) );
+                
+                //--//
 
-
-                //Miguel: Added finder of method's first instruction with debug info for
+                Console.WriteLine( "{0}: ResolveAll", GetTime( ) );
+                m_typeSystem.ResolveAll( );
+                Console.WriteLine( "{0}: Done", GetTime( ) );
+                
                 //LLVM/DWARF debugging support.
                 m_typeSystem.EnumerateMethods( delegate( TS.MethodRepresentation md )
                 {
@@ -1227,15 +1266,7 @@ namespace Microsoft.Zelig.FrontEnd
                 } );
 
                 //--//
-
-                Console.WriteLine( "{0}: ResolveAll", GetTime( ) );
-                m_typeSystem.ResolveAll( );
-                Console.WriteLine( "{0}: Done", GetTime( ) );
-
-                //--//
-
-     
-
+                
                 Directory.CreateDirectory( Path.GetDirectoryName( filePrefix ) );
 
                 if( m_fDumpIL )
@@ -1327,6 +1358,11 @@ namespace Microsoft.Zelig.FrontEnd
                     DumpIRAsText( filePrefix + ".ZeligIR_Pre" );
                 }
 
+                if (m_fDumpIRXMLpre)
+                {
+                    DumpIRAsXML(filePrefix + ".ZeligIR_Pre.xml");
+                }
+
                 //--//
 
                 m_typeSystem.NativeImportDirectories = m_importDirectories;
@@ -1381,6 +1417,11 @@ namespace Microsoft.Zelig.FrontEnd
                     }
 
                     DumpIRAsText( filePrefix + ".ZeligIR_Post" );
+                }
+
+                if (m_fDumpIRXMLpost)
+                {
+                    DumpIRAsXML(filePrefix + ".ZeligIR_Post.xml");
                 }
 
                 SaveIrToDisk( "temp.ZeligImage", m_typeSystem );
@@ -1443,6 +1484,15 @@ namespace Microsoft.Zelig.FrontEnd
                 DumpIRAsText( filePrefix + ".ZeligIR" );
 
                 Console.WriteLine( "{0}:     IR dump done", GetTime( ) );
+            }
+
+            if (m_fDumpIRXML)
+            {
+                Console.WriteLine("{0}:     IR dump (XML)...", GetTime());
+
+                DumpIRAsXML(filePrefix + ".ZeligIR.xml");
+
+                Console.WriteLine("{0}:     IR dump (XML) done", GetTime());
             }
 
             if( m_fDumpASMDIR )

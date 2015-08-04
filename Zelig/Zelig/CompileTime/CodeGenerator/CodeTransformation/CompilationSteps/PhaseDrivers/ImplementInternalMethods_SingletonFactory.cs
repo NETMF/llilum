@@ -47,10 +47,21 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
                                 throw TypeConsistencyErrorException.Create( "Found singleton factory that refers to a type with no concrete subclasses: {0}", target.FullName );
 
                             case 1:
-                                target = lst[0];
+                                target = lst[ 0 ];
                                 break;
 
                             default:
+                                //
+                                // if we have more than one
+                                //
+                                var mostDerived = new TypeSystemForCodeTransformation.LinearHierarchyBuilder( lst, m_typeSystem ).Build();
+
+                                if( mostDerived != null )
+                                {
+                                    target = lst[ 0 ];
+                                    break;
+                                }
+
                                 throw TypeConsistencyErrorException.Create( "Found singleton factory that refers to a type with multiple concrete subclasses: {0}", target.FullName );
                         }
                     }

@@ -9,17 +9,15 @@ namespace Microsoft.Zelig.Runtime
     using System;
     
     internal static class SelfTest
-    {
+    {   
+        [DllImport( "C" )]
+        public static unsafe extern int GetANumber( );
         
         [DllImport( "C" )]
-        public static unsafe extern int get_a_number( );
-
+        public static unsafe extern void BreakWithTrap( );
+        
         [DllImport( "C" )]
-        public static unsafe extern void violent_breakpoint( );
-
-        [DllImport( "C" )]
-        public static unsafe extern void break_and_watch( uint n );
-
+        public static unsafe extern void Breakpoint( uint n );
 
         //
         // Zelig Self Test - Early bootstrap, no heap:
@@ -30,7 +28,7 @@ namespace Microsoft.Zelig.Runtime
         {
             if( !expression )
             {
-                violent_breakpoint( );
+                BreakWithTrap( );
             }
         }
         
@@ -190,7 +188,7 @@ namespace Microsoft.Zelig.Runtime
             const int mask = ( 1 << 16 ) - 1;
 
             // get a number smaller than 16 bits
-            int seed = get_a_number() % mask;
+            int seed = GetANumber() % mask;
 
             SELFTEST_ASSERT( seed < mask );
             
@@ -878,8 +876,8 @@ namespace Microsoft.Zelig.Runtime
 
         private static void SelfTest__Test__Integers_PassByValue( )
         {
-            int a = get_a_number();
-            int b = get_a_number();
+            int a = GetANumber();
+            int b = GetANumber();
 
             SELFTEST_ASSERT( a + b == PassByValue( a, b ) );
         }
@@ -891,8 +889,8 @@ namespace Microsoft.Zelig.Runtime
 
         private static void SelfTest__Test__Integers_PassByRef( )
         {
-            int a = get_a_number();
-            int b = get_a_number();
+            int a = GetANumber();
+            int b = GetANumber();
 
             int c = a + b;
 

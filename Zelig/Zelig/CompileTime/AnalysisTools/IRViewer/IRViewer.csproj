@@ -48,16 +48,13 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.GLEE, Version=1.2.0.0, Culture=neutral, PublicKeyToken=7f84f738e1fc245c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\llvm_ir_generator\External\Binaries\GLEE\Debug\Microsoft.GLEE.dll</HintPath>
+    <Reference Include="Microsoft.GLEE">
+      <HintPath>..\..\..\External\Binaries\GLEE\Debug\Microsoft.GLEE.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.GLEE.Drawing, Version=1.2.0.0, Culture=neutral, PublicKeyToken=8a3d7c21d5fa1306, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\llvm_ir_generator\External\Binaries\GLEE\Debug\Microsoft.GLEE.Drawing.dll</HintPath>
+    <Reference Include="Microsoft.GLEE.Drawing">
+      <HintPath>..\..\..\External\Binaries\GLEE\Debug\Microsoft.GLEE.Drawing.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.GLEE.GraphViewerGDI, Version=1.2.0.0, Culture=neutral, PublicKeyToken=fffc27ea4058b3a1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Microsoft.GLEE.GraphViewerGDI">
       <HintPath>..\..\..\External\Binaries\GLEE\Debug\Microsoft.GLEE.GraphViewerGDI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -77,22 +74,13 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="MethodViewer.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MethodViewer.Designer.cs">
-      <DependentUpon>MethodViewer.cs</DependentUpon>
-    </Compile>
     <Compile Include="Parser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SourceCodeTracker.cs" />
     <EmbeddedResource Include="MainForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MethodViewer.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>MethodViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -113,6 +101,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\RunTime\Zelig\Common\Common.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20061218AA01}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -32,15 +32,6 @@ namespace Microsoft.Zelig.Runtime
             }
         }
 
-        //
-        // Miguel: Added to allow base.base.InitializeMemoryManager() call
-        // from LLVM manager
-        //
-        public void CallBaseInitializeMemoryManager( )
-        {
-            base.InitializeMemoryManager( );
-        }
-
         public override void InitializationComplete()
         {
             if(MemoryManager.Configuration.TrashFreeMemory)

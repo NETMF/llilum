@@ -17,7 +17,7 @@ namespace Microsoft.Zelig.LLVM
             // LT72NOTE: are we thread safe??
             if( !m_typeSystemAlreadyConverted )
             {
-              
+
                 foreach( TS.TypeRepresentation type in m_typeSystem.Types )
                 {
                     GetOrInsertType( type );
@@ -50,15 +50,15 @@ namespace Microsoft.Zelig.LLVM
                 tr = m_typeSystem.WellKnownTypes.System_IntPtr;
             }
 
-            LLVM._Type llvmType = m_module.GetOrInsertType("LLVM." + tr.FullName, ( int )tr.Size * 8 );
+            LLVM._Type llvmType = m_module.GetOrInsertType( "LLVM." + tr.FullName, ( int )tr.Size * 8 );
             llvmType.SetValueTypeFlag( tr is TS.ValueTypeRepresentation );
             return llvmType;
         }
 
         public LLVM._Type GetOrInsertType( TS.TypeRepresentation tr )
         {
-            TS.WellKnownFields wkf=m_typeSystem.WellKnownFields;
-            TS.WellKnownTypes wkt=m_typeSystem.WellKnownTypes;
+            TS.WellKnownFields wkf = m_typeSystem.WellKnownFields;
+            TS.WellKnownTypes wkt = m_typeSystem.WellKnownTypes;
 
             //
             // delayed types do not participate in layout
@@ -114,7 +114,7 @@ namespace Microsoft.Zelig.LLVM
                 if( tr is TS.PointerTypeRepresentation )
                 {
                     if( tr.UnderlyingType == wkt.System_Void )
-                    { 
+                    {
                         //Special case, we remap void * to an IntPtr
                         //to allow LLVM to function
                         return GetOrInsertType( wkt.System_IntPtr );
@@ -122,7 +122,8 @@ namespace Microsoft.Zelig.LLVM
 
                     _Type ty = GetOrInsertType( tr.UnderlyingType );
 
-                    if( ty == null ) return null;
+                    if( ty == null )
+                        return null;
 
                     m_typeRepresentationsToType[ tr ] = m_module.GetOrInsertPointerType( typeName, ty );
 
@@ -132,7 +133,8 @@ namespace Microsoft.Zelig.LLVM
                 {
                     _Type ty = GetOrInsertType( tr.UnderlyingType );
 
-                    if( ty == null ) return null;
+                    if( ty == null )
+                        return null;
 
                     m_typeRepresentationsToType[ tr ] = m_module.GetOrInsertBoxedType( typeName, GetOrInsertType( wkt.System_Object ), ty );
 
@@ -231,16 +233,17 @@ namespace Microsoft.Zelig.LLVM
 
         internal LLVM._Type GetOrInsertType( TS.MethodRepresentation mr )
         {
-            var args=new List<LLVM._Type>( );
+            var args = new List<LLVM._Type>( );
 
             foreach( var param in mr.ThisPlusArguments )
             {
                 args.Add( GetOrInsertType( param ) );
             }
 
-            if( mr is TS.StaticMethodRepresentation ) args.RemoveAt( 0 );
+            if( mr is TS.StaticMethodRepresentation )
+                args.RemoveAt( 0 );
 
-            LLVM._Type retType=GetOrInsertType( mr.ReturnType );
+            LLVM._Type retType = GetOrInsertType( mr.ReturnType );
 
             if( retType == null )
             {

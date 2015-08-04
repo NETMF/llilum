@@ -42,6 +42,11 @@ namespace System
             m_value = (void *)value;
         }
 
+        public unsafe IntPtr( long value )
+        {
+                m_value = (void *)checked((int)value);
+        }
+
         [CLSCompliant( false )]
 ////    [ReliabilityContract( Consistency.MayCorruptInstance, Cer.MayFail )]
         public unsafe IntPtr( void* value )
@@ -92,6 +97,9 @@ namespace System
             return (int)m_value;
         }
 
+        public unsafe long ToInt64() {
+                return (long)(int)m_value;
+        }
 ////    public unsafe override String ToString()
 ////    {
 ////        return ((int)m_value).ToString( CultureInfo.InvariantCulture );
@@ -105,6 +113,11 @@ namespace System
 
 ////    [ReliabilityContract( Consistency.MayCorruptInstance, Cer.MayFail )]
         public static explicit operator IntPtr( int value )
+        {
+            return new IntPtr( value );
+        }
+
+        public static explicit operator IntPtr( long value )
         {
             return new IntPtr( value );
         }
@@ -127,7 +140,12 @@ namespace System
             return (int)value.m_value;
         }
 
-////    [ReliabilityContract( Consistency.WillNotCorruptState, Cer.Success )]
+        public unsafe static explicit operator long( IntPtr value )
+        {
+                return (long)(int)value.m_value;
+        }
+
+        ////    [ReliabilityContract( Consistency.WillNotCorruptState, Cer.Success )]
         public unsafe static bool operator ==( IntPtr value1, IntPtr value2 )
         {
             return value1.m_value == value2.m_value;

@@ -264,7 +264,8 @@ namespace System
             }
         }
 
-        protected abstract MethodInfo GetMethodImpl();
+        [MethodImpl( MethodImplOptions.InternalCall )]
+        protected virtual extern MethodInfo GetMethodImpl();
 ////    {
 ////        if(m_methodBase == null)
 ////        {
@@ -605,121 +606,122 @@ namespace System
             return !d1.Equals( d2 );
         }
 
-////    //
-////    // Implementation of ISerializable
-////    //
-////
-////    public virtual void GetObjectData( SerializationInfo info, StreamingContext context )
-////    {
-////        throw new NotSupportedException();
-////    }
-////
-////    //
-////    // internal implementation details (FCALLS and utilities)
-////    //
-////
-////    // V2 internal API.
-////    internal unsafe static Delegate CreateDelegate( Type type, Object target, RuntimeMethodHandle method )
-////    {
-////        ValidateType( type );
-////
-////        if(method.IsNullHandle())
-////        {
-////            throw new ArgumentNullException( "method" );
-////        }
-////
-////        // Initialize the method...
-////        Delegate d = InternalAlloc( type.TypeHandle );
-////        // This is a new internal API added in Whidbey. Currently it's only
-////        // used by the dynamic method code to generate a wrapper delegate.
-////        // Allow flexible binding options since the target method is
-////        // unambiguously provided to us.
-////        // <TODO> Might consider passing SkipSecurityChecks here; I haven't
-////        // looked at the security implications yet. </TODO>
-////        if(!d.BindToMethodInfo( target, method, method.GetDeclaringType(), DelegateBindingFlags.RelaxedSignature ))
-////        {
-////            throw new ArgumentException( Environment.GetResourceString( "Arg_DlgtTargMeth" ) );
-////        }
-////        return d;
-////    }
-////
-////    // Caution: this method is intended for deserialization only, no security checks are performed.
-////    internal static Delegate InternalCreateDelegate( Type type, Object firstArgument, MethodInfo method )
-////    {
-////        ValidateType( type );
-////        ValidateMethod( method );
-////
-////        // Initialize the method...
-////        Delegate d = InternalAlloc( type.TypeHandle );
-////        // This API is used by the formatters when deserializing a delegate.
-////        // They pass us the specific target method (that was already the
-////        // target in a valid delegate) so we should bind with the most
-////        // relaxed rules available (the result will never be ambiguous, it
-////        // just increases the chance of success with minor (compatible)
-////        // signature changes). We explicitly skip security checks here --
-////        // we're not really constructing a delegate, we're cloning an
-////        // existing instance which already passed its checks.
-////        if(!d.BindToMethodInfo( firstArgument, method.MethodHandle, method.DeclaringType.TypeHandle,
-////                                DelegateBindingFlags.SkipSecurityChecks |
-////                                DelegateBindingFlags.RelaxedSignature ))
-////        {
-////            throw new ArgumentException( Environment.GetResourceString( "Arg_DlgtTargMeth" ) );
-////        }
-////
-////        return d;
-////    }
-////
-////    [ResourceExposure( ResourceScope.None )]
-////    [MethodImpl( MethodImplOptions.InternalCall )]
-////    private extern bool BindToMethodName( Object target, RuntimeTypeHandle methodType, String method, DelegateBindingFlags flags );
-////
-////    [ResourceExposure( ResourceScope.None )]
-////    [MethodImpl( MethodImplOptions.InternalCall )]
-////    private extern bool BindToMethodInfo( Object target, RuntimeMethodHandle method, RuntimeTypeHandle methodType, DelegateBindingFlags flags );
-////
-////    [ResourceExposure( ResourceScope.None )]
-////    [MethodImpl( MethodImplOptions.InternalCall )]
-////    internal extern static MulticastDelegate InternalAlloc( RuntimeTypeHandle type );
-////
-////    [ResourceExposure( ResourceScope.None )]
-////    [MethodImpl( MethodImplOptions.InternalCall )]
-////    internal extern static MulticastDelegate InternalAllocLike( Delegate d );
-////
-////    [ResourceExposure( ResourceScope.None )]
-////    [MethodImpl( MethodImplOptions.InternalCall )]
-////    internal extern static bool InternalEqualTypes( object a, object b );
-////
-////    // Used by the ctor. Do not call directly.
-////    // The name of this function will appear in managed stacktraces as delegate constructor.
-////    [ResourceExposure( ResourceScope.None )]
-////    [MethodImpl( MethodImplOptions.InternalCall )]
-////    private extern void DelegateConstruct( Object target, IntPtr slot );
-////
-////    [ResourceExposure( ResourceScope.None )]
-////    [MethodImpl( MethodImplOptions.InternalCall )]
-////    internal extern IntPtr GetMulticastInvoke();
-////
-////    [ResourceExposure( ResourceScope.None )]
-////    [MethodImpl( MethodImplOptions.InternalCall )]
-////    internal extern IntPtr GetInvokeMethod();
-////
-////    [ResourceExposure( ResourceScope.None )]
-////    [MethodImpl( MethodImplOptions.InternalCall )]
-////    internal extern RuntimeMethodHandle FindMethodHandle();
-////
-////    [ResourceExposure( ResourceScope.None )]
-////    [MethodImpl( MethodImplOptions.InternalCall )]
-////    internal extern IntPtr GetUnmanagedCallSite();
-////
-////    [ResourceExposure( ResourceScope.None )]
-////    [MethodImpl( MethodImplOptions.InternalCall )]
-////    internal extern IntPtr AdjustTarget( Object target, IntPtr methodPtr );
-////
-////    [ResourceExposure( ResourceScope.None )]
-////    [MethodImpl( MethodImplOptions.InternalCall )]
-////    internal extern IntPtr GetCallStub( IntPtr methodPtr );
+        ////    //
+        ////    // Implementation of ISerializable
+        ////    //
+        ////
+        ////    public virtual void GetObjectData( SerializationInfo info, StreamingContext context )
+        ////    {
+        ////        throw new NotSupportedException();
+        ////    }
+        ////
+        ////    //
+        ////    // internal implementation details (FCALLS and utilities)
+        ////    //
+        ////
+        ////    // V2 internal API.
+        ////    internal unsafe static Delegate CreateDelegate( Type type, Object target, RuntimeMethodHandle method )
+        ////    {
+        ////        ValidateType( type );
+        ////
+        ////        if(method.IsNullHandle())
+        ////        {
+        ////            throw new ArgumentNullException( "method" );
+        ////        }
+        ////
+        ////        // Initialize the method...
+        ////        Delegate d = InternalAlloc( type.TypeHandle );
+        ////        // This is a new internal API added in Whidbey. Currently it's only
+        ////        // used by the dynamic method code to generate a wrapper delegate.
+        ////        // Allow flexible binding options since the target method is
+        ////        // unambiguously provided to us.
+        ////        // <TODO> Might consider passing SkipSecurityChecks here; I haven't
+        ////        // looked at the security implications yet. </TODO>
+        ////        if(!d.BindToMethodInfo( target, method, method.GetDeclaringType(), DelegateBindingFlags.RelaxedSignature ))
+        ////        {
+        ////            throw new ArgumentException( Environment.GetResourceString( "Arg_DlgtTargMeth" ) );
+        ////        }
+        ////        return d;
+        ////    }
+        ////
+        ////    // Caution: this method is intended for deserialization only, no security checks are performed.
+        ////    internal static Delegate InternalCreateDelegate( Type type, Object firstArgument, MethodInfo method )
+        ////    {
+        ////        ValidateType( type );
+        ////        ValidateMethod( method );
+        ////
+        ////        // Initialize the method...
+        ////        Delegate d = InternalAlloc( type.TypeHandle );
+        ////        // This API is used by the formatters when deserializing a delegate.
+        ////        // They pass us the specific target method (that was already the
+        ////        // target in a valid delegate) so we should bind with the most
+        ////        // relaxed rules available (the result will never be ambiguous, it
+        ////        // just increases the chance of success with minor (compatible)
+        ////        // signature changes). We explicitly skip security checks here --
+        ////        // we're not really constructing a delegate, we're cloning an
+        ////        // existing instance which already passed its checks.
+        ////        if(!d.BindToMethodInfo( firstArgument, method.MethodHandle, method.DeclaringType.TypeHandle,
+        ////                                DelegateBindingFlags.SkipSecurityChecks |
+        ////                                DelegateBindingFlags.RelaxedSignature ))
+        ////        {
+        ////            throw new ArgumentException( Environment.GetResourceString( "Arg_DlgtTargMeth" ) );
+        ////        }
+        ////
+        ////        return d;
+        ////    }
+        ////
+        ////    [ResourceExposure( ResourceScope.None )]
+        ////    [MethodImpl( MethodImplOptions.InternalCall )]
+        ////    private extern bool BindToMethodName( Object target, RuntimeTypeHandle methodType, String method, DelegateBindingFlags flags );
+        ////
+        ////    [ResourceExposure( ResourceScope.None )]
+        ////    [MethodImpl( MethodImplOptions.InternalCall )]
+        ////    private extern bool BindToMethodInfo( Object target, RuntimeMethodHandle method, RuntimeTypeHandle methodType, DelegateBindingFlags flags );
+        ////
+        ////    [ResourceExposure( ResourceScope.None )]
+        ////    [MethodImpl( MethodImplOptions.InternalCall )]
+        ////    internal extern static MulticastDelegate InternalAlloc( RuntimeTypeHandle type );
+        ////
+        ////    [ResourceExposure( ResourceScope.None )]
+        ////    [MethodImpl( MethodImplOptions.InternalCall )]
+        ////    internal extern static MulticastDelegate InternalAllocLike( Delegate d );
+        ////
+        ////    [ResourceExposure( ResourceScope.None )]
+        ////    [MethodImpl( MethodImplOptions.InternalCall )]
+        ////    internal extern static bool InternalEqualTypes( object a, object b );
+        ////
+        ////    // Used by the ctor. Do not call directly.
+        ////    // The name of this function will appear in managed stacktraces as delegate constructor.
+        ////    [ResourceExposure( ResourceScope.None )]
+        ////    [MethodImpl( MethodImplOptions.InternalCall )]
+        ////    private extern void DelegateConstruct( Object target, IntPtr slot );
+        ////
+        ////    [ResourceExposure( ResourceScope.None )]
+        ////    [MethodImpl( MethodImplOptions.InternalCall )]
+        ////    internal extern IntPtr GetMulticastInvoke();
+        ////
+        ////    [ResourceExposure( ResourceScope.None )]
+        ////    [MethodImpl( MethodImplOptions.InternalCall )]
+        ////    internal extern IntPtr GetInvokeMethod();
+        ////
+        ////    [ResourceExposure( ResourceScope.None )]
+        ////    [MethodImpl( MethodImplOptions.InternalCall )]
+        ////    internal extern RuntimeMethodHandle FindMethodHandle();
+        ////
+        ////    [ResourceExposure( ResourceScope.None )]
+        ////    [MethodImpl( MethodImplOptions.InternalCall )]
+        ////    internal extern IntPtr GetUnmanagedCallSite();
+        ////
+        ////    [ResourceExposure( ResourceScope.None )]
+        ////    [MethodImpl( MethodImplOptions.InternalCall )]
+        ////    internal extern IntPtr AdjustTarget( Object target, IntPtr methodPtr );
+        ////
+        ////    [ResourceExposure( ResourceScope.None )]
+        ////    [MethodImpl( MethodImplOptions.InternalCall )]
+        ////    internal extern IntPtr GetCallStub( IntPtr methodPtr );
 
-        internal abstract Object GetTarget();
+        [MethodImpl( MethodImplOptions.InternalCall )]
+        internal extern virtual Object GetTarget();
     }
 
 ////// These flags effect the way BindToMethodInfo and BindToMethodName are allowed to bind a delegate to a target method. Their

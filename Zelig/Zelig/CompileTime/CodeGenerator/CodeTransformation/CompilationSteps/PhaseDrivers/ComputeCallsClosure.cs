@@ -594,12 +594,17 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
                     {
                         int index = md.FindVirtualTableIndex();
 
+                        if(index == -1)
+                        {
+                            continue;
+                        }
+
                         MethodRepresentation mdRoot = md;
                         TypeRepresentation   tdRoot = td;
                         while((mdRoot.Flags & MethodRepresentation.Attributes.NewSlot) == 0)
                         {
                             tdRoot = tdRoot.Extends; if(tdRoot == null) break;
-
+                            
                             mdRoot = tdRoot.MethodTable[index];
 
                             if(m_reachabilitySet.Contains( mdRoot ))

@@ -47,9 +47,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\mbed\mbed.csproj">
+    <ProjectReference Include="..\..\..\RunTime\DeviceModels\mbed\mbed.csproj">
       <Project>{d7f2bc4e-1406-47aa-90e1-07bc4ce9410f}</Project>
       <Name>mbed</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\RunTime\Framework\Windows\Devices\Windows.Devices.csproj">
+      <Project>{dc8c38d7-780b-4b13-8ace-9050e39cc51c}</Project>
+      <Name>Windows.Devices</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

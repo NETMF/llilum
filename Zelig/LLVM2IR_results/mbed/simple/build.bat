@@ -9,6 +9,14 @@ IF /i "%GCC_BIN%"=="" (
     GOTO :EXIT
 )
 
+IF %1.==. (
+	ECHO No target passed in. Defaulting to LPC1768
+	set TARGET=LPC1768
+) ELSE (
+	ECHO Detected target: %1
+	set TARGET=%1
+)
+
 ECHO Running LLVM Optimization Phases...
 
 ::%LLVM_BIN%\opt -O2 -adce -globaldce Microsoft.Zelig.Test.mbed.Simple.bc -o Microsoft.Zelig.Test.mbed.Simple_opt.bc
@@ -28,8 +36,8 @@ ECHO Size Report...
 
 ECHO.
 ECHO Linking with mbed libs...
-make clean
-make DEBUG=1
+make clean TARGET=%TARGET%
+make DEBUG=1 TARGET=%TARGET%
 
 GOTO :EXIT
 

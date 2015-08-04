@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <LlilumSDK>$(LLILUM_SDK)</LlilumSDK>
+    <LlilumLLVM>$(LlilumSDK)LLVM\Debug\bin\</LlilumLLVM>
+    <LlilumCompiler>$(LlilumSDK)ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Compiler.exe</LlilumCompiler>
+    <LlilumConfig>$(MSBuildProjectDirectory)\mbed_simple.FrontEndConfig2</LlilumConfig>
+    <LlilumTargetDir>$(LlilumSDK)mbed\</LlilumTargetDir>
+    <LlilumTargetBoard>TARGET_LPC1768</LlilumTargetBoard>
+    <LlilumTargetBrand>TARGET_NXP</LlilumTargetBrand>
+    <LlilumTargetToolchain>TOOLCHAIN_GCC_ARM</LlilumTargetToolchain>
+    <LlilumTargetClass>TARGET_LPC176X</LlilumTargetClass>
+    <LlilumTargetBoardMbed>TARGET_MBED_LPC1768</LlilumTargetBoardMbed>
+    <LlilumOutputName>$(SolutionName)</LlilumOutputName>
+    <LlilumGccBin>$(LlilumSDK)ARM_GCC\4.9\bin</LlilumGccBin>
+    <LlilumOutputBin>$(OutDir)\$(LlilumOutputName).bin</LlilumOutputBin>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup />
+  <ItemGroup>
+    <BuildMacro Include="LlilumSDK">
+      <Value>$(LlilumSDK)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumLLVM">
+      <Value>$(LlilumLLVM)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumCompiler">
+      <Value>$(LlilumCompiler)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumConfig">
+      <Value>$(LlilumConfig)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumTargetDir">
+      <Value>$(LlilumTargetDir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumTargetBoard">
+      <Value>$(LlilumTargetBoard)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumTargetBrand">
+      <Value>$(LlilumTargetBrand)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumTargetToolchain">
+      <Value>$(LlilumTargetToolchain)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumTargetClass">
+      <Value>$(LlilumTargetClass)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumTargetBoardMbed">
+      <Value>$(LlilumTargetBoardMbed)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumOutputName">
+      <Value>$(LlilumOutputName)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumGccBin">
+      <Value>$(LlilumGccBin)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumOutputBin">
+      <Value>$(LlilumOutputBin)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

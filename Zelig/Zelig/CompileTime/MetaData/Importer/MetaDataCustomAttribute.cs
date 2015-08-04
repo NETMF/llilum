@@ -231,6 +231,7 @@ namespace Microsoft.Zelig.MetaData.Importer
                     {
                         String className = type.FullName;
 
+                        // handle cases for reference types first 
                         if(className == "System.String")
                         {
                             return reader.ReadCompressedString();
@@ -244,6 +245,12 @@ namespace Microsoft.Zelig.MetaData.Importer
                             string typeName = reader.ReadCompressedString();
 
                             return context.ResolveName( typeName );
+                        }
+
+                        // Enums are just ints, e.g. the case of AttributeTargets param for AttributeUsage attribute
+                        if (type.Extends.ElementType == ElementTypes.VALUETYPE)
+                        {
+                            return reader.ReadInt32();
                         }
 
                         throw new Exception( "Not implemented: object encoding an array (class was " + type +")" );

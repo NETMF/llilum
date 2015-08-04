@@ -138,6 +138,17 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
                                                 if(tElement != null)
                                                 {
                                                     array = Array.CreateInstance( tElement, size );
+
+                                                    if(typeSystem.PlatformAbstraction.PlatformName == "LLVM")
+                                                    {
+                                                        // BUGBUG: ColinA-MSFT: LLVM likes to optimize zero arrays away, and make them zero-length.
+                                                        // However, we need these arrays to be their actual size in memory, so we must set at least
+                                                        // one non-zero element. This workaround should be removed when we fix this on the LLVM side.
+                                                        if (tElement.IsPrimitive && (size > 0))
+                                                        {
+                                                            array.SetValue(Convert.ChangeType(1, tElement), 0);
+                                                        }
+                                                    }
                                                 }
 
                                                 DataManager.Attributes flags = DataManager.Attributes.SuitableForConstantPropagation;

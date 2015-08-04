@@ -67,6 +67,7 @@ namespace Microsoft.Zelig.Runtime.Synchronization
             //
             if(m_ownerThread == null)
             {
+#if ENABLE_GENERICS_BUG
 #pragma warning disable 420
                 if(System.Threading.Interlocked.CompareExchange< ThreadImpl >( ref m_ownerThread, thisThread, null ) == null)
 #pragma warning restore 420
@@ -74,6 +75,7 @@ namespace Microsoft.Zelig.Runtime.Synchronization
                     thisThread.AcquiredWaitableObject( this );
                     return true;
                 }
+#endif // ENABLE_GENERICS_BUG
             }
 
             //

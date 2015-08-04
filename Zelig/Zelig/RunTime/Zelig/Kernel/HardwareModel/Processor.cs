@@ -83,10 +83,7 @@ namespace Microsoft.Zelig.Runtime
         public abstract bool AreAllInterruptsDisabled( );
 
         //--//
-
-        //
-        // LT72: only needed for ARMv7-M, where faults adn interupts are controlled by different registers (PRIMASK and FAULTMASK)
-        //
+        
         public virtual bool AreFaultsDisabled( )
         {
             return true;

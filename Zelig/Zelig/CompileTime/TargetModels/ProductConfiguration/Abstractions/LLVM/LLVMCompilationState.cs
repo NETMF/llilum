@@ -19,9 +19,9 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
         private LLVM._Function m_function;
         private LLVMModuleManager m_manager;
         private TS.MethodRepresentation m_method;
-        private GrowOnlyHashTable<ZeligIR.Expression,LLVM._Value> m_localValues;
-        private TS.WellKnownFields     m_wkf;
-        private TS.WellKnownTypes      m_wkt;
+        private GrowOnlyHashTable<ZeligIR.Expression, LLVM._Value> m_localValues;
+        private TS.WellKnownFields m_wkf;
+        private TS.WellKnownTypes m_wkt;
 
         protected LLVMCompilationState( ) // Default constructor required by TypeSystemSerializer.
         {
@@ -62,7 +62,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
             //Miguel: Review: I can probably get rid of this...
             m_manager.ConvertTypeLayoutsToLLVM( );
-            
+
         }
 
 

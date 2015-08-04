@@ -35,7 +35,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                                          VariableExpression  lhs       ,
                                          Expression          rhs       )
         {
-            CHECKS.ASSERT( lhs.Type is ManagedPointerTypeRepresentation && rhs.Type is BoxedValueTypeRepresentation && lhs.Type.ContainedType == rhs.Type.ContainedType, "Incompatible types for unbox operator: {0} <=> {1}", lhs.Type, rhs.Type );
+            // If we are dealing with a boxed type in the R-value, then the underlying type must match. Refernce types are just OK
+            CHECKS.ASSERT( rhs.Type is BoxedValueTypeRepresentation ? lhs.Type is ManagedPointerTypeRepresentation && lhs.Type.ContainedType == rhs.Type.ContainedType : true, "Incompatible types for unbox operator: {0} <=> {1}", lhs.Type, rhs.Type );
 
             UnboxOperator res = new UnboxOperator( debugInfo );
 

@@ -24,10 +24,11 @@ namespace Microsoft.Zelig.Runtime
         // State
         //
 
-        public Type   Target;
-        public string TargetByWellKnownName;
-        public bool   NoConstructors;
-        public Type   ProcessAfter;
+        public Type     Target;
+        public string   TargetByWellKnownName;
+        public bool     NoConstructors;
+        public Type     ProcessAfter;
+        public string   PlatformFilter;
 
         //
         // Constructor Methods

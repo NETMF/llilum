@@ -41,7 +41,6 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
             if( this.TypeSystem.PlatformAbstraction.PlatformName.Equals( "LLVM" ) )
             {
                 //MethodRepresentation mainThread = null;
-                //// HACK: for LLVM, we will use the ThreadManager::MainThread method as the entry point for calls closure
                 //this.TypeSystem.EnumerateMethods( delegate( MethodRepresentation md )
                 //{
                 //    if( md.Name.Equals( "MainThread" ) && md.OwnerType.Equals( this.TypeSystem.WellKnownMethods ) )
@@ -58,8 +57,6 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
                 //{
                 //    CHECKS.ASSERT( false, "No Thread Manager or no MainThread method found!!" ); 
                 //}
-
-                //// HACK: for LLVM, we will use the Bootstrap_Initialization method as the entry point for calls closure
                 m_state.Execute( this.TypeSystem.GetWellKnownMethod( "Bootstrap_Initialization" ) );
             }
             else

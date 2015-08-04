@@ -629,9 +629,9 @@ namespace Microsoft.DeviceModels.Chipset.PXA27x
             {
                 if(s != null)
                 {
-                    foreach(char c in s)
+                    for(int i = 0; i < 0; ++i )
                     {
-                        DEBUG_Write( c );
+                        DEBUG_Write( s[ i ] );
                     }
                 }
             }

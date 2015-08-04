@@ -2354,13 +2354,19 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
             //
             // Section 1.5 of ECMA spec, Partition III
+            // BUGBUG: several cases we do not handle yet...
             //
             StackEquivalentType seLeft  = exLeft .StackEquivalentType;
             StackEquivalentType seRight = exRight.StackEquivalentType;
 
             if(seLeft != seRight)
             {
-                if(seLeft == StackEquivalentType.Pointer && (exRight.CanBeNull == CanBeNull.Yes || seRight == StackEquivalentType.NativeInt))
+                // ints and manager pointers are 1-o-1 compatible
+                if(seLeft == StackEquivalentType.NativeInt && seRight == StackEquivalentType.Int32     ||
+                   seLeft == StackEquivalentType.Int32     && seRight == StackEquivalentType.NativeInt)
+                {
+                }
+                else if(seLeft == StackEquivalentType.Pointer && (exRight.CanBeNull == CanBeNull.Yes || seRight == StackEquivalentType.NativeInt))
                 {
                 }
                 else if(seRight == StackEquivalentType.Pointer && (exLeft.CanBeNull == CanBeNull.Yes || seLeft == StackEquivalentType.NativeInt))

@@ -251,12 +251,12 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
             if( obj is MethodRepresentation )
             {
                 MethodRepresentation other = ( MethodRepresentation )obj;
-
-                if( m_flags == other.m_flags &&
-                                                  m_buildFlags == other.m_buildFlags &&
-                                                  m_name == other.m_name &&
-                        EqualsThroughEquivalence( m_ownerType, other.m_ownerType, set ) &&
-                        EqualsThroughEquivalence( m_returnType, other.m_returnType, set ) &&
+                
+                if (                              m_flags       == other.m_flags                        &&
+                                                  m_buildFlags  == other.m_buildFlags                   &&
+                                                  m_name        == other.m_name                         &&
+                        EqualsThroughEquivalence( m_ownerType, other.m_ownerType, set )                 &&
+                        EqualsThroughEquivalence( m_returnType, other.m_returnType, set )               &&
                    ArrayEqualsThroughEquivalence( m_thisPlusArguments, other.m_thisPlusArguments, set ) &&
                    ArrayEqualsThroughEquivalence( this.GenericParameters, other.GenericParameters, set ) )
                 {

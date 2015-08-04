@@ -8,9 +8,9 @@ prompt $_$+---$G $P$_$+   $G$_Cmd$G
 :: Set LLVM environment variables.
 ::
 
-set LLVM_BIN=%ZELIG_ROOT%external\LLVM\Debug\bin\
-set LLVM_INCLUDE=%ZELIG_ROOT%external\LLVM\include\
-set LLVM_LIBS=%ZELIG_ROOT%external\LLVM\
+set LLVM_BIN=%LLVM_SRCROOT_DIR%\build\x64\Release\bin\
+set LLVM_INCLUDE=%LLVM_SRCROOT_DIR%\include\
+set LLVM_LIBS=%LLVM_SRCROOT_DIR%\
 
 ::
 :: Add pyOCD and and make to path.

@@ -1,0 +1,47 @@
+﻿<!--
+***********************************************************************************************
+Toolset.props
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+Copyright (C) Microsoft Corporation. All rights reserved.
+***********************************************************************************************
+-->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildThisFileDirectory)ImportBefore\*.props" Condition="Exists('$(MSBuildThisFileDirectory)ImportBefore')" />
+
+  <Import Project="$(VCTargetsPath)\Application Type\$(ApplicationType)\$(ApplicationTypeRevision)\Android.Common.props" />
+
+  <PropertyGroup>
+    <Sysroot></Sysroot>
+    <ClangToolExe>$(ToolchainPrefix)gcc.exe</ClangToolExe>
+    <GNUMode>true</GNUMode>
+    <MSVCErrorReport>false</MSVCErrorReport>
+    <GccToolchainPrebuiltPath />
+    <GccVersion Condition="'$(GccVersion)' == ''">4.9.3</GccVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ExecutablePath Condition="'$(ExecutablePath)' == ''">$(ToolchainPrebuiltPath)\bin;$(MSBuild_ExecutablePath);$(PATH);</ExecutablePath>
+    <IncludePath Condition="'$(IncludePath)' == ''">$(ToolchainPrebuiltPath)\$(ToolchainName)\include\c++\$(ToolchainVersion)\$(ToolchainName)\$(ArmArchitecture);$(ToolchainPrebuiltPath)\$(ToolchainName)\include\c++\$(ToolchainVersion)\$(ToolchainName);$(ToolchainPrebuiltPath)\$(ToolchainName)\include\c++\$(ToolchainVersion);$(ToolchainPrebuiltPath)\$(ToolchainName)\include;$(ToolchainPrebuiltPath)\lib\gcc\$(ToolchainName)\$(GccVersion)\include-fixed;$(ToolchainPrebuiltPath)\lib\gcc\$(ToolchainName)\$(GccVersion)\include</IncludePath>
+    <ExcludePath Condition="'$(ExcludePath)' == ''">$(ToolchainPrebuiltPath)\lib\gcc\$(ToolchainName)\$(GccVersion)\include;$(MSBuildToolsPath);$(MSBuildFrameworkToolsPath);$(MSBuild_ExecutablePath)</ExcludePath>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(StlIncludeDirectories);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ThumbMode Condition="'$(ThumbMode)' != ''">$(ThumbMode)</ThumbMode>
+      <EnableNeonCodegen>false</EnableNeonCodegen>
+    </ClCompile>
+    <Link>
+      <LibraryDependencies Condition="'$(StlIsStaticLibrary)' != 'false'">$(StlLibraryName);%(LibraryDependencies)</LibraryDependencies>
+      <AdditionalLibraryDirectories>$(ToolchainPrebuiltPath)\lib\gcc\$(ToolchainName)\$(GccVersion)\$(ArmArchitecture);$(StlLibraryPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SharedLibrarySearchPath>%(SharedLibrarySearchPath)</SharedLibrarySearchPath>
+    </Link>
+  </ItemDefinitionGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)ImportAfter\*.props" Condition="Exists('$(MSBuildThisFileDirectory)ImportAfter')" />
+</Project>

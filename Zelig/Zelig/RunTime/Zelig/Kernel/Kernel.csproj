@@ -101,8 +101,9 @@
     <Compile Include="HardwareModel\TargetPlatform\AbstractMethodWrapper.cs" />
     <Compile Include="HardwareModel\TargetPlatform\ARMv5\ProcessorARMv5.cs" />
     <Compile Include="HardwareModel\TargetPlatform\ARMv5\ProcessorARMv5_ContextSwitch.cs" />
-    <Compile Include="HardwareModel\TargetPlatform\LLVM\InterruptsSafeHandleLLVM.cs" />
-    <Compile Include="HardwareModel\TargetPlatform\LLVM\ProcessorLLVM.cs" />
+    <Compile Include="HardwareModel\TargetPlatform\ARMv7\InterruptsSafeHandle.cs" />
+    <Compile Include="HardwareModel\TargetPlatform\ARMv7\ProcessorARMv7M.cs" />
+    <Compile Include="HardwareModel\TargetPlatform\ARMv7\ProcessorARMv7M_ContextSwitch.cs" />
     <Compile Include="ManagedHeap\Finalizer.cs" />
     <Compile Include="ManagedHeap\GarbageCollectionExtensionHandler.cs" />
     <Compile Include="SelfTest.cs" />

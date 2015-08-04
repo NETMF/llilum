@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props" Condition="Exists('$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -12,7 +13,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D18BF31D-EA7F-46A4-AD71-0C7A683E46C5}</ProjectGuid>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <Keyword>ManagedCProj</Keyword>
     <RootNamespace>LLVMIR</RootNamespace>
   </PropertyGroup>
@@ -20,14 +21,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CLRSupport>true</CLRSupport>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CLRSupport>true</CLRSupport>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -36,9 +37,11 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(ZELIG_ROOT)LlvmApplication.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(ZELIG_ROOT)LlvmApplication.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -55,7 +58,6 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(LLVM_INCLUDE)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>
@@ -63,9 +65,10 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>LLVMX86CodeGen.lib;LLVMX86AsmParser.lib;LLVMX86AsmPrinter.lib;LLVMX86Desc.lib;LLVMX86Disassembler.lib;LLVMX86Info.lib;LLVMX86Utils.lib;LLVMVectorize.lib;LLVMTransformUtils.lib;LLVMTarget.lib;LLVMTableGen.lib;LLVMSupport.lib;LLVMSelectionDAG.lib;LLVMScalarOpts.lib;LLVMRuntimeDyld.lib;LLVMProfileData.lib;LLVMOption.lib;LLVMObject.lib;LLVMObjCARCOpts.lib;LLVMLTO.lib;LLVMLinker.lib;LLVMLineEditor.lib;LLVMIRReader.lib;LLVMipo.lib;LLVMipa.lib;LLVMInterpreter.lib;LLVMInstrumentation.lib;LLVMInstCombine.lib;LLVMExecutionEngine.lib;LLVMDebugInfo.lib;LLVMCppBackendCodeGen.lib;LLVMCppBackendInfo.lib;LLVMCore.lib;LLVMCodeGen.lib;LLVMBitWriter.lib;LLVMBitReader.lib;LLVMAsmPrinter.lib;LLVMAsmParser.lib;LLVMAnalysis.lib;LLVMMC.lib;LLVMMCAnalysis.lib;LLVMMCDisassembler.lib;LLVMMCJIT.lib;LLVMMCParser.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(LLVM_LIBS)$(Configuration)\lib</AdditionalLibraryDirectories>
       <OutputFile>$(SolutionDir)..\ZeligBuild\Host\bin\$(PlatformTarget)\$(TargetFilename)</OutputFile>
+      <OptimizeReferences>false</OptimizeReferences>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
+      <AdditionalOptions>/ignore:4248 %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -73,12 +76,9 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(LLVM_INCLUDE)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>LLVMX86CodeGen.lib;LLVMX86AsmParser.lib;LLVMX86AsmPrinter.lib;LLVMX86Desc.lib;LLVMX86Disassembler.lib;LLVMX86Info.lib;LLVMX86Utils.lib;LLVMVectorize.lib;LLVMTransformUtils.lib;LLVMTarget.lib;LLVMTableGen.lib;LLVMSupport.lib;LLVMSelectionDAG.lib;LLVMScalarOpts.lib;LLVMRuntimeDyld.lib;LLVMProfileData.lib;LLVMOption.lib;LLVMObject.lib;LLVMObjCARCOpts.lib;LLVMLTO.lib;LLVMLinker.lib;LLVMLineEditor.lib;LLVMIRReader.lib;LLVMipo.lib;LLVMipa.lib;LLVMInterpreter.lib;LLVMInstrumentation.lib;LLVMInstCombine.lib;LLVMExecutionEngine.lib;LLVMDebugInfo.lib;LLVMCppBackendCodeGen.lib;LLVMCppBackendInfo.lib;LLVMCore.lib;LLVMCodeGen.lib;LLVMBitWriter.lib;LLVMBitReader.lib;LLVMAsmPrinter.lib;LLVMAsmParser.lib;LLVMAnalysis.lib;LLVMMC.lib;LLVMMCAnalysis.lib;LLVMMCDisassembler.lib;LLVMMCJIT.lib;LLVMMCParser.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(LLVM_LIBS)$(Configuration)\lib</AdditionalLibraryDirectories>
       <OutputFile>$(SolutionDir)..\ZeligBuild\Host\bin\$(PlatformTarget)\$(TargetFilename)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
@@ -106,7 +106,7 @@
     <ClCompile Include="Value.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\MetaData\Normalized\Normalized.csproj">
+    <ProjectReference Include="..\..\MetaData\Normalized\Normalized.csproj">
       <Project>{186f31a3-ef89-4a25-b2d5-20060510aa01}</Project>
     </ProjectReference>
   </ItemGroup>

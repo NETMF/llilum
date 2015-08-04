@@ -47,6 +47,18 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
                 {
                     object             objTarget = ca.FixedArgsValues[0];
                     TypeRepresentation tdTarget  = objTarget as TypeRepresentation;
+                    
+                    object obj = ca.GetNamedArg( "PlatformFilter" );
+                    if(obj != null)
+                    {
+                        string platform = (string)obj;
+
+                        if(platform != typeSystem.PlatformAbstraction.PlatformName)
+                        {
+                            // This type is not an allowed extension for the current platform
+                            return false;
+                        }
+                    }
 
                     if(tdTarget == null)
                     {
@@ -200,11 +212,24 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
             {
                 CustomAttributeRepresentation ca = td.FindCustomAttribute( m_typeSystem.WellKnownTypes.Microsoft_Zelig_Runtime_ExtendClassAttribute );
                 if(ca != null)
-                {
+                {   
+
                     object             objTarget       = ca.FixedArgsValues[0];
                     TypeRepresentation tdTarget        = objTarget as TypeRepresentation;
                     bool               fNoConstructors = false;
                     object             obj;
+
+                    obj = ca.GetNamedArg( "PlatformFilter" );
+                    if(obj != null)
+                    {
+                        string platform = (string)obj;
+
+                        if(platform != m_typeSystem.PlatformAbstraction.PlatformName)
+                        {
+                            // This type is not an allowed extension for the current platform
+                            return;
+                        }
+                    }
 
                     if(tdTarget == null)
                     {

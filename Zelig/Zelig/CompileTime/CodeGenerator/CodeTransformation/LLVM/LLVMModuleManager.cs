@@ -86,7 +86,7 @@ namespace Microsoft.Zelig.LLVM
 
         private void CompleteMissingDataDescriptors( )
         {
-            bool stillMissing=true;
+            bool stillMissing = true;
 
             while( stillMissing )
             {
@@ -105,9 +105,9 @@ namespace Microsoft.Zelig.LLVM
 
         }
 
-        private LLVM._UntypedConstValue GetUCVStruct( LLVM._Type type, bool anon, params LLVM._UntypedConstValue[] vals )
+        private Llvm.NET.Constant GetUCVStruct( LLVM._Type type, bool anon, params Llvm.NET.Constant[ ] vals )
         {
-            var fields=new List<LLVM._UntypedConstValue>( );
+            var fields = new List<Llvm.NET.Constant>( );
             foreach( var val in vals )
             {
                 fields.Add( val );
@@ -120,12 +120,12 @@ namespace Microsoft.Zelig.LLVM
             return ad.Values != null ? ad.Values[ pos ] : ad.Source.GetValue( pos );
         }
 
-        private LLVM._UntypedConstValue GetUCVArray( IR.DataManager.ArrayDescriptor ad )
+        private Llvm.NET.Constant GetUCVArray( IR.DataManager.ArrayDescriptor ad )
         {
             uint arrayLength = ( uint )( ( ad.Values == null ) ? ad.Source.Length : ad.Values.Length );
 
-            var fields=new List<LLVM._UntypedConstValue>( );
-            TS.TypeRepresentation elTR=( ( TS.ArrayReferenceTypeRepresentation )ad.Context ).ContainedType;
+            var fields = new List<Llvm.NET.Constant>( );
+            TS.TypeRepresentation elTR = ( ( TS.ArrayReferenceTypeRepresentation )ad.Context ).ContainedType;
 
             //
             // Special case for common scalar arrays.
@@ -146,7 +146,7 @@ namespace Microsoft.Zelig.LLVM
 
                     if( val == null )
                     {
-                        fields.Add( GetScalarTypeUCV(  elTR , 0 ) );
+                        fields.Add( GetScalarTypeUCV( elTR, 0 ) );
                     }
                     else if( val is IR.DataManager.DataDescriptor )
                     {
@@ -175,7 +175,7 @@ namespace Microsoft.Zelig.LLVM
             return m_module.GetUCVArray( GetOrInsertType( elTR ), fields );
         }
 
-        private LLVM._UntypedConstValue GetScalarTypeUCV( TS.TypeRepresentation tr, UInt64 v )
+        private Llvm.NET.Constant GetScalarTypeUCV( TS.TypeRepresentation tr, UInt64 v )
         {
             if( v == 0 )
             {
@@ -183,13 +183,13 @@ namespace Microsoft.Zelig.LLVM
             }
             else
             {
-                LLVM._UntypedConstValue ucv = GetUCVIntAsSVT( tr, ( UInt64 )v );
+                Llvm.NET.Constant ucv = GetUCVIntAsSVT( tr, ( UInt64 )v );
                 ucv = GetUCVStruct( GetOrInsertType( tr ), false, ucv );
                 return ucv;
             }
         }
 
-        private LLVM._UntypedConstValue GetUCVIntAsSVT( TS.TypeRepresentation tr, UInt64 v )
+        private Llvm.NET.Constant GetUCVIntAsSVT( TS.TypeRepresentation tr, UInt64 v )
         {
             return m_module.GetUCVInt( GetOrInsertBasicTypeAsLLVMSingleValueType( tr ), v, tr.IsSigned );
         }
@@ -199,7 +199,7 @@ namespace Microsoft.Zelig.LLVM
             return dd is IR.DataManager.ArrayDescriptor || dd.Context == m_typeSystem.WellKnownTypes.System_String;
         }
 
-        private void AddToGlobalInitializedValues( IR.DataManager.DataDescriptor dd , LLVM._Value global )
+        private void AddToGlobalInitializedValues( IR.DataManager.DataDescriptor dd, LLVM._Value global )
         {
             if( m_globalInitializedValues.ContainsKey( dd ) )
             {
@@ -210,7 +210,7 @@ namespace Microsoft.Zelig.LLVM
                 m_globalInitializedValues[ dd ] = global;
                 if( !dd.IsMutable )
                 {
-                    m_globalInitializedValues[ dd ].FlagAsConstant();
+                    m_globalInitializedValues[ dd ].FlagAsConstant( );
                 }
             }
         }
@@ -221,26 +221,26 @@ namespace Microsoft.Zelig.LLVM
             {
                 //I force initialization of arrays and strings to correctly set the static
                 //type for the array.
-                if( TypeChangesAfterCreation(dd) )
+                if( TypeChangesAfterCreation( dd ) )
                 {
-                    LLVM._UntypedConstValue ucv= UCVFromDataDescriptor( dd );
-                    AddToGlobalInitializedValues(dd, m_module.GetGlobalFromUCV( GetOrInsertType( dd.Context ), ucv ));                    
+                    Llvm.NET.Constant ucv = UCVFromDataDescriptor( dd );
+                    AddToGlobalInitializedValues( dd, m_module.GetGlobalFromUCV( GetOrInsertType( dd.Context ), ucv ) );
                 }
                 else
                 {
-                    AddToGlobalInitializedValues( dd,  m_module.GetUninitializedGlobal( GetOrInsertType( dd.Context ) ) );
+                    AddToGlobalInitializedValues( dd, m_module.GetUninitializedGlobal( GetOrInsertType( dd.Context ) ) );
                 }
             }
 
             return m_globalInitializedValues[ dd ];
         }
 
-        private LLVM._UntypedConstValue GetUCVObjectHeader( IR.DataManager.DataDescriptor dd )
+        private Llvm.NET.Constant GetUCVObjectHeader( IR.DataManager.DataDescriptor dd )
         {
-            TS.WellKnownFields wkf=m_typeSystem.WellKnownFields;
-            TS.WellKnownTypes wkt=m_typeSystem.WellKnownTypes;
+            TS.WellKnownFields wkf = m_typeSystem.WellKnownFields;
+            TS.WellKnownTypes wkt = m_typeSystem.WellKnownTypes;
 
-            var fields=new List<LLVM._UntypedConstValue>( );
+            var fields = new List<Llvm.NET.Constant>( );
 
             Runtime.ObjectHeader.GarbageCollectorFlags flags;
 
@@ -260,26 +260,27 @@ namespace Microsoft.Zelig.LLVM
             return m_module.GetUCVStruct( GetOrInsertType( wkt.Microsoft_Zelig_Runtime_ObjectHeader ), fields, false );
         }
 
-        public LLVM._UntypedConstValue UCVFromDataDescriptor( IR.DataManager.DataDescriptor dd, TS.TypeRepresentation treatObjectDescriptorAsType = null )
+        public Llvm.NET.Constant UCVFromDataDescriptor( IR.DataManager.DataDescriptor dd, TS.TypeRepresentation treatObjectDescriptorAsType = null )
         {
-            TS.WellKnownFields wkf=m_typeSystem.WellKnownFields;
-            TS.WellKnownTypes wkt=m_typeSystem.WellKnownTypes;
+            TS.WellKnownFields wkf = m_typeSystem.WellKnownFields;
+            TS.WellKnownTypes wkt = m_typeSystem.WellKnownTypes;
 
             if( dd is IR.DataManager.ObjectDescriptor )
             {
-                IR.DataManager.ObjectDescriptor od=( IR.DataManager.ObjectDescriptor )dd;
+                IR.DataManager.ObjectDescriptor od = ( IR.DataManager.ObjectDescriptor )dd;
                 TS.TypeRepresentation currentType = treatObjectDescriptorAsType;
 
-                if( currentType == null ) currentType = dd.Context;
+                if( currentType == null )
+                    currentType = dd.Context;
 
 
                 if( currentType == wkt.System_Object )
                 {
-                    LLVM._UntypedConstValue ucv=GetUCVObjectHeader( dd );
+                    Llvm.NET.Constant ucv = GetUCVObjectHeader( dd );
                     return GetUCVStruct( GetOrInsertType( wkt.System_Object ), false, ucv );
                 }
 
-                var fields=new List<LLVM._UntypedConstValue>( );
+                var fields = new List<Llvm.NET.Constant>( );
 
                 if( !( currentType is TS.ValueTypeRepresentation ) )
                 {
@@ -287,9 +288,9 @@ namespace Microsoft.Zelig.LLVM
                 }
 
 
-                for( uint i=0; i < currentType.Size - ( currentType.Extends == null ? 0 : currentType.Extends.Size ); i++ )
+                for( uint i = 0; i < currentType.Size - ( currentType.Extends == null ? 0 : currentType.Extends.Size ); i++ )
                 {
-                    var fd= currentType.FindFieldAtOffset( ( int )( i + ( currentType.Extends == null ? 0 : currentType.Extends.Size ) ) );
+                    var fd = currentType.FindFieldAtOffset( ( int )( i + ( currentType.Extends == null ? 0 : currentType.Extends.Size ) ) );
                    
                     if( fd != null )
                     {
@@ -314,8 +315,8 @@ namespace Microsoft.Zelig.LLVM
 
                             if( ptr is TS.MethodRepresentation )
                             {
-                                TS.MethodRepresentation md  = ( TS.MethodRepresentation )ptr;
-                                LLVM._UntypedConstValue ucv = m_module.GetUCVConstantPointerFromValue( GetOrInsertFunction( md ) );
+                                TS.MethodRepresentation md = ( TS.MethodRepresentation )ptr;
+                                Llvm.NET.Constant ucv = m_module.GetUCVConstantPointerFromValue( GetOrInsertFunction( md ) );
                                 ucv = GetUCVStruct( GetOrInsertType( fd.FieldType ), false, ucv );
                                 fields.Add( ucv );
                             }
@@ -332,7 +333,7 @@ namespace Microsoft.Zelig.LLVM
                         }
                         else if( fdVal == null )
                         {
-                            fields.Add( GetScalarTypeUCV(  fd.FieldType , 0 ) );
+                            fields.Add( GetScalarTypeUCV( fd.FieldType, 0 ) );
                         }
                         else if( fdVal is IR.DataManager.DataDescriptor )
                         {
@@ -364,10 +365,10 @@ namespace Microsoft.Zelig.LLVM
 
                 if( currentType == wkt.System_String )
                 {
-                    var chars=new List<LLVM._UntypedConstValue>( );
+                    var chars = new List<Llvm.NET.Constant>( );
                     foreach( var c in ( ( string )od.Source ).ToCharArray( ) )
                     {
-                        chars.Add( GetScalarTypeUCV( wkf.StringImpl_FirstChar.FieldType, (ulong) c ) );
+                        chars.Add( GetScalarTypeUCV( wkf.StringImpl_FirstChar.FieldType, ( ulong )c ) );
 
                     }
                     fields.Add( m_module.GetUCVArray( GetOrInsertType( wkf.StringImpl_FirstChar.FieldType ), chars ) );
@@ -380,7 +381,7 @@ namespace Microsoft.Zelig.LLVM
             {
                 IR.DataManager.ArrayDescriptor ad = ( IR.DataManager.ArrayDescriptor )dd;
 
-                LLVM._UntypedConstValue ucv=GetUCVObjectHeader( dd );
+                Llvm.NET.Constant ucv = GetUCVObjectHeader( dd );
                 ucv = GetUCVStruct( GetOrInsertType( wkt.System_Object ), false, ucv );
                 ucv = GetUCVStruct( GetOrInsertType( wkt.System_Array ), false, ucv, GetScalarTypeUCV( wkf.ArrayImpl_m_numElements.FieldType, ( ulong )ad.Length ) );
                 return GetUCVStruct( GetOrInsertType( dd.Context ), true, ucv, GetUCVArray( ad ) );
@@ -396,21 +397,20 @@ namespace Microsoft.Zelig.LLVM
         {
             if( !m_globalInitializedValues.ContainsKey( dd ) )
             {
-                LLVM._UntypedConstValue ucv= UCVFromDataDescriptor( dd );
+                Llvm.NET.Constant ucv = UCVFromDataDescriptor( dd );
                 
                 //Split the global creation in two step for DDs that keep their type the same
                 //after conversion
 
-                if( !TypeChangesAfterCreation( dd ) )
-                {
-                    AddToGlobalInitializedValues( dd, m_module.GetUninitializedGlobal( GetOrInsertType( dd.Context ) ) );
-                    m_globalInitializedValues[ dd ].SetGlobalInitializer( ucv );
-                }
-                else
+                if( TypeChangesAfterCreation( dd ) )
                 {
                     AddToGlobalInitializedValues( dd, m_module.GetGlobalFromUCV( GetOrInsertType( dd.Context ), ucv ) );
                 }
-                
+                else
+                {
+                    AddToGlobalInitializedValues(dd, m_module.GetUninitializedGlobal(GetOrInsertType(dd.Context)));
+                    m_globalInitializedValues[dd].SetGlobalInitializer(ucv);
+                }
             }
 
             return m_globalInitializedValues[ dd ];

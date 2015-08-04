@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="LIB" PageTemplate="tool" DisplayName="Librarian" SwitchPrefix="-" Order="40" xmlns="http://schemas.microsoft.com/build/2009/properties" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+  <Rule.Categories>
+    <Category Name="General" DisplayName="General" />
+    <Category Name="All Options" DisplayName="All Options" Subtype="Search" />
+    <Category Name="Command Line" DisplayName="Command Line" Subtype="CommandLine" />
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" ItemType="Lib" Label="" HasConfigurationCondition="true" />
+  </Rule.DataSource>
+  <StringListProperty Subtype="file" Name="AdditionalDependencies" DisplayName="Additional Dependencies" Description="Specifies additional objects." Category="General" F1Keyword="VC.Project.Ar.AdditionalDependencies">
+  </StringListProperty>
+  <StringListProperty Subtype="folder" Name="AdditionalLibraryDirectories" DisplayName="Additional Library Directories" Description="Additional search directories to location objects." Category="General" F1Keyword="VC.Project.Ar.AdditionalLibraryDirectories">
+  </StringListProperty>
+  <BoolProperty Name="LinkLibraryDependencies" DisplayName="Link Library Dependencies" Description="Specifies whether or not library outputs from project dependencies are automatically linked in." Category="General" IncludeInCommandLine="false" F1Keyword="VC.Project.Ar.LinkLibraryDependencies">
+    <BoolProperty.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="ProjectReference" Label="" HasConfigurationCondition="true" />
+    </BoolProperty.DataSource>
+  </BoolProperty>
+  <EnumProperty Name="Command" DisplayName="Command" Description="Command for AR." Category="General" Visible="false" F1Keyword="VC.Project.Ar.Command">
+    <EnumProperty.Arguments>
+      <Argument Property="CreateIndex" IsRequired="false" />
+      <Argument Property="CreateThinArchive" IsRequired="false" />
+      <Argument Property="NoWarnOnCreate" IsRequired="false" />
+      <Argument Property="TruncateTimestamp" IsRequired="false" />
+      <Argument Property="SuppressStartupBanner" IsRequired="false" />
+      <Argument Property="Verbose" IsRequired="false" />
+    </EnumProperty.Arguments>
+    <EnumValue Name="Delete" Switch="d" DisplayName="Delete" Description="Delete file(s) from the archive">
+    </EnumValue>
+    <EnumValue Name="Move" Switch="m" DisplayName="Move" Description="Move file(s) in the archive.">
+    </EnumValue>
+    <EnumValue Name="Print" Switch="p" DisplayName="Print" Description="Print file(s) found in the archive.">
+    </EnumValue>
+    <EnumValue Name="Quick" Switch="q" DisplayName="Quick" Description="Quick append file(s) to the archive.">
+    </EnumValue>
+    <EnumValue Name="Replacement" Switch="r" DisplayName="Replacement" Description="Replace existing or insert new file(s) into the archive.">
+    </EnumValue>
+    <EnumValue Name="Table" Switch="t" DisplayName="Table" Description="Display contents of archive.">
+    </EnumValue>
+    <EnumValue Name="Extract" Switch="x" DisplayName="Extract" Description="Extract file(s) from the archive.">
+    </EnumValue>
+  </EnumProperty>
+  <BoolProperty Name="CreateIndex" DisplayName="Create an archive index" Description="Create an archive index (cf. ranlib).  This can speed up linking and reduce dependency within its own library." SwitchPrefix="" Category="General" Switch="s" F1Keyword="VC.Project.Ar.CreateIndex">
+  </BoolProperty>
+  <BoolProperty Name="CreateThinArchive" DisplayName="Create Thin Archive" Description="Create a thin archive.  A thin archive contains relativepaths to the objects instead of embedding the objects.  Switching between Thin and Normal requires deleting the existing library." SwitchPrefix="" Category="General" Switch="T" F1Keyword="VC.Project.Ar.CreateThinArchive">
+  </BoolProperty>
+  <BoolProperty Name="NoWarnOnCreate" DisplayName="No Warning on Create" Description="Do not warn if when the library is created." SwitchPrefix="" Category="General" Switch="c" F1Keyword="VC.Project.Ar.NoWarnOnCreate">
+  </BoolProperty>
+  <BoolProperty Name="TruncateTimestamp" DisplayName="Truncate Timestamp" Description="Use zero for timestamps and uids/gids." SwitchPrefix="" Category="General" Switch="D" F1Keyword="VC.Project.Ar.TruncateTimestamp">
+  </BoolProperty>
+  <BoolProperty ReverseSwitch="V" Name="SuppressStartupBanner" DisplayName="Suppress Startup Banner" Description="Dont show version number." SwitchPrefix="" Category="General" F1Keyword="VC.Project.Ar.SuppressStartupBanner">
+  </BoolProperty>
+  <BoolProperty Name="Verbose" DisplayName="Verbose" Description="Verbose" SwitchPrefix="" Category="General" Switch="v" F1Keyword="VC.Project.Ar.Verbose">
+  </BoolProperty>
+  <StringProperty Name="AdditionalOptions" DisplayName="Additional Options" Description="Additional Options." Category="Command Line" F1Keyword="vc.project.AdditionalOptionsPage">
+  </StringProperty>
+  <StringProperty Subtype="file" Name="OutputFile" DisplayName="Output File" Description="The /OUT option overrides the default name and location of the program that the lib creates." SwitchPrefix="" Category="General" Separator=" " F1Keyword="VC.Project.Ar.OutputFile">
+  </StringProperty>
+  <StringProperty Subtype="folder" Name="TrackerLogDirectory" DisplayName="Tracker Log Directory" Description="Tracker log directory." IncludeInCommandLine="false" Visible="false">
+  </StringProperty>
+</Rule>

@@ -12,4 +12,4 @@ START /I pyocd_win.exe
 
 ECHO.
 ECHO Trying to attach to remote target on port 3333
-%GCC_BIN%arm-none-eabi-gdb.exe LPC1768\mbed_simple.elf --baud 460800 %*  -ex "target remote :3333"
+"%GCC_BIN%arm-none-eabi-gdb.exe" %*

@@ -13,7 +13,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
     public sealed class LLVMPlatform : ArmPlatform
     {
         private const Capabilities c_ProcessorCapabilities = Capabilities.ARMv7M;
-        private const String       c_LLVM                  = "LLVM";
+        private const String       c_PlatformName          = InstructionSetVersion.Platform_LLVM;
 
         //
         // State
@@ -54,7 +54,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         public override string PlatformName
         {
-            get { return c_LLVM; }
+            get { return c_PlatformName; }
         }
 
         public override string PlatformVersion
@@ -116,7 +116,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         public override TypeRepresentation GetMethodWrapperType( )
         {
-            return m_typeSystem.GetWellKnownType( "Microsoft_Zelig_LLVM_MethodWrapper" );
+            return m_typeSystem.GetWellKnownType( "Microsoft_Zelig_ARMv7_MethodWrapper" );
         }
 
         public override bool HasRegisterContextArgument( MethodRepresentation md )

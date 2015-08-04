@@ -27,7 +27,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         protected override uint EmitCodeForBasicBlock_EstimateMinimumSize( IR.Operator op )
         {
-            return sizeof( uint );
+            return sizeof(uint);
         }
 
         protected override void EmitCodeForBasicBlock_EmitOperator( IR.Operator op )
@@ -40,9 +40,9 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         }
 
-        private LLVM._BasicBlock       m_basicBlock;
-        private List<LLVM._Value>      m_arguments;
-        private List<LLVM._Value>      m_results;
+        private LLVM._BasicBlock m_basicBlock;
+        private List<LLVM._Value> m_arguments;
+        private List<LLVM._Value> m_results;
 
         private LLVM._Value GetValue( IR.Expression exp )
         {
@@ -50,15 +50,16 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
             {
                 if( !m_localValues.ContainsKey( exp ) )
                 {
-                    LLVM._Value v=m_function.GetLocalStackValue( exp.ToString( ), m_manager.GetOrInsertType( exp.Type ) );
+                    LLVM._Value v = m_function.GetLocalStackValue( exp.ToString( ), m_manager.GetOrInsertType( exp.Type ) );
                     m_localValues[ exp ] = v;
 
                     if( exp is IR.ArgumentVariableExpression )
                     {
                         int n = ( ( IR.ArgumentVariableExpression )exp ).Number;
-                        if( m_method is TS.StaticMethodRepresentation ) n--;
+                        if( m_method is TS.StaticMethodRepresentation )
+                            n--;
 
-                        m_basicBlock.InsertStore( m_localValues[ exp ],  m_basicBlock.GetFunctionArgument( m_function, n ) );
+                        m_basicBlock.InsertStore( m_localValues[ exp ], m_basicBlock.GetFunctionArgument( m_function, n ) );
                     }
                 
                 }
@@ -74,8 +75,10 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
                 }
                 if( ce.Type.IsFloatingPoint )
                 {
-                    if( ce.Value is float ) return m_manager.Module.GetFloatConstant( ( float )ce.Value );
-                    else return m_manager.Module.GetDoubleConstant( ( double )ce.Value );
+                    if( ce.Value is float )
+                        return m_manager.Module.GetFloatConstant( ( float )ce.Value );
+                    else
+                        return m_manager.Module.GetDoubleConstant( ( double )ce.Value );
                 }
                 if( ce.Type.IsInteger )
                 {
@@ -138,7 +141,8 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
                 foreach( var op in bb.Operators )
                 {
-                    if( EmitCodeForBasicBlock_ShouldSkip( op ) ) continue;
+                if( EmitCodeForBasicBlock_ShouldSkip( op ) )
+                    continue;
                     TranslateOperator( op, bb );
                 }
             #endif
@@ -148,7 +152,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
         {
             //Load Debug metadata            
             // Miguel: (Hack to remove processor.cs epilogue/prologue debug data)
-            if( op.DebugInfo != null && !op.DebugInfo.SrcFileName.EndsWith( "ProcessorLLVM.cs" ) )
+            if( op.DebugInfo != null && !op.DebugInfo.SrcFileName.EndsWith( "ProcessorARMv7M.cs" ) )
             {
                 m_basicBlock.SetDebugInfo( op.DebugInfo.BeginLineNumber, op.DebugInfo.BeginColumn, op.DebugInfo.SrcFileName, LLVMModuleManager.GetFullMethodName( m_method ) );
             }
@@ -316,14 +320,14 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         LLVM._Value ExtractFirstElementFromBasicType( LLVM._Value val )
         {
-            if( val.Type().GetBTUnderlyingType()!=null )
+            if( val.Type( ).GetBTUnderlyingType( ) != null )
             {
                 val = m_basicBlock.ExtractFirstElementFromBasicType( val );
             }
             return val;
         }
 
-        LLVM._Value ConvertValueToALUOperableType( LLVM._Value val )
+        LLVM._Value ConvertValueToALUOperableType( LLVM._Value val, bool skipObjectHeader )
         {
 
             val = ExtractFirstElementFromBasicType( val );
@@ -333,7 +337,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
                 if( ( !val.IsImmediate( ) && val.IsPointerPointer( ) )
                  || ( val.IsImmediate( ) && val.IsPointer( ) ) )
                 {
-                    return m_basicBlock.InsertPointerToInt( val );
+                    return m_basicBlock.InsertPointerToInt( val, skipObjectHeader );
                 }
                 else
                 {
@@ -367,7 +371,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
             {
                 //We make the pointers pass through an uint32
                 //to fix offset differences between realobjects/valuetypes
-                return m_basicBlock.InsertIntToPointer( m_basicBlock.InsertPointerToInt( val ), type );
+                return m_basicBlock.InsertIntToPointer( m_basicBlock.InsertPointerToInt( val, true ), type );
             }
 
             //Integer zext/trunc
@@ -412,7 +416,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
             //Ptr to Int
             if( val.Type( ).IsPointer( ) && type.IsInteger( ) )
             {
-                return ConvertValueToStoreToTarget( m_basicBlock.InsertPointerToInt( val ), type );
+                return ConvertValueToStoreToTarget( m_basicBlock.InsertPointerToInt( val, true ), type );
             }
 
             return val;
@@ -457,8 +461,8 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
             if( op is IR.BinaryOperator )
             {
                 //Todo: add exceptions 
-                LLVM._Value valA=ConvertValueToALUOperableType( m_arguments[ 0 ] );
-                LLVM._Value valB=ConvertValueToALUOperableType( m_arguments[ 1 ] );
+                LLVM._Value valA = ConvertValueToALUOperableType( m_arguments[ 0 ], true );
+                LLVM._Value valB = ConvertValueToALUOperableType( m_arguments[ 1 ], true);
                 MatchIntegerLengths( ref valA, ref valB );
                 LLVM._Value result = m_basicBlock.InsertBinaryOp( ( int )op.Alu, valA, valB, op.Signed );
                 StoreValue( m_results[ 0 ], result );
@@ -476,7 +480,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
             if( op is IR.UnaryOperator )
             {
-                LLVM._Value result = m_basicBlock.InsertUnaryOp( ( int )op.Alu, ConvertValueToALUOperableType( m_arguments[ 0 ] ), op.Signed );
+                LLVM._Value result = m_basicBlock.InsertUnaryOp( ( int )op.Alu, ConvertValueToALUOperableType( m_arguments[ 0 ], true ), op.Signed );
                 StoreValue( m_results[ 0 ], result );
             }
             else
@@ -487,7 +491,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         private void Translate_ConversionOperator( IR.ConversionOperator op )
         {
-            LLVM._Value v =ConvertValueToALUOperableType( m_arguments[ 0 ]);
+            LLVM._Value v = ConvertValueToALUOperableType( m_arguments[ 0 ], true );
             LLVM._Type resultType = m_manager.GetOrInsertBasicTypeAsLLVMSingleValueType( op.FirstResult.Type );
 
             if( op.FirstResult.Type == m_wkt.System_IntPtr || op.FirstResult.Type == m_wkt.System_UIntPtr
@@ -520,10 +524,10 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
         {
             //TODO: Add support for overflow exceptions
 
-            TS.TypeRepresentation.BuiltInTypes kindInput  = op.InputKind;
+            TS.TypeRepresentation.BuiltInTypes kindInput = op.InputKind;
             TS.TypeRepresentation.BuiltInTypes kindOutput = op.OutputKind;
 
-            LLVM._Value v =ConvertValueToALUOperableType( m_arguments[ 0 ] );
+            LLVM._Value v = ConvertValueToALUOperableType( m_arguments[ 0 ], true );
 
             switch( kindInput )
             {
@@ -532,7 +536,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
                     switch( kindOutput )
                     {
                         case TS.TypeRepresentation.BuiltInTypes.R4:
-                            v = m_basicBlock.InsertSIToFPFloat( v);
+                    v = m_basicBlock.InsertSIToFPFloat( v );
                             break;
                         case TS.TypeRepresentation.BuiltInTypes.R8:
                             v = m_basicBlock.InsertSIToFPDouble( v );
@@ -568,7 +572,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         private void Translate_AddressAssignmentOperator( IR.AddressAssignmentOperator op )
         {
-            StoreValue( m_results[ 0 ], m_basicBlock.GetAddressAsUIntPtr(m_arguments[ 0 ]) );
+            StoreValue( m_results[ 0 ], m_basicBlock.GetAddressAsUIntPtr( m_arguments[ 0 ] ) );
              
         }
 
@@ -576,7 +580,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
         {
             if( op.FirstResult is IR.ArgumentVariableExpression )
             {
-                throw new Exception("Operator not implemented!!");
+                throw new Exception( "Operator not implemented!!" );
             }
             else
             {
@@ -586,20 +590,22 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         LLVM._Value DoCmpOp( LLVM._Value valA, LLVM._Value valB, int cond, bool signed )
         {
-            valA = ConvertValueToALUOperableType( valA );
-            valB = ConvertValueToALUOperableType( valB );
+            // We don't want adjust for object headers when comparing pointers. Instead, we compare their raw values in
+            // case we're comparing against a literal (such as null).
+            valA = ConvertValueToALUOperableType( valA, false );
+            valB = ConvertValueToALUOperableType( valB, false );
             return m_basicBlock.InsertCmp( cond, signed, valA, valB );
         }
 
         private void Translate_CompareAndSetOperator( IR.CompareAndSetOperator op )
         {
-            LLVM._Value v=DoCmpOp( m_arguments[ 0 ], m_arguments[ 1 ], ( int )op.Condition, op.Signed );
+            LLVM._Value v = DoCmpOp( m_arguments[ 0 ], m_arguments[ 1 ], ( int )op.Condition, op.Signed );
             StoreValue( m_results[ 0 ], v );
         }
 
         private void Translate_LoadIndirectOperator( IR.LoadIndirectOperator op )
         {
-            StoreValue( m_results[ 0 ], m_basicBlock.LoadIndirect( ExtractFirstElementFromBasicType(m_arguments[ 0 ]), m_manager.GetOrInsertType( op.Type ) ) );
+            StoreValue( m_results[ 0 ], m_basicBlock.LoadIndirect( ExtractFirstElementFromBasicType( m_arguments[ 0 ] ), m_manager.GetOrInsertType( op.Type ) ) );
         }
 
         private void Translate_StoreIndirectOperator( IR.StoreIndirectOperator op )
@@ -614,7 +620,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         private void Translate_LoadInstanceFieldOperator( IR.LoadInstanceFieldOperator op )
         {
-            StoreValue( m_results[ 0 ], m_basicBlock.GetField( m_arguments[ 0 ], m_manager.GetOrInsertType( op.FirstArgument.Type ), m_manager.GetOrInsertType( op.Field.FieldType ), ( int )op.Field.Offset )  );
+            StoreValue( m_results[ 0 ], m_basicBlock.GetField( m_arguments[ 0 ], m_manager.GetOrInsertType( op.FirstArgument.Type ), m_manager.GetOrInsertType( op.Field.FieldType ), ( int )op.Field.Offset ) );
         }
 
         private void Translate_LoadInstanceFieldAddressOperator( IR.LoadInstanceFieldAddressOperator op )
@@ -622,26 +628,26 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
             StoreValue( m_results[ 0 ],
                 m_basicBlock.GetAddressAsUIntPtr(
                 m_basicBlock.GetField( m_arguments[ 0 ], m_manager.GetOrInsertType( op.FirstArgument.Type ), m_manager.GetOrInsertType( op.Field.FieldType ), ( int )op.Field.Offset )
-                ));
+                ) );
         }
 
         private LLVM._Value ArrayAccessByIDX( LLVM._Value array, TS.TypeRepresentation arrayType, LLVM._Value idx )
         {
             
             array = m_basicBlock.GetField( array, m_manager.GetOrInsertType( arrayType ), null, ( int )( m_wkt.System_Array.Size ) );
-            return m_basicBlock.IndexLLVMArray( array, ConvertValueToALUOperableType(idx) ); 
+            return m_basicBlock.IndexLLVMArray( array, ConvertValueToALUOperableType( idx, true ) );
         }
 
         private void Translate_LoadElementOperator( IR.LoadElementOperator op )
         {
             LLVM._Value v = ArrayAccessByIDX( m_arguments[ 0 ], op.FirstArgument.Type, m_arguments[ 1 ] );
-            StoreValue( m_results[ 0 ], v  );
+            StoreValue( m_results[ 0 ], v );
         }
 
         private void Translate_LoadElementAddressOperator( IR.LoadElementAddressOperator op )
         {
             LLVM._Value v = ArrayAccessByIDX( m_arguments[ 0 ], op.FirstArgument.Type, m_arguments[ 1 ] );
-            StoreValue( m_results[ 0 ], m_basicBlock.GetAddressAsUIntPtr(v) );
+            StoreValue( m_results[ 0 ], m_basicBlock.GetAddressAsUIntPtr( v ) );
         }
 
         private void Translate_StoreElementOperator( IR.StoreElementOperator op )
@@ -657,14 +663,16 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         private void Translate_BinaryConditionalControlOperator( IR.BinaryConditionalControlOperator op )
         {
-            m_basicBlock.InsertConditionalBranch( ConvertValueToALUOperableType( m_arguments[ 0 ] ),
+            // We don't want adjust for object headers when comparing pointers. Instead, we compare their raw values in
+            // case we're comparing against a literal (such as null).
+            m_basicBlock.InsertConditionalBranch( ConvertValueToALUOperableType( m_arguments[ 0 ], false ),
                 GetOrInsertBasicBlock( op.TargetBranchTaken ),
                 GetOrInsertBasicBlock( op.TargetBranchNotTaken ) );
         }
 
         private void Translate_CompareConditionalControlOperator( IR.CompareConditionalControlOperator op )
         {
-            LLVM._Value v=DoCmpOp( m_arguments[ 0 ], m_arguments[ 1 ], ( int )op.Condition, op.Signed );
+            LLVM._Value v = DoCmpOp( m_arguments[ 0 ], m_arguments[ 1 ], ( int )op.Condition, op.Signed );
             m_basicBlock.InsertConditionalBranch( v,
                 GetOrInsertBasicBlock( op.TargetBranchTaken ),
                 GetOrInsertBasicBlock( op.TargetBranchNotTaken ) );
@@ -681,7 +689,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
                 caseBBs.Add( GetOrInsertBasicBlock( op.Targets[ i ] ) );
             }
 
-            m_basicBlock.InsertSwitchAndCases( ConvertValueToALUOperableType( m_arguments[ 0 ] ),
+            m_basicBlock.InsertSwitchAndCases( ConvertValueToALUOperableType( m_arguments[ 0 ], true ),
                                               GetOrInsertBasicBlock( op.TargetBranchNotTaken ),
                                               caseValues, caseBBs );
         }
@@ -745,7 +753,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
                 return;
             }
 
-            LLVM._Function targetFunc=m_manager.GetOrInsertFunction( op.TargetMethod );
+            LLVM._Function targetFunc = m_manager.GetOrInsertFunction( op.TargetMethod );
 
             if( op.TargetMethod.Flags.HasFlag( TS.MethodRepresentation.Attributes.PinvokeImpl ) )
             {
@@ -756,12 +764,14 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
             int i = 0;
 
-            if( op.TargetMethod is TS.StaticMethodRepresentation ) ++i;
-            if( callIndirect ) ++i;
+            if( op.TargetMethod is TS.StaticMethodRepresentation )
+                ++i;
+            if( callIndirect )
+                ++i;
 
             for( ; i < op.Arguments.Length; ++i )
             {
-                args.Add( ConvertValueToStoreToTarget( m_arguments[ i ], m_manager.GetOrInsertType( op.TargetMethod.ThisPlusArguments[ i - ( callIndirect ?1:0) ] ) ) );
+                args.Add( ConvertValueToStoreToTarget( m_arguments[ i ], m_manager.GetOrInsertType( op.TargetMethod.ThisPlusArguments[ i - ( callIndirect ? 1 : 0 ) ] ) ) );
             }
 
             LLVM._Value ret;
@@ -774,7 +784,6 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
             {
                 ret = m_basicBlock.InsertIndirectCall( targetFunc, m_arguments[ 0 ], args );
             }
-
 
             if( op.Results.Length == 1 )
             {

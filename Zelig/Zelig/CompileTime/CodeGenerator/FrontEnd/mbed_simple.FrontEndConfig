@@ -11,8 +11,7 @@
 ###
 ### We need to include this assembly to get the right drivers.
 ###
-#-Reference Microsoft.iMote2
--Reference Microsoft.LLVMHosted
+-Reference Microsoft.CortexMOnMBED
 
 
 ###
@@ -65,6 +64,7 @@
 -DumpIR
 #-DumpIRpre
 -DumpIRpost
+-DumpIRXML
 -DumpLLVMIR
 #-ReloadState
 -DumpLLVMIR_TextRepresentation

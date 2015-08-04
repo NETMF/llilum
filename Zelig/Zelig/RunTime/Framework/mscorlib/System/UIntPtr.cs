@@ -34,6 +34,11 @@ namespace System
             m_value = (void*)value;
         }
 
+        public unsafe UIntPtr(ulong value)
+        {
+            m_value = (void*)checked((uint)value);
+        }
+
         [CLSCompliant( false )]
         public unsafe UIntPtr( void* value )
         {
@@ -82,6 +87,9 @@ namespace System
             return (uint)m_value;
         }
 
+        public unsafe ulong ToUInt64() {
+            return (ulong)m_value;
+        }
 ////    public unsafe override String ToString()
 ////    {
 ////        return ((uint)m_value).ToString( CultureInfo.InvariantCulture );
@@ -92,10 +100,19 @@ namespace System
             return new UIntPtr( value );
         }
 
+        public static explicit operator UIntPtr (ulong value) 
+        {
+            return new UIntPtr(value);
+        }
+
         public unsafe static explicit operator uint( UIntPtr value )
         {
             return (uint)value.m_value;
+        }   
 
+        public unsafe static explicit operator ulong (UIntPtr  value) 
+        {
+            return (ulong)value.m_value;
         }
 
         [CLSCompliant( false )]

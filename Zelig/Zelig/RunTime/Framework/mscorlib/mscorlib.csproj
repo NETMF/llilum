@@ -1,5 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <!--
+  mscorlib is treated special so that the .NET Compiler platform (a.k.a. Roslyn)
+  can handle it properly. Ordinarly the compiler assumes that mscorlib is supposed
+  to be referenced as a dependency. However, since this is build mscorlib itself
+  that's not possible. Thus the standard library and other explicit references added 
+  by the compiler must be disabled. (See also: targets additions at the end of this
+  project file.)
+  -->
+  <PropertyGroup>
+    <NoStdLib>true</NoStdLib>
+    <NoCompilerStandardLib>true</NoCompilerStandardLib>
+    <AddAdditionalExplicitAssemblyReferences>false</AddAdditionalExplicitAssemblyReferences>
+  </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -25,7 +38,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <NoStdLib>true</NoStdLib>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -369,6 +381,30 @@
     <Compile Include="ZeligHooks\WellKnownTypeAttribute.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!--
+    Normally the Roslyn compiler gets the runtime metadata version number from the mscorlib 
+    that a project references. However, since this is building mscorlib itself, it needs some
+    help to know which metadata format it should generate. This target runs before the compilation
+    to generate a temproary compiler "response file" that includes the additional command line 
+    option. This is done with a respone file as the standard CSC task doesn't have an property for
+    this and doesn't have any other kind of generalized means to add command line options.
+    -->
+  <Target Condition="$(MSBuildToolsVersion)&gt;=14" Name="GenerateCompilerResponseFile" BeforeTargets="CoreCompile">
+    <Message Text="Generating runtimemetadataversion response file: $(IntermediateOutputPath)runtimemetadataversion.rsp" />
+
+    <WriteLinesToFile File="$(IntermediateOutputPath)runtimemetadataversion.rsp"
+                      Lines="/runtimemetadataversion:v2.0.50727"
+                      Overwrite="true" />
+
+    <ItemGroup>
+      <!-- Be a good citizen and help the build clean the output file -->
+      <Clean Include="$(IntermediateOutputPath)runtimemetadataversion.rsp" />
+    </ItemGroup>
+    <PropertyGroup>
+      <CompilerResponseFile>$(IntermediateOutputPath)runtimemetadataversion.rsp</CompilerResponseFile>
+    </PropertyGroup>
+  </Target>
+
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

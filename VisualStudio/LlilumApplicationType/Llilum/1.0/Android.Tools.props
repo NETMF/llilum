@@ -1,0 +1,93 @@
+<!--
+***********************************************************************************************
+Android.Common.props
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+Copyright (C) Microsoft Corporation. All rights reserved.
+***********************************************************************************************
+-->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildThisFileDirectory)ImportBefore\*.props" Condition="Exists('$(MSBuildThisFileDirectory)ImportBefore')" />
+
+  <PropertyGroup Condition="'$(DisableRegistryUse)' != 'true'">
+    <!-- 1) Use the values set by the user -->
+    <VS_AndroidHome Condition="'$(VS_AndroidHome)' == ''">$(Registry:HKEY_CURRENT_USER\SOFTWARE\Microsoft\VisualStudio\SecondaryInstaller\VC@AndroidHome)</VS_AndroidHome>
+    <VS_AntHome Condition="'$(VS_AntHome)' == ''">$(Registry:HKEY_CURRENT_USER\SOFTWARE\Microsoft\VisualStudio\SecondaryInstaller\VC@AntHome)</VS_AntHome>
+    <VS_JavaHome Condition="'$(VS_JavaHome)' == ''">$(Registry:HKEY_CURRENT_USER\SOFTWARE\Microsoft\VisualStudio\SecondaryInstaller\VC@JavaHome)</VS_JavaHome>
+    <VS_NdkRoot Condition="'$(VS_NdkRoot)' == ''">$(Registry:HKEY_CURRENT_USER\SOFTWARE\Microsoft\VisualStudio\SecondaryInstaller\VC@NDKRoot)</VS_NdkRoot>
+
+    <!-- 2) Use the locations from the secondary installer  -->
+    <VS_AndroidHome Condition="'$(VS_AndroidHome)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Android SDK Tools@Path)</VS_AndroidHome>
+    <VS_AndroidHome Condition="'$(VS_AndroidHome)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Android SDK Tools@Path)</VS_AndroidHome>
+    <VS_AntHome Condition="'$(VS_AntHome)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\14.0\Setup\VS\SecondaryInstaller\Ant@ANT_HOME)</VS_AntHome>
+      <VS_AntHome Condition="'$(VS_AntHome)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\14.0\Setup\VS\SecondaryInstaller\Ant@ANT_HOME)</VS_AntHome>
+    <VS_JavaHome Condition="'$(VS_JavaHome)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\JavaSoft\Java Development Kit\1.7\@JavaHome)</VS_JavaHome>
+    <VS_JavaHome Condition="'$(VS_JavaHome)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\JavaSoft\Java Development Kit\1.7\@JavaHome)</VS_JavaHome>
+    <VS_NdkRoot Condition="'$(VS_NdkRoot)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\14.0\Setup\VS\SecondaryInstaller\AndroidNDK@NDK_HOME)</VS_NdkRoot>
+    <VS_NdkRoot Condition="'$(VS_NdkRoot)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\14.0\Setup\VS\SecondaryInstaller\AndroidNDK@NDK_HOME)</VS_NdkRoot>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Platform path -->
+    <AndroidAPILevelPath Condition="'$(VS_NdkRoot)' != ''">$(VS_NdkRoot)\Platforms</AndroidAPILevelPath>
+    <AndroidSDKAPILevelPath Condition="'$(VS_AndroidHome)' != ''">$(VS_AndroidHome)\Platforms</AndroidSDKAPILevelPath>
+    <ShowAndroidPathsVerbosity Condition="'$(ShowAndroidPathsVerbosity)' == ''">High</ShowAndroidPathsVerbosity>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-3'">3</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-4'">4</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-5'">5</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-6'">6</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-7'">7</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-8'">8</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-9'">9</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-10'">10</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-11'">11</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-12'">12</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-13'">13</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-14'">14</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-15'">15</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-16'">16</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-17'">17</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-18'">18</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-19'">19</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-20'">20</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-21'">21</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-22'">22</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-23'">23</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-24'">24</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-25'">25</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-26'">26</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-27'">27</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-28'">28</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-29'">29</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevel)' == 'android-30'">30</AndroidAPILevelNumber>
+    <AndroidAPILevelNumber Condition="'$(AndroidAPILevelNumber)' == ''">$(DefaultAndroidAPILevelNumber)</AndroidAPILevelNumber>
+    <TargetPlatformVersion>$(AndroidAPILevelNumber).0</TargetPlatformVersion>
+
+    <AndroidAPIFriendlyName_android-3>Cupcake 1.5</AndroidAPIFriendlyName_android-3>
+    <AndroidAPIFriendlyName_android-4>Donut 1.6</AndroidAPIFriendlyName_android-4>
+    <AndroidAPIFriendlyName_android-5>Eclair 2.0</AndroidAPIFriendlyName_android-5>
+    <AndroidAPIFriendlyName_android-6>Eclair 2.0.1</AndroidAPIFriendlyName_android-6>
+    <AndroidAPIFriendlyName_android-7>Eclair 2.1</AndroidAPIFriendlyName_android-7>
+    <AndroidAPIFriendlyName_android-8>Froyo  2.2.x</AndroidAPIFriendlyName_android-8>
+    <AndroidAPIFriendlyName_android-9>Gingerbread 2.3 - 2.3.2</AndroidAPIFriendlyName_android-9>
+    <AndroidAPIFriendlyName_android-10>Gingerbread 2.3.3 - 2.3.7</AndroidAPIFriendlyName_android-10>
+    <AndroidAPIFriendlyName_android-11>Honeycomb 3.0</AndroidAPIFriendlyName_android-11>
+    <AndroidAPIFriendlyName_android-12>Honeycomb 3.1</AndroidAPIFriendlyName_android-12>
+    <AndroidAPIFriendlyName_android-13>Honeycomb 3.2.x</AndroidAPIFriendlyName_android-13>
+    <AndroidAPIFriendlyName_android-14>Ice Cream Sandwich 4.0.1 - 4.0.2</AndroidAPIFriendlyName_android-14>
+    <AndroidAPIFriendlyName_android-15>Ice Cream Sandwich 4.0.3 - 4.0.4</AndroidAPIFriendlyName_android-15>
+    <AndroidAPIFriendlyName_android-16>Jelly Bean 4.1.x</AndroidAPIFriendlyName_android-16>
+    <AndroidAPIFriendlyName_android-17>Jelly Bean 4.2.x</AndroidAPIFriendlyName_android-17>
+    <AndroidAPIFriendlyName_android-18>Jelly Bean 4.3.x</AndroidAPIFriendlyName_android-18>
+    <AndroidAPIFriendlyName_android-19>KitKat 4.4 - 4.4.4</AndroidAPIFriendlyName_android-19>
+    <AndroidAPIFriendlyName_android-21>Lollipop 5.0 - 5.0.2</AndroidAPIFriendlyName_android-21>
+  </PropertyGroup>
+
+</Project>

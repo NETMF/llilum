@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="ProjectGroup" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+  <TemplateData>
+    <Name>Llilum Application Project</Name>
+    <Description>A template for creating a Llilum Application project.</Description>
+    <Icon>LlilumApplication.ico</Icon>
+    <ProjectType>LlilumApplication</ProjectType>
+    <RequiredFrameworkVersion>4.5.2</RequiredFrameworkVersion>
+    <SortOrder>1</SortOrder>
+    <TemplateID>{95af4530-3c8f-4126-a438-e2c18a6133f5}</TemplateID>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>LlilumApplication</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+  </TemplateData>
+    <TemplateContent>
+      <ProjectCollection>
+        <ProjectTemplateLink ProjectName="Native" CopyParameters="true">
+          LlilumNative\MyTemplate.vstemplate
+        </ProjectTemplateLink>
+        <ProjectTemplateLink ProjectName="Managed" CopyParameters="true">
+          LlilumManaged\MyTemplate.vstemplate
+        </ProjectTemplateLink>
+      </ProjectCollection>
+    </TemplateContent>
+</VSTemplate>

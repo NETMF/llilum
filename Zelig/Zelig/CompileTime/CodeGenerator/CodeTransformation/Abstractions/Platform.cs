@@ -96,7 +96,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Abstractions
                                                                                   ControlFlowGraphStateForCodeTransformation cfg  );
 
         //--//
-
+        
         public abstract string PlatformName      { get; }
         public abstract string PlatformVersion   { get; }
         public abstract string PlatformVFP       { get; }

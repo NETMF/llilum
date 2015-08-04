@@ -53,7 +53,6 @@ namespace Microsoft.Zelig.Runtime
            
 #if SELF_TEST
             SelfTest.SelfTest__Bootstrap( );
-
 #else
             //
             // This should only minimally setup hardware so that the system is functional.
@@ -86,16 +85,11 @@ namespace Microsoft.Zelig.Runtime
             //
             SoftwareActivation();
 
+            // 
+            // Time to start execution of user app by delegating to the thread manager
+            ThreadManager.Instance.StartThreads();
 
-            //MIGUEL: instead of starting the thread manager, we call into our entrypoint
-            //ThreadManager.Instance.StartThreads();
-
-            while( true )
-            {
-                Configuration.ExecuteApplication( );
-            }
-
-#endif
+#endif // SELF_TEST
         }
 
         //--//
@@ -136,12 +130,11 @@ namespace Microsoft.Zelig.Runtime
         [CanAllocateOnReturn]
         private static void SoftwareInitialization( uint[] systemStack )
         {
-            //MIGUEL: Commetend out for the demo
-            //ThreadManager.Instance.InitializeBeforeStaticConstructors();
+            ThreadManager.Instance.InitializeBeforeStaticConstructors();
 
             TypeSystemManager.Instance.InitializeTypeSystemManager();
-
-            //ThreadManager.Instance.InitializeAfterStaticConstructors( systemStack );
+            
+            ThreadManager.Instance.InitializeAfterStaticConstructors( systemStack );
 
             GarbageCollectionManager.Instance.InitializeGarbageCollectionManager();
         }
@@ -157,7 +150,7 @@ namespace Microsoft.Zelig.Runtime
         [NoInline]
         private static void SoftwareActivation()
         {
-            //ThreadManager.Instance.Activate();
+            ThreadManager.Instance.Activate();
         }
     }
 }

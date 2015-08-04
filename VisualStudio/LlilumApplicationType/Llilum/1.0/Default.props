@@ -1,0 +1,54 @@
+﻿<!--
+***********************************************************************************************
+Default.props
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+Copyright (C) Microsoft Corporation. All rights reserved.
+***********************************************************************************************
+-->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Import Before -->
+  <Import Condition="Exists('$(MSBuildThisFileDirectory)ImportBefore\Default')" Project="$(MSBuildThisFileDirectory)ImportBefore\Default\*.props" />
+  
+  <PropertyGroup>
+    <AndroidCommonTargetsPath>$(VCTargetsPath)\Application Type\$(ApplicationType)\$(ApplicationTypeRevision)\</AndroidCommonTargetsPath>
+    <!-- PlatformToolset when none is provided. -->
+    <PlatformToolset Condition="'$(PlatformToolset)' == ''">Gcc</PlatformToolset>
+    <!-- Fallback platformtoolset when wrong toolset is provided. -->
+    <DefaultPlatformToolset Condition="'$(DefaultPlatformToolset)' == ''">Gcc</DefaultPlatformToolset>
+    
+    <AndroidNDKProps Condition="'$(AndroidNDKProps)' == ''">$(AndroidCommonTargetsPath)\Android.NDK.Props</AndroidNDKProps>
+    <AndroidAPILevel Condition="'$(AndroidAPILevel)' == ''">android-19</AndroidAPILevel>
+    <DefaultAndroidAPILevelNumber>19</DefaultAndroidAPILevelNumber>
+    <UseOfStl Condition="'$(UseOfStl)' == ''">gnustl_static</UseOfStl>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ArmArchitecture Condition="'$(ArmArchitecture)' == ''">armv7-m</ArmArchitecture>
+	
+	<!-- Use to list the option in the property page. -->
+	<AvailibleArmArchitecture>armv6-m;armv7-ar;armv7e-m;armv7-m;cortex-m7;cortex-m3;cortex-m4</AvailibleArmArchitecture>
+    
+    <!-- Llilum Config -->
+    <LlilumApplicationTypeDir>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Application Type\Llilum\1.0\</LlilumApplicationTypeDir>
+    <LlilumSDK>$(LLILUM_SDK)</LlilumSDK>
+    <LlilumLLVM>$(LLILUM_LLVM)build\x64\Debug\bin\</LlilumLLVM>
+    <LlilumCompiler>$(LlilumSDK)ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Compiler.exe</LlilumCompiler>
+    <LlilumConfig>$(MSBuildProjectDirectory)\mbed_simple.FrontEndConfig2</LlilumConfig>
+    <LlilumTargetDir>$(LlilumSDK)mbed\</LlilumTargetDir>
+    <LlilumTargetBoard>TARGET_LPC1768</LlilumTargetBoard>
+    <LlilumTargetBrand>TARGET_NXP</LlilumTargetBrand>
+    <LlilumTargetToolchain>TOOLCHAIN_GCC_ARM</LlilumTargetToolchain>
+    <LlilumTargetClass>TARGET_LPC176X</LlilumTargetClass>
+    <LlilumTargetBoardMbed>TARGET_MBED_LPC1768</LlilumTargetBoardMbed>
+    <LlilumOutputName>$(SolutionName)</LlilumOutputName>
+    <LlilumGccBin>$(LLILUM_GCC)\bin\</LlilumGccBin>
+    <LlilumOutputBin>$(OutDir)\$(LlilumOutputName).bin</LlilumOutputBin>
+  </PropertyGroup>
+
+  <!-- Import After -->
+  <Import Condition="Exists('$(MSBuildThisFileDirectory)ImportAfter\Default')" Project="$(MSBuildThisFileDirectory)ImportAfter\Default\*.props" />
+</Project>

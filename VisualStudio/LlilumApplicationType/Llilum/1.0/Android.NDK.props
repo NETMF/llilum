@@ -1,0 +1,43 @@
+<!--
+***********************************************************************************************
+Android.NDK.props
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+Copyright (C) Microsoft Corporation. All rights reserved.
+***********************************************************************************************
+-->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup Condition="'$(Platform)' == 'x86'">
+    <ToolchainName>x86</ToolchainName>
+    <ToolchainPrefix>i686-linux-android-</ToolchainPrefix>    
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)' != 'x86'">
+    <ToolchainName>arm-none-eabi</ToolchainName>
+    <ToolchainPrefix>arm-none-eabi-</ToolchainPrefix>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ToolchainVersion Condition="'$(ToolchainVersion)' == ''">4.9.3</ToolchainVersion>
+    <ToolchainPrebuiltPath Condition="'$(ToolchainPrebuiltPath)' == ''"></ToolchainPrebuiltPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ArmArchitecturePath>$(ToolchainPrebuiltPath)\$(ToolchainName)\lib</ArmArchitecturePath>
+    <OBJCOPY>$(ToolchainPrefix)objcopy</OBJCOPY>
+    <OBJDUMP>$(ToolchainPrefix)objdump</OBJDUMP>
+    <SIZE>$(ToolchainPrefix)size</SIZE>
+	
+    <GdbPrebuiltTag Condition="'$(GdbPrebuiltTag)' =='' and '$(Platform)' == 'ARM'">android-arm</GdbPrebuiltTag>
+    <GdbPrebuiltTag Condition="'$(GdbPrebuiltTag)' =='' and '$(Platform)' == 'x86'">android-x86</GdbPrebuiltTag>
+
+    <GdbServerName Condition="'$(GdbServerName)' == ''">gdbserver</GdbServerName>
+    <GdbServerPath Condition="'$(GdbServerPath)' == ''">$(VS_NdkRoot)\prebuilt\$(GdbPrebuiltTag)\gdbserver\$(GdbServerName)</GdbServerPath>
+  </PropertyGroup>
+
+</Project>

@@ -10,7 +10,8 @@ namespace Microsoft.Zelig.Runtime
 
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
-
+    
+    //[ExtendClass(typeof(System.Threading.Thread), PlatformFilter = "ARM")]
     [ExtendClass(typeof(System.Threading.Thread))]
     public class ThreadImpl
     {

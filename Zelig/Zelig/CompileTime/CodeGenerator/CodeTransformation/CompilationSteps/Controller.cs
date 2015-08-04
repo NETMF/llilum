@@ -104,13 +104,6 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
 
                     phase.Disabled = fDisabled;
 
-                    if( fDisabled )
-                    {
-                        // log warning
-                        Console.WriteLine( String.Format( "Disabled phase {0} will not run!", t.FullName ) ); 
-                    }
-
-
                     lst.Add(phase);
                 }
             }
@@ -224,9 +217,21 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
 
         private void DumpPhaseOrdering()
         {
+            Console.WriteLine("");
+            Console.WriteLine("Phase Ordering:");
+
             foreach(var phase in m_phases)
             {
-                Console.WriteLine( "{0}: {1}", phase.PhaseIndex, phase );
+                if (phase.Disabled)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("  {0}: {1} (Disabled)", phase.PhaseIndex, phase);
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Console.WriteLine("  {0}: {1}", phase.PhaseIndex, phase);
+                }
             }
             Console.WriteLine( "" );
             Console.WriteLine( "" );
@@ -266,7 +271,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
 
                 if(m_currentPhase.Disabled)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine( "Skipping phase: {0}", m_currentPhase );
                     Console.ResetColor( );
 

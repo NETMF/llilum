@@ -10,7 +10,8 @@ namespace Microsoft.Zelig.TargetModel.ArmProcessor
         //
         // Platforms
         //
-        public const string Platform_ARM = "ARM";
+        public const string Platform_ARM  = "ARM";
+        public const string Platform_LLVM = "LLVM";
 
         //
         // Platform Version

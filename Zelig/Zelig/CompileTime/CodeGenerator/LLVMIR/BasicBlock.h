@@ -70,7 +70,7 @@ public:
     void    InsertStoreIntoBT   ( _Value^ dst, _Value^ src );
     _Value^ LoadIndirect        ( _Value^ val, _Type^ ptrTy );
     void    InsertMemCpy        ( _Value^ dst, _Value^ src );
-    void    InsertMemCpy        ( _Value ^dst, _Value ^src, _Value ^size, bool overlapping );
+    void    InsertMemCpy        ( _Value^ dst, _Value^ src, _Value^ size, bool overlapping );
     void    InsertMemSet        ( _Value^ dst, unsigned char value );
 
     //

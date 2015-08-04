@@ -71,6 +71,7 @@ namespace Microsoft.Zelig.Tools.IRViewer
         //
 
         public int    Index;
+        public string Type;
         public string Value;
         public string Call;
         public Debug  Debug;
@@ -202,6 +203,7 @@ namespace Microsoft.Zelig.Tools.IRViewer
 
             res.Index = int.Parse( GetAttribute( node, "Index" ) );
             res.Call  =            GetAttribute( node, "Call"  );
+            res.Type = GetAttribute(node, "Type");
 
             res.Value =            node.InnerText;
 

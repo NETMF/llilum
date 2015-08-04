@@ -8,7 +8,7 @@
     <ProjectGuid>{186F31A3-EF89-4A25-B2D5-20080519AA01}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.DeviceModels.ModelForPXA27x</RootNamespace>
+    <RootNamespace>Microsoft.DeviceModels.Chipset.ModelForPXA27x</RootNamespace>
     <AssemblyName>Microsoft.DeviceModels.ModelForPXA27x</AssemblyName>
     <!-- ZELIG: Move intermediate data out of the source tree -->
     <BaseIntermediateOutputPath>$(SolutionDir)\..\ZeligBuild\Target\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>

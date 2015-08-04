@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{$guid2$}</ProjectGuid>
+    <Keyword>Android</Keyword>
+    <RootNamespace>$safeprojectname$</RootNamespace>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <ApplicationType>Llilum</ApplicationType>
+    <ApplicationTypeRevision>1.0</ApplicationTypeRevision>
+    <ToolchainPrebuiltPath>$(LLILUM_GCC)</ToolchainPrebuiltPath>
+    <ProjectName>Native</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  
+  <!-- Supported platform property sheets -->
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <Import Project="$(LlilumApplicationTypeDir)Platforms\*.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <Import Project="$(LlilumApplicationTypeDir)Platforms\*.props" />
+  </ImportGroup>
+
+  <!-- General Llilum Settings -->
+  <PropertyGroup Label="Llilum" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+  </PropertyGroup>
+  <PropertyGroup Label="Llilum" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+  </PropertyGroup>
+
+  <!-- Platform specific options -->
+  <!-- LPC1768 -->
+  <PropertyGroup Label="Llilum" Condition="'$(LlilumBoardName)' == 'LPC1768'">
+    <LlilumClAdditionalOptions>$(LlilumClAdditionalOptionsLPC1768)</LlilumClAdditionalOptions>
+    <LlilumClAdditionalIncludes>$(LlilumClAdditionalIncludesLPC1768)</LlilumClAdditionalIncludes>
+    <LlilumClPreprocessorDefs>$(LlilumClPreprocessorDefsLPC1768)</LlilumClPreprocessorDefs>
+    <LlilumLinkAdditionalDeps>$(LlilumLinkAdditionalDepsLPC1768)</LlilumLinkAdditionalDeps>
+    <LlilumLinkAdditionalLibDirs>$(LlilumLinkAdditionalLibDirsLPC1768)</LlilumLinkAdditionalLibDirs>
+    <LlilumLinkAdditionalOptions>$(LlilumLinkAdditionalOptionsLPC1768)</LlilumLinkAdditionalOptions>
+    <LlilumLinkLibDeps>$(LlilumLinkLibDepsLPC1768)</LlilumLinkLibDeps>
+    <LlilumTargetBoardArchitecture>$(LlilumTargetBoardArchitectureLPC1768)</LlilumTargetBoardArchitecture>
+  </PropertyGroup>
+  
+  <!-- K64F -->
+  <PropertyGroup Label="Llilum" Condition="'$(LlilumBoardName)' == 'K64F'">
+    <LlilumClAdditionalOptions>$(LlilumClAdditionalOptionsK64F)</LlilumClAdditionalOptions>
+    <LlilumClAdditionalIncludes>$(LlilumClAdditionalIncludesK64F)</LlilumClAdditionalIncludes>
+    <LlilumClPreprocessorDefs>$(LlilumClPreprocessorDefsK64F)</LlilumClPreprocessorDefs>
+    <LlilumLinkAdditionalDeps>$(LlilumLinkAdditionalDepsK64F)</LlilumLinkAdditionalDeps>
+    <LlilumLinkAdditionalLibDirs>$(LlilumLinkAdditionalLibDirsK64F)</LlilumLinkAdditionalLibDirs>
+    <LlilumLinkAdditionalOptions>$(LlilumLinkAdditionalOptionsK64F)</LlilumLinkAdditionalOptions>
+    <LlilumLinkLibDeps>$(LlilumLinkLibDepsK64F)</LlilumLinkLibDeps>
+    <LlilumTargetBoardArchitecture>$(LlilumTargetBoardArchitectureK64F)</LlilumTargetBoardArchitecture>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <ArmArchitecture>$(LlilumTargetBoardArchitecture)</ArmArchitecture>
+    <UseOfStl>
+    </UseOfStl>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ArmArchitecture>$(LlilumTargetBoardArchitecture)</ArmArchitecture>
+    <UseOfStl>system</UseOfStl>
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <TargetName>$(LlilumOutputName)</TargetName>
+    <TargetExt>.elf</TargetExt>
+    <ExecutablePath>$(LlilumGccBin);$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <TargetName>$(LlilumOutputName)</TargetName>
+    <TargetExt>.elf</TargetExt>
+    <ExecutablePath>$(LlilumGccBin);$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalOptions>$(LlilumClAdditionalOptions) %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(LlilumClAdditionalIncludes)%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>$(LlilumClPreprocessorDefs);DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(LlilumLinkAdditionalDeps)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(LlilumLinkAdditionalLibDirs)</AdditionalLibraryDirectories>
+      <AdditionalOptions>$(LlilumLinkAdditionalOptions) %(AdditionalOptions)</AdditionalOptions>
+      <LibraryDependencies>$(LlilumLinkLibDeps)</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalOptions>-MMD -MP -fmessage-length=0 -fno-common %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>./mbed;./mbed/TARGET_LPC1768;./mbed/TARGET_LPC1768/TOOLCHAIN_GCC_ARM;./mbed/TARGET_LPC1768/TARGET_NXP;./mbed/TARGET_LPC1768/TARGET_NXP/TARGET_LPC176X;./mbed/TARGET_LPC1768/TARGET_NXP/TARGET_LPC176X/TARGET_MBED_LPC1768;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>TARGET_LPC1768;TARGET_M3;TARGET_CORTEX_M;TARGET_NXP;TARGET_LPC176X;TARGET_MBED_LPC1768;TOOLCHAIN_GCC_ARM;TOOLCHAIN_GCC;__CORTEX_M3;ARM_MATH_CM3;MBED_BUILD_TIMESTAMP=1435688844.64;__MBED__=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>./mbed/TARGET_LPC1768/TOOLCHAIN_GCC_ARM/board.o;./mbed/TARGET_LPC1768/TOOLCHAIN_GCC_ARM/startup_LPC17xx.o;./mbed/TARGET_LPC1768/TOOLCHAIN_GCC_ARM/cmsis_nvic.o;./mbed/TARGET_LPC1768/TOOLCHAIN_GCC_ARM/retarget.o;./mbed/TARGET_LPC1768/TOOLCHAIN_GCC_ARM/system_LPC17xx.o</AdditionalDependencies>
+      <AdditionalLibraryDirectories>./mbed/TARGET_LPC1768/TOOLCHAIN_GCC_ARM</AdditionalLibraryDirectories>
+      <AdditionalOptions>-T./mbed/TARGET_LPC1768/TOOLCHAIN_GCC_ARM/LPC1768.ld -Wl,--gc-sections --specs=nano.specs -u _printf_float -u _scanf_float -Wl,--wrap,main %(AdditionalOptions)</AdditionalOptions>
+      <LibraryDependencies>mbed;stdc++;supc++;m;c;gcc;nosys</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <!--Uncomment to Reference to CS Project-->
+
+  <ItemGroup>
+    <ProjectReference Include="..\Managed\Managed.csproj">
+      <Project>{$guid1$}</Project>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="mbed_simple.FrontEndConfig2" />
+    <None Include="Llilum.props" />
+    <None Include="debug.bat" />
+  </ItemGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

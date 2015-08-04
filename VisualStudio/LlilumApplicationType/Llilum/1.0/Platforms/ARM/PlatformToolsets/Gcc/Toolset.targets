@@ -1,0 +1,33 @@
+﻿<!--
+***********************************************************************************************
+Toolset.targets
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+This file defines the steps/targets required to build Visual C++ (version 14.0) projects
+specifically on ARM platforms.
+
+Copyright (C) Microsoft Corporation. All rights reserved.
+***********************************************************************************************
+-->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildThisFileDirectory)ImportBefore\*.targets" Condition="Exists('$(MSBuildThisFileDirectory)ImportBefore')" />
+
+  <PropertyGroup>
+    <UseDefaultDebuggersPropertyPageSchemas>false</UseDefaultDebuggersPropertyPageSchemas>
+    <_ApplicableDebuggers>Desktop</_ApplicableDebuggers>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <DesktopDebuggerPages Include="$(AndroidCommonTargetsPath)$(LangID)\AndroidDebugger.xml" />
+  </ItemGroup>
+  
+  <Import Project="$(VCTargetsPath)\Microsoft.CppCommon.targets" />
+  <!-- Android specific targets to override ClCompile, Link & Lib -->
+  <Import Project="$(AndroidCommonTargetsPath)\Android.Common.targets" />
+ 
+  <Import Project="$(MSBuildThisFileDirectory)ImportAfter\*.targets" Condition="Exists('$(MSBuildThisFileDirectory)ImportAfter')" />
+</Project>

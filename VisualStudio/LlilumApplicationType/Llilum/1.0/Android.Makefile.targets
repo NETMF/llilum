@@ -1,0 +1,109 @@
+<!--
+***********************************************************************************************
+Android.MakeFile.targets
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+This file defines the steps/targets required to build Visual C++ MakeFile projects.
+
+Copyright (C) Microsoft Corporation. All rights reserved.
+***********************************************************************************************
+-->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Target Name="_AssignProjectReferencesPlatformType">
+    <ItemGroup>
+      <_MSBuildProjectReferenceExistent>
+        <ProjectApplicationType Condition="'%(_MSBuildProjectReferenceExistent)' == ''">Android</ProjectApplicationType>
+      </_MSBuildProjectReferenceExistent>
+    </ItemGroup>
+  </Target>
+
+  <UsingTask TaskName="GenerateApkRecipe" AssemblyFile="$(AndroidTaskPath)Microsoft.Build.CPPTasks.Android.dll"/>
+
+  <Target Name="_CreateApkRecipeFile" AfterTargets="Build;Rebuild" DependsOnTargets="$(CommonBuildOnlyTargets);_AssignProjectReferencesPlatformType;_GetObjIntermediatePaths;GetAdditionalLibraries;GetNativeTargetPath">
+    <MSBuild Projects="@(_MSBuildProjectReferenceExistent->WithMetadataValue('ProjectApplicationType', 'Android'))"
+             Targets="GetRecipeFile"
+             BuildInParallel="$(BuildInParallel)"
+             Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform)"
+             Condition="'%(_MSBuildProjectReferenceExistent.Extension)' == '.vcxproj' and '@(ProjectReferenceWithConfiguration)' != '' and '@(_MSBuildProjectReferenceExistent)' != ''">
+      <Output TaskParameter="TargetOutputs" ItemName="DirectDependenciesRecipelistFile"/>
+    </MSBuild>
+
+    <ItemGroup>
+      <NMakeSoLibs Include="$(ProjectDir)libs\$(TargetArchAbi)\*.so" />
+    </ItemGroup>
+
+    <GenerateApkRecipe SoPaths="@(NMakeSoLibs);@(AdditionalLibrary->'%(Fullpath)')"
+                       IntermediateDirs="@(ObjDirectories)"
+                       Configuration=""
+                       Platform=""
+                       Abi=""
+                       RecipeFiles="@(DirectDependenciesRecipelistFile)"
+                       OutputFile="$(RecipeFile)" />
+
+    <!-- Output for cleaning -->
+    <ItemGroup>
+      <FileWrites Include="$(RecipeFile)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="GetRecipeFile" Returns="$(RecipeFile)">
+
+  </Target>
+
+  <Target Name="_GetObjIntermediatePaths" Returns="@(ObjDirectories)" DependsOnTargets="$(CommonBuildOnlyTargets)" Condition="'$(ConfigurationType)'!='StaticLibrary'">
+    <ItemGroup>
+      <NativeDependenciesIntermediatePaths Include="$(ProjectDir)\obj\local\$(TargetArchAbi)\*.o" />
+      
+      <!--Add object directories for debugging. The non-stipped .so should be first, followed by the non-stripped .o files that comprise it.-->
+      <ObjDirectories Include="$(ProjectDir)\obj\local\$(TargetArchAbi)" />      
+      <ObjDirectories Include="@(NativeDependenciesIntermediatePaths->DirectoryName()->Distinct());@(Object->ClearMetadata()->Distinct())">
+        <FileType>o</FileType>
+        <ProjectType>$(ConfigurationType)</ProjectType>
+      </ObjDirectories>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="GetAdditionalLibraries" >
+    <ItemGroup>
+      <AdditionalLibrary Include="@(Library)" Condition="'%(Library.ExcludedFromBuild)'!='true' and '%(Library.Extension)' == '.so'"/>
+    </ItemGroup>
+  </Target>
+
+  <!-- Override the default property schemas, and define our own for Android projects -->
+  <PropertyGroup>
+     <UseDefaultPropertyPageSchemas>false</UseDefaultPropertyPageSchemas>
+     <RecipeFile>$(OutDir)$(ProjectName).recipe</RecipeFile>
+  </PropertyGroup>
+
+  <!-- *******************************************************************************************
+        Property pages Android makefile project
+       ******************************************************************************************* -->
+  <ItemGroup>
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\ProjectItemsSchema.xml" />
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\directories.xml" />
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\debugger_*.xml" />
+    <PropertyPageSchema Include="$(AndroidCommonTargetsPath)$(LangID)\AndroidDebugger.xml" />
+    <PropertyPageSchema Include="$(AndroidCommonTargetsPath)$(LangID)\nmake_android.xml" />
+
+    <!-- project only rules -->
+    <PropertyPageSchema Include="$(AndroidCommonTargetsPath)$(LangID)\general_makefile_android.xml">
+      <Context>Project</Context>
+    </PropertyPageSchema>
+    
+    <!-- Property sheet only rules -->
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\general_makefile_ps.xml;$(VCTargetsPath)$(LangID)\usermacros.xml">
+      <Context>PropertySheet</Context>
+    </PropertyPageSchema>
+
+    <!-- File only rules -->
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\general_file.xml">
+      <Context>File</Context>
+    </PropertyPageSchema>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" InitialTargets="VerifyZeligPaths" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ZELIG_ROOT Condition="'$(ZELIG_ROOT)'==''">$(MSBuildThisFileDirectory)</ZELIG_ROOT>
+    <LLVM_SRCROOT_DIR>$(ZELIG_ROOT)external\LLVM\</LLVM_SRCROOT_DIR>
+    <LLVM_BUILD_DIR>$(LLVM_SRCROOT_DIR)</LLVM_BUILD_DIR>
+    <LLVM_PLATFORM_DIR>$(LLVM_BUILD_DIR)</LLVM_PLATFORM_DIR>
+    <LLVM_BIN Condition="'$(LLVM_BIN)'==''">$(ZELIG_ROOT)external\LLVM\Debug\bin</LLVM_BIN>
+    <LLVM_INCLUDE Condition="'$(LLVM_INCLUDE)'==''">$(ZELIG_ROOT)external\LLVM\include</LLVM_INCLUDE>
+    <LLVM_LIBS Condition="'$(LLVM_LIBS)'==''">$(ZELIG_ROOT)external\LLVM\</LLVM_LIBS>
+  </PropertyGroup>
+  <Target Name="VerifyZeligPaths">
+    <Error Condition="!EXISTS('$(ZELIG_ROOT)')" Text="Invalid ZELIG_ROOT: '$(ZELIG_ROOT)'" />
+    <Error Condition="!EXISTS('$(LLVM_BIN)')" Text="Invalid LLVM_BIN: '$(LLVM_BIN)'" />
+    <Error Condition="!EXISTS('$(LLVM_INCLUDE)')" Text="Invalid LLVM_INCLUDE: '$(LLVM_INCLUDE)'" />
+    <Error Condition="!EXISTS('$(LLVM_LIBS)')" Text="Invalid LLVM_LIBS: '$(LLVM_LIBS)'" />
+  </Target>
+</Project>

@@ -58,6 +58,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bench.cs" />
@@ -119,45 +120,40 @@
       <Name>IntermediateRepresentation</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\LLVMIR\LLVMIR.vcxproj">
-      <Project>{d18bf31d-ea7f-46a4-ad71-0c7a683e46c5}</Project>
-      <Name>LLVMIR</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="crypto_perf_test.FrontEndConfig" />
-    <None Include="Dhrystone_perf_test.FrontEndConfig" />
-    <None Include="ExternalLinking_Tester.FrontEndConfig">
+    <None Include="Test\crypto_perf_test.FrontEndConfig" />
+    <None Include="Test\Dhrystone_perf_test.FrontEndConfig" />
+    <None Include="Test\ExternalLinking_Tester.FrontEndConfig">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="FileSystemSample.FrontEndConfig" />
-    <None Include="FileSystem_Tester.FrontEndConfig" />
-    <None Include="il2n_Tests.FrontEndConfig" />
-    <None Include="iMoteQuickTest_Tester.FrontEndConfig" />
-    <None Include="LLVM_test.FrontEndConfig" />
+    <None Include="Test\FileSystemSample.FrontEndConfig" />
+    <None Include="Test\FileSystem_Tester.FrontEndConfig" />
+    <None Include="Legacy\iMoteQuickTest_Tester.FrontEndConfig" />
+    <None Include="Test\LLVM_test.FrontEndConfig" />
     <None Include="mbed_simple.FrontEndConfig" />
-    <None Include="tester_FF.FrontEndConfig" />
-    <None Include="tester_NXP.FrontEndConfig" />
-    <None Include="tester_PXA.FrontEndConfig" />
-    <None Include="mscorlib_unittest_PXA.FrontEndConfig" />
-    <None Include="iMote2Loader.FrontEndConfig">
+    <None Include="Legacy\tester_FF.FrontEndConfig" />
+    <None Include="Legacy\tester_NXP.FrontEndConfig" />
+    <None Include="Legacy\tester_PXA.FrontEndConfig" />
+    <None Include="Legacy\mscorlib_unittest_PXA.FrontEndConfig" />
+    <None Include="Legacy\iMote2Loader.FrontEndConfig">
     </None>
-    <None Include="test.FrontEndConfig" />
-    <None Include="mscorlib_unittest_NXP.FrontEndConfig" />
-    <None Include="NohauLPC3180Loader.FrontEndConfig" />
-    <None Include="mscorlib_unittest_FF.FrontEndConfig">
+    <None Include="Test\test.FrontEndConfig" />
+    <None Include="Legacy\mscorlib_unittest_NXP.FrontEndConfig" />
+    <None Include="Legacy\NohauLPC3180Loader.FrontEndConfig" />
+    <None Include="Legacy\mscorlib_unittest_FF.FrontEndConfig">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="VoxSoloFormFactorLoader.FrontEndConfig" />
-    <None Include="VoxSolo_Bootstrap_FF.FrontEndConfig" />
-    <None Include="VoxSolo_Bootstrap_NXP.FrontEndConfig" />
-    <None Include="VoxSolo_Tester_FF.FrontEndConfig">
+    <None Include="Legacy\VoxSoloFormFactorLoader.FrontEndConfig" />
+    <None Include="Legacy\VoxSolo_Bootstrap_FF.FrontEndConfig" />
+    <None Include="Legacy\VoxSolo_Bootstrap_NXP.FrontEndConfig" />
+    <None Include="Legacy\VoxSolo_Tester_FF.FrontEndConfig">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="VoxSolo_Tester_NXP.FrontEndConfig" />
-    <None Include="VoxSolo_UnitTest_FF.FrontEndConfig" />
-    <None Include="VoxSolo_UnitTest_NXP.FrontEndConfig" />
-    <None Include="Whetstone_perf_test.FrontEndConfig" />
+    <None Include="Legacy\VoxSolo_Tester_NXP.FrontEndConfig" />
+    <None Include="Legacy\VoxSolo_UnitTest_FF.FrontEndConfig" />
+    <None Include="Legacy\VoxSolo_UnitTest_NXP.FrontEndConfig" />
+    <None Include="Test\Whetstone_perf_test.FrontEndConfig" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

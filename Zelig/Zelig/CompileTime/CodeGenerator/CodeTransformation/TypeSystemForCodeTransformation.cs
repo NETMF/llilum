@@ -406,6 +406,95 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             }
         }
 
+        public class LinearHierarchyBuilder
+        {
+            List<TypeRepresentation>        m_lst;
+            TypeSystemForCodeTransformation m_ts;
+
+            public LinearHierarchyBuilder( List< TypeRepresentation > lst, TypeSystemForCodeTransformation ts )
+            {
+                m_lst = lst;
+                m_ts  = ts;
+            }
+
+            public TypeRepresentation Build()
+            {
+
+                var hierarchy = new LinkedList< TypeRepresentation >();
+
+                //
+                // There can be only one sealed type in a linear hierachy
+                //
+                foreach( TypeRepresentation target in m_lst )
+                {
+                    TypeRepresentation type;
+                    if( m_ts.IsSealedType( target, out type ) )
+                    {
+                        if(hierarchy.Count > 0)
+                        {
+                            return null;
+                        }
+
+                        hierarchy.AddFirst( new LinkedListNode< TypeRepresentation >( type ) );    
+                    }
+                }
+
+                //
+                // initialize the hierarchy with the last item in the input list
+                //
+                if(hierarchy.Count == 0)
+                {
+                    
+                    TypeRepresentation last = m_lst[ m_lst.Count - 1 ];
+                    
+                    hierarchy.AddFirst( last ); 
+
+                    m_lst.Remove( last );                    
+                }
+
+                //
+                // Scan the input list and find the father of the last item in the hierarchy and the son of the first item.                
+                // At every step we need to always grow the hierarchy of at least one item, or else we are looking at a 
+                // disjoint inheritance line or a tree
+                //
+                int previousCount;
+                do
+                {   
+                    previousCount = hierarchy.Count;
+
+                    TypeRepresentation first = hierarchy.First.Value;
+                    TypeRepresentation last  = hierarchy.Last .Value;
+
+                    foreach( TypeRepresentation item in m_lst )
+                    { 
+                        if( last.Extends == item )
+                        {
+                            hierarchy.AddLast( item );
+
+                            last = item;
+                        }
+                        else if( item.Extends == first )
+                        {
+                            hierarchy.AddFirst( item );
+
+                            first = item;
+                        }
+                    } 
+
+                } while( previousCount < hierarchy.Count);
+
+                //
+                // if we used all objects in the input list, then we have a linear hierarchy
+                //
+                if(m_lst.Count == hierarchy.Count)
+                {
+                    return hierarchy.First.Value;
+                }
+
+                return null;
+            }
+        }
+
         //--//
 
         //
@@ -820,6 +909,17 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                             break;
 
                         default:
+                            //
+                            // if we have more than one
+                            //
+                            var mostDerived = new LinearHierarchyBuilder( lst, this ).Build();
+
+                            if( mostDerived != null )
+                            {
+                                m_forcedDevirtualizations[ td ] = lst[ 0 ];
+                                break;
+                            }
+
                             var  sb     = new System.Text.StringBuilder( );
                             bool fFirst = true;
 

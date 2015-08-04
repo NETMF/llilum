@@ -35,6 +35,7 @@ namespace Microsoft.Zelig.Runtime
             HeapCorruptionDetected,
 
             FailedBootstrap       ,
+            InvalidOperation      ,
         }
 
         //

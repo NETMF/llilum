@@ -1,0 +1,533 @@
+﻿<!--
+***********************************************************************************************
+Android.Common.targets
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+This file defines the steps/targets required to build Visual C++ projects
+specifically on x64 platforms.
+
+Copyright (C) Microsoft Corporation. All rights reserved.
+***********************************************************************************************
+-->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemDefinitionGroup>
+    <Link>
+      <ImportLibrary>%(Link.OutputFile)</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+
+  <PropertyGroup>
+    <_ApkRecipeFile>$(OutDir)$(TargetName)$(TargetExt).recipe</_ApkRecipeFile>
+    <ShowAndroidPathsVerbosity>Low</ShowAndroidPathsVerbosity>
+  </PropertyGroup>
+
+  <UsingTask TaskName="ClangCompile" AssemblyFile="$(MSBuildthisFileDirectory)Microsoft.Build.CPPTasks.Android.dll"/>
+  <UsingTask TaskName="GenerateApkRecipe" AssemblyFile="$(MSBuildthisFileDirectory)Microsoft.Build.CPPTasks.Android.dll"/>
+  <UsingTask TaskName="MergeApkRecipelists" AssemblyFile="$(MSBuildthisFileDirectory)Microsoft.Build.CPPTasks.Android.dll"/>
+
+
+  <!-- *******************************************************************************************
+        Set Build Default Environment Variables
+       ******************************************************************************************* -->
+
+  <UsingTask TaskName="SetEnv" AssemblyFile="$(VCTargetsPath)Microsoft.Build.CppTasks.Common.dll"/>
+
+  <Target Name="SetBuildDefaultEnvironmentVariables"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+
+    <SetEnv Name   ="PATH"
+            Value  ="$(ExecutablePath)"
+            Prefix ="false">
+    </SetEnv>
+
+    <SetEnv Name   ="ANDROID_HOME"
+            Value  ="$(VS_AndroidHome)"
+            Prefix ="false"
+            Verbosity="$(ShowAndroidPathsVerbosity)">
+    </SetEnv>
+
+    <SetEnv Name   ="ANT_HOME"
+            Value  ="$(VS_AntHome)"
+            Prefix ="false"
+            Verbosity="$(ShowAndroidPathsVerbosity)">
+    </SetEnv>
+
+    <SetEnv Name   ="JAVA_HOME"
+            Value  ="$(VS_JavaHome)"
+            Prefix ="false"
+            Verbosity="$(ShowAndroidPathsVerbosity)">
+    </SetEnv>
+
+    <SetEnv Name   ="NDK_ROOT"
+            Value  ="$(VS_NdkRoot)"
+            Prefix ="false"
+            Verbosity="$(ShowAndroidPathsVerbosity)">
+    </SetEnv>
+  </Target>
+
+  <!-- *******************************************************************************************
+        Clang Compile
+       ******************************************************************************************* -->
+
+  <PropertyGroup>
+    <ComputeCompileInputsTargets>
+      $(ComputeCompileInputsTargets);
+      FixupCLCompileOptions;
+    </ComputeCompileInputsTargets>
+  </PropertyGroup>
+
+  <Target Name="FixupCLCompileOptions"
+          Condition="'@(ClCompile)' != ''">
+    <ItemGroup>
+      <ClCompile>
+        <ClangForcedIncludeFiles>%(ClCompile.ForcedIncludeFiles)</ClangForcedIncludeFiles>
+        <PrecompiledHeaderFile Condition="'%(ClCompile.PrecompiledHeader)' != 'Use'"></PrecompiledHeaderFile>
+        <MinimalRebuildFromTracking Condition="'$(_BuildActionType)' != 'Build' or '$(ForceRebuild)' == 'true'">false</MinimalRebuildFromTracking>
+        <WarningLevel Condition="'%(WarningLevel)' == 'Level1' or '%(WarningLevel)' == 'Level2' or '%(WarningLevel)' == 'Level3'">EnableAllWarnings</WarningLevel>
+        <CompileAs Condition="'%(ClCompile.CompileAs)' == 'Default' and '%(ClCompile.Extension)' == '.c'">CompileAsC</CompileAs>
+        <CompileAs Condition="'%(ClCompile.CompileAs)' == 'Default' and '%(ClCompile.Extension)' != '.c'">CompileAsCpp</CompileAs>
+      </ClCompile>
+
+      <ClCompile>
+        <!-- Dont pass C standard to C++ and vice versa -->
+        <CLanguageStandard Condition="'%(ClCompile.CompileAs)' == 'CompileAsCpp'"></CLanguageStandard>
+        <CppLanguageStandard Condition="'%(ClCompile.CompileAs)' == 'CompileAsC'"></CppLanguageStandard>
+      </ClCompile>
+
+      <!-- define precompiled header related options -->
+      <ClCompile Condition="'%(ClCompile.PrecompiledHeaderFile)' != ''">
+        <PrecompiledHeaderOutputFileDirectory Condition="'%(ClCompile.PrecompiledHeaderOutputFileDirectory)' != '' and !HasTrailingSlash('%(ClCompile.PrecompiledHeaderOutputFileDirectory)')">%(ClCompile.PrecompiledHeaderOutputFileDirectory)\</PrecompiledHeaderOutputFileDirectory>
+        <PrecompiledHeaderOutputFileName>$([System.IO.Path]::GetFileName('%(ClCompile.PrecompiledHeaderFile)'))</PrecompiledHeaderOutputFileName>
+        <!-- Add pch.h to force included files. This property will be used for intellisense command line (to be consistent with cl.exe), clang needs it differently (see ClangForcedIncludeFiles) -->
+        <ForcedIncludeFiles>%(ClCompile.PrecompiledHeaderFile);%(ClCompile.ForcedIncludeFiles)</ForcedIncludeFiles>
+      </ClCompile>
+
+      <!-- need to have a separate group to use defined metadata -->
+      <ClCompile Condition="'%(ClCompile.PrecompiledHeaderFile)' != ''">
+        <PrecompiledHeaderFileInOutputDirectory>%(ClCompile.PrecompiledHeaderOutputFileDirectory)%(ClCompile.PrecompiledHeaderOutputFileName)</PrecompiledHeaderFileInOutputDirectory>
+        <PrecompiledHeaderOutputFile>%(ClCompile.PrecompiledHeaderOutputFileDirectory)%(ClCompile.PrecompiledHeaderOutputFileName).gch</PrecompiledHeaderOutputFile>
+        <!-- Clang (gcc) does not have a switch to specify pch file directly. Instead it searches for it assuming the name (pch.h -> pch.h.gch) and location (the same dir as pch.h).
+             It is happy with not existing .h file when it finds .gch for it -->
+        <ClangForcedIncludeFiles>%(ClCompile.PrecompiledHeaderOutputFileDirectory)%(ClCompile.PrecompiledHeaderOutputFileName);%(ClCompile.ClangForcedIncludeFiles)</ClangForcedIncludeFiles>
+      </ClCompile>
+	  
+	  <ClCompile>
+	     <AdditionalOptions Condition="'$(ArmArchitecture)' != ''">-mcpu=$(ArmArchitecture) %(AdditionalOptions)</AdditionalOptions>
+	  </ClCompile>
+    </ItemGroup>
+  </Target>
+
+
+  <Target Name="ClCompile"
+          Condition="'@(ClCompile)' != ''"
+          DependsOnTargets="SelectClCompile" >
+
+    <PropertyGroup>
+      <CLToolArchitecture Condition="'$(CLToolArchitecture)' == ''">$(VCToolArchitecture)</CLToolArchitecture>
+      <CLDeleteOutputOnExecute Condition="'$(CLDeleteOutputOnExecute)' == ''">true</CLDeleteOutputOnExecute>
+    </PropertyGroup>
+
+    <Message Condition="'$(_DebugMessages)' == 'true'" Importance="high" Text="ClCompile.PrecompiledHeaderOutputFileName = '%(ClCompile.PrecompiledHeaderOutputFileName)'"/>
+    <Message Condition="'$(_DebugMessages)' == 'true'" Importance="high" Text="ClCompile.PrecompiledHeaderOutputFile = '%(ClCompile.PrecompiledHeaderOutputFile)'"/>
+
+    <!-- Precompiled headers - need to build them first -->
+
+    <ClangCompile Condition="'%(ClCompile.PrecompiledHeaderFile)' != '' and '%(ClCompile.ExcludedFromBuild)' != 'true'"
+                  BuildingInIDE = "$(BuildingInsideVisualStudio)"
+                  GNUMode="$(GNUMode)"
+                  MSVCErrorReport="$(MSVCErrorReport)"
+
+                  Sources="%(ClCompile.PrecompiledHeaderFile)"
+                  AdditionalIncludeDirectories="%(ClCompile.AdditionalIncludeDirectories);$(IncludePath)"
+                  AdditionalOptions="%(ClCompile.AdditionalOptions)"
+                  BufferSecurityCheck="%(ClCompile.BufferSecurityCheck)"
+                  CLanguageStandard="%(ClCompile.CLanguageStandard)"
+                  CppLanguageStandard="%(ClCompile.CppLanguageStandard)"
+                  DataLevelLinking="%(ClCompile.DataLevelLinking)"
+                  DebugInformationFormat="%(ClCompile.DebugInformationFormat)"
+                  ExceptionHandling="%(ClCompile.ExceptionHandling)"
+                  FloatABI="%(ClCompile.FloatABI)"
+                  ForcedIncludeFiles=""
+                  FunctionLevelLinking="%(ClCompile.FunctionLevelLinking)"
+                  ObjectFileName="%(ClCompile.PrecompiledHeaderOutputFile)"
+                  OmitFramePointers="%(ClCompile.OmitFramePointers)"
+                  Optimization="%(ClCompile.Optimization)"
+                  PositionIndependentCode="%(ClCompile.PositionIndependentCode)"
+                  PrecompiledHeader="Create"
+                  PrecompiledHeaderCompileAs="%(ClCompile.PrecompiledHeaderCompileAs)"
+                  PreprocessorDefinitions="%(ClCompile.PreprocessorDefinitions)"
+                  RuntimeTypeInfo="%(ClCompile.RuntimeTypeInfo)"
+                  ShowIncludes="%(ClCompile.ShowIncludes)"
+                  StrictAliasing="%(ClCompile.StrictAliasing)"
+                  ThumbMode="%(ClCompile.ThumbMode)"
+                  TreatWarningAsError="%(ClCompile.TreatWarningAsError)"
+                  UndefineAllPreprocessorDefinitions="%(ClCompile.UndefineAllPreprocessorDefinitions)"
+                  UndefinePreprocessorDefinitions="%(ClCompile.UndefinePreprocessorDefinitions)"
+                  UseShortEnums="%(ClCompile.UseShortEnums)"
+                  Verbose="%(ClCompile.Verbose)"
+                  WarningLevel="%(ClCompile.WarningLevel)"
+
+                  GccToolChain="$(GccToolchainPrebuiltPath)"
+                  Sysroot="$(Sysroot)"
+                  Target="$(ClangTarget)"
+                  TrackFileAccess="$(TrackFileAccess)"
+                  TrackerLogDirectory="$(TLogLocation)"
+                  MinimalRebuildFromTracking="%(ClCompile.MinimalRebuildFromTracking)"
+                  TLogReadFiles="@(CLTLogReadFiles)"
+                  TLogWriteFiles="@(CLTLogWriteFiles)"
+                  ToolExe="$(ClangToolExe)"
+                  ToolPath="$(ClangToolPath)"
+                  ToolArchitecture="$(CLToolArchitecture)"
+                  TrackerFrameworkPath="$(CLTrackerFrameworkPath)"
+                  TrackerSdkPath="$(CLTrackerSdkPath)"
+                  EnableExecuteTool="$(ClangEnableExecuteTool)"
+    >
+    </ClangCompile>
+
+    <ClangCompile Condition="'%(ClCompile.ExcludedFromBuild)' != 'true'"
+                  BuildingInIDE = "$(BuildingInsideVisualStudio)"
+                  GNUMode="$(GNUMode)"
+                  MSVCErrorReport="$(MSVCErrorReport)"
+
+                  Sources="@(ClCompile)"
+                  AdditionalIncludeDirectories="%(ClCompile.AdditionalIncludeDirectories);$(IncludePath)"
+                  AdditionalOptions="%(ClCompile.AdditionalOptions)"
+                  BufferSecurityCheck="%(ClCompile.BufferSecurityCheck)"
+                  CLanguageStandard="%(ClCompile.CLanguageStandard)"
+                  CompileAs="%(ClCompile.CompileAs)"
+                  CppLanguageStandard="%(ClCompile.CppLanguageStandard)"
+                  DataLevelLinking="%(ClCompile.DataLevelLinking)"
+                  DebugInformationFormat="%(ClCompile.DebugInformationFormat)"
+                  ExceptionHandling="%(ClCompile.ExceptionHandling)"
+                  FloatABI="%(ClCompile.FloatABI)"
+                  ForcedIncludeFiles="%(ClCompile.ClangForcedIncludeFiles)"
+                  FunctionLevelLinking="%(ClCompile.FunctionLevelLinking)"
+                  ObjectFileName="%(ClCompile.ObjectFileName)"
+                  OmitFramePointers="%(ClCompile.OmitFramePointers)"
+                  Optimization="%(ClCompile.Optimization)"
+                  PositionIndependentCode="%(ClCompile.PositionIndependentCode)"
+                  PrecompiledHeader="%(ClCompile.PrecompiledHeader)"
+                  PreprocessorDefinitions="%(ClCompile.PreprocessorDefinitions)"
+                  RuntimeTypeInfo="%(ClCompile.RuntimeTypeInfo)"
+                  ShowIncludes="%(ClCompile.ShowIncludes)"
+                  StrictAliasing="%(ClCompile.StrictAliasing)"
+                  ThumbMode="%(ClCompile.ThumbMode)"
+                  TreatWarningAsError="%(ClCompile.TreatWarningAsError)"
+                  UndefineAllPreprocessorDefinitions="%(ClCompile.UndefineAllPreprocessorDefinitions)"
+                  UndefinePreprocessorDefinitions="%(ClCompile.UndefinePreprocessorDefinitions)"
+                  UseShortEnums="%(ClCompile.UseShortEnums)"
+                  Verbose="%(ClCompile.Verbose)"
+                  WarningLevel="%(ClCompile.WarningLevel)"
+
+                  GccToolChain="$(GccToolchainPrebuiltPath)"
+                  Sysroot="$(Sysroot)"
+                  Target="$(ClangTarget)"
+                  TrackFileAccess="$(TrackFileAccess)"
+                  TrackerLogDirectory="$(TLogLocation)"
+                  MinimalRebuildFromTracking="%(ClCompile.MinimalRebuildFromTracking)"
+                  TLogReadFiles="@(CLTLogReadFiles)"
+                  TLogWriteFiles="@(CLTLogWriteFiles)"
+                  ToolExe="$(ClangToolExe)"
+                  ToolPath="$(ClangToolPath)"
+                  ToolArchitecture="$(CLToolArchitecture)"
+                  TrackerFrameworkPath="$(CLTrackerFrameworkPath)"
+                  TrackerSdkPath="$(CLTrackerSdkPath)"
+                  EnableExecuteTool="$(ClangEnableExecuteTool)"
+    >
+    </ClangCompile>
+  </Target>
+
+  <UsingTask TaskName="ClangLink" AssemblyFile="$(MSBuildthisFileDirectory)Microsoft.Build.CPPTasks.Android.dll"/>
+
+  <Target Name="Link" Condition="'@(Link)' != ''">
+
+    <ItemGroup>
+      <Link>
+        <MinimalRebuildFromTracking    Condition="'$(_BuildActionType)' != 'Build' or '$(ForceRebuild)' == 'true'">false</MinimalRebuildFromTracking>
+		<AdditionalOptions Condition="'$(ArmArchitecture)' != ''">-mcpu=$(ArmArchitecture) %(AdditionalOptions)</AdditionalOptions>
+      </Link>
+      <Link>
+		<AdditionalOptions Condition="'$(ThumbMode)' == 'Thumb'">-mthumb %(AdditionalOptions)</AdditionalOptions>
+      </Link>
+    </ItemGroup>
+	
+    <PropertyGroup>
+      <LinkToolArchitecture Condition="'$(LinkToolArchitecture)' == ''">$(VCToolArchitecture)</LinkToolArchitecture>
+    </PropertyGroup>
+
+    <ClangLink BuildingInIDE = "$(BuildingInsideVisualStudio)"
+               GNUMode="$(GNUMode)"
+               MSVCErrorReport="$(MSVCErrorReport)"
+
+               Sources="@(Link)"
+               AdditionalLibraryDirectories="%(Link.AdditionalLibraryDirectories)"
+               AdditionalOptions="%(Link.AdditionalOptions)"
+               AdditionalDependencies="%(Link.AdditionalDependencies)"
+               FunctionBinding="%(Link.FunctionBinding)"
+               ForceSymbolReferences="%(Link.ForceSymbolReferences)"
+               GenerateMapFile="%(Link.GenerateMapFile)"
+               GccToolChain="$(GccToolchainPrebuiltPath)"
+               IncrementalLink="%(Link.IncrementalLink)"
+               IgnoreSpecificDefaultLibraries="%(Link.IgnoreSpecificDefaultLibraries)"
+               LibraryDependencies="%(Link.LibraryDependencies)"
+               LinkDLL="%(Link.LinkDLL)"
+               NoExecStackRequired="%(Link.NoExecStackRequired)"
+               DebuggerSymbolInformation="%(Link.DebuggerSymbolInformation)"
+               OptimizeForMemory="%(Link.OptimizeForMemory)"
+               OutputFile="%(Link.OutputFile)"
+               Relocation="%(Link.Relocation)"
+               SharedLibrarySearchPath="%(Link.SharedLibrarySearchPath)"
+               ShowProgress="%(Link.ShowProgress)"
+               Sysroot="$(Sysroot)"
+               Target="$(ClangTarget)"
+               UnresolvedSymbolReferences="%(Link.UnresolvedSymbolReferences)"
+               Version="%(Link.Version)"
+               VerboseOutput="%(Link.VerboseOutput)"
+
+               MinimalRebuildFromTracking="%(Link.MinimalRebuildFromTracking)"
+               TrackFileAccess="$(TrackFileAccess)"
+               TrackerLogDirectory="$(TLogLocation)"
+               TLogReadFiles="@(LinkTLogReadFiles)"
+               TLogWriteFiles="@(LinkTLogWriteFiles)"
+               ToolExe="$(ClangToolExe)"
+               ToolPath="$(ClangToolPath)"
+               ToolArchitecture="$(LinkToolArchitecture)"
+               TrackerFrameworkPath="$(LinkTrackerFrameworkPath)"
+               TrackerSdkPath="$(LinkTrackerSdkPath)"
+               EnableExecuteTool="$(ClangEnableExecuteTool)"
+    >
+      <Output TaskParameter="SkippedExecution" PropertyName="LinkSkippedExecution" />
+    </ClangLink>
+
+    <Message Text="$(MSBuildProjectFile) -&gt; %(Link.OutputFile)" Importance="High" />
+  </Target>
+
+  <Target Name="dotbin" Inputs="$(TargetDir)$(TargetName)$(TargetExt)" Outputs="$(TargetDir)$(TargetName).bin">
+    <Exec Command="$(OBJCOPY) -O binary $(TargetDir)$(TargetName)$(TargetExt) $(TargetDir)$(TargetName).bin" />
+  </Target>
+
+  <Target Name="dothex" Inputs="$(TargetDir)$(TargetName)$(TargetExt)" Outputs="$(TargetDir)$(TargetName).hex">
+    <Exec Command="$(OBJCOPY) -O ihex $(TargetDir)$(TargetName)$(TargetExt) $(TargetDir)$(TargetName).hex" />
+  </Target>
+
+  <Target Name="dotlst" Inputs="$(TargetDir)$(TargetName)$(TargetExt)" Outputs="$(TargetDir)$(TargetName).lst">
+    <Exec Command="$(OBJDUMP) -Sdh $(TargetDir)$(TargetName)$(TargetExt) > $(TargetDir)$(TargetName).lst" />
+  </Target>
+
+  <Target Name="size" >
+    <Exec Command="$(SIZE) $(TargetDir)$(TargetName)$(TargetExt)" />
+  </Target>
+  
+  <Target Name="ConvertManagedCode" DependsOnTargets="ResolveReferences" Condition="'@(ReferencePath)' != ''" Inputs="@(ReferencePath)" Outputs="$(IntDir)%(ReferencePath.Filename).opt.dll">
+    <Exec Command="echo Converting managed code to LLVM BC: @(ReferencePath) to $(IntDir)%(ReferencePath.Filename).bc" />
+	<Exec Command="$(LlilumCompiler) -cfg $(LlilumConfig) @(ReferencePath) -OutputName %(ReferencePath.Filename) -OutputDir $(IntDir) -HostAssemblyDir $(LlilumSDK)ZeligBuild\Host\bin\Debug -DeviceAssemblyDir $(LlilumSDK)ZeligBuild\Target\bin\Debug" ContinueOnError="WarnAndContinue"/>
+  </Target>
+  
+  <Target Name="CreateManagedObject" Condition="'@(ReferencePath)' != ''">
+    <Exec Command="echo Compiling and optimizing with LLVM: $(IntDir)%(ReferencePath.Filename).bc to $(IntDir)%(ReferencePath.Filename).o" />
+	<Exec Command="$(LlilumLLVM)opt -scalarrepl -targetlibinfo -verify -mem2reg -constmerge -adce -globaldce -time-passes $(IntDir)%(ReferencePath.Filename).bc -o $(IntDir)%(ReferencePath.Filename)_opt.bc " ContinueOnError="WarnAndContinue"/>
+	<Exec Command="$(LlilumLLVM)llvm-dis $(IntDir)%(ReferencePath.Filename)_opt.bc" ContinueOnError="WarnAndContinue"/>
+	<Exec Command="$(LlilumLLVM)llc -code-model=small -data-sections -relocation-model=pic -march=thumb -mcpu=cortex-m3 -filetype=obj -mtriple=Thumb-NoSubArch-UnknownVendor-UnknownOS-GNUEABI-ELF -o=$(IntDir)%(ReferencePath.Filename).o $(IntDir)%(ReferencePath.Filename)_opt.bc " ContinueOnError="WarnAndContinue"/>
+  </Target>
+
+  <Target Name="ComputeCLOutputFromManagedCode" DependsOnTargets="ResolveReferences">
+    <ItemGroup>
+	  <Object Condition="'@(ReferencePath)' != ''" Include="$(IntDir)%(ReferencePath.Filename).o" />
+	</ItemGroup>
+  </Target>
+  
+  <PropertyGroup>
+    <AfterBuildLinkTargets>$(AfterBuildLinkTargets);dotbin;dothex;dotlst;size</AfterBuildLinkTargets>
+	<BuildCompileTargets>$(BuildCompileTargets);ConvertManagedCode;CreateManagedObject</BuildCompileTargets>
+	<ComputeLinkInputsTargets>ComputeCLOutputFromManagedCode;$(ComputeLinkInputsTargets)</ComputeLinkInputsTargets>
+	<ComputeLibInputsTargets>ComputeCLOutputFromManagedCode;$(ComputeLibInputsTargets)</ComputeLibInputsTargets>
+  </PropertyGroup>
+  
+  <!-- Change this target if clanglink needs to clean extra files that is not tracked from the task. -->
+  <Target Name="ComputeLinkImportLibraryOutputsForClean" />
+
+  <UsingTask TaskName="Archive" AssemblyFile="$(MSBuildthisFileDirectory)Microsoft.Build.CPPTasks.Android.dll"/>
+
+  <Target Name="Lib" Condition="'@(Lib)' != ''" >
+
+    <PropertyGroup>
+      <ArchiveToolExe Condition="'$(ArchiveToolExe)' == '' and '$(ToolchainPrefix)' != ''">$(ToolchainPrefix)ar.exe</ArchiveToolExe>
+      <LibToolArchitecture Condition="'$(LibToolArchitecture)' == ''">$(VCToolArchitecture)</LibToolArchitecture>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Lib>
+        <MinimalRebuildFromTracking    Condition="'$(_BuildActionType)' != 'Build' or '$(ForceRebuild)' == 'true'">false</MinimalRebuildFromTracking>
+      </Lib>
+    </ItemGroup>
+
+    <Archive Sources="@(Lib)"
+             AdditionalLibraryDirectories="%(Lib.AdditionalLibraryDirectories)"
+             AdditionalOptions="%(Lib.AdditionalOptions)"
+             AdditionalDependencies="%(Lib.AdditionalDependencies)"
+             Command="%(Lib.Command)"
+             CreateIndex="%(Lib.CreateIndex)"
+             CreateThinArchive="%(Lib.CreateThinArchive)"
+             NoWarnOnCreate="%(Lib.NoWarnOnCreate)"
+             TruncateTimestamp="%(Lib.TruncateTimestamp)"
+             SuppressStartupBanner="%(Lib.SuppressStartupBanner)"
+             Verbose="%(Lib.Verbose)"
+             OutputFile="%(Lib.OutputFile)"
+
+             TrackFileAccess="$(TrackFileAccess)"
+             TrackerLogDirectory="$(TLogLocation)"
+             MinimalRebuildFromTracking="%(Lib.MinimalRebuildFromTracking)"
+             TLogReadFiles="@(LibTLogReadFiles)"
+             TLogWriteFiles="@(LibTLogWriteFiles)"
+             ToolExe="$(ArchiveToolExe)"
+             ToolPath="$(ArchiveToolPath)"
+             ToolArchitecture="$(LibToolArchitecture)"
+             TrackerFrameworkPath="$(LibTrackerFrameworkPath)"
+             TrackerSdkPath="$(LibTrackerSdkPath)"
+
+             EnableExecuteTool="$(LibEnableExecuteTool)"
+    >
+    </Archive>
+
+    <Message Text="$(MSBuildProjectFile) -&gt; %(Lib.OutputFile)" Importance="High" />
+  </Target>
+
+  <Target Name="_GetObjIntermediatePaths" Returns="@(ObjDirectories)" DependsOnTargets="$(CommonBuildOnlyTargets);ComputeCLOutputs" Condition="'$(ConfigurationType)'!='StaticLibrary'">
+    <PropertyGroup>
+      <_ObjDirectories Condition="'@(Obj)'!=''">$([System.IO.Path]::GetDirectoryName('%(Obj.fullpath)'))</_ObjDirectories>
+    </PropertyGroup>
+    <ItemGroup>
+      <ObjDirectories Include="$(_ObjDirectories);@(NativeDependenciesIntermediatePaths->WithMetadataValue('FileType', 'o')->ClearMetadata()->Distinct()->DirectoryName());@(Object->ClearMetadata()->Distinct())">
+        <FileType>o</FileType>
+        <ProjectType>$(ConfigurationType)</ProjectType>
+      </ObjDirectories>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="GetAdditionalLibraries" >
+    <ItemGroup>
+      <AdditionalLibrary Include="$(GdbServerPath)" />
+      <AdditionalLibrary Include="@(Library)" Condition="'%(Library.ExcludedFromBuild)'!='true' and '%(Library.Extension)' == '.so'"/>
+      <AdditionalLibrary Include="$(StlAdditionalDependencies)" />
+    </ItemGroup>
+
+  </Target>
+
+  <Target Name="_CreateApkRecipeFile" DependsOnTargets="$(CommonBuildOnlyTargets);GetNativeTargetPath;_GetObjIntermediatePaths;GetAdditionalLibraries">
+    <MSBuild Projects="@(_MSBuildProjectReferenceExistent->WithMetadataValue('ProjectApplicationType', 'Android'))"
+             Targets="GetRecipeFile"
+             BuildInParallel="$(BuildInParallel)"
+             Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform)"
+             Condition="'%(_MSBuildProjectReferenceExistent.Extension)' == '.vcxproj' and '@(ProjectReferenceWithConfiguration)' != '' and '@(_MSBuildProjectReferenceExistent)' != ''">
+      <Output TaskParameter="TargetOutputs" ItemName="DirectDependenciesRecipelistFile"/>
+    </MSBuild>
+
+    <GenerateApkRecipe SoPaths="@(NativeTargetPath);@(AdditionalLibrary->'%(Fullpath)')"
+                       IntermediateDirs="@(ObjDirectories)"
+                       Configuration="$(Configuration)"
+                       Platform="$(Platform)"
+                       Abi="$(TargetArchAbi)"
+                       RecipeFiles="@(DirectDependenciesRecipelistFile)"
+                       OutputFile="$(_ApkRecipeFile)" />
+
+    <WriteLinesToFile File="$(TLogLocation)$(ProjectName).write.1u.tlog" Lines="^$(ProjectPath);$(_ApkRecipeFile)" Encoding="Unicode"/>
+  </Target>
+
+  <Target Name="GetRecipeFile" Returns="$(ApkRecipeFile)">
+    <PropertyGroup>
+      <ApkRecipeFile>$(_ApkRecipeFile)</ApkRecipeFile>
+    </PropertyGroup>
+  </Target>
+
+  <!-- Legacy, use GetRecipeFile instead. -->
+  <Target Name="GetApkRecipeFile" Returns="$(ApkRecipeFile)">
+    <PropertyGroup>
+      <ApkRecipeFile>$(_ApkRecipeFile)</ApkRecipeFile>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="MergeApkRecipeFiles">
+    <MergeApkRecipelists RecipeFiles="$(_ApkRecipeFile)" OutputFile="$(_ApkRecipeFile).merged" >
+       <Output TaskParameter="SOLibPaths" ItemName="_mergedSoLibPath" />
+       <Output TaskParameter="AndroidArchitecture" PropertyName="TargetAndroidABI" />
+    </MergeApkRecipelists>
+  </Target>
+
+  <Target Name="_AssignProjectReferencesPlatformType">
+    <ItemGroup>
+      <_MSBuildProjectReferenceExistent Include="@(_MSBuildProjectReferenceExistent)">
+        <ProjectApplicationType>Android</ProjectApplicationType>
+      </_MSBuildProjectReferenceExistent>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_MarkLastSuccessfulDeployForCleanup" DependsOnTargets="$(CommonBuildOnlyTargets)">
+    <WriteLinesToFile Condition="Exists($(LastSuccessfulDeploy))" File="$(TLogLocation)$(ProjectName).write.1u.tlog" Lines="^$(ProjectPath);$(LastSuccessfulDeploy)" Encoding="Unicode"/>
+  </Target>
+
+  <PropertyGroup>
+    <BeforeBuildCompileTargets>
+      $(BeforeBuildCompileTargets);
+      _AssignProjectReferencesPlatformType;
+    </BeforeBuildCompileTargets>
+    <BuildLinkTargets>
+      $(BuildLinkTargets);
+      _CreateApkRecipeFile;
+      _MarkLastSuccessfulDeployForCleanup;
+    </BuildLinkTargets>
+  </PropertyGroup>
+
+  <!-- Designtime definitions -->
+
+  <!-- Property pages -->
+  <ItemGroup>
+    <PropertyPageSchema Include="$(AndroidCommonTargetsPath)$(LangID)\general_android.xml">
+      <Context>Project</Context>
+    </PropertyPageSchema>
+    <PropertyPageSchema Include="$(VCTargetsPath)\$(LangID)\general_ps.xml">
+      <Context>PropertySheet</Context>
+    </PropertyPageSchema>
+    <PropertyPageSchema Include="$(VCTargetsPath)\$(LangID)\folder.xml">
+      <Context>File;BrowseObject</Context>
+    </PropertyPageSchema>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(ConfigurationType)' != 'Utility'">
+    <PropertyPageSchema Include="$(AndroidCommonTargetsPath)$(LangID)\clang.xml"/>
+    <PropertyPageSchema Include="$(AndroidCommonTargetsPath)$(LangID)\clanglink.xml"/>
+    <PropertyPageSchema Include="$(AndroidCommonTargetsPath)$(LangID)\ar.xml"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Unique items for the project -->
+    <CustomBuildStep Include="$(ProjectName)" />
+    <PreBuildEvent Include="$(ProjectName)" />
+    <PreLinkEvent Include="$(ProjectName)" />
+    <PostBuildEvent Include="$(ProjectName)" />
+
+    <!-- Tools that show up in the IDE property pages for Link/Lib (ClangLink) project-->
+    <ProjectTools Condition="'$(ConfigurationType)' == 'DynamicLibrary'" Include="Link" />
+    <ProjectTools Condition="'$(ConfigurationType)' == 'StaticLibrary'" Include="Lib" />
+    <ProjectTools Include="CustomBuildStep" />
+  </ItemGroup>
+
+  <!-- Project capabiltities are used to filter which Extension SDKs appear in the Add/Remove References dialog -->
+  <ItemGroup>
+    <ProjectCapability Include="LlilumApplication"/>
+  </ItemGroup>
+  
+  <!-- Custom project properties -->
+  <ItemGroup>
+    <PropertyPageSchema Include="$(LlilumApplicationTypeDir)$(LangID)\Llilum.xml"/>
+  </ItemGroup>
+
+  <!-- Debug & deploy -->
+  <PropertyGroup>
+    <LastSuccessfulDeploy Condition="'$(PackagePath)' != ''">$(OutDir)\$([System.IO.Path]::GetFileNameWithoutExtension('$(PackagePath)')).lastsuccessfuldeploy</LastSuccessfulDeploy>
+  </PropertyGroup>
+
+</Project>

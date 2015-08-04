@@ -317,6 +317,9 @@ namespace Microsoft.Zelig.Runtime
 
         private void DeliverException( Exception obj )
         {
+            //
+            // TODO: LT72: Only RT.ThreadManager can implement this method correctly
+            //
             ThreadImpl        thread = ThreadManager.Instance.CurrentThread;
             Processor.Context ctx    = thread.ThrowContext;
 

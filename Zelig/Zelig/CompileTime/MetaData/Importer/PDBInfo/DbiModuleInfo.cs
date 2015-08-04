@@ -57,7 +57,7 @@ namespace Microsoft.Zelig.MetaData.Importer.PdbInfo.Features
 
             bits.AlignAbsolute( 4 );
 
-            if(opened != 0 || pad1 != 0)
+            if(opened != 0 /*|| pad1 != 0*/)
             {
                 throw new PdbException( "opened is {0}, not 0", opened );
             }

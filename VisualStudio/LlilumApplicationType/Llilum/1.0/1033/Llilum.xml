@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule
+      Name="ConfigurationLlilum"
+      DisplayName="Llilum Configuration"
+      PageTemplate="generic"
+      Description="Llilum Configuration"
+      SwitchPrefix="/"
+      Order="100"
+      xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.Categories>
+    <Category Name="General" DisplayName="General" Description="General" />
+    <Category Name="Board" DisplayName="Board Settings" Description="Board Settings" />
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" Label="Llilum" />
+  </Rule.DataSource>
+
+  <StringProperty Name="LlilumSDK" DisplayName="LlilumSDK" Category="General" Description="" />
+  <StringProperty Name="LlilumLLVM" DisplayName="LlilumLLVM" Category="General" Description="" />
+  <StringProperty Name="LlilumCompiler" DisplayName="LlilumCompiler" Category="General" Description="" />
+  <StringProperty Name="LlilumConfig" DisplayName="LlilumConfig" Category="General" Description="" />
+  <StringProperty Name="LlilumOutputName" DisplayName="LlilumOutputName" Category="General" Description="" />
+  <StringProperty Name="LlilumGccBin" DisplayName="LlilumGccBin" Category="General" Description="" />
+  <StringProperty Name="LlilumOutputBin" DisplayName="LlilumOutputBin" Category="General" Description="" />
+  
+  <EnumProperty Name="LlilumBoardName" DisplayName="Board Name" Description="Llilum board name" Category="Board">
+    <EnumValue Name="LPC1768" DisplayName="LPC1768" Description="LPC1768 Target" />
+    <EnumValue Name="K64F" DisplayName="K64F" Description="K64F Target" />
+  </EnumProperty>
+  <StringProperty Name="LlilumTargetBoardArchitecture" DisplayName="LlilumTargetBoardArchitecture" Category="Board" Description="" />
+  <StringProperty Name="LlilumClAdditionalOptions" DisplayName="LlilumClAdditionalOptions" Category="Board" Description="" />
+  <StringListProperty Name="LlilumClAdditionalIncludes" Subtype="folder" DisplayName="LlilumClAdditionalIncludes" Category="Board" Description="" />
+  <StringListProperty Name="LlilumClPreprocessorDefs" DisplayName="LlilumClPreprocessorDefs" Category="Board" Description="" />
+  <StringListProperty Name="LlilumLinkAdditionalDeps" Subtype="folder" DisplayName="LlilumLinkAdditionalDeps" Category="Board" Description="" />
+  <StringListProperty Name="LlilumLinkAdditionalLibDirs" Subtype="folder" DisplayName="LlilumLinkAdditionalLibDirs" Category="Board" Description="" />
+  <StringProperty Name="LlilumLinkAdditionalOptions" DisplayName="LlilumLinkAdditionalOptions" Category="Board" Description="" />
+  <StringListProperty Name="LlilumLinkLibDeps" Subtype="folder" DisplayName="LlilumLinkLibDeps" Category="Board" Description="" />
+  
+  
+</Rule>

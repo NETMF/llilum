@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule 
+  Name="AndroidDebugger"
+  DisplayName="Android Debugger"
+  PageTemplate="debugger"
+  Order="100"
+  Description="Debugger options"
+  xmlns:sys="clr-namespace:System;assembly=mscorlib"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns="http://schemas.microsoft.com/build/2009/properties">
+
+  <Rule.Metadata>
+    <sys:Guid x:Key="DebugTargetTypeCommandGuid">FEEA6E9D-77D8-423F-9EDE-3970CBB76125</sys:Guid>
+    <sys:UInt32 x:Key="DebugTargetTypeCommandId">0x400</sys:UInt32>
+    <sys:String x:Key="DebugTargetDropdownEnum">AndroidDeviceID</sys:String>
+  </Rule.Metadata>
+  <Rule.DataSource>
+    <DataSource Persistence="UserFile" />
+  </Rule.DataSource>
+  <Rule.Categories>
+    <Category Name="StartOptions" DisplayName="Start Options" Description="Start Options"/>
+  </Rule.Categories>
+  <EnumProperty Name="DebuggerType" 
+                DisplayName="Debugger Type" 
+                F1Keyword="VC.Project.AndroidDebugger.DebuggerType"
+                Description="Specifies which code type to debug."
+                Category="StartOptions">
+    <EnumProperty.Metadata>
+      <NameValuePair Name="IsDebugType" Value="true"/>
+    </EnumProperty.Metadata>
+    <EnumValue Name="NativeOnly" DisplayName="Native Only"/>
+  </EnumProperty>
+
+  <DynamicEnumProperty Name="AndroidDeviceID" DisplayName="Debug Target" EnumProvider="AndroidDevices"
+                       Description="Specifies the emulator or device to use for debugging. If no emulators are running, then please use 'Android Virtual Device (AVD) Manager' to start a device."
+                       F1Keyword="VC.Project.AndroidDebugger.AndroidDeviceID" />
+
+  <StringProperty Name="PackagePath"
+                  DisplayName="Package to Launch"
+                  Description="Specifies the location of the .apk that will be debugged. Choose this option to specify that a specific Package (APK) should be started when the application is debugged."
+                  F1Keyword="VC.Project.AndroidDebugger.PackagePath">
+    <StringProperty.ValueEditors>
+      <ValueEditor EditorType="DefaultStringPropertyEditor" DisplayName="&lt;Edit...&gt;"/>
+      <ValueEditor EditorType="DefaultFilePropertyEditor" DisplayName="&lt;Browse...&gt;"/>
+    </StringProperty.ValueEditors>
+  </StringProperty>
+
+  <StringProperty Name="PackageName"
+                  DisplayName="Package Name"
+                  Description="The name of the Android Package, has to match the one used in manifest."
+                  F1Keyword="VC.Project.AndroidDebugger.PackageName"
+                  Visible="false">
+  </StringProperty>
+
+  <DynamicEnumProperty Name="LaunchActivity"
+                      DisplayName="Launch Activity"
+                      Description="The Android activity to use to launch the application, has to match the one used in manifest. Press Apply to retrieve the list from AndroidManifest.xml and populate it dynamically."
+                      F1Keyword="VC.Project.AndroidDebugger.LaunchActivity"
+                      EnumProvider="AndroidActivities">
+  </DynamicEnumProperty>
+
+  <StringProperty Name="DefaultLaunchActivity"
+                  DisplayName="Default Launch Activity"
+                  Description="The Android activity to use to launch the application, has to match the one used in manifest."
+                  F1Keyword="VC.Project.AndroidDebugger.DefaultLaunchActivity"
+                  Visible="false">
+  </StringProperty>
+
+  <StringListProperty Name="AdditionalSymbolSearchPaths"
+                  DisplayName="Additional Symbol Search Paths"
+                  Description="Additional search path for debug symbols."
+                  F1Keyword="VC.Project.AndroidDebugger.LaunchActivity"
+                  Subtype="folder"
+                  Visible="true">
+  </StringListProperty>
+
+  <StringProperty Name="TargetPath" Visible="false" />
+
+  <!-- Properties common to the Packaging Project and the VC Android projects -->
+  <StringProperty Name="_ApkRecipeFile" Visible="false">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label="" />
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="VS_AndroidHome" Visible="false">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label="" />
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="VS_NdkRoot" Visible="false">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label="" />
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="LastSuccessfulDeploy" Visible="false">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label="" />
+    </StringProperty.DataSource>
+  </StringProperty>
+</Rule>
