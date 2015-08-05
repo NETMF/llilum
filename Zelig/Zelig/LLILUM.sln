@@ -58,9 +58,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonPC", "RunTime\Zelig\CommonPC\CommonPC.csproj", "{186F31A3-EF89-4A25-B2D5-20070601AA01}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrontEnd", "CompileTime\CodeGenerator\FrontEnd\FrontEnd.csproj", "{186F31A3-EF89-4A25-B2D5-20070605AA02}"
-	ProjectSection(ProjectDependencies) = postProject
-		{3DC48EAF-13D3-4F20-9E7D-2E1DC8501815} = {3DC48EAF-13D3-4F20-9E7D-2E1DC8501815}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductConfiguration", "CompileTime\TargetModels\ProductConfiguration\ProductConfiguration.csproj", "{186F31A3-EF89-4A25-B2D5-20070606AA01}"
 	ProjectSection(ProjectDependencies) = postProject
