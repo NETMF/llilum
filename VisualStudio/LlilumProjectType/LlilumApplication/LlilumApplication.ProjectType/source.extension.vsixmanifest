@@ -4,6 +4,8 @@
     <Identity Id="LlilumApplication.ProjectType..69a3bd88-0aa9-43e2-a2af-f930857c44e7" Version="1.0" Language="en-US" Publisher="LlilumApplication.ProjectType" />
     <DisplayName>Llilum Application VSIX</DisplayName>
     <Description xml:space="preserve">A template for creating a Llilum Application project.</Description>
+    <MoreInfo>https://github.com/NETMF/llilum</MoreInfo>
+    <License>MITLicense.txt</License>
   </Metadata>
   <Installation>
     <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="14.0" />

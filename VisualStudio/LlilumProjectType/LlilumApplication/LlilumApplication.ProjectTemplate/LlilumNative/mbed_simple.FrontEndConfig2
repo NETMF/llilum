@@ -8,13 +8,10 @@
 -CompilationSetup Microsoft.Zelig.Configuration.Environment.LLVMHostedCompilationSetup
 #-CompilationSetup Microsoft.Zelig.Configuration.Environment.iMote2CompilationSetup 
 
-
 ###
 ### We need to include this assembly to get the right drivers.
 ###
-#-Reference Microsoft.iMote2
--Reference Microsoft.LLVMHosted
-
+-Reference Microsoft.CortexMOnMBED
 
 ###
 ### Add compilation phases, in order
@@ -63,12 +60,12 @@
 #-OutputName Microsoft.Zelig.Test.mbed.Simple
 #-OutputDir  C:\Users\mikhas\Desktop\output
 
--DumpIR
+#-DumpIR
 #-DumpIRpre
--DumpIRpost
+#-DumpIRpost
 -DumpLLVMIR
 #-ReloadState
--DumpLLVMIR_TextRepresentation
+#-DumpLLVMIR_TextRepresentation
+#-DumpIRXML
 
 -MaxProcs 1
-

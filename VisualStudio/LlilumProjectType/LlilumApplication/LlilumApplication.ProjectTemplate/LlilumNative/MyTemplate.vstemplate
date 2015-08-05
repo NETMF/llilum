@@ -19,8 +19,6 @@
       <ProjectItem ReplaceParameters="false" TargetFileName="main.cpp">main.cpp</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="pch.h">pch.h</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="mbed_simple.FrontEndConfig2">mbed_simple.FrontEndConfig2</ProjectItem>
-      <ProjectItem ReplaceParameters="false" TargetFileName="Llilum.props">Llilum.props</ProjectItem>
-      <ProjectItem ReplaceParameters="false" TargetFileName="debug.bat">debug.bat</ProjectItem>
     </Project>
   </TemplateContent>
 </VSTemplate>

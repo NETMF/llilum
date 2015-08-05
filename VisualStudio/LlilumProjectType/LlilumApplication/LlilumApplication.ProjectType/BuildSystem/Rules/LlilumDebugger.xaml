@@ -67,4 +67,36 @@
     <BoolProperty Name="LlilumDebuggerDebuggerAttach" DisplayName="Attach"
                 Default="False"
                 Description="Specifies whether the debugger should attempt to attach to an existing process when debugging starts." />
+    <StringProperty Name="LlilumPyOcdPath" DisplayName="Llilum Py Ocd"
+                Default="$(LlilumSDK)tools\pyocd_win.exe"
+                Description="Llilum Py Ocd">
+        <Argument Property="LlilumPyOcdPath" />
+    </StringProperty>
+    <StringProperty Name="LlilumPyOcdArgs" DisplayName="Llilum Py Ocd Args"
+                Description="Llilum Py Ocd Args">
+        <Argument Property="LlilumPyOcdArgs" />
+    </StringProperty>
+    <StringProperty Name="LlilumFlashToolPath" DisplayName="Llilum Flash Tool"
+                Default="$(LlilumSDK)tools\flash_tool.exe"
+                Description="Llilum Flash Tool">
+        <Argument Property="LlilumFlashToolPath" />
+    </StringProperty>
+    <StringProperty Name="LlilumFlashToolArgs" DisplayName="Llilum Flash Tool Args"
+                Description="Llilum Flash Tool Args">
+        <Argument Property="LlilumFlashToolArgs" />
+    </StringProperty>
+    <StringProperty Name="LlilumGdbPath" DisplayName="Llilum GDB Path"
+                Default="$(LLILUM_GCC)bin\arm-none-eabi-gdb.exe"
+                Description="Llilum GDB Path">
+        <Argument Property="LlilumGdbPath" />
+    </StringProperty>
+    <StringProperty Name="LlilumGdbArgs" DisplayName="Llilum GDB Args"
+                Description="Llilum GDB Args">
+        <Argument Property="LlilumGdbArgs" />
+    </StringProperty>
+    <BoolProperty Name="LlilumUseFlashTool" DisplayName="Use Flash Tool"
+                  Default="True"
+                  Description="Whether or not to use flash tool for deploy">
+        <Argument Property="LlilumUseFlashTool" />
+    </BoolProperty>
 </Rule>

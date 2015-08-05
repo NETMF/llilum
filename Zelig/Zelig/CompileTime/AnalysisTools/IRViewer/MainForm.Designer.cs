@@ -28,10 +28,12 @@ namespace Microsoft.Zelig.Tools.IRViewer
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.gViewer1 = new Microsoft.Glee.GraphViewerGdi.GViewer();
             this.textBoxFilter = new System.Windows.Forms.TextBox();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
+            this.checkBoxShowLineNumbers = new System.Windows.Forms.CheckBox();
             this.checkBoxExpandBasicBlocks = new System.Windows.Forms.CheckBox();
             this.listViewVariables = new System.Windows.Forms.ListView();
             this.columnHeaderVariableName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -44,7 +46,9 @@ namespace Microsoft.Zelig.Tools.IRViewer
             this.buttonLaunchCode = new System.Windows.Forms.Button();
             this.textBoxCodeFileName = new System.Windows.Forms.TextBox();
             this.listBoxMethods = new System.Windows.Forms.ListBox();
-            this.checkBoxShowLineNumbers = new System.Windows.Forms.CheckBox();
+            this.buttonBack = new System.Windows.Forms.Button();
+            this.contextMenuStripBackStack = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.buttonBackStackDropdown = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -83,9 +87,9 @@ namespace Microsoft.Zelig.Tools.IRViewer
             // 
             this.textBoxFilter.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxFilter.Location = new System.Drawing.Point(12, 10);
+            this.textBoxFilter.Location = new System.Drawing.Point(67, 10);
             this.textBoxFilter.Name = "textBoxFilter";
-            this.textBoxFilter.Size = new System.Drawing.Size(856, 20);
+            this.textBoxFilter.Size = new System.Drawing.Size(801, 20);
             this.textBoxFilter.TabIndex = 1;
             this.textBoxFilter.Click += new System.EventHandler(this.textBoxFilter_Click);
             this.textBoxFilter.TextChanged += new System.EventHandler(this.textBoxFilter_TextChanged);
@@ -111,10 +115,22 @@ namespace Microsoft.Zelig.Tools.IRViewer
             this.splitContainer.Panel2.Controls.Add(this.richTextBoxCode);
             this.splitContainer.Panel2.Controls.Add(this.buttonLaunchCode);
             this.splitContainer.Panel2.Controls.Add(this.textBoxCodeFileName);
-            this.splitContainer.Panel2.Resize += new System.EventHandler(this.splitContainer1_Panel2_Resize);
             this.splitContainer.Size = new System.Drawing.Size(856, 588);
             this.splitContainer.SplitterDistance = 301;
             this.splitContainer.TabIndex = 2;
+            // 
+            // checkBoxShowLineNumbers
+            // 
+            this.checkBoxShowLineNumbers.AutoSize = true;
+            this.checkBoxShowLineNumbers.Checked = true;
+            this.checkBoxShowLineNumbers.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxShowLineNumbers.Location = new System.Drawing.Point(136, 568);
+            this.checkBoxShowLineNumbers.Name = "checkBoxShowLineNumbers";
+            this.checkBoxShowLineNumbers.Size = new System.Drawing.Size(121, 17);
+            this.checkBoxShowLineNumbers.TabIndex = 4;
+            this.checkBoxShowLineNumbers.Text = "Show Line Numbers";
+            this.checkBoxShowLineNumbers.UseVisualStyleBackColor = true;
+            this.checkBoxShowLineNumbers.CheckedChanged += new System.EventHandler(this.checkBoxShowLineNumbers_CheckedChanged);
             // 
             // checkBoxExpandBasicBlocks
             // 
@@ -171,6 +187,7 @@ namespace Microsoft.Zelig.Tools.IRViewer
             this.listViewBasicBlock.UseCompatibleStateImageBehavior = false;
             this.listViewBasicBlock.View = System.Windows.Forms.View.Details;
             this.listViewBasicBlock.Click += new System.EventHandler(this.listViewBasicBlock_Click);
+            this.listViewBasicBlock.DoubleClick += new System.EventHandler(this.listViewBasicBlock_DoubleClick);
             // 
             // columnHeaderOperatorIndex
             // 
@@ -224,30 +241,49 @@ namespace Microsoft.Zelig.Tools.IRViewer
             // listBoxMethods
             // 
             this.listBoxMethods.FormattingEnabled = true;
-            this.listBoxMethods.Location = new System.Drawing.Point(12, 36);
+            this.listBoxMethods.Location = new System.Drawing.Point(67, 31);
             this.listBoxMethods.Name = "listBoxMethods";
-            this.listBoxMethods.Size = new System.Drawing.Size(858, 212);
+            this.listBoxMethods.Size = new System.Drawing.Size(801, 212);
             this.listBoxMethods.TabIndex = 0;
             this.listBoxMethods.Click += new System.EventHandler(this.listBoxMethods_Click);
             // 
-            // checkBoxShowLineNumbers
+            // buttonBack
             // 
-            this.checkBoxShowLineNumbers.AutoSize = true;
-            this.checkBoxShowLineNumbers.Checked = true;
-            this.checkBoxShowLineNumbers.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxShowLineNumbers.Location = new System.Drawing.Point(136, 568);
-            this.checkBoxShowLineNumbers.Name = "checkBoxShowLineNumbers";
-            this.checkBoxShowLineNumbers.Size = new System.Drawing.Size(121, 17);
-            this.checkBoxShowLineNumbers.TabIndex = 4;
-            this.checkBoxShowLineNumbers.Text = "Show Line Numbers";
-            this.checkBoxShowLineNumbers.UseVisualStyleBackColor = true;
-            this.checkBoxShowLineNumbers.CheckedChanged += new System.EventHandler(this.checkBoxShowLineNumbers_CheckedChanged);
+            this.buttonBack.Enabled = false;
+            this.buttonBack.Font = new System.Drawing.Font("Wingdings 3", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
+            this.buttonBack.Location = new System.Drawing.Point(12, 8);
+            this.buttonBack.Name = "buttonBack";
+            this.buttonBack.Size = new System.Drawing.Size(36, 24);
+            this.buttonBack.TabIndex = 3;
+            this.buttonBack.Text = "f";
+            this.buttonBack.UseVisualStyleBackColor = true;
+            this.buttonBack.Click += new System.EventHandler(this.buttonBack_Click);
+            // 
+            // contextMenuStripBackStack
+            // 
+            this.contextMenuStripBackStack.Name = "contextMenuStripBackStack";
+            this.contextMenuStripBackStack.Size = new System.Drawing.Size(61, 4);
+            // 
+            // buttonBackStackDropdown
+            // 
+            this.buttonBackStackDropdown.Enabled = false;
+            this.buttonBackStackDropdown.Font = new System.Drawing.Font("Wingdings 3", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
+            this.buttonBackStackDropdown.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.buttonBackStackDropdown.Location = new System.Drawing.Point(47, 8);
+            this.buttonBackStackDropdown.Name = "buttonBackStackDropdown";
+            this.buttonBackStackDropdown.Size = new System.Drawing.Size(18, 24);
+            this.buttonBackStackDropdown.TabIndex = 5;
+            this.buttonBackStackDropdown.Text = "q";
+            this.buttonBackStackDropdown.UseVisualStyleBackColor = true;
+            this.buttonBackStackDropdown.Click += new System.EventHandler(this.buttonBackStackDropdown_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(880, 639);
+            this.Controls.Add(this.buttonBackStackDropdown);
+            this.Controls.Add(this.buttonBack);
             this.Controls.Add(this.listBoxMethods);
             this.Controls.Add(this.splitContainer);
             this.Controls.Add(this.textBoxFilter);
@@ -255,6 +291,7 @@ namespace Microsoft.Zelig.Tools.IRViewer
             this.Name = "MainForm";
             this.Text = "IR Viewer";
             this.Load += new System.EventHandler(this.MainForm_Load);
+            this.Resize += new System.EventHandler(this.MainForm_Resize);
             this.splitContainer.Panel1.ResumeLayout(false);
             this.splitContainer.Panel1.PerformLayout();
             this.splitContainer.Panel2.ResumeLayout(false);
@@ -284,6 +321,9 @@ namespace Microsoft.Zelig.Tools.IRViewer
         private System.Windows.Forms.ColumnHeader columnHeaderOperatorType;
         private System.Windows.Forms.ListBox listBoxMethods;
         private System.Windows.Forms.CheckBox checkBoxShowLineNumbers;
+        private System.Windows.Forms.Button buttonBack;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStripBackStack;
+        private System.Windows.Forms.Button buttonBackStackDropdown;
     }
 }
 

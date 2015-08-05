@@ -108,15 +108,15 @@
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalOptions>-MMD -MP -fmessage-length=0 -fno-common %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>./mbed;./mbed/TARGET_LPC1768;./mbed/TARGET_LPC1768/TOOLCHAIN_GCC_ARM;./mbed/TARGET_LPC1768/TARGET_NXP;./mbed/TARGET_LPC1768/TARGET_NXP/TARGET_LPC176X;./mbed/TARGET_LPC1768/TARGET_NXP/TARGET_LPC176X/TARGET_MBED_LPC1768;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>TARGET_LPC1768;TARGET_M3;TARGET_CORTEX_M;TARGET_NXP;TARGET_LPC176X;TARGET_MBED_LPC1768;TOOLCHAIN_GCC_ARM;TOOLCHAIN_GCC;__CORTEX_M3;ARM_MATH_CM3;MBED_BUILD_TIMESTAMP=1435688844.64;__MBED__=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>$(LlilumClAdditionalOptions) %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(LlilumClAdditionalIncludes)%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>$(LlilumClPreprocessorDefs);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>./mbed/TARGET_LPC1768/TOOLCHAIN_GCC_ARM/board.o;./mbed/TARGET_LPC1768/TOOLCHAIN_GCC_ARM/startup_LPC17xx.o;./mbed/TARGET_LPC1768/TOOLCHAIN_GCC_ARM/cmsis_nvic.o;./mbed/TARGET_LPC1768/TOOLCHAIN_GCC_ARM/retarget.o;./mbed/TARGET_LPC1768/TOOLCHAIN_GCC_ARM/system_LPC17xx.o</AdditionalDependencies>
-      <AdditionalLibraryDirectories>./mbed/TARGET_LPC1768/TOOLCHAIN_GCC_ARM</AdditionalLibraryDirectories>
-      <AdditionalOptions>-T./mbed/TARGET_LPC1768/TOOLCHAIN_GCC_ARM/LPC1768.ld -Wl,--gc-sections --specs=nano.specs -u _printf_float -u _scanf_float -Wl,--wrap,main %(AdditionalOptions)</AdditionalOptions>
-      <LibraryDependencies>mbed;stdc++;supc++;m;c;gcc;nosys</LibraryDependencies>
+      <AdditionalDependencies>$(LlilumLinkAdditionalDeps)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(LlilumLinkAdditionalLibDirs)</AdditionalLibraryDirectories>
+      <AdditionalOptions>$(LlilumLinkAdditionalOptions) %(AdditionalOptions)</AdditionalOptions>
+      <LibraryDependencies>$(LlilumLinkLibDeps)</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

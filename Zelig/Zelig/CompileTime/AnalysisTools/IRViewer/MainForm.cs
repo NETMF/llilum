@@ -32,6 +32,22 @@ namespace Microsoft.Zelig.Tools.IRViewer
 
         SourceCodeTracker m_sourceCodeTracker;
 
+        struct BackStackState
+        {
+            public BackStackState(Method method, BasicBlock basicBlock, Operator op)
+            {
+                this.Method = method;
+                this.BasicBlock = basicBlock;
+                this.Operator = op;
+            }
+
+            public Method Method { get; }
+            public BasicBlock BasicBlock { get; }
+            public Operator Operator { get; }
+        }
+
+        Stack<BackStackState> m_backStack;
+
         //
         // Constructor Methods
         //
@@ -39,6 +55,7 @@ namespace Microsoft.Zelig.Tools.IRViewer
         public MainForm()
         {
             m_sourceCodeTracker = new SourceCodeTracker();
+            m_backStack = new Stack<BackStackState>();
 
             m_fExpandBasicBlocks = false;
 
@@ -76,7 +93,7 @@ namespace Microsoft.Zelig.Tools.IRViewer
                         m_lookupMethod = parser.Methods;
                         m_phaseName = phaseName;
 
-                        UpdateDisplay();
+                        SelectMethod(null);
                         UpdateListBox();
 
                         textBoxFilter.Select();
@@ -97,16 +114,33 @@ namespace Microsoft.Zelig.Tools.IRViewer
             }
         }
 
-        private void UpdateDisplay()
+        private void SelectMethod(Method method)
         {
-            Text = $"IRViewer - { m_method?.Name } - { m_phaseName }";
-
-            //--//
-
-            if (m_method != null)
+            if (method == null)
             {
-                CreateGraph();
+                Text = $"IRViewer - { m_phaseName }";
+                m_method = method;
+            }
+            else
+            {
+                Text = $"IRViewer - { method.Name } - { m_phaseName }";
 
+                if (m_method != null && m_method != method)
+                {
+                    var previousOp = (m_selectedOpLVI != null) ? m_selectedBasicBlock.Operators[m_selectedOpLVI.Index] : null;
+
+                    m_backStack.Push(new BackStackState(m_method, m_selectedBasicBlock, previousOp));
+
+                    buttonBack.Enabled = true;
+                    buttonBackStackDropdown.Enabled = true;
+                }
+
+                textBoxFilter.Text = method.Name;
+                listBoxMethods.Visible = false;
+
+                m_method = method;
+
+                CreateGraph();
                 ListVariables();
             }
 
@@ -136,6 +170,11 @@ namespace Microsoft.Zelig.Tools.IRViewer
             }
 
             gViewer1.Graph = g;
+
+            m_selectedNode = null;
+            m_selectedNodeAttr = null;
+            m_highlightedObject = null;
+            m_highlightedObjectAttr = null;
         }
 
         private static Microsoft.Glee.Drawing.Node CreateNode(Microsoft.Glee.Drawing.Graph graph,
@@ -356,9 +395,7 @@ namespace Microsoft.Zelig.Tools.IRViewer
 
                         if (m_lookupMethod.TryGetValue(op.Call, out method))
                         {
-                            m_method = method;
-
-                            UpdateDisplay();
+                            SelectMethod(method);
                         }
                     }
                 }
@@ -485,7 +522,7 @@ namespace Microsoft.Zelig.Tools.IRViewer
             m_selectedOpLVI = null;
         }
 
-        private void splitContainer1_Panel2_Resize(object sender, EventArgs e)
+        private void MainForm_Resize(object sender, EventArgs e)
         {
             const int margin = 3;
             listViewBasicBlock.Height = splitContainer.Panel2.Height - listViewVariables.Height - richTextBoxCode.Height - buttonLaunchCode.Height - margin * 3;
@@ -499,6 +536,9 @@ namespace Microsoft.Zelig.Tools.IRViewer
 
             gViewer1.Height = splitContainer.Panel1.Height - checkBoxExpandBasicBlocks.Height - margin;
             checkBoxExpandBasicBlocks.Top = gViewer1.Bottom + margin;
+            checkBoxShowLineNumbers.Top = gViewer1.Bottom + margin;
+
+            listBoxMethods.Width = textBoxFilter.Width;
         }
 
         private void buttonLaunchCode_Click(object sender, EventArgs e)
@@ -557,12 +597,7 @@ namespace Microsoft.Zelig.Tools.IRViewer
             {
                 if (listBoxMethods.SelectedItem != null)
                 {
-                    m_method = m_lookupMethod[(string)listBoxMethods.SelectedItem];
-
-                    UpdateDisplay();
-
-                    textBoxFilter.Text = listBoxMethods.SelectedItem as String;
-                    listBoxMethods.Visible = false;
+                    SelectMethod(m_lookupMethod[(string)listBoxMethods.SelectedItem]);
                 }
             }
         }
@@ -581,6 +616,83 @@ namespace Microsoft.Zelig.Tools.IRViewer
         private void checkBoxShowLineNumbers_CheckedChanged(object sender, EventArgs e)
         {
             UpdateCodePane(/*force*/true);
+        }
+
+        private void buttonBack_Click(object sender, EventArgs e)
+        {
+            if (m_backStack.Count > 0)
+            {
+                GoBack(m_backStack.Pop());
+            }
+        }
+        
+        private void buttonBackStackDropdown_Click(object sender, EventArgs e)
+        {
+            if (m_backStack.Count > 0)
+            {
+                contextMenuStripBackStack.Items.Clear();
+
+                foreach (var item in m_backStack)
+                {
+                    contextMenuStripBackStack.Items.Add(item.Method.Name, null, new EventHandler(delegate (object o, EventArgs a)
+                    {
+                        BackStackState state;
+                        do
+                        {
+                            state = m_backStack.Pop();
+                        } while (!state.Equals(item));
+
+                        GoBack(state);
+                    }));
+                }
+
+                contextMenuStripBackStack.Show(buttonBack, new Point(0, buttonBack.Height));
+
+            }
+        }
+
+        private void GoBack(BackStackState state)
+        {
+            // Select the method
+            m_method = state.Method;
+            textBoxFilter.Text = m_method.Name;
+            listBoxMethods.Visible = false;
+
+            CreateGraph();
+            ListVariables();
+
+            // Select the basic block
+            SelectBasicBlock(state.BasicBlock);
+
+            if (state.BasicBlock != null)
+            {
+                // Select the node in graph
+                var node = gViewer1.Graph.FindNode(state.BasicBlock.Id);
+                if (node != null)
+                {
+                    m_selectedNode = node;
+                    m_selectedNodeAttr = node.Attr.Clone();
+
+                    node.Attr.Fillcolor = Microsoft.Glee.Drawing.Color.Goldenrod;
+
+                    gViewer1.Invalidate();
+                }
+
+                // Select the operation
+                var lvi = listViewBasicBlock.FindItemWithText(state.Operator.Index.ToString(), /*includesSubItem*/false, /*startIndex*/0, /*prefixSearch*/false);
+                if (lvi != null)
+                {
+                    lvi.Selected = true;
+                    listViewBasicBlock.Select();
+                    UpdateCodePane();
+                }
+            }
+            
+            if (m_backStack.Count == 0)
+            {
+                buttonBack.Enabled = false;
+                buttonBackStackDropdown.Enabled = false;
+            }
         }
     }
 }

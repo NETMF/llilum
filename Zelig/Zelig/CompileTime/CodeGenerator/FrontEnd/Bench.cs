@@ -647,6 +647,44 @@ namespace Microsoft.Zelig.FrontEnd
 
             return null;
         }
+        
+        private static string[] RecombineArgs( string[] args )
+        {
+            List<string> arguments = new List<string>(args.Length);
+
+            for(int i = 0; i < args.Length; ++i)
+            {
+                // An argument like "C:\my directory\with\a\space" will be split as
+                // "C:\my" and "irectory\with\a\space" acrosss two entries in args. 
+                // We need to re-combine those entries
+                
+                // We must find a matching pair of double quotes. 
+                // Matching quotes must appear in the same or next argument. 
+                if( args[ i ].StartsWith( "\"" ) && !args[ i ].EndsWith("\"") )
+                {
+                    // Look in the very next argument.
+                    // if we are at the last entry in args already, then 
+                    // we have an unmatched quote we may be able to recover from
+                    if( i == args.Length - 1 )
+                    {
+                        // ignore and hope for the best
+                    }
+                    else if( args[i + 1].EndsWith("\"") )
+                    {
+                        args[ i + 1 ] = args[ i ] + " " + args[ i + 1 ];
+                        ++i;
+                    }
+                    else
+                    {
+                        // no matching double-quotes
+                        return null;
+                    }
+                }
+                arguments.Add( args[i] );
+            }
+
+            return arguments.ToArray( ); 
+        }
 
         private bool Parse( string[] args )
         {
@@ -686,7 +724,18 @@ namespace Microsoft.Zelig.FrontEnd
                                         continue;
                                     }
 
-                                    if( Parse( line.Split( new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries ) ) == false )
+                                    var arguments = line.Split( new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries );
+
+                                    string[] recombinedArgs = RecombineArgs( arguments );
+
+                                    if(recombinedArgs == null )
+                                    {
+                                        Console.WriteLine( String.Format( "Arguments at line '{0}' could not be recombined", line ) );
+
+                                        return false;
+                                    }
+
+                                    if( Parse( recombinedArgs ) == false )
                                     {
                                         return false;
                                     }
@@ -1591,7 +1640,7 @@ namespace Microsoft.Zelig.FrontEnd
 
             Console.WriteLine( "{0}: Done", GetTime( ) );
         }
-
+        
         //--//
 
         public static void Main( string[] args )
@@ -1602,7 +1651,10 @@ namespace Microsoft.Zelig.FrontEnd
 
             try
             {
-                if( bench.Parse( args ) )
+                // path with space need to be re-assembled
+                string[] recombinedArgs = RecombineArgs( args );
+                
+                if( recombinedArgs != null && bench.Parse( recombinedArgs ) )
                 {
                     if( bench.ValidateOptions( ) )
                     {
@@ -1626,5 +1678,7 @@ namespace Microsoft.Zelig.FrontEnd
                 }
             }
         }
+
+
     }
 }

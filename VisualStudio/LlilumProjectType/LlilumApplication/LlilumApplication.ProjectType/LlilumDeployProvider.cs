@@ -14,7 +14,6 @@ namespace LlilumApplication
     [AppliesTo(MyUnconfiguredProject.UniqueCapability)]
     internal class LlilumDeployProvider : IDeployProvider
     {
-        private static readonly string FlashToolFormat = "{0}tools\\flash_tool.exe";
         /// <summary>
         /// Provides access to the project's properties.
         /// </summary>
@@ -24,22 +23,30 @@ namespace LlilumApplication
         public async Task DeployAsync(CancellationToken cancellationToken, TextWriter outputPaneWriter)
         {
             var properties = await this.Properties.GetLlilumDebuggerPropertiesAsync();
-            var sdkPath = await properties.LlilumSDKPath.GetEvaluatedValueAtEndAsync();
-            string flashToolPath = string.Format(FlashToolFormat, sdkPath);
-            string binaryPath = await properties.LlilumOutputBin.GetEvaluatedValueAtEndAsync();
+            var deployWithFlashTool = await properties.LlilumUseFlashTool.GetEvaluatedValueAtEndAsync();
 
-            ProcessStartInfo start = new ProcessStartInfo();
-            start.FileName = flashToolPath;
-            start.Arguments = string.Format("{0}", binaryPath);
-            start.UseShellExecute = false;
-            start.RedirectStandardOutput = true;
-
-            using (Process process = Process.Start(start))
+            if (string.Compare(deployWithFlashTool, "true", true) == 0)
             {
-                using (StreamReader reader = process.StandardOutput)
+                string flashToolPath = await properties.LlilumFlashToolPath.GetEvaluatedValueAtEndAsync();
+                string flashToolArgs = await properties.LlilumFlashToolArgs.GetEvaluatedValueAtEndAsync();
+                string binaryPath = await properties.LlilumOutputBin.GetEvaluatedValueAtEndAsync();
+
+                if(!string.IsNullOrEmpty(flashToolPath))
                 {
-                    string result = reader.ReadToEnd();
-                    outputPaneWriter.Write(result);
+                    ProcessStartInfo start = new ProcessStartInfo();
+                    start.FileName = flashToolPath;
+                    start.Arguments = string.Format("{0} {1}", binaryPath, flashToolArgs);
+                    start.UseShellExecute = false;
+                    start.RedirectStandardOutput = true;
+
+                    using (Process process = Process.Start(start))
+                    {
+                        using (StreamReader reader = process.StandardOutput)
+                        {
+                            string result = reader.ReadToEnd();
+                            outputPaneWriter.Write(result);
+                        }
+                    }
                 }
             }
         }

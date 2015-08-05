@@ -16,14 +16,10 @@
   </TemplateData>
   <TemplateContent>
     <Project TargetFileName="$projectname$.Managed.csproj" File="Managed.csproj" ReplaceParameters="true">
-      <ProjectItem ReplaceParameters="true" TargetFileName="DigitalOut.cs">DigitalOut.cs</ProjectItem>
-      <ProjectItem ReplaceParameters="true" TargetFileName="GPIO.cs">GPIO.cs</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="Program.cs">Program.cs</ProjectItem>
       <Folder Name="Properties" TargetFolderName="Properties">
         <ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.cs">AssemblyInfo.cs</ProjectItem>
       </Folder>
-      <ProjectItem ReplaceParameters="true" TargetFileName="Timer.cs">Timer.cs</ProjectItem>
-      <ProjectItem ReplaceParameters="true" TargetFileName="UsTicker.cs">UsTicker.cs</ProjectItem>
     </Project>
   </TemplateContent>
 </VSTemplate>

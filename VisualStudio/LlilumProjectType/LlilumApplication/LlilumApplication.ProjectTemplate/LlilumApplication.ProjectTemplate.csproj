@@ -75,8 +75,6 @@
   remove files here, you must also reference them in the ProjectTemplateTemplate.vstemplate file.
   -->
   <ItemGroup>
-    <None Include="LlilumNative\debug.bat" />
-    <None Include="LlilumNative\Llilum.props" />
     <None Include="LlilumNative\mbed_simple.FrontEndConfig2" />
     <None Include="LlilumNative\Native.vcxproj" />
     <None Include="Properties\AssemblyInfo.cs" />
@@ -111,11 +109,7 @@
     <Content Include="LlilumNative\__TemplateIcon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="LlilumManaged\DigitalOut.cs" />
-    <None Include="LlilumManaged\GPIO.cs" />
     <None Include="LlilumManaged\Program.cs" />
-    <None Include="LlilumManaged\Timer.cs" />
-    <None Include="LlilumManaged\UsTicker.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
