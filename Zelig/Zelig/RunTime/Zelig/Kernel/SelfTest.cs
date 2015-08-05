@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace Microsoft.Zelig.Runtime
 {
+    using TypeSystem;
     using System;
     using System.Threading;
 
@@ -506,8 +507,6 @@ namespace Microsoft.Zelig.Runtime
             SelfTest__Memory__GapPlugTest6();
             SelfTest__Memory__Random();
 
-            SelfTest__Memory__AddrefReleaseSetup( );
-
             SelfTest__Memory__BasicAddrefRelease1( );
             SelfTest__Memory__BasicAddrefRelease2( );
             SelfTest__Memory__BasicAddrefRelease3( );
@@ -515,6 +514,18 @@ namespace Microsoft.Zelig.Runtime
             SelfTest__Memory__BasicAddrefRelease5( );
             SelfTest__Memory__BasicAddrefRelease6( );
             SelfTest__Memory__BasicAddrefRelease7( );
+
+            SelfTest__Memory__RefCountGC1( );
+            SelfTest__Memory__RefCountGC2( );
+            SelfTest__Memory__RefCountGC3( );
+            SelfTest__Memory__RefCountGC4( );
+            SelfTest__Memory__RefCountGC5( );
+            SelfTest__Memory__RefCountGC6( );
+            SelfTest__Memory__RefCountGC7( );
+            SelfTest__Memory__RefCountGC8( );
+            SelfTest__Memory__RefCountGC9( );
+            SelfTest__Memory__RefCountGC10( );
+            SelfTest__Memory__RefCountGC11( );
 
             SelfTest__Interlocked__Add_int( );
             SelfTest__Interlocked__Add_long( );
@@ -550,6 +561,7 @@ namespace Microsoft.Zelig.Runtime
         private const uint GapSize = (ArrayFixedSize - sizeof(uint)); // Not enough for a free block
         private const uint AllocSizeForGap = StandardAllocSize - GapSize;
 
+        [DisableAutomaticReferenceCounting]
         private static UIntPtr AllocHelper(uint size)
         {
             var allocSize = (size < ArrayFixedSize + 1) ? ArrayFixedSize + 1 : size;
@@ -567,6 +579,7 @@ namespace Microsoft.Zelig.Runtime
             return ptr;
         }
 
+        [DisableAutomaticReferenceCounting]
         private static UIntPtr AllocHelperWithFakeGap(uint size)
         {
             var allocSize = (size < ArrayFixedSize + 1) ? ArrayFixedSize + 1 : size;
@@ -586,6 +599,7 @@ namespace Microsoft.Zelig.Runtime
 
         // [Free][Obj1][*] // Alloc Obj1
         // [Free      ][*] // Free Obj1 <=== Merge free block with previous free block
+        [DisableAutomaticReferenceCounting]
         private static void SelfTest__Memory__BasicAllocation1()
         {
             BugCheck.Log("BasicAllocation1 Started...");
@@ -604,6 +618,7 @@ namespace Microsoft.Zelig.Runtime
         //[Free][Obj2][Obj1][*] // Alloc Obj1, Obj2
         //[Free][Obj2][Free][*] // Free Obj1 <=== Merge free block alone
         //[Free            ][*] // Free Obj2 <=== Merge free block with previous and next free block
+        [DisableAutomaticReferenceCounting]
         private static void SelfTest__Memory__BasicAllocation2()
         {
             BugCheck.Log("BasicAllocation2 Started...");
@@ -626,6 +641,7 @@ namespace Microsoft.Zelig.Runtime
         //[Free][Obj3][Obj2][Free][*] // Free Obj1
         //[Free][Obj3][Free      ][*] // Free Obj2 <=== Merge free block with next free block
         //[Free                  ][*] // Free Obj3
+        [DisableAutomaticReferenceCounting]
         private static void SelfTest__Memory__BasicAllocation3()
         {
             BugCheck.Log("BasicAllocation3 Started...");
@@ -645,9 +661,10 @@ namespace Microsoft.Zelig.Runtime
             MemoryManager.Instance.ConsistencyCheck();
             BugCheck.Log("BasicAllocation3 Succeeded.");
         }
-        
+
         //[gap][Obj1][*] // Alloc Obj1 <== Alloc with gaps
         //[Free     ][*] // Free Obj1 <== Merge free block with previous gaps
+        [DisableAutomaticReferenceCounting]
         private static unsafe void SelfTest__Memory__GapPlugTest1()
         {
             BugCheck.Log("GapPlugTest1 Started...");
@@ -671,6 +688,7 @@ namespace Microsoft.Zelig.Runtime
         //[Obj2][Free     ][*] // Free Obj1
         //[Obj2][gap][Obj3][*] // Alloc Obj3
         //[Free     ][Obj3][*] // Free Obj2 <== 
+        [DisableAutomaticReferenceCounting]
         private static unsafe void SelfTest__Memory__GapPlugTest2()
         {
             BugCheck.Log("GapPlugTest2 Started...");
@@ -699,6 +717,7 @@ namespace Microsoft.Zelig.Runtime
         //[gap][Obj2][Free     ][*] // Free Obj1
         //[gap][Obj2][gap][Obj3][*] // Alloc Obj3
         //[Free          ][Obj3][*] // Free Obj2 <== 
+        [DisableAutomaticReferenceCounting]
         private static unsafe void SelfTest__Memory__GapPlugTest3()
         {
             BugCheck.Log("GapPlugTest3 Started...");
@@ -726,6 +745,7 @@ namespace Microsoft.Zelig.Runtime
         //[Obj2][Free     ][*] // Free Obj1
         //[Obj2][gap][Obj3][*] // Alloc Obj3
         //[Obj2][Free     ][*] // Free Obj3 <== Merge with previous gaps following fake gaps
+        [DisableAutomaticReferenceCounting]
         private static unsafe void SelfTest__Memory__GapPlugTest4()
         {
             BugCheck.Log("GapPlugTest4 Started...");
@@ -752,6 +772,7 @@ namespace Microsoft.Zelig.Runtime
         //[gap][Obj2][Obj1     ][*] // Alloc Obj1, Obj2
         //[gap][Obj2][Free     ][*] // Free Obj1
         //[Free                ][*] // Free Obj2 <== Merge with previous gaps and next free block
+        [DisableAutomaticReferenceCounting]
         private static unsafe void SelfTest__Memory__GapPlugTest5()
         {
             BugCheck.Log("GapPlugTest5 Started...");
@@ -773,6 +794,7 @@ namespace Microsoft.Zelig.Runtime
         //[Free][Obj2][Free     ][*] // Free Obj1
         //[Free][Obj2][gap][Obj3][*] // Alloc Obj3
         //[Free           ][Obj3][*] // Free Obj2 <== Merge with previous free block and next gaps
+        [DisableAutomaticReferenceCounting]
         private static unsafe void SelfTest__Memory__GapPlugTest6()
         {
             BugCheck.Log("GapPlugTest6 Started...");
@@ -794,6 +816,7 @@ namespace Microsoft.Zelig.Runtime
             BugCheck.Log("GapPlugTest6 Succeeded.");
         }
 
+        [DisableAutomaticReferenceCounting]
         private static unsafe void SelfTest__Memory__Random()
         {
             BugCheck.Log("Random Started...");
@@ -858,6 +881,15 @@ namespace Microsoft.Zelig.Runtime
 
         #region AddRef/Release Tests
 
+        [DisableAutomaticReferenceCounting]
+        private static void InitializeReferenceCount( object obj )
+        {
+            ObjectHeader oh = ObjectHeader.Unpack( obj );
+            oh.MultiUseWord |= ( 1 << ObjectHeader.ReferenceCountShift );
+        }
+
+        [DisableReferenceCounting]
+        [DisableAutomaticReferenceCounting]
         private class Node
         {
             public Node _node1;
@@ -867,8 +899,13 @@ namespace Microsoft.Zelig.Runtime
             private Node( Node node1, Node node2, Node[] nodeArray )
             {
                 _node1 = node1;
+                ObjectHeader.AddReference( node1 );
+
                 _node2 = node2;
+                ObjectHeader.AddReference( node2 );
+
                 _nodeArray = nodeArray;
+                ObjectHeader.AddReference( nodeArray );
             }
 
             static public Node New( out UIntPtr ptr, Node node1, Node node2 )
@@ -878,23 +915,9 @@ namespace Microsoft.Zelig.Runtime
             static public Node New( out UIntPtr ptr, Node node1, Node node2, Node[] nodeArray )
             {
                 Node node = new Node(node1, node2, nodeArray);
-                ObjectHeader.Unpack( node ).InitializeReferenceCount( );
-
-                if(node1 != null)
-                {
-                    ObjectHeader.Unpack( node1 ).AddReference( );
-                }
-                if(node2 != null)
-                {
-                    ObjectHeader.Unpack( node2 ).AddReference( );
-                }
-                if(nodeArray != null)
-                {
-                    ObjectHeader.Unpack( nodeArray ).AddReference( );
-                }
-
+                InitializeReferenceCount( node );
+                
                 ptr = ObjectHeader.Unpack( node ).ToPointer( );
-
                 return node;
             }
 
@@ -911,41 +934,32 @@ namespace Microsoft.Zelig.Runtime
             static public Node[] NewArray( out UIntPtr ptr, int length, Node node0, Node node1, Node node2 )
             {
                 Node[] nodeArray = new Node[length];
-                ObjectHeader.Unpack( nodeArray ).InitializeReferenceCount( );
+                InitializeReferenceCount( nodeArray );
 
                 if(length > 0)
                 {
                     nodeArray[ 0 ] = node0;
-                    if(node0 != null)
-                    {
-                        ObjectHeader.Unpack( node0 ).AddReference( );
-                    }
+                    ObjectHeader.AddReference( node0 );
 
                     if(length > 1)
                     {
                         nodeArray[ 1 ] = node1;
-                        if(node1 != null)
-                        {
-                            ObjectHeader.Unpack( node1 ).AddReference( );
-                        }
+                        ObjectHeader.AddReference( node1 );
 
                         if(length > 2)
                         {
                             nodeArray[ 2 ] = node2;
-                            if(node2 != null)
-                            {
-                                ObjectHeader.Unpack( node2 ).AddReference( );
-                            }
+                            ObjectHeader.AddReference( node2 );
                         }
                     }
                 }
 
                 ptr = ObjectHeader.Unpack( nodeArray ).ToPointer( );
-
                 return nodeArray;
             }
         }
 
+        [DisableAutomaticReferenceCounting]
         private struct NodeStruct
         {
             public Node _node1;
@@ -960,40 +974,27 @@ namespace Microsoft.Zelig.Runtime
             public void Set( Node node1, Node node2, Node[] nodeArray )
             {
                 _node1 = node1;
-                _node2 = node2;
-                _nodeArray = nodeArray;
+                ObjectHeader.AddReference( node1 );
 
-                if(node1 != null)
-                {
-                    ObjectHeader.Unpack( node1 ).AddReference( );
-                }
-                if(node2 != null)
-                {
-                    ObjectHeader.Unpack( node2 ).AddReference( );
-                }
-                if(nodeArray != null)
-                {
-                    ObjectHeader.Unpack( nodeArray ).AddReference( );
-                }
+                _node2 = node2;
+                ObjectHeader.AddReference( node2 );
+
+                _nodeArray = nodeArray;
+                ObjectHeader.AddReference( nodeArray );
             }
 
             static public NodeStruct[] NewArray( out UIntPtr ptr, int length )
             {
                 NodeStruct[] nodeArray = new NodeStruct[length];
-                ObjectHeader.Unpack( nodeArray ).InitializeReferenceCount( );
-                ptr = ObjectHeader.Unpack( nodeArray ).ToPointer( );
+                InitializeReferenceCount( nodeArray );
 
+                ptr = ObjectHeader.Unpack( nodeArray ).ToPointer( );
                 return nodeArray;
             }
         }
 
-        private static void SelfTest__Memory__AddrefReleaseSetup( )
-        {
-            // Ensure ReleaseReferenceHelper is allocated.
-            ThreadImpl.CurrentThread.ReleaseReference.GetType( );
-        }
-
         // Releasing 1 single reference type
+        [DisableAutomaticReferenceCounting]
         private static void SelfTest__Memory__BasicAddrefRelease1( )
         {
             BugCheck.Log( "BasicAddrefRelease1 Started..." );
@@ -1002,11 +1003,11 @@ namespace Microsoft.Zelig.Runtime
             BugCheck.Log( "Available memory before = %d", (int)availableMemoryBefore );
 
             UIntPtr nodePtr;
-            Object node = Node.New(out nodePtr, null, null);
+            var node = Node.New(out nodePtr, null, null);
 
-            ObjectHeader.ReleaseReference( ref node );
+            ObjectHeader.ReleaseReference( node );
+            node = null;
 
-            BugCheck.Assert( node == null, BugCheck.StopCode.HeapCorruptionDetected );
             BugCheck.Assert( !MemoryManager.Instance.IsObjectAlive( nodePtr ), BugCheck.StopCode.HeapCorruptionDetected );
 
             uint availableMemoryAfter = MemoryManager.Instance.AvailableMemory;
@@ -1023,6 +1024,7 @@ namespace Microsoft.Zelig.Runtime
         //   [2]   [3]
         //   /      /\
         // [4]    [5][6]
+        [DisableAutomaticReferenceCounting]
         private static void SelfTest__Memory__BasicAddrefRelease2( )
         {
             BugCheck.Log( "BasicAddrefRelease2 Started..." );
@@ -1031,27 +1033,32 @@ namespace Microsoft.Zelig.Runtime
             BugCheck.Log( "Available memory before = %d", (int)availableMemoryBefore );
 
             UIntPtr node4Ptr;
-            Object node4 = Node.New(out node4Ptr, null, null);
+            var node4 = Node.New(out node4Ptr, null, null);
             UIntPtr node5Ptr;
-            Object node5 = Node.New(out node5Ptr, null, null);
+            var node5 = Node.New(out node5Ptr, null, null);
             UIntPtr node6Ptr;
-            Object node6 = Node.New(out node6Ptr, null, null);
+            var node6 = Node.New(out node6Ptr, null, null);
             UIntPtr node2Ptr;
-            Object node2 = Node.New(out node2Ptr, (Node)node4, null);
+            var node2 = Node.New(out node2Ptr, node4, null);
             UIntPtr node3Ptr;
-            Object node3 = Node.New(out node3Ptr, (Node)node5, (Node)node6);
+            var node3 = Node.New(out node3Ptr, node5, node6);
             UIntPtr node1Ptr;
-            Object node1 = Node.New(out node1Ptr, (Node)node2, (Node)node3);
+            var node1 = Node.New(out node1Ptr, node2, node3);
 
-            ObjectHeader.ReleaseReference( ref node2 );
-            ObjectHeader.ReleaseReference( ref node3 );
-            ObjectHeader.ReleaseReference( ref node4 );
-            ObjectHeader.ReleaseReference( ref node5 );
-            ObjectHeader.ReleaseReference( ref node6 );
+            ObjectHeader.ReleaseReference( node2 );
+            node2 = null;
+            ObjectHeader.ReleaseReference( node3 );
+            node3 = null;
+            ObjectHeader.ReleaseReference( node4 );
+            node4 = null;
+            ObjectHeader.ReleaseReference( node5 );
+            node5 = null;
+            ObjectHeader.ReleaseReference( node6 );
+            node6 = null;
 
-            ObjectHeader.ReleaseReference( ref node1 );
+            ObjectHeader.ReleaseReference( node1 );
+            node1 = null;
 
-            BugCheck.Assert( node1 == null, BugCheck.StopCode.HeapCorruptionDetected );
             BugCheck.Assert( !MemoryManager.Instance.IsObjectAlive( node1Ptr ), BugCheck.StopCode.HeapCorruptionDetected );
             BugCheck.Assert( !MemoryManager.Instance.IsObjectAlive( node2Ptr ), BugCheck.StopCode.HeapCorruptionDetected );
             BugCheck.Assert( !MemoryManager.Instance.IsObjectAlive( node3Ptr ), BugCheck.StopCode.HeapCorruptionDetected );
@@ -1068,6 +1075,7 @@ namespace Microsoft.Zelig.Runtime
         }
 
         // Do not free objects that are not ref-counted 
+        [DisableAutomaticReferenceCounting]
         private static void SelfTest__Memory__BasicAddrefRelease3( )
         {
             BugCheck.Log( "BasicAddrefRelease3 Started..." );
@@ -1075,16 +1083,16 @@ namespace Microsoft.Zelig.Runtime
             uint availableMemoryBefore = MemoryManager.Instance.AvailableMemory;
             BugCheck.Log( "Available memory before = %d", (int)availableMemoryBefore );
 
-            Exception node2 = new Exception("node2", null);
+            var node2 = new Exception("node2", null);
             UIntPtr node2Ptr = ObjectHeader.Unpack(node2).ToPointer();
-            Object node1 = new Exception("node1", node2);
+            var node1 = new Exception("node1", node2);
+            InitializeReferenceCount( node1 );
             UIntPtr node1Ptr = ObjectHeader.Unpack(node1).ToPointer();
-            ObjectHeader.Unpack( node1 ).InitializeReferenceCount( );
             node2 = null;
 
-            ObjectHeader.ReleaseReference( ref node1 );
+            ObjectHeader.ReleaseReference( node1 );
+            node1 = null;
 
-            BugCheck.Assert( node1 == null, BugCheck.StopCode.HeapCorruptionDetected );
             BugCheck.Assert( !MemoryManager.Instance.IsObjectAlive( node1Ptr ), BugCheck.StopCode.HeapCorruptionDetected );
             BugCheck.Assert( MemoryManager.Instance.IsObjectAlive( node2Ptr ), BugCheck.StopCode.HeapCorruptionDetected );
 
@@ -1103,6 +1111,7 @@ namespace Microsoft.Zelig.Runtime
         // nodeRoot --> [ 0 ] [null] [ 2 ]
         //               / \__________/
         //             [1]
+        [DisableAutomaticReferenceCounting]
         private static void SelfTest__Memory__BasicAddrefRelease4( )
         {
             BugCheck.Log( "BasicAddrefRelease4 Started..." );
@@ -1111,30 +1120,34 @@ namespace Microsoft.Zelig.Runtime
             BugCheck.Log( "Available memory before = %d", (int)availableMemoryBefore );
 
             UIntPtr node2Ptr;
-            Object node2 = Node.New(out node2Ptr, null, null);
+            var node2 = Node.New(out node2Ptr, null, null);
             UIntPtr node1Ptr;
-            Object node1 = Node.New(out node1Ptr, null, null);
+            var node1 = Node.New(out node1Ptr, null, null);
             UIntPtr node0Ptr;
-            Object node0 = Node.New(out node0Ptr, (Node)node1, (Node)node2);
+            var node0 = Node.New(out node0Ptr, node1, node2);
             UIntPtr nodeArrayPtr;
-            Object nodeArray = Node.NewArray(out nodeArrayPtr, 3, (Node)node0, null, (Node)node2);
+            var nodeArray = Node.NewArray(out nodeArrayPtr, 3, node0, null, node2);
             UIntPtr nodeRootPtr;
-            Object nodeRoot = Node.New(out nodeRootPtr, null, null, (Node[])nodeArray);
+            var nodeRoot = Node.New(out nodeRootPtr, null, null, nodeArray);
 
-            ObjectHeader.ReleaseReference( ref node0 );
-            ObjectHeader.ReleaseReference( ref node1 );
-            ObjectHeader.ReleaseReference( ref nodeArray );
+            ObjectHeader.ReleaseReference( node0 );
+            node0 = null;
+            ObjectHeader.ReleaseReference( node1 );
+            node1 = null;
+            ObjectHeader.ReleaseReference( nodeArray );
+            nodeArray = null;
 
-            ObjectHeader.ReleaseReference( ref nodeRoot );
-
-            BugCheck.Assert( nodeRoot == null, BugCheck.StopCode.HeapCorruptionDetected );
+            ObjectHeader.ReleaseReference( nodeRoot );
+            nodeRoot = null;
+            
             BugCheck.Assert( !MemoryManager.Instance.IsObjectAlive( nodeRootPtr ), BugCheck.StopCode.HeapCorruptionDetected );
             BugCheck.Assert( !MemoryManager.Instance.IsObjectAlive( nodeArrayPtr ), BugCheck.StopCode.HeapCorruptionDetected );
             BugCheck.Assert( !MemoryManager.Instance.IsObjectAlive( node0Ptr ), BugCheck.StopCode.HeapCorruptionDetected );
             BugCheck.Assert( !MemoryManager.Instance.IsObjectAlive( node1Ptr ), BugCheck.StopCode.HeapCorruptionDetected );
             BugCheck.Assert( MemoryManager.Instance.IsObjectAlive( node2Ptr ), BugCheck.StopCode.HeapCorruptionDetected );
 
-            ObjectHeader.ReleaseReference( ref node2 );
+            ObjectHeader.ReleaseReference( node2 );
+            node2 = null;
 
             BugCheck.Assert( !MemoryManager.Instance.IsObjectAlive( node2Ptr ), BugCheck.StopCode.HeapCorruptionDetected );
 
@@ -1152,6 +1165,7 @@ namespace Microsoft.Zelig.Runtime
         //                   [0]  [1] |   [2]
         //                           \|
         //                          emptyArray
+        [DisableAutomaticReferenceCounting]
         private static void SelfTest__Memory__BasicAddrefRelease5( )
         {
             BugCheck.Log( "BasicAddrefRelease5 Started..." );
@@ -1160,28 +1174,30 @@ namespace Microsoft.Zelig.Runtime
             BugCheck.Log( "Available memory before = %d", (int)availableMemoryBefore );
 
             UIntPtr node2Ptr;
-            Object node2 = Node.New(out node2Ptr, null, null);
+            var node2 = Node.New(out node2Ptr, null, null);
             UIntPtr emptyArrayPtr;
-            Object emptyArray = Node.NewArray(out emptyArrayPtr, 0, null);
+            var emptyArray = Node.NewArray(out emptyArrayPtr, 0, null);
             UIntPtr node1Ptr;
-            Object node1 = Node.New(out node1Ptr, null, null, (Node[])emptyArray);
+            var node1 = Node.New(out node1Ptr, null, null, emptyArray);
             UIntPtr node0Ptr;
-            Object node0 = Node.New(out node0Ptr, (Node)node1, (Node)node2);
+            var node0 = Node.New(out node0Ptr, node1, node2);
 
             UIntPtr nodeStructArrayPtr;
-            NodeStruct[] nodeStructArray = NodeStruct.NewArray(out nodeStructArrayPtr, 3);
-            Object nodeStructArrayObj = nodeStructArray;
+            var nodeStructArray = NodeStruct.NewArray(out nodeStructArrayPtr, 3);
 
-            nodeStructArray[ 0 ].Set( (Node)node0, (Node)node1 );
-            nodeStructArray[ 1 ].Set( null, null, (Node[])emptyArray );
-            nodeStructArray[ 2 ].Set( (Node)node2, (Node)node2 );
+            nodeStructArray[ 0 ].Set( node0, node1 );
+            nodeStructArray[ 1 ].Set( null, null, emptyArray );
+            nodeStructArray[ 2 ].Set( node2, node2 );
+
+            ObjectHeader.ReleaseReference( node0 );
+            node0 = null;
+            ObjectHeader.ReleaseReference( node2 );
+            node2 = null;
+            ObjectHeader.ReleaseReference( emptyArray );
+            emptyArray = null;
+
+            ObjectHeader.ReleaseReference( nodeStructArray );
             nodeStructArray = null;
-
-            ObjectHeader.ReleaseReference( ref node0 );
-            ObjectHeader.ReleaseReference( ref node2 );
-            ObjectHeader.ReleaseReference( ref emptyArray );
-
-            ObjectHeader.ReleaseReference( ref nodeStructArrayObj );
 
             BugCheck.Assert( !MemoryManager.Instance.IsObjectAlive( nodeStructArrayPtr ), BugCheck.StopCode.HeapCorruptionDetected );
             BugCheck.Assert( !MemoryManager.Instance.IsObjectAlive( node0Ptr ), BugCheck.StopCode.HeapCorruptionDetected );
@@ -1189,7 +1205,8 @@ namespace Microsoft.Zelig.Runtime
             BugCheck.Assert( !MemoryManager.Instance.IsObjectAlive( node2Ptr ), BugCheck.StopCode.HeapCorruptionDetected );
             BugCheck.Assert( MemoryManager.Instance.IsObjectAlive( emptyArrayPtr ), BugCheck.StopCode.HeapCorruptionDetected ); // Still held by node1
 
-            ObjectHeader.ReleaseReference( ref node1 );
+            ObjectHeader.ReleaseReference( node1 );
+            node1 = null;
 
             BugCheck.Assert( !MemoryManager.Instance.IsObjectAlive( node1Ptr ), BugCheck.StopCode.HeapCorruptionDetected );
             BugCheck.Assert( !MemoryManager.Instance.IsObjectAlive( emptyArrayPtr ), BugCheck.StopCode.HeapCorruptionDetected );
@@ -1203,6 +1220,7 @@ namespace Microsoft.Zelig.Runtime
         }
 
         // Releasing reference to a primitive array
+        [DisableAutomaticReferenceCounting]
         private static void SelfTest__Memory__BasicAddrefRelease6( )
         {
             BugCheck.Log( "BasicAddrefRelease6 Started..." );
@@ -1210,16 +1228,16 @@ namespace Microsoft.Zelig.Runtime
             uint availableMemoryBefore = MemoryManager.Instance.AvailableMemory;
             BugCheck.Log( "Available memory before = %d", (int)availableMemoryBefore );
 
-            int[] intArray = new int[10];
-            ObjectHeader.Unpack( intArray ).InitializeReferenceCount( );
+            var intArray = new int[10];
+            InitializeReferenceCount( intArray );
             UIntPtr intArrayPtr = ObjectHeader.Unpack(intArray).ToPointer();
             for(int i = 0; i < intArray.Length; i++)
             {
                 intArray[ i ] = i;
             }
-            Object intArrayObj = intArray;
+
+            ObjectHeader.ReleaseReference( intArray );
             intArray = null;
-            ObjectHeader.ReleaseReference( ref intArrayObj );
             BugCheck.Assert( !MemoryManager.Instance.IsObjectAlive( intArrayPtr ), BugCheck.StopCode.HeapCorruptionDetected );
 
             uint availableMemoryAfter = MemoryManager.Instance.AvailableMemory;
@@ -1237,6 +1255,7 @@ namespace Microsoft.Zelig.Runtime
         //   \_/    /    \
         //        [2b]   |
         //           \__/
+        [DisableAutomaticReferenceCounting]
         private static void SelfTest__Memory__BasicAddrefRelease7( )
         {
             BugCheck.Log( "BasicAddrefRelease7 Started..." );
@@ -1246,26 +1265,30 @@ namespace Microsoft.Zelig.Runtime
 
             // Node 1 points to itself
             UIntPtr node1Ptr;
-            Object node1 = Node.New(out node1Ptr, null, null);
-            ( (Node)node1 )._node1 = (Node)node1;
-            ObjectHeader.Unpack( node1 ).AddReference( );
+            var node1 = Node.New(out node1Ptr, null, null);
+            node1._node1 = node1;
+            ObjectHeader.AddReference( node1 );
 
             // Node 2a and 2b creates a circular reference
             UIntPtr node2aPtr;
-            Object node2a = Node.New(out node2aPtr, null, null);
+            var node2a = Node.New(out node2aPtr, null, null);
             UIntPtr node2bPtr;
-            Object node2b = Node.New(out node2bPtr, (Node)node2a, null);
-            ( (Node)node2a )._node2 = (Node)node2b;
-            ObjectHeader.Unpack( node2b ).AddReference( );
+            var node2b = Node.New(out node2bPtr, node2a, null);
+            node2a._node2 = node2b;
+            ObjectHeader.AddReference( node2b );
 
             UIntPtr node0Ptr;
-            Object node0 = Node.New(out node0Ptr, (Node)node1, (Node)node2a);
+            var node0 = Node.New(out node0Ptr, node1, node2a);
 
-            ObjectHeader.ReleaseReference( ref node1 );
-            ObjectHeader.ReleaseReference( ref node2a );
-            ObjectHeader.ReleaseReference( ref node2b );
+            ObjectHeader.ReleaseReference( node1 );
+            node1 = null;
+            ObjectHeader.ReleaseReference( node2a );
+            node2a = null;
+            ObjectHeader.ReleaseReference( node2b );
+            node2b = null;
 
-            ObjectHeader.ReleaseReference( ref node0 );
+            ObjectHeader.ReleaseReference( node0 );
+            node0 = null;
 
             BugCheck.Assert( !MemoryManager.Instance.IsObjectAlive( node0Ptr ), BugCheck.StopCode.HeapCorruptionDetected );
             BugCheck.Assert( MemoryManager.Instance.IsObjectAlive( node1Ptr ), BugCheck.StopCode.HeapCorruptionDetected );
@@ -1574,6 +1597,422 @@ namespace Microsoft.Zelig.Runtime
         }
 
         #endregion // Interlocked Tests
+
+        #region RefCount GC Tests
+        private class GCNode
+        {
+            static int s_nextId = 1;
+
+            public static GCNode s_node;
+
+            public int _id;
+            public GCNode _node1;
+            public GCNode _node2;
+
+            public GCNode( GCNode node1, GCNode node2 )
+            {
+                _node1 = node1;
+                _node2 = node2;
+                _id = s_nextId++;
+            }
+
+            [NoInline]
+            public static void ClearStaticNode()
+            {
+                s_node = null;
+            }
+        }
+
+        private static void RefCountGC1_Helper()
+        {
+            GCNode node1 = new GCNode( null, null );
+            BugCheck.Log( "Node1 created: id= %d", node1._id );
+            node1 = new GCNode( null, null );
+            BugCheck.Log( "Node1 replaced by: id= %d", node1._id );
+        }
+
+        private static void SelfTest__Memory__RefCountGC1( )
+        {
+            BugCheck.Log( "RefCountGC1 Started..." );
+
+            uint availableMemoryBefore = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory before = %d", (int)availableMemoryBefore );
+
+            RefCountGC1_Helper( );
+
+            uint availableMemoryAfter = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory after = %d", (int)availableMemoryAfter );
+            BugCheck.Assert( availableMemoryBefore == availableMemoryAfter, BugCheck.StopCode.HeapCorruptionDetected );
+
+            BugCheck.Log( "RefCountGC1 Succeeded." );
+        }
+
+        [NoInline]
+        private static GCNode GetNewGCNode( )
+        {
+            return new GCNode( null, null );
+        }
+
+        [NoInline]
+        private static void GetNewGCNode( out GCNode node )
+        {
+            node = new GCNode( null, null );
+        }
+
+        [NoInline]
+        private static void GetNewGCNodeRef( ref GCNode node )
+        {
+            if(node != null)
+            {
+                node = new GCNode( null, null );
+            }
+        }
+
+        private static void RefCountGC2_Helper( )
+        {
+            GCNode node1 = GetNewGCNode( );
+            BugCheck.Assert( MemoryManager.Instance.IsObjectAlive( ObjectHeader.Unpack( node1 ).ToPointer( )), BugCheck.StopCode.HeapCorruptionDetected );
+            BugCheck.Log( "Node1 created: id= %d", node1._id );
+            node1 = new GCNode( null, null );
+            BugCheck.Log( "Node1 replaced by: id= %d", node1._id );
+        }
+
+        private static void SelfTest__Memory__RefCountGC2( )
+        {
+            BugCheck.Log( "RefCountGC2 Started..." );
+
+            uint availableMemoryBefore = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory before = %d", (int)availableMemoryBefore );
+
+            RefCountGC2_Helper( );
+
+            uint availableMemoryAfter = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory after = %d", (int)availableMemoryAfter );
+            BugCheck.Assert( availableMemoryBefore == availableMemoryAfter, BugCheck.StopCode.HeapCorruptionDetected );
+
+            BugCheck.Log( "RefCountGC2 Succeeded." );
+        }
+
+        private static void RefCountGC3_Helper( )
+        {
+            GCNode node1 = new GCNode( null, null );
+            BugCheck.Log( "Node1 created: id= %d", node1._id );
+            GCNode node2 = new GCNode( null, null );
+            BugCheck.Log( "Node2 created: id= %d", node2._id );
+            node1 = node2;
+            BugCheck.Log( "Node1 is now: id= %d", node1._id );
+            BugCheck.Log( "Node2 is now: id= %d", node2._id );
+        }
+
+        private static void SelfTest__Memory__RefCountGC3( )
+        {
+            BugCheck.Log( "RefCountGC3 Started..." );
+
+            uint availableMemoryBefore = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory before = %d", (int)availableMemoryBefore );
+
+            RefCountGC3_Helper( );
+
+            uint availableMemoryAfter = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory after = %d", (int)availableMemoryAfter );
+            BugCheck.Assert( availableMemoryBefore == availableMemoryAfter, BugCheck.StopCode.HeapCorruptionDetected );
+
+            BugCheck.Log( "RefCountGC3 Succeeded." );
+        }
+
+        private static void RefCountGC4_Helper( )
+        {
+            GCNode node0 = new GCNode( null, null );
+            int node0Id = node0._id;
+            BugCheck.Log( "Node0 created: id= %d", node0Id );
+
+            GCNode node1 = new GCNode( null, null );
+            int node1Id = node1._id;
+            BugCheck.Log( "Node1 created: id= %d", node1Id );
+
+            GCNode node2 = new GCNode( node1, null );
+            int node2Id = node2._id;
+            BugCheck.Log( "Node2 created: id= %d", node2Id );
+            BugCheck.Log( "Node2._node1 is: id= %d", node2._node1._id );
+            BugCheck.Assert( node2._node1._id == node1Id, BugCheck.StopCode.HeapCorruptionDetected );
+
+            node1 = node2;
+
+            BugCheck.Log( "Node1 is now: id= %d", node1._id );
+            BugCheck.Log( "Node2._node1 is now: id= %d", node2._node1._id );
+            BugCheck.Assert( MemoryManager.Instance.IsObjectAlive( ObjectHeader.Unpack( node2._node1 ).ToPointer( ) ), BugCheck.StopCode.HeapCorruptionDetected );
+            BugCheck.Assert( node1._id == node2Id, BugCheck.StopCode.HeapCorruptionDetected );
+
+            node2._node1 = node0;
+            BugCheck.Log( "Node2._node1 is now: id= %d", node2._node1._id );
+            BugCheck.Assert( node2._node1._id == node0Id, BugCheck.StopCode.HeapCorruptionDetected );
+        }
+
+        private static void SelfTest__Memory__RefCountGC4( )
+        {
+            BugCheck.Log( "RefCountGC4 Started..." );
+
+            uint availableMemoryBefore = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory before = %d", (int)availableMemoryBefore );
+
+            RefCountGC4_Helper( );
+
+            uint availableMemoryAfter = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory after = %d", (int)availableMemoryAfter );
+            BugCheck.Assert( availableMemoryBefore == availableMemoryAfter, BugCheck.StopCode.HeapCorruptionDetected );
+
+            BugCheck.Log( "RefCountGC4 Succeeded." );
+        }
+
+        private static void RefCountGC5_Helper( )
+        {
+            GCNode node1 = new GCNode( null, null );
+            int node1Id = node1._id;
+            BugCheck.Log( "Node1 created: id= %d", node1Id );
+            GCNode.s_node = new GCNode( node1, null );
+            BugCheck.Log( "s_node created: id= %d", GCNode.s_node._id );
+            BugCheck.Log( "s_node._node1 is: id= %d", GCNode.s_node._node1._id );
+            BugCheck.Assert( GCNode.s_node._node1._id == node1Id, BugCheck.StopCode.HeapCorruptionDetected );
+
+            GCNode.s_node = node1;
+            BugCheck.Log( "s_node is now: id= %d", GCNode.s_node._id );
+            BugCheck.Assert( GCNode.s_node._id == node1Id, BugCheck.StopCode.HeapCorruptionDetected );
+        }
+
+        private static void SelfTest__Memory__RefCountGC5( )
+        {
+            BugCheck.Log( "RefCountGC5 Started..." );
+
+            uint availableMemoryBefore = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory before = %d", (int)availableMemoryBefore );
+
+            RefCountGC5_Helper( );
+
+            uint availableMemoryAfter = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory after helper = %d", (int)availableMemoryAfter );
+
+            GCNode.ClearStaticNode( );
+
+            availableMemoryAfter = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory after clear = %d", (int)availableMemoryAfter );
+            BugCheck.Assert( availableMemoryBefore == availableMemoryAfter, BugCheck.StopCode.HeapCorruptionDetected );
+
+            BugCheck.Log( "RefCountGC5 Succeeded." );
+        }
+
+        private static void RefCountGC6_Helper( )
+        {
+            GCNode[] nodeArray = new GCNode[ 3 ];
+
+            for(int repeat = 0; repeat < 2; repeat++)
+            {
+                for(int i = 0; i < nodeArray.Length; i++)
+                {
+                    nodeArray[ i ] = new GCNode( null, null );
+
+                    BugCheck.Log( "NodeArray[%d] created: id= %d", i, nodeArray[ i ]._id );
+                }
+            }
+
+            for(int i = 0; i < nodeArray.Length; i++)
+            {
+                nodeArray[ i ] = null;
+
+                BugCheck.Log( "NodeArray[%d] set to null.", i );
+            }
+        }
+
+        private static void SelfTest__Memory__RefCountGC6( )
+        {
+            BugCheck.Log( "RefCountGC6 Started..." );
+
+            uint availableMemoryBefore = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory before = %d", (int)availableMemoryBefore );
+
+            RefCountGC6_Helper( );
+
+            uint availableMemoryAfter = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory after = %d", (int)availableMemoryAfter );
+            BugCheck.Assert( availableMemoryBefore == availableMemoryAfter, BugCheck.StopCode.HeapCorruptionDetected );
+
+            BugCheck.Log( "RefCountGC6 Succeeded." );
+        }
+
+        private static void RefCountGC7_Helper( )
+        {
+            GCNode node = new GCNode( null, null );
+            BugCheck.Log( "Node created: id= %d", node._id );
+            GetNewGCNode( out node );
+            BugCheck.Assert( MemoryManager.Instance.IsObjectAlive( ObjectHeader.Unpack( node ).ToPointer( ) ), BugCheck.StopCode.HeapCorruptionDetected );
+            BugCheck.Log( "Node is now: id= %d", node._id );
+            node = new GCNode( null, null );
+            BugCheck.Log( "Node replaced by: id= %d", node._id );
+        }
+
+        private static void SelfTest__Memory__RefCountGC7( )
+        {
+            BugCheck.Log( "RefCountGC7 Started..." );
+
+            uint availableMemoryBefore = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory before = %d", (int)availableMemoryBefore );
+
+            RefCountGC7_Helper( );
+
+            uint availableMemoryAfter = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory after = %d", (int)availableMemoryAfter );
+            BugCheck.Assert( availableMemoryBefore == availableMemoryAfter, BugCheck.StopCode.HeapCorruptionDetected );
+
+            BugCheck.Log( "RefCountGC7 Succeeded." );
+        }
+
+        private static void RefCountGC8_Helper( )
+        {
+            GCNode node = new GCNode( null, null );
+            BugCheck.Log( "Node created: id= %d", node._id );
+            GetNewGCNodeRef( ref node );
+            BugCheck.Assert( MemoryManager.Instance.IsObjectAlive( ObjectHeader.Unpack( node ).ToPointer( ) ), BugCheck.StopCode.HeapCorruptionDetected );
+            BugCheck.Log( "Node is now: id= %d", node._id );
+            node = new GCNode( null, null );
+            BugCheck.Log( "Node replaced by: id= %d", node._id );
+        }
+
+        private static void SelfTest__Memory__RefCountGC8( )
+        {
+            BugCheck.Log( "RefCountGC8 Started..." );
+
+            uint availableMemoryBefore = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory before = %d", (int)availableMemoryBefore );
+
+            RefCountGC8_Helper( );
+
+            uint availableMemoryAfter = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory after = %d", (int)availableMemoryAfter );
+            BugCheck.Assert( availableMemoryBefore == availableMemoryAfter, BugCheck.StopCode.HeapCorruptionDetected );
+
+            BugCheck.Log( "RefCountGC8 Succeeded." );
+        }
+
+        private static void RefCountGC9_Helper( )
+        {
+            GCNode node1 = new GCNode( null, null );
+            BugCheck.Log( "Node1 created: id= %d", node1._id );
+            UIntPtr node1Ptr = ObjectHeader.Unpack( node1 ).ToPointer( );
+            BugCheck.Log( "Node1ptr = %x", (int)node1Ptr.ToUInt32( ) );
+            Object nodeObj = ObjectImpl.FromPointer( node1Ptr );
+            BugCheck.Log( "NodeObj = %x", (int)ObjectHeader.Unpack( nodeObj ).ToPointer( ).ToUInt32( ) );
+            GCNode node2 = (GCNode)nodeObj;
+            BugCheck.Log( "node2 is: id= %d", node2._id );
+        }
+
+        private static void SelfTest__Memory__RefCountGC9( )
+        {
+            BugCheck.Log( "RefCountGC9 Started..." );
+
+            uint availableMemoryBefore = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory before = %d", (int)availableMemoryBefore );
+
+            RefCountGC9_Helper( );
+
+            uint availableMemoryAfter = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory after = %d", (int)availableMemoryAfter );
+            BugCheck.Assert( availableMemoryBefore == availableMemoryAfter, BugCheck.StopCode.HeapCorruptionDetected );
+
+            BugCheck.Log( "RefCountGC9 Succeeded." );
+        }
+
+        private static void RefCountGC10_Helper( )
+        {
+            String a = new string( 'a', 3 );
+            String b = "bbb";
+            char[] array = { 'c', 'c', 'c' };
+            String c = new string( array );
+
+            BugCheck.Log( a );
+            BugCheck.Log( b );
+            BugCheck.Log( c );
+
+            String concat = a + b + c;
+            BugCheck.Log( concat );
+        }
+
+        private static void SelfTest__Memory__RefCountGC10( )
+        {
+            BugCheck.Log( "RefCountGC10 Started..." );
+
+            uint availableMemoryBefore = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory before = %d", (int)availableMemoryBefore );
+
+            RefCountGC10_Helper( );
+
+            uint availableMemoryAfter = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory after = %d", (int)availableMemoryAfter );
+            BugCheck.Assert( availableMemoryBefore == availableMemoryAfter, BugCheck.StopCode.HeapCorruptionDetected );
+
+            BugCheck.Log( "RefCountGC10 Succeeded." );
+        }
+
+        private static GCNode RefCountGC11_SetupHelper()
+        {
+            var node = new GCNode( new GCNode( null, null ), null );
+
+            BugCheck.Log( "Node created: id= %d", node._id );
+            BugCheck.Log( "Node.node1 created: id= %d", node._node1._id );
+
+            return node;
+        }
+
+        private static void RefCountGC11_ExchangeHelper( GCNode node )
+        {
+            var node1 = new GCNode( null, null );
+            BugCheck.Log( "Node created: id= %d", node1._id );
+
+            Interlocked.Exchange( ref node._node1, node1 );
+        }
+
+        private static void RefCountGC11_CompareExchangeHelper( GCNode node )
+        {
+            var node1 = node._node1;
+
+            var newNode1 = new GCNode( null, null );
+            BugCheck.Log( "Node created: id= %d", newNode1._id );
+
+            Interlocked.CompareExchange( ref node._node1, newNode1, node1 );
+        }
+
+        private static void RefCountGC11_Helper( )
+        {
+            GCNode node = RefCountGC11_SetupHelper( );
+
+            RefCountGC11_ExchangeHelper( node );
+
+            BugCheck.Log( "Node.node1 is now: id= %d", node._node1._id );
+
+            BugCheck.Assert( MemoryManager.Instance.IsObjectAlive( ( (ObjectImpl)(object)node._node1 ).ToPointer( ) ), BugCheck.StopCode.HeapCorruptionDetected );
+
+            RefCountGC11_CompareExchangeHelper( node );
+
+            BugCheck.Log( "Node.node1 is now: id= %d", node._node1._id );
+
+            BugCheck.Assert( MemoryManager.Instance.IsObjectAlive( ( (ObjectImpl)(object)node._node1 ).ToPointer( ) ), BugCheck.StopCode.HeapCorruptionDetected );
+        }
+
+        private static void SelfTest__Memory__RefCountGC11( )
+        {
+            BugCheck.Log( "RefCountGC11 Started..." );
+
+            uint availableMemoryBefore = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory before = %d", (int)availableMemoryBefore );
+
+            RefCountGC11_Helper( );
+
+            uint availableMemoryAfter = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory after = %d", (int)availableMemoryAfter );
+            BugCheck.Assert( availableMemoryBefore == availableMemoryAfter, BugCheck.StopCode.HeapCorruptionDetected );
+
+            BugCheck.Log( "RefCountGC11 Succeeded." );
+        }
+
+        #endregion
 
         //--//
         //--//

@@ -65,6 +65,7 @@ namespace Microsoft.Zelig.Runtime
         {
         }
 
+        [TS.WellKnownMethod( "ThreadImpl_ctor" )]
         [DiscardTargetImplementation]
         public ThreadImpl( System.Threading.ThreadStart start ,
                            uint[]                       stack )
@@ -88,6 +89,28 @@ namespace Microsoft.Zelig.Runtime
             
             m_swappedOutContext.PopulateFromDelegate( entrypoint, m_stack );
         }
+
+        [TS.WellKnownMethod( "ThreadImpl_AllocateReleaseReferenceHelper" )]
+        private void AllocateReleaseReferenceHelper()
+        {
+            m_releaseReferenceHelper = new ReleaseReferenceHelper( );
+        }
+
+        internal enum BootstrapThread
+        {
+            BootstrapThread
+        }
+
+        [TS.DisableAutomaticReferenceCounting]
+        [DiscardTargetImplementation]
+        internal ThreadImpl(BootstrapThread bst)
+        {
+            if (bst == BootstrapThread.BootstrapThread)
+            {
+                m_releaseReferenceHelper = new ReleaseReferenceHelper(0, 0);
+            }
+        }
+
 
         //--//
 
@@ -634,13 +657,10 @@ namespace Microsoft.Zelig.Runtime
 
         public ReleaseReferenceHelper ReleaseReference
         {
+            [Inline]
+            [TS.DisableAutomaticReferenceCounting]
             get
             {
-                if(m_releaseReferenceHelper == null)
-                {
-                    m_releaseReferenceHelper = new ReleaseReferenceHelper( );
-                }
-
                 return m_releaseReferenceHelper;
             }
         }

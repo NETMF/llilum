@@ -118,6 +118,16 @@ namespace Microsoft.Zelig.Runtime
             }
         }
 
+        [TS.DisableAutomaticReferenceCounting]
+        public void InitializeForReferenceCounting()
+        {
+            // Set up a dummy bootstrap thread with a fake release reference helper as part of the
+            // heap initialization when the reference counting garbage collection is turned on.
+            // This is so that if ReleaseReference needs to call CurrentThread.ReleaseReferenceHelper
+            // before the main thread is established, it can behave predictably.
+            ThreadImpl.CurrentThread = new ThreadImpl( ThreadImpl.BootstrapThread.BootstrapThread );
+        }
+
         public virtual void InitializeBeforeStaticConstructors()
         {
             //

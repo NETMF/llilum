@@ -71,6 +71,23 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
 #endif
 
             }
+
+            if (this.TypeSystem.EnableReferenceCountingGarbageCollection)
+            {
+                // Keep the reference counting methods around so they stay alive when we inject 
+                // auto reference counting code in the ReferenceCountingGarbageCollection phase
+                var wkm = this.TypeSystem.WellKnownMethods;
+                m_state.Execute( wkm.ObjectHeader_AddReference );
+                m_state.Execute( wkm.ObjectHeader_ReleaseReference );
+                m_state.Execute( wkm.ThreadImpl_AllocateReleaseReferenceHelper );
+                m_state.Execute( wkm.ReferenceCountingCollector_Swap );
+                m_state.Execute( wkm.ReferenceCountingCollector_LoadAndAddReference );
+                m_state.Execute( wkm.StringImpl_FastAllocateReferenceCountingString );
+                m_state.Execute( wkm.Bootstrap_ReferenceCountingInitialization );
+                m_state.Execute( wkm.InterlockedImpl_ReferenceCountingExchange );
+                m_state.Execute( wkm.InterlockedImpl_ReferenceCountingCompareExchange );
+            }
+
             this.TypeSystem.ExpandCallsClosure( m_state );
 
             var touched = this.CallsDataBase.ExecuteInlining( this.TypeSystem );

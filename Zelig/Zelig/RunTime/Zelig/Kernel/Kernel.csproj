@@ -117,6 +117,7 @@
     <Compile Include="FrameworkOverrides_Windows\Devices\Spi\SpiDeviceImplUwp.cs" />
     <Compile Include="FrameworkOverrides_Windows\Devices\Spi\SpiProviderUwp.cs" />
     <Compile Include="GarbageCollectors\MarkAndSweepCollector.cs" />
+    <Compile Include="GarbageCollectors\ReferenceCountingCollector.cs" />
     <Compile Include="HardwareModel\HardwareProvider.cs" />
     <Compile Include="HardwareModel\TargetPlatform\AbstractMethodWrapper.cs" />
     <Compile Include="HardwareModel\TargetPlatform\ARMv5\ProcessorARMv5.cs" />

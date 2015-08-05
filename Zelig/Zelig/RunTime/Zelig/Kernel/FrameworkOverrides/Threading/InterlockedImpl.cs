@@ -194,6 +194,38 @@ namespace Microsoft.Zelig.Runtime
 
         //--//
 
+        [NoInline]
+        [TS.DisableAutomaticReferenceCounting]
+        [TS.WellKnownMethod( "InterlockedImpl_ReferenceCountingExchange" )]
+        private static Object ReferenceCountingExchange( ref Object location1,
+                                                             Object value )
+        {
+            ObjectHeader.AddReference( value );
+            var oldValue = InternalExchange( ref location1, value );
+            ObjectHeader.ReleaseReference( oldValue );
+            return oldValue;
+        }
+
+        [NoInline]
+        [TS.DisableAutomaticReferenceCounting]
+        [TS.WellKnownMethod( "InterlockedImpl_ReferenceCountingCompareExchange" )]
+        private static Object ReferenceCountingCompareExchange( ref Object location1,
+                                                                    Object value,
+                                                                    Object comparand )
+        {
+            ObjectHeader.AddReference( value );
+            var oldValue = InternalCompareExchange( ref location1, value, comparand );
+            if (oldValue == comparand)
+            {
+                ObjectHeader.ReleaseReference( oldValue );
+            }
+            else
+            {
+                ObjectHeader.ReleaseReference( value );
+            }
+            return oldValue;
+        }
+
 #if LLVM
         [NoInline] // Disable inlining so we always have a chance to replace the method.
 #else
@@ -272,6 +304,7 @@ namespace Microsoft.Zelig.Runtime
         [Inline]
 #endif
         [TS.WellKnownMethod( "InterlockedImpl_InternalExchange_Template" )]
+        [TS.DisableAutomaticReferenceCounting]
         internal static T InternalExchange<T>( ref T location1,
                                                    T value ) where T : class
         {
@@ -380,6 +413,7 @@ namespace Microsoft.Zelig.Runtime
         [Inline]
 #endif
         [TS.WellKnownMethod( "InterlockedImpl_InternalCompareExchange_Template" )]
+        [TS.DisableAutomaticReferenceCounting]
         internal static T InternalCompareExchange<T>( ref T location1,
                                                           T value,
                                                           T comparand ) where T : class

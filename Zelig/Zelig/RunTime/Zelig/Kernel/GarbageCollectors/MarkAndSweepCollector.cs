@@ -475,6 +475,11 @@ namespace Microsoft.Zelig.Runtime
                             address = AddressMath.Increment( address, sizeof(uint) );
                             break;
 
+                        case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes | ObjectHeader.GarbageCollectorFlags.Unmarked:
+                        case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes | ObjectHeader.GarbageCollectorFlags.Marked:
+                            address = AddressMath.Increment( address, oh.AllocatedRawBytesSize );
+                            break;
+
                         case ObjectHeader.GarbageCollectorFlags.ReadOnlyObject       | ObjectHeader.GarbageCollectorFlags.Unmarked:
                         case ObjectHeader.GarbageCollectorFlags.ReadOnlyObject       | ObjectHeader.GarbageCollectorFlags.Marked  :
                             BugCheck.Raise( BugCheck.StopCode.HeapCorruptionDetected );
@@ -829,6 +834,11 @@ namespace Microsoft.Zelig.Runtime
                             addressNext = AddressMath.Increment( address, sizeof(uint) );
                             break;
 
+                        case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes | ObjectHeader.GarbageCollectorFlags.Unmarked:
+                        case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes | ObjectHeader.GarbageCollectorFlags.Marked:
+                            addressNext = AddressMath.Increment( address, oh.AllocatedRawBytesSize );
+                            break;
+
                         case ObjectHeader.GarbageCollectorFlags.ReadOnlyObject       | ObjectHeader.GarbageCollectorFlags.Unmarked:
                         case ObjectHeader.GarbageCollectorFlags.ReadOnlyObject       | ObjectHeader.GarbageCollectorFlags.Marked  :
                             BugCheck.Raise( BugCheck.StopCode.HeapCorruptionDetected );
@@ -1025,6 +1035,10 @@ namespace Microsoft.Zelig.Runtime
 
                 case ObjectHeader.GarbageCollectorFlags.ReadOnlyObject       | ObjectHeader.GarbageCollectorFlags.Unmarked:
                 case ObjectHeader.GarbageCollectorFlags.ReadOnlyObject       | ObjectHeader.GarbageCollectorFlags.Marked  :
+                    return;
+
+                case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes | ObjectHeader.GarbageCollectorFlags.Unmarked:
+                case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes | ObjectHeader.GarbageCollectorFlags.Marked:
                     return;
 
                 case ObjectHeader.GarbageCollectorFlags.UnreclaimableObject  | ObjectHeader.GarbageCollectorFlags.Unmarked:
@@ -1325,6 +1339,11 @@ namespace Microsoft.Zelig.Runtime
                             }
                             break;
 
+                        case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes | ObjectHeader.GarbageCollectorFlags.Unmarked:
+                        case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes | ObjectHeader.GarbageCollectorFlags.Marked:
+                            address = AddressMath.Increment( address, oh.AllocatedRawBytesSize );
+                            break;
+
                         default:
                             BugCheck.Raise( BugCheck.StopCode.HeapCorruptionDetected );
                             return;
@@ -1385,6 +1404,11 @@ namespace Microsoft.Zelig.Runtime
 
                                 address = addressNext;
                             }
+                            break;
+
+                        case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes | ObjectHeader.GarbageCollectorFlags.Unmarked:
+                        case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes | ObjectHeader.GarbageCollectorFlags.Marked:
+                            address = AddressMath.Increment( address, oh.AllocatedRawBytesSize );
                             break;
 
                         default:

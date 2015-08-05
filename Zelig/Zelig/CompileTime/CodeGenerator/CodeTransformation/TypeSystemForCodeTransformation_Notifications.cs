@@ -473,6 +473,54 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             m_garbageCollectionExclusions.Insert( owner );
         }
 
+        [CompilationSteps.CustomAttributeNotification( "Microsoft_Zelig_Runtime_TypeSystem_DisableReferenceCountingAttribute" )]
+        private void Notify_EnableReferenceCountingAttribute( ref bool                          fKeep,
+                                                                  CustomAttributeRepresentation ca,
+                                                                  TypeRepresentation            owner )
+        {
+            m_referenceCountingExcludedTypes.Insert( owner );
+        }
+
+        [CompilationSteps.CustomAttributeNotification( "Microsoft_Zelig_Runtime_TypeSystem_DisableAutomaticReferenceCountingAttribute" )]
+        private void Notify_DisableAutomaticReferenceCountingAttribute( ref bool                          fKeep,
+                                                                            CustomAttributeRepresentation ca,
+                                                                            BaseRepresentation            owner )
+        {
+            if(owner is MethodRepresentation)
+            {
+                AddAutomaticReferenceCountingExclusion( (MethodRepresentation)owner );
+            }
+            else if(owner is TypeRepresentation)
+            {
+                var tr = (TypeRepresentation)owner;
+
+                foreach(var mr in tr.Methods)
+                {
+                    AddAutomaticReferenceCountingExclusion( mr );
+                }
+            }
+        }
+
+        private void AddAutomaticReferenceCountingExclusion( MethodRepresentation md )
+        {
+            if(md.IsGenericInstantiation)
+            {
+                md = md.GenericTemplate;
+            }
+
+            var methodsList = m_automaticReferenceCountingExclusions.GetValue( md.Name );
+            if(methodsList == null)
+            {
+                methodsList = new List<MethodRepresentation>( );
+                m_automaticReferenceCountingExclusions.Add( md.Name, methodsList );
+            }
+
+            if(!methodsList.Contains( md ))
+            {
+                methodsList.Add( md );
+            }
+        }
+
         //--//
 
         [CompilationSteps.CustomAttributeNotification( "Microsoft_Zelig_Runtime_AlignmentRequirementsAttribute" )]

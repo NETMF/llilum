@@ -10,7 +10,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
 
     using Microsoft.Zelig.Runtime.TypeSystem;
 
-
+    [PhaseOrdering( ExecuteAfter = typeof( InitializeReferenceCountingGarbageCollection ) )]
     public sealed class ReduceNumberOfTemporaries : PhaseDriver
     {
         //

@@ -91,7 +91,9 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_SZArrayHelper;
 
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_TypeSystem_AssumeReferencedAttribute;
-        
+        public readonly TypeRepresentation Microsoft_Zelig_Runtime_TypeSystem_DisableAutomaticReferenceCountingAttribute;
+        public readonly TypeRepresentation Microsoft_Zelig_Runtime_TypeSystem_DisableReferenceCountingAttribute;
+
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_AliasForBaseFieldAttribute;
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_AliasForBaseMethodAttribute;
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_AliasForSuperMethodAttribute;

@@ -9,7 +9,7 @@ namespace Microsoft.Zelig.Runtime
 
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
-
+    [TS.DisableAutomaticReferenceCounting]
     public abstract class DefaultTypeSystemManager : TypeSystemManager
     {
         [NoInline]
@@ -23,7 +23,21 @@ namespace Microsoft.Zelig.Runtime
                 Memory.Zero( ptr, AddressMath.Increment( ptr, size ) ); 
             }
 
-            return InitializeObject( ptr, vTable );
+            return InitializeObject( ptr, vTable, referenceCounting: false );
+        }
+
+        [NoInline]
+        public override Object AllocateReferenceCountingObject( TS.VTable vTable )
+        {
+            uint   size = ComputeObjectSize( vTable       );
+            UIntPtr ptr = AllocateInner    ( vTable, size );
+
+            if(MemoryManager.Configuration.TrashFreeMemory)
+            {
+                Memory.Zero( ptr, AddressMath.Increment( ptr, size ) ); 
+            }
+
+            return InitializeObject( ptr, vTable, referenceCounting: true );
         }
 
         [NoInline]
@@ -52,7 +66,22 @@ namespace Microsoft.Zelig.Runtime
                 Memory.Zero( ptr, AddressMath.Increment( ptr, size ) ); 
             }
 
-            return InitializeArray( ptr, vTable, length );
+            return InitializeArray( ptr, vTable, length, referenceCounting: false );
+        }
+
+        [NoInline]
+        public override Array AllocateReferenceCountingArray( TS.VTable vTable,
+                                                              uint      length )
+        {
+            uint    size = ComputeArraySize( vTable, length );
+            UIntPtr ptr  = AllocateInner   ( vTable, size   );
+
+            if(MemoryManager.Configuration.TrashFreeMemory)
+            {
+                Memory.Zero( ptr, AddressMath.Increment( ptr, size ) ); 
+            }
+
+            return InitializeArray( ptr, vTable, length, referenceCounting: true );
         }
 
         [NoInline]
@@ -62,7 +91,7 @@ namespace Microsoft.Zelig.Runtime
             uint    size = ComputeArraySize( vTable, length );
             UIntPtr ptr  = AllocateInner   ( vTable, size   );
 
-            return InitializeArray( ptr, vTable, length );
+            return InitializeArray( ptr, vTable, length, referenceCounting: false );
         }
 
         [NoInline]
@@ -77,7 +106,22 @@ namespace Microsoft.Zelig.Runtime
                 Memory.Zero( ptr, AddressMath.Increment( ptr, size ) ); 
             }
 
-            return InitializeString( ptr, vTable, length );
+            return InitializeString( ptr, vTable, length, referenceCounting: false );
+        }
+
+        [NoInline]
+        public override String AllocateReferenceCountingString( TS.VTable vTable ,
+                                                                int       length )
+        {
+            uint    size = ComputeArraySize( vTable, (uint)length );
+            UIntPtr ptr  = AllocateInner   ( vTable,       size   );
+
+            if(MemoryManager.Configuration.TrashFreeMemory)
+            {
+                Memory.Zero( ptr, AddressMath.Increment( ptr, size ) ); 
+            }
+
+            return InitializeString( ptr, vTable, length, referenceCounting: true );
         }
 
         //--//

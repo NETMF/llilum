@@ -10,7 +10,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
 
     using Microsoft.Zelig.Runtime.TypeSystem;
     
-    [PhaseOrdering( ExecuteAfter=typeof( FromImplicitToExplictExceptions ) )]
+    [PhaseOrdering( ExecuteAfter=typeof( ReferenceCountingGarbageCollection ) )]
     [PhaseLimit( Operator.OperatorLevel.ConcreteTypes_NoExceptions )]
     public sealed class MidLevelToLowLevelConversion : PhaseDriver
     {

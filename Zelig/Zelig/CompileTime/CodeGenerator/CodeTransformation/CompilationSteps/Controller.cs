@@ -318,6 +318,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
 
             cache.Register( new Handlers.OperatorHandlers_HighLevel                               () );
             cache.Register( new Handlers.OperatorHandlers_HighLevelToMidLevel                     () );
+            cache.Register( new Handlers.OperatorHandlers_ReferenceCountingGarbageCollection      () );
             cache.Register( new Handlers.OperatorHandlers_FromImplicitToExplictExceptions         () );
             cache.Register( new Handlers.OperatorHandlers_ConvertUnsupportedOperatorsToMethodCalls() );
             cache.Register( new Handlers.OperatorHandlers_ExpandAggregateTypes                    () );

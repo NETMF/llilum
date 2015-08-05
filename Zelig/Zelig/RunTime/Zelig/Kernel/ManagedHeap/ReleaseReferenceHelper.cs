@@ -7,6 +7,8 @@ namespace Microsoft.Zelig.Runtime
     using System;
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
+    [TS.DisableAutomaticReferenceCounting]
+    [TS.DisableReferenceCounting]
     public class ReleaseReferenceHelper
     {
         private const int c_defaultObjectStackCapacity = 100;
@@ -71,41 +73,42 @@ namespace Microsoft.Zelig.Runtime
 
         public ReleaseReferenceHelper( int objectStackCapacity, int arrayStackCapacity )
         {
-            m_objectStack = new ObjectHeader[ objectStackCapacity ];
+            m_objectStack = ( objectStackCapacity > 0 ) ? new ObjectHeader[ objectStackCapacity ] : null;
             m_objectStackPos = 0;
 
-            _arrayStack = new ArrayInfo[ arrayStackCapacity ];
+            _arrayStack = ( arrayStackCapacity > 0 ) ? new ArrayInfo[ arrayStackCapacity ] : null;
             _arrayStackPos = 0;
         }
 
-        public bool ReleaseReference( ObjectHeader oh )
+        public void DeleteObject( ObjectHeader oh )
         {
-            Log( "ReleaseReference 0x%x", (int)oh.ToPointer( ) );
+            Log( "DeleteObject 0x%x", (int)oh.ToPointer( ) );
 
-            // DecrementRefCount returns true when the ref count of oh reaches 0
-            if(DecrementRefCount( oh ))
+            if(oh.VirtualTable.IsArray)
             {
-                while(true)
-                {
-                    if(!this.IsObjectStackEmpty)
-                    {
-                        VisitObjectStack( );
-                        continue;
-                    }
-
-                    if(!this.IsArrayStackEmpty)
-                    {
-                        VisitArrayStack( );
-                        continue;
-                    }
-
-                    break;
-                }
-
-                return true;
+                PushToArrayStack( oh );
+            }
+            else
+            {
+                PushToObjectStack( oh );
             }
 
-            return false;
+            while(true)
+            {
+                if(!this.IsObjectStackEmpty)
+                {
+                    VisitObjectStack( );
+                    continue;
+                }
+
+                if(!this.IsArrayStackEmpty)
+                {
+                    VisitArrayStack( );
+                    continue;
+                }
+
+                break;
+            }
         }
 
         // Helper that decrement the ref count of oh, and if necessary, 
@@ -113,7 +116,7 @@ namespace Microsoft.Zelig.Runtime
         // Return true if the ref count reaches 0.
         private bool DecrementRefCount( ObjectHeader oh )
         {
-            if(oh.ExtensionKind == ObjectHeader.ExtensionKinds.ReferenceCount &&
+            if(oh.HasReferenceCount &&
                 oh.DecrementReferenceCount())
             {
                 if(oh.VirtualTable.IsArray)
@@ -157,7 +160,7 @@ namespace Microsoft.Zelig.Runtime
         }
 
         // Helper that calls the finalizer and free up the memory.
-        private void DeleteObject( ObjectHeader oh )
+        private void DeleteObjectFromMemory( ObjectHeader oh )
         {
             Log( "Releasing oh:0x%x from memory.", (int)oh.ToPointer( ) );
             oh.Pack().FinalizeImpl( );
@@ -173,7 +176,7 @@ namespace Microsoft.Zelig.Runtime
 
             UIntPtr baseAddress = oh.Pack().GetFieldPointer();
             DecrementFieldsRefCount( baseAddress, oh.VirtualTable );
-            DeleteObject( oh );
+            DeleteObjectFromMemory( oh );
         }
 
         // Helper called by the main loop to iterate through the array stack.
@@ -206,17 +209,18 @@ namespace Microsoft.Zelig.Runtime
             {
                 // When we've gone through all the elements in this array, we can safely delete
                 // array object from memory
-                DeleteObject( PopFromArrayStack( ) );
+                DeleteObjectFromMemory( PopFromArrayStack( ) );
             }
         }
 
         private void PushToObjectStack( ObjectHeader oh )
         {
-            Log( "Adding 0x%x to delete object stack at pos:%d", (int)oh.ToPointer(), m_objectStackPos );
+            if(m_objectStack != null && m_objectStackPos < m_objectStack.Length - 1)
+            {
+                Log( "Adding 0x%x to delete object stack at pos:%d", (int)oh.ToPointer(), m_objectStackPos );
 
-            BugCheck.Assert( m_objectStackPos < m_objectStack.Length - 1, BugCheck.StopCode.NoMarkStack );
-
-            m_objectStack[ m_objectStackPos++ ] = oh;
+                m_objectStack[ m_objectStackPos++ ] = oh;
+            }
         }
 
         private void PushToArrayStack( ObjectHeader oh )
@@ -227,7 +231,7 @@ namespace Microsoft.Zelig.Runtime
             if(numOfElements == 0)
             {
                 // Empty array, we can just delete the array object itself and return.
-                DeleteObject( oh );
+                DeleteObjectFromMemory( oh );
                 return;
             }
 
@@ -239,7 +243,7 @@ namespace Microsoft.Zelig.Runtime
                 {
                     // It's an array of value types with no pointers, no need to push it.
                     // Just delete the array object and return.
-                    DeleteObject( oh );
+                    DeleteObjectFromMemory( oh );
                     return;
                 }
 
@@ -252,11 +256,12 @@ namespace Microsoft.Zelig.Runtime
                 vTableElement = null;
             }
 
-            Log( "Adding 0x%x (len %d) to delete array stack at pos:%d", (int)oh.ToPointer( ), (int)numOfElements, _arrayStackPos );
-
-            BugCheck.Assert( _arrayStackPos < _arrayStack.Length - 1, BugCheck.StopCode.NoMarkStack );
-
-            _arrayStack[ _arrayStackPos++ ].Push( array, oh.VirtualTable.ElementSize, numOfElements, vTableElement );
+            if(_arrayStack != null && _arrayStackPos < _arrayStack.Length - 1)
+            {
+                Log( "Adding 0x%x (len %d) to delete array stack at pos:%d", (int)oh.ToPointer( ), (int)numOfElements, _arrayStackPos );
+                
+                _arrayStack[ _arrayStackPos++ ].Push( array, oh.VirtualTable.ElementSize, numOfElements, vTableElement );
+            }
         }
 
         private ObjectHeader PopFromObjectStack( )

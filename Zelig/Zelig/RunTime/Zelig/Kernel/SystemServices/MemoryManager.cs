@@ -12,6 +12,8 @@ namespace Microsoft.Zelig.Runtime
 
     [ImplicitInstance]
     [ForceDevirtualization]
+    [TS.DisableAutomaticReferenceCounting]
+    [TS.DisableReferenceCounting]
     public abstract unsafe class MemoryManager
     {
         public static class Configuration

@@ -125,6 +125,7 @@ namespace Microsoft.Zelig.Runtime
 
         [NoInline]
         [CanAllocateOnReturn]
+        [TS.WellKnownMethod( "Bootstrap_HeapInitialization" )]
         private static void HeapInitialization()
         {
             MemoryManager mm = MemoryManager.Instance;
@@ -132,6 +133,13 @@ namespace Microsoft.Zelig.Runtime
             mm.InitializeMemoryManager();
 
             mm.InitializationComplete();
+
+            
+        }
+        [TS.WellKnownMethod( "Bootstrap_ReferenceCountingInitialization" )]
+        private static void ReferenceCountingInitialization()
+        {
+            ThreadManager.Instance.InitializeForReferenceCounting( );
         }
 
         [NoInline]

@@ -8,7 +8,7 @@ namespace Microsoft.Zelig.Runtime
 
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
-
+    [TS.DisableAutomaticReferenceCounting]
     public unsafe struct MemorySegment
     {
         //
@@ -376,14 +376,14 @@ namespace Microsoft.Zelig.Runtime
 
             if (this.FirstFreeBlock == null)
             {
-                BugCheck.Assert(this.LastFreeBlock == null, BugCheck.StopCode.HeapCorruptionDetected);
-                BugCheck.Assert(this.AvailableMemory == 0, BugCheck.StopCode.HeapCorruptionDetected);
+                BugCheck.Assert( this.LastFreeBlock   == null, BugCheck.StopCode.HeapCorruptionDetected );
+                BugCheck.Assert( this.AvailableMemory == 0,    BugCheck.StopCode.HeapCorruptionDetected );
             }
             else
             {
-                BugCheck.Assert(this.FirstFreeBlock->Previous == null, BugCheck.StopCode.HeapCorruptionDetected);
-                BugCheck.Assert(this.LastFreeBlock != null, BugCheck.StopCode.HeapCorruptionDetected);
-                BugCheck.Assert(this.LastFreeBlock->Next == null, BugCheck.StopCode.HeapCorruptionDetected);
+                BugCheck.Assert( this.FirstFreeBlock->Previous == null, BugCheck.StopCode.HeapCorruptionDetected );
+                BugCheck.Assert( this.LastFreeBlock            != null, BugCheck.StopCode.HeapCorruptionDetected );
+                BugCheck.Assert( this.LastFreeBlock->Next      == null, BugCheck.StopCode.HeapCorruptionDetected );
 
                 // A generous estimation of how many free blocks are possible given the size of this memory segment
                 uint maxFreeBlocksPossible = (AddressMath.RangeSize(this.FirstBlock, this.End) / MemoryFreeBlock.MinimumSpaceRequired()) + 1;
@@ -430,12 +430,18 @@ namespace Microsoft.Zelig.Runtime
                 ObjectHeader.GarbageCollectorFlags gcFlags = oh.GarbageCollectorStateWithoutMutableBits;
                 bool isFreeBlock = gcFlags == ObjectHeader.GarbageCollectorFlags.FreeBlock;
                 bool isGapPlug = gcFlags == ObjectHeader.GarbageCollectorFlags.GapPlug;
+                bool isAllocatedRawBytes = gcFlags == ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes;
 
-                Log("oh:0x%x, gcFlags:%x(fb:%d, gp:%d), size %d",
+                int fga = 0;
+
+                if(isFreeBlock) fga += 100;
+                if(isGapPlug) fga += 10;
+                if(isAllocatedRawBytes) fga += 1;
+
+                Log("oh:0x%x, gcFlags:%x(fb/gp/arp:%03d), size %d",
                     (int)objectPointer.ToUInt32(),
                     (int)gcFlags,
-                    isFreeBlock ? 1 : 0,
-                    isGapPlug ? 1 : 0,
+                    fga,
                     isGapPlug ? sizeof(uint) : (int)oh.TotalSize);
 
                 if (isFreeBlock)

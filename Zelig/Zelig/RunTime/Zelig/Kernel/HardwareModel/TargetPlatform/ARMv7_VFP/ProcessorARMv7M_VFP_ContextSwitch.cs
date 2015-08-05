@@ -15,6 +15,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
     using RT     = Microsoft.Zelig.Runtime;
 
 
+    [TS.DisableAutomaticReferenceCounting]
     public abstract partial class ProcessorARMv7M_VFP 
     {
         //--//
@@ -23,6 +24,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         // Part of Context may be defined in the model for the targeted sub-system, e.g. Mbed or CMSIS-Core for ARM processors
         //
 
+        [TS.DisableAutomaticReferenceCounting]
         public abstract unsafe new class Context : Processor.Context
         {
             [StructLayout(LayoutKind.Sequential)]

@@ -64,17 +64,29 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             //
             if(exStringLen != null)
             {
-                mdAllocateObject = wkm.StringImpl_FastAllocateString;
+                if(ts.IsReferenceCountingType( ts.WellKnownTypes.System_String ) &&
+                    !ts.ShouldExcludeMethodFromReferenceCounting( nc.CurrentMethod ))
+                {
+                    mdAllocateObject = wkm.StringImpl_FastAllocateReferenceCountingString;
+                }
+                else
+                {
+                    mdAllocateObject = wkm.StringImpl_FastAllocateString;
+                }
 
                 rhs  = ts.AddTypePointerToArgumentsOfStaticMethod( mdAllocateObject, exStringLen );
                 call = StaticCallOperator.New( op.DebugInfo, CallOperator.CallKind.Direct, mdAllocateObject, op.Results, rhs );
                 op.SubstituteWithOperator( call, Operator.SubstitutionFlags.CopyAnnotations );
                 call.AddAnnotation( NotNullAnnotation.Create( ts ) );
-
-                nc.MarkAsModified();
             }
             else
             {
+                if(md != wkm.TypeSystemManager_AllocateObjectWithExtensions && 
+                    ts.IsReferenceCountingType( td ) && !ts.ShouldExcludeMethodFromReferenceCounting( nc.CurrentMethod ))
+                {
+                    mdAllocateObject = wkm.TypeSystemManager_AllocateReferenceCountingObject;
+                }
+
                 TemporaryVariableExpression typeSystemManagerEx = FetchTypeSystemManager( nc, op );
 
                 rhs  = new Expression[] { typeSystemManagerEx, ts.GetVTable( op.Type ) };
@@ -91,9 +103,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
                     call.AddOperatorAfter( callHelper );
                 }
-
-                nc.MarkAsModified();
             }
+
+            nc.MarkAsModified();
         }
 
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
@@ -111,6 +123,11 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             CallOperator                    call;
             Expression[]                    rhs;
             Expression                      exLen = op.FirstArgument;
+
+            if(ts.IsReferenceCountingType( ts.WellKnownTypes.System_Array ) && !ts.ShouldExcludeMethodFromReferenceCounting( nc.CurrentMethod ))
+            {
+                mdAllocateArray = ts.WellKnownMethods.TypeSystemManager_AllocateReferenceCountingArray;
+            }
 
             rhs  = new Expression[] { typeSystemManagerEx, ts.GetVTable( op.Type ), exLen };
             call = InstanceCallOperator.New( op.DebugInfo, CallOperator.CallKind.Virtual, mdAllocateArray, op.Results, rhs, true );

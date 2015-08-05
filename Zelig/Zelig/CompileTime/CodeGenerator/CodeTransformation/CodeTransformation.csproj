@@ -83,6 +83,7 @@
     <Compile Include="CompilationSteps\Attributes\WellKnownMethodHandlerAttribute.cs" />
     <Compile Include="CompilationSteps\Attributes\WellKnownTypeHandlerAttribute.cs" />
     <Compile Include="CompilationSteps\Controller.cs" />
+    <Compile Include="CompilationSteps\Handlers\OperatorHandlers_ReferenceCountingGarbageCollection.cs" />
     <Compile Include="CompilationSteps\Handlers\SoftwareFloatingPoint.cs" />
     <Compile Include="CompilationSteps\Handlers\OperatorHandlers_ConvertUnsupportedOperatorsToMethodCalls.cs" />
     <Compile Include="CompilationSteps\Handlers\MethodTransformations.cs" />
@@ -121,7 +122,9 @@
     <Compile Include="CompilationSteps\Phases\ConvertToSSA.cs" />
     <Compile Include="CompilationSteps\Phases\ConvertUnsupportedOperatorsToMethodCalls.cs" />
     <Compile Include="CompilationSteps\Phases\FuseOperators.cs" />
+    <Compile Include="CompilationSteps\Phases\InitializeReferenceCountingGarbageCollection.cs" />
     <Compile Include="CompilationSteps\Phases\PrepareExternalMethods.cs" />
+    <Compile Include="CompilationSteps\Phases\ReferenceCountingGarbageCollection.cs" />
     <Compile Include="CompilationSteps\Phases\ResourceManagerOptimizations.cs" />
     <Compile Include="CompilationSteps\Phases\CrossReferenceTypeSystem.cs" />
     <Compile Include="CompilationSteps\Phases\DetectNonImplementedInternalCalls.cs" />

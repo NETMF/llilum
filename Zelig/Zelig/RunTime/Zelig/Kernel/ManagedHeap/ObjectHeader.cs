@@ -15,16 +15,22 @@ namespace Microsoft.Zelig.Runtime
 
     [TS.WellKnownType( "Microsoft_Zelig_Runtime_ObjectHeader" )]
     [TS.NoVTable]
+    [TS.DisableAutomaticReferenceCounting]
+    [TS.DisableReferenceCounting]
     public class ObjectHeader
     {
+        // Note the GarbageCollectorMask has to be the last byte, we rely on this in GarbageCollectorState property
         const uint GarbageCollectorMask  = 0x000000FF;
         const int  GarbageCollectorShift = 0;
 
         const uint ExtensionKindMask     = 0x00000300;
         const int  ExtensionKindShift    = 8;
 
-        const uint ExtensionPayloadMask  = 0xFFFFFC00;
+        const uint ExtensionPayloadMask  = 0x00FFFC00;
         const int  ExtensionPayloadShift = 10;
+
+        public const uint ReferenceCountMask  = 0xFF000000;
+        public const int  ReferenceCountShift = 24;
 
         [Flags]
         public enum GarbageCollectorFlags : uint
@@ -39,6 +45,7 @@ namespace Microsoft.Zelig.Runtime
             UnreclaimableObject    = 3 << 1, // This object is stored outside the garbage-collected heap.
             NormalObject           = 4 << 1, // Normal object.
             SpecialHandlerObject   = 5 << 1, // This object has a GC extension handler.
+            AllocatedRawBytes      = 6 << 1, // Allocated bytes that have not been initialized yet
         }
 
         public enum ExtensionKinds : uint
@@ -46,7 +53,6 @@ namespace Microsoft.Zelig.Runtime
             Empty          = 0,
             HashCode       = 1,
             SyncBlock      = 2,
-            ReferenceCount = 3,
         }
 
         //
@@ -85,7 +91,6 @@ namespace Microsoft.Zelig.Runtime
         {
             return AddressMath.Increment( ToPointer(), this.TotalSize );
         }
-
         public static uint HeaderSize
         {
             [Inline]
@@ -111,7 +116,18 @@ namespace Microsoft.Zelig.Runtime
         {
             get
             {
-                return HeaderSize + ObjectSize;
+                uint size;
+
+                if(this.GarbageCollectorStateWithoutMutableBits == GarbageCollectorFlags.AllocatedRawBytes)
+                {
+                    size = this.AllocatedRawBytesSize;
+                }
+                else
+                {
+                    size = HeaderSize + ObjectSize;
+                }
+
+                return size;
             }
         }
 
@@ -127,6 +143,13 @@ namespace Microsoft.Zelig.Runtime
                 *dst++  = (uint)GarbageCollectorFlags.GapPlug;
                 bytesLeft -= sizeof(uint);
             }
+        }
+
+        [Inline]
+        public void InitializeAllocatedRawBytes( uint size )
+        {
+            this.MultiUseWord = (int)GarbageCollectorFlags.AllocatedRawBytes;
+            this.AllocatedRawBytesSize = size;
         }
 
         //--//
@@ -153,46 +176,162 @@ namespace Microsoft.Zelig.Runtime
             }
         }
 
-        internal void InitializeReferenceCount( )
-        {
-            // Only support reference counting on normal objects
-            if(this.GarbageCollectorStateWithoutMutableBits == GarbageCollectorFlags.NormalObject)
-            {
-                this.MultiUseWord &= (int)GarbageCollectorMask;
-                this.MultiUseWord |= ( (int)ExtensionKinds.ReferenceCount << ExtensionKindShift ) | ( 1 << ExtensionPayloadShift );
+#if REFCOUNT_STAT
+        internal static int s_RefCountedObjectsAllocated = 0;
+        internal static int s_RefCountedObjectsFreed = 0;
+        internal static int s_AddRefCalled = 0;
+        internal static int s_ReleaseCalled = 0;
+        internal static int s_NoOpAddRefCalled = 0;
+        internal static int s_NoOpReleaseCalled = 0;
+        internal static int s_NonRCAddRefCalled = 0;
+        internal static int s_NonRCReleaseCalled = 0;
+#endif
 
-                //BugCheck.Log( "Oh: 0x%x ref count initialized to 1", (int)ToPointer( ).ToUInt32( ) );
-            }
-        }
-
-        public void AddReference( )
-        {
-            if(ExtensionKind == ExtensionKinds.ReferenceCount)
-            {
-                ModifyReferenceCount( /*delta*/1 );
-            }
-        }
-
-        static public void ReleaseReference( ref Object obj )
+        [TS.WellKnownMethod( "ObjectHeader_AddReference" )]
+        [TS.DisableAutomaticReferenceCounting]
+        static public void AddReference( Object obj )
         {
             if(obj != null)
             {
-                ThreadImpl.CurrentThread.ReleaseReference.ReleaseReference( ObjectHeader.Unpack( obj ) );
-                obj = null;
+                ObjectHeader oh = ObjectHeader.Unpack( obj );
+
+                if(oh.HasReferenceCount)
+                {
+                    oh.ModifyReferenceCount( /*delta*/1 );
+                }
+#if REFCOUNT_STAT
+                else
+                {
+                    s_NonRCAddRefCalled++;
+                }
+#endif
+
             }
+
+#if REFCOUNT_STAT
+            if(obj == null)
+            {
+                s_NoOpAddRefCalled++;
+            }
+            else
+            {
+                s_AddRefCalled++;
+            }
+#endif
         }
 
+        [TS.WellKnownMethod( "ObjectHeader_ReleaseReference" )]
+        [TS.DisableAutomaticReferenceCounting]
+        static public void ReleaseReference( Object obj )
+        {
+            if(obj != null)
+            {
+                ObjectHeader oh = ObjectHeader.Unpack( obj );
+
+                if(oh.HasReferenceCount)
+                {
+                    if(oh.DecrementReferenceCount( ))
+                    {
+                        ThreadImpl.CurrentThread.ReleaseReference.DeleteObject( oh );
+                    }
+                }
+#if REFCOUNT_STAT
+                else
+                {
+                    s_NonRCReleaseCalled++;
+                }
+#endif
+            }
+
+#if REFCOUNT_STAT
+            if(obj == null)
+            {
+                s_NoOpReleaseCalled++;
+            }
+            else
+            {
+                s_ReleaseCalled++;
+            }
+#endif
+        }
+
+        public static void DumpRefCountStat( bool reset )
+        {
+#if REFCOUNT_STAT
+            var RefCountedObjectsAllocated = s_RefCountedObjectsAllocated;
+            var RefCountedObjectsFreed = s_RefCountedObjectsFreed;
+            var AddRefCalled = s_AddRefCalled;
+            var ReleaseCalled = s_ReleaseCalled;
+            var NoOpAddRefCalled = s_NoOpAddRefCalled;
+            var NoOpReleaseCalled = s_NoOpReleaseCalled;
+            var NonRCAddRefCalled = s_NonRCAddRefCalled;
+            var NonRCReleaseCalled = s_NonRCReleaseCalled;
+
+            BugCheck.Log( "RC objects alloced:%d freed:%d", RefCountedObjectsAllocated, RefCountedObjectsFreed );
+            BugCheck.Log( "AddRefs:  %d (%d nop / %d nonRC)", AddRefCalled + NoOpAddRefCalled, NoOpAddRefCalled, NonRCAddRefCalled );
+            BugCheck.Log( "Releases: %d (%d nop / %d nonRC)", ReleaseCalled + NoOpReleaseCalled, NoOpReleaseCalled, NonRCReleaseCalled );
+
+            if (reset)
+            {
+                s_RefCountedObjectsAllocated = 0;
+                s_RefCountedObjectsFreed = 0;
+                s_AddRefCalled = 0;
+                s_ReleaseCalled = 0;
+                s_NoOpAddRefCalled = 0;
+                s_NoOpReleaseCalled = 0;
+                s_NonRCAddRefCalled = 0;
+                s_NonRCReleaseCalled = 0;
+            }
+#endif
+        }
+
+        [Inline]
         internal bool DecrementReferenceCount()
         {
             int newMultiUseWord = ModifyReferenceCount( /*delta*/-1 );
 
-            return ( newMultiUseWord & ExtensionPayloadMask ) == 0;
+            bool delete = ( newMultiUseWord & ReferenceCountMask ) == 0;
+
+#if REFCOUNT_STAT
+            if (delete)
+            {
+                s_RefCountedObjectsFreed++;
+            }
+#endif
+            return delete;
         }
 
         [Inline]
         private int ModifyReferenceCount( int delta )
         {
-            return System.Threading.Interlocked.Add(ref this.MultiUseWord, delta << ExtensionPayloadShift);
+#pragma warning disable 420 // a reference to a volatile field will not be treated as volatile
+            var result = InterlockedImpl.InternalAdd( ref this.MultiUseWord, delta << ReferenceCountShift );
+#pragma warning restore 420
+
+#if DEBUG_REFCOUNT
+            var ptr = ToPointer( );
+            var refCount = ( result & ReferenceCountMask ) >> ReferenceCountShift;
+            var isAlive = MemoryManager.Instance.IsObjectAlive( ptr );
+
+            if(!isAlive)
+            {
+                BugCheck.Log( "Attempting to modifying ref count of a dead object!!" );
+            }
+
+            if(delta > 0)
+            {
+                BugCheck.Log( "AddRef (0x%x) %d +", (int)ptr, (int)refCount );
+                BugCheck.Assert( refCount > 1, BugCheck.StopCode.HeapCorruptionDetected );
+            }
+            else
+            {
+                BugCheck.Log( "Release(0x%x) %d -", (int)ptr, (int)refCount );
+                BugCheck.Assert( refCount >= 0, BugCheck.StopCode.HeapCorruptionDetected );
+            }
+
+            BugCheck.Assert( isAlive, BugCheck.StopCode.HeapCorruptionDetected );
+#endif
+            return result;
         }
 
         //
@@ -261,6 +400,44 @@ namespace Microsoft.Zelig.Runtime
             get
             {
                 return (int)(((uint)this.MultiUseWord & ExtensionPayloadMask) >> ExtensionPayloadShift);
+            }
+        }
+
+        public bool HasReferenceCount
+        {
+            [Inline]
+            get
+            {
+                return ( this.MultiUseWord & ReferenceCountMask ) != 0;
+            }
+        }
+
+        internal unsafe uint AllocatedRawBytesSize
+        {
+            [Inline]
+            get
+            {
+#pragma warning disable 420 // a reference to a volatile field will not be treated as volatile
+                fixed (int* ptr = &this.MultiUseWord)
+#pragma warning restore 420
+                {
+                    uint* size = (uint*)( ptr + 1 );
+
+                    return *size;
+                }
+            }
+
+            [Inline]
+            private set
+            {
+#pragma warning disable 420 // a reference to a volatile field will not be treated as volatile
+                fixed (int* ptr = &this.MultiUseWord)
+#pragma warning restore 420
+                {
+                    uint* size = (uint*)( ptr + 1 );
+
+                    *size = value;
+                }
             }
         }
 

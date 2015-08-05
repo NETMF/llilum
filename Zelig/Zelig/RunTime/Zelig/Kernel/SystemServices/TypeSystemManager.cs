@@ -12,12 +12,19 @@ namespace Microsoft.Zelig.Runtime
 
     [ImplicitInstance]
     [ForceDevirtualization]
+    [TS.DisableAutomaticReferenceCounting]
     public abstract class TypeSystemManager
     {
         class EmptyManager : TypeSystemManager
         {
             [NoInline]
             public override Object AllocateObject( TS.VTable vTable )
+            {
+                return null;
+            }
+
+            [NoInline]
+            public override Object AllocateReferenceCountingObject( TS.VTable vTable )
             {
                 return null;
             }
@@ -36,6 +43,13 @@ namespace Microsoft.Zelig.Runtime
             }
 
             [NoInline]
+            public override Array AllocateReferenceCountingArray( TS.VTable vTable,
+                                                                  uint      length )
+            {
+                return null;
+            }
+
+            [NoInline]
             public override Array AllocateArrayNoClear( TS.VTable vTable ,
                                                         uint      length )
             {
@@ -45,6 +59,13 @@ namespace Microsoft.Zelig.Runtime
             [NoInline]
             public override String AllocateString( TS.VTable vTable ,
                                                    int       length )
+            {
+                return null;
+            }
+
+            [NoInline]
+            public override String AllocateReferenceCountingString( TS.VTable vTable,
+                                                                    int       length )
             {
                 return null;
             }
@@ -61,12 +82,27 @@ namespace Microsoft.Zelig.Runtime
 
         [Inline]
         public object InitializeObject( UIntPtr   memory ,
-                                        TS.VTable vTable )
+                                        TS.VTable vTable ,
+                                        bool      referenceCounting )
         {
             ObjectHeader oh = ObjectHeader.CastAsObjectHeader( memory );
 
             oh.VirtualTable = vTable;
-            oh.MultiUseWord = (int)(ObjectHeader.GarbageCollectorFlags.NormalObject | ObjectHeader.GarbageCollectorFlags.Unmarked);
+
+            if(referenceCounting)
+            {
+                oh.MultiUseWord = (int)( ( 1 << ObjectHeader.ReferenceCountShift ) | (int)ObjectHeader.GarbageCollectorFlags.NormalObject | (int)ObjectHeader.GarbageCollectorFlags.Unmarked );
+#if REFCOUNT_STAT
+                ObjectHeader.s_RefCountedObjectsAllocated++;
+#endif
+#if DEBUG_REFCOUNT
+                BugCheck.Log( "InitRC (0x%x), new count = 1 +", (int)oh.ToPointer( ) );
+#endif
+            }
+            else
+            {
+                oh.MultiUseWord = (int)( ObjectHeader.GarbageCollectorFlags.NormalObject | ObjectHeader.GarbageCollectorFlags.Unmarked );
+            }
 
             return oh.Pack();
         }
@@ -87,9 +123,10 @@ namespace Microsoft.Zelig.Runtime
         [Inline]
         public Array InitializeArray( UIntPtr   memory ,
                                       TS.VTable vTable ,
-                                      uint      length )
+                                      uint      length ,
+                                      bool      referenceCounting )
         {
-            object obj = InitializeObject( memory, vTable );
+            object obj = InitializeObject( memory, vTable, referenceCounting );
 
             ArrayImpl array = ArrayImpl.CastAsArray( obj );
 
@@ -101,9 +138,10 @@ namespace Microsoft.Zelig.Runtime
         [Inline]
         public String InitializeString( UIntPtr   memory ,
                                         TS.VTable vTable ,
-                                        int       length )
+                                        int       length ,
+                                        bool      referenceCounting )
         {
-            object obj = InitializeObject( memory, vTable );
+            object obj = InitializeObject( memory, vTable, referenceCounting );
 
             StringImpl str = StringImpl.CastAsString( obj );
 
@@ -115,12 +153,19 @@ namespace Microsoft.Zelig.Runtime
         [TS.WellKnownMethod( "TypeSystemManager_AllocateObject" )]
         public abstract Object AllocateObject( TS.VTable vTable );
 
+        [TS.WellKnownMethod( "TypeSystemManager_AllocateReferenceCountingObject" )]
+        public abstract Object AllocateReferenceCountingObject( TS.VTable vTable );
+
         [TS.WellKnownMethod( "TypeSystemManager_AllocateObjectWithExtensions" )]
         public abstract Object AllocateObjectWithExtensions( TS.VTable vTable );
 
         [TS.WellKnownMethod( "TypeSystemManager_AllocateArray" )]
         public abstract Array AllocateArray( TS.VTable vTable ,
                                              uint      length );
+
+        [TS.WellKnownMethod( "TypeSystemManager_AllocateReferenceCountingArray" )]
+        public abstract Array AllocateReferenceCountingArray( TS.VTable vTable,
+                                                              uint      length );
 
         [TS.WellKnownMethod( "TypeSystemManager_AllocateArrayNoClear" )]
         public abstract Array AllocateArrayNoClear( TS.VTable vTable ,
@@ -129,6 +174,9 @@ namespace Microsoft.Zelig.Runtime
         [TS.WellKnownMethod( "TypeSystemManager_AllocateString" )]
         public abstract String AllocateString( TS.VTable vTable ,
                                                int       length );
+
+        public abstract String AllocateReferenceCountingString( TS.VTable vTable ,
+                                                                int       length );
 
         //--//
 

@@ -10,6 +10,7 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
 
 
     [WellKnownType( "Microsoft_Zelig_Runtime_TypeSystem_VTable" )]
+    [DisableReferenceCounting]
     public sealed class VTable
     {
         [AllowCompileTimeIntrospection]

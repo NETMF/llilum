@@ -567,6 +567,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         private GrowOnlyHashTable   < TypeRepresentation  , TypeRepresentation                              > m_garbageCollectionExtensions;
         private GrowOnlySet         < FieldRepresentation                                                   > m_garbageCollectionExclusions;
 
+        private GrowOnlySet         < TypeRepresentation                                                    > m_referenceCountingExcludedTypes;
+        private GrowOnlyHashTable   < string              , List< MethodRepresentation >                    > m_automaticReferenceCountingExclusions;
+
         private GrowOnlyHashTable   < TypeRepresentation  , CustomAttributeRepresentation                   > m_memoryMappedPeripherals;
         private GrowOnlyHashTable   < FieldRepresentation , CustomAttributeRepresentation                   > m_registerAttributes;
 
@@ -618,6 +621,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
             m_garbageCollectionExtensions = HashTableFactory.New<TypeRepresentation, TypeRepresentation>( );
             m_garbageCollectionExclusions = SetFactory.New<FieldRepresentation>( );
+
+            m_referenceCountingExcludedTypes = SetFactory.New<TypeRepresentation>( );
+            m_automaticReferenceCountingExclusions = HashTableFactory.New<string, List<MethodRepresentation>>( );
 
             m_memoryMappedPeripherals = HashTableFactory.New<TypeRepresentation, CustomAttributeRepresentation>( );
             m_registerAttributes = HashTableFactory.New<FieldRepresentation, CustomAttributeRepresentation>( );
@@ -1529,6 +1535,60 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             {
                 return m_garbageCollectionExclusions;
             }
+        }
+
+        public bool EnableReferenceCountingGarbageCollection
+        {
+            get; set;
+        }
+
+        public bool IsReferenceCountingType( TypeRepresentation td )
+        {
+            if(!this.EnableReferenceCountingGarbageCollection ||
+                td == null ||
+                !( td is ReferenceTypeRepresentation ) ||
+                td.IsOpenType ||
+                td.IsDelayedType)
+            {
+                return false;
+            }
+
+            // If type T is excluded, then all its derived classes would be as well.
+            while(td != null)
+            {
+                if(m_referenceCountingExcludedTypes.Contains( td ))
+                {
+                    return false;
+                }
+                td = td.Extends;
+            }
+
+            return true;
+        }
+
+        public bool ShouldExcludeMethodFromReferenceCounting( MethodRepresentation md )
+        {
+            if(md.IsGenericInstantiation)
+            {
+                md = md.GenericTemplate;
+            }
+
+            var methodsList = m_automaticReferenceCountingExclusions.GetValue( md.Name );
+            if(methodsList != null)
+            {
+                var matches = methodsList.FindAll( method => method.MatchSignature( md, null ) );
+
+                foreach(var match in matches)
+                {
+                    if(match == md || match.OwnerType.IsSuperClassOf( md.OwnerType, null ))
+                    {
+                        // Match if it's in the list or it overrides a method in the list.
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         //--//

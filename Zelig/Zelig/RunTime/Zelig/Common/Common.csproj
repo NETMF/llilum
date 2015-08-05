@@ -98,6 +98,8 @@
     <Compile Include="Attributes\TypeSystem\AllowCompileTimeIntrospectionAttribute.cs" />
     <Compile Include="Attributes\TypeSystem\AssumeReferencedAttribute.cs" />
     <Compile Include="Attributes\CompileTimeOptions\ConfigurationOptionAttribute.cs" />
+    <Compile Include="Attributes\TypeSystem\DisableAutomaticReferenceCountingAttribute.cs" />
+    <Compile Include="Attributes\TypeSystem\DisableReferenceCountingAttribute.cs" />
     <Compile Include="Attributes\TypeSystem\SkipDuringGarbageCollectionAttribute.cs" />
     <Compile Include="Attributes\TypeSystem\GarbageCollectionExtensionAttribute.cs" />
     <Compile Include="Attributes\TypeSystem\TypeDependencyAttribute.cs" />

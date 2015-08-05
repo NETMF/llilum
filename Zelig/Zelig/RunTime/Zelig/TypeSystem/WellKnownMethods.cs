@@ -18,8 +18,10 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
 
         public readonly MethodRepresentation TypeSystemManager_InvokeStaticConstructors;
         public readonly MethodRepresentation TypeSystemManager_AllocateObject;
+        public readonly MethodRepresentation TypeSystemManager_AllocateReferenceCountingObject;
         public readonly MethodRepresentation TypeSystemManager_AllocateObjectWithExtensions;
         public readonly MethodRepresentation TypeSystemManager_AllocateArray;
+        public readonly MethodRepresentation TypeSystemManager_AllocateReferenceCountingArray;
         public readonly MethodRepresentation TypeSystemManager_AllocateArrayNoClear;
         public readonly MethodRepresentation TypeSystemManager_AllocateString;
         public readonly MethodRepresentation TypeSystemManager_CastToType;
@@ -42,15 +44,19 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         public readonly MethodRepresentation StringImpl_ctor_charArray;
         public readonly MethodRepresentation StringImpl_ctor_char_int;
         public readonly MethodRepresentation StringImpl_FastAllocateString;
+        public readonly MethodRepresentation StringImpl_FastAllocateReferenceCountingString;
 
         public readonly MethodRepresentation MulticastDelegateImpl_MulticastDelegateImpl;
 
+
+        public readonly MethodRepresentation ThreadImpl_ctor;
         public readonly MethodRepresentation ThreadImpl_get_CurrentThread;
         public readonly MethodRepresentation ThreadImpl_GetCurrentException;
         public readonly MethodRepresentation ThreadImpl_ThrowNullException;
         public readonly MethodRepresentation ThreadImpl_ThrowIndexOutOfRangeException;
         public readonly MethodRepresentation ThreadImpl_ThrowOverflowException;
         public readonly MethodRepresentation ThreadImpl_ThrowNotImplementedException;
+        public readonly MethodRepresentation ThreadImpl_AllocateReleaseReferenceHelper;
 
         public readonly MethodRepresentation RuntimeHelpers_InitializeArray2;
 
@@ -65,10 +71,22 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         public readonly MethodRepresentation InterlockedImpl_InternalCompareExchange_IntPtr;
         public readonly MethodRepresentation InterlockedImpl_InternalCompareExchange_Template;
         public readonly MethodRepresentation InterlockedImpl_InternalAdd_int;
+        public readonly MethodRepresentation InterlockedImpl_ReferenceCountingExchange;
+        public readonly MethodRepresentation InterlockedImpl_ReferenceCountingCompareExchange;
+
+        public readonly MethodRepresentation ReferenceCountingCollector_LoadAndAddReference;
+        public readonly MethodRepresentation ReferenceCountingCollector_Swap;
+
+        public readonly MethodRepresentation Bootstrap_HeapInitialization;
+        public readonly MethodRepresentation Bootstrap_ReferenceCountingInitialization;
+
         //--//
 
         public readonly MethodRepresentation Object_Equals;
         public readonly MethodRepresentation Object_GetHashCode;
+
+        public readonly MethodRepresentation ObjectHeader_AddReference;
+        public readonly MethodRepresentation ObjectHeader_ReleaseReference;
 
         public readonly MethodRepresentation System_Buffer_InternalMemoryCopy;
         public readonly MethodRepresentation System_Buffer_InternalBackwardMemoryCopy;
@@ -103,8 +121,6 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
 
         public readonly MethodRepresentation Microsoft_Zelig_Runtime_Memory_Fill;
 
-        //--//
-        
         //
         // Helper Methods
         //

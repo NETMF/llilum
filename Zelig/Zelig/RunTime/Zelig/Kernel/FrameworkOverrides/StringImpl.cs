@@ -101,6 +101,17 @@ namespace Microsoft.Zelig.Runtime
             return res;
         }
 
+        [TS.WellKnownMethod( "StringImpl_FastAllocateReferenceCountingString" )]
+        [TS.DisableAutomaticReferenceCounting]
+        private static StringImpl FastAllocateReferenceCountingString( int length )
+        {
+            StringImpl res = (StringImpl)(object)TypeSystemManager.Instance.AllocateReferenceCountingString( TS.VTable.GetFromType( typeof( string ) ), length + 1 );
+
+            res.m_stringLength = length;
+
+            return res;
+        }
+
         //
         // Aliasing to mark methods in mscorlib as well-known.
         //

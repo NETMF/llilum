@@ -8,7 +8,7 @@ namespace Microsoft.Zelig.Runtime
 
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
-
+    [TS.DisableAutomaticReferenceCounting]
     public unsafe struct MemoryFreeBlock
     {
         //
@@ -128,7 +128,11 @@ namespace Microsoft.Zelig.Runtime
                     array.SetLength( numElements );
                 }
 
-                return new UIntPtr( (byte*)array.GetDataPointer() + numElements );
+                UIntPtr newAllocation = new UIntPtr( (byte*)array.GetDataPointer() + numElements );
+
+                ObjectHeader.CastAsObjectHeader( newAllocation ).InitializeAllocatedRawBytes( size );
+
+                return newAllocation;
             }
 
             return UIntPtr.Zero;
@@ -159,7 +163,7 @@ namespace Microsoft.Zelig.Runtime
             TS.VTable vTable        = TS.VTable.GetFromType( typeof(byte[]) );
             uint      numOfElements = sizeInBytes - FixedSize();
 
-            byte[] externalRepresentation = (byte[])TypeSystemManager.Instance.InitializeArray( baseAddress, vTable, numOfElements );
+            byte[] externalRepresentation = (byte[])TypeSystemManager.Instance.InitializeArray( baseAddress, vTable, numOfElements, referenceCounting: false );
 
             ObjectHeader oh = ObjectHeader.Unpack( externalRepresentation );
 
