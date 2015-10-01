@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CEE4D575-4B4B-42B0-B2F1-CC7198CB7306}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Zelig.LPC1768</RootNamespace>
+    <AssemblyName>LPC1768</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <Choose>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <When Condition="Exists('$(SolutionDir)\..\ZeligBuild\Target\bin\Debug\')">
+      <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <OutputPath>$(SolutionDir)\..\ZeligBuild\Target\bin\Debug\</OutputPath>
+      </PropertyGroup>
+      <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <OutputPath>$(SolutionDir)\..\ZeligBuild\Target\bin\Release\</OutputPath>
+      </PropertyGroup>
+      <PropertyGroup>
+        <BaseIntermediateOutputPath>$(SolutionDir)\..\ZeligBuild\Target\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+      </PropertyGroup>
+    </When>
+    <!-- ZELIG: Move output directory to the SDK -->
+    <When Condition="!Exists('$(SolutionDir)\..\ZeligBuild\Target\bin\Debug\')">
+      <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <OutputPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\</OutputPath>
+      </PropertyGroup>
+      <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <OutputPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Release\</OutputPath>
+      </PropertyGroup>
+      <PropertyGroup>
+        <BaseIntermediateOutputPath>$(LLILUM_SDK)\ZeligBuild\Target\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+      </PropertyGroup>
+    </When>
+  </Choose>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoStdLib>true</NoStdLib>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+<<<<<<< HEAD
+=======
+    <IntermediateOutputPath>C:\Users\lorenzte\AppData\Local\Temp\vs88AD.tmp\Debug\</IntermediateOutputPath>
+>>>>>>> dbf5992636f60aa4e08d2a137fb5b29bebf2501a
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Target\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoStdLib>true</NoStdLib>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+<<<<<<< HEAD
+=======
+    <IntermediateOutputPath>C:\Users\lorenzte\AppData\Local\Temp\vs88AD.tmp\Release\</IntermediateOutputPath>
+>>>>>>> dbf5992636f60aa4e08d2a137fb5b29bebf2501a
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Board.cs" />
+    <Compile Include="GPIO.cs" />
+    <Compile Include="NVIC.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Choose>
+    <When Condition="Exists('$(SolutionDir)\..\ZeligBuild\Target\bin\Debug\')">
+      <ItemGroup>
+        <ProjectReference Include="..\..\..\Framework\mscorlib\mscorlib.csproj">
+          <Project>{186f31a3-ef89-4a25-b2d5-20060501aa01}</Project>
+          <Name>mscorlib</Name>
+        </ProjectReference>
+        <ProjectReference Include="..\..\CortexMOnMBED\CortexMOnMBED.csproj">
+          <Project>{0c522c6a-0f77-4af8-ad78-5b2415c98c51}</Project>
+          <Name>CortexMOnMBED</Name>
+        </ProjectReference>
+      </ItemGroup>
+    </When>
+    <When Condition="!Exists('$(SolutionDir)\..\ZeligBuild\Target\bin\Debug\')">
+      <ItemGroup>
+        <Reference Include="mscorlib">
+          <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\mscorlib.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.CortexMOnMBED">
+          <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\Microsoft.CortexMOnMBED.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
