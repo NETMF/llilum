@@ -1353,7 +1353,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                                 }
                             }
 
-                            if(CompilationSteps.PhaseDriver.CompareOrder( phase, typeof(CompilationSteps.Phases.LayoutTypes) ) <= 0)
+                            // Note that we only want to skip GCInfo before the LayoutTypes phase, but not in LayoutType phase,
+                            // so GCInfo will be corrected during the call to RefreshValues as part of the LayoutTypes phase.
+                            if (CompilationSteps.PhaseDriver.CompareOrder( phase, typeof(CompilationSteps.Phases.LayoutTypes) ) < 0)
                             {
                                 if(nestingFd == wkf.VTable_GCInfo)
                                 {

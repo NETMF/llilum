@@ -1,4 +1,5 @@
 ﻿using Llvm.NET;
+using Llvm.NET.Types;
 
 namespace Microsoft.Zelig.LLVM
 {
@@ -15,7 +16,7 @@ namespace Microsoft.Zelig.LLVM
         public static bool IsVoid( this TypeRef typeRef ) => typeRef.Kind == TypeKind.Void;
 
         public static bool IsFloatingPoint( this TypeRef typeRef )
-        {
+        {   
             switch( typeRef.Kind )
             {
             case TypeKind.Float16:

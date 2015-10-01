@@ -1,1 +1,2 @@
-copy LPC1768\mbed_simple.bin e:\.
+del E:\*.bin
+copy LPC1768\mbed_simple.bin E:\.

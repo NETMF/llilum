@@ -22,6 +22,10 @@ namespace Microsoft.Zelig.Runtime
 
         public abstract void Activate();
 
+        public abstract void EnableInterrupt( uint index );
+
+        public abstract void DisableInterrupt( uint index );
+
         public abstract void CauseInterrupt();
 
         public abstract void ContinueUnderNormalInterrupt( Continuation dlg );

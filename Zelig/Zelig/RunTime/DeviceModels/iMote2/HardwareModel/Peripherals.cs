@@ -42,6 +42,14 @@ namespace Microsoft.iMote2
             //Drivers.SPI.Instance.Initialize();
         }
 
+        public override void EnableInterrupt( uint index )
+        {
+        }
+
+        public override void DisableInterrupt( uint index )
+        {
+        }
+
         public override void CauseInterrupt()
         {
             Drivers.InterruptController.Instance.CauseInterrupt();

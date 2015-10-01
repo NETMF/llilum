@@ -96,6 +96,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
         <!-- Dont pass C standard to C++ and vice versa -->
         <CLanguageStandard Condition="'%(ClCompile.CompileAs)' == 'CompileAsCpp'"></CLanguageStandard>
         <CppLanguageStandard Condition="'%(ClCompile.CompileAs)' == 'CompileAsC'"></CppLanguageStandard>
+        <!-- Don't pass runtime type info flags for C code (Generates an annoying warning)-->
+        <RuntimeTypeInfo Condition="'%(ClCompile.CompileAs)' != 'CompileAsCpp'"></RuntimeTypeInfo>
       </ClCompile>
 
       <!-- define precompiled header related options -->
@@ -114,10 +116,10 @@ Copyright (C) Microsoft Corporation. All rights reserved.
              It is happy with not existing .h file when it finds .gch for it -->
         <ClangForcedIncludeFiles>%(ClCompile.PrecompiledHeaderOutputFileDirectory)%(ClCompile.PrecompiledHeaderOutputFileName);%(ClCompile.ClangForcedIncludeFiles)</ClangForcedIncludeFiles>
       </ClCompile>
-	  
-	  <ClCompile>
-	     <AdditionalOptions Condition="'$(ArmArchitecture)' != ''">-mcpu=$(ArmArchitecture) %(AdditionalOptions)</AdditionalOptions>
-	  </ClCompile>
+
+      <ClCompile>
+        <AdditionalOptions Condition="'$(ArmArchitecture)' != ''">-mcpu=$(ArmArchitecture) %(AdditionalOptions)</AdditionalOptions>
+      </ClCompile>
     </ItemGroup>
   </Target>
 
@@ -248,13 +250,13 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <ItemGroup>
       <Link>
         <MinimalRebuildFromTracking    Condition="'$(_BuildActionType)' != 'Build' or '$(ForceRebuild)' == 'true'">false</MinimalRebuildFromTracking>
-		<AdditionalOptions Condition="'$(ArmArchitecture)' != ''">-mcpu=$(ArmArchitecture) %(AdditionalOptions)</AdditionalOptions>
+        <AdditionalOptions Condition="'$(ArmArchitecture)' != ''">-mcpu=$(ArmArchitecture) %(AdditionalOptions)</AdditionalOptions>
       </Link>
       <Link>
-		<AdditionalOptions Condition="'$(ThumbMode)' == 'Thumb'">-mthumb %(AdditionalOptions)</AdditionalOptions>
+        <AdditionalOptions Condition="'$(ThumbMode)' == 'Thumb'">-mthumb %(AdditionalOptions)</AdditionalOptions>
       </Link>
     </ItemGroup>
-	
+
     <PropertyGroup>
       <LinkToolArchitecture Condition="'$(LinkToolArchitecture)' == ''">$(VCToolArchitecture)</LinkToolArchitecture>
     </PropertyGroup>
@@ -307,46 +309,58 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   </Target>
 
   <Target Name="dotbin" Inputs="$(TargetDir)$(TargetName)$(TargetExt)" Outputs="$(TargetDir)$(TargetName).bin">
-    <Exec Command="$(OBJCOPY) -O binary $(TargetDir)$(TargetName)$(TargetExt) $(TargetDir)$(TargetName).bin" />
+    <Exec Command='$(OBJCOPY) -O binary "$(TargetDir)$(TargetName)$(TargetExt)" "$(TargetDir)$(TargetName).bin"' />
   </Target>
 
   <Target Name="dothex" Inputs="$(TargetDir)$(TargetName)$(TargetExt)" Outputs="$(TargetDir)$(TargetName).hex">
-    <Exec Command="$(OBJCOPY) -O ihex $(TargetDir)$(TargetName)$(TargetExt) $(TargetDir)$(TargetName).hex" />
+    <Exec Command='$(OBJCOPY) -O ihex "$(TargetDir)$(TargetName)$(TargetExt)" "$(TargetDir)$(TargetName).hex"' />
   </Target>
 
   <Target Name="dotlst" Inputs="$(TargetDir)$(TargetName)$(TargetExt)" Outputs="$(TargetDir)$(TargetName).lst">
-    <Exec Command="$(OBJDUMP) -Sdh $(TargetDir)$(TargetName)$(TargetExt) > $(TargetDir)$(TargetName).lst" />
+    <Exec Command='$(OBJDUMP) -Sdh "$(TargetDir)$(TargetName)$(TargetExt)" > "$(TargetDir)$(TargetName).lst"' />
   </Target>
 
   <Target Name="size" >
-    <Exec Command="$(SIZE) $(TargetDir)$(TargetName)$(TargetExt)" />
+    <Exec Command='$(SIZE) "$(TargetDir)$(TargetName)$(TargetExt)"' />
   </Target>
-  
-  <Target Name="ConvertManagedCode" DependsOnTargets="ResolveReferences" Condition="'@(ReferencePath)' != ''" Inputs="@(ReferencePath)" Outputs="$(IntDir)%(ReferencePath.Filename).opt.dll">
-    <Exec Command="echo Converting managed code to LLVM BC: @(ReferencePath) to $(IntDir)%(ReferencePath.Filename).bc" />
-	<Exec Command="$(LlilumCompiler) -cfg $(LlilumConfig) @(ReferencePath) -OutputName %(ReferencePath.Filename) -OutputDir $(IntDir) -HostAssemblyDir $(LlilumSDK)ZeligBuild\Host\bin\Debug -DeviceAssemblyDir $(LlilumSDK)ZeligBuild\Target\bin\Debug" ContinueOnError="WarnAndContinue"/>
+
+  <Target Name="ConvertManagedCode" DependsOnTargets="ResolveReferences" Condition="'@(ReferencePath)' != ''" Inputs="@(ReferencePath)" Outputs="$(IntDir)%(ReferencePath.Filename).bc">
+    <PropertyGroup>
+      <!-- IntDir includes a trailing sperator, however default .NET Command line parsing
+           includes unconventional escape character support that causes issues for quoted
+           paths with a terminating sperator. The parser considers the trailing '\"' as an
+           escaped quote character and the parsed arg that the app sees will include the
+           quote but not the trailing sperator. That is ["my path\sub\"] on the command
+           line will be seen as [my path\sub"] at run time. Clearly not what was intended.
+           This property is used to strip the trailing seperator to prevent that scenario
+           until we add custom command line parsing to the Llilum transformation engine.
+      -->
+      <IntDirTrimmed>$(IntDir.TrimEnd('\'))</IntDirTrimmed>
+    </PropertyGroup>
+    <Exec Command='echo Converting managed code to LLVM BC: "@(ReferencePath)" to "$(IntDir)%(ReferencePath.Filename).bc"' />
+    <Exec Command='$(LlilumCompiler) -cfg "$(LlilumConfig)" "@(ReferencePath)" -OutputName "%(ReferencePath.Filename)" -OutputDir "$(IntDirTrimmed)" -HostAssemblyDir "$(LlilumSDK)ZeligBuild\Host\bin\Debug" -DeviceAssemblyDir "$(LlilumSDK)ZeligBuild\Target\bin\Debug"' ContinueOnError="WarnAndContinue"/>
   </Target>
-  
-  <Target Name="CreateManagedObject" Condition="'@(ReferencePath)' != ''">
+
+  <Target Name="CreateManagedObject" Condition="'@(ReferencePath)' != ''" Inputs="$(IntDir)%(ReferencePath.Filename).bc" Outputs="$(IntDir)%(ReferencePath.Filename).o">
     <Exec Command="echo Compiling and optimizing with LLVM: $(IntDir)%(ReferencePath.Filename).bc to $(IntDir)%(ReferencePath.Filename).o" />
-	<Exec Command="$(LlilumLLVM)opt -scalarrepl -targetlibinfo -verify -mem2reg -constmerge -adce -globaldce -time-passes $(IntDir)%(ReferencePath.Filename).bc -o $(IntDir)%(ReferencePath.Filename)_opt.bc " ContinueOnError="WarnAndContinue"/>
-	<Exec Command="$(LlilumLLVM)llvm-dis $(IntDir)%(ReferencePath.Filename)_opt.bc" ContinueOnError="WarnAndContinue"/>
-	<Exec Command="$(LlilumLLVM)llc -code-model=small -data-sections -relocation-model=pic -march=thumb -mcpu=cortex-m3 -filetype=obj -mtriple=Thumb-NoSubArch-UnknownVendor-UnknownOS-GNUEABI-ELF -o=$(IntDir)%(ReferencePath.Filename).o $(IntDir)%(ReferencePath.Filename)_opt.bc " ContinueOnError="WarnAndContinue"/>
+    <Exec Command="$(LlilumLLVM)opt -scalarrepl -targetlibinfo -verify -mem2reg -constmerge -adce -globaldce -time-passes $(IntDir)%(ReferencePath.Filename).bc -o $(IntDir)%(ReferencePath.Filename)_opt.bc " ContinueOnError="false"/>
+    <Exec Command="$(LlilumLLVM)llvm-dis $(IntDir)%(ReferencePath.Filename)_opt.bc" ContinueOnError="false"/>
+    <Exec Command="$(LlilumLLVM)llc -code-model=small -data-sections -relocation-model=pic -march=thumb -mcpu=cortex-m3 -filetype=obj -mtriple=armv7m-none-eabi -o=$(IntDir)%(ReferencePath.Filename).o $(IntDir)%(ReferencePath.Filename)_opt.bc " ContinueOnError="false"/>
   </Target>
 
   <Target Name="ComputeCLOutputFromManagedCode" DependsOnTargets="ResolveReferences">
     <ItemGroup>
-	  <Object Condition="'@(ReferencePath)' != ''" Include="$(IntDir)%(ReferencePath.Filename).o" />
-	</ItemGroup>
+      <Object Condition="'@(ReferencePath)' != ''" Include="$(IntDir)%(ReferencePath.Filename).o" />
+    </ItemGroup>
   </Target>
-  
+
   <PropertyGroup>
     <AfterBuildLinkTargets>$(AfterBuildLinkTargets);dotbin;dothex;dotlst;size</AfterBuildLinkTargets>
-	<BuildCompileTargets>$(BuildCompileTargets);ConvertManagedCode;CreateManagedObject</BuildCompileTargets>
-	<ComputeLinkInputsTargets>ComputeCLOutputFromManagedCode;$(ComputeLinkInputsTargets)</ComputeLinkInputsTargets>
-	<ComputeLibInputsTargets>ComputeCLOutputFromManagedCode;$(ComputeLibInputsTargets)</ComputeLibInputsTargets>
+    <BuildCompileTargets>$(BuildCompileTargets);ConvertManagedCode;CreateManagedObject</BuildCompileTargets>
+    <ComputeLinkInputsTargets>ComputeCLOutputFromManagedCode;$(ComputeLinkInputsTargets)</ComputeLinkInputsTargets>
+    <ComputeLibInputsTargets>ComputeCLOutputFromManagedCode;$(ComputeLibInputsTargets)</ComputeLibInputsTargets>
   </PropertyGroup>
-  
+
   <!-- Change this target if clanglink needs to clean extra files that is not tracked from the task. -->
   <Target Name="ComputeLinkImportLibraryOutputsForClean" />
 
@@ -452,8 +466,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
   <Target Name="MergeApkRecipeFiles">
     <MergeApkRecipelists RecipeFiles="$(_ApkRecipeFile)" OutputFile="$(_ApkRecipeFile).merged" >
-       <Output TaskParameter="SOLibPaths" ItemName="_mergedSoLibPath" />
-       <Output TaskParameter="AndroidArchitecture" PropertyName="TargetAndroidABI" />
+      <Output TaskParameter="SOLibPaths" ItemName="_mergedSoLibPath" />
+      <Output TaskParameter="AndroidArchitecture" PropertyName="TargetAndroidABI" />
     </MergeApkRecipelists>
   </Target>
 
@@ -519,7 +533,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   <ItemGroup>
     <ProjectCapability Include="LlilumApplication"/>
   </ItemGroup>
-  
+
   <!-- Custom project properties -->
   <ItemGroup>
     <PropertyPageSchema Include="$(LlilumApplicationTypeDir)$(LangID)\Llilum.xml"/>
@@ -531,3 +545,4 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   </PropertyGroup>
 
 </Project>
+

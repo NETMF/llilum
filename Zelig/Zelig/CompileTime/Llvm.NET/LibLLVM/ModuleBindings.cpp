@@ -20,4 +20,10 @@ extern "C"
         auto pSignature = cast< FunctionType >( unwrap( functionType ) );
         return wrap( pModule->getOrInsertFunction( name, pSignature ) );
     }
+
+    char const* LLVMGetModuleName( LLVMModuleRef module )
+    {
+        auto pModule = unwrap( module );
+        return pModule->getModuleIdentifier( ).c_str( );
+    }
 }

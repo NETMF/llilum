@@ -7,30 +7,58 @@ namespace Microsoft.Zelig.Configuration.Environment
     using System;
     using System.Collections.Generic;
 
-    #region LLVM Platform
+    #region LPC1768
 
-    [DisplayName( "LLVM Hosted" )]
-    public sealed class LLVMHosted : ProductCategory
+    [DisplayName( "LPC1768 MBED Hosted" )]
+    public sealed class LPC1768MBEDHosted : ProductCategory
     {
-        [Defaults( "CoreClockFrequency", 416000000UL )]
-        [Defaults( "PeripheralsClockFrequency", 13000000UL )]
+        [AllowedOptions( typeof( mBed ) )]
+        [Defaults( "CoreClockFrequency", 96000000UL )]
         [Defaults( "RealTimeClockFrequency", 1000000UL )]
         public ProcessorCategory Processor;
     }
 
-    [DisplayName( "LLVM Hosted Compilation" )]
+    [DisplayName( "CMSIS-Core Memory Map for LPC1768" )]
+    public sealed class LPC1768CMSISCoreMemoryMap : MemoryMapCategory
+    {
+    }
+
+    [DisplayName( "LLVM Hosted Compilation for LPC1768" )]
     [Defaults( "Platform", typeof( Microsoft.Zelig.Configuration.Environment.Abstractions.LLVMPlatform ) )]
     [Defaults( "CallingConvention", typeof( Microsoft.Zelig.Configuration.Environment.Abstractions.LLVMCallingConvention ) )]
-    [Defaults( "Product", typeof( LLVMHosted ) )]
-    [Defaults( "MemoryMap", typeof( LLVMHostedMemoryMap ) )]
-    public sealed class LLVMHostedCompilationSetup : CompilationSetupCategory
+    [Defaults( "Product", typeof( LPC1768MBEDHosted ) )]
+    [Defaults( "MemoryMap", typeof( LPC1768CMSISCoreMemoryMap ) )]
+    public sealed class LPC1768MBEDHostedCompilationSetup : CompilationSetupCategory
     {
     }
 
-    [DisplayName( "LLVM Hosted Memory Map" )]
-    public sealed class LLVMHostedMemoryMap : MemoryMapCategory
+    #endregion // LPC1768
+
+    
+    #region K64F
+
+    [DisplayName( "K64F MBED Hosted" )]
+    public sealed class K64FMBEDHosted : ProductCategory
+    {
+        [AllowedOptions( typeof( mBed ) )]
+        [Defaults( "CoreClockFrequency", 120000000UL )]
+        [Defaults( "RealTimeClockFrequency", 1000000UL )]
+        public ProcessorCategory Processor;
+    }
+
+    [DisplayName( "CMSIS-Core Memory Map for K64F" )]
+    public sealed class K64FCMSISCoreMemoryMap : MemoryMapCategory
     {
     }
 
-    #endregion //LLVM Platform
+    [DisplayName( "LLVM Hosted Compilation for K64F" )]
+    [Defaults( "Platform", typeof( Microsoft.Zelig.Configuration.Environment.Abstractions.LLVMPlatform ) )]
+    [Defaults( "CallingConvention", typeof( Microsoft.Zelig.Configuration.Environment.Abstractions.LLVMCallingConvention ) )]
+    [Defaults( "Product", typeof( K64FMBEDHosted ) )]
+    [Defaults( "MemoryMap", typeof( K64FCMSISCoreMemoryMap ) )]
+    public sealed class K64FMBEDHostedCompilationSetup : CompilationSetupCategory
+    {
+    }
+
+    #endregion // K64F
 }

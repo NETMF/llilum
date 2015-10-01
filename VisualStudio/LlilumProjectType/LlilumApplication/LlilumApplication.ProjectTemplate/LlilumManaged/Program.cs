@@ -5,16 +5,19 @@
 #define LPC1768
 //#define K64F
 
-using System.Collections.Generic;
-
-namespace $safeprojectname$
+namespace Managed
 {
-    namespace Simple
-    {
     using System.Collections.Generic;
     using Windows.Devices.Gpio;
-
     using Microsoft.Zelig.Support.mbed;
+
+    //--//
+
+#if LPC1768
+    using Microsoft.Zelig.LPC1768;
+#elif K64F
+    using Microsoft.Zelig.K64F;
+#endif
 
     //--//
 
@@ -107,21 +110,21 @@ namespace $safeprojectname$
         static int[] pinNumbers =
         {
 #if (LPC1768)
-            (int)PinName.LED1,
-            (int)PinName.LED2,
-            (int)PinName.LED3,
-            (int)PinName.LED4,
+        (int)PinName.LED1,
+        (int)PinName.LED2,
+        (int)PinName.LED3,
+        (int)PinName.LED4,
 #elif (K64F)
-            (1 << 12) | 22,
-            (1 << 12) | 21,
+        (1 << 12) | 22,
+        (1 << 12) | 21,
 #else
-            #error No target board defined.
+        #error No target board defined.
 #endif
-        };
+    };
 
         static void Main()
         {
-            var controller = new GpioController(new MbedGpioProvider());
+            var controller = GpioController.GetDefault();
             var pins = new GpioPin[pinNumbers.Length];
 
             for (int i = 0; i < pinNumbers.Length; ++i)
@@ -165,5 +168,4 @@ namespace $safeprojectname$
             }
         }
     }
-}
 }

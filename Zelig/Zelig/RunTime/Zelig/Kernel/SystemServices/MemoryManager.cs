@@ -47,8 +47,7 @@ namespace Microsoft.Zelig.Runtime
                 return new UIntPtr( 0 );
             }
 
-            public override void Release( UIntPtr address ,
-                                          uint    size    )
+            public override void Release(UIntPtr address)
             {
             }
 
@@ -105,12 +104,19 @@ namespace Microsoft.Zelig.Runtime
             }
         }
 
+        internal virtual void ConsistencyCheck()
+        { }
+
+        internal virtual bool IsObjectAlive( UIntPtr ptr )
+        {
+            throw new NotImplementedException( );
+        }
+
         [TS.WellKnownMethod( "MemoryManager_Allocate" )]
         public abstract UIntPtr Allocate( uint size );
 
-        [TS.WellKnownMethod( "MemoryManager_Release" )]
-        public abstract void Release( UIntPtr address ,
-                                      uint    size    );
+        [TS.WellKnownMethod("MemoryManager_Release")]
+        public abstract void Release(UIntPtr address);
 
         public abstract bool RefersToMemory( UIntPtr address );
 

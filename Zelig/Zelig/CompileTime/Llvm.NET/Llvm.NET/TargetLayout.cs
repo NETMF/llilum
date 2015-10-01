@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Llvm.NET
 {
     /// <summary>Name mangling mode for target output</summary>
+    [Obsolete( "This enumeration should no longer be used it is only applicable to ITargetLayout, which is now aslo obsolete" )]
     public enum NameMangling
     {
         Elf,
@@ -13,6 +15,7 @@ namespace Llvm.NET
     }
 
     /// <summary>Interface for components describing a particular target's data layout rules</summary>
+    [Obsolete("This interaface and implementations should no longer be used, use Llvm.NET.TargetData obtained from an Llvm.NET.TargetMachine")]
     public interface ITargetDataLayout
     {
         /// <summary>List of natively supported integer bit widths</summary>
@@ -44,6 +47,7 @@ namespace Llvm.NET
     }
 
     /// <summary>Base class with default information for creating implementations of <see cref="ITargetDataLayout"/></summary>
+    [Obsolete( "This implementation of ITargetLayout should no longer be used, use Llvm.NET.TargetData obtained from an Llvm.NET.TargetMachine" )]
     public class TargetDataLayout
         : ITargetDataLayout
     {

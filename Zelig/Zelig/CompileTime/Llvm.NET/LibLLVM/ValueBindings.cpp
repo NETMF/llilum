@@ -33,3 +33,10 @@ int LLVMGetValueID( LLVMValueRef valueRef )
     return unwrap( valueRef )->getValueID();
 }
 
+LLVMValueRef LLVMMetadataAsValue( LLVMContextRef context, LLVMMetadataRef metadataRef )
+{
+    LLVMContext* ctx = unwrap( context );
+    auto md = unwrap( metadataRef );
+    return wrap( MetadataAsValue::get( *ctx, md ) );
+}
+

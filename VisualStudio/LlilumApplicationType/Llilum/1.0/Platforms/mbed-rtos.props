@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\HAL_CM.c"/>
+    <ClCompile Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\RTX_Conf_CM.c"/>
+    <ClCompile Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\rt_CMSIS.c"/>
+    <ClCompile Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\rt_Event.c"/>
+    <ClCompile Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\rt_List.c"/>
+    <ClCompile Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\rt_Mailbox.c"/>
+    <ClCompile Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\rt_MemBox.c"/>
+    <ClCompile Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\rt_Mutex.c"/>
+    <ClCompile Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\rt_Robin.c"/>
+    <ClCompile Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\rt_Semaphore.c"/>
+    <ClCompile Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\rt_System.c"/>
+    <ClCompile Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\rt_Task.c"/>
+    <ClCompile Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\rt_Time.c"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\cmsis_os.h" />
+    <ClInclude Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\os_tcb.h" />
+    <ClInclude Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\RTX_CM_lib.h" />
+    <ClInclude Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\RTX_Conf.h" />
+    <ClInclude Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\rt_Event.h" />
+    <ClInclude Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\rt_HAL_CM.h" />
+    <ClInclude Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\rt_List.h" />
+    <ClInclude Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\rt_Mailbox.h" />
+    <ClInclude Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\rt_MemBox.h" />
+    <ClInclude Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\rt_Mutex.h" />
+    <ClInclude Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\rt_Robin.h" />
+    <ClInclude Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\rt_Semaphore.h" />
+    <ClInclude Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\rt_System.h" />
+    <ClInclude Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\rt_Task.h" />
+    <ClInclude Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\rt_Time.h" />
+    <ClInclude Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\rt_TypeDef.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- TODO: For now this is hard coded to the Cortex-M3 variant, but it should be updated to leverage a property that defines the micro-architecture -->
+    <ArmAssemble Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\TARGET_M3\TOOLCHAIN_GCC\HAL_CM3.S" />
+    <ArmAssemble Include="$(LlilumSDK)\mbed-rtos\rtx\TARGET_CORTEX_M\TARGET_M3\TOOLCHAIN_GCC\SVC_Table.S" />
+  </ItemGroup>
+</Project>

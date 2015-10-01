@@ -16,9 +16,20 @@
   </TemplateData>
   <TemplateContent>
     <Project TargetFileName="$projectname$.Native.vcxproj" File="Native.vcxproj" ReplaceParameters="true">
-      <ProjectItem ReplaceParameters="false" TargetFileName="main.cpp">main.cpp</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="helpers.h">helpers.h</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="InteropExports_clock.cpp">InteropExports_clock.cpp</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="InteropExports_core.cpp">InteropExports_core.cpp</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="InteropExports_debug.cpp">InteropExports_debug.cpp</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="InteropExports_gpio.cpp">InteropExports_gpio.cpp</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="InteropExports_i2c.cpp">InteropExports_i2c.cpp</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="InteropExports_mem.cpp">InteropExports_mem.cpp</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="InteropExports_nvic.cpp">InteropExports_nvic.cpp</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="InteropExports_spi.cpp">InteropExports_spi.cpp</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="InteropExports_system_timer.cpp">InteropExports_system_timer.cpp</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="InteropExports_systick.cpp">InteropExports_systick.cpp</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="InteropExports_threading.cpp">InteropExports_threading.cpp</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="pch.h">pch.h</ProjectItem>
-      <ProjectItem ReplaceParameters="false" TargetFileName="mbed_simple.FrontEndConfig2">mbed_simple.FrontEndConfig2</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="mbed_simple.FrontEndConfig2">mbed_simple.FrontEndConfig</ProjectItem>
     </Project>
   </TemplateContent>
 </VSTemplate>

@@ -1030,13 +1030,11 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
                     ValueTypeRepresentation vt = td as ValueTypeRepresentation;
                     if ((null != vt) && ((vt.Flags & TypeRepresentation.Attributes.Abstract) == 0))
                     {
-                        //if the user did not specify any item in the value type we
-                        //still need to make sure that an instance of this type consumes
-                        //at least one byte. otherwise, assignment operators will fail
-                        //for there is no data to copy
+                        // If this is a zero-sized struct, we need to arbitrarily assign it a size of one byte. This
+                        // matches the CLR spec and simplifies element offset validation
                         if (size == 0)
                         {
-                            size = 4;
+                            size = 1;
                         }
 
                         //very special case:

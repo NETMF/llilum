@@ -33,6 +33,57 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
+        private static VariableExpression LoadVirtualMethodPointer(
+            PhaseExecution.NotificationContext nc,
+            InstanceCallOperator call,
+            Expression target,
+            MethodRepresentation method)
+        {
+            TypeSystemForCodeTransformation typeSystem = nc.TypeSystem;
+            Debugging.DebugInfo             debugInfo  = call.DebugInfo;
+            TemporaryVariableExpression     methodPointer;
+
+            if ( method.OwnerType is InterfaceTypeRepresentation )
+            {
+                // Load MethodPointers for interface.
+                MethodRepresentation        mdVTableGetInterface = typeSystem.WellKnownMethods.VTable_GetInterface;
+                TemporaryVariableExpression methodPointers       = nc.AllocateTemporary( mdVTableGetInterface.ReturnType );
+                Expression[]                rhs                  = typeSystem.AddTypePointerToArgumentsOfStaticMethod( mdVTableGetInterface, target, typeSystem.GetVTable( method.OwnerType ) );
+                CallOperator                newCall              = StaticCallOperator.New( debugInfo, CallOperator.CallKind.Direct, mdVTableGetInterface, VariableExpression.ToArray( methodPointers ), rhs );
+                call.AddOperatorBefore( newCall );
+
+                // Load the code pointer from the list. No null or range check, we know both will always pass.
+                int idx = method.FindInterfaceTableIndex();
+                methodPointer = nc.AllocateTemporary( methodPointers.Type.ContainedType );
+                call.AddOperatorBefore( LoadElementOperator.New( debugInfo, methodPointer, methodPointers, typeSystem.CreateConstant( idx ), null, false ) );
+            }
+            else
+            {
+                // Load the target object's VTable.
+                MethodRepresentation        mdVTableGet = typeSystem.WellKnownMethods.VTable_Get;
+                TemporaryVariableExpression tmpVTable   = nc.AllocateTemporary( mdVTableGet.OwnerType );
+                Expression[]                rhs         = typeSystem.AddTypePointerToArgumentsOfStaticMethod( mdVTableGet, target );
+                CallOperator                newCall     = StaticCallOperator.New( debugInfo, CallOperator.CallKind.Direct, mdVTableGet, VariableExpression.ToArray( tmpVTable ), rhs );
+                call.AddOperatorBefore( newCall );
+
+                // Get method code pointers. The VTable can never be null here, so don't add null-checks.
+                FieldRepresentation         fdMethodPointers = typeSystem.WellKnownFields.VTable_MethodPointers;
+                TemporaryVariableExpression methodPointers   = nc.AllocateTemporary( fdMethodPointers.FieldType );
+                call.AddOperatorBefore( LoadInstanceFieldOperator.New( debugInfo, fdMethodPointers, methodPointers, tmpVTable, false ) );
+
+                // Load the code pointer from the list. No null or range check, we know both will always pass.
+                int index = method.FindVirtualTableIndex();
+                methodPointer = nc.AllocateTemporary( methodPointers.Type.ContainedType );
+                call.AddOperatorBefore( LoadElementOperator.New( debugInfo, methodPointer, methodPointers, typeSystem.CreateConstant( index ), null, false ) );
+            }
+
+            return methodPointer;
+        }
+
+        //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
+        //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
+        //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
+
         [CompilationSteps.PhaseFilter( typeof(Phases.HighLevelToMidLevelConversion) )]
         [CompilationSteps.OperatorHandler( typeof(InstanceCallOperator) )]
         private static void Handle_Convert_VirtualCallOperator( PhaseExecution.NotificationContext nc )
@@ -48,84 +99,11 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                     return;
                 }
 
-                MethodRepresentation md = op.TargetMethod;
+                VariableExpression methodPointer = LoadVirtualMethodPointer( nc, op, op.FirstArgument, op.TargetMethod );
+                Expression[] rhs = ArrayUtility.InsertAtHeadOfNotNullArray( op.Arguments, methodPointer );
+                CallOperator call = IndirectCallOperator.New( op.DebugInfo, op.TargetMethod, op.Results, rhs, false );
 
-                if(md.OwnerType is InterfaceTypeRepresentation)
-                {
-                    CallOperator call;
-                    Expression[] rhs;
-
-                    //
-                    // Load MethodPointers for interface.
-                    //
-                    MethodRepresentation        mdVTableGetInterface = typeSystem.WellKnownMethods.VTable_GetInterface;
-                    TemporaryVariableExpression tmpMethodPointers    = nc.AllocateTemporary( typeSystem.WellKnownFields.VTable_MethodPointers.FieldType );
-
-                    rhs  = typeSystem.AddTypePointerToArgumentsOfStaticMethod( mdVTableGetInterface, op.FirstArgument, typeSystem.GetVTable( md.OwnerType ) );
-                    call = StaticCallOperator.New( op.DebugInfo, CallOperator.CallKind.Direct, mdVTableGetInterface, VariableExpression.ToArray( tmpMethodPointers ), rhs );
-                    op.AddOperatorBefore( call );
-
-                    //
-                    // Load MethodPointer at index X.
-                    //
-                    int                         idx              = md.FindInterfaceTableIndex();
-                    TemporaryVariableExpression tmpMethodPointer = nc.AllocateTemporary( tmpMethodPointers.Type.ContainedType );
-
-                    //
-                    // No null or range check, we know both will always pass.
-                    //
-                    op.AddOperatorBefore( LoadElementOperator.New( op.DebugInfo, tmpMethodPointer, tmpMethodPointers, typeSystem.CreateConstant( idx ), null, false ) );
-
-                    //
-                    // Call indirect.
-                    //
-
-                    rhs  = ArrayUtility.InsertAtHeadOfNotNullArray( op.Arguments, (Expression)tmpMethodPointer );
-                    call = IndirectCallOperator.New( op.DebugInfo, md, op.Results, rhs, false );
-
-                    op.SubstituteWithOperator( call, Operator.SubstitutionFlags.CopyAnnotations );
-                }
-                else
-                {
-                    CallOperator call;
-                    Expression[] rhs;
-
-                    //
-                    // Load VTable
-                    //
-                    MethodRepresentation        mdVTableGet = typeSystem.WellKnownMethods.VTable_Get;
-                    TemporaryVariableExpression tmpVTable   = nc.AllocateTemporary( mdVTableGet.OwnerType );
-
-                    rhs  = typeSystem.AddTypePointerToArgumentsOfStaticMethod( mdVTableGet, op.FirstArgument );
-                    call = StaticCallOperator.New( op.DebugInfo, CallOperator.CallKind.Direct, mdVTableGet, VariableExpression.ToArray( tmpVTable ), rhs );
-                    op.AddOperatorBefore( call );
-
-                    //
-                    // Load MethodPointer at index X.
-                    //
-                    int idx = md.FindVirtualTableIndex();
-
-                    FieldRepresentation         fdMethodPointers  = typeSystem.WellKnownFields.VTable_MethodPointers;
-                    TemporaryVariableExpression tmpMethodPointers = nc.AllocateTemporary( fdMethodPointers.FieldType               );
-                    TemporaryVariableExpression tmpMethodPointer  = nc.AllocateTemporary( fdMethodPointers.FieldType.ContainedType );
-
-                    //
-                    // 'tmpVTable' will never be null, so we don't need to add null checks.
-                    //
-                    op.AddOperatorBefore( LoadInstanceFieldOperator.New( op.DebugInfo, fdMethodPointers, tmpMethodPointers, tmpVTable, false ) );
-
-                    //
-                    // Call indirect.
-                    //
-                    // No null or range check, we know both will always pass.
-                    //
-                    op.AddOperatorBefore( LoadElementOperator.New( op.DebugInfo, tmpMethodPointer, tmpMethodPointers, typeSystem.CreateConstant( idx ), null, false ) );
-
-                    rhs  = ArrayUtility.InsertAtHeadOfNotNullArray( op.Arguments, (Expression)tmpMethodPointer );
-                    call = IndirectCallOperator.New( op.DebugInfo, md, op.Results, rhs, false );
-
-                    op.SubstituteWithOperator( call, Operator.SubstitutionFlags.CopyAnnotations );
-                }
+                op.SubstituteWithOperator( call, Operator.SubstitutionFlags.CopyAnnotations );
 
                 nc.MarkAsModified();
             }
@@ -173,50 +151,13 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                     // Virtual method.
                     //
                     Expression source = op.FirstArgument;
-
                     if(source != target)
                     {
                         throw TypeConsistencyErrorException.Create( "Cannot create an instance delegate on '{0}' when the method comes from '{1}'", target, source );
                     }
 
-                    //
-                    // Load VTable
-                    //
-                    WellKnownFields             wkf         = typeSystem.WellKnownFields;
-                    MethodRepresentation        mdVTableGet = wkm.VTable_Get;
-                    TemporaryVariableExpression tmpVTable   = nc.AllocateTemporary( mdVTableGet.OwnerType );
-
-                    rhs     = typeSystem.AddTypePointerToArgumentsOfStaticMethod( mdVTableGet, target );
-                    newCall = StaticCallOperator.New( debugInfo, CallOperator.CallKind.Direct, mdVTableGet, VariableExpression.ToArray( tmpVTable ), rhs );
-                    call.AddOperatorBefore( newCall );
-
-                    //
-                    // Load MethodPointer at index X.
-                    //
-                    int idx = mdDelegate.FindVirtualTableIndex();
-
-                    FieldRepresentation         fdMethodPointers  = wkf.VTable_MethodPointers;
-                    TemporaryVariableExpression tmpMethodPointers = nc.AllocateTemporary( fdMethodPointers.FieldType               );
-                    TemporaryVariableExpression tmpMethodPointer  = nc.AllocateTemporary( fdMethodPointers.FieldType.ContainedType );
-
-                    //
-                    // 'tmpVTable' will never be null, so we don't need to add null checks.
-                    //
-                    call.AddOperatorBefore( LoadInstanceFieldOperator.New( debugInfo, fdMethodPointers, tmpMethodPointers, tmpVTable, false ) );
-
-                    //
-                    // No null or range check, we know code pointers will always be non-null.
-                    //
-                    call.AddOperatorBefore( LoadElementOperator.New( debugInfo, tmpMethodPointer, tmpMethodPointers, typeSystem.CreateConstant( idx ), null, false ) );
-
-                    exCode = tmpMethodPointer;
+                    exCode = LoadVirtualMethodPointer( nc, call, target, mdDelegate );
                 }
-
-                //////////////////////////////////////////////////////////////////////////
-                // LT72
-                //
-                // ORIGINAL: 
-                //foreach(MethodRepresentation mdParent in call.TargetMethod.OwnerType.Extends.Methods)
 
                 foreach( MethodRepresentation mdParent in call.TargetMethod.OwnerType.Extends.Methods )
                 {

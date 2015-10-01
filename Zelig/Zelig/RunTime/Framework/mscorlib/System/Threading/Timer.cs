@@ -17,8 +17,8 @@ namespace System.Threading
 {
     using System;
     using System.Threading;
-////using System.Security;
-////using System.Security.Permissions;
+    using System.Security;
+    using System.Security.Permissions;
 ////using Microsoft.Win32;
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
@@ -270,7 +270,7 @@ namespace System.Threading
 ////
 ////}
 
-////[HostProtection( Synchronization = true, ExternalThreading = true )]
+    [HostProtection( Synchronization = true, ExternalThreading = true )]
     public sealed class Timer : MarshalByRefObject, IDisposable
     {
 ////    private const UInt32 MAX_SUPPORTED_TIMEOUT = (uint)0xfffffffe;

@@ -50,19 +50,10 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
             {
                 if( !m_localValues.ContainsKey( exp ) )
                 {
-                    LLVM._Value v = m_function.GetLocalStackValue( exp.ToString( ), m_manager.GetOrInsertType( exp.Type ) );
+                    LLVM._Value v = m_function.GetLocalStackValue( m_method, m_basicBlock, ( IR.VariableExpression )exp, m_manager );
                     m_localValues[ exp ] = v;
-
-                    if( exp is IR.ArgumentVariableExpression )
-                    {
-                        int n = ( ( IR.ArgumentVariableExpression )exp ).Number;
-                        if( m_method is TS.StaticMethodRepresentation )
-                            n--;
-
-                        m_basicBlock.InsertStore( m_localValues[ exp ], m_basicBlock.GetFunctionArgument( m_function, n ) );
-                    }
-                
                 }
+
                 return m_localValues[ exp ];
             }
             else if( exp is IR.ConstantExpression )
@@ -132,20 +123,23 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         public override void EmitCodeForBasicBlock( IR.BasicBlock bb )
         {
-            #if GENERATE_ONLY_TYPESYSTEM_AND_FUNCTION_DEFINITIONS
-                m_manager.TurnOffCompilationAndValidation( );    
-                m_function.SetExternalLinkage( );
-                m_basicBlock = null;                
-            #else
-                m_basicBlock = GetOrInsertBasicBlock( bb );
+#if GENERATE_ONLY_TYPESYSTEM_AND_FUNCTION_DEFINITIONS
+            m_manager.TurnOffCompilationAndValidation( );
+            m_function.SetExternalLinkage( );
+            m_basicBlock = null;
+#else // GENERATE_ONLY_TYPESYSTEM_AND_FUNCTION_DEFINITIONS
+            m_basicBlock = GetOrInsertBasicBlock( bb );
 
-                foreach( var op in bb.Operators )
+            foreach( var op in bb.Operators )
+            {
+                if ( EmitCodeForBasicBlock_ShouldSkip( op ) )
                 {
-                if( EmitCodeForBasicBlock_ShouldSkip( op ) )
                     continue;
-                    TranslateOperator( op, bb );
                 }
-            #endif
+
+                TranslateOperator( op, bb );
+            }
+#endif // GENERATE_ONLY_TYPESYSTEM_AND_FUNCTION_DEFINITIONS
         }
 
         private void TranslateOperator( IR.Operator op, IR.BasicBlock bb )
@@ -154,7 +148,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
             // Miguel: (Hack to remove processor.cs epilogue/prologue debug data)
             if( op.DebugInfo != null && !op.DebugInfo.SrcFileName.EndsWith( "ProcessorARMv7M.cs" ) )
             {
-                m_basicBlock.SetDebugInfo( op.DebugInfo.BeginLineNumber, op.DebugInfo.BeginColumn, op.DebugInfo.SrcFileName, LLVMModuleManager.GetFullMethodName( m_method ) );
+                m_basicBlock.SetDebugInfo( op.DebugInfo.BeginLineNumber, op.DebugInfo.BeginColumn, op.DebugInfo.SrcFileName, m_manager, m_method );
             }
 
             OutputStringInline( op.ToString( ) );
@@ -532,11 +526,13 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
             switch( kindInput )
             {
                 case TS.TypeRepresentation.BuiltInTypes.I4:
+                case TS.TypeRepresentation.BuiltInTypes.U4:
                 case TS.TypeRepresentation.BuiltInTypes.I8:
+                case TS.TypeRepresentation.BuiltInTypes.U8:
                     switch( kindOutput )
                     {
                         case TS.TypeRepresentation.BuiltInTypes.R4:
-                    v = m_basicBlock.InsertSIToFPFloat( v );
+                            v = m_basicBlock.InsertSIToFPFloat( v );
                             break;
                         case TS.TypeRepresentation.BuiltInTypes.R8:
                             v = m_basicBlock.InsertSIToFPDouble( v );
@@ -578,14 +574,18 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         private void Translate_InitialValueOperator( IR.InitialValueOperator op )
         {
-            if( op.FirstResult is IR.ArgumentVariableExpression )
+            if (!(op.FirstResult is IR.ArgumentVariableExpression))
             {
-                throw new Exception( "Operator not implemented!!" );
+                throw new Exception("InitialValueOperator implemented only for argument variables: " + op.ToString());
             }
-            else
+
+            int index = op.FirstResult.Number;
+            if (m_method is TS.StaticMethodRepresentation)
             {
-                throw new Exception( "InitialValueOperator not yet handled: " + op.ToString( ) );
+                --index;
             }
+
+            m_basicBlock.InsertStoreArgument(m_results[0], index);
         }
 
         LLVM._Value DoCmpOp( LLVM._Value valA, LLVM._Value valB, int cond, bool signed )
@@ -615,26 +615,38 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         private void Translate_StoreInstanceFieldOperator( IR.StoreInstanceFieldOperator op )
         {
-            StoreValue( m_basicBlock.GetField( m_arguments[ 0 ], m_manager.GetOrInsertType( op.FirstArgument.Type ), m_manager.GetOrInsertType( op.Field.FieldType ), ( int )op.Field.Offset ), m_arguments[ 1 ] );
+            _Value value = m_basicBlock.GetField(
+                m_arguments[ 0 ],
+                m_manager.GetOrInsertType( op.FirstArgument.Type ),
+                m_manager.GetOrInsertType( op.Field.FieldType ),
+                op.Field.Offset );
+            StoreValue( value, m_arguments[ 1 ] );
         }
 
         private void Translate_LoadInstanceFieldOperator( IR.LoadInstanceFieldOperator op )
         {
-            StoreValue( m_results[ 0 ], m_basicBlock.GetField( m_arguments[ 0 ], m_manager.GetOrInsertType( op.FirstArgument.Type ), m_manager.GetOrInsertType( op.Field.FieldType ), ( int )op.Field.Offset ) );
+            _Value value = m_basicBlock.GetField(
+                m_arguments[ 0 ],
+                m_manager.GetOrInsertType( op.FirstArgument.Type ),
+                m_manager.GetOrInsertType( op.Field.FieldType ),
+                op.Field.Offset );
+            StoreValue( m_results[ 0 ], value );
         }
 
         private void Translate_LoadInstanceFieldAddressOperator( IR.LoadInstanceFieldAddressOperator op )
         {
-            StoreValue( m_results[ 0 ],
-                m_basicBlock.GetAddressAsUIntPtr(
-                m_basicBlock.GetField( m_arguments[ 0 ], m_manager.GetOrInsertType( op.FirstArgument.Type ), m_manager.GetOrInsertType( op.Field.FieldType ), ( int )op.Field.Offset )
-                ) );
+            _Value value = m_basicBlock.GetField(
+                m_arguments[ 0 ],
+                m_manager.GetOrInsertType( op.FirstArgument.Type ),
+                m_manager.GetOrInsertType( op.Field.FieldType ),
+                op.Field.Offset );
+            StoreValue( m_results[ 0 ], m_basicBlock.GetAddressAsUIntPtr( value ) );
         }
 
         private LLVM._Value ArrayAccessByIDX( LLVM._Value array, TS.TypeRepresentation arrayType, LLVM._Value idx )
         {
             
-            array = m_basicBlock.GetField( array, m_manager.GetOrInsertType( arrayType ), null, ( int )( m_wkt.System_Array.Size ) );
+            array = m_basicBlock.GetField( array, m_manager.GetOrInsertType( arrayType ), null, ( int )m_wkt.System_Array.Size );
             return m_basicBlock.IndexLLVMArray( array, ConvertValueToALUOperableType( idx, true ) );
         }
 

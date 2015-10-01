@@ -294,6 +294,16 @@ namespace Microsoft.Zelig.Runtime
             // TODO: Capture stack dump.
             //
 
+            //
+            // Our LLVM port does not yet support throwing exceptions
+            //
+            
+             BugCheck.Log( "!!!                       WARNING                             !!!" );
+             BugCheck.Log( "!!! Throwing Exceptions is not yet supported for LLVM CodeGen !!!" );
+             BugCheck.Log( "!!!                       WARNING                             !!!" );
+
+             BugCheck.Raise( BugCheck.StopCode.InvalidOperation );
+
             DeliverException( obj );
         }
 

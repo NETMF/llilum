@@ -4,14 +4,22 @@
 -HostAssemblyDir   ..\..\..\..\ZeligBuild\Host\bin\Debug
 -DeviceAssemblyDir ..\..\..\..\ZeligBuild\Target\bin\Debug
 
--CompilationSetup Microsoft.Zelig.Configuration.Environment.LLVMHostedCompilationSetup
-#-CompilationSetup Microsoft.Zelig.Configuration.Environment.iMote2CompilationSetup 
+-CompilationSetup Microsoft.Zelig.Configuration.Environment.LPC1768MBEDHostedCompilationSetup
+#-CompilationSetup Microsoft.Zelig.Configuration.Environment.K64FMBEDHostedCompilationSetup
 
 
 ###
 ### We need to include this assembly to get the right drivers.
 ###
--Reference Microsoft.CortexMOnMBED
+-Reference Microsoft.CortexM3OnMBED
+-Reference Microsoft.CortexM3OnCMSISCore
+-Reference Microsoft.DeviceModels.ModelForCortexM3
+-Reference LPC1768
+
+#-Reference Microsoft.CortexM4OnMBED
+#-Reference Microsoft.CortexM4OnCMSISCore
+#-Reference Microsoft.DeviceModels.ModelForCortexM4
+#-Reference K64F
 
 
 ###
@@ -63,11 +71,13 @@
 
 -DumpIR
 #-DumpIRpre
--DumpIRpost
--DumpIRXML
+#-DumpIRpost
+#-DumpIRXML
 -DumpLLVMIR
 #-ReloadState
 -DumpLLVMIR_TextRepresentation
 
 -MaxProcs 1
+
+-NoSDK
 

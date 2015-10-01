@@ -209,4 +209,10 @@ namespace Microsoft.Zelig.Configuration.Environment
 ////    [LinkToConfigurationOption("LPC3180__DRAMWideBus")]
 ////    public bool DRAMWideBus;
     }
+
+    
+    [DisplayName("mBed")]
+    public sealed class mBed : ProcessorCategory
+    {
+    }
 }

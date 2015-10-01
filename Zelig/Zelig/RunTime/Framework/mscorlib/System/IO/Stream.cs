@@ -18,8 +18,8 @@ using System;
 using System.Threading;
 using System.Runtime.InteropServices;
 //using System.Runtime.Remoting.Messaging;
-//using System.Security;
-//using System.Security.Permissions;
+using System.Security;
+using System.Security.Permissions;
 
 namespace System.IO
 {
@@ -152,7 +152,7 @@ namespace System.IO
             return new ManualResetEvent( false );
         }
 
-////    [HostProtection( ExternalThreading = true )]
+        [HostProtection( ExternalThreading = true )]
         public virtual IAsyncResult BeginRead( byte[] buffer, int offset, int count, AsyncCallback callback, Object state )
         {
             if(!CanRead) __Error.ReadNotSupported();
@@ -206,7 +206,7 @@ namespace System.IO
             return ar._numRead;
         }
 
-////    [HostProtection( ExternalThreading = true )]
+        [HostProtection( ExternalThreading = true )]
         public virtual IAsyncResult BeginWrite( byte[] buffer, int offset, int count, AsyncCallback callback, Object state )
         {
             if(!CanWrite) __Error.WriteNotSupported();
@@ -292,7 +292,7 @@ namespace System.IO
             Write( oneByteArray, 0, 1 );
         }
 
-////    [HostProtection( Synchronization = true )]
+        [HostProtection( Synchronization = true )]
         public static Stream Synchronized( Stream stream )
         {
             if(stream == null)
@@ -602,7 +602,7 @@ namespace System.IO
                 }
             }
 
-////        [HostProtection( ExternalThreading = true )]
+            [HostProtection( ExternalThreading = true )]
             public override IAsyncResult BeginRead( byte[] buffer, int offset, int count, AsyncCallback callback, Object state )
             {
                 lock(_stream)
@@ -651,7 +651,7 @@ namespace System.IO
                 }
             }
 
-////        [HostProtection( ExternalThreading = true )]
+            [HostProtection( ExternalThreading = true )]
             public override IAsyncResult BeginWrite( byte[] buffer, int offset, int count, AsyncCallback callback, Object state )
             {
                 lock(_stream)

@@ -50,6 +50,56 @@ namespace Llvm.NET
         NonLazyBind = LLVMAttribute.LLVMNonLazyBind
     }
 
+    public enum AttributeKind : uint
+    {
+        None = LLVMAttributeKind.None,
+        Alignment = LLVMAttributeKind.Alignment,
+        AlwaysInline = LLVMAttributeKind.AlwaysInline,
+        Builtin = LLVMAttributeKind.Builtin,
+        ByVal = LLVMAttributeKind.ByVal,
+        InAlloca = LLVMAttributeKind.InAlloca,
+        Cold = LLVMAttributeKind.Cold,
+        Convergent = LLVMAttributeKind.Convergent,
+        InlineHint = LLVMAttributeKind.InlineHint,
+        InRegister = LLVMAttributeKind.InReg,
+        JumpTable = LLVMAttributeKind.JumpTable,
+        MinSize = LLVMAttributeKind.MinSize,
+        Naked = LLVMAttributeKind.Naked,
+        Nest = LLVMAttributeKind.Nest,
+        NoAlias = LLVMAttributeKind.NoAlias,
+        NoBuiltin = LLVMAttributeKind.NoBuiltin,
+        NoCapture = LLVMAttributeKind.NoCapture,
+        NoDuplicate = LLVMAttributeKind.NoDuplicate,
+        NoImplicitFloat = LLVMAttributeKind.NoImplicitFloat,
+        NoInline = LLVMAttributeKind.NoInline,
+        NonLazyBind = LLVMAttributeKind.NonLazyBind,
+        NonNull = LLVMAttributeKind.NonNull,
+        Dereferenceable = LLVMAttributeKind.Dereferenceable,
+        DereferenceableOrNull = LLVMAttributeKind.DereferenceableOrNull,
+        NoRedZone = LLVMAttributeKind.NoRedZone,
+        NoReturn = LLVMAttributeKind.NoReturn,
+        NoUnwind = LLVMAttributeKind.NoUnwind,
+        OptimizeForSize = LLVMAttributeKind.OptimizeForSize,
+        OptimizeNone = LLVMAttributeKind.OptimizeNone,
+        ReadNone = LLVMAttributeKind.ReadNone,
+        ReadOnly = LLVMAttributeKind.ReadOnly,
+        ArgMemOnly = LLVMAttributeKind.ArgMemOnly,
+        Returned = LLVMAttributeKind.Returned,
+        ReturnsTwice = LLVMAttributeKind.ReturnsTwice,
+        SignExtend = LLVMAttributeKind.SExt,
+        StackAlignment = LLVMAttributeKind.StackAlignment,
+        StackProtect = LLVMAttributeKind.StackProtect,
+        StackProtectReq = LLVMAttributeKind.StackProtectReq,
+        StackProtectStrong = LLVMAttributeKind.StackProtectStrong,
+        SafeStack = LLVMAttributeKind.SafeStack,
+        StructRet = LLVMAttributeKind.StructRet,
+        SanitizeAddress = LLVMAttributeKind.SanitizeAddress,
+        SanitizeThread = LLVMAttributeKind.SanitizeThread,
+        SanitizeMemory = LLVMAttributeKind.SanitizeMemory,
+        UnwindTable = LLVMAttributeKind.UWTable,
+        ZeroExtend = LLVMAttributeKind.ZExt,
+    }
+
     /// <summary>LLVM Instruction opcodes</summary>
     public enum Opcode : uint
     {
@@ -165,31 +215,31 @@ namespace Llvm.NET
     /// <summary>Linkage specification for functions and globals</summary>
     public enum Linkage : uint
     {
-        External = LLVMLinkage.LLVMExternalLinkage,    /**< Externally visible function */
+        External = LLVMLinkage.LLVMExternalLinkage,    /*< Externally visible function */
         AvailableExternally = LLVMLinkage.LLVMAvailableExternallyLinkage,
-        LinkOnceAny = LLVMLinkage.LLVMLinkOnceAnyLinkage, /**< Keep one copy of function when linking (inline)*/
-        LinkOnceODR = LLVMLinkage.LLVMLinkOnceODRLinkage, /**< Same, but only replaced by something equivalent. */
+        LinkOnceAny = LLVMLinkage.LLVMLinkOnceAnyLinkage, /*< Keep one copy of function when linking (inline)*/
+        LinkOnceODR = LLVMLinkage.LLVMLinkOnceODRLinkage, /*< Same, but only replaced by something equivalent. */
         //LLVMLinkage.LLVMLinkOnceODRAutoHideLinkage, /**< Obsolete */
-        Weak = LLVMLinkage.LLVMWeakAnyLinkage,     /**< Keep one copy of function when linking (weak) */
-        WeakODR = LLVMLinkage.LLVMWeakODRLinkage,     /**< Same, but only replaced by something equivalent. */
-        Append = LLVMLinkage.LLVMAppendingLinkage,   /**< Special purpose, only applies to global arrays */
-        Internal = LLVMLinkage.LLVMInternalLinkage,    /**< Rename collisions when linking (static functions) */
-        Private = LLVMLinkage.LLVMPrivateLinkage,     /**< Like Internal, but omit from symbol table */
-        DllImport = LLVMLinkage.LLVMDLLImportLinkage,   /**< Function to be imported from DLL */
-        DllExport = LLVMLinkage.LLVMDLLExportLinkage,   /**< Function to be accessible from DLL */
-        ExternalWeak = LLVMLinkage.LLVMExternalWeakLinkage,/**< ExternalWeak linkage description */
-        //LLVMLinkage.LLVMGhostLinkage,       /**< Obsolete */
-        Common = LLVMLinkage.LLVMCommonLinkage,      /**< Tentative definitions */
-        LinkerPrivate = LLVMLinkage.LLVMLinkerPrivateLinkage, /**< Like Private, but linker removes. */
-        LinkerPrivateWeak = LLVMLinkage.LLVMLinkerPrivateWeakLinkage /**< Like LinkerPrivate, but is weak. */
+        Weak = LLVMLinkage.LLVMWeakAnyLinkage,     /*< Keep one copy of function when linking (weak) */
+        WeakODR = LLVMLinkage.LLVMWeakODRLinkage,     /*< Same, but only replaced by something equivalent. */
+        Append = LLVMLinkage.LLVMAppendingLinkage,   /*< Special purpose, only applies to global arrays */
+        Internal = LLVMLinkage.LLVMInternalLinkage,    /*< Rename collisions when linking (static functions) */
+        Private = LLVMLinkage.LLVMPrivateLinkage,     /*< Like Internal, but omit from symbol table */
+        DllImport = LLVMLinkage.LLVMDLLImportLinkage,   /*< Function to be imported from DLL */
+        DllExport = LLVMLinkage.LLVMDLLExportLinkage,   /*< Function to be accessible from DLL */
+        ExternalWeak = LLVMLinkage.LLVMExternalWeakLinkage,/*< ExternalWeak linkage description */
+        //LLVMLinkage.LLVMGhostLinkage,       /*< Obsolete */
+        Common = LLVMLinkage.LLVMCommonLinkage,      /*< Tentative definitions */
+        LinkerPrivate = LLVMLinkage.LLVMLinkerPrivateLinkage, /*< Like Private, but linker removes. */
+        LinkerPrivateWeak = LLVMLinkage.LLVMLinkerPrivateWeakLinkage /*< Like LinkerPrivate, but is weak. */
     }
 
     ///<summary>Enumeration for the visibility of a global value</summary>
     public enum Visibility : uint
     {
-        Default = LLVMVisibility.LLVMDefaultVisibility,  /**< The GV is visible */
-        Hidden = LLVMVisibility.LLVMHiddenVisibility,   /**< The GV is hidden */
-        Protected = LLVMVisibility.LLVMProtectedVisibility /**< The GV is protected */
+        Default = LLVMVisibility.LLVMDefaultVisibility,  /*< The GV is visible */
+        Hidden = LLVMVisibility.LLVMHiddenVisibility,   /*< The GV is hidden */
+        Protected = LLVMVisibility.LLVMProtectedVisibility /*< The GV is protected */
     }
     
     /// <summary>Unified predicate enumeration</summary>

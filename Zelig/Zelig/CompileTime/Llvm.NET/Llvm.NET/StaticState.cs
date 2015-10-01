@@ -67,7 +67,6 @@ namespace Llvm.NET
                 LLVMNative.InitializeAllAsmParsers( );
         }
 
-        //basic pattern to follow for any new targets in the future
         public static void RegisterNative( TargetRegistration regFlags = TargetRegistration.All )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
@@ -236,25 +235,25 @@ namespace Llvm.NET
                 LLVMNative.InitializePowerPCAsmParser( );
         }
 
-        public static void RegisterR600( TargetRegistration regFlags = TargetRegistration.All  )
+        public static void RegisterAMDGPU( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
-                LLVMNative.InitializeR600Target( );
+                LLVMNative.InitializeAMDGPUTarget( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
-                LLVMNative.InitializeR600TargetInfo( );
+                LLVMNative.InitializeAMDGPUTargetInfo( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
-                LLVMNative.InitializeR600TargetMC( );
+                LLVMNative.InitializeAMDGPUTargetMC( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
-                LLVMNative.InitializeR600AsmPrinter( );
+                LLVMNative.InitializeAMDGPUAsmPrinter( );
 
             //if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
-            //    LLVMNative.InitializeR600Disassembler( );
+            //    LLVMNative.InitializeAMDGPUDisassembler( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
-                LLVMNative.InitializeR600AsmParser( );
+                LLVMNative.InitializeAMDGPUAsmParser( );
         }
 
         public static void RegisterSparc( TargetRegistration regFlags = TargetRegistration.All  )

@@ -52,10 +52,22 @@
     <Compile Include="_Value.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\RunTime\Zelig\Common\Common.csproj">
+      <Project>{186f31a3-ef89-4a25-b2d5-20061218aa01}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\RunTime\Zelig\TypeSystem\TypeSystem.csproj">
+      <Project>{186f31a3-ef89-4a25-b2d5-20060720aa01}</Project>
+      <Name>TypeSystem</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Llvm.NET\Llvm.NET\Llvm.NET.csproj">
       <Project>{0162c8ce-6641-4922-8664-f8a44356fbf7}</Project>
       <Name>Llvm.NET</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\IntermediateRepresentation\IntermediateRepresentation.csproj">
+      <Project>{186f31a3-ef89-4a25-b2d5-20060603aa01}</Project>
+      <Name>IntermediateRepresentation</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

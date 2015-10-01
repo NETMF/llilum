@@ -86,8 +86,7 @@ namespace Microsoft.Zelig.FrontEnd
         private string                              m_outputDir;
         private string                              m_targetFile;
         private string                              m_entryPointName;
-
-
+        
         private bool                                m_fReloadState;
         private bool                                m_fDumpIL;
         private bool                                m_fDumpIRpre;
@@ -686,7 +685,7 @@ namespace Microsoft.Zelig.FrontEnd
             return arguments.ToArray( ); 
         }
 
-        private bool Parse( string[] args )
+        private bool Parse( string[] args, ref bool fNoSDK)
         {
             if( args != null )
             {
@@ -734,13 +733,17 @@ namespace Microsoft.Zelig.FrontEnd
 
                                         return false;
                                     }
-
-                                    if( Parse( recombinedArgs ) == false )
+                                    
+                                    if( Parse( recombinedArgs, ref fNoSDK ) == false )
                                     {
                                         return false;
                                     }
                                 }
                             }
+                        }
+                        else if( IsMatch( option, "NoSDK" ) )
+                        {
+                            fNoSDK = true;
                         }
                         else if( IsMatch( option, "DumpIL" ) )
                         {
@@ -1263,16 +1266,18 @@ namespace Microsoft.Zelig.FrontEnd
                 //--//
 
                 var pa = ( IR.Abstractions.Platform )Activator.CreateInstance( m_compilationSetup.Platform, m_typeSystem, m_memoryMap );
-
-
+                
                 m_typeSystem.PlatformAbstraction = pa;
 
                 //--//
 
                 var cc = ( IR.Abstractions.CallingConvention )Activator.CreateInstance( m_compilationSetup.CallingConvention, m_typeSystem );
-
-
+                
                 m_typeSystem.CallingConvention = cc;
+
+                //--//
+                
+                m_typeSystem.Product = m_product.Model;
 
                 //--//
 
@@ -1291,29 +1296,6 @@ namespace Microsoft.Zelig.FrontEnd
                 m_typeSystem.ResolveAll( );
                 Console.WriteLine( "{0}: Done", GetTime( ) );
                 
-                //LLVM/DWARF debugging support.
-                m_typeSystem.EnumerateMethods( delegate( TS.MethodRepresentation md )
-                {
-                    var cfg=IR.TypeSystemForCodeTransformation.GetCodeForMethod( md );
-                    if( cfg != null )
-                    {
-                        Debugging.DebugInfo di = null;
-                        foreach( var op in cfg.DataFlow_SpanningTree_Operators )
-                        {
-                            if( op.DebugInfo != null )
-                            {
-                                di = op.DebugInfo;
-                                break;
-                            }
-                        }
-
-                        if( di != null )
-                        {
-                            m_typeSystem.Module.DebugInfoForMethods.Add( md, new Debugging.DebugInfo( di.SrcFileName, di.MethodName, di.BeginLineNumber, di.BeginColumn, di.EndLineNumber, di.EndColumn ) );
-                        }
-                    }
-                } );
-
                 //--//
                 
                 Directory.CreateDirectory( Path.GetDirectoryName( filePrefix ) );
@@ -1493,7 +1475,28 @@ namespace Microsoft.Zelig.FrontEnd
             Console.Out.Flush( );
 #endif
 
-            //            //--//
+            //LLVM/DWARF debugging support.
+            m_typeSystem.EnumerateMethods( delegate ( TS.MethodRepresentation md )
+            {
+                var cfg = IR.TypeSystemForCodeTransformation.GetCodeForMethod( md );
+                if( cfg != null )
+                {
+                    Debugging.DebugInfo di = null;
+                    foreach( var op in cfg.DataFlow_SpanningTree_Operators )
+                    {
+                        if( op.DebugInfo != null )
+                        {
+                            di = op.DebugInfo;
+                            break;
+                        }
+                    }
+
+                    if( di != null )
+                    {
+                        m_typeSystem.Module.DebugInfoForMethods.Add( md, new Debugging.DebugInfo( di.SrcFileName, di.MethodName, di.BeginLineNumber, di.BeginColumn, di.EndLineNumber, di.EndColumn ) );
+                    }
+                }
+            } );
 
             if( PerformanceCounters.ContextualTiming.IsEnabled( ) )
             {
@@ -1591,14 +1594,20 @@ namespace Microsoft.Zelig.FrontEnd
                 Console.WriteLine( "{0}:     HEX file done", GetTime( ) );
             }
 
-            if( m_fDumpLLVMIR )
-            {
-                m_typeSystem.Module.DumpToFile( filePrefix + ".bc", false );
-            }
-
             if( m_fDumpLLVMIR_TextRepresentation )
             {
-                m_typeSystem.Module.DumpToFile( filePrefix + ".ll", true );
+                Console.WriteLine( "Writing LLVM IR text representation" );
+                m_typeSystem.Module.DumpToFile( filePrefix + ".ll", LLVM.OutputFormat.BitCodeSource );
+            }
+
+            if( m_fDumpLLVMIR )
+            {
+                Console.WriteLine( "Writing LLVM Bitcode representation" );
+                m_typeSystem.Module.DumpToFile( filePrefix + ".bc", LLVM.OutputFormat.BitCodeBinary );
+                
+                // todo: add compiler flag for these?
+                //m_typeSystem.Module.DumpToFile( filePrefix + ".s", LLVM.OutputFormat.TargetAsmSource );
+                //m_typeSystem.Module.DumpToFile( filePrefix + ".o", LLVM.OutputFormat.TargetObjectFile );
             }
 
             foreach( var raw in m_dumpRawImage )
@@ -1640,27 +1649,36 @@ namespace Microsoft.Zelig.FrontEnd
 
             Console.WriteLine( "{0}: Done", GetTime( ) );
         }
-        
+
         //--//
+
+        internal static bool RunBench(string[] args)
+        {
+            bool fNoSDK = false;
+            Bench bench = new Bench();
+            Bench.s_pThis = bench;
+
+            // path with space need to be re-assembled
+            string[] recombinedArgs = RecombineArgs(args);
+
+            if (recombinedArgs != null && bench.Parse(recombinedArgs, ref fNoSDK))
+            {
+                if (bench.ValidateOptions())
+                {
+                    bench.Compile();
+                }
+            }
+
+            return fNoSDK;
+        }
 
         public static void Main( string[] args )
         {
-
-            Bench bench = new Bench( );
-            Bench.s_pThis = bench;
+            bool fNoSDK = false;
 
             try
             {
-                // path with space need to be re-assembled
-                string[] recombinedArgs = RecombineArgs( args );
-                
-                if( recombinedArgs != null && bench.Parse( recombinedArgs ) )
-                {
-                    if( bench.ValidateOptions( ) )
-                    {
-                        bench.Compile( );
-                    }
-                }
+                fNoSDK = RunBench(args);
             }
             catch( Importer.SilentCompilationAbortException )
             {
@@ -1671,14 +1689,12 @@ namespace Microsoft.Zelig.FrontEnd
             }
             finally
             {
-                if( System.Diagnostics.Debugger.IsAttached )
+                if( System.Diagnostics.Debugger.IsAttached && fNoSDK == true)
                 {
                     Console.WriteLine( "Press <enter> to exit" );
                     Console.ReadLine( );
                 }
             }
         }
-
-
     }
 }

@@ -7,7 +7,7 @@
 //  - removed C++ function unwrap()
 //  - removed DEFINE_ISA_CONVERSION_FUNCTIONS which was erroneously mis-identified as a function
 //    declaration rather than a preprocessor macro instantiation
-//  - converted several int return and param types to proper LLVMxxxRef types not handled correctly
+//  - converted several int return and parameter types to proper LLVMxxxRef types not handled correctly
 //    by the ClangSharp code generator
 //
 using System;
@@ -43,7 +43,59 @@ namespace Llvm.NET
         internal IntPtr Pointer;
     }
 
-    
+    /// <summary>
+    /// LLVM attribute types. These should match Attribute::AttrKind exactly.
+    /// </summary>
+    internal enum LLVMAttributeKind : uint
+    {
+        None,
+        Alignment,
+        AlwaysInline,
+        Builtin,
+        ByVal,
+        InAlloca,
+        Cold,
+        Convergent,
+        InlineHint,
+        InReg,
+        JumpTable,
+        MinSize,
+        Naked,
+        Nest,
+        NoAlias,
+        NoBuiltin,
+        NoCapture,
+        NoDuplicate,
+        NoImplicitFloat,
+        NoInline,
+        NonLazyBind,
+        NonNull,
+        Dereferenceable,
+        DereferenceableOrNull,
+        NoRedZone,
+        NoReturn,
+        NoUnwind,
+        OptimizeForSize,
+        OptimizeNone,
+        ReadNone,
+        ReadOnly,
+        ArgMemOnly,
+        Returned,
+        ReturnsTwice,
+        SExt,
+        StackAlignment,
+        StackProtect,
+        StackProtectReq,
+        StackProtectStrong,
+        SafeStack,
+        StructRet,
+        SanitizeAddress,
+        SanitizeThread,
+        SanitizeMemory,
+        UWTable,
+        ZExt,
+    }
+
     internal enum LLVMModFlagBehavior
     {
         @Error = 1,
@@ -78,13 +130,92 @@ namespace Llvm.NET
         @LLVMValueKindMetadataAsValueVal,       // This is an instance of MetadataAsValue
         @LLVMValueKindInlineAsmVal,             // This is an instance of InlineAsm
         @LLVMValueKindInstructionVal,           // This is an instance of Instruction
-                                               // Enum values starting at InstructionVal are used for Instructions;
+                                                // Enum values starting at InstructionVal are used for Instructions;
 
         // Markers:
         @LLVMValueKindConstantFirstVal = LLVMValueKindFunctionVal,
         @LLVMValueKindConstantLastVal = LLVMValueKindConstantPointerNullVal
     };
 
+    enum LLVMDwarfTag : ushort
+    {
+        LLVMDwarfTagArrayType = 0x01,
+        LLVMDwarfTagClassType = 0x02,
+        LLVMDwarfTagEntryPoint = 0x03,
+        LLVMDwarfTagEnumerationType = 0x04,
+        LLVMDwarfTagFormalParameter = 0x05,
+        LLVMDwarfTagImportedDeclaration = 0x08,
+        LLVMDwarfTagLabel = 0x0a,
+        LLVMDwarfTagLexicalBlock = 0x0b,
+        LLVMDwarfTagMember = 0x0d,
+        LLVMDwarfTagPointerType = 0x0f,
+        LLVMDwarfTagReferenceType = 0x10,
+        LLVMDwarfTagCompileUnit = 0x11,
+        LLVMDwarfTagStringType = 0x12,
+        LLVMDwarfTagStructureType = 0x13,
+        LLVMDwarfTagSubroutineType = 0x15,
+        LLVMDwarfTagTypeDef = 0x16,
+        LLVMDwarfTagUnionType = 0x17,
+        LLVMDwarfTagUnspecifiedParameters = 0x18,
+        LLVMDwarfTagVariant = 0x19,
+        LLVMDwarfTagCommonBlock = 0x1a,
+        LLVMDwarfTagCommonInclusion = 0x1b,
+        LLVMDwarfTagInheritance = 0x1c,
+        LLVMDwarfTagInlinedSubroutine = 0x1d,
+        LLVMDwarfTagModule = 0x1e,
+        LLVMDwarfTagPtrToMemberType = 0x1f,
+        LLVMDwarfTagSetType = 0x20,
+        LLVMDwarfTagSubrangeType = 0x21,
+        LLVMDwarfTagWithStatement = 0x22,
+        LLVMDwarfTagAccessDeclaration = 0x23,
+        LLVMDwarfTagBaseType = 0x24,
+        LLVMDwarfTagCatchBlock = 0x25,
+        LLVMDwarfTagConstType = 0x26,
+        LLVMDwarfTagConstant = 0x27,
+        LLVMDwarfTagEnumerator = 0x28,
+        LLVMDwarfTagFileType = 0x29,
+        LLVMDwarfTagFriend = 0x2a,
+        LLVMDwarfTagNameList = 0x2b,
+        LLVMDwarfTagNameListItem = 0x2c,
+        LLVMDwarfTagPackedType = 0x2d,
+        LLVMDwarfTagSubProgram = 0x2e,
+        LLVMDwarfTagTemplateTypeParameter = 0x2f,
+        LLVMDwarfTagTemplateValueParameter = 0x30,
+        LLVMDwarfTagThrownType = 0x31,
+        LLVMDwarfTagTryBlock = 0x32,
+        LLVMDwarfTagVariantPart = 0x33,
+        LLVMDwarfTagVariable = 0x34,
+        LLVMDwarfTagVolatileType = 0x35,
+        LLVMDwarfTagDwarfProcedure = 0x36,
+        LLVMDwarfTagRestrictType = 0x37,
+        LLVMDwarfTagInterfaceType = 0x38,
+        LLVMDwarfTagNamespace = 0x39,
+        LLVMDwarfTagImportedModule = 0x3a,
+        LLVMDwarfTagUnspecifiedType = 0x3b,
+        LLVMDwarfTagPartialUnit = 0x3c,
+        LLVMDwarfTagInportedUnit = 0x3d,
+        LLVMDwarfTagCondition = 0x3f,
+        LLVMDwarfTagSharedType = 0x40,
+        LLVMDwarfTagTypeUnit = 0x41,
+        LLVMDwarfTagRValueReferenceType = 0x42,
+        LLVMDwarfTagTemplateAlias = 0x43,
+
+        // New in DWARF 5:
+        LLVMDwarfTagCoArrayType = 0x44,
+        LLVMDwarfTagGenericSubrange = 0x45,
+        LLVMDwarfTagDynamicType = 0x46,
+
+        LLVMDwarfTagMipsLoop = 0x4081,
+        LLVMDwarfTagFormatLabel = 0x4101,
+        LLVMDwarfTagFunctionTemplate = 0x4102,
+        LLVMDwarfTagClassTemplate = 0x4103,
+        LLVMDwarfTagGnuTemplateTemplateParam = 0x4106,
+        LLVMDwarfTagGnuTemplateParameterPack = 0x4107,
+        LLVMDwarfTagGnuFormalParameterPack = 0x4108,
+        LLVMDwarfTagLoUser = 0x4080,
+        LLVMDwarfTagAppleProperty = 0x4200,
+        LLVMDwarfTagHiUser = 0xffff
+    };
 
     internal static partial class LLVMNative
     {
@@ -134,13 +265,10 @@ namespace Llvm.NET
         internal static extern LLVMValueRef GetOrInsertFunction( LLVMModuleRef module, [MarshalAs( UnmanagedType.LPStr )] string @name, LLVMTypeRef functionType );
 
         [DllImport(libraryPath, EntryPoint = "LLVMAddFunctionAttr2", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
-        internal static extern void AddFunctionAttr2(LLVMValueRef @Fn, ulong @PA);
-
-        [DllImport(libraryPath, EntryPoint = "LLVMGetFunctionAttr2", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
-        internal static extern ulong GetFunctionAttr2( LLVMValueRef @Fn );
+        internal static extern void AddFunctionAttr2(LLVMValueRef @Fn, LLVMAttributeKind @Kind, ulong @Value);
 
         [DllImport(libraryPath, EntryPoint = "LLVMRemoveFunctionAttr2", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
-        internal static extern void RemoveFunctionAttr2( LLVMValueRef @Fn, ulong @PA);
+        internal static extern void RemoveFunctionAttr2( LLVMValueRef @Fn, LLVMAttributeKind @Kind);
 
         [DllImport(libraryPath, EntryPoint = "LLVMIsConstantZeroValue", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
         internal static extern LLVMBool IsConstantZeroValue( LLVMValueRef @Val );
@@ -206,7 +334,7 @@ namespace Llvm.NET
         internal static extern LLVMMetadataRef DIBuilderCreatePointerType(LLVMDIBuilderRef @D, LLVMMetadataRef @PointeeType, ulong @SizeInBits, ulong @AlignInBits, [MarshalAs(UnmanagedType.LPStr)] string @Name);
 
         [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateSubroutineType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
-        internal static extern LLVMMetadataRef DIBuilderCreateSubroutineType(LLVMDIBuilderRef @D, LLVMMetadataRef @File, LLVMMetadataRef @ParameterTypes);
+        internal static extern LLVMMetadataRef DIBuilderCreateSubroutineType(LLVMDIBuilderRef @D, LLVMMetadataRef @File, LLVMMetadataRef @ParameterTypes, uint @Flags);
 
         [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateStructType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
         internal static extern LLVMMetadataRef DIBuilderCreateStructType(LLVMDIBuilderRef @D, LLVMMetadataRef @Scope, [MarshalAs(UnmanagedType.LPStr)] string @Name, LLVMMetadataRef @File, uint @Line, ulong @SizeInBits, ulong @AlignInBits, uint @Flags, LLVMMetadataRef @DerivedFrom, LLVMMetadataRef @ElementTypes);
@@ -216,6 +344,9 @@ namespace Llvm.NET
 
         [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateArrayType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
         internal static extern LLVMMetadataRef DIBuilderCreateArrayType(LLVMDIBuilderRef @D, ulong @SizeInBits, ulong @AlignInBits, LLVMMetadataRef @ElementType, LLVMMetadataRef @Subscripts);
+
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateVectorType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        internal static extern LLVMMetadataRef DIBuilderCreateVectorType(LLVMDIBuilderRef @D, ulong @SizeInBits, ulong @AlignInBits, LLVMMetadataRef @ElementType, LLVMMetadataRef @Subscripts);
 
         [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateTypedef", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
         internal static extern LLVMMetadataRef DIBuilderCreateTypedef(LLVMDIBuilderRef @D, LLVMMetadataRef @Ty, [MarshalAs(UnmanagedType.LPStr)] string @Name, LLVMMetadataRef @File, uint @Line, LLVMMetadataRef @Context);
@@ -233,9 +364,54 @@ namespace Llvm.NET
         internal static extern LLVMMetadataRef DIBuilderCreateExpression(LLVMDIBuilderRef @Dref, out long @Addr, ulong @Length);
 
         [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderInsertDeclareAtEnd", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
-        internal static extern int DIBuilderInsertDeclareAtEnd(LLVMDIBuilderRef @D, int @Storage, LLVMMetadataRef @VarInfo, LLVMMetadataRef @Expr, int @Block);
+        internal static extern LLVMValueRef DIBuilderInsertDeclareAtEnd(LLVMDIBuilderRef @D, LLVMValueRef @Storage, LLVMMetadataRef @VarInfo, LLVMMetadataRef @Expr, LLVMMetadataRef Location, LLVMBasicBlockRef @Block);
 
         [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderInsertValueAtEnd", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
-        internal static extern int DIBuilderInsertValueAtEnd(LLVMDIBuilderRef @D, int @Val, ulong @Offset, LLVMMetadataRef @VarInfo, LLVMMetadataRef @Expr, int @Block);
+        internal static extern int DIBuilderInsertValueAtEnd(LLVMDIBuilderRef @D, LLVMValueRef @Val, ulong @Offset, LLVMMetadataRef @VarInfo, LLVMMetadataRef @Expr, LLVMMetadataRef Location, LLVMBasicBlockRef @Block);
+
+        [DllImport(libraryPath, EntryPoint = "LLVMDiBuilderCreateEnumerationType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        internal static extern LLVMMetadataRef DIBuilderCreateEnumerationType( LLVMDIBuilderRef @D, LLVMMetadataRef @Scope, string @Name, LLVMMetadataRef @File, uint @LineNumber, ulong @SizeInBits, ulong @AlignInBits, LLVMMetadataRef @Elements, LLVMMetadataRef @UnderlyingType, string @UniqueId );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMDiBuilderCreateEnumeratorValue", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        internal static extern LLVMMetadataRef DIBuilderCreateEnumeratorValue( LLVMDIBuilderRef @D, string @Name, long @Val );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMDIDescriptorGetTag", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        internal static extern LLVMDwarfTag DIDescriptorGetTag( LLVMMetadataRef descriptor );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMDIBuilderCreateGlobalVariable", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        internal static extern LLVMMetadataRef DIBuilderCreateGlobalVariable( LLVMDIBuilderRef Dref, LLVMMetadataRef Context,string Name, string LinkageName, LLVMMetadataRef File, uint LineNo, LLVMMetadataRef Ty, LLVMBool isLocalToUnit, LLVMValueRef Val, LLVMMetadataRef Decl );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMDIBuilderInsertDeclareBefore", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        internal static extern LLVMValueRef DIBuilderInsertDeclareBefore( LLVMDIBuilderRef Dref, LLVMValueRef Storage, LLVMMetadataRef VarInfo, LLVMMetadataRef Expr, LLVMMetadataRef Location, LLVMValueRef InsertBefore );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMDIDescriptorAsString", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        internal static extern IntPtr DIDescriptorAsString( LLVMMetadataRef descriptor );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMMDNodeReplaceAllUsesWith", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        internal static extern void MDNodeReplaceAllUsesWith( LLVMMetadataRef oldDescriptor, LLVMMetadataRef newDescriptor );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMDITypeGetFlags", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        internal static extern uint DITypeGetFlags( LLVMMetadataRef type );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMMetadataAsValue", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        internal static extern LLVMValueRef MetadataAsValue( LLVMContextRef context, LLVMMetadataRef metadataRef );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMDIBuilderCreateReplaceableCompositeType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        internal static extern LLVMMetadataRef DIBuilderCreateReplaceableCompositeType( LLVMDIBuilderRef Dref, uint Tag, string Name, LLVMMetadataRef Scope, LLVMMetadataRef File, uint Line, uint RuntimeLang, ulong SizeInBits, ulong AlignInBits, uint Flags);
+
+        [DllImport( libraryPath, EntryPoint = "LLVMDILocation", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        internal static extern LLVMMetadataRef DILocation( LLVMContextRef context, uint Line, uint Column, LLVMMetadataRef scope, LLVMMetadataRef InlinedAt );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMGetDITypeName", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        internal static extern IntPtr GetDITypeName( LLVMMetadataRef diType );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMGetModuleName", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        internal static extern IntPtr GetModuleName( LLVMModuleRef module );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMIsTemporary", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        internal static extern LLVMBool IsTemporary( LLVMMetadataRef M );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMIsResolved", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        internal static extern LLVMBool IsResolved( LLVMMetadataRef M );
     }
 }

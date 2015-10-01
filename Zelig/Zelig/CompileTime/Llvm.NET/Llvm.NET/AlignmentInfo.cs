@@ -19,12 +19,12 @@ namespace Llvm.NET
         /// <remarks>
         /// The ABI alignment must be greater than or equal to the Preferred alignment or an exception is thrown.
         /// </remarks>
-        public AlignmentInfo( int abiAlignement, int preferredAlignment )
+        public AlignmentInfo( int abiAlignment, int preferredAlignment )
         {
-            if( abiAlignement < preferredAlignment )
+            if( abiAlignment < preferredAlignment )
                 throw new ArgumentException( "ABI alignment < preferred Alignment" );
 
-            AbiAlignment = abiAlignement;
+            AbiAlignment = abiAlignment;
             PreferredAlignment = preferredAlignment;
         }
 

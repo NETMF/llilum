@@ -1,5 +1,5 @@
 ﻿using System;
-using Llvm.NET;
+using Llvm.NET.Values;
 
 namespace Microsoft.Zelig.LLVM
 {
@@ -34,7 +34,7 @@ namespace Microsoft.Zelig.LLVM
             return gv.Initializer == null;
         }
 
-        public void SetGlobalInitializer( Llvm.NET.Constant val )
+        public void SetGlobalInitializer( Constant val )
         {
             var gv = Impl.GetLLVMObject() as GlobalVariable;
             if( gv != null )
@@ -92,7 +92,7 @@ namespace Microsoft.Zelig.LLVM
     // _Value instances might refer to the same Value_impl instance
     internal class ValueImpl
     {
-        internal ValueImpl( TypeImpl typeImpl, Llvm.NET.Value value, bool isImmediate )
+        internal ValueImpl( TypeImpl typeImpl, Value value, bool isImmediate )
         {
             TypeImpl = typeImpl;
             Value = value;
@@ -109,8 +109,8 @@ namespace Microsoft.Zelig.LLVM
 
         internal TypeImpl TypeImpl { get; }
         internal bool IsImmediate  { get; }
-        internal Llvm.NET.Value GetLLVMObject( ) => Value;
+        internal Value GetLLVMObject( ) => Value;
 
-        private readonly Llvm.NET.Value Value;
+        private readonly Value Value;
     }
 }

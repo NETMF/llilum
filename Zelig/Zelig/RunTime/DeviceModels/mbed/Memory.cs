@@ -18,7 +18,7 @@ namespace Microsoft.Zelig.Support.mbed
             //
             // never try and allocate more than than half of the address space
             //
-            int requestSize = (int)System.Math.Max(*size, System.UInt32.MaxValue / 2);
+            int requestSize = (int)System.Math.Min(*size, System.UInt32.MaxValue / 2);
             do
             {
                 mem = malloc( (uint)requestSize ); 
@@ -28,12 +28,26 @@ namespace Microsoft.Zelig.Support.mbed
                     requestSize -= requestSize / 10;
                 }
             } while(mem == null && requestSize > 0);
-            
+
+            *size = (uint)requestSize;
+
             return mem;
+        }
+
+        
+        public static unsafe void FreeMemoryPool( byte* mem )
+        {
+            if(mem != null)
+            {
+                free( mem );
+            }
         }
 
         [DllImport("C")]
         public static unsafe extern byte* malloc( uint size );
+
+        [DllImport("C")]
+        public static unsafe extern byte* free( byte* mem );
     }
 
 

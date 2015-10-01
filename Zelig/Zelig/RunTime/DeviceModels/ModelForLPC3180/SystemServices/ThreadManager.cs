@@ -10,9 +10,9 @@ namespace Microsoft.DeviceModels.Chipset.LPC3180.Runtime
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
 
-    public abstract class ThreadManager : RT.ThreadManager
+    public abstract class ThreadManager : RT.ARMv5ThreadManager 
     {
-        const ulong c_TimeQuantumMsec = 20;
+        public const ulong c_TimeQuantumMsec = 20;
 
         //
         // State

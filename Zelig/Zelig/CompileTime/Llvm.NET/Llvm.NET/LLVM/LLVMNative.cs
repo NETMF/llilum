@@ -15,30 +15,42 @@ namespace Llvm.NET
         public static implicit operator bool( LLVMBool value ) => value.Value != 0;
     }
 
+    internal partial struct LLVMMetadataRef
+    {
+        internal static LLVMMetadataRef Zero = new LLVMMetadataRef( IntPtr.Zero );
+    }
+
     internal static partial class LLVMNative
     {
         internal static ValueKind GetValueKind( LLVMValueRef valueRef ) => ( ValueKind )GetValueID( valueRef );
 
         internal static string MarshalMsg( IntPtr msg )
         {
-            var retVal = Marshal.PtrToStringAnsi( msg );
-            DisposeMessage( msg );
+            var retVal = string.Empty;
+            if( msg != IntPtr.Zero )
+            {
+                try
+                {
+                    retVal = Marshal.PtrToStringAnsi( msg );
+                }
+                finally
+                {
+                    DisposeMessage( msg );
+                }
+            }
             return retVal;
         }
 
 #if DYNAMICALLY_LOAD_LIBLLVM
         // force loading the appropriate architecture specific 
-        // DLL before any use of the wrapped interop APIs to 
+        // DLL before any use of the wrapped inter-op APIs to 
         // allow building this library as ANYCPU
         static LLVMNative()
         {
-            var handle = LLvmDllHandle.Value;
+            var handle = NativeMethods.LoadWin32Library( "LibLLVM", libraryPath );
             if( handle == IntPtr.Zero )
                 throw new InvalidOperationException( "Verification of DLL Load Failed!" );
         }
-
-        private static Lazy<IntPtr> LLvmDllHandle 
-            = new Lazy<IntPtr>( ( ) => NativeMethods.LoadWin32Library( "LLVM", libraryPath ), LazyThreadSafetyMode.ExecutionAndPublication );
 #endif
     }
 }

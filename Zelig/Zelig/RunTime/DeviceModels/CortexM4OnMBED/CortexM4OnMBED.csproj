@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{65C8EDA6-AC24-4E18-A5B5-216E0F2C3906}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.CortexM4OnMBED</RootNamespace>
+    <AssemblyName>Microsoft.CortexM4OnMBED</AssemblyName>
+    <!-- ZELIG: Move intermediate data out of the source tree -->
+    <BaseIntermediateOutputPath>$(SolutionDir)\..\ZeligBuild\Target\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Target\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoStdLib>true</NoStdLib>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(SolutionDir)\..\ZeligBuild\Target\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoStdLib>true</NoStdLib>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="HardwareModel\Board.cs" />
+    <Compile Include="HardwareModel\Device.cs" />
+    <Compile Include="HardwareModel\Drivers\GpioPinMbed.cs" />
+    <Compile Include="HardwareModel\Drivers\I2cChannelMbed.cs" />
+    <Compile Include="HardwareModel\Drivers\InterruptController.cs" />
+    <Compile Include="HardwareModel\Drivers\SpiChannel.cs" />
+    <Compile Include="HardwareModel\Drivers\SystemTimer.cs" />
+    <Compile Include="HardwareModel\HardwareProvider.cs" />
+    <Compile Include="HardwareModel\Memory.cs" />
+    <Compile Include="HardwareModel\Peripherals.cs" />
+    <Compile Include="HardwareModel\Processor.cs" />
+    <Compile Include="HardwareModel\Storage.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SystemServices\GarbageCollectionManager.cs" />
+    <Compile Include="SystemServices\MemoryManager.cs" />
+    <Compile Include="SystemServices\ThreadManager.cs" />
+    <Compile Include="SystemServices\TypeSystemManager.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\Runtime\Framework\mscorlib\mscorlib.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060501AA01}</Project>
+      <Name>mscorlib</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\Runtime\Zelig\Common\Common.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20061218AA01}</Project>
+      <Name>Common</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\Runtime\Zelig\Kernel\Kernel.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060509AA01}</Project>
+      <Name>Kernel</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\Runtime\Zelig\TypeSystem\TypeSystem.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060720AA01}</Project>
+      <Name>TypeSystem</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Framework\system\system.csproj">
+      <Project>{186f31a3-ef89-4a25-b2d5-20070702aa01}</Project>
+      <Name>system</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Framework\Windows\Devices\Windows.Devices.csproj">
+      <Project>{DC8C38D7-780B-4B13-8ACE-9050E39CC51C}</Project>
+      <Name>Windows.Devices</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CortexM3OnCMSIS-Core\CortexM3OnCMSIS-Core.csproj">
+      <Project>{0b37e5ba-4839-4ec4-9e36-a96bcbea2400}</Project>
+      <Name>CortexM3OnCMSIS-Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CortexM3OnMBED\CortexM3OnMBED.csproj">
+      <Project>{0c522c6a-0f77-4af8-ad78-5b2415c98c51}</Project>
+      <Name>CortexM3OnMBED</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CortexM4OnCMSIS-Core\CortexM4OnCMSIS-Core.csproj">
+      <Project>{7fb3f581-742d-4e12-a36a-be172c574ab0}</Project>
+      <Name>CortexM4OnCMSIS-Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\mbed\mbed.csproj">
+      <Project>{d7f2bc4e-1406-47aa-90e1-07bc4ce9410f}</Project>
+      <Name>mbed</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ModelForCortexM3\ModelForCortexM3.csproj">
+      <Project>{a30eb003-94f8-4a85-8da1-006f6810a7a4}</Project>
+      <Name>ModelForCortexM3</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ModelForCortexM4\ModelForCortexM4.csproj">
+      <Project>{ca8a6d38-528b-4faa-89b6-8fa9178de55d}</Project>
+      <Name>ModelForCortexM4</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

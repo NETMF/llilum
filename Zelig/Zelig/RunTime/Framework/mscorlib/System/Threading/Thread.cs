@@ -21,7 +21,7 @@ namespace System.Threading
 ////using System.Runtime.Remoting.Contexts;
 ////using System.Runtime.Remoting.Messaging;
     using System.Diagnostics;
-////using System.Security.Permissions;
+    using System.Security.Permissions;
 ////using System.Security.Principal;
     using System.Globalization;
     using System.Collections.Generic;
@@ -221,7 +221,7 @@ namespace System.Threading
         **
         ** Exceptions: ThreadStateException if the thread has already been started.
         =========================================================================*/
-////    [HostProtection( Synchronization = true, ExternalThreading = true )]
+        [HostProtection( Synchronization = true, ExternalThreading = true )]
         [MethodImpl( MethodImplOptions.InternalCall )]
         public extern void Start();
 ////    {
@@ -419,8 +419,8 @@ namespace System.Threading
 ////        {
 ////            return (ThreadPriority)GetPriorityNative();
 ////        }
-    
-////        [HostProtection( SelfAffectingThreading = true )]
+
+            [HostProtection( SelfAffectingThreading = true )]
             [MethodImpl( MethodImplOptions.InternalCall )]
             set;
 ////        {
@@ -474,8 +474,8 @@ namespace System.Threading
 ////    [MethodImpl( MethodImplOptions.InternalCall )]
 ////    [HostProtection( Synchronization = true, ExternalThreading = true )]
 ////    private extern void JoinInternal();
-    
-////    [HostProtection( Synchronization = true, ExternalThreading = true )]
+
+        [HostProtection( Synchronization = true, ExternalThreading = true )]
         [MethodImpl( MethodImplOptions.InternalCall )]
         public extern void Join();
 ////    {
@@ -495,15 +495,15 @@ namespace System.Threading
 ////    [MethodImpl( MethodImplOptions.InternalCall )]
 ////    [HostProtection( Synchronization = true, ExternalThreading = true )]
 ////    private extern bool JoinInternal( int millisecondsTimeout );
-////
-////    [HostProtection( Synchronization = true, ExternalThreading = true )]
+
+        [HostProtection( Synchronization = true, ExternalThreading = true )]
         [MethodImpl( MethodImplOptions.InternalCall )]
         public extern bool Join( int millisecondsTimeout );
 ////    {
 ////        return JoinInternal( millisecondsTimeout );
 ////    }
-////
-////    [HostProtection( Synchronization = true, ExternalThreading = true )]
+
+        [HostProtection( Synchronization = true, ExternalThreading = true )]
         [MethodImpl( MethodImplOptions.InternalCall )]
         public extern bool Join( TimeSpan timeout );
 ////    {
@@ -547,24 +547,39 @@ namespace System.Threading
 ////    }
 
 
-////    /* wait for a length of time proportial to 'iterations'.  Each iteration is should
-////       only take a few machine instructions.  Calling this API is preferable to coding
-////       a explict busy loop because the hardware can be informed that it is busy waiting. */
-////
-////    [MethodImpl( MethodImplOptions.InternalCall )]
-////    [HostProtection( Synchronization = true, ExternalThreading = true )]
-////    [ReliabilityContract( Consistency.WillNotCorruptState, Cer.Success )]
-////    [ResourceExposure( ResourceScope.None )]
-////    private static extern void SpinWaitInternal( int iterations );
-////
-////    [HostProtection( Synchronization = true, ExternalThreading = true )]
-////    [ReliabilityContract( Consistency.WillNotCorruptState, Cer.Success )]
-////    public static void SpinWait( int iterations )
-////    {
-////        SpinWaitInternal( iterations );
-////    }
-    
-    
+        /* wait for a length of time proportial to 'iterations'.  Each iteration is should
+           only take a few machine instructions.  Calling this API is preferable to coding
+           a explict busy loop because the hardware can be informed that it is busy waiting. */
+
+        [System.Security.SecurityCritical]  // auto-generated
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        [HostProtection(Synchronization=true,ExternalThreading=true)]
+////    [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        private static extern void SpinWaitInternal(int iterations);
+
+        [System.Security.SecuritySafeCritical]  // auto-generated
+        [HostProtection(Synchronization=true,ExternalThreading=true)]
+////    [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        public static void SpinWait(int iterations)
+        {
+            SpinWaitInternal(iterations);
+        }
+
+        [System.Security.SecurityCritical]  // auto-generated
+////    [DllImport(JitHelpers.QCall, CharSet = CharSet.Unicode)]
+////    [SuppressUnmanagedCodeSecurity]
+        [HostProtection(Synchronization = true, ExternalThreading = true)]
+////    [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        private static extern bool YieldInternal();
+
+        [System.Security.SecuritySafeCritical]  // auto-generated
+        [HostProtection(Synchronization = true, ExternalThreading = true)]
+////    [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        public static bool Yield()
+        {
+            return YieldInternal();
+        }
+        
         public extern static Thread CurrentThread
         {
 ////        [ReliabilityContract( Consistency.WillNotCorruptState, Cer.MayFail )]
@@ -640,8 +655,8 @@ namespace System.Threading
 ////        {
 ////            return IsBackgroundNative();
 ////        }
-    
-////        [HostProtection( SelfAffectingThreading = true )]
+
+            [HostProtection( SelfAffectingThreading = true )]
             [MethodImpl( MethodImplOptions.InternalCall )]
             set;
 ////        {
@@ -1195,10 +1210,9 @@ namespace System.Threading
             get
             {
                 return m_Name;
-    
             }
-    
-////        [HostProtection( ExternalThreading = true )]
+
+            [HostProtection( ExternalThreading = true )]
             set
             {
                 lock(this)
@@ -1250,7 +1264,7 @@ namespace System.Threading
         /*
          *  This marks the beginning of a critical code region.
          */
-////    [HostProtection( Synchronization = true, ExternalThreading = true )]
+        [HostProtection( Synchronization = true, ExternalThreading = true )]
 ////    [ResourceExposure( ResourceScope.None )]
         [MethodImpl( MethodImplOptions.InternalCall )]
 ////    [ReliabilityContract( Consistency.WillNotCorruptState, Cer.MayFail )]
@@ -1259,7 +1273,7 @@ namespace System.Threading
         /*
          *  This marks the end of a critical code region.
          */
-////    [HostProtection( Synchronization = true, ExternalThreading = true )]
+        [HostProtection( Synchronization = true, ExternalThreading = true )]
 ////    [ResourceExposure( ResourceScope.None )]
         [MethodImpl( MethodImplOptions.InternalCall )]
 ////    [ReliabilityContract( Consistency.WillNotCorruptState, Cer.Success )]

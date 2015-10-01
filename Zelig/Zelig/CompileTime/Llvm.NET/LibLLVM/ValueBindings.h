@@ -2,6 +2,7 @@
 #define _VALUE_BINDINGS_H_
 
 #include "llvm-c/Core.h"
+#include "DIBuilderBindings.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,6 +43,7 @@ extern "C" {
     
     LLVMValueRef LLVMBuildIntCast2( LLVMBuilderRef B, LLVMValueRef Val, LLVMTypeRef DestTy, LLVMBool isSigned, const char *Name );
     int LLVMGetValueID( LLVMValueRef valueRef);
+    LLVMValueRef LLVMMetadataAsValue( LLVMContextRef context, LLVMMetadataRef metadataRef );
 
 #ifdef __cplusplus
 }

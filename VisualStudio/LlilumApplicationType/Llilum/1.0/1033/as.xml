@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ProjectSchemaDefinitions
+  xmlns="http://schemas.microsoft.com/build/2009/properties"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:sys="clr-namespace:System;assembly=mscorlib"
+  >
+  <Rule Name="ArmAssemble"
+        PageTemplate="tool"
+        DisplayName="ARM Assembler"
+        SwitchPrefix="-"
+        Order="40"
+        xmlns="http://schemas.microsoft.com/build/2009/properties"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        >
+    <Rule.Categories>
+      <Category Name="General" DisplayName="General" />
+      <Category Name="All Options" DisplayName="All Options" Subtype="Search" />
+      <Category Name="Command Line" DisplayName="Command Line" Subtype="CommandLine" />
+    </Rule.Categories>
+    <Rule.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="ArmAssemble" Label="" HasConfigurationCondition="true" />
+    </Rule.DataSource>
+    <!-- For now force all options to be "additional Options" this gets things up and running quickly.
+       We'll come back and fill in with real meaningful properties for the UI later
+  -->
+    <StringProperty Name="AdditionalOptions" DisplayName="Additional Options" Description="Additional Options." Category="Command Line" F1Keyword="vc.project.AdditionalOptionsPage">
+    </StringProperty>
+  </Rule>
+  <ItemType
+    Name="ArmAssemble"
+    DisplayName="Microsoft ARM Assembler" />
+  <FileExtension
+    Name="*.s"
+    ContentType="ArmAssemble" />
+  <ContentType
+    Name="ArmAssemble"
+    DisplayName="Microsoft ARM Assembler"
+    ItemType="ArmAssemble" />
+</ProjectSchemaDefinitions>

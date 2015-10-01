@@ -183,6 +183,14 @@ namespace Microsoft.VoxSoloFormFactor
             Drivers.RealTimeClock.Instance.Initialize();
         }
 
+        public override void EnableInterrupt( uint index )
+        {
+        }
+
+        public override void DisableInterrupt( uint index )
+        {
+        }
+
         public override void CauseInterrupt()
         {
             Drivers.InterruptController.Instance.CauseInterrupt();

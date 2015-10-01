@@ -49,6 +49,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="K64F">
+      <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\K64F.dll</HintPath>
+    </Reference>
+    <Reference Include="LPC1768">
+      <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\LPC1768.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Zelig.Support.mbed">
       <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\Microsoft.Zelig.Support.mbed.dll</HintPath>
     </Reference>

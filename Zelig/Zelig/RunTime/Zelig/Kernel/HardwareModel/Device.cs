@@ -12,13 +12,13 @@ namespace Microsoft.Zelig.Runtime
     [ForceDevirtualization]
     public abstract class Device
     {
-        private static BugCheck.StopCode bugCheckCode;
+        protected static BugCheck.StopCode m_bugCheckCode;
 
-        const int DefaultStackSize = 2048 / sizeof(uint);
+        const int DefaultStackSize = 512 / sizeof(uint);
 
         [MemoryUsage(MemoryUsage.Stack, ContentsUninitialized=true, AllocateFromHighAddress=true)]
         static readonly uint[] s_bootstrapStack = new uint[DefaultStackSize];
-
+        
         //
         // Helper Methods
         //
@@ -29,10 +29,17 @@ namespace Microsoft.Zelig.Runtime
 
         public virtual void ProcessBugCheck( BugCheck.StopCode code )
         {
-            Device.bugCheckCode = code;
+            Device.m_bugCheckCode = code;
 
             while(true);
         }
+
+        public virtual void ProcessLog(string format) { }
+        public virtual void ProcessLog(string format, int p1) { }
+        public virtual void ProcessLog(string format, int p1, int p2) { }
+        public virtual void ProcessLog(string format, int p1, int p2, int p3) { }
+        public virtual void ProcessLog(string format, int p1, int p2, int p3, int p4) { }
+        public virtual void ProcessLog(string format, int p1, int p2, int p3, int p4, int p5) { }
 
         //
         // Access Methods
@@ -47,7 +54,6 @@ namespace Microsoft.Zelig.Runtime
 
         public virtual uint[] BootstrapStack
         {
-            [Inline]
             get
             {
                 return s_bootstrapStack;
@@ -56,7 +62,7 @@ namespace Microsoft.Zelig.Runtime
 
         public unsafe UIntPtr BootstrapStackPointer
         {
-            [Inline]
+            [NoInline]
             get
             {
                 var stack = this.BootstrapStack;

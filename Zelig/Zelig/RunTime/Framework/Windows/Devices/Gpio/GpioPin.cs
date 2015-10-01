@@ -1,3 +1,7 @@
+//
+// Copyright (c) Microsoft Corporation.    All rights reserved.
+//
+
 using System;
 using Windows.Devices.Gpio.Provider;
 
@@ -13,7 +17,7 @@ namespace Windows.Devices.Gpio
     /// </summary>
     public sealed class GpioPin : IDisposable
     {
-        private readonly IGpioControllerProvider _provider;
+        private GpioPinProvider _provider;
         private int _pinNumber = -1;
         private bool _disposed = false;
 
@@ -21,9 +25,17 @@ namespace Windows.Devices.Gpio
         private GpioPinValue _lastOutputValue = GpioPinValue.Low;
         private GpioPinValueChangedEventHandler _callbacks = null;
 
-        internal GpioPin(IGpioControllerProvider provider)
+        internal GpioPin(int pinNumber)
         {
-            _provider = provider;
+            _pinNumber = pinNumber;
+        }
+
+        internal GpioPinProvider PinProvider
+        {
+            set
+            {
+                _provider = value;
+            }
         }
 
         ~GpioPin()
@@ -143,12 +155,12 @@ namespace Windows.Devices.Gpio
         ///     value written to the pin.</returns>
         public GpioPinValue Read()
         {
-            if (_disposed)
+            if(_disposed)
             {
                 throw new ObjectDisposedException(this.GetType().FullName);
             }
 
-            return _provider.Read(_pinNumber);
+            return (GpioPinValue)_provider.Read();
         }
 
         /// <summary>
@@ -166,15 +178,17 @@ namespace Windows.Devices.Gpio
         ///     and drive the signal the when the mode is set.</remarks>
         public void Write(GpioPinValue value)
         {
-            if (_disposed)
+            if(_disposed)
             {
                 throw new ObjectDisposedException(this.GetType().FullName);
             }
 
+            // Remember this value in case we switch drive mode
             _lastOutputValue = value;
+
             if (_driveMode == GpioPinDriveMode.Output)
             {
-                _provider.Write(_pinNumber, value);
+                _provider.Write((int)value);
             }
         }
 
@@ -189,11 +203,11 @@ namespace Windows.Devices.Gpio
         {
             switch (driveMode)
             {
-            case GpioPinDriveMode.Input:
-            case GpioPinDriveMode.Output:
-            case GpioPinDriveMode.InputPullUp:
-            case GpioPinDriveMode.InputPullDown:
-                return true;
+                case GpioPinDriveMode.Input:
+                case GpioPinDriveMode.Output:
+                case GpioPinDriveMode.InputPullUp:
+                case GpioPinDriveMode.InputPullDown:
+                    return true;
             }
 
             return false;
@@ -232,10 +246,10 @@ namespace Windows.Devices.Gpio
 
             if (driveMode != _driveMode)
             {
-                _provider.SetPinDriveMode(_pinNumber, driveMode);
+                _provider.SetPinDriveMode((GpioDriveMode)driveMode);
                 if (driveMode == GpioPinDriveMode.Output)
                 {
-                    _provider.Write(_pinNumber, _lastOutputValue);
+                    _provider.Write((int)_lastOutputValue);
                 }
 
                 _driveMode = driveMode;
@@ -253,22 +267,6 @@ namespace Windows.Devices.Gpio
                 GC.SuppressFinalize(this);
                 _disposed = true;
             }
-        }
-
-        /// <summary>
-        /// Binds the pin to a given pin number.
-        /// </summary>
-        /// <returns>Status indicating whether the pin reservation was successful.</returns>
-        /// <remarks>If this method throws or returns false, there is no need to dispose the pin. </remarks>
-        internal GpioOpenStatus Reserve(int pinNumber)
-        {
-            if (!_provider.AllocatePin(pinNumber))
-            {
-                return GpioOpenStatus.PinUnavailable;
-            }
-
-            _pinNumber = pinNumber;
-            return GpioOpenStatus.PinOpened;
         }
 
         /// <summary>
@@ -297,7 +295,10 @@ namespace Windows.Devices.Gpio
             {
                 if (_pinNumber != -1)
                 {
-                    _provider.ReleasePin(_pinNumber);
+                    _provider.Dispose();
+
+                    // Mark the pin as available in the hardware provider
+                    GpioController.ReleaseGpioPin(_pinNumber);
                 }
             }
         }

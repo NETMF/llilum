@@ -12,7 +12,7 @@ namespace Llvm.NET
         public MemoryBuffer( string path )
         {
             IntPtr msg;
-            if( LLVMNative.CreateMemoryBufferWithContentsOfFile( path, out OpaqueHandle_, out msg ).Succeeded )
+            if( LLVMNative.CreateMemoryBufferWithContentsOfFile( path, out BufferHandle_, out msg ).Succeeded )
                 return;
 
             var msgText = string.Empty;
@@ -30,23 +30,25 @@ namespace Llvm.NET
         {
             get
             {
-                if( OpaqueHandle.Pointer == IntPtr.Zero )
+                if( BufferHandle.Pointer == IntPtr.Zero )
                     return 0;
 
-                return LLVMNative.GetBufferSize( OpaqueHandle );
+                return LLVMNative.GetBufferSize( BufferHandle );
             }
         }
 
         public void Dispose( )
         {
-            if( OpaqueHandle.Pointer != IntPtr.Zero )
+            if( BufferHandle.Pointer != IntPtr.Zero )
             {
-                LLVMNative.DisposeMemoryBuffer( OpaqueHandle );
-                OpaqueHandle_ = default(LLVMMemoryBufferRef);
+                LLVMNative.DisposeMemoryBuffer( BufferHandle );
+                BufferHandle_ = default(LLVMMemoryBufferRef);
             }
         }
 
-        internal LLVMMemoryBufferRef OpaqueHandle => OpaqueHandle_;
-        private LLVMMemoryBufferRef OpaqueHandle_;
+        internal LLVMMemoryBufferRef BufferHandle => BufferHandle_;
+        
+        // keep as a private field so this is usable as an out param in constructor
+        private LLVMMemoryBufferRef BufferHandle_;
     }
 }

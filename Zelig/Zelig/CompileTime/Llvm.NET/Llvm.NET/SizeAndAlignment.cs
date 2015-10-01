@@ -15,9 +15,9 @@
         /// <param name="size">Sixe of the type</param>
         /// <param name="abiAlignment">ABI required alignment for the type</param>
         /// <param name="preferredAlignment">Preferred alignment for the type</param>
-        public SizeAndAlignment( int size, int abiAlignement, int preferredAlignment )
+        public SizeAndAlignment( int size, int abiAlignment, int preferredAlignment )
         {
-            Alignment = new AlignmentInfo( abiAlignement, preferredAlignment );
+            Alignment = new AlignmentInfo( abiAlignment, preferredAlignment );
             Size = size;
         }
 

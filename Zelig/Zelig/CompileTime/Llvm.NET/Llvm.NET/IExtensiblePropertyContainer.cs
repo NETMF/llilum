@@ -45,7 +45,7 @@ namespace Llvm.NET
 
         /// <summary>Gets a value for the property from the container</summary>
         /// <param name="container">container</param>
-        /// <returns>Value retrieved from the property or the default value of type <paramref name="T"/></returns>
+        /// <returns>Value retrieved from the property or the default value of type <typeparamref name="T"/></returns>
         public T GetValueFrom( IExtensiblePropertyContainer container )
         {
             return GetValueFrom( container, default(T) );
@@ -99,7 +99,7 @@ namespace Llvm.NET
                 object currentValue;
                 if( Items.TryGetValue( id, out currentValue ) )
                 {
-                    if( currentValue.GetType( ) != value.GetType() )
+                    if( currentValue != null && value !=null && currentValue.GetType( ) != value.GetType() )
                         throw new ArgumentException( " Cannot change type of an extended property once set", nameof( value ) );
                 }
                 Items[ id ] = value;

@@ -1,4 +1,6 @@
-﻿namespace Llvm.NET.Instructions
+﻿using Llvm.NET.Values;
+
+namespace Llvm.NET.Instructions
 {
     public class Switch
         : Terminator

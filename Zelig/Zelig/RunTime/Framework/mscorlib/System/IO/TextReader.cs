@@ -188,7 +188,7 @@ namespace System.IO
         }
 
 
-////    [HostProtection( Synchronization = true )]
+        [HostProtection( Synchronization = true )]
         public static TextReader Synchronized( TextReader reader )
         {
             if(reader == null)

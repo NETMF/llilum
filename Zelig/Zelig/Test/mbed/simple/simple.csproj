@@ -47,6 +47,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\RunTime\DeviceModels\Boards\K64F\K64F.csproj">
+      <Project>{1705887b-e636-4fa3-ae40-2d431af1511c}</Project>
+      <Name>K64F</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\RunTime\DeviceModels\Boards\LPC1768\LPC1768.csproj">
+      <Project>{cee4d575-4b4b-42b0-b2f1-cc7198cb7306}</Project>
+      <Name>LPC1768</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\RunTime\DeviceModels\mbed\mbed.csproj">
       <Project>{d7f2bc4e-1406-47aa-90e1-07bc4ce9410f}</Project>
       <Name>mbed</Name>
@@ -54,6 +62,10 @@
     <ProjectReference Include="..\..\..\RunTime\Framework\Windows\Devices\Windows.Devices.csproj">
       <Project>{dc8c38d7-780b-4b13-8ace-9050e39cc51c}</Project>
       <Name>Windows.Devices</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\RunTime\Zelig\Kernel\Kernel.csproj">
+      <Project>{186f31a3-ef89-4a25-b2d5-20060509aa01}</Project>
+      <Name>Kernel</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

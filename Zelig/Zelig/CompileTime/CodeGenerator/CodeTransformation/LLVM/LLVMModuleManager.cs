@@ -16,8 +16,9 @@ namespace Microsoft.Zelig.LLVM
     using Normalized = Microsoft.Zelig.MetaData.Normalized;
     using IR = Microsoft.Zelig.CodeGeneration.IR;
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
+    using Llvm.NET.Values;
 
-    public partial class LLVMModuleManager
+    public partial class LLVMModuleManager : IModuleManager
     {
         private _Module m_module;
         private readonly string m_imageName;
@@ -30,7 +31,7 @@ namespace Microsoft.Zelig.LLVM
         private bool                                                                 m_typeSystemAlreadyConverted;
         private bool                                                                 m_turnOffCompilationAndValidation;
 
-        //TypeSystem might not be completelly initialized at this point.
+        //TypeSystem might not be completely initialized at this point.
         public LLVMModuleManager( IR.TypeSystemForCodeTransformation typeSystem, string imageName )
         {
             m_imageName = imageName;
@@ -51,7 +52,85 @@ namespace Microsoft.Zelig.LLVM
         {
             CompleteMissingDataDescriptors( );
 
-            if( !m_turnOffCompilationAndValidation )
+            //
+            // Synthesize calls to well known handlers methods for low level HW interaction
+            // 
+            //////TS.MethodRepresentation handlerMd;
+            //////LLVM._Function handler; 
+
+            //
+            //  Not implemented yet
+            //
+            //////handlerMd = m_typeSystem.GetWellKnownMethod( "Hardware_InvokeResetHandler" );
+            //////handler = GetOrInsertFunction( handlerMd );
+            //////m_module.CreateAlias( handler, handlerMd.Name );
+            
+            //////handlerMd = m_typeSystem.GetWellKnownMethod( "Hardware_InvokeHardFaultHandler" );
+            //////handler = GetOrInsertFunction( handlerMd );
+            //////m_module.CreateAlias( handler, handlerMd.Name );
+            
+            //////handlerMd = m_typeSystem.GetWellKnownMethod( "Hardware_InvokeDebugMonHandler" );
+            //////handler = GetOrInsertFunction( handlerMd );
+            //////m_module.CreateAlias( handler, handlerMd.Name );
+            
+            //////handlerMd = m_typeSystem.GetWellKnownMethod( "Hardware_InvokeNMIHandler" );
+            //////handler = GetOrInsertFunction( handlerMd );
+            //////m_module.CreateAlias( handler, handlerMd.Name );
+            
+            //////handlerMd = m_typeSystem.GetWellKnownMethod( "Hardware_InvokeMemManageHandler" );
+            //////handler = GetOrInsertFunction( handlerMd );
+            //////m_module.CreateAlias( handler, handlerMd.Name );
+            
+            //////handlerMd = m_typeSystem.GetWellKnownMethod( "Hardware_InvokeBusFaultHandler" );
+            //////handler = GetOrInsertFunction( handlerMd );
+            //////m_module.CreateAlias( handler, handlerMd.Name );
+            
+            //////handlerMd = m_typeSystem.GetWellKnownMethod( "Hardware_InvokeUsageFaultHandler" );
+            //////handler = GetOrInsertFunction( handlerMd );
+            //////m_module.CreateAlias( handler, handlerMd.Name );
+            
+            //////handlerMd = m_typeSystem.GetWellKnownMethod( "Hardware_InvokeSVCHandler" );
+            //////handler = GetOrInsertFunction( handlerMd );
+            //////m_module.CreateAlias( handler, handlerMd.Name );
+            
+            //////handlerMd = m_typeSystem.GetWellKnownMethod( "Hardware_InvokePendSVHandler" );
+            //////handler = GetOrInsertFunction( handlerMd );
+            //////m_module.CreateAlias( handler, handlerMd.Name );
+            
+            //////handlerMd = m_typeSystem.GetWellKnownMethod( "Hardware_InvokeSysTickHandler" );
+            //////handler = GetOrInsertFunction( handlerMd );
+            //////m_module.CreateAlias( handler, handlerMd.Name );
+            
+            //////handlerMd = m_typeSystem.GetWellKnownMethod( "Hardware_InvokeAnyInterruptHandler" );
+            //////handler = GetOrInsertFunction( handlerMd );
+            //////m_module.CreateAlias( handler, handlerMd.Name );
+
+            //////handlerMd = m_typeSystem.GetWellKnownMethod("Hardware_InvokeSystemTimerHandler");
+            //////handler = GetOrInsertFunction(handlerMd);
+            //////m_module.CreateAlias(handler, handlerMd.Name);
+
+            //
+            // Synthetize the code for all exported methods as a simple C-style function using the name
+            // of the method without full qualification
+            //
+            List< TS.MethodRepresentation > exportedMethods = new List< TS.MethodRepresentation >();
+
+            m_typeSystem.EnumerateMethods( delegate( TS.MethodRepresentation md )
+            {
+                if(md.HasBuildTimeFlag( TS.MethodRepresentation.BuildTimeAttributes.Exported ))
+                {
+                    exportedMethods.Add( md );
+                }
+            } );
+
+            foreach(TS.MethodRepresentation md in exportedMethods)
+            {
+                LLVM._Function handler = GetOrInsertFunction( md );
+
+                m_module.CreateAlias( handler, md.Name );
+            }
+
+            if ( !m_turnOffCompilationAndValidation )
             {
                 TS.MethodRepresentation bootstrapResetMR = m_typeSystem.GetWellKnownMethod( "Bootstrap_Initialization" );
                 LLVM._Function bootstrapReset = GetOrInsertFunction( bootstrapResetMR );
@@ -60,9 +139,9 @@ namespace Microsoft.Zelig.LLVM
             }
         }
 
-        public void DumpToFile( string filename, bool textRepresentation )
+        public void DumpToFile( string filename, OutputFormat format )
         {
-            m_module.DumpToFile( filename, textRepresentation );
+            m_module.DumpToFile( filename, format );
         }
 
         public void TurnOffCompilationAndValidation( )
@@ -72,7 +151,41 @@ namespace Microsoft.Zelig.LLVM
 
         public LLVM._Function GetOrInsertFunction( TS.MethodRepresentation md )
         {
-            return m_module.GetOrInsertFunction( GetFullMethodName( md ), GetOrInsertType( md ) );
+            LLVM._Function function = m_module.GetOrInsertFunction( GetFullMethodName( md ), GetOrInsertType( md ) );
+
+            // FUTURE: We might see a very slight performance improvement by checking whether these already exist before
+            // setting them. However, setting each attribute is relatively cheap so we'll do it the naive way for now.
+
+            if ( md.HasBuildTimeFlag( TS.MethodRepresentation.BuildTimeAttributes.Inline ) )
+            {
+                // BUGBUG: Should this be AlwaysInline?
+                function.AddAttribute( FunctionAttribute.InlineHint );
+            }
+
+            if ( md.HasBuildTimeFlag( TS.MethodRepresentation.BuildTimeAttributes.NoInline ) )
+            {
+                function.AddAttribute( FunctionAttribute.NoInline );
+            }
+
+            if ( md.HasBuildTimeFlag( TS.MethodRepresentation.BuildTimeAttributes.BottomOfCallStack ) )
+            {
+                function.AddAttribute( FunctionAttribute.Naked );
+            }
+
+            if ( md.HasBuildTimeFlag( TS.MethodRepresentation.BuildTimeAttributes.NoReturn ) )
+            {
+                function.AddAttribute( FunctionAttribute.NoReturn );
+            }
+
+            // Try to find an explicit stack alignment attribute and apply it if it exists.
+            TS.WellKnownTypes wkt = m_typeSystem.WellKnownTypes;
+            TS.CustomAttributeRepresentation alignAttr = md.FindCustomAttribute( wkt.Microsoft_Zelig_Runtime_AlignmentRequirementsAttribute );
+            if (alignAttr != null)
+            {
+                function.AddAttribute( FunctionAttribute.StackAlignment, (uint)alignAttr.FixedArgsValues[0] );
+            }
+
+            return function;
         }
 
         public static string GetFullMethodName( TS.MethodRepresentation md )
@@ -105,9 +218,9 @@ namespace Microsoft.Zelig.LLVM
 
         }
 
-        private Llvm.NET.Constant GetUCVStruct( LLVM._Type type, bool anon, params Llvm.NET.Constant[ ] vals )
+        private Constant GetUCVStruct( LLVM._Type type, bool anon, params Constant[ ] vals )
         {
-            var fields = new List<Llvm.NET.Constant>( );
+            var fields = new List<Constant>( );
             foreach( var val in vals )
             {
                 fields.Add( val );
@@ -120,11 +233,11 @@ namespace Microsoft.Zelig.LLVM
             return ad.Values != null ? ad.Values[ pos ] : ad.Source.GetValue( pos );
         }
 
-        private Llvm.NET.Constant GetUCVArray( IR.DataManager.ArrayDescriptor ad )
+        private Constant GetUCVArray( IR.DataManager.ArrayDescriptor ad )
         {
             uint arrayLength = ( uint )( ( ad.Values == null ) ? ad.Source.Length : ad.Values.Length );
 
-            var fields = new List<Llvm.NET.Constant>( );
+            var fields = new List<Constant>( );
             TS.TypeRepresentation elTR = ( ( TS.ArrayReferenceTypeRepresentation )ad.Context ).ContainedType;
 
             //
@@ -175,7 +288,7 @@ namespace Microsoft.Zelig.LLVM
             return m_module.GetUCVArray( GetOrInsertType( elTR ), fields );
         }
 
-        private Llvm.NET.Constant GetScalarTypeUCV( TS.TypeRepresentation tr, UInt64 v )
+        private Constant GetScalarTypeUCV( TS.TypeRepresentation tr, UInt64 v )
         {
             if( v == 0 )
             {
@@ -183,13 +296,13 @@ namespace Microsoft.Zelig.LLVM
             }
             else
             {
-                Llvm.NET.Constant ucv = GetUCVIntAsSVT( tr, ( UInt64 )v );
+                Constant ucv = GetUCVIntAsSVT( tr, ( UInt64 )v );
                 ucv = GetUCVStruct( GetOrInsertType( tr ), false, ucv );
                 return ucv;
             }
         }
 
-        private Llvm.NET.Constant GetUCVIntAsSVT( TS.TypeRepresentation tr, UInt64 v )
+        private Constant GetUCVIntAsSVT( TS.TypeRepresentation tr, UInt64 v )
         {
             return m_module.GetUCVInt( GetOrInsertBasicTypeAsLLVMSingleValueType( tr ), v, tr.IsSigned );
         }
@@ -223,8 +336,8 @@ namespace Microsoft.Zelig.LLVM
                 //type for the array.
                 if( TypeChangesAfterCreation( dd ) )
                 {
-                    Llvm.NET.Constant ucv = UCVFromDataDescriptor( dd );
-                    AddToGlobalInitializedValues( dd, m_module.GetGlobalFromUCV( GetOrInsertType( dd.Context ), ucv ) );
+                    Constant ucv = UCVFromDataDescriptor( dd );
+                    AddToGlobalInitializedValues(dd, m_module.GetGlobalFromUCV(GetOrInsertType(dd.Context), ucv, dd.IsMutable));
                 }
                 else
                 {
@@ -235,12 +348,12 @@ namespace Microsoft.Zelig.LLVM
             return m_globalInitializedValues[ dd ];
         }
 
-        private Llvm.NET.Constant GetUCVObjectHeader( IR.DataManager.DataDescriptor dd )
+        private Constant GetUCVObjectHeader( IR.DataManager.DataDescriptor dd )
         {
             TS.WellKnownFields wkf = m_typeSystem.WellKnownFields;
             TS.WellKnownTypes wkt = m_typeSystem.WellKnownTypes;
 
-            var fields = new List<Llvm.NET.Constant>( );
+            var fields = new List<Constant>( );
 
             Runtime.ObjectHeader.GarbageCollectorFlags flags;
 
@@ -260,7 +373,7 @@ namespace Microsoft.Zelig.LLVM
             return m_module.GetUCVStruct( GetOrInsertType( wkt.Microsoft_Zelig_Runtime_ObjectHeader ), fields, false );
         }
 
-        public Llvm.NET.Constant UCVFromDataDescriptor( IR.DataManager.DataDescriptor dd, TS.TypeRepresentation treatObjectDescriptorAsType = null )
+        public Constant UCVFromDataDescriptor( IR.DataManager.DataDescriptor dd, TS.TypeRepresentation treatObjectDescriptorAsType = null )
         {
             TS.WellKnownFields wkf = m_typeSystem.WellKnownFields;
             TS.WellKnownTypes wkt = m_typeSystem.WellKnownTypes;
@@ -276,11 +389,11 @@ namespace Microsoft.Zelig.LLVM
 
                 if( currentType == wkt.System_Object )
                 {
-                    Llvm.NET.Constant ucv = GetUCVObjectHeader( dd );
+                    Constant ucv = GetUCVObjectHeader( dd );
                     return GetUCVStruct( GetOrInsertType( wkt.System_Object ), false, ucv );
                 }
 
-                var fields = new List<Llvm.NET.Constant>( );
+                var fields = new List<Constant>( );
 
                 if( !( currentType is TS.ValueTypeRepresentation ) )
                 {
@@ -316,7 +429,7 @@ namespace Microsoft.Zelig.LLVM
                             if( ptr is TS.MethodRepresentation )
                             {
                                 TS.MethodRepresentation md = ( TS.MethodRepresentation )ptr;
-                                Llvm.NET.Constant ucv = m_module.GetUCVConstantPointerFromValue( GetOrInsertFunction( md ) );
+                                Constant ucv = m_module.GetUCVConstantPointerFromValue( GetOrInsertFunction( md ) );
                                 ucv = GetUCVStruct( GetOrInsertType( fd.FieldType ), false, ucv );
                                 fields.Add( ucv );
                             }
@@ -365,7 +478,7 @@ namespace Microsoft.Zelig.LLVM
 
                 if( currentType == wkt.System_String )
                 {
-                    var chars = new List<Llvm.NET.Constant>( );
+                    var chars = new List<Constant>( );
                     foreach( var c in ( ( string )od.Source ).ToCharArray( ) )
                     {
                         chars.Add( GetScalarTypeUCV( wkf.StringImpl_FirstChar.FieldType, ( ulong )c ) );
@@ -381,9 +494,12 @@ namespace Microsoft.Zelig.LLVM
             {
                 IR.DataManager.ArrayDescriptor ad = ( IR.DataManager.ArrayDescriptor )dd;
 
-                Llvm.NET.Constant ucv = GetUCVObjectHeader( dd );
+                Constant ucv = GetUCVObjectHeader( dd );
                 ucv = GetUCVStruct( GetOrInsertType( wkt.System_Object ), false, ucv );
-                ucv = GetUCVStruct( GetOrInsertType( wkt.System_Array ), false, ucv, GetScalarTypeUCV( wkf.ArrayImpl_m_numElements.FieldType, ( ulong )ad.Length ) );
+
+                ulong arrayLen = (ulong)((ad.Source != null) ? ad.Source.Length : ad.Length);
+
+                ucv = GetUCVStruct( GetOrInsertType( wkt.System_Array ), false, ucv, GetScalarTypeUCV( wkf.ArrayImpl_m_numElements.FieldType, arrayLen) );
                 return GetUCVStruct( GetOrInsertType( dd.Context ), true, ucv, GetUCVArray( ad ) );
             }
             else
@@ -397,14 +513,14 @@ namespace Microsoft.Zelig.LLVM
         {
             if( !m_globalInitializedValues.ContainsKey( dd ) )
             {
-                Llvm.NET.Constant ucv = UCVFromDataDescriptor( dd );
+                Constant ucv = UCVFromDataDescriptor( dd );
                 
                 //Split the global creation in two step for DDs that keep their type the same
                 //after conversion
 
                 if( TypeChangesAfterCreation( dd ) )
                 {
-                    AddToGlobalInitializedValues( dd, m_module.GetGlobalFromUCV( GetOrInsertType( dd.Context ), ucv ) );
+                    AddToGlobalInitializedValues( dd, m_module.GetGlobalFromUCV( GetOrInsertType( dd.Context ), ucv, dd.IsMutable ) );
                 }
                 else
                 {

@@ -40,13 +40,13 @@ namespace Microsoft.Zelig.Runtime
             NormalObject           = 4 << 1, // Normal object.
             SpecialHandlerObject   = 5 << 1, // This object has a GC extension handler.
         }
-                              
+
         public enum ExtensionKinds : uint
         {
-            Empty     = 0x00000000,
-            HashCode  = 0x00000001,
-            SyncBlock = 0x00000002,
-            Reserved  = 0x00000003,
+            Empty          = 0,
+            HashCode       = 1,
+            SyncBlock      = 2,
+            ReferenceCount = 3,
         }
 
         //
@@ -94,13 +94,31 @@ namespace Microsoft.Zelig.Runtime
         public unsafe UIntPtr GetNextObjectPointer()
         {
             ObjectImpl obj    = (ObjectImpl)this.Pack();
-            TS.VTable  vTable =             this.VirtualTable;
-            ArrayImpl  array  = ArrayImpl.CastAsArray( obj );
-            uint       size   = vTable.BaseSize + vTable.ElementSize * (uint)array.Length;
 
-            size = AddressMath.AlignToWordBoundary( size );
+            return new UIntPtr( (uint)obj.Unpack() + this.ObjectSize );
+        }
 
-            return new UIntPtr( (uint)obj.Unpack() + size );
+        public uint ObjectSize
+        {
+            get
+            {
+                ObjectImpl obj = (ObjectImpl)this.Pack();
+                TS.VTable vTable = this.VirtualTable;
+                ArrayImpl array = ArrayImpl.CastAsArray(obj);
+                uint size = vTable.BaseSize + vTable.ElementSize * (uint)array.Length;
+
+                size = AddressMath.AlignToWordBoundary(size);
+
+                return size;
+            }
+        }
+
+        public uint Size
+        {
+            get
+            {
+                return this.ObjectSize + (uint)System.Runtime.InteropServices.Marshal.SizeOf(typeof(ObjectHeader));
+            }
         }
 
         [TS.WellKnownMethod("DebugGC_ObjectHeader_InsertPlug")]
@@ -108,11 +126,12 @@ namespace Microsoft.Zelig.Runtime
         {
             UIntPtr address = this.ToPointer();
             uint*   dst     = (uint*)address.ToPointer();
+            var bytesLeft = size;
 
-            while(size >= sizeof(uint))
+            while(bytesLeft >= sizeof(uint))
             {
                 *dst++  = (uint)GarbageCollectorFlags.GapPlug;
-                size   -= sizeof(uint);
+                bytesLeft -= sizeof(uint);
             }
         }
 
@@ -138,6 +157,48 @@ namespace Microsoft.Zelig.Runtime
                     break;
                 }
             }
+        }
+
+        internal void InitializeReferenceCount( )
+        {
+            // Only support reference counting on normal objects
+            if(this.GarbageCollectorStateWithoutMutableBits == GarbageCollectorFlags.NormalObject)
+            {
+                this.MultiUseWord &= (int)GarbageCollectorMask;
+                this.MultiUseWord |= ( (int)ExtensionKinds.ReferenceCount << ExtensionKindShift ) | ( 1 << ExtensionPayloadShift );
+
+                //BugCheck.Log( "Oh: 0x%x ref count initialized to 1", (int)ToPointer( ).ToUInt32( ) );
+            }
+        }
+
+        public void AddReference( )
+        {
+            if(ExtensionKind == ExtensionKinds.ReferenceCount)
+            {
+                ModifyReferenceCount( /*delta*/1 );
+            }
+        }
+
+        static public void ReleaseReference( ref Object obj )
+        {
+            if(obj != null)
+            {
+                ThreadImpl.CurrentThread.ReleaseReference.ReleaseReference( ObjectHeader.Unpack( obj ) );
+                obj = null;
+            }
+        }
+
+        internal bool DecrementReferenceCount()
+        {
+            int newMultiUseWord = ModifyReferenceCount( /*delta*/-1 );
+
+            return ( newMultiUseWord & ExtensionPayloadMask ) == 0;
+        }
+
+        [Inline]
+        private int ModifyReferenceCount( int delta )
+        {
+            return System.Threading.Interlocked.Add(ref this.MultiUseWord, delta << ExtensionPayloadShift);
         }
 
         //

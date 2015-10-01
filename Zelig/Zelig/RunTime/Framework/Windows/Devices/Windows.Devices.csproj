@@ -56,12 +56,23 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Enumeration\DeviceInformation.cs" />
+    <Compile Include="Enumeration\DeviceInformationCollection.cs" />
     <Compile Include="Gpio\GpioController.cs" />
     <Compile Include="Gpio\GpioEnums.cs" />
     <Compile Include="Gpio\GpioPin.cs" />
     <Compile Include="Gpio\GpioPinValueChangedEventArgs.cs" />
-    <Compile Include="Gpio\IGpioControllerProvider.cs" />
+    <Compile Include="Gpio\GpioPinProvider.cs" />
+    <Compile Include="I2c\I2cChannel.cs" />
+    <Compile Include="I2c\I2cEnums.cs" />
+    <Compile Include="I2c\I2cConnectionSettings.cs" />
+    <Compile Include="I2c\I2cDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Spi\SpiChannel.cs" />
+    <Compile Include="Spi\SpiBusInfo.cs" />
+    <Compile Include="Spi\SpiConnectionSettings.cs" />
+    <Compile Include="Spi\SpiDevice.cs" />
+    <Compile Include="Spi\SpiEnums.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\RunTime\Framework\system\system.csproj">

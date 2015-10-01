@@ -96,12 +96,15 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_AliasForBaseMethodAttribute;
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_AliasForSuperMethodAttribute;
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_AliasForTargetMethodAttribute;
+        public readonly TypeRepresentation Microsoft_Zelig_Runtime_AlignmentRequirementsAttribute;
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_DiscardTargetImplementationAttribute;
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_ExtendClassAttribute;
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_InjectAtEntryPointAttribute;
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_InjectAtExitPointAttribute;
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_MergeWithTargetImplementationAttribute;
-                                                           
+        public readonly TypeRepresentation Microsoft_Zelig_Runtime_SingletonFactoryPlatformFilterAttribute;
+        public readonly TypeRepresentation Microsoft_Zelig_Runtime_ProductFilterAttribute;
+
         //--//                                             
                                                            
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_ObjectHeader;

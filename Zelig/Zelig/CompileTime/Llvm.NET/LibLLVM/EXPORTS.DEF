@@ -3,7 +3,6 @@ EXPORTS
 LLVMAddModuleFlag
 LLVMVerifyFunctionEx
 LLVMAddFunctionAttr2
-LLVMGetFunctionAttr2
 LLVMRemoveFunctionAttr2
 LLVMConstantAsMetadata
 LLVMMDString2
@@ -18,6 +17,10 @@ LLVMRemoveGlobalFromParent
 LLVMGetOrInsertFunction
 LLVMBuildIntCast2
 LLVMGetValueID
+LLVMMetadataAsValue
+LLVMGetModuleName
+LLVMIsTemporary
+LLVMIsResolved
 
 ; Debug info functions not part of standard LLVM-C API
 LLVMSetDebugLoc
@@ -34,8 +37,10 @@ LLVMDIBuilderCreateBasicType
 LLVMDIBuilderCreatePointerType
 LLVMDIBuilderCreateSubroutineType
 LLVMDIBuilderCreateStructType
+LLVMDIBuilderCreateReplaceableCompositeType
 LLVMDIBuilderCreateMemberType
 LLVMDIBuilderCreateArrayType
+LLVMDIBuilderCreateVectorType
 LLVMDIBuilderCreateTypedef
 LLVMDIBuilderGetOrCreateSubrange
 LLVMDIBuilderGetOrCreateArray
@@ -43,6 +48,16 @@ LLVMDIBuilderGetOrCreateTypeArray
 LLVMDIBuilderCreateExpression
 LLVMDIBuilderInsertDeclareAtEnd
 LLVMDIBuilderInsertValueAtEnd
+LLVMDIBuilderCreateEnumerationType
+LLVMDIBuilderCreateEnumeratorValue
+LLVMDIDescriptorGetTag
+LLVMDIBuilderCreateGlobalVariable
+LLVMDIBuilderInsertDeclareBefore
+LLVMDIDescriptorAsString
+LLVMMDNodeReplaceAllUsesWith
+LLVMDITypeGetFlags
+LLVMDILocation
+LLVMGetDITypeName
 
 ; Instrumentation Bindings
 LLVMAddAddressSanitizerFunctionPass
@@ -700,7 +715,6 @@ LLVMInitializeMSP430AsmPrinter
 LLVMInitializeMSP430TargetMC
 LLVMInitializeMSP430TargetInfo
 LLVMInitializeNVPTXAsmPrinter
-LLVMInitializeNVPTXBackendAsmPrinter
 LLVMInitializeNVPTXTarget
 LLVMInitializeNVPTXTargetMC
 LLVMInitializeNVPTXTargetInfo
@@ -710,7 +724,6 @@ LLVMDisposeObjectFile
 LLVMDisposeRelocationIterator
 LLVMDisposeSectionIterator
 LLVMDisposeSymbolIterator
-LLVMGetRelocationAddress
 LLVMGetRelocationOffset
 LLVMGetRelocationSymbol
 LLVMGetRelocationType
@@ -740,11 +753,11 @@ LLVMInitializePowerPCTarget
 LLVMInitializePowerPCTargetMC
 LLVMInitializePowerPCDisassembler
 LLVMInitializePowerPCTargetInfo
-LLVMInitializeR600AsmParser
-LLVMInitializeR600AsmPrinter
-LLVMInitializeR600Target
-LLVMInitializeR600TargetMC
-LLVMInitializeR600TargetInfo
+LLVMInitializeAMDGPUAsmParser
+LLVMInitializeAMDGPUAsmPrinter
+LLVMInitializeAMDGPUTarget
+LLVMInitializeAMDGPUTargetMC
+LLVMInitializeAMDGPUTargetInfo
 LLVMAddAggressiveDCEPass
 LLVMAddAlignmentFromAssumptionsPass
 LLVMAddBasicAliasAnalysisPass

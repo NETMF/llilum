@@ -24,36 +24,30 @@ using namespace llvm;
 
 extern "C"
 {
-    void LLVMAddFunctionAttr2( LLVMValueRef Fn, uint64_t PA )
+    void LLVMAddFunctionAttr2( LLVMValueRef Fn, uint32_t Kind, uint64_t Value )
     {
         Function *Func = unwrap<Function>( Fn );
         const AttributeSet PAL = Func->getAttributes( );
-        AttrBuilder B( PA );
+        const Attribute Attr = Attribute::get( Func->getContext(), ( Attribute::AttrKind )Kind, Value );
+        AttrBuilder B( Attr );
         const AttributeSet PALnew = PAL.addAttributes( Func->getContext( )
                                                        , AttributeSet::FunctionIndex
                                                        , AttributeSet::get( Func->getContext( )
-                                                                            , AttributeSet::FunctionIndex, B )
+                                                                          , AttributeSet::FunctionIndex
+                                                                          , B
+                                                                          )
                                                        );
         Func->setAttributes( PALnew );
     }
 
-    uint64_t LLVMGetFunctionAttr2( LLVMValueRef Fn )
+    void LLVMRemoveFunctionAttr2( LLVMValueRef Fn, uint32_t Kind )
     {
         Function *Func = unwrap<Function>( Fn );
         const AttributeSet PAL = Func->getAttributes( );
-        return PAL.Raw( AttributeSet::FunctionIndex );
-    }
-
-    void LLVMRemoveFunctionAttr2( LLVMValueRef Fn, uint64_t PA )
-    {
-        Function *Func = unwrap<Function>( Fn );
-        const AttributeSet PAL = Func->getAttributes( );
-        AttrBuilder B( PA );
-        const AttributeSet PALnew = PAL.removeAttributes( Func->getContext( )
-                                                          , AttributeSet::FunctionIndex
-                                                          , AttributeSet::get( Func->getContext( )
-                                                                               , AttributeSet::FunctionIndex, B )
-                                                          );
+        const AttributeSet PALnew = PAL.removeAttribute( Func->getContext( )
+                                                         , AttributeSet::FunctionIndex
+                                                         , ( Attribute::AttrKind )Kind
+                                                         );
         Func->setAttributes( PALnew );
     }
 
@@ -83,10 +77,10 @@ extern "C"
                                          , unsigned Count
                                          )
     {
-        auto node = MDNode::getTemporary( *unwrap( C )
+        auto node = MDTuple::getTemporary( *unwrap( C )
                                           , ArrayRef<Metadata *>( unwrap( MDs ), Count )
                                           );
-        return wrap( node );
+        return wrap( node.release() );
     }
 
     void LLVMAddNamedMetadataOperand2( LLVMModuleRef M
@@ -112,8 +106,8 @@ extern "C"
 
     void LLVMMetadataReplaceAllUsesWith( LLVMMetadataRef MD, LLVMMetadataRef New )
     {
-        auto *Node = unwrap<MDNodeFwdDecl>( MD );
-        Node->replaceAllUsesWith( unwrap<MDNode>( New ) );
+        auto *Node = unwrap<MDNode>( MD );
+        Node->replaceAllUsesWith( unwrap<Metadata>( New ) );
         MDNode::deleteTemporary( Node );
     }
 
@@ -130,5 +124,17 @@ extern "C"
                                   , InlinedAt ? unwrap<MDNode>( InlinedAt ) : nullptr
                                   );
         unwrap( Bref )->SetCurrentDebugLocation( loc );
+    }
+
+    LLVMBool LLVMIsTemporary( LLVMMetadataRef M )
+    {
+        auto pMetadata = unwrap<MDNode>( M );
+        return pMetadata->isTemporary();
+    }
+
+    LLVMBool LLVMIsResolved( LLVMMetadataRef M )
+    {
+        auto pMetadata = unwrap<MDNode>( M );
+        return pMetadata->isResolved( );
     }
 }

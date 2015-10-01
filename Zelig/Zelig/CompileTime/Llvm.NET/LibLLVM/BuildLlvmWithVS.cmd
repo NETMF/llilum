@@ -10,11 +10,11 @@ set LLVM_ROOT=%~d0%~p0
 @REM By default do the following:
 @REM 1 - Generate the build project and solutions from CMake
 @REM 2 - Build all the Platform\configuration combos (2x3)
-@REM 3 - Register the outpurt location in registry
+@REM 3 - Register the output location in registry
 set GENERATE=1
 set BUILD=1
 set REGISTER=1
-set LlvmVersion=3.6.1
+set LlvmVersion=3.7.0
 
 @REM - Allow overriding default version and disabling any of the stages via parameters
 :arg_loop
@@ -40,10 +40,10 @@ if NOT EXIST %LLVM_ROOT%CMakeLists.txt (
 )
 
 if %GENERATE%==1 (
-    call :CongigureLLVMBuild x64
+    call :CongigureLLVMBuild "Visual Studio 14 2015 Win64" x64
     if %ERRORLEVEL% GTR 0 goto :exit
     
-    call :CongigureLLVMBuild Win32
+    call :CongigureLLVMBuild "Visual Studio 14 2015" Win32
     if %ERRORLEVEL% GTR 0 goto :exit
 )
 if %BUILD%==1 (
@@ -88,10 +88,10 @@ endlocal
 goto :EOF
 
 :CongigureLLVMBuild
-    @echo __--== Generating build configuration of LLVM For %1 ==--__    
-    if NOT EXIST "build\%1" md build\%1
-    pushd build\%1
-    cmake -G"Visual Studio 14 2015" -DCMAKE_INSTALL_PREFIX=Install -DCMAKE_GENERATOR_PLATFORM=%1 ..\..
+    @echo __--== Generating build configuration of LLVM For %2 ==--__    
+    if NOT EXIST "build\%2" md build\%2
+    pushd build\%2
+    cmake -G"%~1" -DCMAKE_INSTALL_PREFIX=Install ..\..
     popd
     if %ERRORLEVEL% GTR 0 exit /B %ERRORLEVEL%
 
@@ -113,4 +113,3 @@ goto :EOF
     if %ERRORLEVEL% GTR 0 exit /B %ERRORLEVEL%
 
     goto :EOF
-

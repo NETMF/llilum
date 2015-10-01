@@ -2,6 +2,8 @@
 using System.Linq;
 using Llvm.NET.Instructions;
 using System.Collections.Generic;
+using Llvm.NET.Values;
+using Llvm.NET.Types;
 
 namespace Llvm.NET
 {
@@ -122,35 +124,39 @@ namespace Llvm.NET
 
         public Value Or( Value lhs, Value rhs, string name ) => BuildBinOp( LLVMNative.BuildOr, lhs, rhs, name );
 
-        public Value Alloca( TypeRef typeRef ) => Alloca( typeRef, string.Empty );
+        public Alloca Alloca( TypeRef typeRef ) => Alloca( typeRef, string.Empty );
 
-        public Value Alloca( TypeRef typeRef, string name ) => Value.FromHandle( LLVMNative.BuildAlloca( BuilderHandle, typeRef.TypeHandle, name ) );
+        public Alloca Alloca( TypeRef typeRef, string name )
+        {
+            var handle = LLVMNative.BuildAlloca( BuilderHandle, typeRef.TypeHandle, name );
+            return ( Alloca )Value.FromHandle( handle );
+        }
 
-        public Value Alloca( TypeRef typeRef, ConstantInt elements ) => Alloca( typeRef, elements, string.Empty );
+        public Alloca Alloca( TypeRef typeRef, ConstantInt elements ) => Alloca( typeRef, elements, string.Empty );
 
-        public Value Alloca( TypeRef typeRef, ConstantInt elements, string name )
+        public Alloca Alloca( TypeRef typeRef, ConstantInt elements, string name )
         {
             var instHandle = LLVMNative.BuildArrayAlloca( BuilderHandle, typeRef.TypeHandle, elements.ValueHandle, name );
-            return Value.FromHandle( instHandle );
+            return (Alloca)Value.FromHandle( instHandle );
         }
 
         public Value Return( ) => Value.FromHandle( LLVMNative.BuildRetVoid( BuilderHandle ) );
 
         public Value Return( Value value ) => Value.FromHandle( LLVMNative.BuildRet( BuilderHandle, value.ValueHandle ) );
 
-        public Value Call( Value func, params Value[ ] args ) => Call( string.Empty, func, ( IReadOnlyList<Value> )args );
-        public Value Call( Value func, IReadOnlyList<Value> args ) => Call( string.Empty, func, args );
-        public Value Call( string name, Value func, params Value[ ] args ) => Call( name, func, ( IReadOnlyList<Value> )args );
-        public Value Call( string name, Value func, IReadOnlyList<Value> args )
+        public Call Call( Value func, params Value[ ] args ) => Call( string.Empty, func, ( IReadOnlyList<Value> )args );
+        public Call Call( Value func, IReadOnlyList<Value> args ) => Call( string.Empty, func, args );
+        public Call Call( string name, Value func, params Value[ ] args ) => Call( name, func, ( IReadOnlyList<Value> )args );
+        public Call Call( string name, Value func, IReadOnlyList<Value> args )
         {
             LLVMValueRef hCall = BuildCall( name, func, args );
-            return Value.FromHandle( hCall );
+            return (Call)Value.FromHandle( hCall );
         }
 
         /// <summary>Builds an LLVM Store instruction</summary>
         /// <param name="value">Value to store in destination</param>
         /// <param name="destination">value for the destination</param>
-        /// <returns><see cref="Store"/> instruction</returns>
+        /// <returns><see cref="Instructions.Store"/> instruction</returns>
         /// <remarks>
         /// Since store targets memory the type of <paramref name="destination"/>
         /// must be a <see cref="PointerType"/>. Furthermore, the element type of
@@ -167,11 +173,7 @@ namespace Llvm.NET
              || ( value.Type.Kind == TypeKind.Integer && value.Type.IntegerBitWidth != ptrType.ElementType.IntegerBitWidth )
               )
             {
-                var msg = string.Format( "Incompatible types: destination pointer must be of the same type as the value stored.\nTypes are:\n\t{0}\n\t{1}"
-                                       , ptrType.ElementType.ToString( )
-                                       , value.Type.ToString( )
-                                       );
-                throw new ArgumentException( msg );
+                throw new ArgumentException( string.Format( IncompatibleTypeMsgFmt, ptrType.ElementType, value.Type ) );
             }
 
             return Value.FromHandle( LLVMNative.BuildStore( BuilderHandle, value.ValueHandle, destination.ValueHandle ) );
@@ -185,10 +187,7 @@ namespace Llvm.NET
         }
 
         public Value Load( Value sourcePtr ) => Load( sourcePtr, string.Empty );
-        public Value Load( Value sourcePtr, string name )
-        {
-            return Value.FromHandle( LLVMNative.BuildLoad( BuilderHandle, sourcePtr.ValueHandle, name ) );
-        }
+        public Value Load( Value sourcePtr, string name ) => Value.FromHandle( LLVMNative.BuildLoad( BuilderHandle, sourcePtr.ValueHandle, name ) );
 
         /// <summary>Creates a <see cref="User"/> that accesses an element (field) of a structure</summary>
         /// <param name="pointer">pointer to the strucure to get an element from</param>
@@ -197,14 +196,11 @@ namespace Llvm.NET
         /// <para><see cref="User"/> for the member access. This is a User as LLVM may 
         /// optimize the expression to a <see cref="ConstantExpression"/> if it 
         /// can so the actual type of the result may be <see cref="ConstantExpression"/>
-        /// or <see cref="GetElementPtr"/>.</para>
+        /// or <see cref="Instructions.GetElementPtr"/>.</para>
         /// <para>Note that <paramref name="pointer"/> must be a pointer to a structure
         /// or an excpetion is thrown.</para>
         /// </returns>
-        public Value GetStructElementPointer( Value pointer, uint index )
-        {
-            return GetStructElementPointer( pointer, index, string.Empty );
-        }
+        public Value GetStructElementPointer( Value pointer, uint index ) => GetStructElementPointer( pointer, index, string.Empty );
 
         /// <summary>Creates a <see cref="User"/> that accesses an element (field) of a structure</summary>
         /// <param name="pointer">pointer to the strucure to get an element from</param>
@@ -214,7 +210,7 @@ namespace Llvm.NET
         /// <para><see cref="User"/> for the member access. This is a User as LLVM may 
         /// optimize the expression to a <see cref="ConstantExpression"/> if it 
         /// can so the actual type of the result may be <see cref="ConstantExpression"/>
-        /// or <see cref="GetElementPtr"/>.</para>
+        /// or <see cref="Instructions.GetElementPtr"/>.</para>
         /// <para>Note that <paramref name="pointer"/> must be a pointer to a structure
         /// or an excpetion is thrown.</para>
         /// </returns>
@@ -234,7 +230,7 @@ namespace Llvm.NET
         /// <para><see cref="User"/> for the member access. This is a User as LLVM may 
         /// optimize the expression to a <see cref="ConstantExpression"/> if it 
         /// can so the actual type of the result may be <see cref="ConstantExpression"/>
-        /// or <see cref="GetElementPtr"/>.</para>
+        /// or <see cref="Instructions.GetElementPtr"/>.</para>
         /// <para>Note that <paramref name="pointer"/> must be a pointer to a structure
         /// or an excpetion is thrown.</para>
         /// </returns>
@@ -245,12 +241,12 @@ namespace Llvm.NET
         /// and C++ programmers an expression like pFoo->bar seems to only have a single offset or
         /// index. However that is only syntactic sugar where the compiler implicitly hides the first
         /// index. That is, there is no difference between pFoo[0].bar and pFoo->bar except that the
-        /// former makes the first index explicit. LLVM requires an explicit first index even if it is
-        /// zero, in order to properly compute the offset for a given element in an aggregate type.
+        /// former makes the first index explicit. In order to properly compute the offset for a given
+        /// element in an aggregate type LLVM requires an explicit first index even if it is zero.
         /// </remarks>
         public Value GetElementPtr( Value pointer, IEnumerable<Value> args ) => GetElementPtr( pointer, args, string.Empty );
 
-            /// <summary>Creates a <see cref="User"/> that accesses an element of a type referenced by a pointer</summary>
+        /// <summary>Creates a <see cref="User"/> that accesses an element of a type referenced by a pointer</summary>
         /// <param name="pointer">pointer to get an element from</param>
         /// <param name="args">additional indeces for computing the resulting pointer</param>
         /// <param name="name">Name to give to the instruction</param>
@@ -258,7 +254,7 @@ namespace Llvm.NET
         /// <para><see cref="User"/> for the member access. This is a User as LLVM may 
         /// optimize the expression to a <see cref="ConstantExpression"/> if it 
         /// can so the actual type of the result may be <see cref="ConstantExpression"/>
-        /// or <see cref="GetElementPtr"/>.</para>
+        /// or <see cref="Instructions.GetElementPtr"/>.</para>
         /// <para>Note that <paramref name="pointer"/> must be a pointer to a structure
         /// or an excpetion is thrown.</para>
         /// </returns>
@@ -269,18 +265,12 @@ namespace Llvm.NET
         /// and C++ programmers an expression like pFoo->bar seems to only have a single offset or
         /// index. However that is only syntactic sugar where the compiler implicitly hides the first
         /// index. That is, there is no difference between pFoo[0].bar and pFoo->bar except that the
-        /// former makes the first index explicit. LLVM requires an explicit first index even if it is
-        /// zero, in order to properly compute the offset for a given element in an aggregate type.
+        /// former makes the first index explicit. In order to properly compute the offset for a given
+        /// element in an aggregate type LLVM requires an explicit first index even if it is zero.
         /// </remarks>
         public Value GetElementPtr( Value pointer, IEnumerable<Value> args, string name )
         {
-            if( pointer.Type.Kind != TypeKind.Pointer )
-                throw new ArgumentException( "Pointer value expected", nameof( pointer ) );
-
-            LLVMValueRef[ ] llvmArgs = args.Select( a=> a.ValueHandle ).ToArray();
-            if( llvmArgs.Length == 0 )
-                throw new ArgumentException( "There must be at least one index argument", nameof( args ) );
-
+            var llvmArgs = GetValidatedGEPArgs( pointer, args );
             var hRetVal = LLVMNative.BuildGEP( BuilderHandle, pointer.ValueHandle, out llvmArgs[ 0 ], ( uint )llvmArgs.Length, string.Empty );
             return Value.FromHandle( hRetVal );
         }
@@ -292,7 +282,7 @@ namespace Llvm.NET
         /// <para><see cref="User"/> for the member access. This is a User as LLVM may 
         /// optimize the expression to a <see cref="ConstantExpression"/> if it 
         /// can so the actual type of the result may be <see cref="ConstantExpression"/>
-        /// or <see cref="GetElementPtr"/>.</para>
+        /// or <see cref="Instructions.GetElementPtr"/>.</para>
         /// <para>Note that <paramref name="pointer"/> must be a pointer to a structure
         /// or an excpetion is thrown.</para>
         /// </returns>
@@ -303,8 +293,8 @@ namespace Llvm.NET
         /// and C++ programmers an expression like pFoo->bar seems to only have a single offset or
         /// index. However that is only syntactic sugar where the compiler implicitly hides the first
         /// index. That is, there is no difference between pFoo[0].bar and pFoo->bar except that the
-        /// former makes the first index explicit. LLVM requires an explicit first index even if it is
-        /// zero, in order to properly compute the offset for a given element in an aggregate type.
+        /// former makes the first index explicit. In order to properly compute the offset for a given
+        /// element in an aggregate type LLVM requires an explicit first index even if it is zero.
         /// </remarks>
         public Value GetElementPtrInBounds( Value pointer, params Value[ ] args ) => GetElementPtrInBounds( pointer, args, string.Empty );
         public Value GetElementPtrInBounds( Value pointer, string name, params Value[ ] args ) => GetElementPtrInBounds( pointer, args, name );
@@ -317,7 +307,7 @@ namespace Llvm.NET
         /// <para><see cref="User"/> for the member access. This is a User as LLVM may 
         /// optimize the expression to a <see cref="ConstantExpression"/> if it 
         /// can so the actual type of the result may be <see cref="ConstantExpression"/>
-        /// or <see cref="GetElementPtr"/>.</para>
+        /// or <see cref="Instructions.GetElementPtr"/>.</para>
         /// <para>Note that <paramref name="pointer"/> must be a pointer to a structure
         /// or an excpetion is thrown.</para>
         /// </returns>
@@ -326,20 +316,14 @@ namespace Llvm.NET
         /// basic gist is that the GEP instruction does not access memory, it only computes a pointer
         /// offset from a base. A common confusion is around the first index and what it means. For C
         /// and C++ programmers an expression like pFoo->bar seems to only have a single offset or
-        /// index. However that is only syntactic sugar where the compiler implicitly hides the first
+        /// index. However, that is only syntactic sugar where the compiler implicitly hides the first
         /// index. That is, there is no difference between pFoo[0].bar and pFoo->bar except that the
-        /// former makes the first index explicit. LLVM requires an explicit first index even if it is
-        /// zero, in order to properly compute the offset for a given element in an aggregate type.
+        /// former makes the first index explicit. In order to properly compute the offset for a given
+        /// element in an aggregate type LLVM requires an explicit first index even if it is zero.
         /// </remarks>
         public Value GetElementPtrInBounds( Value pointer, IEnumerable<Value> args, string name )
         {
-            if( pointer.Type.Kind != TypeKind.Pointer )
-                throw new ArgumentException( "Pointer value expected", nameof( pointer ) );
-
-            LLVMValueRef[ ] llvmArgs = args.Select( a => a.ValueHandle ).ToArray( );
-            if( llvmArgs.Length == 0 )
-                throw new ArgumentException( "There must be at least one index argument", nameof( args ) );
-
+            var llvmArgs = GetValidatedGEPArgs( pointer, args );
             var hRetVal = LLVMNative.BuildInBoundsGEP( BuilderHandle, pointer.ValueHandle, out llvmArgs[ 0 ], ( uint )llvmArgs.Length, string.Empty );
             return Value.FromHandle( hRetVal );
         }
@@ -351,7 +335,7 @@ namespace Llvm.NET
         /// <para><see cref="User"/> for the member access. This is a User as LLVM may 
         /// optimize the expression to a <see cref="ConstantExpression"/> if it 
         /// can so the actual type of the result may be <see cref="ConstantExpression"/>
-        /// or <see cref="GetElementPtr"/>.</para>
+        /// or <see cref="Instructions.GetElementPtr"/>.</para>
         /// <para>Note that <paramref name="pointer"/> must be a pointer to a structure
         /// or an excpetion is thrown.</para>
         /// </returns>
@@ -367,14 +351,9 @@ namespace Llvm.NET
         /// </remarks>
         public Value ConstGetElementPtrInBounds( Value pointer, params Value[ ] args )
         {
-            if( pointer.Type.Kind != TypeKind.Pointer )
-                throw new ArgumentException( "Pointer value expected", nameof( pointer ) );
-
-            LLVMValueRef[ ] llvmArgs = args.Select( a => a.ValueHandle ).ToArray( );
-            if( llvmArgs.Length == 0 )
-                throw new ArgumentException( "There must be at least one index argument", nameof( args ) );
-
-            return Value.FromHandle( LLVMNative.ConstInBoundsGEP( pointer.ValueHandle, out llvmArgs[ 0 ], ( uint )llvmArgs.Length ) );
+            var llvmArgs = GetValidatedGEPArgs( pointer, args );
+            var handle = LLVMNative.ConstInBoundsGEP( pointer.ValueHandle, out llvmArgs[ 0 ], ( uint )llvmArgs.Length );
+            return Value.FromHandle( handle );
         }
 
         /// <summary>Builds a cast from an integer to a pointer</summary>
@@ -382,7 +361,7 @@ namespace Llvm.NET
         /// <param name="ptrType">pointer type to return</param>
         /// <returns>Resulting value from the cast</returns>
         /// <remarks>
-        /// The actual type of value returned depends on <paramref name="intVal"/>
+        /// The actual type of value returned depends on <paramref name="intValue"/>
         /// and is either a <see cref="ConstantExpression"/> or an <see cref="Instructions.IntToPointer"/>
         /// instruction. Conversion to a constant expression is performed whenever possible.
         /// </remarks>
@@ -641,7 +620,12 @@ namespace Llvm.NET
                 return Cast.FromHandle( LLVMNative.BuildFPExt( BuilderHandle, valueRef.ValueHandle, toType.TypeHandle, name ) );
         }
 
-        public Value PhiNode( TypeRef resultType ) => Value.FromHandle( LLVMNative.BuildPhi( BuilderHandle, resultType.TypeHandle, string.Empty ) );
+        public PhiNode PhiNode( TypeRef resultType ) => PhiNode( resultType, string.Empty );
+        public PhiNode PhiNode( TypeRef resultType, string name )
+        {
+            var handle = LLVMNative.BuildPhi( BuilderHandle, resultType.TypeHandle, string.Empty );
+            return (PhiNode)Value.FromHandle( handle );
+        }
 
         public Value ExtractValue( Value instance, uint index ) => ExtractValue( instance, index, string.Empty );
         public Value ExtractValue( Value instance, uint index, string name )
@@ -729,6 +713,7 @@ namespace Llvm.NET
             var call = BuildCall( func, destination, source, len, ConstantInt.From( align ), ConstantInt.From( isVolatile ) );
             return Value.FromHandle( call );
         }
+
         /// <summary>Builds a memmov intrinsic call</summary>
         /// <param name="module">Module to add the declaration of the intrinsic to if it doesn't already exist</param>
         /// <param name="destination">Destination pointer of the memcpy</param>
@@ -739,7 +724,7 @@ namespace Llvm.NET
         /// <returns><see cref="Intrinsic"/> call for the memcpy</returns>
         /// <remarks>
         /// LLVM has many overloaded variants of the memmov instrinsic, this implementation currently assumes the 
-        /// single form defined by <see cref="Intrinsic.MemMovName"/>, which matches the classic "C" style memmov
+        /// single form defined by <see cref="Intrinsic.MemMoveName"/>, which matches the classic "C" style memmov
         /// function. However future implementations should be able to deduce the types from the provided values
         /// and generate a more specific call without changing any caller code. 
         /// </remarks>
@@ -846,6 +831,21 @@ namespace Llvm.NET
         }
         #endregion
 
+        LLVMValueRef[ ] GetValidatedGEPArgs( Value pointer, IEnumerable<Value> args)
+        {
+            if( pointer.Type.Kind != TypeKind.Pointer )
+                throw new ArgumentException( "Pointer value expected", nameof( pointer ) );
+
+            if( args.Any( a => !a.Type.IsInteger ) )
+                throw new ArgumentException( $"GEP index arguments must be integers" );
+
+            LLVMValueRef[ ] llvmArgs = args.Select( a => a.ValueHandle ).ToArray( );
+            if( llvmArgs.Length == 0 )
+                throw new ArgumentException( "There must be at least one index argument", nameof( args ) );
+
+            return llvmArgs;
+        }
+
         internal LLVMBuilderRef BuilderHandle { get; }
 
         // LLVM will automatically perform constant folding, thus the result of applying
@@ -919,5 +919,11 @@ namespace Llvm.NET
             var hCall = LLVMNative.BuildCall( BuilderHandle, func.ValueHandle, out llvmArgs[ 0 ], ( uint )argCount, name );
             return hCall;
         }
+
+        const string IncompatibleTypeMsgFmt = "Incompatible types: destination pointer must be of the same type as the value stored.\n"
+                                            + "Types are:\n"
+                                            + "\tDestination: {0}\n"
+                                            + "\tValue: {1}";
+
     }
 }

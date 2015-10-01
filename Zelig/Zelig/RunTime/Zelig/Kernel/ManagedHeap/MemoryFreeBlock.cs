@@ -51,6 +51,16 @@ namespace Microsoft.Zelig.Runtime
             return size;
         }
 
+        public ObjectHeader ToObjectHeader()
+        {
+            return ObjectHeader.Unpack(Pack());
+
+        }
+        public UIntPtr ToObjectHeaderPointer()
+        {
+            return ToObjectHeader().ToPointer();
+        }
+
         [TS.WellKnownMethod("DebugGC_MemoryFreeBlock_ZeroFreeMemory")]
         public void ZeroFreeMemory()
         {
@@ -134,7 +144,7 @@ namespace Microsoft.Zelig.Runtime
         }
 
         [Inline]
-        private static uint FixedSize()
+        public static uint FixedSize()
         {
             int size;
 

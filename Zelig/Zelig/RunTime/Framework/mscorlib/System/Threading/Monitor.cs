@@ -18,14 +18,14 @@
 namespace System.Threading
 {
     using System;
-////using System.Security.Permissions;
+    using System.Security.Permissions;
 ////using System.Runtime.Remoting;
     using System.Threading;
     using System.Runtime.CompilerServices;
     using System.Runtime.ConstrainedExecution;
 ////using System.Runtime.Versioning;
 
-////[HostProtection( Synchronization = true, ExternalThreading = true )]
+    [HostProtection( Synchronization = true, ExternalThreading = true )]
     public static class Monitor
     {
         /*=========================================================================

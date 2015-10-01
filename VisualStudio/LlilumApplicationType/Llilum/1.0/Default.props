@@ -28,16 +28,16 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <UseOfStl Condition="'$(UseOfStl)' == ''">gnustl_static</UseOfStl>
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <ArmArchitecture Condition="'$(ArmArchitecture)' == ''">armv7-m</ArmArchitecture>
-	
-	<!-- Use to list the option in the property page. -->
-	<AvailibleArmArchitecture>armv6-m;armv7-ar;armv7e-m;armv7-m;cortex-m7;cortex-m3;cortex-m4</AvailibleArmArchitecture>
+
+    <!-- Use to list the option in the property page. -->
+    <AvailibleArmArchitecture>armv6-m;armv7-ar;armv7e-m;armv7-m;cortex-m7;cortex-m3;cortex-m4</AvailibleArmArchitecture>
     
     <!-- Llilum Config -->
-    <LlilumApplicationTypeDir>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Application Type\Llilum\1.0\</LlilumApplicationTypeDir>
+    <LlilumApplicationTypeDir>$(MSBuildExtensionsPath)\Microsoft.Cpp\v4.0\V140\Application Type\Llilum\1.0\</LlilumApplicationTypeDir>
     <LlilumSDK>$(LLILUM_SDK)</LlilumSDK>
     <LlilumLLVM>$(LLILUM_LLVM)build\x64\Debug\bin\</LlilumLLVM>
     <LlilumCompiler>$(LlilumSDK)ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Compiler.exe</LlilumCompiler>
-    <LlilumConfig>$(MSBuildProjectDirectory)\mbed_simple.FrontEndConfig2</LlilumConfig>
+    <LlilumConfig>$(MSBuildProjectDirectory)\mbed_simple.FrontEndConfig</LlilumConfig>
     <LlilumTargetDir>$(LlilumSDK)mbed\</LlilumTargetDir>
     <LlilumTargetBoard>TARGET_LPC1768</LlilumTargetBoard>
     <LlilumTargetBrand>TARGET_NXP</LlilumTargetBrand>

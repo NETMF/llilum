@@ -14,28 +14,37 @@ namespace Microsoft.Zelig.Runtime
     {
         public enum StopCode
         {
-            InterruptsNotDisabled ,
-            InterruptsNotEnabled  ,
+            InterruptsNotDisabled   ,
+            InterruptsNotEnabled    ,
 
-            UnwindFailure         ,
+            UnwindFailure           ,
 
-            KernelNodeStillLinked ,
-            NoCurrentThread       ,
-            ExpectingReadyThread  ,
+            KernelNodeStillLinked   ,
+            NoCurrentThread         ,
+            ExpectingReadyThread    ,
 
-            NoFreeSyncBlock       ,
-            SyncBlockCorruption   ,
+            NoFreeSyncBlock         ,
+            SyncBlockCorruption     ,
 
-            NegativeIndex         ,
-            IncorrectArgument     ,
+            NegativeIndex           ,
+            IncorrectArgument       ,
 
-            NoMemory              ,
-            NoMarkStack           ,
-            NotAMemoryReference   ,
-            HeapCorruptionDetected,
-
-            FailedBootstrap       ,
-            InvalidOperation      ,
+            NoMemory                ,
+            NoMarkStack             ,
+            NotAMemoryReference     ,
+            HeapCorruptionDetected  ,
+            
+            IllegalMode             ,
+            IllegalConfiguration    ,
+            FailedBootstrap         ,
+            IllegalSchedule         ,
+            CtxSwtchOntoSelf        ,
+            CtxSwtchWrongContext    ,
+            CtxSwtchFailed          ,
+            StackCorruptionDetected ,
+            InvalidSupervisorCall   ,
+            InvalidOperation        ,
+            Impossible              ,
         }
 
         //
@@ -58,6 +67,36 @@ namespace Microsoft.Zelig.Runtime
         public static void Raise( StopCode code )
         {
             Device.Instance.ProcessBugCheck( code );
+        }
+
+        public static void Log(string format)
+        {
+            Device.Instance.ProcessLog(format);
+        }
+
+        public static void Log(string format, int p1)
+        {
+            Device.Instance.ProcessLog(format, p1);
+        }
+
+        public static void Log(string format, int p1, int p2)
+        {
+            Device.Instance.ProcessLog(format, p1, p2);
+        }
+
+        public static void Log(string format, int p1, int p2, int p3)
+        {
+            Device.Instance.ProcessLog(format, p1, p2, p3);
+        }
+
+        public static void Log(string format, int p1, int p2, int p3, int p4)
+        {
+            Device.Instance.ProcessLog(format, p1, p2, p3, p4);
+        }
+
+        public static void Log(string format, int p1, int p2, int p3, int p4, int p5)
+        {
+            Device.Instance.ProcessLog(format, p1, p2, p3, p4, p5);
         }
 
         //--//

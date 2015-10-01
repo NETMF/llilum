@@ -32,7 +32,7 @@ namespace System.Threading
     using System.Security;
     using System.Threading;
 ////using System.Runtime.Remoting;
-////using System.Security.Permissions;
+    using System.Security.Permissions;
 ////using Microsoft.Win32;
     using System.Runtime.CompilerServices;
     using System.Runtime.ConstrainedExecution;
@@ -334,7 +334,7 @@ namespace System.Threading
 ////                                   NativeOverlapped* pOVERLAP // ptr to OVERLAP structure
 ////                                   );
 
-////[HostProtection( Synchronization = true, ExternalThreading = true )]
+    [HostProtection( Synchronization = true, ExternalThreading = true )]
     public static class ThreadPool
     {
 ////    [SecurityPermissionAttribute( SecurityAction.Demand, ControlThread = true )]

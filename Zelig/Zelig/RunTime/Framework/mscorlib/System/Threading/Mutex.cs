@@ -17,7 +17,7 @@ namespace System.Threading
     using System;
     using System.Threading;
     using System.Runtime.CompilerServices;
-////using System.Security.Permissions;
+    using System.Security.Permissions;
 ////using System.IO;
 ////using Microsoft.Win32;
 ////using Microsoft.Win32.SafeHandles;
@@ -28,7 +28,7 @@ namespace System.Threading
 ////using System.Security;
 ////using System.Security.AccessControl;
 
-////[HostProtection( Synchronization = true, ExternalThreading = true )]
+    [HostProtection( Synchronization = true, ExternalThreading = true )]
     public sealed class Mutex : WaitHandle
     {
 ////    static bool dummyBool;

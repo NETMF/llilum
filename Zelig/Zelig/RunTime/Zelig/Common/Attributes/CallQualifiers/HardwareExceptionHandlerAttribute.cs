@@ -23,6 +23,11 @@ namespace Microsoft.Zelig.Runtime
         Interrupt           ,
         FastInterrupt       ,
         SoftwareInterrupt   ,
+
+        NMI                 ,
+        Fault               , 
+        Service             , 
+        Debug               , 
     }
 
     [TypeSystem.WellKnownType( "Microsoft_Zelig_Runtime_HardwareExceptionHandlerAttribute" )]

@@ -21,21 +21,20 @@
     <ProjectName>Native</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  
   <!-- Supported platform property sheets -->
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <Import Project="$(LlilumApplicationTypeDir)Platforms\*.props" />
+    <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_LPC1768.props" />
+    <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_K64F.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <Import Project="$(LlilumApplicationTypeDir)Platforms\*.props" />
+    <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_LPC1768.props" />
+    <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_K64F.props" />
   </ImportGroup>
-
   <!-- General Llilum Settings -->
   <PropertyGroup Label="Llilum" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
   </PropertyGroup>
   <PropertyGroup Label="Llilum" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
   </PropertyGroup>
-
   <!-- Platform specific options -->
   <!-- LPC1768 -->
   <PropertyGroup Label="Llilum" Condition="'$(LlilumBoardName)' == 'LPC1768'">
@@ -48,7 +47,7 @@
     <LlilumLinkLibDeps>$(LlilumLinkLibDepsLPC1768)</LlilumLinkLibDeps>
     <LlilumTargetBoardArchitecture>$(LlilumTargetBoardArchitectureLPC1768)</LlilumTargetBoardArchitecture>
   </PropertyGroup>
-  
+
   <!-- K64F -->
   <PropertyGroup Label="Llilum" Condition="'$(LlilumBoardName)' == 'K64F'">
     <LlilumClAdditionalOptions>$(LlilumClAdditionalOptionsK64F)</LlilumClAdditionalOptions>
@@ -123,10 +122,21 @@
     <ClCompile Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="InteropExports_clock.cpp" />
+    <ClCompile Include="InteropExports_core.cpp" />
+    <ClCompile Include="InteropExports_debug.cpp" />
+    <ClCompile Include="InteropExports_gpio.cpp" />
+    <ClCompile Include="InteropExports_i2c.cpp" />
+    <ClCompile Include="InteropExports_mem.cpp" />
+    <ClCompile Include="InteropExports_nvic.cpp" />
+    <ClCompile Include="InteropExports_spi.cpp" />
+    <ClCompile Include="InteropExports_system_timer.cpp" />
+    <ClCompile Include="InteropExports_systick.cpp" />
+    <ClCompile Include="InteropExports_threading.cpp" />
   </ItemGroup>
-  <!--Uncomment to Reference to CS Project-->
-
+  <ItemGroup>
+    <ClInclude Include="helpers.h" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Managed\Managed.csproj">
       <Project>{$guid1$}</Project>
@@ -134,9 +144,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="mbed_simple.FrontEndConfig2" />
-    <None Include="Llilum.props" />
-    <None Include="debug.bat" />
+    <None Include="mbed_simple.FrontEndConfig" />
+    <None Include="mbed_simple_LPC1768.FrontEndConfig" />
+    <None Include="mbed_simple_K64F.FrontEndConfig" />
   </ItemGroup>
 
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

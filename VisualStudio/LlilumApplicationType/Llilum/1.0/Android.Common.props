@@ -190,6 +190,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
   <ImportGroup Label="PropertySheets">
     <Import Condition="'$(UseOfSTL)' != ''" Project="$(MSBuildThisFileDirectory)Android.STL.props" />
+    <Import Condition="Exists('$(MSBuildThisFileDirectory)Platforms\Llilum_$(LlilumBoardName).props')" Project="$(MSBuildThisFileDirectory)Platforms\Llilum_$(LlilumBoardName).props" />
+    <Import Condition="'$(UseMbedRTOS)'=='true'" Project="$(MSBuildThisFileDirectory)Platforms\mbed-rtos.props" />
   </ImportGroup>
 
   <PropertyGroup>

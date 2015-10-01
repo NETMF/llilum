@@ -21,6 +21,14 @@ namespace Microsoft.NohauLPC3180Loader
         {
         }
 
+        public override void EnableInterrupt( uint index )
+        {
+        }
+
+        public override void DisableInterrupt( uint index )
+        {
+        }
+
         public override void CauseInterrupt()
         {
         }

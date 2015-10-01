@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- add ARMASM specific task to the targets for building the input list to the linker and librarian -->
+  <PropertyGroup>
+    <ComputeLinkInputsTargets>
+      $(ComputeLinkInputsTargets);
+      ComputeARMASMOutput;
+    </ComputeLinkInputsTargets>
+    <ComputeLibInputsTargets>
+      $(ComputeLibInputsTargets);
+      ComputeARMASMOutput;
+    </ComputeLibInputsTargets>
+  </PropertyGroup>
+
+  <!-- Support IDE for building selected files only -->
+  <Target Name="SelectArmAssemble" DependsOnTargets="_SelectedFiles;SelectCustomBuild">
+    <ItemGroup Condition="'@(SelectedFiles)'!=''">
+      <ArmAssemble Remove="@(ArmAssemble)" Condition="'%(Identity)'!='@(SelectedFiles)'"/>
+      <ArmAssemble>
+        <MinimalRebuildFromTracking>false</MinimalRebuildFromTracking>
+      </ArmAssemble>
+    </ItemGroup>
+  </Target>
+
+  <!-- New target for running the ARM Assembler-->
+  <Target
+    Name="ArmAssemble"
+    BeforeTargets="$(ARMASMBeforeTargets)"
+    AfterTargets="$(ARMASMAfterTargets)"
+    Condition="'@(ArmAssemble)' != ''"
+    Outputs="%(ArmAssemble.ObjectFileName)"
+    Inputs="%(ArmAssemble.Identity);%(ArmAssemble.AdditionalDependencies);$(MSBuildProjectFile)"
+    DependsOnTargets="SelectArmAssemble"
+    >
+
+    <!-- support CPS t_logging -->
+    <ItemGroup>
+      <ArmAssemble_tlog Include="%(ArmAssemble.ObjectFileName)" Condition="'%(ArmAssemble.ObjectFileName)' != '' and '%(ArmAssemble.ExcludedFromBuild)' != 'true'">
+        <Source>@(ArmAssemble, '|')</Source>
+      </ArmAssemble_tlog>
+    </ItemGroup>
+
+    <!-- generate message in build output for what it is we are doing (from ExecutionDescription Metadata in the XAML)-->
+    <Message Importance="High" Text="%(ArmAssemble.ExecutionDescription)" />
+    <Error Condition="'%(ArmAssemble.ObjectFileName)'==''" Code="AS001" Text="ObjectFileName item metadata must be specified for assembly" />
+    
+    <!-- generate tlog -->
+    <WriteLinesToFile
+      Condition="'@(ArmAssemble_tlog)' != '' and '%(ArmAssemble_tlog.ExcludedFromBuild)' != 'true'"
+      File="$(TLogLocation)$(ASSEMBLER).write.1.tlog"
+      Lines="^%(ArmAssemble_tlog.Source);@(ArmAssemble_tlog->'%(Fullpath)')"/>
+    
+    <!-- TODO: replace Exec task with a XAML task factory or manually created task for the assembler once we support full options etc... in the UI -->
+    <Exec Command='"$(ASSEMBLER)" %(ArmAssemble.AdditionalOptions) -o "%(ArmAssemble.ObjectFileName)" "%(ArmAssemble.FullPath)"' ContinueOnError='false' />
+  </Target>
+
+  <!-- Add the object files generated to the list of inputs for the linker or librarian, as appropriate-->
+  <Target
+    Name="ComputeARMASMOutput"
+    Condition="'@(ArmAssemble)' != ''">
+    <ItemGroup>
+      <Link Include="@(ArmAssemble->Metadata('ObjectFileName')->Distinct()->ClearMetadata())" Condition="'%(ArmAssemble.ExcludedFromBuild)' != 'true'"/>
+      <Lib Include="@(ArmAssemble->Metadata('ObjectFileName')->Distinct()->ClearMetadata())" Condition="'%(ArmAssemble.ExcludedFromBuild)' != 'true'"/>
+    </ItemGroup>
+  </Target>
+</Project>

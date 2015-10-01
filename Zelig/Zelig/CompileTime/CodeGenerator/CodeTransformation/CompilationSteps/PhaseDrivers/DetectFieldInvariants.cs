@@ -148,6 +148,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
                                                         {
                                                             array.SetValue(Convert.ChangeType(1, tElement), 0);
                                                         }
+                                                        else if(size > 0)
+                                                        {
+                                                            array.SetValue(Convert.ChangeType(1, tElement), 0);
+                                                        }
                                                     }
                                                 }
 

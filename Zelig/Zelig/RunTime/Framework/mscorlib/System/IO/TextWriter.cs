@@ -139,7 +139,7 @@ namespace System.IO
         }
 
 
-////    [HostProtection( Synchronization = true )]
+        [HostProtection( Synchronization = true )]
         public static TextWriter Synchronized( TextWriter writer )
         {
             if(writer == null)

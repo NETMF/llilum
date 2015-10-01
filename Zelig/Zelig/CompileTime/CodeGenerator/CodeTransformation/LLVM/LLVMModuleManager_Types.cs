@@ -10,7 +10,7 @@ namespace Microsoft.Zelig.LLVM
     using IR = Microsoft.Zelig.CodeGeneration.IR;
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
-    public partial class LLVMModuleManager
+    public partial class LLVMModuleManager : IModuleManager
     {
         public void ConvertTypeLayoutsToLLVM( )
         {
@@ -253,5 +253,19 @@ namespace Microsoft.Zelig.LLVM
             return m_module.GetOrInsertFunctionType( GetFullMethodName( mr ) + "_func_signature", retType, args );
         }
 
+        string IModuleManager.GetFullNameFor( TS.MethodRepresentation method ) => GetFullMethodName( method );
+
+        _Type IModuleManager.LookupNativeTypeFor( TS.TypeRepresentation tr ) => GetOrInsertType( tr );
+
+        Debugging.DebugInfo IModuleManager.GetDebugInfoFor( TS.MethodRepresentation method )
+        {
+            Debugging.DebugInfo retVal;
+            if( m_debugInfoForMethods.TryGetValue( method, out retVal ) )
+                return retVal;
+
+            return DummyDebugInfo;
+        }
+
+        static Debugging.DebugInfo DummyDebugInfo = new Debugging.DebugInfo( string.Empty, 0, 0, 0, 0 );
     }
 }

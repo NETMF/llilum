@@ -33,9 +33,8 @@ typedef struct LLVMOpaqueMetadata *LLVMMetadataRef;
 // values, and the these bindings expose all of the LLVM attributes, some of which
 // have values >= 1<<32.
 
-void LLVMAddFunctionAttr2(LLVMValueRef Fn, uint64_t PA);
-uint64_t LLVMGetFunctionAttr2(LLVMValueRef Fn);
-void LLVMRemoveFunctionAttr2(LLVMValueRef Fn, uint64_t PA);
+void LLVMAddFunctionAttr2(LLVMValueRef Fn, uint32_t Kind, uint64_t Value);
+void LLVMRemoveFunctionAttr2(LLVMValueRef Fn, uint32_t Kind);
 
 LLVMMetadataRef LLVMConstantAsMetadata(LLVMValueRef Val);
 LLVMMetadataRef LLVMMDString2(LLVMContextRef C, const char *Str, unsigned SLen);
@@ -46,6 +45,9 @@ void LLVMAddNamedMetadataOperand2(LLVMModuleRef M, const char *name, LLVMMetadat
 void LLVMSetMetadata2(LLVMValueRef Inst, unsigned KindID, LLVMMetadataRef MD);
 void LLVMMetadataReplaceAllUsesWith(LLVMMetadataRef MD, LLVMMetadataRef New);
 void LLVMSetCurrentDebugLocation2(LLVMBuilderRef Bref, unsigned Line, unsigned Col, LLVMMetadataRef Scope, LLVMMetadataRef InlinedAt);
+
+LLVMBool LLVMIsTemporary( LLVMMetadataRef M );
+LLVMBool LLVMIsResolved( LLVMMetadataRef M );
 
 #ifdef __cplusplus
 }

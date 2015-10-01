@@ -19,7 +19,7 @@ namespace System
     using System.IO;
     using System.Text;
     using System.Globalization;
-////using System.Security.Permissions;
+    using System.Security.Permissions;
 ////using Microsoft.Win32;
     using System.Runtime.CompilerServices;
     using System.Threading;
@@ -1529,8 +1529,8 @@ namespace System
 ////    {
 ////        return In.ReadLine();
 ////    }
-    
-////    [HostProtection( UI = true )]
+
+        [HostProtection( UI = true )]
         [MethodImpl( MethodImplOptions.InternalCall )]
         public static extern void WriteLine();
 ////    {
@@ -1566,8 +1566,8 @@ namespace System
 ////    {
 ////        Out.WriteLine( value );
 ////    }
-////
-////    [HostProtection( UI = true )]
+
+        [HostProtection( UI = true )]
         [MethodImpl( MethodImplOptions.InternalCall )]
         public extern static void WriteLine( double value );
 ////    {
@@ -1579,8 +1579,8 @@ namespace System
 ////    {
 ////        Out.WriteLine( value );
 ////    }
-////
-////    [HostProtection( UI = true )]
+
+        [HostProtection( UI = true )]
         [MethodImpl( MethodImplOptions.InternalCall )]
         public extern static void WriteLine( int value );
 ////    {
@@ -1606,37 +1606,36 @@ namespace System
 ////    {
 ////        Out.WriteLine( value );
 ////    }
-////
-////    [HostProtection( UI = true )]
+
+        [HostProtection( UI = true )]
         [MethodImpl( MethodImplOptions.InternalCall )]
         public extern static void WriteLine( Object value );
 ////    {
 ////        Out.WriteLine( value );
 ////    }
-    
-////    [HostProtection( UI = true )]
+
+        [HostProtection( UI = true )]
         [MethodImpl( MethodImplOptions.InternalCall )]
         public static extern void WriteLine( String value );
 ////    {
 ////        Out.WriteLine( value );
 ////    }
-    
-    
-////    [HostProtection( UI = true )]
+
+        [HostProtection( UI = true )]
         [MethodImpl( MethodImplOptions.InternalCall )]
         public static extern void WriteLine( String format, Object arg0 );
 ////    {
 ////        Out.WriteLine( format, arg0 );
 ////    }
-    
-////    [HostProtection( UI = true )]
+
+        [HostProtection( UI = true )]
         [MethodImpl( MethodImplOptions.InternalCall )]
         public static extern void WriteLine( String format, Object arg0, Object arg1 );
 ////    {
 ////        Out.WriteLine( format, arg0, arg1 );
 ////    }
-    
-////    [HostProtection( UI = true )]
+
+        [HostProtection( UI = true )]
         [MethodImpl( MethodImplOptions.InternalCall )]
         public static extern void WriteLine( String format, Object arg0, Object arg1, Object arg2 );
 ////    {
@@ -1671,9 +1670,8 @@ namespace System
 ////
 ////        Out.WriteLine( format, objArgs );
 ////    }
-////
-////
-////    [HostProtection( UI = true )]
+
+        [HostProtection( UI = true )]
         [MethodImpl( MethodImplOptions.InternalCall )]
         public static extern void WriteLine( String format, params Object[] arg );
 ////    {

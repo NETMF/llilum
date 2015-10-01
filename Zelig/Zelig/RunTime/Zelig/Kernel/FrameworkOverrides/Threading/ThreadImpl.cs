@@ -2,6 +2,9 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+
+#define ARMv7
+
 namespace Microsoft.Zelig.Runtime
 {
     using System;
@@ -46,6 +49,8 @@ namespace Microsoft.Zelig.Runtime
 
         private          KernelPerformanceCounter                     m_activeTime;
 
+        private          ReleaseReferenceHelper                       m_releaseReferenceHelper;
+
         //
         // HACK: We have a bug in the liveness of multi-pointer structure. We have to use a class instead.
         //
@@ -56,7 +61,7 @@ namespace Microsoft.Zelig.Runtime
         //
 
         [DiscardTargetImplementation]
-        public ThreadImpl( System.Threading.ThreadStart start ) : this( start, new uint[1024] ) 
+        public ThreadImpl( System.Threading.ThreadStart start ) : this( start, new uint[ ThreadManager.Instance.DefaultStackSize ] ) // move to configuration??
         {
         }
 
@@ -64,7 +69,7 @@ namespace Microsoft.Zelig.Runtime
         public ThreadImpl( System.Threading.ThreadStart start ,
                            uint[]                       stack )
         {
-            m_managedThreadId   = s_managedThreadId++;
+            m_managedThreadId   = (int)0x12340000 | s_managedThreadId++;
 
             m_start             = start;
             m_stack             = stack;
@@ -80,7 +85,7 @@ namespace Microsoft.Zelig.Runtime
             m_priority          = ThreadPriority.Normal;
 
             ThreadStart entrypoint = Entrypoint;
-
+            
             m_swappedOutContext.PopulateFromDelegate( entrypoint, m_stack );
         }
 
@@ -200,7 +205,13 @@ namespace Microsoft.Zelig.Runtime
 
         public void ReleasedProcessor()
         {
-            BugCheck.AssertInterruptsOff();
+            
+#if !ARMv7
+                //
+                // For ARMv7 we are using the async PendSV exception, which is delivered with ISRs enabled
+                //
+                BugCheck.AssertInterruptsOff();
+#endif
 
             m_activeTime.Stop();
 
@@ -212,7 +223,9 @@ namespace Microsoft.Zelig.Runtime
 
         public void AcquiredProcessor()
         {
+#if !ARMv7
             BugCheck.AssertInterruptsOff();
+#endif
 
             m_activeTime.Start();
         }
@@ -616,6 +629,19 @@ namespace Microsoft.Zelig.Runtime
             get
             {
                 return m_activeTime;
+            }
+        }
+
+        public ReleaseReferenceHelper ReleaseReference
+        {
+            get
+            {
+                if(m_releaseReferenceHelper == null)
+                {
+                    m_releaseReferenceHelper = new ReleaseReferenceHelper( );
+                }
+
+                return m_releaseReferenceHelper;
             }
         }
 

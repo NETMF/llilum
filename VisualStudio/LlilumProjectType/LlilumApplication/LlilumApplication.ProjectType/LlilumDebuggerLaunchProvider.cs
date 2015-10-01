@@ -49,15 +49,19 @@ namespace LlilumApplication
             return !string.IsNullOrEmpty(commandValue);
         }
 
-        public string CreateDebuggerFile(string workingDirectory, string executablePath, string gdbPath, string gdbArgs, string script)
+        public string CreateDebuggerFileIfNoneExist(string workingDirectory, string executablePath, string gdbPath, string gdbArgs, string script)
         {
             string debuggerFile = string.Format(DebuggerFileFormat, workingDirectory, "tmp_debug");
             
-            using (System.IO.StreamWriter file =
-                new System.IO.StreamWriter(debuggerFile))
+            if(!File.Exists(debuggerFile))
             {
-                file.WriteLine(string.Format(script, gdbPath, executablePath, gdbArgs));
+                using (System.IO.StreamWriter file =
+                new System.IO.StreamWriter(debuggerFile))
+                {
+                    file.WriteLine(string.Format(script, gdbPath, executablePath, gdbArgs));
+                }
             }
+            
             return debuggerFile;
         }
 
@@ -83,7 +87,7 @@ namespace LlilumApplication
             }
 
             // Create the temporary file for passing to the debug engine
-            string debuggerFile = CreateDebuggerFile(dir, executable, gdbPath, gdbArgs, debugScript);
+            string debuggerFile = CreateDebuggerFileIfNoneExist(dir, executable, gdbPath, gdbArgs, debugScript);
 
             settings.Options = string.Format(DebuggerOptionsFormat, debuggerFile);
             settings.LaunchOperation = DebugLaunchOperation.CreateProcess;
@@ -95,6 +99,9 @@ namespace LlilumApplication
 
             if(!string.IsNullOrEmpty(pyOcdPath))
             {
+                // Even though we did it in deploy, do it here just in case we go straight to debug
+                LlilumHelpers.TryKillPyocd();
+
                 ProcessStartInfo start = new ProcessStartInfo();
                 start.FileName = pyOcdPath;
                 start.Arguments = pyOcdArgs;

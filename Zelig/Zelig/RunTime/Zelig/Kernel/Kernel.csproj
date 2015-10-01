@@ -97,15 +97,22 @@
     <Compile Include="FrameworkOverrides_System\IO\Ports\BaseSerialStream.cs" />
     <Compile Include="FrameworkOverrides_System\IO\Ports\SerialStreamImpl.cs" />
     <Compile Include="FrameworkOverrides_System\IO\Ports\SerialPortImpl.cs" />
+    <Compile Include="FrameworkOverrides_Windows\Devices\Gpio\GpioControllerImpl.cs" />
+    <Compile Include="FrameworkOverrides_Windows\Devices\I2c\I2cDeviceImpl.cs" />
+    <Compile Include="FrameworkOverrides_Windows\Devices\Spi\SpiDeviceImpl.cs" />
     <Compile Include="GarbageCollectors\MarkAndSweepCollector.cs" />
+    <Compile Include="HardwareModel\HardwareProvider.cs" />
     <Compile Include="HardwareModel\TargetPlatform\AbstractMethodWrapper.cs" />
     <Compile Include="HardwareModel\TargetPlatform\ARMv5\ProcessorARMv5.cs" />
     <Compile Include="HardwareModel\TargetPlatform\ARMv5\ProcessorARMv5_ContextSwitch.cs" />
     <Compile Include="HardwareModel\TargetPlatform\ARMv7\InterruptsSafeHandle.cs" />
     <Compile Include="HardwareModel\TargetPlatform\ARMv7\ProcessorARMv7M.cs" />
     <Compile Include="HardwareModel\TargetPlatform\ARMv7\ProcessorARMv7M_ContextSwitch.cs" />
+    <Compile Include="HardwareModel\TargetPlatform\ARMv7_VFP\ProcessorARMv7M_VFP.cs" />
+    <Compile Include="HardwareModel\TargetPlatform\ARMv7_VFP\ProcessorARMv7M_VFP_ContextSwitch.cs" />
     <Compile Include="ManagedHeap\Finalizer.cs" />
     <Compile Include="ManagedHeap\GarbageCollectionExtensionHandler.cs" />
+    <Compile Include="ManagedHeap\ReleaseReferenceHelper.cs" />
     <Compile Include="SelfTest.cs" />
     <Compile Include="SystemServices\SerialPortsManager.cs" />
     <Compile Include="HardwareModel\Storage.cs" />
@@ -158,7 +165,9 @@
     <Compile Include="SystemServices\SchedulerTime.cs" />
     <Compile Include="SystemServices\GarbageCollectionManager.cs" />
     <Compile Include="SystemServices\MemoryManager.cs" />
-    <Compile Include="SystemServices\ThreadManager.cs" />
+    <Compile Include="SystemServices\Threading\ARMv5ThreadManager.cs" />
+    <Compile Include="SystemServices\Threading\ARMv7ThreadManager.cs" />
+    <Compile Include="SystemServices\Threading\ThreadManager.cs" />
     <Compile Include="SystemServices\TypeSystemManager.cs" />
     <Compile Include="TypeSystemManagers\DefaultTypeSystemManager.cs" />
   </ItemGroup>
@@ -187,6 +196,10 @@
       <Project>{186F31A3-EF89-4A25-B2D5-20060720AA01}</Project>
       <Name>TypeSystem</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Framework\Windows\Devices\Windows.Devices.csproj">
+      <Project>{dc8c38d7-780b-4b13-8ace-9050e39cc51c}</Project>
+      <Name>Windows.Devices</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

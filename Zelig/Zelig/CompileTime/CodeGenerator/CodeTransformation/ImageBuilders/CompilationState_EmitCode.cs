@@ -99,7 +99,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ImageBuilders
             //
             // Skip any meta-operators.
             //
-            if(op.IsMetaOperator)
+            if(op.IsMetaOperator && !(op is InitialValueOperator))
             {
                 return true;
             }

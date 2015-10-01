@@ -2,9 +2,21 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Llvm.NET.Values;
+using Llvm.NET;
+using Llvm.NET.Types;
+using Llvm.NET.DebugInfo;
 
 namespace Microsoft.Zelig.LLVM
 {
+    public enum OutputFormat
+    {
+        BitCodeBinary,
+        BitCodeSource,
+        TargetObjectFile,
+        TargetAsmSource
+    }
+
     public class _Module
     {
         public _Module( string assemblyName, uint nativeIntSize )
@@ -28,13 +40,14 @@ namespace Microsoft.Zelig.LLVM
 
         public _Type GetOrInsertFunctionType( string name, _Type returnType, List<_Type> argTypes )
         {
-            var llvmArgs = from argType in argTypes
-                           select argType.Impl.GetLLVMObjectForStorage( );
-
-            Llvm.NET.FunctionType funcType = Impl.LlvmContext.GetFunctionType( returnType.Impl.GetLLVMObjectForStorage( ), llvmArgs, false );
+            var llvmArgs = argTypes.Select( t => t.Impl.GetLLVMObjectForStorage( ) );
+            FunctionType funcType = Impl.LlvmContext.GetFunctionType( returnType.Impl.GetLLVMObjectForStorage( ), llvmArgs, false );
             TypeImpl timpl = TypeImpl.GetOrInsertTypeImpl( Impl, name, 0, funcType );
 
+            // Create Debug info version of the signature
+            var diArgTypes = argTypes.Select( t => t.Impl.DIType );
             timpl.FunctionArgs.AddRange( argTypes.Select( t => t.Impl ) );
+            timpl.DIType = DiBuilder.CreateSubroutineType( Impl.CurDiFile, 0, returnType.Impl.DIType, diArgTypes );
             return GetOrInsertType( timpl );
         }
 
@@ -42,8 +55,11 @@ namespace Microsoft.Zelig.LLVM
         {
             Debug.Assert( !underlyingType.Impl.GetLLVMObjectForStorage( ).IsVoid( ) );
 
-            Llvm.NET.PointerType ptrType = underlyingType.Impl.GetLLVMObjectForStorage( ).CreatePointerType( );
-            _Type retVal = GetOrInsertType( TypeImpl.GetOrInsertTypeImpl( Impl, name, Impl.GetPointerSize( ), ptrType ) );
+            PointerType ptrType = underlyingType.Impl.GetLLVMObjectForStorage( ).CreatePointerType( );
+            var sizeAndAlign = Impl.GetPointerSize( );
+            var typeImpl = TypeImpl.GetOrInsertTypeImpl( Impl, name, sizeAndAlign, ptrType );
+            typeImpl.DIType = DiBuilder.CreatePointerType( underlyingType.Impl.DIType, name, sizeAndAlign, sizeAndAlign );
+            _Type retVal = GetOrInsertType( typeImpl );
             retVal.Impl.SetValueTypeFlag( true );
             retVal.Impl.SetHasHeaderFlag( false );
             retVal.Impl.SetBoxedFlag( false );
@@ -53,21 +69,22 @@ namespace Microsoft.Zelig.LLVM
 
         public _Type GetOrInsertPointerType( _Type underlyingType )
         {
-            return GetOrInsertPointerType( $"{underlyingType.Impl.GetName()} *", underlyingType );
+            return GetOrInsertPointerType( $"{underlyingType.Impl.GetName()}*", underlyingType );
         }
 
         public _Type GetOrInsertBoxedType( string name, _Type headerType, _Type underlyingType )
         {
-            Llvm.NET.StructType structType = Impl.LlvmContext.CreateStructType( name
-                                                                              , true
-                                                                              , headerType.Impl.GetLLVMObject( )
-                                                                              , underlyingType.Impl.GetLLVMObjectForStorage( )
-                                                                              );
+            StructType structType = Impl.LlvmContext.CreateStructType( name
+                                                                     , true
+                                                                     , headerType.Impl.GetLLVMObject( )
+                                                                     , underlyingType.Impl.GetLLVMObjectForStorage( )
+                                                                     );
             var impl = TypeImpl.GetOrInsertTypeImpl( Impl
                                                    , name
                                                    , ( uint )( headerType.GetSizeInBits( ) + underlyingType.GetSizeInBitsForStorage( ) )
                                                    , structType
                                                    );
+            impl.DIType = DiBuilder.CreateReplaceableCompositeType( Tag.StructureType, name, DiGlobalScope, null, 0 );
             _Type retVal = GetOrInsertType( impl );
             retVal.Impl.SetValueTypeFlag( false );
             retVal.Impl.SetHasHeaderFlag( true );
@@ -80,6 +97,7 @@ namespace Microsoft.Zelig.LLVM
         {
             var arrayType = type.Impl.GetLLVMObjectForStorage( ).CreateArrayType( 0 );
             var impl = TypeImpl.GetOrInsertTypeImpl( Impl, $"MemoryArray of {type.Impl.GetName()}", ( uint )type.GetSizeInBitsForStorage( ), arrayType );
+            impl.DIType = DiBuilder.CreateArrayType( 0, 0, type.Impl.DIType, DiBuilder.CreateSubrange( 0, 0 ) );
             _Type retVal = GetOrInsertType( impl );
             retVal.Impl.SetValueTypeFlag( true );
             retVal.Impl.SetHasHeaderFlag( false );
@@ -103,11 +121,11 @@ namespace Microsoft.Zelig.LLVM
 
         public _Value GetIntConstant( _Type type, ulong v, bool isSigned )
         {
-            Llvm.NET.Constant val = Llvm.NET.ConstantInt.From( Impl.LlvmContext, type.Impl.GetSizeInBits(), v, isSigned );
+            Constant val = ConstantInt.From( Impl.LlvmContext, type.Impl.GetSizeInBits(), v, isSigned );
             string name = type.Impl.GetName( );
             if( name == "LLVM.System.IntPtr" || name == "LLVM.System.UIntPtr" )
             {
-                val = Llvm.NET.ConstantExpression.IntToPtrExpression( val, type.Impl.GetLLVMObject( ) );
+                val = ConstantExpression.IntToPtrExpression( val, type.Impl.GetLLVMObject( ) );
             }
 
             return new _Value( this, new ValueImpl( type.Impl, val, true ) );
@@ -116,14 +134,14 @@ namespace Microsoft.Zelig.LLVM
         public _Value GetFloatConstant( float c )
         {
             _Type t = GetType( "LLVM.System.Single" );
-            Llvm.NET.Value val = Llvm.NET.ConstantFP.From( Impl.LlvmContext, c );
+            Value val = ConstantFP.From( Impl.LlvmContext, c );
             return new _Value( this, new ValueImpl( t.Impl, val, true ) );
         }
 
         public _Value GetDoubleConstant( double c )
         {
             _Type t = GetType( "LLVM.System.Double" );
-            Llvm.NET.Value val = Llvm.NET.ConstantFP.From( Impl.LlvmContext, c );
+            Value val = ConstantFP.From( Impl.LlvmContext, c );
             return new _Value( this, new ValueImpl( t.Impl, val, true ) );
         }
 
@@ -138,32 +156,32 @@ namespace Microsoft.Zelig.LLVM
         // layers above this?
         public bool CheckIfAExtendsB( _Type a, _Type b )
         {
-            Llvm.NET.TypeRef tyA = a.Impl.GetLLVMObject();
-            Llvm.NET.TypeRef tyB = b.Impl.GetLLVMObject();
+            TypeRef tyA = a.Impl.GetLLVMObject();
+            TypeRef tyB = b.Impl.GetLLVMObject();
 
             // REVIEW:
             // While this is from the original C++ it seems a bit odd
             // given the name of this method...
             // A type is generally not considered an extension of itself
-            // ( It is possible the orignal semantic intent of this
+            // ( It is possible the original semantic intent of this
             // function is more along the lines of IsAssignmentCompatible(a,b) )
             if( tyA == tyB )
                 return true;
 
             if( tyA.IsStruct() && tyB.IsStruct( ) )
             {
-                var stA = ( Llvm.NET.StructType )tyA;
+                var stA = ( StructType )tyA;
 
                 if( stA.IsOpaque )
                     return false;
 
-                Llvm.NET.TypeRef tSuper = stA.Members[ 0 ];
+                TypeRef tSuper = stA.Members[ 0 ];
                 while( tSuper.IsStruct() )
                 {
                     if( tSuper == tyB )
                         return true;
 
-                    var stSuper = ( Llvm.NET.StructType )tSuper;
+                    var stSuper = ( StructType )tSuper;
                     if( stSuper.IsOpaque )
                         return false;
 
@@ -183,18 +201,18 @@ namespace Microsoft.Zelig.LLVM
             return new _Function( this, name, funcType );
         }
 
-        public Llvm.NET.Constant GetUCVStruct( _Type structType, List<Llvm.NET.Constant> structMembers, bool anon )
+        public Constant GetUCVStruct( _Type structType, List<Constant> structMembers, bool anon )
         {
-            List<Llvm.NET.Constant> fields = new List<Llvm.NET.Constant>( );
-            var llvmStructType = ( Llvm.NET.StructType )( structType.Impl.GetLLVMObject( ) );
+            List<Constant> fields = new List<Constant>( );
+            var llvmStructType = ( StructType )( structType.Impl.GetLLVMObject( ) );
             if( structMembers != null )
             {
-                foreach( Llvm.NET.Constant ucv in structMembers )
+                foreach( Constant ucv in structMembers )
                 {
                     var curVal = ucv;
                     var curType = llvmStructType.Members[ fields.Count ];
 
-                    //Zero initializer coersion shortcut:
+                    //Zero initializer coercion shortcut:
 
                     if( curVal.IsZeroValue )
                     {
@@ -204,7 +222,7 @@ namespace Microsoft.Zelig.LLVM
                     {
                         if( curType.IsPointer( ) && curVal.Type != curType )
                         {
-                            curVal = Llvm.NET.ConstantExpression.BitCast( curVal, curType );
+                            curVal = ConstantExpression.BitCast( curVal, curType );
                         }
                     }
 
@@ -212,10 +230,10 @@ namespace Microsoft.Zelig.LLVM
                 }
             }
 
-            Llvm.NET.Constant retVal;
+            Constant retVal;
             if( anon )
             {
-                retVal = Impl.LlvmContext.CreateConstantStruct( fields, true );
+                retVal = Impl.LlvmContext.CreateConstantStruct( true, fields );
             }
             else
             {
@@ -225,16 +243,16 @@ namespace Microsoft.Zelig.LLVM
             return retVal;
         }
 
-        public Llvm.NET.Constant GetUCVArray( _Type arrayMemberType, List<Llvm.NET.Constant> arrayMembers )
+        public Constant GetUCVArray( _Type arrayMemberType, List<Constant> arrayMembers )
         {
-            var members = new List<Llvm.NET.Constant>( );
-            Llvm.NET.TypeRef curType = arrayMemberType.Impl.GetLLVMObjectForStorage( );
+            var members = new List<Constant>( );
+            TypeRef curType = arrayMemberType.Impl.GetLLVMObjectForStorage( );
 
             if( arrayMembers != null )
             {
-                foreach( Llvm.NET.Constant ucv in arrayMembers )
+                foreach( Constant ucv in arrayMembers )
                 {
-                    Llvm.NET.Constant curVal = ucv;
+                    Constant curVal = ucv;
 
                     if( curType.IsPointer( ) && curVal.Type != curType )
                     {
@@ -242,36 +260,36 @@ namespace Microsoft.Zelig.LLVM
                         //Let's try to force it with a ptrtoint, inttotr
                         //curVal = ConstantExpr::getPtrToInt( curVal, llvm::IntegerType::get( _pimpl->GetLLVMObject( )->getContext( ), 32 ) );
                         //curVal = ConstantExpr::getIntToPtr( curVal, curType );
-                        curVal = Llvm.NET.ConstantExpression.BitCast( curVal, curType );
+                        curVal = ConstantExpression.BitCast( curVal, curType );
                     }
 
                     members.Add( curVal );
                 }
             }
 
-            return Llvm.NET.ConstantArray.From( curType, members );
+            return ConstantArray.From( curType, members );
         }
 
-        public Llvm.NET.Constant GetUCVInt( _Type type, ulong v, bool isSigned )
+        public Constant GetUCVInt( _Type type, ulong v, bool isSigned )
         {
-            return Llvm.NET.ConstantInt.From( type.Impl.GetLLVMObject( ), v, isSigned );
+            return ConstantInt.From( type.Impl.GetLLVMObject( ), v, isSigned );
         }
 
         //REVIEW: This smells fishy...
         // Both the NullPointer and ZeroInitialized variants are identical (even in the original C++)
         // This seems problematic as, at least in LLVM, there's a distinction between a NullValue
         // (e.g. all zero value of type T) and a NullPointer ( e.g. a value with Type T* and contents all zero)
-        public Llvm.NET.Constant GetUCVNullPointer( _Type type ) => type.Impl.GetLLVMObjectForStorage( ).GetNullValue( );
-        public Llvm.NET.Constant GetUCVZeroInitialized( _Type type ) => type.Impl.GetLLVMObjectForStorage( ).GetNullValue( );
+        public Constant GetUCVNullPointer( _Type type ) => type.Impl.GetLLVMObjectForStorage( ).GetNullValue( );
+        public Constant GetUCVZeroInitialized( _Type type ) => type.Impl.GetLLVMObjectForStorage( ).GetNullValue( );
 
-        public Llvm.NET.Constant GetUCVConstantPointerFromValue( _Value val ) => ( Llvm.NET.Constant )val.Impl.GetLLVMObject( );
+        public Constant GetUCVConstantPointerFromValue( _Value val ) => ( Constant )val.Impl.GetLLVMObject( );
 
-        public _Value GetGlobalFromUCV( _Type type, Llvm.NET.Constant ucv )
+        public _Value GetGlobalFromUCV( _Type type, Constant ucv, bool isConstant )
         {
             var name = $"G{GetMonotonicUniqueId( )}";
             var gv = Impl.GetLLVMObject().AddGlobal( ucv.Type, name );
-            gv.IsConstant = false;
-            gv.Linkage = Llvm.NET.Linkage.Internal;
+            gv.IsConstant = isConstant;
+            gv.Linkage = Linkage.Internal;
             gv.Initializer = ucv;
             return new _Value( this, new ValueImpl( type.Impl, gv, !type.IsValueType( ) ) );
         }
@@ -281,18 +299,18 @@ namespace Microsoft.Zelig.LLVM
             var name = $"G{GetMonotonicUniqueId( )}";
             var gv = Impl.GetLLVMObject().AddGlobal( type.Impl.GetLLVMObject( ), name );
             gv.IsConstant = false;
-            gv.Linkage = Llvm.NET.Linkage.Internal;
+            gv.Linkage = Linkage.Internal;
             return new _Value( this, new ValueImpl( type.Impl, gv, !type.IsValueType( ) ) );
         }
 
         public void CreateAlias( _Value val, string name )
         {
-            Llvm.NET.Value llvmVal = val.Impl.GetLLVMObject( );
-            var gv = llvmVal as Llvm.NET.GlobalObject;
+            Value llvmVal = val.Impl.GetLLVMObject( );
+            var gv = llvmVal as GlobalObject;
             if( gv != null )
             {
                 var alias = Impl.GetLLVMObject().AddAlias( gv, name );
-                alias.Linkage = Llvm.NET.Linkage.External;
+                alias.Linkage = Linkage.External;
             }
             else
             {
@@ -300,12 +318,28 @@ namespace Microsoft.Zelig.LLVM
             }
         }
 
-        public bool Compile( ) => Impl.Compile( );
+        public bool Compile( )
+        {
+            FinalizeDebugInfo( );
+            return Impl.Compile( );
+        }
 
-        public bool DumpToFile( string fileName, bool text ) => Impl.DumpToFile( fileName, text );
+        public bool DumpToFile( string fileName, OutputFormat format )
+        {
+            FinalizeDebugInfo( );
+            return Impl.DumpToFile( fileName, format );
+        }
+
+        public DebugInfoBuilder DiBuilder => Impl.DiBuilder;
+
+        public DIScope DiGlobalScope => Impl.DICompileUnit;
+
+        public void FinalizeDebugInfo( )
+        {
+            TypeImpl.FinalizeAllDebugInfo( );
+        }
 
         internal ModuleImpl Impl { get; }
-        readonly Dictionary<string, _Type> TypeNameMap = new Dictionary<string, _Type>( );
 
         static int GetMonotonicUniqueId( )
         {
@@ -319,49 +353,66 @@ namespace Microsoft.Zelig.LLVM
     {
         internal ModuleImpl( string assembly, uint nativeIntSize )
         {
-            // REVIEW: This is suspect...
-            // It initializes the LLVM system for the native
-            // target, which is the target of the host system
-            // this application is running on. For Zelig that
-            // is pretty much never what we want.... (This is
-            // what the original C++ code did so currently
-            // following the pattern during conversion)
-            Llvm.NET.StaticState.RegisterNative( );
+            StaticState.RegisterAll( );
 
             // REVIEW: Need to deal with how LLVM thinks about threads and context
             // and figure out how to map it to how Zelig system uses threads...
             // for now assuming the LLVM code gen is done on a single thread
             // and ignoring the issue of disposing the context.
-            LlvmContext = Llvm.NET.Context.CreateThreadContext( );
+            LlvmContext = Context.CreateThreadContext( );
+            var target = Target.FromTriple( "thumbv7m-none-eabi" );
+            TargetMachine = target.CreateTargetMachine( "thumbv7m-none-eabi"
+                                                      , string.Empty   // CPU
+                                                      , string.Empty   // features
+                                                      , CodeGenOpt.None // hard code no optimizations for easier debugging for now...
+                                                      , Reloc.Static
+                                                      , CodeModel.Default
+                                                      );
+
             Module = LlvmContext.CreateModule( assembly );
-            IrBuilder = new Llvm.NET.InstructionBuilder( );
+            Module.TargetTriple = TargetMachine.Triple;
+            Module.DataLayout = TargetMachine.TargetData.ToString( );
+
+            IrBuilder = new InstructionBuilder( );
             NativeIntSize = nativeIntSize;
 
-            Module.AddModuleFlag( Llvm.NET.ModuleFlagBehavior.Override, Llvm.NET.Module.DebugVersionValue, Llvm.NET.Module.DebugMetadataVersion );
-            DiBuilder = new Llvm.NET.DebugInfo.DebugInfoBuilder( Module );
+            Module.AddModuleFlag( ModuleFlagBehavior.Override, Module.DebugVersionValue, Module.DebugMetadataVersion );
+            DiBuilder = new DebugInfoBuilder( Module );
             SetCurrentDIFile( "out.bc" );
-            DiCompileUnit = DiBuilder.CreateCompileUnit( Llvm.NET.Dwarf.SourceLanguage.UserMin + 0xabc, "out.bc", "", "ZeligIR2LLVMIR", true, "", 0 );
+            DICompileUnit = DiBuilder.CreateCompileUnit( SourceLanguage.CSharp, "out.bc", "", "ZeligIR2LLVMIR", true, "", 0 );
         }
 
-        internal Llvm.NET.BasicBlock InsertBlock( Llvm.NET.Function func, string name)
+        internal BasicBlock InsertBlock( Function func, string name)
         {
             return func.AppendBasicBlock( name );
         }
 
-        internal bool DumpToFile( string filename, bool text )
+        internal bool DumpToFile( string filename, OutputFormat format )
         {
             DiBuilder.Finish( );
             try
             {
-                if( text )
+                switch( format )
                 {
-                    System.IO.File.WriteAllText( filename, Module.AsString( ) );
-                }
-                else
-                {
+                case OutputFormat.BitCodeBinary:
                     Module.WriteToFile( filename );
+                    return true;
+
+                case OutputFormat.BitCodeSource:
+                    System.IO.File.WriteAllText( filename, Module.AsString( ) );
+                    return true;
+
+                case OutputFormat.TargetObjectFile:
+                    TargetMachine.EmitToFile( Module, filename, CodeGenFileType.ObjectFile );
+                    return true;
+
+                case OutputFormat.TargetAsmSource:
+                    TargetMachine.EmitToFile( Module, filename, CodeGenFileType.AssemblySource );
+                    return true;
+
+                default:
+                    return false;
                 }
-                return true;
             }
             catch( System.IO.IOException ex)
             {
@@ -396,30 +447,30 @@ namespace Microsoft.Zelig.LLVM
             return GetNativeIntSize( );
         }
 
-        internal Llvm.NET.Module GetLLVMObject( ) => Module;
+        internal Module GetLLVMObject( ) => Module;
 
         internal void SetCurrentDIFile( string fn )
         {
-            Llvm.NET.DebugInfo.File diFile;
-            if( !DiFiles.TryGetValue( fn, out diFile ) )
+            DIFile DIFile;
+            if( !DiFiles.TryGetValue( fn, out DIFile ) )
             {
-                diFile = DiBuilder.CreateFile( fn );
-                DiFiles.Add( fn, diFile );
+                DIFile = DiBuilder.CreateFile( fn );
+                DiFiles.Add( fn, DIFile );
             }
 
-            CurDiFile = diFile;
+            CurDiFile = DIFile;
         }
 
-        internal Llvm.NET.DebugInfo.SubProgram GetDISubprogram( string fn )
+        internal DISubProgram GetDISubprogram( string fn )
         {
-            Llvm.NET.DebugInfo.SubProgram retVal;
+            DISubProgram retVal;
             if( DiSubPrograms.TryGetValue( fn, out retVal ) )
                 return retVal;
 
             return null;
         }
 
-        internal void SetDISubprogram( string fn, Llvm.NET.DebugInfo.SubProgram disub )
+        internal void SetDISubprogram( string fn, DISubProgram disub )
         {
             if( !DiSubPrograms.ContainsKey( fn ) )
             {
@@ -427,16 +478,19 @@ namespace Microsoft.Zelig.LLVM
             }
         }
 
-        internal Llvm.NET.Context LlvmContext { get; }
-        Llvm.NET.Module Module;
-        Llvm.NET.InstructionBuilder IrBuilder;
+        internal Context LlvmContext { get; }
+        Module Module;
+        InstructionBuilder IrBuilder;
         uint NativeIntSize;
 
-        internal Llvm.NET.DebugInfo.DebugInfoBuilder DiBuilder { get; }
+        internal DebugInfoBuilder DiBuilder { get; }
 
-        Llvm.NET.DebugInfo.CompileUnit DiCompileUnit;
-        internal Llvm.NET.DebugInfo.File CurDiFile;
-        Dictionary<string, Llvm.NET.DebugInfo.File> DiFiles = new Dictionary<string, Llvm.NET.DebugInfo.File>( );
-        Dictionary<string, Llvm.NET.DebugInfo.SubProgram> DiSubPrograms = new Dictionary<string, Llvm.NET.DebugInfo.SubProgram>( );
+        internal DICompileUnit DICompileUnit { get; }
+
+        internal TargetMachine TargetMachine { get; }
+
+        internal DIFile CurDiFile;
+        readonly Dictionary<string, DIFile> DiFiles = new Dictionary<string, DIFile>( );
+        readonly Dictionary<string, DISubProgram> DiSubPrograms = new Dictionary<string, DISubProgram>( );
     }
 }

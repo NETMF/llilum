@@ -60,7 +60,7 @@
     <Reference Include="Microsoft.MIDebugEngine">
       <HintPath>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\MDD\Debugger\Microsoft.MIDebugEngine.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.ComponentModelHost" />
+    <Reference Include="Microsoft.VisualStudio.ComponentModelHost, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Composition, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.VisualStudio.Composition.14.0.50715-pre\lib\net451\Microsoft.VisualStudio.Composition.dll</HintPath>
       <Private>True</Private>
@@ -152,6 +152,7 @@
   <ItemGroup>
     <Compile Include="LlilumDebuggerLaunchProvider.cs" />
     <Compile Include="LlilumDeployProvider.cs" />
+    <Compile Include="LlilumHelpers.cs" />
     <Compile Include="MyConfiguredProject.cs" />
     <Compile Include="MyUnconfiguredProject.cs" />
     <Compile Include="ProjectProperties.cs" />

@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Llvm.NET;
+using Llvm.NET.Types;
 using System.Linq;
+using Llvm.NET.DebugInfo;
 
 namespace Microsoft.Zelig.LLVM
 {
@@ -45,7 +48,7 @@ namespace Microsoft.Zelig.LLVM
         public bool IsPointer( ) => Impl.GetLLVMObjectForStorage( ).IsPointer();
         public bool IsPointerPointer( )
         {
-            return Impl.GetLLVMObject( ).IsPointer && ( ( Llvm.NET.PointerType )Impl.GetLLVMObject() ).ElementType.IsPointer;
+            return Impl.GetLLVMObject( ).IsPointer && ( ( PointerType )Impl.GetLLVMObject() ).ElementType.IsPointer;
         }
         public bool IsStruct( ) => Impl.GetLLVMObjectForStorage( ).IsStruct();
 
@@ -74,18 +77,23 @@ namespace Microsoft.Zelig.LLVM
         private bool IsBoxedFlag;
         private string Name;
         private uint SizeInBits;
-        private readonly Llvm.NET.TypeRef LlvmType;
+        private readonly TypeRef LlvmType;
         private ModuleImpl Owner;
 
-        internal List<TypeField> Fields { get; } = new List<TypeField>();
+        internal DIType DIType { get; set; }
+
+        internal List<TypeField> Fields { get; } = new List<TypeField>( );
+
         internal List<TypeImpl> FunctionArgs { get; } = new List<TypeImpl>();
+
+        internal List<DIType> DiFields = new List<DIType>( );
 
         // REVIEW: Any reason these can't be consolidated into a single UnderlyingElementType?
         //         Not like you can have a boxed pointer...
         internal TypeImpl UnderlyingBoxedType;
         internal TypeImpl UnderlyingPointerType;
 
-        internal Llvm.NET.TypeRef GetLLVMObject( ) => LlvmType;
+        internal TypeRef GetLLVMObject( ) => LlvmType;
 
         private void PrivateInit( ModuleImpl module, string name, uint sizeInBits)
         {
@@ -99,7 +107,7 @@ namespace Microsoft.Zelig.LLVM
             UnderlyingPointerType = null;
         }
 
-        internal TypeImpl( ModuleImpl module, string name, uint sizeInBits, Llvm.NET.TypeRef typeRef )
+        internal TypeImpl( ModuleImpl module, string name, uint sizeInBits, TypeRef typeRef )
         {
             PrivateInit( module, name, sizeInBits );
             LlvmType = typeRef;
@@ -109,42 +117,61 @@ namespace Microsoft.Zelig.LLVM
         internal TypeImpl( ModuleImpl owner, string name, uint sizeInBits )
         {
             PrivateInit( owner, name, sizeInBits );
-            Llvm.NET.Module module = owner.GetLLVMObject( );
+            Module module = owner.GetLLVMObject( );
 
             Debug.Assert( module.GetTypeByName( name ) == null, "Trying to override TypeImpl" );
             switch( name )
             {
             case "System.Void":
+                DIType = owner.DiBuilder.CreateBasicType( name, 0, 0, 0 );
                 LlvmType = module.Context.VoidType;
                 break;
 
-            case "LLVM.System.Boolean":
             case "LLVM.System.Char":
+                DIType = owner.DiBuilder.CreateBasicType( name, sizeInBits, 0, DiTypeKind.UTF );
+                LlvmType = module.Context.GetIntType( ( uint )sizeInBits );
+                break;
+
+            case "LLVM.System.Boolean":
+                DIType = owner.DiBuilder.CreateBasicType( name, sizeInBits, 0, DiTypeKind.Boolean );
+                LlvmType = module.Context.GetIntType( ( uint )sizeInBits );
+                break;
+
             case "LLVM.System.SByte":
-            case "LLVM.System.Byte":
             case "LLVM.System.Int16":
-            case "LLVM.System.UInt16":
             case "LLVM.System.Int32":
-            case "LLVM.System.UInt32":
             case "LLVM.System.Int64":
+                DIType = owner.DiBuilder.CreateBasicType( name, sizeInBits, 0, DiTypeKind.Signed );
+                LlvmType = module.Context.GetIntType( ( uint )sizeInBits );
+                break;
+
+            case "LLVM.System.Byte":
+            case "LLVM.System.UInt16":
+            case "LLVM.System.UInt32":
             case "LLVM.System.UInt64":
+                DIType = owner.DiBuilder.CreateBasicType( name, sizeInBits, 0,  DiTypeKind.Unsigned );
                 LlvmType = module.Context.GetIntType( ( uint )sizeInBits );
                 break;
 
             case "LLVM.System.Single":
+                DIType = owner.DiBuilder.CreateBasicType( name, sizeInBits, 0, 0 );
                 LlvmType = module.Context.FloatType;
                 break;
 
             case "LLVM.System.Double":
+                DIType = owner.DiBuilder.CreateBasicType( name, sizeInBits, 0, 0 );
                 LlvmType = module.Context.DoubleType;
                 break;
 
             case "LLVM.System.IntPtr":
             case "LLVM.System.UIntPtr":
+                DIType = owner.DiBuilder.CreatePointerType( owner.DiBuilder.CreateBasicType( "System.Void", 0, 0, 0 ), name, sizeInBits, 0 );
                 LlvmType = module.Context.Int8Type.CreatePointerType( );
                 break;
 
             default:
+                // Creation of concrete DIType deferred until SetupFields when full field layout information is known
+                DIType = owner.DiBuilder.CreateReplaceableCompositeType(Tag.StructureType, name, owner.DICompileUnit, null, 0 );
                 LlvmType = module.Context.CreateStructType( name );
                 break;
             }
@@ -152,7 +179,7 @@ namespace Microsoft.Zelig.LLVM
             TypeImplsReverseLookupForLlVMTypes[ LlvmType ] = this;
         }
 
-        internal static TypeImpl GetOrInsertTypeImpl( ModuleImpl owner, string name, uint sizeInBits, Llvm.NET.TypeRef ty )
+        internal static TypeImpl GetOrInsertTypeImpl( ModuleImpl owner, string name, uint sizeInBits, TypeRef ty )
         {
             if( !TypeImplMap.ContainsKey( name ) )
             {
@@ -181,13 +208,13 @@ namespace Microsoft.Zelig.LLVM
             return null;
         }
 
-        internal static TypeImpl GetTypeImpl( Llvm.NET.TypeRef ty )
+        internal static TypeImpl GetTypeImpl( TypeRef ty )
         {
             TypeImpl retVal;
             if( TypeImplsReverseLookupForLlVMTypes.TryGetValue( ty, out retVal ) )
                 return retVal;
 
-            var pointerType = ty as Llvm.NET.PointerType;
+            var pointerType = ty as PointerType;
             if( pointerType != null && pointerType.ElementType.IsStruct( ) )
             {
                 return TypeImplsReverseLookupForLlVMTypes[ pointerType.ElementType ];
@@ -205,6 +232,36 @@ namespace Microsoft.Zelig.LLVM
                 return SizeInBits;
 
             return Owner.GetPointerSize( );
+        }
+
+        internal void FinalizeDebugInfo( )
+        {
+            if( !DIType.IsTemporary || DIType.IsResolved )
+                return;
+
+            if( UnderlyingPointerType != null )
+            {
+                var alignment = Owner.TargetMachine.TargetData.AbiAlignmentOf( LlvmType );
+                var bitSize = Owner.TargetMachine.TargetData.AbiSizeOf( LlvmType );
+                DIType = Owner.DiBuilder.CreatePointerType( UnderlyingPointerType.DIType
+                                                          , $"{UnderlyingPointerType.Name}*"
+                                                          , bitSize
+                                                          , alignment
+                                                          );
+            }
+            else
+            {
+                foreach( TypeField field in Fields )
+                {
+                    AddDiField( field );
+                }
+                var alignment = Fields.Count == 0 ? 0 : Owner.TargetMachine.TargetData.AbiAlignmentOf( LlvmType );
+                var bitSize = Fields.Count == 0 ? 0 : Owner.TargetMachine.TargetData.AbiSizeOf( LlvmType );
+
+                var concreteType = Owner.DiBuilder.CreateStructType( Owner.DICompileUnit, Name, null, 0, bitSize, alignment, 0, null, DiFields );
+                DIType.ReplaceAllUsesWith( concreteType );
+                DIType = concreteType;
+            }
         }
 
         internal void AddField( uint offset, TypeImpl type, bool forceInline, string name )
@@ -226,51 +283,82 @@ namespace Microsoft.Zelig.LLVM
             Fields[ i ] = f;
         }
 
-        private void AddTypeToStruct( ref int idx, IList<Llvm.NET.TypeRef> llvmFields, ref uint i )
+        private void AddTypeToStruct( TypeField field, IList<TypeRef> llvmFields, ref uint offset )
         {
-            Fields[ idx ].FinalIdx = ( uint )llvmFields.Count;
-            if( Fields[ idx ].ForceInline )
+            field.FinalIdx = ( uint )llvmFields.Count;
+            if( field.ForceInline )
             {
-                llvmFields.Add( Fields[ idx ].MemberType.GetLLVMObject( ) );
-                i = ( i - 1 ) + ( uint )Fields[ idx ].MemberType.GetSizeInBits() / 8;
+                llvmFields.Add( field.MemberType.GetLLVMObject( ) );
+                offset += field.MemberType.GetSizeInBits() / 8;
             }
             else
             {
-                llvmFields.Add( Fields[ idx ].MemberType.GetLLVMObjectForStorage( ) );
-                i = ( i - 1 ) + ( uint )Fields[ idx ].MemberType.GetSizeInBitsForStorage( ) / 8u;
+                llvmFields.Add( field.MemberType.GetLLVMObjectForStorage( ) );
+                offset += field.MemberType.GetSizeInBitsForStorage( ) / 8u;
             }
-            idx++;
         }
 
         internal void SetupFields( )
         {
-            if( !( GetLLVMObject( ) is Llvm.NET.StructType ) || Fields.Count == 0 )
-                return;
-
-            List<Llvm.NET.TypeRef> llvmFields = new List<Llvm.NET.TypeRef>( );
-            int idx = 0;
-
-            for( uint i = 0; i < SizeInBits / 8; ++i )
+            if( !( GetLLVMObject( ) is StructType ) )
             {
-                if( idx < Fields.Count && Fields[ idx ].Offset == i )
+                return;
+            }
+
+            List<TypeRef> llvmFields = new List<TypeRef>( );
+            int idx = 0;
+            uint offset = 0;
+            while ( offset < SizeInBits / 8 )
+            {
+                if( ( idx < Fields.Count ) && ( Fields[ idx ].Offset == offset ) )
                 {
-                    AddTypeToStruct( ref idx, llvmFields, ref i );
+                    AddTypeToStruct( Fields[ idx ], llvmFields, ref offset );
+                    ++idx;
                 }
                 else
                 {
+                    // Add explicit padding if necessary.
                     // TODO: Clean this up with a single byte array [ n x i8 ]
-                    // add padding with a byte member
                     llvmFields.Add( GetOrInsertTypeImpl( Owner, "System.Byte", 8 ).GetLLVMObject( ) );
+                    ++offset;
                 }
             }
 
-            for( ; idx < Fields.Count; ++idx )
+            // Add in any remaining fields beyond the expected structure size. These should generally be zero-sized,
+            // such as System.Object and the elements trailing strings/arrays.
+            for ( ; idx < Fields.Count; ++idx )
             {
-                uint i = 0;
-                AddTypeToStruct( ref idx, llvmFields, ref i );
+                AddTypeToStruct( Fields[ idx ], llvmFields, ref offset );
             }
 
-            ( ( Llvm.NET.StructType )LlvmType ).SetBody( true, llvmFields.ToArray( ) );
+            // BUGBUG: We don't yet handle explicit struct layout with overlapping fields.
+
+            (( StructType )LlvmType ).SetBody( true, llvmFields.ToArray( ) );
+        }
+
+        private void AddDiField( TypeField field )
+        {
+            var structType = LlvmType as StructType;
+            Debug.Assert( structType != null );
+            Debug.Assert( field.MemberType.DIType != null );
+            var memberDiType = field.MemberType.GetDiTypeForStack( );
+            if( field.ForceInline )
+                memberDiType = field.MemberType.DIType;
+
+            var alignment = field.MemberType.LlvmType.IsSized ? Owner.TargetMachine.TargetData.AbiAlignmentOf( field.MemberType.LlvmType ) : 0;
+            var bitSize = field.MemberType.LlvmType.IsSized ? Owner.TargetMachine.TargetData.AbiSizeOf( field.MemberType.LlvmType ) : 0;
+            var offset = Owner.TargetMachine.TargetData.OffsetOfElement( structType, field.FinalIdx );
+            var diField = Owner.DiBuilder.CreateMemberType( scope: Owner.DICompileUnit
+                                                          , name: field.Name
+                                                          , file: null
+                                                          , line: 0
+                                                          , bitSize: bitSize
+                                                          , bitAlign: alignment
+                                                          , bitOffset: offset
+                                                          , flags: 0 // TODO: protected/public/private,...
+                                                          , type: memberDiType
+                                                          );
+            DiFields.Add( diField );
         }
 
         internal void SetHasHeaderFlag( bool value ) => HasHeaderFlag = value;
@@ -280,12 +368,20 @@ namespace Microsoft.Zelig.LLVM
         internal bool IsValueType( ) => IsValueTypeFlag;
         internal string GetName( ) => Name;
 
-        internal Llvm.NET.TypeRef GetLLVMObjectForStorage( )
+        internal TypeRef GetLLVMObjectForStorage( )
         {
             if( IsValueTypeFlag )
                 return GetLLVMObject( );
 
             return GetLLVMObject( ).CreatePointerType( );
+        }
+
+        internal DIType GetDiTypeForStack( )
+        {
+            if( IsValueTypeFlag )
+                return DIType;
+
+            return Owner.DiBuilder.CreatePointerType( DIType, $"{Name}*", Owner.GetPointerSize( ), Owner.GetPointerSize( ) );
         }
 
         internal void Dump( )
@@ -295,7 +391,20 @@ namespace Microsoft.Zelig.LLVM
             Console.WriteLine( );
         }
 
+        internal static void FinalizeAllDebugInfo( )
+        {
+            if( DebugInfoFinalized )
+                return;
+
+            foreach( TypeImpl typeImpl in TypeImplMap.Values )
+            {
+                typeImpl.FinalizeDebugInfo( );
+            }
+            DebugInfoFinalized = true;
+        }
+
+        static bool DebugInfoFinalized;
         static Dictionary<string, TypeImpl> TypeImplMap = new Dictionary<string, TypeImpl>( );
-        static Dictionary<Llvm.NET.TypeRef, TypeImpl> TypeImplsReverseLookupForLlVMTypes = new Dictionary<Llvm.NET.TypeRef, TypeImpl>( );
+        static Dictionary<TypeRef, TypeImpl> TypeImplsReverseLookupForLlVMTypes = new Dictionary<TypeRef, TypeImpl>( );
     }
 }

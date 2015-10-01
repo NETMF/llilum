@@ -93,7 +93,7 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         public readonly MethodRepresentation Microsoft_Zelig_Runtime_AbstractMethodWrapper_Epilogue2;
 
         //--//
-
+        
         //
         // Helper Methods
         //

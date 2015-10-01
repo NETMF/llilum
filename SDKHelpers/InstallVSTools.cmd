@@ -6,7 +6,7 @@ IF NOT %2.==. GOTO SKIPREG
 
 :: Look for the LLVM reg key set by BuildllvmWithVS script
 setlocal ENABLEEXTENSIONS
-set KEY_NAME="HKEY_CURRENT_USER\SOFTWARE\LLVM\3.6.1"
+set KEY_NAME="HKEY_CURRENT_USER\SOFTWARE\LLVM\3.7.0"
 set VALUE_NAME=SrcRoot
 FOR /F "usebackq skip=2 tokens=1-2*" %%A IN (`REG QUERY %KEY_NAME% /v %VALUE_NAME% 2^>nul`) DO (
     set LLVMRegValue=%%C

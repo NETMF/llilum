@@ -10,7 +10,7 @@ namespace Microsoft.DeviceModels.Chipset.PXA27x.Runtime
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
     
-    public abstract class ThreadManager : RT.ThreadManager
+    public abstract class ThreadManager : RT.ARMv5ThreadManager
     {
         const ulong c_TimeQuantumMsec = 20;
 

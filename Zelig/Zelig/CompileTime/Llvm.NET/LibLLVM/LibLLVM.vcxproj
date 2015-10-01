@@ -30,7 +30,7 @@
     <ProjectGuid>{6C77A7DE-D464-430F-96A9-A64768763B5F}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>LibLLVM</RootNamespace>
-    <ProjectName>LibLLVM.3.6.1</ProjectName>
+    <ProjectName>LibLLVM</ProjectName>
     <TargetPlatformVersion>8.1</TargetPlatformVersion>
     <AdditionalDependencies>@(AllLlvmLibs);$(AdditionalDependencies)</AdditionalDependencies>
   </PropertyGroup>
@@ -137,7 +137,6 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>Win32;_DEBUG;_WINDOWS;_USRDLL;LIBLLVM_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4267;4244;4800;4291;4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -170,7 +169,6 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>Win32;NDEBUG;_WINDOWS;_USRDLL;LIBLLVM_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4267;4244;4800;4291;4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -189,7 +187,6 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>Win32;NDEBUG;_WINDOWS;_USRDLL;LIBLLVM_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <DisableSpecificWarnings>4267;4244;4800;4291;4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

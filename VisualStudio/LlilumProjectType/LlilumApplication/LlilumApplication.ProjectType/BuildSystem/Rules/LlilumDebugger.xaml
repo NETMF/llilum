@@ -46,19 +46,26 @@
         <Argument Property="LlilumDebuggerSolutionDirectory" />
     </StringProperty>
     <StringProperty Name="LlilumDebuggerOutputName" DisplayName="Llilum Binary Name"
-                Default="$(LlilumOutputName)"
-                Description="Name of the Llilup output binary.">
+                Default='"$(LlilumOutputName)"'
+                Description="Name of the Llilum output binary.">
         <Argument Property="LlilumDebuggerOutputName" />
     </StringProperty>
     <StringProperty Name="LlilumSDKPath" DisplayName="Llilum SDK Path"
-                Default="$(LlilumSDK)"
+                Default='"$(LlilumSDK)"'
                 Description="Llilum SDK Path">
         <Argument Property="LlilumSDKPath" />
     </StringProperty>
     <StringProperty Name="LlilumOutputBin" DisplayName="Llilum Output Bin"
-                Default="$(LlilumOutputBin)"
+                Default="$(OutDir)\$(LlilumOutputName).bin"
                 Description="Llilum Output Bin">
-        <Argument Property="LlilumOutputBin" />
+        <StringProperty.ValueEditors>
+            <ValueEditor EditorType="DefaultStringPropertyEditor" DisplayName="&lt;Edit...&gt;"/>
+            <ValueEditor EditorType="DefaultFilePropertyEditor" DisplayName="&lt;Browse...&gt;">
+                <ValueEditor.Metadata>
+                    <NameValuePair Name="Filters" Value="Bin Files (*.bin)|*.bin" />
+                </ValueEditor.Metadata>
+            </ValueEditor>
+        </StringProperty.ValueEditors>
     </StringProperty>
     <StringProperty Name="LlilumDebuggerWorkingDirectory" DisplayName="Working Directory"
                 Default="$(MSBuildProjectDirectory)"  
@@ -77,7 +84,7 @@
         <Argument Property="LlilumPyOcdArgs" />
     </StringProperty>
     <StringProperty Name="LlilumFlashToolPath" DisplayName="Llilum Flash Tool"
-                Default="$(LlilumSDK)tools\flash_tool.exe"
+                Default='"$(LlilumSDK)tools\flash_tool.exe"'
                 Description="Llilum Flash Tool">
         <Argument Property="LlilumFlashToolPath" />
     </StringProperty>

@@ -6,6 +6,8 @@
 
 //--//
 
+using Microsoft.Zelig.Runtime.TargetPlatform.ARMv7;
+
 namespace Microsoft.Zelig.Runtime
 {
     using System;
@@ -50,9 +52,13 @@ namespace Microsoft.Zelig.Runtime
         [TS.WellKnownMethod( "Bootstrap_Initialization" )]
         private static unsafe void Initialization()
         {
-           
 #if SELF_TEST
             SelfTest.SelfTest__Bootstrap( );
+#elif SELF_TEST_MEMORY
+            HardwareInitialization();
+            HeapInitialization();
+            SoftwareInitialization(Device.Instance.BootstrapStack);
+            SelfTest.SelfTest__Memory();
 #else
             //
             // This should only minimally setup hardware so that the system is functional.
@@ -60,10 +66,8 @@ namespace Microsoft.Zelig.Runtime
             // memory has been initialized and operated at the nominal rate, the CPU runs at
             // the correct clock frequency, etc.
             //
-
             HardwareInitialization();
-
-
+            
             //
             // This only initializes the heap.
             //

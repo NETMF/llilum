@@ -16,7 +16,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7.SmartHandles
         // State
         //
         
-        uint m_primask;
+        uint m_basepri;
 
         //
         // Constructor Methods
@@ -24,9 +24,9 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7.SmartHandles
 
         [DiscardTargetImplementation()]
         [Inline]
-        public InterruptState( uint primask )
+        public InterruptState( uint basepri )
         {
-            m_primask = primask;
+            m_basepri = basepri;
         }
 
         //
@@ -36,17 +36,17 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7.SmartHandles
         [Inline]
         public void Dispose()
         {
-            ProcessorARMv7M.SetMode( m_primask );
+            ProcessorARMv7M.DisableInterruptsWithPriorityLowerOrEqualTo( m_basepri );
         }
 
         [Inline]
         public void Toggle()
         {
-            uint primask = ProcessorARMv7M.GetPriMaskRegister( );
+            uint basepri = ProcessorARMv7M.GetBasePriRegister();
 
-            ProcessorARMv7M.SetMode( m_primask );
-            ProcessorARMv7M.Nop( );
-            ProcessorARMv7M.SetMode( primask );
+            ProcessorARMv7M.SetBasePriRegister( m_basepri );
+            ProcessorARMv7M.Nop               (           );
+            ProcessorARMv7M.SetBasePriRegister(   basepri );
         }
 
         //--//
@@ -60,7 +60,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7.SmartHandles
         [Inline]
         public static InterruptState DisableAll( )
         {
-            return new InterruptState( ProcessorARMv7M.DisableAllInterrupts( ) );
+            return new InterruptState( ProcessorARMv7M.DisableInterrupts( ) );
         }
 
         [Inline]
@@ -72,7 +72,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7.SmartHandles
         [Inline]
         public static InterruptState EnableAll( )
         {
-            return new InterruptState( ProcessorARMv7M.EnableAllInterrupts( ) );
+            return new InterruptState( ProcessorARMv7M.EnableInterrupts( ) );
         }
 
         //
@@ -82,22 +82,47 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7.SmartHandles
         [Inline]
         public uint GetPreviousState()
         {
-            return m_primask;
+            return m_basepri;
         }
 
         public HardwareException GetCurrentExceptionMode()
         {
-            return (HardwareException)GetPreviousState( );
+            ProcessorARMv7M.ISR_NUMBER ex = GetMode();
+            
+            if(ex == ProcessorARMv7M.ISR_NUMBER.ThreadMode)
+            {
+                return HardwareException.None;
+            }
 
-            //switch( m_cpsr & ProcessorLLVM.c_psr_mode )
-            //{
-            //    case ProcessorARMv4.c_psr_mode_FIQ  : return HardwareException.FastInterrupt;
-            //    case ProcessorARMv4.c_psr_mode_IRQ  : return HardwareException.Interrupt;
-            //    case ProcessorARMv4.c_psr_mode_SVC  : return HardwareException.SoftwareInterrupt;
-            //    case ProcessorARMv4.c_psr_mode_ABORT: return HardwareException.DataAbort;
-            //}
+            switch(ex)
+            {
+                case ProcessorARMv7M.ISR_NUMBER.Reset           : BugCheck.Assert( false, BugCheck.StopCode.IllegalMode ); break;
+                case ProcessorARMv7M.ISR_NUMBER.NMI             : return HardwareException.NMI; 
+                case ProcessorARMv7M.ISR_NUMBER.HardFault       : return HardwareException.Fault; 
+                case ProcessorARMv7M.ISR_NUMBER.MemManage       : return HardwareException.Fault;
+                case ProcessorARMv7M.ISR_NUMBER.BusFault        : return HardwareException.Fault;
+                case ProcessorARMv7M.ISR_NUMBER.UsageFault      : return HardwareException.Fault;
+                case ProcessorARMv7M.ISR_NUMBER.Reserved7       : BugCheck.Assert( false, BugCheck.StopCode.IllegalMode ); break;
+                case ProcessorARMv7M.ISR_NUMBER.Reserved8       : BugCheck.Assert( false, BugCheck.StopCode.IllegalMode ); break;
+                case ProcessorARMv7M.ISR_NUMBER.Reserved9       : BugCheck.Assert( false, BugCheck.StopCode.IllegalMode ); break;
+                case ProcessorARMv7M.ISR_NUMBER.Reserved10      : BugCheck.Assert( false, BugCheck.StopCode.IllegalMode ); break;
+                case ProcessorARMv7M.ISR_NUMBER.SVCall          : return HardwareException.Service;
+                case ProcessorARMv7M.ISR_NUMBER.ReservedForDebug: return HardwareException.Debug;
+                case ProcessorARMv7M.ISR_NUMBER.Reserved13      : BugCheck.Assert( false, BugCheck.StopCode.IllegalMode ); break;
+                case ProcessorARMv7M.ISR_NUMBER.PendSV          : return HardwareException.SoftwareInterrupt;
+                case ProcessorARMv7M.ISR_NUMBER.SysTick         : return HardwareException.SoftwareInterrupt;
+                    
+                default                                         : return HardwareException.Interrupt;
+            }
 
-            // return HardwareException.None;
+            return HardwareException.Interrupt;
+        }
+
+        //--//
+
+        private ProcessorARMv7M.ISR_NUMBER GetMode( )
+        {
+            return (ProcessorARMv7M.ISR_NUMBER)(ProcessorARMv7M.CMSIS_STUB_SCB__get_IPSR( ) & 0xFF);
         }
     }
 }

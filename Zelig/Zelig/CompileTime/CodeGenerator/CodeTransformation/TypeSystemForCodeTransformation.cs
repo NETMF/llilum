@@ -409,12 +409,49 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         public class LinearHierarchyBuilder
         {
             List<TypeRepresentation>        m_lst;
-            TypeSystemForCodeTransformation m_ts;
+            TypeSystemForCodeTransformation m_typeSystem;
 
-            public LinearHierarchyBuilder( List< TypeRepresentation > lst, TypeSystemForCodeTransformation ts )
+            public LinearHierarchyBuilder( List< TypeRepresentation > lst, TypeSystemForCodeTransformation typeSystem )
             {
                 m_lst = lst;
-                m_ts  = ts;
+                m_typeSystem  = typeSystem;
+
+                m_lst.RemoveAll( tr =>
+                {
+                    CustomAttributeRepresentation sfpf = tr.FindCustomAttribute( typeSystem.WellKnownTypes.Microsoft_Zelig_Runtime_SingletonFactoryPlatformFilterAttribute );
+                    if( sfpf != null )
+                    {
+                        object obj = sfpf.GetNamedArg( "PlatformFilter" );
+                        if( obj != null )
+                        {
+                            string platform = (string)obj;
+
+                            if( platform != typeSystem.PlatformAbstraction.PlatformName )
+                            {
+                                // This type is not an allowed extension for the current platform
+                                return true;
+                            }
+                        }
+                    }
+                    
+                    CustomAttributeRepresentation pf = tr.FindCustomAttribute( typeSystem.WellKnownTypes.Microsoft_Zelig_Runtime_SingletonFactoryPlatformFilterAttribute );
+                    if( pf != null )
+                    {
+                        object obj = pf.GetNamedArg( "ProductFilter" );
+                        if( obj != null )
+                        {
+                            string product = (string)obj;
+
+                            if( product != typeSystem.Product.FullName )
+                            {
+                                // This type is not an allowed extension for the current platform
+                                return true;
+                            }
+                        }
+                    }
+
+                    return false;
+                });
             }
 
             public TypeRepresentation Build()
@@ -428,7 +465,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 foreach( TypeRepresentation target in m_lst )
                 {
                     TypeRepresentation type;
-                    if( m_ts.IsSealedType( target, out type ) )
+                    if( m_typeSystem.IsSealedType( target, out type ) )
                     {
                         if(hierarchy.Count > 0)
                         {
@@ -502,7 +539,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         //
 
         public static readonly object Lock = new Object( );
-
+        
+        private Type                                                                                          m_activeProduct;
         private Abstractions.Platform                                                                         m_activePlatform;
         private Abstractions.CallingConvention                                                                m_activeCallingConvention;
 
@@ -1306,6 +1344,24 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         //
         // Access Methods
         //
+
+        public Type Product
+        {
+            get
+            {
+                return m_activeProduct;
+            }
+
+            set
+            {
+                if( m_activeProduct != null )
+                {
+                    throw TypeConsistencyErrorException.Create( "Cannot change Product after it's been set" );
+                }
+
+                m_activeProduct = value;
+            }
+        }
 
         public Abstractions.Platform PlatformAbstraction
         {

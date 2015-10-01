@@ -27,6 +27,8 @@ extern "C" {
                             );
 
     LLVMValueRef LLVMGetOrInsertFunction( LLVMModuleRef module, const char* name, LLVMTypeRef functionType );
+    char const* LLVMGetModuleName( LLVMModuleRef module );
+
 #ifdef __cplusplus
 }
 #endif

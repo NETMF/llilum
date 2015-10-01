@@ -77,6 +77,7 @@
     <Compile Include="Attributes\CompileTimeOptions\ImplicitInstanceAttribute.cs" />
     <Compile Include="Attributes\CompileTimeOptions\MemoryRequirementsAttribute.cs" />
     <Compile Include="Attributes\CompileTimeOptions\MemoryUsageAttribute.cs" />
+    <Compile Include="Attributes\OpenClasses\ProductFilterAttribute.cs" />
     <Compile Include="Attributes\CompileTimeOptions\SingletonFactoryAttribute.cs" />
     <Compile Include="Attributes\HardwareModeling\BitFieldPeripheralAttribute.cs" />
     <Compile Include="Attributes\HardwareModeling\BitFieldRegisterAttribute.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="Attributes\OpenClasses\DiscardTargetImplementationAttribute.cs" />
     <Compile Include="Attributes\OpenClasses\ExtendClassAttribute.cs" />
     <Compile Include="Attributes\OpenClasses\MergeWithTargetImplementationAttribute.cs" />
+    <Compile Include="Attributes\OpenClasses\SingletonFactoryPlatformFilter.cs" />
     <Compile Include="Attributes\TypeSystem\AllowCompileTimeIntrospectionAttribute.cs" />
     <Compile Include="Attributes\TypeSystem\AssumeReferencedAttribute.cs" />
     <Compile Include="Attributes\CompileTimeOptions\ConfigurationOptionAttribute.cs" />

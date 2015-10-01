@@ -40,6 +40,14 @@ namespace Microsoft.NohauLPC3180
             RT.SerialPortsManager.Instance.Initialize();
         }
 
+        public override void EnableInterrupt( uint index )
+        {
+        }
+
+        public override void DisableInterrupt( uint index )
+        {
+        }
+
         public override void CauseInterrupt()
         {
             Drivers.InterruptController.Instance.CauseInterrupt();
