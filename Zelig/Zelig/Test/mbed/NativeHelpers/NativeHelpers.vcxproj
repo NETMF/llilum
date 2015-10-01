@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\.gdbinit" />
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\build.bat" />
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\buildmake.bat" />
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\debug.bat" />
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\debugLPC1768.bat" />
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\deploy.bat" />
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\makefile" />
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\startup_LPC17xx.S" />
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\startup_MK64F12.S" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\..\..\LLVM2IR_results\mbed\simple\DebugOptions.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\LLVM2IR_results\mbed\simple\helpers.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{6367CACE-0511-485D-9AE5-698F7E600839}</ProjectGuid>
+    <Keyword>MakeFileProj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <NMakeBuildCommandLine>make __GNUC__ DEBUG=1 TARGET=%TARGET% HEAP_SIZE=0x6000</NMakeBuildCommandLine>
+    <NMakeOutput>NativeHelpers.bin</NMakeOutput>
+    <NMakeCleanCommandLine>make clean TARGET=%TARGET%</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>make clean all __GNUC__  DEBUG=1 TARGET=%TARGET% HEAP_SIZE=0x6000</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>__GNUC__;TARGET=LPC1768;DEBUG=1;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <IncludePath>$(SolutionDir)..\..\external\targets\mbed\;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X\TARGET_MBED_LPC1768;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)..\ZeligBuild\Target\bin\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\ZeligBuild\Target\obj\$(Configuration)\</IntDir>
+    <NMakeIncludeSearchPath>$(SolutionDir)..\..\external\targets\mbed\;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X\TARGET_MBED_LPC1768;$(IncludePath)</NMakeIncludeSearchPath>
+    <LibraryPath>$(SolutionDir)..\external\targets\mbed\TARGET_LPC1768\TOOLCHAIN_GCC_ARM;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <NMakeBuildCommandLine>make __GNUC__ DEBUG=1 TARGET=%TARGET% HEAP_SIZE=0x6000</NMakeBuildCommandLine>
+    <NMakeOutput>NativeHelpers.bin</NMakeOutput>
+    <NMakeCleanCommandLine>make clean TARGET=%TARGET%</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>make clean all __GNUC__  DEBUG=1 TARGET=%TARGET% HEAP_SIZE=0x6000</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>__GNUC__;TARGET=LPC1768;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <IncludePath>$(SolutionDir)..\..\external\targets\mbed\;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X\TARGET_MBED_LPC1768;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)..\ZeligBuild\Target\bin\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\ZeligBuild\Target\obj\$(Configuration)\</IntDir>
+    <NMakeIncludeSearchPath>$(SolutionDir)..\..\external\targets\mbed\;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X\TARGET_MBED_LPC1768;$(IncludePath)</NMakeIncludeSearchPath>
+    <LibraryPath>$(SolutionDir)..\external\targets\mbed\TARGET_LPC1768\TOOLCHAIN_GCC_ARM;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <LibraryPath>$(SolutionDir)..\external\targets\mbed\TARGET_LPC1768\TOOLCHAIN_GCC_ARM;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\..\external\targets\mbed\;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X\TARGET_MBED_LPC1768;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)..\ZeligBuild\Target\bin\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\ZeligBuild\Target\obj\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <LibraryPath>$(SolutionDir)..\external\targets\mbed\TARGET_LPC1768\TOOLCHAIN_GCC_ARM;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\..\external\targets\mbed\;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X\TARGET_MBED_LPC1768;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)..\ZeligBuild\Target\bin\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\ZeligBuild\Target\obj\$(Configuration)\</IntDir>
+    <NMakeIncludeSearchPath>$(SolutionDir)..\..\external\targets\mbed\;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X\TARGET_MBED_LPC1768;$(IncludePath)</NMakeIncludeSearchPath>
+    <NMakePreprocessorDefinitions>__GNUC__;TARGET=LPC1768;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <NMakeOutput>NativeHelpers.bin</NMakeOutput>
+    <NMakeCleanCommandLine>make clean TARGET=%TARGET%</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>make clean all __GNUC__  DEBUG=1 TARGET=%TARGET% HEAP_SIZE=0x6000</NMakeReBuildCommandLine>
+    <NMakeBuildCommandLine>make __GNUC__ DEBUG=1 TARGET=%TARGET% HEAP_SIZE=0x6000</NMakeBuildCommandLine>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

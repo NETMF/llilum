@@ -44,8 +44,8 @@ LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc -lnosys
 # LPC1768 settings
 ifeq ($(TARGET),LPC1768)
 
-ifndef HEAP_SIZE
-	AS_FLAGS += --defsym __HEAP_SIZE=0x4000
+ifndef $(HEAP_SIZE)
+    AS_FLAGS += --defsym __HEAP_SIZE=0x4000
 else
     AS_FLAGS += --defsym __HEAP_SIZE=$(HEAP_SIZE)
 endif

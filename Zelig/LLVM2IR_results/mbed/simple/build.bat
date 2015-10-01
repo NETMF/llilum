@@ -1,4 +1,5 @@
 @echo off
+setlocal enableDelayedExpansion
 
 IF /i "%LLVM_BIN%"=="" (
     ECHO LLVM_BIN is not defined. Please define LLVM_BIN to point to LLVM tools and binaries. 

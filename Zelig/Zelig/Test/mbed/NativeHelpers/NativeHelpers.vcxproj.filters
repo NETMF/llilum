@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\startup_LPC17xx.S" />
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\.gdbinit">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\build.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\buildmake.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\debug.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\debugLPC1768.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\deploy.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\makefile">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\startup_MK64F12.S" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="build&amp;debug">
+      <UniqueIdentifier>{982f765d-fe61-4e22-bc32-486e16a38851}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\..\..\LLVM2IR_results\mbed\simple\DebugOptions.xml">
+      <Filter>build&amp;debug</Filter>
+    </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\LLVM2IR_results\mbed\simple\helpers.h" />
+  </ItemGroup>
+</Project>
