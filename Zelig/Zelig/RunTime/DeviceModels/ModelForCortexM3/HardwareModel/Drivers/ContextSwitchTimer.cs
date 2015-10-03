@@ -19,6 +19,25 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
     public abstract class ContextSwitchTimer
     {
         public delegate void Callback( SysTickTimer sysTickTimer, ulong currentTime );
+        
+        /// <summary>
+        /// Max value that can be assigned for a one shot timer with no wrap around
+        /// </summary>
+        public const uint c_MaxCounterValue = 0x00FFFFFF;
+        /// <summary>
+        /// This constant is the representation of the overhead of invoking 
+        /// the timer handler. It needs to be trimmed. 
+        /// // TODO: automate and/or expose to system configuration
+        /// </summary>
+        const uint c_InvokeOverhead = 10; 
+        /// <summary>
+        /// This constant is the representation of the overhead of querying 
+        /// the current time. It needs to be trimmed.
+        /// // TODO: automate and/or expose to system configuration
+        /// </summary>
+        const uint c_QueryOverhead  = 10; 
+
+        //--//
 
         //
         // The SysTick timer could be used as a general timer, although that is not an appropriate usage
@@ -112,20 +131,7 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
         //
         // State
         //
-
-        /// <summary>
-        /// This constant is the representation of the overhead of invoking 
-        /// the timer handler. It needs to be trimmed. 
-        /// // TODO: automate and/or expose to system configuration
-        /// </summary>
-        const uint c_InvokeOverhead = 10; 
-        /// <summary>
-        /// This constant is the representation of the overhead of querying 
-        /// the current time. It needs to be trimmed.
-        /// // TODO: automate and/or expose to system configuration
-        /// </summary>
-        const uint c_QueryOverhead  = 10; 
-
+        
         //--//
         
         private SysTick      m_sysTick;
@@ -259,13 +265,7 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
         {
             m_accumulator += m_latestMatch;
 
-            //
-            // TODO: measure and trim invoke overhead
-            //
-            //if(m_enabled)
-            //{
-                m_SysTickTimer.Invoke( m_accumulator + c_InvokeOverhead );
-            //}
+            m_SysTickTimer.Invoke( m_accumulator + c_InvokeOverhead );
         }
 
         //--//

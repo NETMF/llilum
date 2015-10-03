@@ -319,7 +319,7 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
 
         public void CauseInterrupt()
         {
-            ProcessorARMv7M.RaiseSupervisorCall( ProcessorARMv7M.SVC_Code.SupervisorCall__LongJump ); 
+            NVIC.SetPending( (ProcessorARMv7M.IRQn_Type)Board.Instance.GetSystemTimerIRQNumber() ); 
         }
 
         public void ContinueUnderNormalInterrupt( RT.Peripherals.Continuation dlg )

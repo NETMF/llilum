@@ -245,9 +245,19 @@ extern "C"
         *((uint32_t volatile *)0xE000ED04) = ICSR;
     }
 
-    /*__STATIC_INLINE*/ int CUSTOM_STUB_SCB_IPSR_GetCurrentISRNumber()
+    /*__STATIC_INLINE*/ uint32_t CUSTOM_STUB_SCB_IPSR_GetCurrentISRNumber()
     {
         return __get_IPSR() & 0x000000FF;
+    }
+
+    /*__STATIC_INLINE*/ void CUSTOM_STUB_SCB_SCR_SetSystemControlRegister(uint32_t scr)
+    {
+        *((uint32_t volatile *)0xE000ED10) = scr;
+    }
+
+    /*__STATIC_INLINE*/ uint32_t CUSTOM_STUB_SCB_SCR_GetSystemControlRegister( )
+    {
+        return *((uint32_t volatile *)0xE000ED10);
     }
 
     /*__STATIC_INLINE*/ void CMSIS_STUB_POWER_WaitForEvent()
@@ -265,14 +275,19 @@ extern "C"
         __WFI();
     }
     
-    /*__STATIC_INLINE*/ __attribute__((naked)) __attribute__((aligned(8))) void CUSTOM_STUB_RaiseSupervisorCallForSwitchToContext()
+    /*__STATIC_INLINE*/ __attribute__((naked)) __attribute__((aligned(8))) void CUSTOM_STUB_RaiseSupervisorCallForLongJump()
     {
         __ASM volatile ("svc #17");
     }
 
-    /*__STATIC_INLINE*/ __attribute__((naked)) __attribute__((aligned(8))) void CUSTOM_STUB_RaiseSupervisorCallForRetireThread()
+    /*__STATIC_INLINE*/ __attribute__((naked)) __attribute__((aligned(8))) void CUSTOM_STUB_RaiseSupervisorCallForStartThreads()
     {
         __ASM volatile ("svc #18");
+    }
+
+    /*__STATIC_INLINE*/ __attribute__((naked)) __attribute__((aligned(8))) void CUSTOM_STUB_RaiseSupervisorCallForRetireThread()
+    {
+        __ASM volatile ("svc #19");
     }
 
     //--//

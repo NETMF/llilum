@@ -36,7 +36,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7.SmartHandles
         [Inline]
         public void Dispose()
         {
-            ProcessorARMv7M.DisableInterruptsWithPriorityLowerOrEqualTo( m_basepri );
+            ProcessorARMv7M.DisableInterruptsWithPriorityLevelHigherOrEqualTo( m_basepri );
         }
 
         [Inline]
@@ -96,21 +96,21 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7.SmartHandles
 
             switch(ex)
             {
-                case ProcessorARMv7M.ISR_NUMBER.Reset           : BugCheck.Assert( false, BugCheck.StopCode.IllegalMode ); break;
                 case ProcessorARMv7M.ISR_NUMBER.NMI             : return HardwareException.NMI; 
                 case ProcessorARMv7M.ISR_NUMBER.HardFault       : return HardwareException.Fault; 
                 case ProcessorARMv7M.ISR_NUMBER.MemManage       : return HardwareException.Fault;
                 case ProcessorARMv7M.ISR_NUMBER.BusFault        : return HardwareException.Fault;
                 case ProcessorARMv7M.ISR_NUMBER.UsageFault      : return HardwareException.Fault;
-                case ProcessorARMv7M.ISR_NUMBER.Reserved7       : BugCheck.Assert( false, BugCheck.StopCode.IllegalMode ); break;
-                case ProcessorARMv7M.ISR_NUMBER.Reserved8       : BugCheck.Assert( false, BugCheck.StopCode.IllegalMode ); break;
-                case ProcessorARMv7M.ISR_NUMBER.Reserved9       : BugCheck.Assert( false, BugCheck.StopCode.IllegalMode ); break;
-                case ProcessorARMv7M.ISR_NUMBER.Reserved10      : BugCheck.Assert( false, BugCheck.StopCode.IllegalMode ); break;
                 case ProcessorARMv7M.ISR_NUMBER.SVCall          : return HardwareException.Service;
                 case ProcessorARMv7M.ISR_NUMBER.ReservedForDebug: return HardwareException.Debug;
-                case ProcessorARMv7M.ISR_NUMBER.Reserved13      : BugCheck.Assert( false, BugCheck.StopCode.IllegalMode ); break;
                 case ProcessorARMv7M.ISR_NUMBER.PendSV          : return HardwareException.SoftwareInterrupt;
                 case ProcessorARMv7M.ISR_NUMBER.SysTick         : return HardwareException.SoftwareInterrupt;
+                case ProcessorARMv7M.ISR_NUMBER.Reset           :
+                case ProcessorARMv7M.ISR_NUMBER.Reserved7       :
+                case ProcessorARMv7M.ISR_NUMBER.Reserved8       :
+                case ProcessorARMv7M.ISR_NUMBER.Reserved9       :
+                case ProcessorARMv7M.ISR_NUMBER.Reserved10      :
+                case ProcessorARMv7M.ISR_NUMBER.Reserved13      : BugCheck.Assert( false, BugCheck.StopCode.IllegalMode ); break;
                     
                 default                                         : return HardwareException.Interrupt;
             }

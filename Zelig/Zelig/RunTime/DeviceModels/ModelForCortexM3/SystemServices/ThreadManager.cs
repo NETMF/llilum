@@ -44,51 +44,36 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Runtime
         
         public override void Activate()
         {
+            //
+            // Activate the quantum timer, when the Idle Thread will run will enable execptions, 
+            // thus letting the context switching to start 
+            //
+            RT.BugCheck.AssertInterruptsOff( );
+
             m_SysTickTimer = Drivers.ContextSwitchTimer.Instance.CreateTimer( TimeQuantumExpired );
-            m_SysTickTimer.Muted = false;
             m_SysTickTimer.Schedule();
         }
 
         public override void CancelQuantumTimer()
         {
-            //
-            // We will let the SysTick run forever, but 
-            // we do not want to hear from any ISR...
-            //
-            //m_SysTickTimer.Cancel();
-            m_SysTickTimer.Muted = true;
+            m_SysTickTimer.Cancel();
         }
 
         public override void SetNextQuantumTimer()
         {
-            //
-            // Normally we would use a value from the configuration, but for a Cortex-M the SysTick timer 
-            // is equipped to be efficiently scheduled for a context switch and does not need to be reloaed
-            // 
-            m_SysTickTimer.Muted = false;
+            m_SysTickTimer.Schedule( ); 
         }
 
         public override void SetNextQuantumTimer( RT.SchedulerTime nextTimeout )
         {
             ulong timeout = nextTimeout.Units;
-
-            if(timeout > 0x00FFFFFF)
+            
+            if(timeout > Drivers.ContextSwitchTimer.c_MaxCounterValue)
             {
                 RT.BugCheck.Assert( false, RT.BugCheck.StopCode.IllegalSchedule );
             }
 
-            //
-            // only reschedule if changed
-            //
-            if(m_SysTickTimer.RelativeTimeout != (uint)timeout)
-            {
-                m_SysTickTimer.RelativeTimeout = (uint)timeout;
-            }
-            
-            //
-            // Unmute 
-            //
-            m_SysTickTimer.Muted = false;
+            m_SysTickTimer.RelativeTimeout = (uint)timeout;
         }
         
         public override void TimeQuantumExpired()
@@ -106,11 +91,9 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Runtime
         
         //--//
 
-        private void TimeQuantumExpired( Drivers.ContextSwitchTimer.SysTickTimer sysTickTimer       ,
-                                         ulong                     currentTime )
+        private void TimeQuantumExpired( Drivers.ContextSwitchTimer.SysTickTimer sysTickTimer, ulong currentTime )
         {
             TimeQuantumExpired();
         }
-
     } 
 }

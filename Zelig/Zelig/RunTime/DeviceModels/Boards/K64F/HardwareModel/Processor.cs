@@ -17,6 +17,9 @@ namespace Microsoft.Zelig.K64F
         {
             public override unsafe void SwitchTo( )
             {
+                //
+                // BUGBUG: return to thread usign VFP state as well 
+                //
                 base.SwitchTo( ); 
             }
         }

@@ -41,7 +41,7 @@ extern "C"
 
 	/*__STATIC_INLINE*/ void CMSIS_STUB_NVIC_SetPendingIRQ(IRQn_Type IRQn)
 	{
-		NVIC_GetPendingIRQ(IRQn);
+		NVIC_SetPendingIRQ(IRQn);
 	}
 
 	/*__STATIC_INLINE*/ void CMSIS_STUB_NVIC_ClearPendingIRQ(IRQn_Type IRQn)

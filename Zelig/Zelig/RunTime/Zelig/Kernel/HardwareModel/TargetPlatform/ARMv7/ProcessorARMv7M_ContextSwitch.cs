@@ -193,9 +193,6 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
             public override unsafe void SwitchTo( )
             {
-                //
-                // Return to thread usign VFP state as well
-                //
                 ProcessorARMv7M.SetExcReturn( ProcessorARMv7M.c_MODE_RETURN__THREAD_PSP );
 
                 //
@@ -435,6 +432,11 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             //--//
             //--//
             //--//
+                       
+            private static unsafe void FirstLongJump( )
+            {
+                LongJump( ); 
+            }
             
             private static unsafe void LongJump( )
             {
@@ -692,6 +694,9 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 {
                     case SVC_Code.SupervisorCall__LongJump:
                         LongJump( );
+                        break;
+                    case SVC_Code.SupervisorCall__StartThreads:
+                        FirstLongJump( );
                         break;
                     case SVC_Code.SupervisorCall__RetireThread:
                         LongJumpForRetireThread( );

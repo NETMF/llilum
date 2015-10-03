@@ -326,7 +326,6 @@ namespace Microsoft.Zelig.Runtime
 
             if(mode == HardwareException.None)
             {
-
                 if(this.ShouldContextSwitch)
                 {
                     Peripherals.Instance.CauseInterrupt( );
@@ -450,6 +449,14 @@ namespace Microsoft.Zelig.Runtime
         protected void InsertInPriorityOrder( ThreadImpl thread )
         {
             //
+            // Idle thread must never enter the set of the ready threads
+            //
+            if(thread == m_idleThread)
+            {
+                return;
+            }
+
+            //
             // Insert in order.
             //
             var node = m_readyThreads.StartOfForwardWalk;
@@ -475,9 +482,11 @@ namespace Microsoft.Zelig.Runtime
             //BugCheck.Log( "!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
             //BugCheck.Log( "!!! Idle thread running !!!" );
             //BugCheck.Log( "!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
-            
-            ProcessorARMv7M.DisableInterruptsWithPriorityLowerOrEqualTo( ProcessorARMv7M.c_Priority__Lowest );
-            
+
+            ProcessorARMv7M.InitiateContextSwitch( );
+
+            SmartHandles.InterruptState.EnableAll( ); 
+             
             while(true)
             {
                 Peripherals.Instance.WaitForInterrupt();

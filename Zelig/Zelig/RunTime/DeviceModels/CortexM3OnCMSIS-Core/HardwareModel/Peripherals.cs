@@ -54,7 +54,8 @@ namespace Microsoft.CortexM3OnCMSISCore
 
         public override void CauseInterrupt()
         {
-            ProcessorARMv7M.InitiateContextSwitch( ); 
+            //ProcessorARMv7M.InitiateContextSwitch( ); 
+            Drivers.InterruptController.Instance.CauseInterrupt( ); 
         }
 
         public override void ContinueUnderNormalInterrupt(Continuation dlg)
@@ -64,14 +65,14 @@ namespace Microsoft.CortexM3OnCMSISCore
 
         public override void WaitForInterrupt()
         {
-#if ALLOW_PAUSE
+
             while (true)
             {
                 ProcessorARMv7M.WaitForEvent( );
             }
-#else
-            while(true) ;
-#endif
+            
+            //ProcessorARMv7M.InitiateContextSwitch( ); 
+            //while(true) ;
         }
 
         public override void ProcessInterrupt()

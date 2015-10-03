@@ -155,40 +155,40 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 #endif
         };
 
-        static void Main()
+        static void Main( )
         {
             int currentMode = 0;
             int count = 0;
-            
+
             var controller = GpioController.GetDefault();
             var pins = new GpioPin[pinNumbers.Length];
 
-            for (int i = 0; i < pinNumbers.Length; ++i)
+            for(int i = 0; i < pinNumbers.Length; ++i)
             {
                 GpioPin pin = controller.OpenPin(pinNumbers[i]);
 
                 // Start with all LEDs on.
-                pin.Write(GpioPinValue.High);
-                pin.SetDriveMode(GpioPinDriveMode.Output);
+                pin.Write( GpioPinValue.High );
+                pin.SetDriveMode( GpioPinDriveMode.Output );
 
-                pins[i] = pin;
+                pins[ i ] = pin;
             }
 
             var solitary = controller.OpenPin( threadPin );
-            solitary.SetDriveMode(GpioPinDriveMode.Output);
+            solitary.SetDriveMode( GpioPinDriveMode.Output );
 
             LedToggler[] blinkingModes = new LedToggler[3];
-            blinkingModes[0] = new LedTogglerSimultaneous(pins);
-            blinkingModes[1] = new LedTogglerSequential(pins);
-            blinkingModes[2] = new LedTogglerAlternate(pins);
+            blinkingModes[ 0 ] = new LedTogglerSimultaneous( pins );
+            blinkingModes[ 1 ] = new LedTogglerSequential( pins );
+            blinkingModes[ 2 ] = new LedTogglerAlternate( pins );
 
             var blinkingTimer = new ZeligSupport.Timer();
             var blinkingModeSwitchTimer = new ZeligSupport.Timer();
 
-            blinkingTimer.start();
-            blinkingModeSwitchTimer.start();
+            blinkingTimer.start( );
+            blinkingModeSwitchTimer.start( );
 
-#region SPI
+            #region SPI
 #if USE_GPIO
             // Get the device selector by friendly name
             string deviceSelector = SpiDevice.GetDeviceSelector("SPI0");
@@ -213,9 +213,9 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             byte[] writeBuffer2 = new byte[] { 0x1, 0x2, 0x3 };
             byte[] readBuffer = new byte[1];
 #endif
-#endregion
+            #endregion
 
-#region I2C
+            #region I2C
 #if USE_I2C
             //
             // I2C Init
@@ -236,7 +236,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             i2cReadWrite2[1] = 0x0;
             i2cDevice.Write(i2cReadWrite2);
 #endif
-#endregion
+            #endregion
 
             int pinState = 1;
             solitary.Write( (GpioPinValue)pinState );
@@ -247,14 +247,13 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             pinState = 0;
 
 #if (USE_THREADING)
-            var ev = new AutoResetEvent( false ); 
+            var ev = new AutoResetEvent( false );
 
             var solitaryBlinker = new Thread( delegate()
             {
                 while(true)
                 {
-                    //ev.WaitOne();
-                    Microsoft.Zelig.Support.mbed.Timer.wait_ms( 1000 ); 
+                    ev.WaitOne( 1000, false );
                     
                     solitary.Write( (GpioPinValue)pinState );
 
@@ -262,14 +261,19 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                 }
             } );
 
-            solitaryBlinker.Start();
+            solitaryBlinker.Start( );
+            
+            var solitaryAlerter = new System.Threading.Timer( ( obj ) =>
+            {
+                // blink 20 times very fast
+                int fastBlinks = 20;
+                while(fastBlinks-- > 0)
+                {
+                    ( (AutoResetEvent)obj).Set();
 
-            //var solitaryAlerter = new System.Threading.Timer( ( obj ) => { ((AutoResetEvent)obj).Set(); }, ev, 2000, 5000 );
-
-            //Microsoft.CortexM3OnMBED.Drivers.SystemTimer.Timer tm = null;
-            //tm =
-            //    Microsoft.CortexM3OnMBED.Drivers.SystemTimer.Instance.CreateTimer( ( timer, currentTime ) => { ev.Set( ); tm.RelativeTimeout = 5 * 1000* 1000; } );
-            //tm.RelativeTimeout = 5 * 1000 * 1000;
+                    Thread.Sleep( 50 );
+                }
+            }, ev, 2000, 5000 ); 
 #endif
             while(true)
             {

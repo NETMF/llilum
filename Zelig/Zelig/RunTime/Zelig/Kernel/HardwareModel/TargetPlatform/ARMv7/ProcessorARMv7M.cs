@@ -62,7 +62,8 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         public enum SVC_Code : byte
         {
             SupervisorCall__LongJump        = 0x11,
-            SupervisorCall__RetireThread    = 0x12,
+            SupervisorCall__StartThreads    = 0x12,
+            SupervisorCall__RetireThread    = 0x13,
         }
 
         //
@@ -73,8 +74,8 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         public const byte c_Priority__Highest               = 0x00000001;
         public const byte c_Priority__Lowest                = 0x000000FF;
         public const byte c_Priority__HigherThanAnyWeOwn    = 0x00000004;
-        public const byte c_Priority__SVCCall               = 0x00000005;
-        public const byte c_Priority__SystemTimer           = 0x00000006;
+        public const byte c_Priority__SVCCall               = 0x00000007;
+        public const byte c_Priority__SystemTimer           = 0x00000007;
         public const byte c_Priority__SysTick               = 0x00000007;
         public const byte c_Priority__PendSV                = 0x0000000E;
 
@@ -343,9 +344,17 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             //
             // Disable interrupts, but not faults 
             //
-            DisableInterrupts( ); 
-            
-            //EnableAllInterruptsWithPriority( c_Priority__Highest - 1 );
+            DisableInterrupts( );
+
+            //
+            // Enforce reset behavior: 
+            // - only enabled interrupts or events can wakeup the processor, disabled interrupts are excluded
+            // - sleep by turning off clock to main proc (not deep) 
+            // - do not sleep when returning to thread mode
+            //
+            SetSystemControlRegister(   c_SCR__SLEEPONEXIT__NO_SLEEP    |  
+                                        c_SCR__SLEEPDEEP__SLEEP         | 
+                                        c_SCR__SEVONPEND__ENONLY        ); 
             
             // Enforce 8 bytes alignment
             //
@@ -369,10 +378,13 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             switch(code)
             {
                 case SVC_Code.SupervisorCall__LongJump:
-                    CUSTOM_STUB_RaiseSupervisorCallForSwitchToContext( ); 
+                    CUSTOM_STUB_RaiseSupervisorCallForLongJump( );
                     break;
-                case SVC_Code.SupervisorCall__RetireThread:
-                    CUSTOM_STUB_RaiseSupervisorCallForRetireThread( ); 
+                case SVC_Code.SupervisorCall__StartThreads:
+                    CUSTOM_STUB_RaiseSupervisorCallForStartThreads( ); 
+                    break;
+                 case SVC_Code.SupervisorCall__RetireThread:
+                     CUSTOM_STUB_RaiseSupervisorCallForRetireThread( );
                     break;
                 default:
                     throw new ArgumentException( "Request SVC does not exists or is not supported" ); 
@@ -392,6 +404,11 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         public static void CompleteContextSwitch( )
         {
             RaiseSystemHandler( c_ICSR__PENDSVSET__SET ) ;
+        }
+
+        internal void SetSystemControlRegister( uint flags )
+        {
+            CUSTOM_STUB_SCB_SCR_SetSystemControlRegister( flags );
         }
 
         public static void WaitForEvent( )
@@ -554,7 +571,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         {
             uint basepri = GetBasePriRegister( );
 
-            DisableInterruptsWithPriorityLowerOrEqualTo( c_Priority__Lowest );
+            DisableInterruptsWithPriorityLevelHigherOrEqualTo( c_Priority__Lowest );
 
             return basepri; 
         }
@@ -563,7 +580,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         {
             uint basepri = GetBasePriRegister( );
 
-            DisableInterruptsWithPriorityLowerOrEqualTo( c_Priority__Highest );
+            DisableInterruptsWithPriorityLevelHigherOrEqualTo( c_Priority__Highest );
 
             return basepri; 
         }
@@ -606,7 +623,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             return DisableInterrupts( ) | DisableFaults( );
         }
 
-        public static void DisableInterruptsWithPriorityLowerOrEqualTo( uint basepri )
+        public static void DisableInterruptsWithPriorityLevelHigherOrEqualTo( uint basepri )
         {
             SetBasePriRegister( basepri );
         }
@@ -797,7 +814,10 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         internal static extern void CUSTOM_STUB_SCB_ICSR_RaiseSystemException( uint ex );
 
         [DllImport( "C" )]
-        internal static extern void CUSTOM_STUB_RaiseSupervisorCallForSwitchToContext( );
+        internal static extern void CUSTOM_STUB_RaiseSupervisorCallForLongJump( );
+ 
+        [DllImport( "C" )]
+        internal static extern void CUSTOM_STUB_RaiseSupervisorCallForStartThreads( );
 
         [DllImport( "C" )]
         internal static extern void CUSTOM_STUB_RaiseSupervisorCallForRetireThread( );
@@ -807,6 +827,12 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         
         [DllImport( "C" )]
         internal static extern int CUSTOM_STUB_SCB_IPSR_GetCurrentISRNumber( );
+
+        [DllImport( "C" )]
+        internal static extern int CUSTOM_STUB_SCB_SCR_GetSystemControlRegister( );
+
+        [DllImport( "C" )]
+        internal static extern void CUSTOM_STUB_SCB_SCR_SetSystemControlRegister( uint scr ); 
 
         [DllImport( "C" )]
         private static extern void CMSIS_STUB_POWER_WaitForEvent( ); 

@@ -112,11 +112,11 @@ namespace Microsoft.CortexM3OnMBED.Drivers
         //
         // System Timer Implementation
         //
-
-        public const uint MaxCounterValue   = uint.MaxValue;
-        public const uint HalfCycle         = MaxCounterValue >> 1;
-        public const uint QuarterCycle      = MaxCounterValue >> 2;
-        public const uint ThreeQuarterCycle = HalfCycle + QuarterCycle;
+        
+        public const uint c_MaxCounterValue   = uint.MaxValue;
+        public const uint c_HalfCycle         = c_MaxCounterValue >> 1;
+        public const uint c_QuarterCycle      = c_MaxCounterValue >> 2;
+        public const uint c_ThreeQuarterCycle = c_HalfCycle + c_QuarterCycle;
 
         //--//
 
@@ -131,8 +131,8 @@ namespace Microsoft.CortexM3OnMBED.Drivers
 
         public void Initialize()
         {
-            m_timers                = new RT.KernelList<Timer>();
-            m_accumulator           = 0;
+            m_timers      = new RT.KernelList<Timer>();
+            m_accumulator = 0;
             
 
             // This call sets up the timer handler to call SystemTimer_Handler/ProcessTimeout
@@ -279,7 +279,7 @@ namespace Microsoft.CortexM3OnMBED.Drivers
             }
             else
             {
-                absTimeout = QuarterCycle + now;
+                absTimeout = c_QuarterCycle + now;
             }
 
             // 
@@ -298,7 +298,7 @@ namespace Microsoft.CortexM3OnMBED.Drivers
         {
             // trim to quarter cycle, so we have time to handle wrap-arounds
             // This is guaranteed to fit in a uint
-            uint trimmed = (uint)Math.Min(remainder, QuarterCycle);
+            uint trimmed = (uint)Math.Min(remainder, c_QuarterCycle);
 
             unsafe
             {
@@ -366,8 +366,8 @@ namespace Microsoft.CortexM3OnMBED.Drivers
             // the counter is still going up. Otherwise, the timer hit its max value
             // and started counting from 0
             return (current >= m_lastAccumulatorUpdate) ?
-                current         - m_lastAccumulatorUpdate          :
-                MaxCounterValue - m_lastAccumulatorUpdate + current;
+                current           - m_lastAccumulatorUpdate          :
+                c_MaxCounterValue - m_lastAccumulatorUpdate + current;
         }
         
         //
