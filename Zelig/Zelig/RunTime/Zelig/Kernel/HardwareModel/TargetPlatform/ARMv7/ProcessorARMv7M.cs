@@ -74,7 +74,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         public const byte c_Priority__Highest               = 0x00000001;
         public const byte c_Priority__Lowest                = 0x000000FF;
         public const byte c_Priority__HigherThanAnyWeOwn    = 0x00000004;
-        public const byte c_Priority__SVCCall               = 0x00000007;
+        public const byte c_Priority__SVCCall               = 0x00000005;
         public const byte c_Priority__SystemTimer           = 0x00000007;
         public const byte c_Priority__SysTick               = 0x00000007;
         public const byte c_Priority__PendSV                = 0x0000000E;

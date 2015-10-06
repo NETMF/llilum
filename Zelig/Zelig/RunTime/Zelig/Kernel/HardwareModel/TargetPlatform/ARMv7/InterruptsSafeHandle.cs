@@ -122,7 +122,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7.SmartHandles
 
         private ProcessorARMv7M.ISR_NUMBER GetMode( )
         {
-            return (ProcessorARMv7M.ISR_NUMBER)(ProcessorARMv7M.CMSIS_STUB_SCB__get_IPSR( ) & 0xFF);
+            return (ProcessorARMv7M.ISR_NUMBER)(ProcessorARMv7M.CMSIS_STUB_SCB__get_IPSR( ) & 0x1FF);
         }
     }
 }

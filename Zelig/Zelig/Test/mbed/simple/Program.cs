@@ -262,7 +262,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             } );
 
             solitaryBlinker.Start( );
-            
+
             var solitaryAlerter = new System.Threading.Timer( ( obj ) =>
             {
                 // blink 20 times very fast
