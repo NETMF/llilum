@@ -263,6 +263,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 
             solitaryBlinker.Start( );
 
+#if (LPC1768)
             var solitaryAlerter = new System.Threading.Timer( ( obj ) =>
             {
                 // blink 20 times very fast
@@ -274,6 +275,9 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                     Thread.Sleep( 50 );
                 }
             }, ev, 2000, 5000 ); 
+
+#endif
+
 #endif
             while(true)
             {
