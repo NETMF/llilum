@@ -1,16 +1,64 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
+using Llvm.NET.DebugInfo;
 using Llvm.NET.Types;
 using Llvm.NET.Values;
 
 namespace Llvm.NET
 {
     /// <summary>LLVM Bit code module</summary>
-    public class Module 
+    /// <remarks>
+    /// A module is the basic unit for containing code in LLVM. Modules are an in memory
+    /// representation of the LLVM bitcode. 
+    /// </remarks>
+    public sealed class Module 
         : IDisposable
+        , IExtensiblePropertyContainer
     {
+        /// <summary>Creates an unnamed module without debug information</summary>
+        public Module( )
+            :this( string.Empty )
+        {
+        }
+
+        /// <summary>Creates an named module without debug information</summary>
+        public Module( string moduleId )
+        {
+            if( moduleId == null )
+                throw new ArgumentNullException( nameof( moduleId ) );
+
+            var hContext = NativeMethods.ContextCreate( );
+            ModuleHandle = NativeMethods.ModuleCreateWithNameInContext( moduleId, hContext );
+            if( ModuleHandle.Pointer == IntPtr.Zero )
+                throw new InternalCodeGeneratorException("Could not create module in context");
+
+            DIBuilder_ = new Lazy<DebugInfoBuilder>( ()=>new DebugInfoBuilder( this ) );
+            Context.AddModule( this );
+        }
+
+        /// <summary>Creates a named module with a root <see cref="DICompileUnit"/> to contain debugging information</summary>
+        /// <param name="moduleId">Module name</param>
+        /// <param name="language">Language to store in the debugging information</param>
+        /// <param name="srcFilePath">path of source file to set for the compilation unit</param>
+        /// <param name="producer">Name of the application producing this module</param>
+        /// <param name="optimized">Flag to indicate if the module is optimized</param>
+        /// <param name="flags">Additional flags</param>
+        /// <param name="runtimeVersion">Runtime version if any (use 0 if the runtime version has no meaning)</param>
+        public Module( string moduleId
+                     , SourceLanguage language
+                     , string srcFilePath
+                     , string producer
+                     , bool optimized
+                     , string flags
+                     , uint runtimeVersion
+                     )
+            : this( moduleId )
+        {
+            DIBuilder.CreateCompileUnit( language, srcFilePath, producer, optimized, flags, runtimeVersion );
+        }
+
         #region IDisposable Pattern
         public void Dispose()
         {
@@ -23,32 +71,44 @@ namespace Llvm.NET
             Dispose( false );
         }
 
-        protected virtual void Dispose( bool disposing )
+        void Dispose( bool disposing )
         {
-            // if not already disposed, dispose the module
-            // NOTE:
-            // The test logic here is backwards from what you might think
-            // Ordinarily unmanged resource are always released independent
-            // of the value of the disposing param. However, since the Context
-            // ultimately owns the module it will destroy it when it is finalized
-            // furthermore. Finalization isn't deterministic in that the Context
-            // can be finalized BEFORE the module is. But since LLVM will destroy 
-            // the underlying module when the context is destroyed that ends up
-            // with a dangling pointer/handle in the module. WHen the finalizer 
-            // eventually gets to finalize the module the handle is invalid and
-            // casues an exception in the native code of LLVM. Thus disposing the
-            // module will release the resources for a module early so it doesn't 
-            // leak if the same context is used to generate multiple modules. 
-            if( disposing )
-            {
-                LLVMNative.DisposeModule( ModuleHandle );
-                ModuleHandle = new LLVMModuleRef( );
-            }
+            // if not already disposed, dispose the context
+            // NOTE: the module itself is released when the 
+            // containing context is release, so only the
+            // context is explicitly closed.
+            if( Context != null )
+                Context.Close( );
+
+            ModuleHandle = default( LLVMModuleRef );
         }
         #endregion
 
+        /// <summary>Name of the Debug Version information module flag</summary>
+        public const string DebugVersionValue = "Debug Info Version";
+        /// <summary>Name of the Dwarf Version module flag</summary>
+        public const string DwarfVersionValue = "Dwarf Version";
+
+        /// <summary>Version of the Debug information Metadata</summary>
+        public const UInt32 DebugMetadataVersion = 3; /* DEBUG_METADATA_VERSION (for LLVM v3.7.0) */
+
         /// <summary><see cref="Context"/> this module belongs to</summary>
-        public Context Context { get; }
+        public Context Context
+        {
+            get
+            {
+                if( ModuleHandle.Pointer == IntPtr.Zero )
+                    return null;
+
+                return Llvm.NET.Context.GetContextFor( ModuleHandle );
+            }
+        }
+
+        /// <summary><see cref="DebugInfoBuilder"/> to create debug information for this module</summary>
+        public DebugInfoBuilder DIBuilder => DIBuilder_.Value;
+
+        /// <summary>Debug Comile unit for this module</summary>
+        public DICompileUnit DICompileUnit { get; internal set; }
 
         /// <summary>Data layout string</summary>
         /// <remarks>
@@ -60,30 +120,49 @@ namespace Llvm.NET
         /// at the expense of making the bit code and front-end a bit target
         /// dependent.
         /// </remarks>
-        public string DataLayout
+        public string DataLayoutString
         {
             get
             {
-                var ptr = LLVMNative.GetDataLayout( ModuleHandle );
-                return Marshal.PtrToStringAnsi( ptr );
+                return Layout?.ToString( ) ?? string.Empty;
             }
             set
             {
-                LLVMNative.SetDataLayout( ModuleHandle, value );
+                Layout = TargetData.Parse( value );
             }
         }
+
+        /// <summary>Target data layout for this module</summary>
+        /// <remarks>The layout is produced by parsing the <see cref="DataLayoutString"/>
+        /// therefore this property changes anytime the <see cref="DataLayoutString"/> is 
+        /// set. Furthermore, setting this property will change the value of <see cref="DataLayoutString"/>.
+        /// In other words, Layout and <see cref="DataLayoutString"/> are two different views
+        /// of the same information and setting either one updates the other. 
+        /// </remarks>
+        public TargetData Layout
+        {
+            get { return Layout_; }
+            set
+            {
+                if( Layout_ != null )
+                    Layout_.Dispose( );
+                Layout_ = value;
+                NativeMethods.SetDataLayout( ModuleHandle, value.ToString( ) );
+            }
+        }
+        private TargetData Layout_;
 
         /// <summary>Target Triple describing the target, ABI and OS</summary>
         public string TargetTriple
         {
             get
             {
-                var ptr = LLVMNative.GetTarget( ModuleHandle );
-                return Marshal.PtrToStringAnsi( ptr );
+                var ptr = NativeMethods.GetTarget( ModuleHandle );
+                return NativeMethods.NormalizeLineEndings( ptr );
             }
             set 
             {
-                LLVMNative.SetTarget( ModuleHandle, value );
+                NativeMethods.SetTarget( ModuleHandle, value );
             }
         }
 
@@ -92,11 +171,11 @@ namespace Llvm.NET
         {
             get
             {
-                var current = LLVMNative.GetFirstGlobal( ModuleHandle );
+                var current = NativeMethods.GetFirstGlobal( ModuleHandle );
                 while( current.Pointer != IntPtr.Zero )
                 {
                     yield return Value.FromHandle( current );
-                    current = LLVMNative.GetNextGlobal( current );
+                    current = NativeMethods.GetNextGlobal( current );
                 }
             }
         }
@@ -106,24 +185,22 @@ namespace Llvm.NET
         {
             get
             {
-                var current = LLVMNative.GetFirstFunction( ModuleHandle );
+                var current = NativeMethods.GetFirstFunction( ModuleHandle );
                 while( current.Pointer != IntPtr.Zero )
                 {
-                    yield return (Function)Value.FromHandle( current );
-                    current = LLVMNative.GetNextFunction( current );
+                    yield return Value.FromHandle<Function>( current );
+                    current = NativeMethods.GetNextFunction( current );
                 }
             }
         }
 
+        /// <summary>Name of the module</summary>
         public string Name
         {
             get
             {
-                var ptr = LLVMNative.GetModuleName( ModuleHandle );
-                if( ptr == IntPtr.Zero )
-                    return string.Empty;
-
-                return Marshal.PtrToStringAnsi( ptr );
+                var ptr = NativeMethods.GetModuleName( ModuleHandle );
+                return NativeMethods.NormalizeLineEndings( ptr );
             }
         }
 
@@ -133,9 +210,9 @@ namespace Llvm.NET
         public void Link( Module otherModule, LinkerMode linkMode )
         {
             IntPtr errMsgPtr;
-            if( 0 != LLVMNative.LinkModules( ModuleHandle, otherModule.ModuleHandle, (LLVMLinkerMode)linkMode, out errMsgPtr ).Value )
+            if( 0 != NativeMethods.LinkModules( ModuleHandle, otherModule.ModuleHandle, (LLVMLinkerMode)linkMode, out errMsgPtr ).Value )
             {
-                var errMsg = LLVMNative.MarshalMsg( errMsgPtr );
+                var errMsg = NativeMethods.MarshalMsg( errMsgPtr );
                 throw new InternalCodeGeneratorException( errMsg );
             }
         }
@@ -147,20 +224,12 @@ namespace Llvm.NET
         {
             errmsg = null;
             IntPtr msgPtr;
-            LLVMBool result = LLVMNative.VerifyModule( ModuleHandle, LLVMVerifierFailureAction.LLVMReturnStatusAction, out msgPtr );
-            try
-            {
-                if( result.Succeeded )
-                    return true;
+            LLVMBool result = NativeMethods.VerifyModule( ModuleHandle, LLVMVerifierFailureAction.LLVMReturnStatusAction, out msgPtr );
+            if( result.Succeeded )
+                return true;
 
-                errmsg = Marshal.PtrToStringAnsi( msgPtr );
-                return false;
-            }
-            finally
-            {
-                if( msgPtr != IntPtr.Zero )
-                    LLVMNative.DisposeMessage( msgPtr );
-            }
+            errmsg = NativeMethods.MarshalMsg( msgPtr );
+            return false;
         }
 
         /// <summary>Gets a function by name from this module</summary>
@@ -168,11 +237,11 @@ namespace Llvm.NET
         /// <returns>The function or null if not found</returns>
         public Function GetFunction( string name )
         {
-            var funcRef = LLVMNative.GetNamedFunction( ModuleHandle, name );
+            var funcRef = NativeMethods.GetNamedFunction( ModuleHandle, name );
             if( funcRef.Pointer == IntPtr.Zero )
                 return null;
 
-            return (Function)Value.FromHandle( funcRef );
+            return Value.FromHandle<Function>( funcRef );
         }
 
         /// <summary>Add a function with the specified signature to the module</summary>
@@ -185,9 +254,9 @@ namespace Llvm.NET
         /// the same name exists with a different signature an exception is thrown as LLVM does
         /// not perform any function overloading.
         /// </remarks>
-        public Function AddFunction( string name, FunctionType signature )
+        public Function AddFunction( string name, IFunctionType signature )
         {
-            return (Function)Value.FromHandle( LLVMNative.GetOrInsertFunction( ModuleHandle, name, signature.TypeHandle ) );
+            return Value.FromHandle<Function>( NativeMethods.GetOrInsertFunction( ModuleHandle, name, signature.GetTypeRef() ) );
         }
 
         /// <summary>Writes a bit-code module to a file</summary>
@@ -199,9 +268,24 @@ namespace Llvm.NET
         /// </remarks>
         public void WriteToFile( string path )
         {
-            var err = LLVMNative.WriteBitcodeToFile( ModuleHandle, path );
+            var err = NativeMethods.WriteBitcodeToFile( ModuleHandle, path );
             if( err < 0 )
-                throw new System.IO.IOException( );
+                throw new IOException( );
+        }
+
+        /// <summary>Writes this module as LLVM IR source to a file</summary>
+        /// <param name="path">File to write the LLVM IR source to</param>
+        /// <param name="errMsg">Error messages encountered, if any</param>
+        /// <returns><see langword="true"/> if succesful or <see langword="false"/> if not</returns>
+        public bool WriteToTextFile( string path, out string errMsg )
+        {
+            errMsg = string.Empty;
+            IntPtr msg;
+            if( NativeMethods.PrintModuleToFile( ModuleHandle, path, out msg ) )
+                return true;
+
+            errMsg = NativeMethods.MarshalMsg( msg );
+            return false;
         }
 
         /// <summary>Creates a string representation of the module</summary>
@@ -218,27 +302,26 @@ namespace Llvm.NET
             if( !Verify( out errMsg ) )
                 return $"Invalid Module: {errMsg}";
 
-            return LLVMNative.MarshalMsg( LLVMNative.PrintModuleToString( ModuleHandle ) );
+            return NativeMethods.MarshalMsg( NativeMethods.PrintModuleToString( ModuleHandle ) );
         }
 
         /// <summary>Add an alias to the module</summary>
         /// <param name="aliasee">Value being aliased</param>
         /// <param name="aliasName">Name of the alias</param>
         /// <returns><see cref="GlobalAlias"/> for the alias</returns>
-        public GlobalAlias AddAlias( Value aliasee, string aliasName ) => AddAlias( aliasee.Type, aliasee, aliasName );
-
-        /// <summary>Add an alias to the module</summary>
-        /// <param name="typeRef">Type of the alias</param>
-        /// <param name="aliasee">Value being aliased</param>
-        /// <param name="aliasName">Name of the alias</param>
-        /// <returns><see cref="GlobalAlias"/> for the alias</returns>
-        /// <openissues>
-        /// - What does LLVM do if creating a second alias with the same name (return null, throw, crash??,...)
-        /// </openissues>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Language", "CSE0003:Use expression-bodied members", Justification = "Readability" )]
-        public GlobalAlias AddAlias( TypeRef typeRef, Value aliasee, string aliasName )
+        public GlobalAlias AddAlias( Value aliasee, string aliasName )
         {
-            return (GlobalAlias)Value.FromHandle( LLVMNative.AddAlias( ModuleHandle, typeRef.TypeHandle, aliasee.ValueHandle, aliasName ) );
+            var handle = NativeMethods.AddAlias( ModuleHandle, aliasee.Type.GetTypeRef(), aliasee.ValueHandle, aliasName );
+            return Value.FromHandle<GlobalAlias>( handle );
+        }
+
+        /// <summary>Get an alias by name</summary>
+        /// <param name="name">name of the alias to get</param>
+        /// <returns>Alias matching <paramref name="name"/> or null if no such alias exists</returns>
+        public GlobalAlias GetAlias( string name )
+        {
+            var handle = NativeMethods.GetGlobalAlias( ModuleHandle, name );
+            return Value.FromHandle<GlobalAlias>( handle );
         }
 
         /// <summary>Adds a global to this module</summary>
@@ -248,11 +331,10 @@ namespace Llvm.NET
         /// <openissues>
         /// - What does LLVM do if creating a second Global with the same name (return null, throw, crash??,...)
         /// </openissues>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Language", "CSE0003:Use expression-bodied members", Justification = "Readability" )]
-        public GlobalVariable AddGlobal( TypeRef typeRef, string name )
+        public GlobalVariable AddGlobal( ITypeRef typeRef, string name )
         {
-            var handle = LLVMNative.AddGlobal( ModuleHandle, typeRef.TypeHandle, name );
-            return (GlobalVariable)Value.FromHandle( handle );
+            var handle = NativeMethods.AddGlobal( ModuleHandle, typeRef.GetTypeRef(), name );
+            return Value.FromHandle<GlobalVariable>( handle );
         }
 
         /// <summary>Adds a global to this module</summary>
@@ -261,12 +343,19 @@ namespace Llvm.NET
         /// <param name="linkage">Linkage type for this global</param>
         /// <param name="constVal">Initial value for the global</param>
         /// <returns>New global variable</returns>
-        public GlobalVariable AddGlobal( TypeRef typeRef, bool isConst, Linkage linkage, Constant constVal )
+        public GlobalVariable AddGlobal( ITypeRef typeRef, bool isConst, Linkage linkage, Constant constVal )
         {
             return AddGlobal( typeRef, isConst, linkage, constVal, string.Empty );
         }
 
-        public GlobalVariable AddGlobal( TypeRef typeRef, bool isConst, Linkage linkage, Constant constVal, string name )
+        /// <summary>Adds a global to this module</summary>
+        /// <param name="typeRef">Type of the global's value</param>
+        /// <param name="isConst">Flag to indicate if this global is a constant</param>
+        /// <param name="linkage">Linkage type for this global</param>
+        /// <param name="constVal">Initial value for the global</param>
+        /// <param name="name">Name of the variable</param>
+        /// <returns>New global variable</returns>
+        public GlobalVariable AddGlobal( ITypeRef typeRef, bool isConst, Linkage linkage, Constant constVal, string name )
         {
             var retVal = AddGlobal( typeRef, name );
             retVal.IsConstant = isConst;
@@ -275,12 +364,12 @@ namespace Llvm.NET
             return retVal;
         }
 
-        /// <summary>Retrieves a <see cref="TypeRef"/> by name from the module</summary>
+        /// <summary>Retrieves a <see cref="ITypeRef"/> by name from the module</summary>
         /// <param name="name">Name of the type</param>
         /// <returns>The type or null if no type with the specified name exists in the module</returns>
-        public TypeRef GetTypeByName( string name )
+        public ITypeRef GetTypeByName( string name )
         {
-            var hType = LLVMNative.GetTypeByName( ModuleHandle, name );
+            var hType = NativeMethods.GetTypeByName( ModuleHandle, name );
             return hType.Pointer == IntPtr.Zero ? null : TypeRef.FromHandle( hType );
         }
 
@@ -289,11 +378,11 @@ namespace Llvm.NET
         /// <returns></returns>
         public GlobalVariable GetNamedGlobal( string name )
         {
-            var hGlobal = LLVMNative.GetNamedGlobal( ModuleHandle, name );
+            var hGlobal = NativeMethods.GetNamedGlobal( ModuleHandle, name );
             if( hGlobal.Pointer == IntPtr.Zero )
                 return null;
 
-            return (GlobalVariable)Value.FromHandle( hGlobal );
+            return Value.FromHandle<GlobalVariable>( hGlobal );
         }
 
         /// <summary>Adds a module flag to the module</summary>
@@ -303,27 +392,93 @@ namespace Llvm.NET
         public void AddModuleFlag( ModuleFlagBehavior behavior, string name, UInt32 value )
         {
             // AddModuleFlag comes from custom LLVMDebug-C api
-            LLVMNative.AddModuleFlag( ModuleHandle, ( LLVMModFlagBehavior )behavior, name, value );
+            NativeMethods.AddModuleFlag( ModuleHandle, ( LLVMModFlagBehavior )behavior, name, value );
         }
 
+        /// <summary>Adds operand value to named metadata</summary>
+        /// <param name="name">Name of the netadata</param>
+        /// <param name="value">operand value</param>
         public void AddNamedMetadataOperand( string name, Metadata value )
         {
-            LLVMNative.AddNamedMetadataOperand2( ModuleHandle, name, value.MetadataHandle );
+            NativeMethods.AddNamedMetadataOperand2( ModuleHandle, name, value.MetadataHandle );
         }
 
+        /// <summary>Adds an llvm.ident metadata string to the module</summary>
+        /// <param name="version">version information to place in the ident metadata</param>
         public void AddVersionIdentMetadata( string version )
         {
-            var elements = new LLVMMetadataRef[ ] { LLVMNative.MDString2( Context.ContextHandle, version, (uint)version.Length ) };
-            var hNode = LLVMNative.MDNode2( Context.ContextHandle, out elements[ 0 ], 1 );
-            LLVMNative.AddNamedMetadataOperand2( ModuleHandle, "llvm.ident", hNode );
+            var elements = new LLVMMetadataRef[ ] { NativeMethods.MDString2( Context.ContextHandle, version, (uint)version.Length ) };
+            var hNode = NativeMethods.MDNode2( Context.ContextHandle, out elements[ 0 ], 1 );
+            NativeMethods.AddNamedMetadataOperand2( ModuleHandle, "llvm.ident", hNode );
         }
 
-        /// <summary>Name of the Debug Version information module flag</summary>
-        public const string DebugVersionValue = "Debug Info Version";
-        public const string DwarfVersionValue = "Dwarf Version";
+        /// <summary>Creates a Function definition with Debug information</summary>
+        /// <param name="scope">Containing scope for the function</param>
+        /// <param name="name">Name of the function in source language form</param>
+        /// <param name="linkageName">Mangled linker visible name of the function (may be same as <paramref name="name"/> if mangling not required by source language</param>
+        /// <param name="file">File containing the function definition</param>
+        /// <param name="line">Line number of the function definition</param>
+        /// <param name="signature">LLVM Function type for the signatur of the function</param>
+        /// <param name="isLocalToUnit">Flag to indicate if this function is local to the compilation unit</param>
+        /// <param name="isDefinition">Flag to indicate if this is a definition</param>
+        /// <param name="scopeLine">First line of the function's outermost scope, this may not be the same as the first line of the function definition due to source formatting</param>
+        /// <param name="flags">Additional flags describing this function</param>
+        /// <param name="isOptimized">Flag to indicate if this function is optimized</param>
+        /// <param name="tParam"></param>
+        /// <param name="decl"></param>
+        /// <returns>Function described by the arguments</returns>
+        public Function CreateFunction( DIScope scope
+                                      , string name
+                                      , string linkageName
+                                      , DIFile file
+                                      , uint line
+                                      , DebugFunctionType signature
+                                      , bool isLocalToUnit
+                                      , bool isDefinition
+                                      , uint scopeLine
+                                      , DebugInfoFlags flags
+                                      , bool isOptimized
+                                      , MDNode tParam = null
+                                      , MDNode decl = null
+                                      )
+        {
+            if( string.IsNullOrWhiteSpace( name ) )
+                throw new ArgumentException("Name cannot be null, empty or whitespace", nameof( name ) );
 
-        /// <summary>Version of the Debug information Metadata</summary>
-        public const UInt32 DebugMetadataVersion = 3; /* DEBUG_METADATA_VERSION (for LLVM v3.7.0) */
+            var func = AddFunction( linkageName ?? name, signature );
+            var diSignature = signature.DIType;
+            Debug.Assert( diSignature != null );
+            var diFunc = DIBuilder.CreateFunction( scope: scope
+                                                 , name: name
+                                                 , mangledName: linkageName
+                                                 , file: file
+                                                 , line: line
+                                                 , compositeType: diSignature
+                                                 , isLocalToUnit: isLocalToUnit
+                                                 , isDefinition: isDefinition
+                                                 , scopeLine: scopeLine
+                                                 , flags: ( uint )flags
+                                                 , isOptimized: isOptimized
+                                                 , function: func
+                                                 , TParam: tParam
+                                                 , Decl: decl
+                                                 );
+            Debug.Assert( diFunc.Describes( func ) );
+            func.DISubProgram = diFunc;
+            return func;
+        }
+
+        /// <inheritdoc/>
+        bool IExtensiblePropertyContainer.TryGetExtendedPropertyValue<T>( string id, out T value )
+        {
+            return PropertyBag.TryGetExtendedPropertyValue<T>( id, out value );
+        }
+
+        /// <inheritdoc/>
+        void IExtensiblePropertyContainer.AddExtendedPropertyValue( string id, object value )
+        {
+            PropertyBag.AddExtendedPropertyValue( id, value );
+        }
 
         /// <summary>Load a bit-code module from a given file</summary>
         /// <param name="path">path of the file to load</param>
@@ -336,31 +491,23 @@ namespace Llvm.NET
             if( !File.Exists( path ) )
                 throw new FileNotFoundException( "Specified bit-code file does not exist", path );
 
-            var ctx = Context.CurrentContext;
+            var ctx = new Context( );
             using( var buffer = new MemoryBuffer( path ) )
             {
                 LLVMModuleRef modRef;
                 IntPtr errMsgPtr;
-                if( LLVMNative.ParseBitcodeInContext( ctx.ContextHandle, buffer.BufferHandle, out modRef, out errMsgPtr ).Failed )
+                if( NativeMethods.ParseBitcodeInContext( ctx.ContextHandle, buffer.BufferHandle, out modRef, out errMsgPtr ).Failed )
                 {
-                    var errMsg = Marshal.PtrToStringAnsi( errMsgPtr );
-                    LLVMNative.DisposeMessage( errMsgPtr );
+                    var errMsg = NativeMethods.MarshalMsg( errMsgPtr );
                     throw new InternalCodeGeneratorException( errMsg );
                 }
                 return ctx.GetModuleFor( modRef );
             }
         }
 
-        internal Module( LLVMModuleRef moduleRef )
-        {
-            if( moduleRef.Pointer == IntPtr.Zero )
-                throw new ArgumentNullException( nameof( moduleRef ) );
-
-            ModuleHandle = moduleRef;
-            var hContext = LLVMNative.GetModuleContext( ModuleHandle );
-            Context = Llvm.NET.Context.GetContextFor( hContext );
-        }
-
         internal LLVMModuleRef ModuleHandle { get; private set; }
+
+        private readonly ExtensiblePropertyContainer PropertyBag = new ExtensiblePropertyContainer( );
+        private readonly Lazy<DebugInfoBuilder> DIBuilder_;
     }
 }

@@ -21,7 +21,7 @@ namespace Llvm.NET
     {
         public static void ParseCommandLineOptions( string[] args, string overview )
         {
-            LLVMNative.ParseCommandLineOptions( args.Length, args, overview );
+            NativeMethods.ParseCommandLineOptions( args.Length, args, overview );
         }
 
         // basic pattern to follow for any new targets in the future
@@ -49,28 +49,28 @@ namespace Llvm.NET
         public static void RegisterAll( TargetRegistration regFlags = TargetRegistration.All )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
-                LLVMNative.InitializeAllTargets( );
+                NativeMethods.InitializeAllTargets( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
-                LLVMNative.InitializeAllTargetInfos( );
+                NativeMethods.InitializeAllTargetInfos( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
-                LLVMNative.InitializeAllTargetMCs( );
+                NativeMethods.InitializeAllTargetMCs( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
-                LLVMNative.InitializeAllAsmPrinters( );
+                NativeMethods.InitializeAllAsmPrinters( );
 
             if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
-                LLVMNative.InitializeAllDisassemblers( );
+                NativeMethods.InitializeAllDisassemblers( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
-                LLVMNative.InitializeAllAsmParsers( );
+                NativeMethods.InitializeAllAsmParsers( );
         }
 
         public static void RegisterNative( TargetRegistration regFlags = TargetRegistration.All )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
-                LLVMNative.InitializeNativeTarget( );
+                NativeMethods.InitializeNativeTarget( );
 
             //if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
             //    LLVMNative.InitializeNativeTargetInfo( );
@@ -79,73 +79,73 @@ namespace Llvm.NET
             //    LLVMNative.InitializeNativeTargetMC( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
-                LLVMNative.InitializeNativeAsmPrinter( );
+                NativeMethods.InitializeNativeAsmPrinter( );
 
             if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
-                LLVMNative.InitializeNativeDisassembler( );
+                NativeMethods.InitializeNativeDisassembler( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
-                LLVMNative.InitializeNativeAsmParser( );
+                NativeMethods.InitializeNativeAsmParser( );
         }
 
         public static void RegisterAArch64( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
-                LLVMNative.InitializeAArch64Target( );
+                NativeMethods.InitializeAArch64Target( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
-                LLVMNative.InitializeAArch64TargetInfo( );
+                NativeMethods.InitializeAArch64TargetInfo( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
-                LLVMNative.InitializeAArch64TargetMC( );
+                NativeMethods.InitializeAArch64TargetMC( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
-                LLVMNative.InitializeAArch64AsmPrinter( );
+                NativeMethods.InitializeAArch64AsmPrinter( );
 
             if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
-                LLVMNative.InitializeAArch64Disassembler( );
+                NativeMethods.InitializeAArch64Disassembler( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
-                LLVMNative.InitializeAArch64AsmParser( );
+                NativeMethods.InitializeAArch64AsmParser( );
         }
 
         public static void RegisterARM( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
-                LLVMNative.InitializeARMTarget( );
+                NativeMethods.InitializeARMTarget( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
-                LLVMNative.InitializeARMTargetInfo( );
+                NativeMethods.InitializeARMTargetInfo( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
-                LLVMNative.InitializeARMTargetMC( );
+                NativeMethods.InitializeARMTargetMC( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
-                LLVMNative.InitializeARMAsmPrinter( );
+                NativeMethods.InitializeARMAsmPrinter( );
 
             if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
-                LLVMNative.InitializeARMDisassembler( );
+                NativeMethods.InitializeARMDisassembler( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
-                LLVMNative.InitializeARMAsmParser( );
+                NativeMethods.InitializeARMAsmParser( );
         }
 
         public static void RegisterHexagon( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
-                LLVMNative.InitializeHexagonTarget( );
+                NativeMethods.InitializeHexagonTarget( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
-                LLVMNative.InitializeHexagonTargetInfo( );
+                NativeMethods.InitializeHexagonTargetInfo( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
-                LLVMNative.InitializeHexagonTargetMC( );
+                NativeMethods.InitializeHexagonTargetMC( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
-                LLVMNative.InitializeHexagonAsmPrinter( );
+                NativeMethods.InitializeHexagonAsmPrinter( );
 
             if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
-                LLVMNative.InitializeHexagonDisassembler( );
+                NativeMethods.InitializeHexagonDisassembler( );
 
             //if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
             //    LLVMNative.InitializeHexagonAsmParser( );
@@ -154,37 +154,37 @@ namespace Llvm.NET
         public static void RegisterMips( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
-                LLVMNative.InitializeMipsTarget( );
+                NativeMethods.InitializeMipsTarget( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
-                LLVMNative.InitializeMipsTargetInfo( );
+                NativeMethods.InitializeMipsTargetInfo( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
-                LLVMNative.InitializeMipsTargetMC( );
+                NativeMethods.InitializeMipsTargetMC( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
-                LLVMNative.InitializeMipsAsmPrinter( );
+                NativeMethods.InitializeMipsAsmPrinter( );
 
             if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
-                LLVMNative.InitializeMipsDisassembler( );
+                NativeMethods.InitializeMipsDisassembler( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
-                LLVMNative.InitializeMipsAsmParser( );
+                NativeMethods.InitializeMipsAsmParser( );
         }
 
         public static void RegisterMSP430( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
-                LLVMNative.InitializeMSP430Target( );
+                NativeMethods.InitializeMSP430Target( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
-                LLVMNative.InitializeMSP430TargetInfo( );
+                NativeMethods.InitializeMSP430TargetInfo( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
-                LLVMNative.InitializeMSP430TargetMC( );
+                NativeMethods.InitializeMSP430TargetMC( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
-                LLVMNative.InitializeMSP430AsmPrinter( );
+                NativeMethods.InitializeMSP430AsmPrinter( );
 
             //if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
             //    LLVMNative.InitializeMSP430Disassembler( );
@@ -196,16 +196,16 @@ namespace Llvm.NET
         public static void RegisterNVPTX( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
-                LLVMNative.InitializeNVPTXTarget( );
+                NativeMethods.InitializeNVPTXTarget( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
-                LLVMNative.InitializeNVPTXTargetInfo( );
+                NativeMethods.InitializeNVPTXTargetInfo( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
-                LLVMNative.InitializeNVPTXTargetMC( );
+                NativeMethods.InitializeNVPTXTargetMC( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
-                LLVMNative.InitializeNVPTXAsmPrinter( );
+                NativeMethods.InitializeNVPTXAsmPrinter( );
 
             //if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
             //    LLVMNative.InitializeNVPTXDisassembler( );
@@ -217,124 +217,124 @@ namespace Llvm.NET
         public static void RegisterPowerPC( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
-                LLVMNative.InitializePowerPCTarget( );
+                NativeMethods.InitializePowerPCTarget( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
-                LLVMNative.InitializePowerPCTargetInfo( );
+                NativeMethods.InitializePowerPCTargetInfo( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
-                LLVMNative.InitializePowerPCTargetMC( );
+                NativeMethods.InitializePowerPCTargetMC( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
-                LLVMNative.InitializePowerPCAsmPrinter( );
+                NativeMethods.InitializePowerPCAsmPrinter( );
 
             if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
-                LLVMNative.InitializePowerPCDisassembler( );
+                NativeMethods.InitializePowerPCDisassembler( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
-                LLVMNative.InitializePowerPCAsmParser( );
+                NativeMethods.InitializePowerPCAsmParser( );
         }
 
         public static void RegisterAMDGPU( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
-                LLVMNative.InitializeAMDGPUTarget( );
+                NativeMethods.InitializeAMDGPUTarget( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
-                LLVMNative.InitializeAMDGPUTargetInfo( );
+                NativeMethods.InitializeAMDGPUTargetInfo( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
-                LLVMNative.InitializeAMDGPUTargetMC( );
+                NativeMethods.InitializeAMDGPUTargetMC( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
-                LLVMNative.InitializeAMDGPUAsmPrinter( );
+                NativeMethods.InitializeAMDGPUAsmPrinter( );
 
             //if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
             //    LLVMNative.InitializeAMDGPUDisassembler( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
-                LLVMNative.InitializeAMDGPUAsmParser( );
+                NativeMethods.InitializeAMDGPUAsmParser( );
         }
 
         public static void RegisterSparc( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
-                LLVMNative.InitializeSparcTarget( );
+                NativeMethods.InitializeSparcTarget( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
-                LLVMNative.InitializeSparcTargetInfo( );
+                NativeMethods.InitializeSparcTargetInfo( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
-                LLVMNative.InitializeSparcTargetMC( );
+                NativeMethods.InitializeSparcTargetMC( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
-                LLVMNative.InitializeSparcAsmPrinter( );
+                NativeMethods.InitializeSparcAsmPrinter( );
 
             if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
-                LLVMNative.InitializeSparcDisassembler( );
+                NativeMethods.InitializeSparcDisassembler( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
-                LLVMNative.InitializeSparcAsmParser( );
+                NativeMethods.InitializeSparcAsmParser( );
         }
 
         public static void RegisterSystemZ( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
-                LLVMNative.InitializeSystemZTarget( );
+                NativeMethods.InitializeSystemZTarget( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
-                LLVMNative.InitializeSystemZTargetInfo( );
+                NativeMethods.InitializeSystemZTargetInfo( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
-                LLVMNative.InitializeSystemZTargetMC( );
+                NativeMethods.InitializeSystemZTargetMC( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
-                LLVMNative.InitializeSystemZAsmPrinter( );
+                NativeMethods.InitializeSystemZAsmPrinter( );
 
             if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
-                LLVMNative.InitializeSystemZDisassembler( );
+                NativeMethods.InitializeSystemZDisassembler( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
-                LLVMNative.InitializeSystemZAsmParser( );
+                NativeMethods.InitializeSystemZAsmParser( );
         }
 
         public static void RegisterX86( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
-                LLVMNative.InitializeX86Target( );
+                NativeMethods.InitializeX86Target( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
-                LLVMNative.InitializeX86TargetInfo( );
+                NativeMethods.InitializeX86TargetInfo( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
-                LLVMNative.InitializeX86TargetMC( );
+                NativeMethods.InitializeX86TargetMC( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
-                LLVMNative.InitializeX86AsmPrinter( );
+                NativeMethods.InitializeX86AsmPrinter( );
 
             if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
-                LLVMNative.InitializeX86Disassembler( );
+                NativeMethods.InitializeX86Disassembler( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
-                LLVMNative.InitializeX86AsmParser( );
+                NativeMethods.InitializeX86AsmParser( );
         }
 
         public static void RegisterXCore( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
-                LLVMNative.InitializeXCoreTarget( );
+                NativeMethods.InitializeXCoreTarget( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
-                LLVMNative.InitializeXCoreTargetInfo( );
+                NativeMethods.InitializeXCoreTargetInfo( );
 
             if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
-                LLVMNative.InitializeXCoreTargetMC( );
+                NativeMethods.InitializeXCoreTargetMC( );
 
             if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
-                LLVMNative.InitializeXCoreAsmPrinter( );
+                NativeMethods.InitializeXCoreAsmPrinter( );
 
             if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
-                LLVMNative.InitializeXCoreDisassembler( );
+                NativeMethods.InitializeXCoreDisassembler( );
 
             //if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
             //    LLVMNative.InitializeXCoreAsmParser( );

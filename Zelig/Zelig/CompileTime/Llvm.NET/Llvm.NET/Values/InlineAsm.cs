@@ -14,7 +14,7 @@
         }
 
         internal InlineAsm( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsAInlineAsm ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAInlineAsm ) )
         {
         }
 

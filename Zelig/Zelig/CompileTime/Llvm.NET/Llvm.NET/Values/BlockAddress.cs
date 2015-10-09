@@ -8,7 +8,7 @@
         }
 
         internal BlockAddress( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsABlockAddress ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsABlockAddress ) )
         {
         }
     }

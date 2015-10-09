@@ -4,12 +4,11 @@ namespace Llvm.NET
 {
     public class TargetMachine : IDisposable
     {
-
-        public Target Target => Target.FromHandle( LLVMNative.GetTargetMachineTarget( TargetMachineHandle ) );
-        public string Triple => LLVMNative.MarshalMsg( LLVMNative.GetTargetMachineTriple( TargetMachineHandle ) );
-        public string Cpu => LLVMNative.MarshalMsg( LLVMNative.GetTargetMachineCPU( TargetMachineHandle ) );
-        public string Features => LLVMNative.MarshalMsg( LLVMNative.GetTargetMachineFeatureString( TargetMachineHandle ) );
-        public TargetData TargetData => TargetData.FromHandle( LLVMNative.GetTargetMachineData( TargetMachineHandle), isDisposable: false );
+        public Target Target => Target.FromHandle( NativeMethods.GetTargetMachineTarget( TargetMachineHandle ) );
+        public string Triple => NativeMethods.MarshalMsg( NativeMethods.GetTargetMachineTriple( TargetMachineHandle ) );
+        public string Cpu => NativeMethods.MarshalMsg( NativeMethods.GetTargetMachineCPU( TargetMachineHandle ) );
+        public string Features => NativeMethods.MarshalMsg( NativeMethods.GetTargetMachineFeatureString( TargetMachineHandle ) );
+        public TargetData TargetData => TargetData.FromHandle( NativeMethods.GetTargetMachineData( TargetMachineHandle), isDisposable: false );
 
         public void EmitToFile( Module module, string path, CodeGenFileType fileType )
         {
@@ -23,9 +22,9 @@ namespace Llvm.NET
                 throw new ArgumentException( "Triple specifed for the module doesn't match target machine", nameof( module ) );
 
             IntPtr errMsg;
-            if( 0 != LLVMNative.TargetMachineEmitToFile( TargetMachineHandle, module.ModuleHandle, path, (LLVMCodeGenFileType)fileType, out errMsg ).Value )
+            if( 0 != NativeMethods.TargetMachineEmitToFile( TargetMachineHandle, module.ModuleHandle, path, (LLVMCodeGenFileType)fileType, out errMsg ).Value )
             {
-                var errTxt = LLVMNative.MarshalMsg( errMsg );
+                var errTxt = NativeMethods.MarshalMsg( errMsg );
                 throw new InternalCodeGeneratorException( errTxt );
             }
         }
@@ -47,7 +46,7 @@ namespace Llvm.NET
                 //{
                 //    // dispose managed state (managed objects).
                 //}
-                LLVMNative.DisposeTargetMachine( TargetMachineHandle );
+                NativeMethods.DisposeTargetMachine( TargetMachineHandle );
                 TargetMachineHandle = default( LLVMTargetMachineRef );
             }
         }

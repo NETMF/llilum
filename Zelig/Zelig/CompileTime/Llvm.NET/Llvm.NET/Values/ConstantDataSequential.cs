@@ -15,7 +15,7 @@ namespace Llvm.NET.Values
     /// </remarks>
     public class ConstantDataSequential : Constant
     {
-        public bool IsString => LLVMNative.IsConstantString( ValueHandle );
+        public bool IsString => NativeMethods.IsConstantString( ValueHandle );
 
         public string GetAsString()
         {
@@ -23,8 +23,8 @@ namespace Llvm.NET.Values
                 throw new InvalidOperationException( "ConstantDataSequential is not a string" );
 
             int len;
-            var strPtr = LLVMNative.GetAsString( ValueHandle, out len );
-            return Marshal.PtrToStringAnsi( strPtr, len );
+            var strPtr = NativeMethods.GetAsString( ValueHandle, out len );
+            return NativeMethods.NormalizeLineEndings( strPtr, len );
         }
 
         internal ConstantDataSequential( LLVMValueRef valueRef )
@@ -33,7 +33,7 @@ namespace Llvm.NET.Values
         }
 
         internal ConstantDataSequential( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsAConstantDataSequential ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAConstantDataSequential ) )
         {
         }
     }

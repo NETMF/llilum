@@ -8,7 +8,7 @@
         }
 
         internal ConstantDataArray( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsAConstantDataArray ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAConstantDataArray ) )
         {
         }
     }

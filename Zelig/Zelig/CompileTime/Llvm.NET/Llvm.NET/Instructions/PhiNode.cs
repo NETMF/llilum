@@ -23,7 +23,7 @@ namespace Llvm.NET.Instructions
             for( int i = 0; i < additionalIncoming.Length; ++i )
                 llvmBlocks[ i + i ] = additionalIncoming[ i ].Item2.BlockHandle;
 
-            LLVMNative.AddIncoming( ValueHandle, out llvmValues[ 0 ], out llvmBlocks[ 0 ], ( uint )llvmValues.Length );
+            NativeMethods.AddIncoming( ValueHandle, out llvmValues[ 0 ], out llvmBlocks[ 0 ], ( uint )llvmValues.Length );
         }
 
         internal PhiNode( LLVMValueRef valueRef )
@@ -32,7 +32,7 @@ namespace Llvm.NET.Instructions
         }
 
         internal PhiNode( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsAPHINode ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAPHINode ) )
         {
         }
     }

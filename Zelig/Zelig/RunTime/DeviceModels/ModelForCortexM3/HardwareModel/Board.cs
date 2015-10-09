@@ -31,6 +31,14 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3
             public int SclPin;
         }
 
+        public class SerialPortInfo
+        {
+            public int RxPin;
+            public int TxPin;
+            public int RtsPin;
+            public int CtsPin;
+        }
+
         //--//
 
         public abstract int GetSpiChannelIndexFromString( string busId );
@@ -65,7 +73,14 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3
         public abstract string[] GetI2cChannels();
 
         public abstract int GetI2cChannelIndexFromString(string busId);
-        
+
+        //
+        // Serial Methods
+        //
+        public abstract string[] GetSerialPorts();
+
+        public abstract SerialPortInfo GetSerialPortInfo(string portName);
+
         //
         // System timer
         //

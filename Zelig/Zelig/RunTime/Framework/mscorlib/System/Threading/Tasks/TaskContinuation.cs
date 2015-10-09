@@ -11,8 +11,9 @@ namespace System.Threading.Tasks
             Task antecedent,
             Delegate action,
             object state,
+            CancellationToken cancellationToken,
             TaskCreationOptions creationOptions) :
-                base(action, state, creationOptions, InternalTaskOptions.ContinuationTask)
+                base(action, state, cancellationToken, creationOptions, InternalTaskOptions.ContinuationTask)
         {
         }
 
@@ -55,8 +56,9 @@ namespace System.Threading.Tasks
             Task<TAntecedentResult> antecedent,
             Delegate action,
             object state,
+            CancellationToken cancellationToken,
             TaskCreationOptions creationOptions) :
-                base(action, state, creationOptions, InternalTaskOptions.ContinuationTask)
+                base(action, state, cancellationToken, creationOptions, InternalTaskOptions.ContinuationTask)
         {
         }
 
@@ -99,8 +101,9 @@ namespace System.Threading.Tasks
             Task antecedent,
             Delegate function,
             object state,
+            CancellationToken cancellationToken,
             TaskCreationOptions creationOptions) :
-                base(function, state, creationOptions, InternalTaskOptions.ContinuationTask)
+                base(function, state, cancellationToken, creationOptions, InternalTaskOptions.ContinuationTask)
         {
         }
 
@@ -143,8 +146,9 @@ namespace System.Threading.Tasks
             Task<TAntecedentResult> antecedent,
             Delegate function,
             object state,
+            CancellationToken cancellationToken,
             TaskCreationOptions creationOptions) :
-                base(function, state, creationOptions, InternalTaskOptions.ContinuationTask)
+                base(function, state, cancellationToken, creationOptions, InternalTaskOptions.ContinuationTask)
         {
         }
 
@@ -200,7 +204,7 @@ namespace System.Threading.Tasks
             case TaskStatus.RanToCompletion:
                 if ((m_continuationOptions & TaskContinuationOptions.NotOnRanToCompletion) != 0)
                 {
-                    // TODO: ENABLE_CANCELLATION: Cancel the task.
+                    m_task.InternalCancel();
                     return;
                 }
                 break;
@@ -208,7 +212,7 @@ namespace System.Threading.Tasks
             case TaskStatus.Canceled:
                 if ((m_continuationOptions & TaskContinuationOptions.NotOnCanceled) != 0)
                 {
-                    // TODO: ENABLE_CANCELLATION: Cancel the task.
+                    m_task.InternalCancel();
                     return;
                 }
                 break;
@@ -216,7 +220,7 @@ namespace System.Threading.Tasks
             case TaskStatus.Faulted:
                 if ((m_continuationOptions & TaskContinuationOptions.NotOnFaulted) != 0)
                 {
-                    // TODO: ENABLE_CANCELLATION: Cancel the task.
+                    m_task.InternalCancel();
                     return;
                 }
                 break;

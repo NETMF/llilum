@@ -19,7 +19,7 @@
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>Llvm.NET.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>..\..\..\..\ZeligBuild\Host\bin\Release\</OutputPath>
@@ -27,17 +27,7 @@
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'RelWithDebInfo|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>.\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>Llvm.NET.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'">
     <DebugSymbols>true</DebugSymbols>
@@ -56,15 +46,22 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'RelWithDebInfo|Win32'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\Win32\RelWithDebInfo\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>Llvm.NET.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\Release\</OutputPath>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>Llvm.NET.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -72,7 +69,41 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AlignmentInfo.cs" />
+    <Compile Include="DebugInfo\DebugArrayType.cs" />
+    <Compile Include="DebugInfo\DebugMemberInfo.cs" />
+    <Compile Include="DebugInfo\DebugPointerType.cs" />
+    <Compile Include="DebugInfo\DebugStructType.cs" />
+    <Compile Include="DebugInfo\DIArray.cs" />
+    <Compile Include="DebugInfo\DIBasicType.cs" />
+    <Compile Include="DebugInfo\DICompileUnit.cs" />
+    <Compile Include="DebugInfo\DICompositeType.cs" />
+    <Compile Include="DebugInfo\DIDerivedType.cs" />
+    <Compile Include="DebugInfo\DIEnumerator.cs" />
+    <Compile Include="DebugInfo\DIExpression.cs" />
+    <Compile Include="DebugInfo\DIFile.cs" />
+    <Compile Include="DebugInfo\DIGlobalVariable.cs" />
+    <Compile Include="DebugInfo\DILexicalBlock.cs" />
+    <Compile Include="DebugInfo\DILexicalBlockBase.cs" />
+    <Compile Include="DebugInfo\DILexicalBlockFile.cs" />
+    <Compile Include="DebugInfo\DILocalScope.cs" />
+    <Compile Include="DebugInfo\DILocalVariable.cs" />
+    <Compile Include="DebugInfo\DILocation.cs" />
+    <Compile Include="DebugInfo\DIModule.cs" />
+    <Compile Include="DebugInfo\DINamespace.cs" />
+    <Compile Include="DebugInfo\DINode.cs" />
+    <Compile Include="DebugInfo\DIObjCProperty.cs" />
+    <Compile Include="DebugInfo\DIScope.cs" />
+    <Compile Include="DebugInfo\DISubProgram.cs" />
+    <Compile Include="DebugInfo\DISubRange.cs" />
+    <Compile Include="DebugInfo\DISubroutineType.cs" />
+    <Compile Include="DebugInfo\DITemplateParameter.cs" />
+    <Compile Include="DebugInfo\DITemplateTypeParameter.cs" />
+    <Compile Include="DebugInfo\DITemplateValueParameter.cs" />
+    <Compile Include="DebugInfo\DIType.cs" />
+    <Compile Include="DebugInfo\DITypeArray.cs" />
+    <Compile Include="DebugInfo\DIVariable.cs" />
+    <Compile Include="DebugInfo\GenericDINode.cs" />
+    <Compile Include="DebugInfo\DebugType.cs" />
     <Compile Include="Instructions\AddressSpaceCast.cs" />
     <Compile Include="Instructions\AtomicCmpXchg.cs" />
     <Compile Include="Instructions\AtomicRMW.cs" />
@@ -96,8 +127,12 @@
     <Compile Include="Instructions\VaArg.cs" />
     <Compile Include="Metadata.cs" />
     <Compile Include="ScalarEnumerable.cs" />
+    <Compile Include="DebugInfo\DebugBasicType.cs" />
+    <Compile Include="DebugInfo\DebugFunctionType.cs" />
+    <Compile Include="Types\ITypeRef.cs" />
     <Compile Include="Values\Argument.cs" />
     <Compile Include="Types\ArrayType.cs" />
+    <Compile Include="Values\AttributeValue.cs" />
     <Compile Include="Values\BasicBlock.cs" />
     <Compile Include="Values\BlockAddress.cs" />
     <Compile Include="Values\Constant.cs" />
@@ -114,7 +149,6 @@
     <Compile Include="Values\ConstPointerNull.cs" />
     <Compile Include="Context.cs" />
     <Compile Include="DebugInfo\DebugInfoBuilder.cs" />
-    <Compile Include="DebugInfo\Descriptor.cs" />
     <Compile Include="DebugInfo\DwarfEnumerations.cs" />
     <Compile Include="Enumerations.cs" />
     <Compile Include="Values\Function.cs" />
@@ -170,14 +204,13 @@
     <Compile Include="PassManagerBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types\SequenceType.cs" />
-    <Compile Include="SizeAndAlignment.cs" />
     <Compile Include="StaticState.cs" />
     <Compile Include="Types\StructType.cs" />
     <Compile Include="Target.cs" />
-    <Compile Include="TargetLayout.cs" />
     <Compile Include="TargetMachine.cs" />
     <Compile Include="TargetData.cs" />
     <Compile Include="Types\TypeRef.cs" />
+    <Compile Include="Values\IAttributeSet.cs" />
     <Compile Include="Values\InlineAsm.cs" />
     <Compile Include="Values\UndefValue.cs" />
     <Compile Include="Values\User.cs" />
@@ -194,7 +227,9 @@
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Llvm.NET.ruleset" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

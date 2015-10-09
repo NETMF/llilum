@@ -501,6 +501,10 @@ namespace Microsoft.Zelig.Runtime
              
             while(true)
             {
+                //BugCheck.Log( "!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
+                //BugCheck.Log( "!!!       sleeping      !!!" );
+                //BugCheck.Log( "!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
+
                 Peripherals.Instance.WaitForInterrupt();
             }
         }

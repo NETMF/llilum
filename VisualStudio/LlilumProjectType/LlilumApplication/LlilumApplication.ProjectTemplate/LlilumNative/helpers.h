@@ -18,7 +18,7 @@
 #include "i2c_api.h"
 #include "core_cmFunc.h"
 #include "us_ticker_api.h"
-
+#include "serial_api.h"
 #include <stdint.h>
 #include <stdlib.h>
 

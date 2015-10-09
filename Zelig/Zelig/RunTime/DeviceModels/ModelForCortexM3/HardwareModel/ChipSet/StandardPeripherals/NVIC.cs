@@ -84,18 +84,20 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3
         
         public static void EnableInterrupt( ProcessorARMv7M.IRQn_Type irq )
         {
+            RT.BugCheck.Assert( irq >= 0, RT.BugCheck.StopCode.IncorrectArgument );
+            
             CMSIS_STUB_NVIC_EnableIRQ( irq );
         }
 
         public static void DisableInterrupt( ProcessorARMv7M.IRQn_Type irq )
         {
+            RT.BugCheck.Assert( irq >= 0, RT.BugCheck.StopCode.IncorrectArgument );
+            
             CMSIS_STUB_NVIC_DisableIRQ( irq );
         }
 
         public static void SetPriority( ProcessorARMv7M.IRQn_Type irq, int pri )
         {
-            RT.BugCheck.Assert( pri > 0, RT.BugCheck.StopCode.IncorrectArgument );
-
             CMSIS_STUB_NVIC_SetPriority( irq, (uint)pri );
         }
 

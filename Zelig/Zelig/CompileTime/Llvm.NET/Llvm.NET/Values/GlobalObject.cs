@@ -6,7 +6,7 @@ namespace Llvm.NET.Values
         : GlobalValue
     {
         internal GlobalObject( LLVMValueRef valueRef )
-            : base( ValidateConversion( valueRef, LLVMNative.IsAGlobalObject ) )
+            : base( ValidateConversion( valueRef, NativeMethods.IsAGlobalObject ) )
         {
         }
 
@@ -15,11 +15,11 @@ namespace Llvm.NET.Values
         {
             get
             {
-                return LLVMNative.GetAlignment( ValueHandle );
+                return NativeMethods.GetAlignment( ValueHandle );
             }
             set
             {
-                LLVMNative.SetAlignment( ValueHandle, value );
+                NativeMethods.SetAlignment( ValueHandle, value );
             }
         }
 
@@ -28,12 +28,12 @@ namespace Llvm.NET.Values
         {
             get
             {
-                var ptr = LLVMNative.GetSection( ValueHandle );
+                var ptr = NativeMethods.GetSection( ValueHandle );
                 return Marshal.PtrToStringAnsi( ptr );
             }
             set
             {
-                LLVMNative.SetSection( ValueHandle, value );
+                NativeMethods.SetSection( ValueHandle, value );
             }
         }
     }

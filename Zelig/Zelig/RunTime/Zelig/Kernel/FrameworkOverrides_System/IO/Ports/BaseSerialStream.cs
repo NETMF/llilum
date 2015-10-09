@@ -9,6 +9,7 @@ namespace Microsoft.Zelig.Runtime
     using System.Collections.Generic;
     using System.Threading;
     using System.Runtime.CompilerServices;
+    using PORTS = System.IO.Ports;
 
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
@@ -21,41 +22,54 @@ namespace Microsoft.Zelig.Runtime
             // State
             //
 
-            public readonly string                    PortName;
-            public          int                       BaudRate;
-            public          System.IO.Ports.Parity    Parity;
-            public          int                       DataBits;
-            public          System.IO.Ports.StopBits  StopBits;
-            public          int                       ReadBufferSize;
-            public          int                       WriteBufferSize;
-            public          int                       ReadTimeout;
-            public          int                       WriteTimeout;
-            public          System.IO.Ports.Handshake Handshake;
-            public          bool                      DtrEnable;
-            public          bool                      RtsEnable;
-            public          bool                      DiscardNull;
-            public          byte                      ParityReplace;
+            public readonly string PortName;
+            public int BaudRate;
+            public PORTS.Parity Parity;
+            public int DataBits;
+            public PORTS.StopBits StopBits;
+            public int ReadBufferSize;
+            public int WriteBufferSize;
+            public int ReadTimeout;
+            public int WriteTimeout;
+            public PORTS.Handshake Handshake;
+            public bool DtrEnable;
+            public bool RtsEnable;
+            public bool CtsEnable;
+            public bool DiscardNull;
+            public byte ParityReplace;
+            public int TxPin;
+            public int RxPin;
+            public int CtsPin;
+            public int RtsPin;
 
             //
             // Constructor Methods
             //
 
-            public Configuration( string portName )
+            public Configuration(string portName)
             {
-                this.PortName        = portName;
-                this.BaudRate        = 9600;
-                this.Parity          = System.IO.Ports.Parity.None;
-                this.DataBits        = 8;
-                this.StopBits        = System.IO.Ports.StopBits.One;
-                this.ReadBufferSize  = 1024;
-                this.WriteBufferSize = 1024;
-                this.ReadTimeout     = Timeout.Infinite;
-                this.WriteTimeout    = Timeout.Infinite;
-                this.Handshake       = System.IO.Ports.Handshake.None;
-                this.DtrEnable       = false;
-                this.RtsEnable       = false;
-                this.DiscardNull     = false;
-                this.ParityReplace   = 0;
+                this.PortName = portName;
+                this.BaudRate = 9600;
+                this.Parity = PORTS.Parity.None;
+                this.DataBits = 8;
+                this.StopBits = PORTS.StopBits.One;
+                this.ReadBufferSize = 256;
+                this.WriteBufferSize = 256;
+                this.ReadTimeout = Timeout.Infinite;
+                this.WriteTimeout = Timeout.Infinite;
+                this.Handshake = PORTS.Handshake.None;
+                this.DtrEnable = false;
+                this.RtsEnable = false;
+                this.CtsEnable = false;
+                this.DiscardNull = false;
+                this.ParityReplace = 0;
+
+                // Temporary variable here to avoid multiple virtual calls
+                int invalidPin = HardwareProvider.Instance.InvalidPin;
+                this.TxPin = invalidPin;
+                this.RxPin = invalidPin;
+                this.CtsPin = invalidPin;
+                this.RtsPin = invalidPin;
             }
         }
 
@@ -63,20 +77,20 @@ namespace Microsoft.Zelig.Runtime
         // State
         //
 
-        protected Configuration                m_cfg;
-        protected KernelCircularBuffer< byte > m_receiveQueue;
-        protected KernelCircularBuffer< byte > m_transmitQueue;
+        protected Configuration m_cfg;
+        protected KernelCircularBuffer<byte> m_receiveQueue;
+        protected KernelCircularBuffer<byte> m_transmitQueue;
 
         //
         // Constructor Methods
         //
 
-        protected BaseSerialStream( ref Configuration cfg )
+        protected BaseSerialStream(ref Configuration cfg)
         {
             m_cfg = cfg;
 
-            m_receiveQueue  = new KernelCircularBuffer< byte >( cfg.ReadBufferSize  );
-            m_transmitQueue = new KernelCircularBuffer< byte >( cfg.WriteBufferSize );
+            m_receiveQueue = new KernelCircularBuffer<byte>(cfg.ReadBufferSize);
+            m_transmitQueue = new KernelCircularBuffer<byte>(cfg.WriteBufferSize);
         }
 
         //
@@ -85,7 +99,7 @@ namespace Microsoft.Zelig.Runtime
 
         public override void DiscardInBuffer()
         {
-            using(SmartHandles.InterruptState.Disable())
+            using (SmartHandles.InterruptState.Disable())
             {
                 m_receiveQueue.Clear();
             }
@@ -93,26 +107,23 @@ namespace Microsoft.Zelig.Runtime
 
         public override void DiscardOutBuffer()
         {
-            using(SmartHandles.InterruptState.Disable())
+            using (SmartHandles.InterruptState.Disable())
             {
                 m_transmitQueue.Clear();
             }
         }
 
-        public override int Read( byte[] array   ,
-                                  int    offset  ,
-                                  int    count   ,
-                                  int    timeout )
+        public override int Read(byte[] array, int offset, int count, int timeout)
         {
             int got = 0;
 
-            while(got < count)
+            while (got < count)
             {
                 byte val;
 
-                if(m_receiveQueue.DequeueBlocking( timeout, out val ) == false)
+                if (!m_receiveQueue.DequeueBlocking(timeout, out val))
                 {
-                    if(timeout != 0)
+                    if (timeout != 0)
                     {
                         throw new TimeoutException();
                     }
@@ -127,13 +138,13 @@ namespace Microsoft.Zelig.Runtime
             return got;
         }
 
-        public override int ReadByte( int timeout )
+        public override int ReadByte(int timeout)
         {
             byte val;
 
-            if(m_receiveQueue.DequeueBlocking( timeout, out val ) == false)
+            if (!m_receiveQueue.DequeueBlocking(timeout, out val))
             {
-                if(timeout != 0)
+                if (timeout != 0)
                 {
                     throw new TimeoutException();
                 }
@@ -144,34 +155,34 @@ namespace Microsoft.Zelig.Runtime
             return val;
         }
 
-        public override void Write( byte[] array   ,
-                                    int    offset  ,
-                                    int    count   ,
-                                    int    timeout )
+        public override void Write(byte[] array, int offset, int count, int timeout)
         {
-            for(int pos = 0; pos < count; pos++)
+            for (int pos = 0; pos < count; pos++)
             {
-                if(m_transmitQueue.EnqueueBlocking( timeout, array[offset++] ) == false)
+                if (!m_transmitQueue.EnqueueBlocking(timeout, array[offset]))
                 {
                     throw new TimeoutException();
                 }
+                offset++;
             }
         }
 
-        public override void WriteByte( byte value   ,
-                                        int  timeout )
+        public override void WriteByte(byte value,
+                                        int timeout)
         {
-            if(m_transmitQueue.EnqueueBlocking( timeout, value ) == false)
+            if (!m_transmitQueue.EnqueueBlocking(timeout, value))
             {
                 throw new TimeoutException();
             }
         }
 
+        // TODO: Consider Yield or SpinWait
+        // TODO: This also won't do anything as Write isn't currently async
         public override void Flush()
         {
-            while(m_transmitQueue.IsEmpty == false)
+            while (!m_transmitQueue.IsEmpty)
             {
-                Thread.Sleep( 0 );
+                Thread.Sleep(0);
             }
         }
 
@@ -259,7 +270,7 @@ namespace Microsoft.Zelig.Runtime
             {
                 return m_cfg.ReadTimeout;
             }
-    
+
             set
             {
                 m_cfg.ReadTimeout = value;
@@ -293,7 +304,7 @@ namespace Microsoft.Zelig.Runtime
             {
                 return m_cfg.WriteTimeout;
             }
-    
+
             set
             {
                 m_cfg.WriteTimeout = value;

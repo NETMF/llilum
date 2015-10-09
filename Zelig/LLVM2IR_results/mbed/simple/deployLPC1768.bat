@@ -1,2 +1,2 @@
-del F:\*.bin
-copy LPC1768\mbed_simple.bin F:\.
+del E:\*.bin
+copy LPC1768\mbed_simple.bin E:\.

@@ -9,7 +9,7 @@
         }
 
         internal Trunc( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsATruncInst ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsATruncInst ) )
         {
         }
     }

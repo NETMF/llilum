@@ -11,6 +11,7 @@ OBJECTS = .\Microsoft.Zelig.Test.mbed.Simple_opt.o \
 	$(TARGET)\InteropExports_i2c.o \
 	$(TARGET)\InteropExports_mem.o \
 	$(TARGET)\InteropExports_NVIC.o \
+	$(TARGET)\InteropExports_serial.o \
 	$(TARGET)\InteropExports_spi.o \
 	$(TARGET)\InteropExports_system_timer.o \
 	$(TARGET)\InteropExports_SysTick.o \
@@ -36,7 +37,7 @@ else
 endif
 
 # Common settings
-MBED_ROOT = $(ZELIG_ROOT)external\targets\mbed
+MBED_ROOT = $(ZELIG_ROOT)Zelig\mbed
 SOURCE_ROOT = $(ZELIG_ROOT)Zelig\Zelig\Test\mbed\SimpleSDK\Native
 LIBRARIES = -lmbed
 LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc -lnosys

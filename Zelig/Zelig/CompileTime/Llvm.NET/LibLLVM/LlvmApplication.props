@@ -39,6 +39,7 @@
     </PropertyGroup >
     <ItemGroup>
         <AllLlvmLibs Include="$(LLVM_LIB_DIR)LLVM*.lib" />
+        <AllLlvmLibs Include="$(LLVM_LIB_DIR)LTO.lib"/>
     </ItemGroup>
     <PropertyGroup>
         <AllLlvmStaticLibs>@(AllLlvmLibs)</AllLlvmStaticLibs>

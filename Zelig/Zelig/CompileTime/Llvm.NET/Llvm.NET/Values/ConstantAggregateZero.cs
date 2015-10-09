@@ -8,7 +8,7 @@
         }
 
         internal ConstantAggregateZero( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsAConstantAggregateZero ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAConstantAggregateZero ) )
         {
         }
     }

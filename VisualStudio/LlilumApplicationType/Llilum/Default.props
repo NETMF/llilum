@@ -19,6 +19,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 	<!-- This must be android in order for intellisense to know it is for GCC/Clang. -->
     <TargetPlatformIdentifier>Android</TargetPlatformIdentifier>
     <Platform Condition="'$(Platform)' == '' or '$(Platform)' == 'Win32'">ARM</Platform>
+    <LLilumGccVersion Condition="'$(LlilumGccVersion)'==''">4.9 2015q1</LLilumGccVersion>
+    <LLILUM_GCC Condition="'$(LLILUM_GCC)'==''">$(MSBuildProgramFiles32)\GNU Tools ARM Embedded\$(LLilumGccVersion)\</LLILUM_GCC>
   </PropertyGroup>
 
   <!-- Import After -->

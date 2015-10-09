@@ -2,24 +2,31 @@
 
 namespace Llvm.NET.Types
 {
+    public interface ISequenceType
+        : ITypeRef
+    {
+        ITypeRef ElementType { get; }
+    }
+
     /// <summary>LLVM Sequence type</summary>
     /// <remarks>
     /// Sequence types represent a sequence of elements that are contiguous 
     /// in memory. These include Vectors, Arrays, and pointers
     /// </remarks>
-    public class SequenceType
+    internal class SequenceType
         : TypeRef
+        , ISequenceType
     {
         /// <summary>Type of element stored in the sequence</summary>
-        public TypeRef ElementType
+        public ITypeRef ElementType
         {
             get
             {
-                var type = LLVMNative.GetElementType( TypeHandle );
-                if( type.Pointer == IntPtr.Zero )
+                var typeRef = NativeMethods.GetElementType( this.GetTypeRef() );
+                if( typeRef.Pointer == IntPtr.Zero )
                     return null;
 
-                return TypeRef.FromHandle( type );
+                return FromHandle( typeRef );
             }
         }
 
@@ -32,7 +39,7 @@ namespace Llvm.NET.Types
 
         internal static bool IsSequenceTypeRef( LLVMTypeRef typeRef )
         {
-            var kind = ( TypeKind )LLVMNative.GetTypeKind( typeRef );
+            var kind = ( TypeKind )NativeMethods.GetTypeKind( typeRef );
             return kind == TypeKind.Array
                 || kind == TypeKind.Vector
                 || kind == TypeKind.Pointer;

@@ -8,7 +8,7 @@
         }
 
         internal UndefValue( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsAUndefValue ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAUndefValue ) )
         {
         }
     }

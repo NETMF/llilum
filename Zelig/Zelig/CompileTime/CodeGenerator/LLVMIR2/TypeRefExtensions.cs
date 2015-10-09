@@ -5,17 +5,17 @@ namespace Microsoft.Zelig.LLVM
 {
     public static class TypeRefExtensions
     {
-        public static bool IsInteger( this TypeRef typeRef ) => typeRef.Kind == TypeKind.Integer;
+        public static bool IsInteger( this ITypeRef typeRef ) => typeRef.Kind == TypeKind.Integer;
 
         // Return true if value is 'float', a 32-bit IEEE fp type.
-        public static bool IsFloat( this TypeRef typeRef ) => typeRef.Kind == TypeKind.Float32;
+        public static bool IsFloat( this ITypeRef typeRef ) => typeRef.Kind == TypeKind.Float32;
 
         // Return true if this is 'double', a 64-bit IEEE fp type
-        public static bool IsDouble( this TypeRef typeRef ) => typeRef.Kind == TypeKind.Float64;
+        public static bool IsDouble( this ITypeRef typeRef ) => typeRef.Kind == TypeKind.Float64;
 
-        public static bool IsVoid( this TypeRef typeRef ) => typeRef.Kind == TypeKind.Void;
+        public static bool IsVoid( this ITypeRef typeRef ) => typeRef.Kind == TypeKind.Void;
 
-        public static bool IsFloatingPoint( this TypeRef typeRef )
+        public static bool IsFloatingPoint( this ITypeRef typeRef )
         {   
             switch( typeRef.Kind )
             {
@@ -32,13 +32,13 @@ namespace Microsoft.Zelig.LLVM
             }
         }
 
-        public static bool IsPointer( this TypeRef typeRef ) => typeRef.Kind == TypeKind.Pointer;
-        public static bool IsPointerPointer( this TypeRef typeRef )
+        public static bool IsPointer( this ITypeRef typeRef ) => typeRef.Kind == TypeKind.Pointer;
+        public static bool IsPointerPointer( this ITypeRef typeRef )
         {
-            var ptrType = typeRef as PointerType;
+            var ptrType = typeRef as IPointerType;
             return ptrType !=null && ptrType.ElementType.Kind == TypeKind.Pointer;
         }
 
-        public static bool IsStruct( this TypeRef typeRef ) => typeRef.Kind == TypeKind.Struct;
+        public static bool IsStruct( this ITypeRef typeRef ) => typeRef.Kind == TypeKind.Struct;
     }
 }

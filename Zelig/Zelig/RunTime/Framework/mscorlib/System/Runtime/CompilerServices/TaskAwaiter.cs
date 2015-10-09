@@ -37,6 +37,7 @@
 //
 // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+using System;
 using System.Diagnostics.Contracts;
 using System.Security;
 using System.Security.Permissions;
@@ -118,7 +119,7 @@ namespace System.Runtime.CompilerServices
             // waiting is needed.
             if (!task.IsCompleted)
             {
-                bool taskCompleted = task.InternalWait(Timeout.Infinite/*, default(CancellationToken)*/);
+                bool taskCompleted = task.InternalWait(Timeout.Infinite, default(CancellationToken));
 #if ENABLE_CONTRACTS
                 Contract.Assert(taskCompleted, "With an infinite timeout, the task should have always completed.");
 #endif // ENABLE_CONTRACTS
@@ -130,14 +131,12 @@ namespace System.Runtime.CompilerServices
             case TaskStatus.RanToCompletion:
                 break;
 
-#if ENABLE_CANCELLATION
             // If the task completed in a canceled state, throw an OperationCanceledException.
             // This will either be the OCE that actually caused the task to cancel, or it will be a new
             // TaskCanceledException. TCE derives from OCE, and by throwing it we automatically pick up the
             // completed task's CancellationToken if it has one, including that CT in the OCE.
             case TaskStatus.Canceled:
                 throw new TaskCanceledException(task);
-#endif // ENABLE_CANCELLATION
 
             // If the task faulted, throw its first exception,
             // even if it contained more than one.

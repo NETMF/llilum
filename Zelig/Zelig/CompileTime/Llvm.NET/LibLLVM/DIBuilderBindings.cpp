@@ -122,6 +122,8 @@ extern "C"
                                                  , unsigned Flags
                                                  , int IsOptimized
                                                  , LLVMValueRef Func
+                                                 , LLVMMetadataRef /*MDNode* */ TParam /*= nullptr*/
+                                                 , LLVMMetadataRef /*MDNode* */ Decl /*= nullptr*/
                                                  )
     {
         DIBuilder *D = unwrap( Dref );
@@ -136,8 +138,46 @@ extern "C"
                                              , ScopeLine
                                              , Flags
                                              , IsOptimized
-                                             , unwrap<Function>( Func )
+                                             , Func ? unwrap<Function>( Func ) : nullptr
+                                             , TParam ? unwrap<MDNode>( TParam ) : nullptr
+                                             , Decl ? unwrap<MDNode>( Decl ) : nullptr
                                              );
+        return wrap( SP );
+    }
+
+    LLVMMetadataRef LLVMDIBuilderCreateTempFunctionFwdDecl( LLVMDIBuilderRef Dref
+                                                           , LLVMMetadataRef /*DIScope* */Scope
+                                                           , char const* Name
+                                                           , char const* LinkageName
+                                                           , LLVMMetadataRef /*DIFile* */ File
+                                                           , unsigned LineNo
+                                                           , LLVMMetadataRef /*DISubroutineType* */ Ty
+                                                           , bool isLocalToUnit
+                                                           , bool isDefinition
+                                                           , unsigned ScopeLine
+                                                           , unsigned Flags /*= 0*/
+                                                           , bool isOptimized /*= false*/
+                                                           , LLVMValueRef /*Function* */ Fn /*= nullptr*/
+                                                           , LLVMMetadataRef /*MDNode* */ TParam /*= nullptr*/
+                                                           , LLVMMetadataRef /*MDNode* */ Decl /*= nullptr*/
+                                                           )
+    {
+        DIBuilder *D = unwrap( Dref );
+        DISubprogram* SP = D->createTempFunctionFwdDecl( unwrap<DIScope>( Scope )
+                                                      , Name
+                                                      , LinkageName
+                                                      , File ? unwrap<DIFile>( File ) : nullptr
+                                                      , LineNo
+                                                      , unwrap<DISubroutineType>( Ty )
+                                                      , isLocalToUnit
+                                                      , isDefinition
+                                                      , ScopeLine
+                                                      , Flags
+                                                      , isOptimized
+                                                      , Fn ? unwrap<Function>( Fn ) : nullptr
+                                                      , TParam ? unwrap<MDNode>( TParam ) : nullptr
+                                                      , Decl ? unwrap<MDNode>( Decl ) : nullptr
+                                                      );
         return wrap( SP );
     }
 
@@ -187,13 +227,24 @@ extern "C"
                                                     )
     {
         DIBuilder *D = unwrap( Dref );
-        DIDerivedType* T = D->createPointerType( unwrap<DIType>( PointeeType )
+        DIDerivedType* T = D->createPointerType( PointeeType ? unwrap<DIType>( PointeeType ) : nullptr // nullptr == void
                                                 , SizeInBits
                                                 , AlignInBits
                                                 , Name
                                                 );
         return wrap( T );
     }
+
+    LLVMMetadataRef LLVMDIBuilderCreateQualifiedType( LLVMDIBuilderRef Dref
+                                                      , uint32_t Tag
+                                                      , LLVMMetadataRef BaseType
+                                                      )
+    {
+        DIBuilder* D = unwrap( Dref );
+        DIDerivedType* T = D->createQualifiedType( Tag, unwrap<DIType>( BaseType ) );
+        return wrap( T );
+    }
+
 
     LLVMMetadataRef LLVMDIBuilderCreateSubroutineType( LLVMDIBuilderRef Dref
                                                        , LLVMMetadataRef File
@@ -519,12 +570,6 @@ LLVMMetadataRef LLVMDIBuilderCreateReplaceableCompositeType( LLVMDIBuilderRef Dr
         o->replaceAllUsesWith( n );
     }
 
-    unsigned LLVMDITypeGetFlags( LLVMMetadataRef t )
-    {
-       DIType* type = unwrap<DIType>( t );
-       return type->getFlags();
-    }
-
     LLVMMetadataRef LLVMDILocation( LLVMContextRef context, unsigned Line, unsigned Column, LLVMMetadataRef scope, LLVMMetadataRef InlinedAt )
     {
         DILocation* pLoc = DILocation::get( *unwrap( context )
@@ -536,10 +581,9 @@ LLVMMetadataRef LLVMDIBuilderCreateReplaceableCompositeType( LLVMDIBuilderRef Dr
         return wrap( pLoc );
     }
 
-    char const* LLVMGetDITypeName( LLVMMetadataRef diType )
+    LLVMBool LLVMSubProgramDescribes( LLVMMetadataRef subProgram, LLVMValueRef /*const Function **/F )
     {
-        DIType* pType = unwrap<DIType>( diType );
-        return LLVMCreateMessage( pType->getName( ).str().c_str() );
+        DISubprogram* pSub = unwrap<DISubprogram>( subProgram );
+        return pSub->describes( unwrap<Function>( F ) );
     }
-
 }

@@ -44,6 +44,9 @@ extern "C" {
     LLVMValueRef LLVMBuildIntCast2( LLVMBuilderRef B, LLVMValueRef Val, LLVMTypeRef DestTy, LLVMBool isSigned, const char *Name );
     int LLVMGetValueID( LLVMValueRef valueRef);
     LLVMValueRef LLVMMetadataAsValue( LLVMContextRef context, LLVMMetadataRef metadataRef );
+    LLVMValueRef LLVMGetAliasee( LLVMValueRef Val );
+    uint32_t LLVMGetArgumentIndex( LLVMValueRef Val);
+
 
 #ifdef __cplusplus
 }

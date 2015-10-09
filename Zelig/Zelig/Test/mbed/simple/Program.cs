@@ -116,7 +116,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
         }
     }
     
-    unsafe class Program
+    class Program
     {
         public static byte[] i2cReadWrite1 = new byte[1];
         public static byte[] i2cReadWrite2 = new byte[2];
@@ -248,7 +248,6 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 
 #if (USE_THREADING)
             var ev = new AutoResetEvent( false );
-
             var solitaryBlinker = new Thread( delegate()
             {
                 while(true)
@@ -260,26 +259,22 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                     pinState = ++pinState % 2;
                 }
             } );
-
             solitaryBlinker.Start( );
-
-#if (LPC1768)
+            
             var solitaryAlerter = new System.Threading.Timer( ( obj ) =>
             {
                 // blink 20 times very fast
                 int fastBlinks = 20;
-                while(fastBlinks-- > 0)
+                while (fastBlinks-- > 0)
                 {
-                    ( (AutoResetEvent)obj).Set();
+                    ((AutoResetEvent)obj).Set();
 
-                    Thread.Sleep( 50 );
+                    Thread.Sleep(50);
                 }
-            }, ev, 2000, 5000 ); 
+            }, ev, 2000, 5000);
 
 #endif
-
-#endif
-            while(true)
+            while (true)
             {
 
                 if (blinkingTimer.read() >= period)

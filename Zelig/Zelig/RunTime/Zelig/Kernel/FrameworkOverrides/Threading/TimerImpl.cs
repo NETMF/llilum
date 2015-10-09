@@ -82,7 +82,7 @@ namespace Microsoft.Zelig.Runtime
             // State
             //
 
-            const int c_MaxIdleHandlers = 3;
+            const int c_MaxIdleHandlers = 2;
             
             KernelList< TimerImpl >  m_timers;
 

@@ -9,7 +9,10 @@
 //    declaration rather than a preprocessor macro instantiation
 //  - converted several int return and parameter types to proper LLVMxxxRef types not handled correctly
 //    by the ClangSharp code generator
-//
+//  - numerous additional extension methods added manually. (e.g. as new apis are added they are done so
+//    rather than re-running a tool and then fixing everything up again )
+//  - manually updated to 3.7.0 APIs
+//  - added BestFitMapping = false, ThrowOnUnmappableChar = true to resolve FxCop issue CA2101
 using System;
 using System.Runtime.InteropServices;
 
@@ -43,59 +46,7 @@ namespace Llvm.NET
         internal IntPtr Pointer;
     }
 
-    /// <summary>
-    /// LLVM attribute types. These should match Attribute::AttrKind exactly.
-    /// </summary>
-    internal enum LLVMAttributeKind : uint
-    {
-        None,
-        Alignment,
-        AlwaysInline,
-        Builtin,
-        ByVal,
-        InAlloca,
-        Cold,
-        Convergent,
-        InlineHint,
-        InReg,
-        JumpTable,
-        MinSize,
-        Naked,
-        Nest,
-        NoAlias,
-        NoBuiltin,
-        NoCapture,
-        NoDuplicate,
-        NoImplicitFloat,
-        NoInline,
-        NonLazyBind,
-        NonNull,
-        Dereferenceable,
-        DereferenceableOrNull,
-        NoRedZone,
-        NoReturn,
-        NoUnwind,
-        OptimizeForSize,
-        OptimizeNone,
-        ReadNone,
-        ReadOnly,
-        ArgMemOnly,
-        Returned,
-        ReturnsTwice,
-        SExt,
-        StackAlignment,
-        StackProtect,
-        StackProtectReq,
-        StackProtectStrong,
-        SafeStack,
-        StructRet,
-        SanitizeAddress,
-        SanitizeThread,
-        SanitizeMemory,
-        UWTable,
-        ZExt,
-    }
-
+    
     internal enum LLVMModFlagBehavior
     {
         @Error = 1,
@@ -217,201 +168,305 @@ namespace Llvm.NET
         LLVMDwarfTagHiUser = 0xffff
     };
 
-    internal static partial class LLVMNative
+    internal enum LLVMAttrKind
     {
-        [DllImport( libraryPath, EntryPoint = "LLVMGetValueID", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+       @LLVMAttrKindNone,
+       @LLVMAttrKindAlignment,
+       @LLVMAttrKindAlwaysInline,
+       @LLVMAttrKindBuiltin,
+       @LLVMAttrKindByVal,
+       @LLVMAttrKindInAlloca,
+       @LLVMAttrKindCold,
+       @LLVMAttrKindConvergent,
+       @LLVMAttrKindInlineHint,
+       @LLVMAttrKindInReg,
+       @LLVMAttrKindJumpTable,
+       @LLVMAttrKindMinSize,
+       @LLVMAttrKindNaked,
+       @LLVMAttrKindNest,
+       @LLVMAttrKindNoAlias,
+       @LLVMAttrKindNoBuiltin,
+       @LLVMAttrKindNoCapture,
+       @LLVMAttrKindNoDuplicate,
+       @LLVMAttrKindNoImplicitFloat,
+       @LLVMAttrKindNoInline,
+       @LLVMAttrKindNonLazyBind,
+       @LLVMAttrKindNonNull,
+       @LLVMAttrKindDereferenceable,
+       @LLVMAttrKindDereferenceableOrNull,
+       @LLVMAttrKindNoRedZone,
+       @LLVMAttrKindNoReturn,
+       @LLVMAttrKindNoUnwind,
+       @LLVMAttrKindOptimizeForSize,
+       @LLVMAttrKindOptimizeNone,
+       @LLVMAttrKindReadNone,
+       @LLVMAttrKindReadOnly,
+       @LLVMAttrKindArgMemOnly,
+       @LLVMAttrKindReturned,
+       @LLVMAttrKindReturnsTwice,
+       @LLVMAttrKindSExt,
+       @LLVMAttrKindStackAlignment,
+       @LLVMAttrKindStackProtect,
+       @LLVMAttrKindStackProtectReq,
+       @LLVMAttrKindStackProtectStrong,
+       @LLVMAttrKindSafeStack,
+       @LLVMAttrKindStructRet,
+       @LLVMAttrKindSanitizeAddress,
+       @LLVMAttrKindSanitizeThread,
+       @LLVMAttrKindSanitizeMemory,
+       @LLVMAttrKindUWTable,
+       @LLVMAttrKindZExt,
+    };
+
+    internal static partial class NativeMethods
+    {
+        [DllImport( libraryPath, EntryPoint = "LLVMGetValueID", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern int GetValueID( LLVMValueRef @val );
 
-        [ DllImport( libraryPath, EntryPoint = "LLVMBuildIntCast2", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        [ DllImport( libraryPath, EntryPoint = "LLVMBuildIntCast2", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern LLVMValueRef BuildIntCast( LLVMBuilderRef @param0, LLVMValueRef @Val, LLVMTypeRef @DestTy, LLVMBool isSigned, [MarshalAs( UnmanagedType.LPStr )] string @Name );
 
-        [DllImport( libraryPath, EntryPoint = "LLVMSetDebugLoc", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        [DllImport( libraryPath, EntryPoint = "LLVMSetDebugLoc", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern void SetDebugLoc( LLVMValueRef inst, uint line, uint column, LLVMMetadataRef scope );
 
-        [DllImport(libraryPath, EntryPoint = "LLVMVerifyFunctionEx", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMVerifyFunctionEx", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMBool VerifyFunctionEx(LLVMValueRef @Fn, LLVMVerifierFailureAction @Action, out IntPtr @OutMessages);
 
-        [DllImport( libraryPath, EntryPoint = "LLVMInitializeNativeTargetExport", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
-        internal static extern LLVMBool LLVMInitializeNativeTarget( );
-
-        [DllImport( libraryPath, EntryPoint = "LLVMInitializeNativeAsmParserExport", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
-        internal static extern LLVMBool LLVMInitializeNativeAsmParser( );
-
-        [DllImport( libraryPath, EntryPoint = "LLVMInitializeNativeAsmPrinterExport", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
-        internal static extern LLVMBool LLVMInitializeNativeAsmPrinter( );
-
-        [DllImport( libraryPath, EntryPoint = "LLVMInitializeNativeDisassemblerExport", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
-        internal static extern LLVMBool LLVMInitializeNativeDisassembler( );
-
-        [DllImport(libraryPath, EntryPoint = "LLVMAddAddressSanitizerFunctionPass", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMAddAddressSanitizerFunctionPass", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern void AddAddressSanitizerFunctionPass( LLVMPassManagerRef @PM );
 
-        [DllImport(libraryPath, EntryPoint = "LLVMAddAddressSanitizerModulePass", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMAddAddressSanitizerModulePass", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern void AddAddressSanitizerModulePass( LLVMPassManagerRef @PM );
 
-        [DllImport(libraryPath, EntryPoint = "LLVMAddThreadSanitizerPass", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMAddThreadSanitizerPass", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern void AddThreadSanitizerPass( LLVMPassManagerRef @PM );
 
-        [DllImport(libraryPath, EntryPoint = "LLVMAddMemorySanitizerPass", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMAddMemorySanitizerPass", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern void AddMemorySanitizerPass( LLVMPassManagerRef @PM );
 
-        [DllImport(libraryPath, EntryPoint = "LLVMAddDataFlowSanitizerPass", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMAddDataFlowSanitizerPass", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern void AddDataFlowSanitizerPass( LLVMPassManagerRef @PM, [MarshalAs(UnmanagedType.LPStr)] string @ABIListFile);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMAddModuleFlag", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMAddModuleFlag", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern void AddModuleFlag(LLVMModuleRef @M, LLVMModFlagBehavior behavior, [MarshalAs(UnmanagedType.LPStr)] string @name, uint @value);
 
-        [DllImport( libraryPath, EntryPoint = "LLVMGetOrInsertFunction", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        [DllImport( libraryPath, EntryPoint = "LLVMGetOrInsertFunction", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMValueRef GetOrInsertFunction( LLVMModuleRef module, [MarshalAs( UnmanagedType.LPStr )] string @name, LLVMTypeRef functionType );
 
-        [DllImport(libraryPath, EntryPoint = "LLVMAddFunctionAttr2", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
-        internal static extern void AddFunctionAttr2(LLVMValueRef @Fn, LLVMAttributeKind @Kind, ulong @Value);
+        [DllImport( libraryPath, EntryPoint = "LLVMAddFunctionAttr2", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern void AddFunctionAttr2( LLVMValueRef Fn, int index, LLVMAttrKind kind );
 
-        [DllImport(libraryPath, EntryPoint = "LLVMRemoveFunctionAttr2", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
-        internal static extern void RemoveFunctionAttr2( LLVMValueRef @Fn, LLVMAttributeKind @Kind);
+        [DllImport( libraryPath, EntryPoint = "LLVMHasFunctionAttr2", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern LLVMBool HasFunctionAttr2( LLVMValueRef Fn, int index, LLVMAttrKind kind );
 
-        [DllImport(libraryPath, EntryPoint = "LLVMIsConstantZeroValue", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport( libraryPath, EntryPoint = "LLVMRemoveFunctionAttr2", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern void RemoveFunctionAttr2( LLVMValueRef Fn, int index, LLVMAttrKind kind );
+
+        [DllImport(libraryPath, EntryPoint = "LLVMIsConstantZeroValue", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMBool IsConstantZeroValue( LLVMValueRef @Val );
 
-        [DllImport( libraryPath, EntryPoint = "LLVMRemoveGlobalFromParent", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        [DllImport( libraryPath, EntryPoint = "LLVMRemoveGlobalFromParent", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern void RemoveGlobalFromParent( LLVMValueRef @Val );
 
-        [DllImport(libraryPath, EntryPoint = "LLVMConstantAsMetadata", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMConstantAsMetadata", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef ConstantAsMetadata( LLVMValueRef @Val );
 
-        [DllImport(libraryPath, EntryPoint = "LLVMMDString2", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMMDString2", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef MDString2(LLVMContextRef @C, [MarshalAs(UnmanagedType.LPStr)] string @Str, uint @SLen);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMMDNode2", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMMDNode2", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef MDNode2( LLVMContextRef @C, out LLVMMetadataRef @MDs, uint @Count);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMTemporaryMDNode", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMTemporaryMDNode", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef TemporaryMDNode( LLVMContextRef @C, out LLVMMetadataRef @MDs, uint @Count);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMAddNamedMetadataOperand2", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMAddNamedMetadataOperand2", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern void AddNamedMetadataOperand2( LLVMModuleRef @M, [MarshalAs(UnmanagedType.LPStr)] string @name, LLVMMetadataRef @Val);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMSetMetadata2", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMSetMetadata2", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern void SetMetadata2( LLVMValueRef @Inst, uint @KindID, LLVMMetadataRef @MD);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMMetadataReplaceAllUsesWith", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMMetadataReplaceAllUsesWith", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern void MetadataReplaceAllUsesWith(LLVMMetadataRef @MD, LLVMMetadataRef @New);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMSetCurrentDebugLocation2", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMSetCurrentDebugLocation2", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern void SetCurrentDebugLocation2( LLVMBuilderRef @Bref, uint @Line, uint @Col, LLVMMetadataRef @Scope, LLVMMetadataRef @InlinedAt);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMNewDIBuilder", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMNewDIBuilder", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMDIBuilderRef NewDIBuilder( LLVMModuleRef @m, LLVMBool allowUnresolved );
 
-        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderDestroy", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderDestroy", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern void DIBuilderDestroy(LLVMDIBuilderRef @d);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderFinalize", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderFinalize", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern void DIBuilderFinalize(LLVMDIBuilderRef @d);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateCompileUnit", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateCompileUnit", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef DIBuilderCreateCompileUnit(LLVMDIBuilderRef @D, uint @Language, [MarshalAs(UnmanagedType.LPStr)] string @File, [MarshalAs(UnmanagedType.LPStr)] string @Dir, [MarshalAs(UnmanagedType.LPStr)] string @Producer, int @Optimized, [MarshalAs(UnmanagedType.LPStr)] string @Flags, uint @RuntimeVersion);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateFile", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateFile", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef DIBuilderCreateFile(LLVMDIBuilderRef @D, [MarshalAs(UnmanagedType.LPStr)] string @File, [MarshalAs(UnmanagedType.LPStr)] string @Dir);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateLexicalBlock", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateLexicalBlock", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef DIBuilderCreateLexicalBlock(LLVMDIBuilderRef @D, LLVMMetadataRef @Scope, LLVMMetadataRef @File, uint @Line, uint @Column);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateLexicalBlockFile", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateLexicalBlockFile", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef DIBuilderCreateLexicalBlockFile(LLVMDIBuilderRef @D, LLVMMetadataRef @Scope, LLVMMetadataRef @File, uint @Discriminator);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateFunction", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
-        internal static extern LLVMMetadataRef DIBuilderCreateFunction(LLVMDIBuilderRef @D, LLVMMetadataRef @Scope, [MarshalAs(UnmanagedType.LPStr)] string @Name, [MarshalAs(UnmanagedType.LPStr)] string @LinkageName, LLVMMetadataRef @File, uint @Line, LLVMMetadataRef @CompositeType, int @IsLocalToUnit, int @IsDefinition, uint @ScopeLine, uint @Flags, int @IsOptimized, LLVMValueRef @Function);
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateFunction", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern LLVMMetadataRef DIBuilderCreateFunction(LLVMDIBuilderRef @D, LLVMMetadataRef @Scope, [MarshalAs(UnmanagedType.LPStr)] string @Name, [MarshalAs(UnmanagedType.LPStr)] string @LinkageName, LLVMMetadataRef @File, uint @Line, LLVMMetadataRef @CompositeType, int @IsLocalToUnit, int @IsDefinition, uint @ScopeLine, uint @Flags, int @IsOptimized, LLVMValueRef @Function, LLVMMetadataRef TParam, LLVMMetadataRef Decl );
 
-        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateLocalVariable", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateTempFunctionFwdDecl", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern LLVMMetadataRef DIBuilderCreateTempFunctionFwdDecl(LLVMDIBuilderRef @D, LLVMMetadataRef @Scope, [MarshalAs(UnmanagedType.LPStr)] string @Name, [MarshalAs(UnmanagedType.LPStr)] string @LinkageName, LLVMMetadataRef @File, uint @Line, LLVMMetadataRef @CompositeType, int @IsLocalToUnit, int @IsDefinition, uint @ScopeLine, uint @Flags, int @IsOptimized, LLVMValueRef @Function, LLVMMetadataRef TParam, LLVMMetadataRef Decl );
+
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateLocalVariable", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef DIBuilderCreateLocalVariable(LLVMDIBuilderRef @D, uint @Tag, LLVMMetadataRef @Scope, [MarshalAs(UnmanagedType.LPStr)] string @Name, LLVMMetadataRef @File, uint @Line, LLVMMetadataRef @Ty, int @AlwaysPreserve, uint @Flags, uint @ArgNo);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateBasicType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateBasicType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef DIBuilderCreateBasicType(LLVMDIBuilderRef @D, [MarshalAs(UnmanagedType.LPStr)] string @Name, ulong @SizeInBits, ulong @AlignInBits, uint @Encoding);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreatePointerType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreatePointerType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef DIBuilderCreatePointerType(LLVMDIBuilderRef @D, LLVMMetadataRef @PointeeType, ulong @SizeInBits, ulong @AlignInBits, [MarshalAs(UnmanagedType.LPStr)] string @Name);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateSubroutineType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateQualifiedType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern LLVMMetadataRef DIBuilderCreateQualifiedType( LLVMDIBuilderRef Dref, uint Tag, LLVMMetadataRef BaseType );
+
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateSubroutineType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef DIBuilderCreateSubroutineType(LLVMDIBuilderRef @D, LLVMMetadataRef @File, LLVMMetadataRef @ParameterTypes, uint @Flags);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateStructType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateStructType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef DIBuilderCreateStructType(LLVMDIBuilderRef @D, LLVMMetadataRef @Scope, [MarshalAs(UnmanagedType.LPStr)] string @Name, LLVMMetadataRef @File, uint @Line, ulong @SizeInBits, ulong @AlignInBits, uint @Flags, LLVMMetadataRef @DerivedFrom, LLVMMetadataRef @ElementTypes);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateMemberType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateMemberType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef DIBuilderCreateMemberType(LLVMDIBuilderRef @D, LLVMMetadataRef @Scope, [MarshalAs(UnmanagedType.LPStr)] string @Name, LLVMMetadataRef @File, uint @Line, ulong @SizeInBits, ulong @AlignInBits, ulong @OffsetInBits, uint @Flags, LLVMMetadataRef @Ty);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateArrayType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateArrayType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef DIBuilderCreateArrayType(LLVMDIBuilderRef @D, ulong @SizeInBits, ulong @AlignInBits, LLVMMetadataRef @ElementType, LLVMMetadataRef @Subscripts);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateVectorType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateVectorType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef DIBuilderCreateVectorType(LLVMDIBuilderRef @D, ulong @SizeInBits, ulong @AlignInBits, LLVMMetadataRef @ElementType, LLVMMetadataRef @Subscripts);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateTypedef", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateTypedef", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef DIBuilderCreateTypedef(LLVMDIBuilderRef @D, LLVMMetadataRef @Ty, [MarshalAs(UnmanagedType.LPStr)] string @Name, LLVMMetadataRef @File, uint @Line, LLVMMetadataRef @Context);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderGetOrCreateSubrange", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderGetOrCreateSubrange", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef DIBuilderGetOrCreateSubrange(LLVMDIBuilderRef @D, long @Lo, long @Count);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderGetOrCreateArray", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderGetOrCreateArray", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef DIBuilderGetOrCreateArray(LLVMDIBuilderRef @D, out LLVMMetadataRef @Data, ulong @Length);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderGetOrCreateTypeArray", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderGetOrCreateTypeArray", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef DIBuilderGetOrCreateTypeArray(LLVMDIBuilderRef @D, out LLVMMetadataRef @Data, ulong @Length);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateExpression", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateExpression", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef DIBuilderCreateExpression(LLVMDIBuilderRef @Dref, out long @Addr, ulong @Length);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderInsertDeclareAtEnd", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderInsertDeclareAtEnd", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMValueRef DIBuilderInsertDeclareAtEnd(LLVMDIBuilderRef @D, LLVMValueRef @Storage, LLVMMetadataRef @VarInfo, LLVMMetadataRef @Expr, LLVMMetadataRef Location, LLVMBasicBlockRef @Block);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderInsertValueAtEnd", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderInsertValueAtEnd", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int DIBuilderInsertValueAtEnd(LLVMDIBuilderRef @D, LLVMValueRef @Val, ulong @Offset, LLVMMetadataRef @VarInfo, LLVMMetadataRef @Expr, LLVMMetadataRef Location, LLVMBasicBlockRef @Block);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMDiBuilderCreateEnumerationType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+        [DllImport(libraryPath, EntryPoint = "LLVMDIBuilderCreateEnumerationType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef DIBuilderCreateEnumerationType( LLVMDIBuilderRef @D, LLVMMetadataRef @Scope, string @Name, LLVMMetadataRef @File, uint @LineNumber, ulong @SizeInBits, ulong @AlignInBits, LLVMMetadataRef @Elements, LLVMMetadataRef @UnderlyingType, string @UniqueId );
 
-        [DllImport( libraryPath, EntryPoint = "LLVMDiBuilderCreateEnumeratorValue", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        [DllImport( libraryPath, EntryPoint = "LLVMDIBuilderCreateEnumeratorValue", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef DIBuilderCreateEnumeratorValue( LLVMDIBuilderRef @D, string @Name, long @Val );
 
-        [DllImport( libraryPath, EntryPoint = "LLVMDIDescriptorGetTag", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        [DllImport( libraryPath, EntryPoint = "LLVMDIDescriptorGetTag", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMDwarfTag DIDescriptorGetTag( LLVMMetadataRef descriptor );
 
-        [DllImport( libraryPath, EntryPoint = "LLVMDIBuilderCreateGlobalVariable", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        [DllImport( libraryPath, EntryPoint = "LLVMDIBuilderCreateGlobalVariable", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef DIBuilderCreateGlobalVariable( LLVMDIBuilderRef Dref, LLVMMetadataRef Context,string Name, string LinkageName, LLVMMetadataRef File, uint LineNo, LLVMMetadataRef Ty, LLVMBool isLocalToUnit, LLVMValueRef Val, LLVMMetadataRef Decl );
 
-        [DllImport( libraryPath, EntryPoint = "LLVMDIBuilderInsertDeclareBefore", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        [DllImport( libraryPath, EntryPoint = "LLVMDIBuilderInsertDeclareBefore", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMValueRef DIBuilderInsertDeclareBefore( LLVMDIBuilderRef Dref, LLVMValueRef Storage, LLVMMetadataRef VarInfo, LLVMMetadataRef Expr, LLVMMetadataRef Location, LLVMValueRef InsertBefore );
 
-        [DllImport( libraryPath, EntryPoint = "LLVMDIDescriptorAsString", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        [DllImport( libraryPath, EntryPoint = "LLVMDIDescriptorAsString", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern IntPtr DIDescriptorAsString( LLVMMetadataRef descriptor );
 
-        [DllImport( libraryPath, EntryPoint = "LLVMMDNodeReplaceAllUsesWith", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        [DllImport( libraryPath, EntryPoint = "LLVMMDNodeReplaceAllUsesWith", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern void MDNodeReplaceAllUsesWith( LLVMMetadataRef oldDescriptor, LLVMMetadataRef newDescriptor );
 
-        [DllImport( libraryPath, EntryPoint = "LLVMDITypeGetFlags", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
-        internal static extern uint DITypeGetFlags( LLVMMetadataRef type );
-
-        [DllImport( libraryPath, EntryPoint = "LLVMMetadataAsValue", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        [DllImport( libraryPath, EntryPoint = "LLVMMetadataAsValue", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMValueRef MetadataAsValue( LLVMContextRef context, LLVMMetadataRef metadataRef );
 
-        [DllImport( libraryPath, EntryPoint = "LLVMDIBuilderCreateReplaceableCompositeType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        [DllImport( libraryPath, EntryPoint = "LLVMDIBuilderCreateReplaceableCompositeType", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef DIBuilderCreateReplaceableCompositeType( LLVMDIBuilderRef Dref, uint Tag, string Name, LLVMMetadataRef Scope, LLVMMetadataRef File, uint Line, uint RuntimeLang, ulong SizeInBits, ulong AlignInBits, uint Flags);
 
-        [DllImport( libraryPath, EntryPoint = "LLVMDILocation", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        [DllImport( libraryPath, EntryPoint = "LLVMDILocation", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMMetadataRef DILocation( LLVMContextRef context, uint Line, uint Column, LLVMMetadataRef scope, LLVMMetadataRef InlinedAt );
 
-        [DllImport( libraryPath, EntryPoint = "LLVMGetDITypeName", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
-        internal static extern IntPtr GetDITypeName( LLVMMetadataRef diType );
-
-        [DllImport( libraryPath, EntryPoint = "LLVMGetModuleName", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        [DllImport( libraryPath, EntryPoint = "LLVMGetModuleName", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern IntPtr GetModuleName( LLVMModuleRef module );
 
-        [DllImport( libraryPath, EntryPoint = "LLVMIsTemporary", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        [DllImport( libraryPath, EntryPoint = "LLVMIsTemporary", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMBool IsTemporary( LLVMMetadataRef M );
 
-        [DllImport( libraryPath, EntryPoint = "LLVMIsResolved", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl )]
+        [DllImport( libraryPath, EntryPoint = "LLVMIsResolved", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMBool IsResolved( LLVMMetadataRef M );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMGetMDStringText", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern IntPtr GetMDStringText( LLVMMetadataRef M, out uint len );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMGetGlobalAlias", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern LLVMValueRef GetGlobalAlias( LLVMModuleRef module, string name );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMGetAliasee", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern LLVMValueRef GetAliasee( LLVMValueRef Val );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMMDNodeResolveCycles", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern void MDNodeResolveCycles( LLVMMetadataRef M );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMSubProgramDescribes", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern LLVMBool SubProgramDescribes( LLVMMetadataRef subProgram, LLVMValueRef function );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMDITypeGetLine", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern UInt32 DITypeGetLine( LLVMMetadataRef typeRef );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMDITypeGetSizeInBits", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern UInt64 DITypeGetSizeInBits( LLVMMetadataRef typeRef );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMDITypeGetAlignInBits", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern UInt64 DITypeGetAlignInBits( LLVMMetadataRef typeRef );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMDITypeGetOffsetInBits", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern UInt64 DITypeGetOffsetInBits( LLVMMetadataRef typeRef );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMDITypeGetFlags", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern UInt32 DITypeGetFlags( LLVMMetadataRef typeRef );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMDITypeGetScope", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern LLVMMetadataRef DITypeGetScope( LLVMMetadataRef typeRef );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMDITypeGetName", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern IntPtr DITypeGetName( LLVMMetadataRef typeRef );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMDIScopeGetFile", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true )]
+        internal static extern LLVMMetadataRef DIScopeGetFile( LLVMMetadataRef scope );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMGetArgumentIndex", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true )]
+        internal static extern UInt32 GetArgumentIndex( LLVMValueRef Val );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMAddTargetDependentFunctionAttr2", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true )]
+        internal static extern void AddTargetDependentFunctionAttr2( LLVMValueRef function, int index, [MarshalAs( UnmanagedType.LPStr )] string name, [MarshalAs( UnmanagedType.LPStr )] string value );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMRemoveTargetDependentFunctionAttr2", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true )]
+        internal static extern void RemoveTargetDependentFunctionAttr2( LLVMValueRef function, int index, [MarshalAs( UnmanagedType.LPStr )] string name );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMSetFunctionAttributeValue", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true )]
+        internal static extern void SetFunctionAttributeValue( LLVMValueRef Fn, int index, LLVMAttrKind kind, UInt64 value );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMGetFunctionAttributeValue", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true )]
+        internal static extern UInt64 GetFunctionAttributeValue( LLVMValueRef Fn, int index, LLVMAttrKind kind );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMFunctionHasAttributes", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true )]
+        internal static extern LLVMBool FunctionHasAttributes( LLVMValueRef Fn, int index );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMGetFunctionAttributesAsString", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true )]
+        internal static extern IntPtr GetFunctionAttributesAsString( LLVMValueRef Fn, int index );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMGetFunctionAttributesAsString", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true )]
+        internal static extern LLVMBool LLVMHasTargetDependentAttribute( LLVMValueRef Fn, int index, [MarshalAs( UnmanagedType.LPStr )]string name );
     }
 }

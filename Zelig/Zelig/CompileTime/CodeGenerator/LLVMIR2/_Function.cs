@@ -7,9 +7,7 @@ using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
 namespace Microsoft.Zelig.LLVM
 {
-    /// <summary>
-    /// Subset of AttributeKind values which apply specifically to functions.
-    /// </summary>
+    /// <summary>Subset of AttributeKind values which apply specifically to functions.</summary>
     public enum FunctionAttribute : uint
     {
         AlwaysInline = AttributeKind.AlwaysInline,
@@ -42,53 +40,46 @@ namespace Microsoft.Zelig.LLVM
         SanitizeAddress = AttributeKind.SanitizeAddress,
         SanitizeThread = AttributeKind.SanitizeThread,
         SanitizeMemory = AttributeKind.SanitizeMemory,
-        UnwindTable = AttributeKind.UnwindTable,
+        UnwindTable = AttributeKind.UWTable,
     }
 
     public class _Function : _Value
     {
         public _Function( _Module module, string name, _Type funcType )
-            : base( module )
+            : base( module
+                  , funcType
+                  , module.LlvmModule.AddFunction( name, ( DebugFunctionType )( funcType.DebugType ) )
+                  , false
+                  )
         {
-            Function val = module.Impl.GetLLVMObject().AddFunction( name, ( Llvm.NET.Types.FunctionType )( funcType.Impl.GetLLVMObject( ) ) );
-            if( val.BasicBlocks.Count == 0 )
-                val.Linkage = Llvm.NET.Linkage.ExternalWeak;
-
-            Impl = new ValueImpl( funcType.Impl, val, false );
+            var function = ( Function )LlvmValue;
+            if( function.BasicBlocks.Count == 0 )
+                function.Linkage( Linkage.ExternalWeak );
         }
 
-        public void AddAttribute( FunctionAttribute kind, ulong value = 0 )
+        public void AddAttribute( FunctionAttribute kind )
         {
-            var func = ( Function )( Impl.GetLLVMObject( ) );
-            func.AddAttribute( ( AttributeKind )kind, value );
+            var func = ( Function )( LlvmValue );
+            func.AddAttributes( ( AttributeKind )kind );
+        }
+
+        public void AddAttribute( FunctionAttribute kind, ulong value )
+        {
+            var func = ( Function )( LlvmValue );
+            func.AddAttributes( new AttributeValue( (AttributeKind )kind, value ) );
         }
 
         public void RemoveAttribute( FunctionAttribute kind )
         {
-            var func = ( Function )( Impl.GetLLVMObject( ) );
-            func.RemoveAttribute( ( AttributeKind )kind );
+            var func = ( Function )( LlvmValue );
+            func.Attributes.Remove( ( AttributeKind )kind );
         }
 
         public _BasicBlock GetOrInsertBasicBlock( string blockName )
         {
-            var func = ( Function )( Impl.GetLLVMObject( ) );
+            var func = ( Function )( LlvmValue );
 
-            foreach( var block in func.BasicBlocks )
-            {
-                if( block.Name == blockName )
-                {
-                    return new _BasicBlock( this, new BasicBlockImpl( block ) );
-                }
-            }
-
-            BasicBlockImpl bbi = new BasicBlockImpl( func.AppendBasicBlock( blockName ) );
-
-            if( EntryBlock == null )
-            {
-                EntryBlock = bbi;
-            }
-
-            return new _BasicBlock( this, bbi );
+            return new _BasicBlock( this, func.FindOrCreateNamedBlock( blockName ) );
         }
 
         public _Value GetLocalStackValue( TS.MethodRepresentation method, _BasicBlock block, IR.VariableExpression val, IModuleManager manager )
@@ -104,7 +95,7 @@ namespace Microsoft.Zelig.LLVM
             var argExpression = val as IR.ArgumentVariableExpression;
             if( argExpression != null )
             {
-                var fn = ( Function )( Impl.GetLLVMObject( ) );
+                var fn = ( Function )( LlvmValue );
                 index = argExpression.Number;
                 if( method is TS.StaticMethodRepresentation )
                     index--;
@@ -115,30 +106,49 @@ namespace Microsoft.Zelig.LLVM
 
             var retVal = GetLocalStackValue( val.ToString( ), manager.LookupNativeTypeFor( val.Type ) );
             // if the local had a valid symbolic name in the source code, generate debug info for it
-            if( val.DebugName != null && !string.IsNullOrWhiteSpace( val.DebugName.Name ) )
+            if( string.IsNullOrWhiteSpace( val.DebugName?.Name ) )
+                return retVal;
+
+            var module = Module;
+            DILocalVariable localSym;
+            if( tag == Tag.ArgVariable )
             {
-                var module = Module( );
-                var localSym = module.DiBuilder.CreateLocalVariable( ( uint )tag
-                                                                   , block.CurDiSubProgram
-                                                                   , val.DebugName.Name
-                                                                   , module.Impl.CurDiFile
-                                                                   , ( uint )block.DebugCurLine
-                                                                   , valType.Impl.GetDiTypeForStack( )
-                                                                   , true
-                                                                   , 0
-                                                                   , ( uint )index
-                                                                   );
-                var loc = new DILocation( ( uint )block.DebugCurLine, ( uint )block.DebugCurLine, block.CurDiSubProgram );
-                // for reference types passed as a pointer, tell debugger to deref the pointer
-                var expr = retVal.Type( ).Impl.IsValueType( ) ? module.DiBuilder.CreateExpression() : module.DiBuilder.CreateExpression( ExpressionOp.deref );
-                module.DiBuilder.InsertDeclare( retVal.Impl.GetLLVMObject( ), localSym, loc, block.Impl.GetLLVMObject( ) );
+                localSym = module.DIBuilder.CreateArgument( block.CurDiSubProgram
+                                                          , val.DebugName.Name
+                                                          , module.CurDiFile
+                                                          , ( uint )block.DebugCurLine
+                                                          , valType.GetDiTypeForStack( ).DIType
+                                                          , true
+                                                          , 0
+                                                          , ( uint )index
+                                                          );
             }
+            else
+            {
+                localSym = module.DIBuilder.CreateLocalVariable( block.CurDiSubProgram
+                                                               , val.DebugName.Name
+                                                               , module.CurDiFile
+                                                               , ( uint )block.DebugCurLine
+                                                               , valType.GetDiTypeForStack( ).DIType
+                                                               , true
+                                                               , 0
+                                                               , ( uint )index
+                                                               );
+            }
+
+            var loc = new DILocation( module.LlvmContext, ( uint )block.DebugCurLine, ( uint )block.DebugCurLine, block.CurDiSubProgram );
+            // for reference types passed as a pointer, tell debugger to deref the pointer
+            DIExpression expr = module.DIBuilder.CreateExpression( );
+            if( !retVal.Type.IsValueType )
+                expr = module.DIBuilder.CreateExpression( ExpressionOp.deref );
+
+            module.DIBuilder.InsertDeclare( retVal.LlvmValue, localSym, expr, loc, block.LlvmBasicBlock );
             return retVal;
         }
 
         public _Value GetLocalStackValue( string name, _Type type )
         {
-            var fn = (Function)( Impl.GetLLVMObject( ) );
+            var fn = (Function)( LlvmValue );
 
             if( fn.BasicBlocks.Count == 0 )
             {
@@ -147,7 +157,7 @@ namespace Microsoft.Zelig.LLVM
 
             BasicBlock bb = fn.EntryBlock;
 
-            var bldr = new Llvm.NET.InstructionBuilder(type.Impl.GetLLVMObject().Context);
+            var bldr = new InstructionBuilder( type.DebugType.Context );
             if (bb.FirstInstruction == null)
             {
                 // The entry block is empty, which can happen when we're inserting the first InitialValueOperator.
@@ -158,9 +168,10 @@ namespace Microsoft.Zelig.LLVM
                 bldr.PositionBefore(bb.FirstInstruction);
             }
 
-            Value retVal = bldr.Alloca( type.Impl.GetLLVMObjectForStorage( ), name );
+            Value retVal = bldr.Alloca( type.GetLLVMObjectForStorage( ) )
+                               .RegisterName( name );
 
-            return new _Value( Owner, new ValueImpl( type.Impl, retVal, false ) );
+            return new _Value( Module, type, retVal, false );
         }
 
         //public void DeleteBody( )
@@ -170,14 +181,12 @@ namespace Microsoft.Zelig.LLVM
 
         public void SetExternalLinkage( )
         {
-            ( ( Function )Impl.GetLLVMObject( ) ).Linkage = Llvm.NET.Linkage.External;
+            ( ( Function )LlvmValue ).Linkage = Linkage.External;
         }
 
         public void SetInternalLinkage( )
         {
-            ( ( Function )Impl.GetLLVMObject( ) ).Linkage = Llvm.NET.Linkage.Internal;
+            ( ( Function )LlvmValue ).Linkage = Linkage.Internal;
         }
-
-        BasicBlockImpl EntryBlock;
     }
 }

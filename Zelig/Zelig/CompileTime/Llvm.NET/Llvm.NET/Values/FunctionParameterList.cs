@@ -19,7 +19,7 @@ namespace Llvm.NET.Values
                 if( index >= Count || index < 0 )
                     throw new IndexOutOfRangeException( );
 
-                return (Argument)Value.FromHandle( LLVMNative.GetParam( OwningFunction.ValueHandle, ( uint )index ) );
+                return Value.FromHandle<Argument>( NativeMethods.GetParam( OwningFunction.ValueHandle, ( uint )index ) );
             }
         }
 
@@ -27,7 +27,7 @@ namespace Llvm.NET.Values
         {
             get
             {
-                uint count = LLVMNative.CountParams( OwningFunction.ValueHandle );
+                uint count = NativeMethods.CountParams( OwningFunction.ValueHandle );
                 return ( int )Math.Min( count, int.MaxValue );
             }
         }
@@ -36,11 +36,11 @@ namespace Llvm.NET.Values
         {
             for( uint i = 0; i < Count; ++i )
             {
-                LLVMValueRef val = LLVMNative.GetParam( OwningFunction.ValueHandle, i );
+                LLVMValueRef val = NativeMethods.GetParam( OwningFunction.ValueHandle, i );
                 if( val.Pointer == IntPtr.Zero )
                     yield break;
 
-                yield return (Argument)Value.FromHandle( val );
+                yield return Value.FromHandle<Argument>( val );
             }
         }
 

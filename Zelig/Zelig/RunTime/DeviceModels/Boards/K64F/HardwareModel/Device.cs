@@ -24,5 +24,13 @@ namespace Microsoft.Zelig.K64F
                 return s_bootstrapStackK64F;
             }
         }
+
+        public override uint ManagedHeapSize
+        {
+            get
+            { 
+                return 0x10000u;
+            }
+        }
     }
 }

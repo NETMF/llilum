@@ -55,6 +55,7 @@
     <Compile Include="HardwareModel\Memory.cs" />
     <Compile Include="HardwareModel\Peripherals.cs" />
     <Compile Include="HardwareModel\Processor.cs" />
+    <Compile Include="HardwareModel\SerialPortsManager.cs" />
     <Compile Include="HardwareModel\Storage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SystemServices\GarbageCollectionManager.cs" />

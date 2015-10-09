@@ -19,7 +19,7 @@ namespace Llvm.NET.Values
                 if( index >= Count || index < 0 )
                     throw new IndexOutOfRangeException( );
 
-                return Value.FromHandle( LLVMNative.GetOperand( Owner.ValueHandle, ( uint )index ) );
+                return Value.FromHandle( NativeMethods.GetOperand( Owner.ValueHandle, ( uint )index ) );
             }
         }
 
@@ -27,7 +27,7 @@ namespace Llvm.NET.Values
         {
             get
             {
-                int count = LLVMNative.GetNumOperands( Owner.ValueHandle );
+                int count = NativeMethods.GetNumOperands( Owner.ValueHandle );
                 return Math.Min( count, int.MaxValue );
             }
         }
@@ -36,7 +36,7 @@ namespace Llvm.NET.Values
         {
             for( uint i = 0; i < Count; ++i )
             {
-                LLVMValueRef val = LLVMNative.GetOperand( Owner.ValueHandle, i );
+                LLVMValueRef val = NativeMethods.GetOperand( Owner.ValueHandle, i );
                 if( val.Pointer == IntPtr.Zero )
                     yield break;
 

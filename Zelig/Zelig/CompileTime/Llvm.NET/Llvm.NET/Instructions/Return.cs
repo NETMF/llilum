@@ -9,7 +9,7 @@
         }
 
         internal Return( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsAReturnInst ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAReturnInst ) )
         {
         }
     }

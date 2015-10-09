@@ -8,7 +8,7 @@
         }
 
         internal ConstantDataVector( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsAConstantDataVector ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAConstantDataVector ) )
         {
         }
     }

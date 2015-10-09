@@ -785,22 +785,6 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             }
 
             //
-            // Not ready for these ones yet
-            //
-
-            //////[ExportedMethod]
-            //////[WellKnownMethod("Hardware_InvokeResetHandler")]
-            //////private static void Reset_Handler( ) {}
-
-            //////[ExportedMethod]
-            //////[WellKnownMethod("Hardware_InvokeHardFaultHandler")]
-            //////private static void HardFault_Handler( ) {}
-
-            //////[ExportedMethod]
-            //////[WellKnownMethod("Hardware_InvokeDebugMonHandler")]
-            //////private static void DebugMon_Handler( ) {}
-
-            //
             // Helpers 
             //
 
@@ -903,51 +887,8 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             }
             
             //
-            // All overridable exceptions
+            // All overridable exceptions for Ctx Switch
             //
-
-            [RT.BottomOfCallStack( )]
-            [RT.HardwareExceptionHandler( RT.HardwareException.NMI )]
-            [ExportedMethod]
-            //[TS.WellKnownMethod( "Hardware_InvokeNMIHandler" )]
-            private static void NMI_Handler( )
-            {
-                //
-                // The processor clears the FAULTMASK bit to 0 on exit from any exception handler except the NMI handler.
-                //
-
-                EnableFaults( );
-            }
-            
-            [RT.BottomOfCallStack( )]
-            [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
-            [RT.NoReturn]
-            [ExportedMethod]
-            //[TS.WellKnownMethod( "Hardware_InvokeMemManageHandler" )]
-            private static void MemManage_Handler( )
-            {
-
-            }
-
-            [RT.BottomOfCallStack( )]
-            [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
-            [RT.NoReturn]
-            [ExportedMethod]
-            //[TS.WellKnownMethod( "Hardware_InvokeBusFaultHandler" )]
-            private static void BusFault_Handler( )
-            {
-
-            }
-
-            [RT.BottomOfCallStack( )]
-            [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
-            [RT.NoReturn]
-            [ExportedMethod]
-            //[TS.WellKnownMethod( "Hardware_InvokeUsageFaultHandler" )]
-            private static void UsageFault_Handler( )
-            {
-
-            }
 
             //[RT.BottomOfCallStack( )]
             //[RT.HardwareExceptionHandler( RT.HardwareException.Service )] // TODO: use LongJump instead of Service?

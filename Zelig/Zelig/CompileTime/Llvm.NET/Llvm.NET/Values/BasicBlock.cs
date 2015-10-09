@@ -18,14 +18,14 @@ namespace Llvm.NET.Values
         {
             get
             {
-                var parent = LLVMNative.GetBasicBlockParent( BlockHandle );
+                var parent = NativeMethods.GetBasicBlockParent( BlockHandle );
                 if( parent.Pointer == IntPtr.Zero )
                     return null;
 
                 // cache functions and use lookups to ensure
                 // identity/interning remains consistent with actual
                 // LLVM model of interning
-                return (Function)Value.FromHandle( parent );
+                return Value.FromHandle<Function>( parent );
             }
         }
 
@@ -34,11 +34,11 @@ namespace Llvm.NET.Values
         {
             get
             {
-                var firstInst = LLVMNative.GetFirstInstruction( BlockHandle );
+                var firstInst = NativeMethods.GetFirstInstruction( BlockHandle );
                 if( firstInst.Pointer == IntPtr.Zero )
                     return null;
 
-                return (Instruction)Value.FromHandle( firstInst );
+                return Value.FromHandle<Instruction>( firstInst );
             }
         }
 
@@ -47,11 +47,11 @@ namespace Llvm.NET.Values
         {
             get
             {
-                var lastInst = LLVMNative.GetLastInstruction( BlockHandle );
+                var lastInst = NativeMethods.GetLastInstruction( BlockHandle );
                 if( lastInst.Pointer == IntPtr.Zero)
                     return null;
 
-                return (Instruction)Value.FromHandle( lastInst );
+                return Value.FromHandle<Instruction>( lastInst );
             }
         }
 
@@ -63,11 +63,11 @@ namespace Llvm.NET.Values
         {
             get
             {
-                var terminator = LLVMNative.GetBasicBlockTerminator( BlockHandle );
+                var terminator = NativeMethods.GetBasicBlockTerminator( BlockHandle );
                 if( terminator.Pointer == IntPtr.Zero)
                     return null;
 
-                return (Instruction)Value.FromHandle( terminator );
+                return Value.FromHandle<Instruction>( terminator );
             }
         }
 
@@ -97,8 +97,8 @@ namespace Llvm.NET.Values
             if( instruction.ContainingBlock != this )
                 throw new ArgumentException( "Instruction is from a different block", nameof( instruction ) );
 
-            var hInst = LLVMNative.GetNextInstruction( instruction.ValueHandle );
-            return hInst.Pointer == IntPtr.Zero ? null : (Instruction)Value.FromHandle( hInst );
+            var hInst = NativeMethods.GetNextInstruction( instruction.ValueHandle );
+            return hInst.Pointer == IntPtr.Zero ? null : Value.FromHandle<Instruction>( hInst );
         }
 
         private BasicBlock( LLVMValueRef valueRef )
@@ -107,27 +107,20 @@ namespace Llvm.NET.Values
         }
 
         private BasicBlock( LLVMBasicBlockRef basicBlockRef )
-            : this( LLVMNative.BasicBlockAsValue( basicBlockRef ), false )
+            : this( NativeMethods.BasicBlockAsValue( basicBlockRef ), false )
         {
         }
 
         internal BasicBlock( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsABasicBlock ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsABasicBlock ) )
         {
         }
 
-        internal LLVMBasicBlockRef BlockHandle => LLVMNative.ValueAsBasicBlock( ValueHandle );
+        internal LLVMBasicBlockRef BlockHandle => NativeMethods.ValueAsBasicBlock( ValueHandle );
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Language", "CSE0003:Use expression-bodied members", Justification = "Readability" )]
-        internal new static BasicBlock FromHandle( LLVMValueRef valueRef )
-        {
-            return (BasicBlock)Context.CurrentContext.GetValueFor( valueRef, ( h )=>new BasicBlock( h ) );
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Language", "CSE0003:Use expression-bodied members", Justification = "Readability" )]
         internal static BasicBlock FromHandle( LLVMBasicBlockRef basicBlockRef )
         {
-            return (BasicBlock)Context.CurrentContext.GetValueFor( LLVMNative.BasicBlockAsValue( basicBlockRef ), ( h )=>new BasicBlock( h, true ) );
+            return Value.FromHandle<BasicBlock>( NativeMethods.BasicBlockAsValue( basicBlockRef ) );
         }
     }
 }

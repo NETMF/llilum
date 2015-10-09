@@ -45,7 +45,7 @@ namespace Microsoft.Zelig.LLVM
             m_typeSystemAlreadyConverted = false;
             m_turnOffCompilationAndValidation = false;
 
-            m_module = new _Module( m_imageName, m_nativeIntSize );
+            m_module = new _Module( m_imageName );
         }
 
         public void Compile( )
@@ -188,13 +188,13 @@ namespace Microsoft.Zelig.LLVM
             return function;
         }
 
-        public static string GetFullMethodName( TS.MethodRepresentation md )
+        public static string GetFullMethodName( TS.MethodRepresentation method )
         {
-            if( md.Flags.HasFlag( TS.MethodRepresentation.Attributes.PinvokeImpl ) )
+            if( method.Flags.HasFlag( TS.MethodRepresentation.Attributes.PinvokeImpl ) )
             {
-                return md.Name;
+                return method.Name;
             }
-            return md.ToShortString( ) + "_" + md.GetHashCode( );
+            return $"{method.OwnerType.Name}_{method.Name}${method.m_identity}";
         }
 
         private void CompleteMissingDataDescriptors( )

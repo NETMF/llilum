@@ -2,6 +2,8 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+#define LLVM
+
 namespace Microsoft.Zelig.Runtime
 {
     using System;
@@ -326,7 +328,6 @@ namespace Microsoft.Zelig.Runtime
             Fill( start, end, 0xDEADBEEF );
         }
 
-        [NoInline]
         [DisableNullChecks]
         public static unsafe void Fill( UIntPtr start ,
                                         UIntPtr end   ,
@@ -334,6 +335,9 @@ namespace Microsoft.Zelig.Runtime
         {
             uint* startPtr = (uint*)start.ToPointer();
             uint* endPtr   = (uint*)end  .ToPointer();
+            
+            BugCheck.Assert( startPtr != null, BugCheck.StopCode.HeapCorruptionDetected );
+            BugCheck.Assert( endPtr   != null, BugCheck.StopCode.HeapCorruptionDetected );
 
             endPtr -= 7;
 

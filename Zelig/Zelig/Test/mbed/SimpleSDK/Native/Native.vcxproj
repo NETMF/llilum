@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props" Condition="Exists('$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|ARM">
       <Configuration>Debug</Configuration>
@@ -17,7 +18,6 @@
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <ApplicationType>Llilum</ApplicationType>
     <ApplicationTypeRevision>1.0</ApplicationTypeRevision>
-    <ToolchainPrebuiltPath>$(LLILUM_GCC)</ToolchainPrebuiltPath>
     <ProjectName>Native</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -33,15 +33,13 @@
   <!-- General Llilum Settings -->
   <PropertyGroup Label="Llilum" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <LlilumBoardName>LPC1768</LlilumBoardName>
-    <LlilumSDK>$(ProjectDir)..\..\..\..\..\</LlilumSDK>
-    <LlilumCompiler>$(LlilumSDK)ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Compiler.exe</LlilumCompiler>
-    <LlilumConfig>$(MSBuildProjectDirectory)\mbed_simple.FrontEndConfig</LlilumConfig>
+    <LlilumCompiler>$(ProjectDir)..\..\..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Compiler.exe</LlilumCompiler>
+    <LlilumConfig>$(MSBuildProjectDirectory)\mbed_simple_$(LlilumBoardName).FrontEndConfig</LlilumConfig>
   </PropertyGroup>
   <PropertyGroup Label="Llilum" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <LlilumBoardName>LPC1768</LlilumBoardName>
-    <LlilumSDK>$(ProjectDir)..\..\..\..\..\</LlilumSDK>
-    <LlilumCompiler>$(LlilumSDK)ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Compiler.exe</LlilumCompiler>
-    <LlilumConfig>$(MSBuildProjectDirectory)\mbed_simple.FrontEndConfig</LlilumConfig>
+    <LlilumCompiler>$(ProjectDir)..\..\..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Compiler.exe</LlilumCompiler>
+    <LlilumConfig>$(MSBuildProjectDirectory)\mbed_simple_$(LlilumBoardName).FrontEndConfig</LlilumConfig>
   </PropertyGroup>
   <!-- Platform specific options -->
   <!-- LPC1768 -->
@@ -85,16 +83,19 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <TargetName>$(LlilumOutputName)</TargetName>
+    <TargetName>SimpleTestProgram_$(LlilumBoardName)</TargetName>
     <TargetExt>.elf</TargetExt>
     <ExecutablePath>$(LlilumGccBin);$(ExecutablePath)</ExecutablePath>
-    <OutDir>$(ProjectDir)$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(ZeligBuildRoot)\Target\bin\$(ProjectName)\$(Configuration)\</OutDir>
     <ExtensionsToDeleteOnClean>*.bin;*.hex;*.elf;*.lst;*.d;*.tlog;$(ExtensionsToDeleteOnClean)</ExtensionsToDeleteOnClean>
+    <IntDir>$(ZeligBuildRoot)\Target\obj\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <TargetName>$(LlilumOutputName)</TargetName>
+    <TargetName>SimpleTestProgram_$(LlilumBoardName)</TargetName>
     <TargetExt>.elf</TargetExt>
     <ExecutablePath>$(LlilumGccBin);$(ExecutablePath)</ExecutablePath>
+    <OutDir>$(ZeligBuildRoot)\Target\bin\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>$(ZeligBuildRoot)\Target\obj\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
@@ -134,6 +135,7 @@
     <ClCompile Include="InteropExports_i2c.cpp" />
     <ClCompile Include="InteropExports_mem.cpp" />
     <ClCompile Include="InteropExports_nvic.cpp" />
+    <ClCompile Include="InteropExports_serial.cpp" />
     <ClCompile Include="InteropExports_spi.cpp" />
     <ClCompile Include="InteropExports_system_timer.cpp" />
     <ClCompile Include="InteropExports_systick.cpp" />
@@ -143,6 +145,12 @@
   <ItemGroup>
     <ProjectReference Include="..\Managed\SimpleTestProgram.csproj">
       <Project>{612f2d6b-1976-47dc-8e69-022d42aaf62d}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\CompileTime\CodeGenerator\FrontEnd\FrontEnd.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20070605AA02}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

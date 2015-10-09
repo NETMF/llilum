@@ -10,7 +10,7 @@ namespace Llvm.NET.Instructions
         }
 
         internal ZeroExtend( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsAZExtInst ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAZExtInst ) )
         {
         }
     }

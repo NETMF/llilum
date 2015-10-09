@@ -18,9 +18,9 @@ IF %1.==. (
     ECHO Detected target: %1
     set TARGET=%1
     IF "%1"=="K64F" (
-        set SIZE_OF_HEAP=0x10000
-    ) ELSE (
-        set SIZE_OF_HEAP=0x6000
+    set SIZE_OF_HEAP=0x10000
+) ELSE (
+    set SIZE_OF_HEAP=0x6000
     )
 )
 

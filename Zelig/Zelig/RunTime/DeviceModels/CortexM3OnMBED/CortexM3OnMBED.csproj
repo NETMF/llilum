@@ -52,7 +52,9 @@
     <Compile Include="HardwareModel\Drivers\GpioPinMbed.cs" />
     <Compile Include="HardwareModel\Drivers\I2cChannelMbed.cs" />
     <Compile Include="HardwareModel\Drivers\InterruptController.cs" />
+    <Compile Include="HardwareModel\Drivers\SerialPortsManager.cs" />
     <Compile Include="HardwareModel\Drivers\SpiChannel.cs" />
+    <Compile Include="HardwareModel\Drivers\StandardSerialPort.cs" />
     <Compile Include="HardwareModel\Drivers\SystemTimer.cs" />
     <Compile Include="HardwareModel\HardwareProvider.cs" />
     <Compile Include="HardwareModel\Memory.cs" />

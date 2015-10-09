@@ -27,43 +27,42 @@ namespace Llvm.NET.Values
         {
             get
             {
-                var ptr = LLVMNative.GetValueName( ValueHandle );
+                if( Context.IsDisposed )
+                    return string.Empty;
+
+                var ptr = NativeMethods.GetValueName( ValueHandle );
                 return Marshal.PtrToStringAnsi( ptr );
             }
             set
             {
-                LLVMNative.SetValueName( ValueHandle, value );
-                Debug.Assert( Name == value );
+                NativeMethods.SetValueName( ValueHandle, value );
+                // LLVM auto adds a numeric suffix if a register with the same name already exists
+                Debug.Assert( Name.StartsWith( value ) );
             }
         }
 
         /// <summary>Indicates if this value is Undefined</summary>
-        public bool IsUndefined => LLVMNative.IsUndef( ValueHandle );
+        public bool IsUndefined => NativeMethods.IsUndef( ValueHandle );
 
         /// <summary>Determines if the Value represents the NULL value for the values type</summary>
-        public bool IsNull => LLVMNative.IsNull( ValueHandle );
+        public bool IsNull => NativeMethods.IsNull( ValueHandle );
 
         /// <summary>Type of the value</summary>
-        public TypeRef Type => TypeRef.FromHandle( LLVMNative.TypeOf( ValueHandle ) );
+        public ITypeRef Type => TypeRef.FromHandle( NativeMethods.TypeOf( ValueHandle ) );
+
+        public Context Context => Type.Context;
 
         /// <summary>Generates a string representing the LLVM syntax of the value</summary>
         /// <returns>string version of the value formatted by LLVM</returns>
         public override string ToString( )
         {
-            var ptr = LLVMNative.PrintValueToString( ValueHandle );
-            try
-            {
-                return Marshal.PtrToStringAnsi( ptr );
-            }
-            finally
-            {
-                LLVMNative.DisposeMessage( ptr );
-            }
+            var ptr = NativeMethods.PrintValueToString( ValueHandle );
+            return NativeMethods.MarshalMsg( ptr );
         }
 
         public void ReplaceAllUsesWith( Value other )
         {
-            LLVMNative.ReplaceAllUsesWith( ValueHandle, other.ValueHandle );
+            NativeMethods.ReplaceAllUsesWith( ValueHandle, other.ValueHandle );
         }
 
         public bool TryGetExtendedPropertyValue<T>( string id, out T value ) => ExtensibleProperties.TryGetExtendedPropertyValue<T>( id, out value );
@@ -74,21 +73,27 @@ namespace Llvm.NET.Values
             if( valueRef.Pointer == IntPtr.Zero )
                 throw new ArgumentNullException( nameof( valueRef ) );
 
-            Context.CurrentContext.AssertValueNotInterned( valueRef );
+#if DEBUG
+            var context = Llvm.NET.Context.GetContextFor( valueRef );
+            context.AssertValueNotInterned( valueRef );
+#endif
             ValueHandle = valueRef;
         }
 
         internal LLVMValueRef ValueHandle { get; }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Language", "CSE0003:Use expression-bodied members", Justification = "Readability" )]
-        internal static Value FromHandle( LLVMValueRef valueRef )
+        internal static Value FromHandle( LLVMValueRef valueRef ) => FromHandle<Value>( valueRef );
+
+        internal static T FromHandle<T>( LLVMValueRef valueRef )
+            where T : Value
         {
-            return Context.CurrentContext.GetValueFor( valueRef, StaticFactory );
+            var context = Context.GetContextFor( valueRef );
+            return (T)context.GetValueFor( valueRef, StaticFactory );
         }
 
         private static Value StaticFactory( LLVMValueRef h )
         {
-            var kind = LLVMNative.GetValueKind( h );
+            var kind = NativeMethods.GetValueKind( h );
             switch( kind )
             {
             case ValueKind.Argument:
@@ -324,22 +329,88 @@ namespace Llvm.NET.Values
             var ex = new ArgumentException( "Incompatible handle type" );
             
             // Use LLVM to print to the debugger what the handle is for use in diagnosing the problem
-            var msgString = LLVMNative.PrintValueToString( fromHandle );
-            try
-            {
-                var txt = Marshal.PtrToStringAnsi( msgString );
-                Debug.Print( txt );
-                // attach the details to the exception so it is available after the fact in the debugger
-                // and any logs that dump exception details.
-                ex.Data.Add( "Llvm.NETNative.Handle.Dump", txt );
-            }
-            finally
-            {
-                LLVMNative.DisposeMessage( msgString );
-            }
+            var msgString = NativeMethods.MarshalMsg( NativeMethods.PrintValueToString( fromHandle ) );
+            Debug.Print( msgString );
+            // attach the details to the exception so it is available after the fact in the debugger
+            // and any logs that dump exception details.
+            ex.Data.Add( "Llvm.NETNative.Handle.Dump", msgString );
             throw ex;
         }
 
         private ExtensiblePropertyContainer ExtensibleProperties = new ExtensiblePropertyContainer( );
+    }
+
+    /// <summary>Provides extension methods to <see cref="Value"/> that cannot be achieved as members of the class</summary>
+    /// <remarks>
+    /// Using generic static extension methods allows for fluent coding while retaining the type of the "this" parameter.
+    /// If these were members of the <see cref="Value"/> class then the only return type could be <see cref="Value"/>,
+    /// thus losing the orignal type and requiring a cast to get back to it.
+    /// </remarks>
+    public static class ValueExtensions
+    {
+        /// <summary>Sets the debugging location for a value</summary>
+        /// <typeparam name="T"> Type of the value to tag</typeparam>
+        /// <param name="value">Value to set debug location for</param>
+        /// <param name="line">Line number</param>
+        /// <param name="column">Column number</param>
+        /// <param name="scope">Scope for the value</param>
+        /// <remarks>
+        /// <para>Technically speaking only an <see cref="Instructions.Instruction"/> can have debug location
+        /// information. However, since LLVM will perform constant folding in the <see cref="InstructionBuilder"/>
+        /// most of the methods in <see cref="InstructionBuilder"/> return a <see cref="Value"/> rather than a
+        /// more specific <see cref="Instructions.Instruction"/>. Thus, without this extension method here,
+        /// code would need to know ahead of time that an actual instruction would be produced then cast the result
+        /// to an <see cref="Instructions.Instruction"/> and then set the debug location. This makes the code rather
+        /// ugly and tedious to manage. Placing this as a generic extension method ensures that the return type matches
+        /// the original and no additional casting is needed, which would defeat the purpose of doing this. For
+        /// <see cref="Value"/> types that are not instructions this does nothing. This allows for a simpler fluent
+        /// style of programming where the actual type is retained even in cases where an <see cref="InstructionBuilder"/>
+        /// method will always return an atual instruction.</para>
+        /// <para>In order to help simplify code generation for cases where not all of the source information is
+        /// available this is a NOP if <paramref name="scope"/> is null. Thus, it is safe to call even when debugging
+        /// information isn't actually available. This helps to avoid cluttering calling code with test for debug info
+        /// before trying to add it.</para>
+        /// </remarks>
+        public static T SetDebugLocation<T>( this T value, uint line, uint column, DebugInfo.DIScope scope )
+            where T : Value
+        {
+            if( value is Instructions.Instruction && scope != null )
+                NativeMethods.SetDebugLoc( value.ValueHandle, line, column, scope.MetadataHandle );
+
+            return value;
+        }
+
+        /// <summary>Sets the virtual register name for a value</summary>
+        /// <typeparam name="T"> Type of the value to set the name for</typeparam>
+        /// <param name="value">Value to set register name for</param>
+        /// <param name="name">Name for the virtual register the value represents</param>
+        /// <remarks>
+        /// <para>Technically speaking only an <see cref="Instructions.Instruction"/> can have register name
+        /// information. However, since LLVM will perform constant folding in the <see cref="InstructionBuilder"/>
+        /// it almost all of the methods in <see cref="InstructionBuilder"/> return a <see cref="Value"/> rather
+        /// than an more specific <see cref="Instructions.Instruction"/>. Thus, without this extension method here,
+        /// code would need to know ahead of time that an actual instruction would be produced then cast the result
+        /// to an <see cref="Instructions.Instruction"/> and then set the debug location. This makes the code rather
+        /// ugly and tedious to manage. Placing this as a generic extension method ensures that the return type matches
+        /// the original and no additional casting is needed, which would defeat the purpose of doing this. For
+        ///  <see cref="Value"/> types that are not instructions this does nothing. This allows for a simpler fluent
+        /// style of programming where the actual type is retained even in cases where an <see cref="InstructionBuilder"/>
+        /// method will always return an atual instruction.</para>
+        /// <para>Since the <see cref="Value.Name"/> property is available on all <see cref="Value"/>s this is slightly
+        /// redundant. It is useful for maintining the fluent style of coding along with expressing intent more clearly.
+        /// (e.g. using this makes it expressly clear that the intent is to set the virtual register name and not the
+        /// name of a local variable etc...) Using the fluent style allows a 50% reduction in the number of overloaded
+        /// methods in <see cref="InstructionBuilder"/> to account for all variations with or without a name.
+        /// </para>
+        /// </remarks>
+        public static T RegisterName<T>( this T value, string name )
+            where T : Value
+        {
+            var inst = value as Instructions.Instruction;
+            if( inst != null )
+                value.Name = name;
+
+            return value;
+        }
     }
 }

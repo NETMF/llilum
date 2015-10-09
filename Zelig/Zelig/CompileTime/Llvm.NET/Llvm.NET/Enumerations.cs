@@ -18,88 +18,6 @@ namespace Llvm.NET
         AppendUnique = LLVMModFlagBehavior.AppendUnique
     };
 
-    /// <summary>Attributes for functions globals and parameters</summary>
-    [Flags]
-    public enum Attributes : int
-    {
-        ZeroExtend = LLVMAttribute.LLVMZExtAttribute,
-        SignExtend = LLVMAttribute.LLVMSExtAttribute,
-        NoReturn = LLVMAttribute.LLVMNoReturnAttribute,
-        InRegister = LLVMAttribute.LLVMInRegAttribute,
-        StructReturn = LLVMAttribute.LLVMStructRetAttribute,
-        NoUnwind = LLVMAttribute.LLVMNoUnwindAttribute,
-        NoAlias = LLVMAttribute.LLVMNoAliasAttribute,
-        ByVal = LLVMAttribute.LLVMByValAttribute,
-        Nest = LLVMAttribute.LLVMNestAttribute,
-        ReadNone = LLVMAttribute.LLVMReadNoneAttribute,
-        ReadOnly = LLVMAttribute.LLVMReadOnlyAttribute,
-        NoInline = LLVMAttribute.LLVMNoInlineAttribute,
-        AlwaysInline = LLVMAttribute.LLVMAlwaysInlineAttribute,
-        OptimizeForSize = LLVMAttribute.LLVMOptimizeForSizeAttribute,
-        StackProtect = LLVMAttribute.LLVMStackProtectAttribute,
-        StackProtectReq = LLVMAttribute.LLVMStackProtectReqAttribute,
-        Alignment = LLVMAttribute.LLVMAlignment,
-        NoCapture = LLVMAttribute.LLVMNoCaptureAttribute,
-        NoRedZone = LLVMAttribute.LLVMNoRedZoneAttribute,
-        NoImplicitFloat = LLVMAttribute.LLVMNoImplicitFloatAttribute,
-        Naked = LLVMAttribute.LLVMNakedAttribute,
-        InlineHint = LLVMAttribute.LLVMInlineHintAttribute,
-        StackAlignment = LLVMAttribute.LLVMStackAlignment,
-        ReturnsTwice = LLVMAttribute.LLVMReturnsTwice,
-        UnwindTable = LLVMAttribute.LLVMUWTable,
-        NonLazyBind = LLVMAttribute.LLVMNonLazyBind
-    }
-
-    public enum AttributeKind : uint
-    {
-        None = LLVMAttributeKind.None,
-        Alignment = LLVMAttributeKind.Alignment,
-        AlwaysInline = LLVMAttributeKind.AlwaysInline,
-        Builtin = LLVMAttributeKind.Builtin,
-        ByVal = LLVMAttributeKind.ByVal,
-        InAlloca = LLVMAttributeKind.InAlloca,
-        Cold = LLVMAttributeKind.Cold,
-        Convergent = LLVMAttributeKind.Convergent,
-        InlineHint = LLVMAttributeKind.InlineHint,
-        InRegister = LLVMAttributeKind.InReg,
-        JumpTable = LLVMAttributeKind.JumpTable,
-        MinSize = LLVMAttributeKind.MinSize,
-        Naked = LLVMAttributeKind.Naked,
-        Nest = LLVMAttributeKind.Nest,
-        NoAlias = LLVMAttributeKind.NoAlias,
-        NoBuiltin = LLVMAttributeKind.NoBuiltin,
-        NoCapture = LLVMAttributeKind.NoCapture,
-        NoDuplicate = LLVMAttributeKind.NoDuplicate,
-        NoImplicitFloat = LLVMAttributeKind.NoImplicitFloat,
-        NoInline = LLVMAttributeKind.NoInline,
-        NonLazyBind = LLVMAttributeKind.NonLazyBind,
-        NonNull = LLVMAttributeKind.NonNull,
-        Dereferenceable = LLVMAttributeKind.Dereferenceable,
-        DereferenceableOrNull = LLVMAttributeKind.DereferenceableOrNull,
-        NoRedZone = LLVMAttributeKind.NoRedZone,
-        NoReturn = LLVMAttributeKind.NoReturn,
-        NoUnwind = LLVMAttributeKind.NoUnwind,
-        OptimizeForSize = LLVMAttributeKind.OptimizeForSize,
-        OptimizeNone = LLVMAttributeKind.OptimizeNone,
-        ReadNone = LLVMAttributeKind.ReadNone,
-        ReadOnly = LLVMAttributeKind.ReadOnly,
-        ArgMemOnly = LLVMAttributeKind.ArgMemOnly,
-        Returned = LLVMAttributeKind.Returned,
-        ReturnsTwice = LLVMAttributeKind.ReturnsTwice,
-        SignExtend = LLVMAttributeKind.SExt,
-        StackAlignment = LLVMAttributeKind.StackAlignment,
-        StackProtect = LLVMAttributeKind.StackProtect,
-        StackProtectReq = LLVMAttributeKind.StackProtectReq,
-        StackProtectStrong = LLVMAttributeKind.StackProtectStrong,
-        SafeStack = LLVMAttributeKind.SafeStack,
-        StructRet = LLVMAttributeKind.StructRet,
-        SanitizeAddress = LLVMAttributeKind.SanitizeAddress,
-        SanitizeThread = LLVMAttributeKind.SanitizeThread,
-        SanitizeMemory = LLVMAttributeKind.SanitizeMemory,
-        UnwindTable = LLVMAttributeKind.UWTable,
-        ZeroExtend = LLVMAttributeKind.ZExt,
-    }
-
     /// <summary>LLVM Instruction opcodes</summary>
     public enum Opcode : uint
     {
@@ -468,4 +386,84 @@ namespace Llvm.NET
         ConstantFirstVal = Function,
         ConstantLastVal = ConstantPointerNull
     }
+
+    public enum AttributeKind
+    {
+        // IR-Level Attributes
+        None,                  // No attributes have been set
+        Alignment,             // Alignment of parameter (5 bits)
+                               // stored as log2 of alignment with +1 bias
+                               // 0 means unaligned (different from align(1))
+        AlwaysInline,          // inline=always
+        Builtin,               // Callee is recognized as a builtin, despite
+                               // nobuiltin attribute on its declaration.
+        ByVal,                 // Pass structure by value
+        InAlloca,              // Pass structure in an alloca
+        Cold,                  // Marks function as being in a cold path.
+        Convergent,            // Can only be moved to control-equivalent blocks
+        InlineHint,            // Source said inlining was desirable
+        InReg,                 // Force argument to be passed in register
+        JumpTable,             // Build jump-instruction tables and replace refs.
+        MinSize,               // Function must be optimized for size first
+        Naked,                 // Naked function
+        Nest,                  // Nested function static chain
+        NoAlias,               // Considered to not alias after call
+        NoBuiltin,             // Callee isn't recognized as a builtin
+        NoCapture,             // Function creates no aliases of pointer
+        NoDuplicate,           // Call cannot be duplicated
+        NoImplicitFloat,       // Disable implicit floating point insts
+        NoInline,              // inline=never
+        NonLazyBind,           // Function is called early and/or
+                               // often, so lazy binding isn't worthwhile
+        NonNull,               // Pointer is known to be not null
+        Dereferenceable,       // Pointer is known to be dereferenceable
+        DereferenceableOrNull, // Pointer is either null or dereferenceable
+        NoRedZone,             // Disable redzone
+        NoReturn,              // Mark the function as not returning
+        NoUnwind,              // Function doesn't unwind stack
+        OptimizeForSize,       // opt_size
+        OptimizeNone,          // Function must not be optimized.
+        ReadNone,              // Function does not access memory
+        ReadOnly,              // Function only reads from memory
+        ArgMemOnly,            // Funciton can access memory only using pointers
+                               // based on its arguments.
+        Returned,              // Return value is always equal to this argument
+        ReturnsTwice,          // Function can return twice
+        SExt,                  // Sign extended before/after call
+        StackAlignment,        // Alignment of stack for function (3 bits)
+                               // stored as log2 of alignment with +1 bias 0
+                               // means unaligned (different from
+                               // alignstack=(1))
+        StackProtect,          // Stack protection.
+        StackProtectReq,       // Stack protection required.
+        StackProtectStrong,    // Strong Stack protection.
+        SafeStack,             // Safe Stack protection.
+        StructRet,             // Hidden pointer to structure to return
+        SanitizeAddress,       // AddressSanitizer is on.
+        SanitizeThread,        // ThreadSanitizer is on.
+        SanitizeMemory,        // MemorySanitizer is on.
+        UWTable,               // Function must be in a unwind table
+        ZExt,                  // Zero extended before/after call
+    };
+
+    /// <summary>Function index for attributes</summary>
+    /// <remarks>
+    /// Attributes on functions apply to the function itself, the return type
+    /// or one of the funtion's parameters. This enumeration is used to 
+    /// identify where the attribute applies.
+    /// </remarks>
+    public enum FunctionAttributeIndex
+    {
+        /// <summary>The attribute applies to the function itself</summary>
+        Function = -1,
+        /// <summary>The attribute applies to the return type of the function</summary>
+        ReturnType = 0,
+        /// <summary>The attribute applies to the first paramter of the function</summary>
+        /// <remarks>
+        /// Additional parameters can identified by simply adding an integer value to
+        /// this value. (i.e. FunctionAttributeIndex.Parameter0 + 1 )
+        /// </remarks>
+        Parameter0 = 1 
+    }
+
 }

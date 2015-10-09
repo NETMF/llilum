@@ -10,5 +10,12 @@ namespace Microsoft.Zelig.LPC1768
     
     public sealed class Device : Microsoft.CortexM3OnMBED.Device
     {
+        public override uint ManagedHeapSize
+        {
+            get
+            { 
+                return 0x5800u;
+            }
+        }
     }
 }

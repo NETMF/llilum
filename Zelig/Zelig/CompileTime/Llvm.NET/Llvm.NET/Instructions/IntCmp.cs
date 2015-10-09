@@ -9,7 +9,7 @@
         }
 
         internal IntCmp( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsAICmpInst ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAICmpInst ) )
         {
         }
     }

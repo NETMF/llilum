@@ -24,31 +24,114 @@ using namespace llvm;
 
 extern "C"
 {
-    void LLVMAddFunctionAttr2( LLVMValueRef Fn, uint32_t Kind, uint64_t Value )
+    LLVMBool LLVMFunctionHasAttributes( LLVMValueRef Fn, int index )
     {
         Function *Func = unwrap<Function>( Fn );
-        const AttributeSet PAL = Func->getAttributes( );
-        const Attribute Attr = Attribute::get( Func->getContext(), ( Attribute::AttrKind )Kind, Value );
-        AttrBuilder B( Attr );
-        const AttributeSet PALnew = PAL.addAttributes( Func->getContext( )
-                                                       , AttributeSet::FunctionIndex
-                                                       , AttributeSet::get( Func->getContext( )
-                                                                          , AttributeSet::FunctionIndex
-                                                                          , B
-                                                                          )
-                                                       );
-        Func->setAttributes( PALnew );
+        AttributeSet attributes = Func->getAttributes( );
+        return attributes.hasAttributes( index );
     }
 
-    void LLVMRemoveFunctionAttr2( LLVMValueRef Fn, uint32_t Kind )
+    char const* LLVMGetFunctionAttributesAsString( LLVMValueRef Fn, int index )
     {
         Function *Func = unwrap<Function>( Fn );
-        const AttributeSet PAL = Func->getAttributes( );
-        const AttributeSet PALnew = PAL.removeAttribute( Func->getContext( )
-                                                         , AttributeSet::FunctionIndex
-                                                         , ( Attribute::AttrKind )Kind
-                                                         );
-        Func->setAttributes( PALnew );
+        AttributeSet attributes = Func->getAttributes( );
+        return LLVMCreateMessage( attributes.getAsString( index ).c_str( ) );
+    }
+
+    void LLVMAddTargetDependentFunctionAttr2( LLVMValueRef Fn, int index, char const* name, char const* value )
+    {
+        Function *Func = unwrap<Function>( Fn );
+        auto Idx =  static_cast<AttributeSet::AttrIndex>( index );
+        AttrBuilder B;
+
+        B.addAttribute( name, value );
+        AttributeSet Set = AttributeSet::get( Func->getContext( ), Idx, B );
+        Func->addAttributes( Idx, Set );
+    }
+
+    void LLVMRemoveTargetDependentFunctionAttr2( LLVMValueRef Fn, int index, char const* name )
+    {
+        Function *Func = unwrap<Function>( Fn );
+        auto Idx = static_cast<AttributeSet::AttrIndex>( index );
+        AttrBuilder B( Func->getAttributes(), index );
+        B.removeAttribute( name );
+        Func->setAttributes( AttributeSet::get( Func->getContext( ), Idx, B ) );
+    }
+
+    void LLVMSetFunctionAttributeValue( LLVMValueRef Fn, int index, LLVMAttrKind kind, uint64_t value )
+    {
+        Function *Func = unwrap<Function>( Fn );
+        AttrBuilder builder( Func->getAttributes( ), index );
+        switch( kind )
+        {
+        case LLVMAttrKind::LLVMAttrKindAlignment:
+            assert( index > AttributeSet::AttrIndex::ReturnIndex && "Expected parameter index");
+            assert( value <= UINT32_MAX && "expected value <= UINT32_MAX");
+            builder.addAlignmentAttr( value );
+            break;
+
+        case LLVMAttrKind::LLVMAttrKindStackAlignment:
+            assert( index == AttributeSet::AttrIndex::FunctionIndex && "Stack alignment only applicable to the function itself" );
+            assert( value <= UINT32_MAX && "expected value <= UINT32_MAX" );
+            builder.addStackAlignmentAttr( value );
+            break;
+
+        case LLVMAttrKind::LLVMAttrKindDereferenceable:
+            assert( index != AttributeSet::AttrIndex::FunctionIndex && "Expected a return or param index" );
+            builder.addDereferenceableAttr( value );
+            break;
+
+        case LLVMAttrKind::LLVMAttrKindDereferenceableOrNull:
+            assert( index != AttributeSet::AttrIndex::FunctionIndex && "Expected a return or param index" );
+            builder.addDereferenceableOrNullAttr( value );
+            break;
+
+        default:
+            assert( false && "Attribute kind doesn't have a value to set" );
+            break;
+        }
+        auto newAttributeSet = AttributeSet::get( Func->getContext( ), AttributeSet::AttrIndex::FunctionIndex, builder );
+        Func->setAttributes( newAttributeSet );
+    }
+
+    uint64_t LLVMGetFunctionAttributeValue( LLVMValueRef Fn, int index, LLVMAttrKind kind )
+    {
+        Function *Func = unwrap<Function>( Fn );
+        AttributeSet const attributes = Func->getAttributes( );
+        Attribute attr = attributes.getAttribute( index, (Attribute::AttrKind)kind );
+        return attr.getValueAsInt();
+    }
+
+    void LLVMAddFunctionAttr2( LLVMValueRef Fn, int index, LLVMAttrKind kind )
+    {
+        Function *Func = unwrap<Function>( Fn );
+        AttrBuilder builder( Func->getAttributes( ), index );
+        builder.addAttribute( ( Attribute::AttrKind )kind );
+        auto newAttributeSet = AttributeSet::get( Func->getContext( ), index, builder );
+        Func->setAttributes( newAttributeSet );
+    }
+
+    LLVMBool LLVMHasFunctionAttr2( LLVMValueRef Fn, int index, LLVMAttrKind kind )
+    {
+        Function *Func = unwrap<Function>( Fn );
+        AttributeSet const attributes = Func->getAttributes( );
+        return attributes.hasAttribute( index, ( Attribute::AttrKind )kind );
+    }
+
+    LLVMBool LLVMHasTargetDependentAttribute( LLVMValueRef Fn, int index, char const* name )
+    {
+        Function *Func = unwrap<Function>( Fn );
+        AttributeSet const attributes = Func->getAttributes( );
+        return attributes.hasAttribute( index, name );
+    }
+
+    void LLVMRemoveFunctionAttr2( LLVMValueRef Fn, int index, LLVMAttrKind kind )
+    {
+        Function *Func = unwrap<Function>( Fn );
+        AttrBuilder builder( Func->getAttributes( ), index );
+        builder.removeAttribute( ( Attribute::AttrKind )kind );
+        auto newAttributeSet = AttributeSet::get( Func->getContext( ), index, builder );
+        Func->setAttributes( newAttributeSet );
     }
 
     LLVMMetadataRef LLVMConstantAsMetadata( LLVMValueRef C )
@@ -56,7 +139,7 @@ extern "C"
         return wrap( ConstantAsMetadata::get( unwrap<Constant>( C ) ) );
     }
 
-    LLVMMetadataRef LLVMMDString2( LLVMContextRef C, const char *Str, unsigned SLen )
+    LLVMMetadataRef LLVMMDString2( LLVMContextRef C, char const *Str, unsigned SLen )
     {
         return wrap( MDString::get( *unwrap( C ), StringRef( Str, SLen ) ) );
     }
@@ -84,7 +167,7 @@ extern "C"
     }
 
     void LLVMAddNamedMetadataOperand2( LLVMModuleRef M
-                                       , const char *name
+                                       , char const *name
                                        , LLVMMetadataRef Val
                                        )
     {
@@ -136,5 +219,21 @@ extern "C"
     {
         auto pMetadata = unwrap<MDNode>( M );
         return pMetadata->isResolved( );
+    }
+
+    char const* LLVMGetMDStringText( LLVMMetadataRef mdstring, unsigned* len )
+    {
+        MDString const* S = unwrap<MDString>( mdstring );
+        *len = S->getString( ).size( );
+        return S->getString( ).data( );
+    }
+
+    void LLVMMDNodeResolveCycles( LLVMMetadataRef M )
+    {
+        MDNode* pNode = unwrap<MDNode>( M );
+        if( pNode->isResolved() )
+            return;
+
+        pNode->resolveCycles( );
     }
 }

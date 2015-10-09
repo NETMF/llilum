@@ -41,15 +41,17 @@ namespace Llvm.NET
         {
             MetadataHandle = handle;
         }
-        ///// <summary>Replace all uses of this descriptor with another</summary>
-        ///// <param name="other">New descriptor to replace this one with</param>
-        //public void ReplaceAllUsesWith( Metadata other )
-        //{
-        //    if( MetadataHandle.Pointer == IntPtr.Zero )
-        //        throw new InvalidOperationException( "Cannot Replace all uses of a null descriptor" );
 
-        //    LLVMNative.MetadataReplaceAllUsesWith( MetadataHandle, other.MetadataHandle );
-        //}
+        /// <summary>Replace all uses of this descriptor with another</summary>
+        /// <param name="other">New descriptor to replace this one with</param>
+        public virtual void ReplaceAllUsesWith( Metadata other )
+        {
+            if( MetadataHandle.Pointer == IntPtr.Zero )
+                throw new InvalidOperationException( "Cannot Replace all uses of a null descriptor" );
+
+            NativeMethods.MetadataReplaceAllUsesWith( MetadataHandle, other.MetadataHandle );
+            MetadataHandle = LLVMMetadataRef.Zero;
+        }
 
         internal LLVMMetadataRef MetadataHandle { get; set; }
     }
@@ -71,7 +73,7 @@ namespace Llvm.NET
             if( value.Pointer == IntPtr.Zero )
                 return value;
 
-            return LLVMNative.GetValueKind( value ) == ValueKind.MetadataAsValue ? value : default(LLVMValueRef);
+            return NativeMethods.GetValueKind( value ) == ValueKind.MetadataAsValue ? value : default(LLVMValueRef);
         }
 
         public static implicit operator Metadata( MetadataAsValue self )
@@ -89,18 +91,19 @@ namespace Llvm.NET
         {
         }
 
-        public bool IsTemporary => LLVMNative.IsTemporary( MetadataHandle );
-        public bool IsResolved => LLVMNative.IsResolved( MetadataHandle );
+        public bool IsTemporary => NativeMethods.IsTemporary( MetadataHandle );
+        public bool IsResolved => NativeMethods.IsResolved( MetadataHandle );
+        public void ResolveCycles( ) => NativeMethods.MDNodeResolveCycles( MetadataHandle );
 
-        public void ReplaceAllUsesWith( Metadata other )
+        public override void ReplaceAllUsesWith( Metadata other )
         {
             if( !IsTemporary || IsResolved )
-                throw new InvalidOperationException( "Cannot replace non temporary or resolved metadata nodes" );
+                throw new InvalidOperationException( "Cannot replace non temporary or resolved  MDNode" );
 
             if( MetadataHandle.Pointer == IntPtr.Zero )
                 throw new InvalidOperationException( "Cannot Replace all uses of a null descriptor" );
 
-            LLVMNative.MDNodeReplaceAllUsesWith( MetadataHandle, other.MetadataHandle );
+            NativeMethods.MDNodeReplaceAllUsesWith( MetadataHandle, other.MetadataHandle );
             MetadataHandle = LLVMMetadataRef.Zero;
         }
     }
@@ -110,6 +113,13 @@ namespace Llvm.NET
         internal MDString( LLVMMetadataRef handle )
             : base( handle )
         {
+        }
+
+        public override string ToString( )
+        {
+            uint len;
+            var ptr = NativeMethods.GetMDStringText( MetadataHandle, out len );
+            return NativeMethods.NormalizeLineEndings( ptr, (int)len );
         }
     } 
 }

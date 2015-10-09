@@ -75,7 +75,28 @@ namespace Microsoft.Zelig.K64F
             SdaPin = (int)PinName.PTE25,
             SclPin = (int)PinName.PTE24,
         };
-        
+
+        //
+        // Serial Ports
+        //
+        private static readonly string[] m_serialPorts = { "UART0", "UART1" };
+
+        public static readonly ChipsetAbstration.Board.SerialPortInfo UART0 = new ChipsetAbstration.Board.SerialPortInfo() 
+        {
+            TxPin = (int)PinName.PTC14,
+            RxPin = (int)PinName.PTC15,
+            RtsPin = unchecked((int)PinName.NC),
+            CtsPin = unchecked((int)PinName.NC)
+        };
+
+        public static readonly ChipsetAbstration.Board.SerialPortInfo UART1 = new ChipsetAbstration.Board.SerialPortInfo() 
+        {
+            TxPin = (int)PinName.USBTX,
+            RxPin = (int)PinName.USBRX,
+            RtsPin = unchecked((int)PinName.NC),
+            CtsPin = unchecked ((int)PinName.NC)
+        };
+
         //
         // SPI discovery
         //
@@ -182,8 +203,28 @@ namespace Microsoft.Zelig.K64F
                     return -1;
             }
         }
-        
-        
+
+        //
+        // Serial Port
+        //
+        public override string[] GetSerialPorts()
+        {
+            return m_serialPorts;
+        }
+
+        public override ChipsetAbstration.Board.SerialPortInfo GetSerialPortInfo(string portName)
+        {
+            switch (portName)
+            {
+                case "UART0":
+                    return UART0;
+                case "UART1":
+                    return UART1;
+                default:
+                    return null;
+            }
+        }
+
         //
         // System timer
         //

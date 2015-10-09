@@ -2,8 +2,6 @@ EXPORTS
 ; extensions to standard LLVM-C API
 LLVMAddModuleFlag
 LLVMVerifyFunctionEx
-LLVMAddFunctionAttr2
-LLVMRemoveFunctionAttr2
 LLVMConstantAsMetadata
 LLVMMDString2
 LLVMMDNode2
@@ -21,6 +19,22 @@ LLVMMetadataAsValue
 LLVMGetModuleName
 LLVMIsTemporary
 LLVMIsResolved
+LLVMGetMDStringText
+LLVMGetGlobalAlias
+LLVMGetAliasee
+LLVMMDNodeResolveCycles
+LLVMAddFunctionAttr2
+LLVMHasFunctionAttr2
+LLVMRemoveFunctionAttr2
+LLVMGetArgumentIndex
+LLVMAddTargetDependentFunctionAttr2
+LLVMRemoveTargetDependentFunctionAttr2
+LLVMGetFunctionAttributeValue
+LLVMSetFunctionAttributeValue
+LLVMFunctionHasAttributes
+LLVMGetFunctionAttributesAsString
+LLVMHasTargetDependentAttribute
+LLVMDIScopeGetFile
 
 ; Debug info functions not part of standard LLVM-C API
 LLVMSetDebugLoc
@@ -32,9 +46,11 @@ LLVMDIBuilderCreateFile
 LLVMDIBuilderCreateLexicalBlock
 LLVMDIBuilderCreateLexicalBlockFile
 LLVMDIBuilderCreateFunction
+LLVMDIBuilderCreateTempFunctionFwdDecl
 LLVMDIBuilderCreateLocalVariable
 LLVMDIBuilderCreateBasicType
 LLVMDIBuilderCreatePointerType
+LLVMDIBuilderCreateQualifiedType
 LLVMDIBuilderCreateSubroutineType
 LLVMDIBuilderCreateStructType
 LLVMDIBuilderCreateReplaceableCompositeType
@@ -55,9 +71,16 @@ LLVMDIBuilderCreateGlobalVariable
 LLVMDIBuilderInsertDeclareBefore
 LLVMDIDescriptorAsString
 LLVMMDNodeReplaceAllUsesWith
-LLVMDITypeGetFlags
 LLVMDILocation
-LLVMGetDITypeName
+LLVMSubProgramDescribes
+
+LLVMDITypeGetLine
+LLVMDITypeGetSizeInBits
+LLVMDITypeGetAlignInBits
+LLVMDITypeGetOffsetInBits
+LLVMDITypeGetFlags
+LLVMDITypeGetScope
+LLVMDITypeGetName
 
 ; Instrumentation Bindings
 LLVMAddAddressSanitizerFunctionPass
@@ -77,6 +100,51 @@ LLVMInitializeNativeTarget        = LLVMInitializeNativeTargetExport
 LLVMInitializeNativeAsmParser     = LLVMInitializeNativeAsmParserExport
 LLVMInitializeNativeAsmPrinter    = LLVMInitializeNativeAsmPrinterExport
 LLVMInitializeNativeDisassembler  = LLVMInitializeNativeDisassemblerExport
+
+;LTO APIs
+;llvm_create_optimizer
+;llvm_destroy_optimizer
+;llvm_read_object_file
+;llvm_optimize_modules
+;lto_get_version
+;lto_get_error_message
+;lto_module_is_object_file
+;lto_module_is_object_file_for_target
+;lto_module_is_object_file_in_memory
+;lto_module_is_object_file_in_memory_for_target
+;lto_module_create
+;lto_module_create_from_memory
+;lto_module_create_from_memory_with_path
+;lto_module_create_in_local_context
+;lto_module_create_in_codegen_context
+;lto_module_create_from_fd
+;lto_module_create_from_fd_at_offset
+;lto_module_dispose
+;lto_module_get_target_triple
+;lto_module_set_target_triple
+;lto_module_get_num_symbols
+;lto_module_get_symbol_name
+;lto_module_get_symbol_attribute
+;lto_module_get_num_deplibs
+;lto_module_get_deplib
+;lto_module_get_num_linkeropts
+;lto_module_get_linkeropt
+;lto_codegen_set_diagnostic_handler
+;lto_codegen_create
+;lto_codegen_create_in_local_context
+;lto_codegen_dispose
+;lto_codegen_add_module
+;lto_codegen_set_debug_model
+;lto_codegen_set_pic_model
+;lto_codegen_set_cpu
+;lto_codegen_set_assembler_path
+;lto_codegen_set_assembler_args
+;lto_codegen_add_must_preserve_symbol
+;lto_codegen_write_merged_modules
+;lto_codegen_compile
+;lto_codegen_compile_to_file
+;lto_codegen_debug_options
+;lto_initialize_disassembler
 
 ; standard LLVM-C API exports
 LLVMInitializeAArch64AsmParser

@@ -9,14 +9,8 @@
         }
 
         internal BinaryOperator( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsABinaryOperator ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsABinaryOperator ) )
         {
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Language", "CSE0003:Use expression-bodied members", Justification = "Readability" )]
-        internal static BinaryOperator FromHandle( LLVMValueRef valueRef, bool preValidated )
-        {
-            return (BinaryOperator)Context.CurrentContext.GetValueFor( valueRef, ( h ) => new BinaryOperator( h, preValidated ) );
         }
     }
 }

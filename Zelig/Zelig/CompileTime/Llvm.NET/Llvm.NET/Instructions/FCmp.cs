@@ -9,7 +9,7 @@
         }
 
         internal FCmp( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsAFCmpInst ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAFCmpInst ) )
         {
         }
     }

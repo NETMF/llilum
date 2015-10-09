@@ -9,7 +9,7 @@
         }
 
         internal Alloca( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsAAllocaInst ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAAllocaInst ) )
         {
         }
     }

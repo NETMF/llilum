@@ -45,6 +45,8 @@ namespace Microsoft.Zelig.Runtime
             InvalidSupervisorCall   ,
             InvalidOperation        ,
             Impossible              ,
+            Fault_Vectors           ,
+            Fault_Unknown           ,
         }
 
         //

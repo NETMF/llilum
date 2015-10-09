@@ -24,65 +24,65 @@ namespace Llvm.NET
 
         public static void InitializeCore()
         {
-            LLVMNative.InitializeCore( PassRegistryHandle.Value );
+            NativeMethods.InitializeCore( PassRegistryHandle.Value );
         }
 
         public static void InitializeTransformUtils()
         {
-            LLVMNative.InitializeTransformUtils( PassRegistryHandle.Value );
+            NativeMethods.InitializeTransformUtils( PassRegistryHandle.Value );
         }
 
         public static void InitializeScalarOpts()
         {
-            LLVMNative.InitializeScalarOpts( PassRegistryHandle.Value );
+            NativeMethods.InitializeScalarOpts( PassRegistryHandle.Value );
         }
 
         public static void InitializeObjCARCOpts()
         {
-            LLVMNative.InitializeObjCARCOpts( PassRegistryHandle.Value );
+            NativeMethods.InitializeObjCARCOpts( PassRegistryHandle.Value );
         }
 
         public static void InitializeVectorization()
         {
-            LLVMNative.InitializeVectorization( PassRegistryHandle.Value );
+            NativeMethods.InitializeVectorization( PassRegistryHandle.Value );
         }
 
         public static void InitializeInstCombine( )
         {
-            LLVMNative.InitializeInstCombine( PassRegistryHandle.Value );
+            NativeMethods.InitializeInstCombine( PassRegistryHandle.Value );
         }
 
         public static void InitializeIPO( )
         {
-            LLVMNative.InitializeIPO( PassRegistryHandle.Value );
+            NativeMethods.InitializeIPO( PassRegistryHandle.Value );
         }
 
         public static void InitializeInstrumentation( )
         {
-            LLVMNative.InitializeInstrumentation( PassRegistryHandle.Value );
+            NativeMethods.InitializeInstrumentation( PassRegistryHandle.Value );
         }
 
         public static void InitializeAnalysis( )
         {
-            LLVMNative.InitializeAnalysis( PassRegistryHandle.Value );
+            NativeMethods.InitializeAnalysis( PassRegistryHandle.Value );
         }
 
         public static void InitializeIPA( )
         {
-            LLVMNative.InitializeIPA( PassRegistryHandle.Value );
+            NativeMethods.InitializeIPA( PassRegistryHandle.Value );
         }
 
         public static void InitializeCodeGen( )
         {
-            LLVMNative.InitializeCodeGen( PassRegistryHandle.Value );
+            NativeMethods.InitializeCodeGen( PassRegistryHandle.Value );
         }
 
         public static void InitializeTarget( )
         {
-            LLVMNative.InitializeTarget( PassRegistryHandle.Value );
+            NativeMethods.InitializeTarget( PassRegistryHandle.Value );
         }
 
         private static Lazy<LLVMPassRegistryRef> PassRegistryHandle
-            = new Lazy<LLVMPassRegistryRef>( ( ) => LLVMNative.GetGlobalPassRegistry( ), LazyThreadSafetyMode.ExecutionAndPublication );
+            = new Lazy<LLVMPassRegistryRef>( ( ) => NativeMethods.GetGlobalPassRegistry( ), LazyThreadSafetyMode.ExecutionAndPublication );
     }
 }

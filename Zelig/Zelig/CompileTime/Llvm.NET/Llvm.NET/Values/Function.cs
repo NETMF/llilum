@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Llvm.NET.Types;
+using Llvm.NET.DebugInfo;
 
 namespace Llvm.NET.Values
 {
@@ -12,17 +13,17 @@ namespace Llvm.NET.Values
         : GlobalObject
     {
         /// <summary>Signature type of the function</summary>
-        public FunctionType Signature => FunctionType.FromHandle( LLVMNative.GetElementType( LLVMNative.TypeOf( ValueHandle ) ) );
+        public IFunctionType Signature => TypeRef.FromHandle<IFunctionType>( NativeMethods.GetElementType( NativeMethods.TypeOf( ValueHandle ) ) );
 
         /// <summary>Entry block for this function</summary>
         public BasicBlock EntryBlock
         {
             get
             {
-                if( LLVMNative.CountBasicBlocks( ValueHandle ) == 0 )
+                if( NativeMethods.CountBasicBlocks( ValueHandle ) == 0 )
                     return null;
 
-                return BasicBlock.FromHandle( LLVMNative.GetEntryBasicBlock( ValueHandle ) );
+                return BasicBlock.FromHandle( NativeMethods.GetEntryBasicBlock( ValueHandle ) );
             }
         }
 
@@ -31,10 +32,10 @@ namespace Llvm.NET.Values
         {
             get
             {
-                uint count = LLVMNative.CountBasicBlocks( ValueHandle );
+                uint count = NativeMethods.CountBasicBlocks( ValueHandle );
                 var buf = new LLVMBasicBlockRef[ count ];
                 if( count > 0 )
-                    LLVMNative.GetBasicBlocks( ValueHandle, out buf[ 0 ] );
+                    NativeMethods.GetBasicBlocks( ValueHandle, out buf[ 0 ] );
 
                 return buf.Select( BasicBlock.FromHandle )
                           .ToList( )
@@ -50,22 +51,25 @@ namespace Llvm.NET.Values
         {
             get
             {
-                return ( CallingConvention )LLVMNative.GetFunctionCallConv( ValueHandle );
+                return ( CallingConvention )NativeMethods.GetFunctionCallConv( ValueHandle );
             }
             set
             {
-                LLVMNative.SetFunctionCallConv( ValueHandle, ( uint )value );
+                NativeMethods.SetFunctionCallConv( ValueHandle, ( uint )value );
             }
         }
 
         /// <summary>LLVM instrinsicID for the method</summary>
-        public uint IntrinsicId => LLVMNative.GetIntrinsicID( ValueHandle );
+        public uint IntrinsicId => NativeMethods.GetIntrinsicID( ValueHandle );
 
         /// <summary>Flag to indicate if the method signature accepts variable arguments</summary>
         public bool IsVarArg => Signature.IsVarArg;
 
         /// <summary>Return type of the function</summary>
-        public TypeRef ReturnType => Signature.ReturnType;
+        public ITypeRef ReturnType => Signature.ReturnType;
+
+        /// <summary>Debug information for this function</summary>
+        public DISubProgram DISubProgram { get; internal set; }
 
         /// <summary>Garbage collection engine name that this function is generated to work with</summary>
         /// <remarks>For details on GC support in LLVM see: http://llvm.org/docs/GarbageCollection.html </remarks>
@@ -73,39 +77,56 @@ namespace Llvm.NET.Values
         {
             get
             {
-                var nativePtr = LLVMNative.GetGC( ValueHandle );
+                var nativePtr = NativeMethods.GetGC( ValueHandle );
                 return Marshal.PtrToStringAnsi( nativePtr );
             }
             set
             {
-                LLVMNative.SetGC( ValueHandle, value );
+                NativeMethods.SetGC( ValueHandle, value );
             }
         }
 
+        /// <summary>Verifies the function is valid and all blocks properly terminated</summary>
         public void Verify()
         {
             IntPtr errMsgPtr;
-            var status = LLVMNative.VerifyFunctionEx( ValueHandle, LLVMVerifierFailureAction.LLVMReturnStatusAction, out errMsgPtr );
+            var status = NativeMethods.VerifyFunctionEx( ValueHandle, LLVMVerifierFailureAction.LLVMReturnStatusAction, out errMsgPtr );
             if( status )
-                throw new InternalCodeGeneratorException( LLVMNative.MarshalMsg( errMsgPtr) );
+                throw new InternalCodeGeneratorException( NativeMethods.MarshalMsg( errMsgPtr) );
         }
 
-        /// <summary>Add attribute flags to the function</summary>
-        /// <param name="attrib"><see cref="AttributeKind"/> to add to the function</param>
-        /// <param name="value">Value to associate with this attribute. This is usually zero, but can also be a power of
-        ///     2 for StackAlignment.</param>
-        public void AddAttribute( AttributeKind kind, ulong value ) => LLVMNative.AddFunctionAttr2( ValueHandle, ( LLVMAttributeKind )kind, value );
+        /// <summary>Gets the <see cref="IAttributeSet"/> for this function itself</summary>
+        public IAttributeSet Attributes { get; }
 
-        /// <summary>Remove attribute flags from the function</summary>
-        /// <param name="attrib"><see cref="AttributeKind"/> to remove from the function</param>
-        public void RemoveAttribute(AttributeKind kind ) => LLVMNative.RemoveFunctionAttr2( ValueHandle, ( LLVMAttributeKind )kind );
+        // REVIEW: Should this be null if the return type is void? Is there any valid use of attributes
+        // to a void return type?
+        /// <summary>Gets the <see cref="IAttributeSet"/> for the return value of this function</summary>
+        public IAttributeSet ReturnAttributes { get; }
+
+        /// <summary>Add a set of attributes using fluent style coding</summary>
+        /// <param name="attributes">Attributes to add</param>
+        /// <returns>This instance for use in fluent style code</returns>
+        public Function AddAttributes( IEnumerable<AttributeValue> attributes )
+        {
+            Attributes.Add( attributes );
+            return this;
+        }
+
+        /// <summary>Add a set of attributes using fluent style coding</summary>
+        /// <param name="attributes">Attributes to add</param>
+        /// <returns>This instance for use in fluent style code</returns>
+        public Function AddAttributes( params AttributeValue[] attributes )
+        {
+            Attributes.Add( attributes );
+            return this;
+        }
 
         /// <summary>Add a new basic block to the beginning of a function</summary>
         /// <param name="name">Name (label) for the block</param>
         /// <returns><see cref="BasicBlock"/> created and insterted into the begining function</returns>
         public BasicBlock PrependBasicBlock( string name )
         {
-            LLVMBasicBlockRef firstBlock = LLVMNative.GetFirstBasicBlock( ValueHandle );
+            LLVMBasicBlockRef firstBlock = NativeMethods.GetFirstBasicBlock( ValueHandle );
             BasicBlock retVal;
             if( firstBlock.Pointer == IntPtr.Zero )
             {
@@ -113,7 +134,7 @@ namespace Llvm.NET.Values
             }
             else
             {
-                var blockRef = LLVMNative.InsertBasicBlockInContext( Type.Context.ContextHandle, firstBlock, name );
+                var blockRef = NativeMethods.InsertBasicBlockInContext( Type.Context.ContextHandle, firstBlock, name );
                 retVal = BasicBlock.FromHandle( firstBlock );
             }
             return retVal;
@@ -124,10 +145,8 @@ namespace Llvm.NET.Values
         /// <returns><see cref="BasicBlock"/> created and insterted onto the end of the function</returns>
         public BasicBlock AppendBasicBlock( string name )
         {
-            BasicBlock result;
-            LLVMBasicBlockRef blockRef = LLVMNative.AppendBasicBlockInContext( Type.Context.ContextHandle, ValueHandle, name );
-            result = BasicBlock.FromHandle( blockRef );
-            return result;
+            LLVMBasicBlockRef blockRef = NativeMethods.AppendBasicBlockInContext( Type.Context.ContextHandle, ValueHandle, name );
+            return BasicBlock.FromHandle( blockRef );
         }
 
         /// <summary>Retrieves or creates  block by name</summary>
@@ -147,14 +166,190 @@ namespace Llvm.NET.Values
             return retVal;
         }
 
-        internal Function( LLVMValueRef valueRef )
+        /// <summary>Determines if a given AttributeValue uses a parameter value</summary>
+        /// <param name="kind">AttributeValue kind to test</param>
+        /// <returns>true if the AttributeValue has a parameter</returns>
+        /// <remarks>
+        /// Most of the attributes are simple boolean flags, however some, in particular
+        /// those dealing with sizes or alignment require a parameter value. This method
+        /// is used to determine which category the AttributeValue falls into. Any AttributeValue 
+        /// returning true requires an integer parameter and has special handling so 
+        /// cannot be used in the AddAttributes() methods.
+        /// </remarks>
+        public static bool AttributeHasValue( AttributeKind kind )
+        {
+            switch( kind )
+            {
+            case AttributeKind.Alignment:
+            case AttributeKind.Dereferenceable:
+            case AttributeKind.DereferenceableOrNull:
+            case AttributeKind.StackAlignment:
+                return true;
+
+            default:
+                return false;
+            }
+        }
+
+        #region AttributeValue Support
+        /// <summary>Adds a set of boolean attributes to the function index specified</summary>
+        /// <param name="index">Function index to apply the AttributeValue to</param>
+        /// <param name="attributes">Attributes to add</param>
+        /// <returns>This function for use in fluent style coding</returns>
+        internal Function AddAttributes( FunctionAttributeIndex index, params AttributeValue[ ] attributes )
+        {
+            return AddAttributes( index, ( IEnumerable<AttributeValue> )attributes );
+        }
+
+        /// <summary>Adds a set of boolean attributes to the function index specified</summary>
+        /// <param name="index">Function index to apply the AttributeValue to</param>
+        /// <param name="attributes">Attributes to add</param>
+        /// <returns>This function for use in fluent style coding</returns>
+        internal Function AddAttributes( FunctionAttributeIndex index, IEnumerable<AttributeValue> attributes )
+        {
+            foreach( var attribute in attributes )
+                AddAttribute( index, attribute );
+
+            return this;
+        }
+
+        internal Function AddAttribute( FunctionAttributeIndex index, AttributeValue attribute )
+        {
+            if( attribute.Kind.HasValue )
+            {
+                if( attribute.IntegerValue.HasValue )
+                    AddAttribute( index, attribute.Kind.Value, attribute.IntegerValue.Value );
+                else
+                    AddAttribute( index, attribute.Kind.Value );
+            }
+            else if( attribute.IsString )
+            {
+                AddAttribute( index, attribute.Name, attribute.StringValue );
+            }
+            else
+                throw new ArgumentException( "Invalid Attrbiute", nameof( attribute ) );
+
+            return this; 
+        }
+
+        /// <summary>Adds a single boolean AttributeValue to the function index specified</summary>
+        /// <param name="index">Function index to apply the AttributeValue to</param>
+        /// <param name="kind">AttributeValue kind to add</param>
+        /// <returns>This function for use in fluent style coding</returns>
+        private void AddAttribute( FunctionAttributeIndex index, AttributeKind kind )
+        {
+            if( AttributeHasValue( kind ) )
+                throw new ArgumentException( $"Attribute '{kind}' requires an argument", nameof( kind ) );
+
+            NativeMethods.AddFunctionAttr2( ValueHandle, ( int )index, ( LLVMAttrKind )kind );
+        }
+
+        private void AddAttribute( FunctionAttributeIndex index, AttributeKind kind, UInt64 value )
+        {
+            VerifyIntAttributeUsage( index, kind, value );
+            NativeMethods.SetFunctionAttributeValue( ValueHandle, ( int )index, ( LLVMAttrKind )kind, value );
+        }
+
+        internal static void RangeCheckIntAttributeValue( AttributeKind kind, ulong value )
+        {
+            // To prevent native asserts or crashes - validate params before passing down to native code
+            switch( kind )
+            {
+            case AttributeKind.Alignment:
+                if( value > UInt32.MaxValue )
+                    throw new ArgumentOutOfRangeException( nameof( value ), "Expected a 32 bit value for alignment" );
+
+                break;
+
+            case AttributeKind.StackAlignment:
+                if( value > UInt32.MaxValue )
+                    throw new ArgumentOutOfRangeException( nameof( value ), "Expected a 32 bit value for alignment" );
+                break;
+
+            case AttributeKind.Dereferenceable:
+            case AttributeKind.DereferenceableOrNull:
+                break;
+
+            default:
+                throw new ArgumentException( $"Attribute '{kind}' does not support an argument", nameof( kind ) );
+            }
+        }
+
+        private static void VerifyIntAttributeUsage( FunctionAttributeIndex index, AttributeKind kind, ulong value )
+        {
+            RangeCheckIntAttributeValue( kind, value );
+            // To prevent native asserts or crashes - validate params before passing down to native code
+            switch( kind )
+            {
+            case AttributeKind.Alignment:
+                if( index > FunctionAttributeIndex.ReturnType )
+                    throw new ArgumentException( "Alignment only supported on parameters", nameof( index ) );
+                break;
+
+            case AttributeKind.StackAlignment:
+                if( index != FunctionAttributeIndex.Function )
+                    throw new ArgumentException( "Stack alignment only applicable to the function itself", nameof( index ) );
+                break;
+
+            case AttributeKind.Dereferenceable:
+                if( index == FunctionAttributeIndex.Function )
+                    throw new ArgumentException( "Expected a return or param index", nameof( index ) );
+                break;
+
+            case AttributeKind.DereferenceableOrNull:
+                if( index == FunctionAttributeIndex.Function )
+                    throw new ArgumentException( "Expected a return or param index", nameof( index ) );
+                break;
+
+            default:
+                throw new ArgumentException( $"Attribute '{kind}' does not support an argument", nameof( kind ) );
+            }
+        }
+
+        internal UInt64 GetAttributeValue( FunctionAttributeIndex index, AttributeKind kind )
+        {
+            if( !AttributeHasValue( kind ) )
+                throw new ArgumentException( $"Attribute '{kind}' does not support an argument", nameof( kind ) );
+
+            return NativeMethods.GetFunctionAttributeValue( ValueHandle, (int)index, ( LLVMAttrKind )kind );
+        }
+
+        internal void RemoveAttribute( FunctionAttributeIndex index, AttributeKind kind )
+        {
+            NativeMethods.RemoveFunctionAttr2( ValueHandle, ( int )index, ( LLVMAttrKind )kind );
+        }
+
+        internal void AddAttribute( FunctionAttributeIndex index, string name, string value )
+        {
+            NativeMethods.AddTargetDependentFunctionAttr2( ValueHandle, ( int )index, name, value );
+        }
+
+        internal void RemoveAttribute( FunctionAttributeIndex index, string name )
+        {
+            NativeMethods.RemoveTargetDependentFunctionAttr2( ValueHandle, ( int )index, name );
+        }
+
+        internal bool HasAttribute( FunctionAttributeIndex index, AttributeKind kind )
+        {
+            return NativeMethods.HasFunctionAttr2( ValueHandle, ( int )index, ( LLVMAttrKind )kind );
+        }
+
+        internal bool HasAttribute( FunctionAttributeIndex index, string name )
+        {
+            return NativeMethods.LLVMHasTargetDependentAttribute( ValueHandle, ( int )index, name );
+        }
+        #endregion
+
+        internal Function( LLVMValueRef valueRef ) 
             : this( valueRef, false )
         {
         }
 
-        internal Function( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsAFunction ) )
+        internal Function( LLVMValueRef valueRef, bool preValidated ) 
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAFunction ) )
         {
+            Attributes = new AttributeSetImpl( this, FunctionAttributeIndex.Function );
+            ReturnAttributes = new AttributeSetImpl( this, FunctionAttributeIndex.ReturnType );
         }
     }
 }

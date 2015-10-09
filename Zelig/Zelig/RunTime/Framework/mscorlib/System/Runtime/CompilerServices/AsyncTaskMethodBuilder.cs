@@ -11,6 +11,7 @@
 // be beneficial. For now, we're generating these results on demand to limit static memory overhead.
 //#define ENABLE_CACHED_TASKS
 
+using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Security;

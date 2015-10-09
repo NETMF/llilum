@@ -2,21 +2,23 @@
 
 namespace Llvm.NET.Types
 {
-    public class VectorType : SequenceType
+    public interface IVectorType
+        : ISequenceType
     {
-        public uint Size => LLVMNative.GetVectorSize( TypeHandle );
+        uint Size { get; }
+    }
+
+    internal class VectorType
+        : SequenceType
+        , IVectorType
+    {
+        public uint Size => NativeMethods.GetVectorSize( TypeHandle_ );
 
         internal VectorType( LLVMTypeRef typeRef )
             : base( typeRef )
         {
-            if( LLVMNative.GetTypeKind( typeRef ) != LLVMTypeKind.LLVMVectorTypeKind )
+            if( NativeMethods.GetTypeKind( typeRef ) != LLVMTypeKind.LLVMVectorTypeKind )
                 throw new ArgumentException( "Vector type reference expected", nameof( typeRef ) );
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Language", "CSE0003:Use expression-bodied members", Justification = "Readability" )]
-        internal new static VectorType FromHandle( LLVMTypeRef typeRef )
-        {
-            return ( VectorType )Context.CurrentContext.GetTypeFor( typeRef, ( h ) => new VectorType( h ) );
         }
     }
 }

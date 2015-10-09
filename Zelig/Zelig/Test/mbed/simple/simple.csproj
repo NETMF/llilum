@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props" Condition="Exists('$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -18,7 +19,9 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\ZeligBuild\Target\bin\Debug\</OutputPath>
+    <IntermediateOutputPath>$(ZeligBuildRoot)\Target\obj\$(MSBuildProjectName)\$(Configuration)\</IntermediateOutputPath>
+    <OutputPath>$(ZeligBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
+
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -28,23 +31,18 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\ZeligBuild\Target\bin\Release\</OutputPath>
+    <OutputPath>$(ZeligBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>$(ZeligBuildRoot)\Target\obj\$(MSBuildProjectName)\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\RunTime\DeviceModels\Boards\K64F\K64F.csproj">
@@ -58,6 +56,10 @@
     <ProjectReference Include="..\..\..\RunTime\DeviceModels\mbed\mbed.csproj">
       <Project>{d7f2bc4e-1406-47aa-90e1-07bc4ce9410f}</Project>
       <Name>mbed</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\RunTime\Framework\system\system.csproj">
+      <Project>{186f31a3-ef89-4a25-b2d5-20070702aa01}</Project>
+      <Name>system</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\RunTime\Framework\Windows\Devices\Windows.Devices.csproj">
       <Project>{dc8c38d7-780b-4b13-8ace-9050e39cc51c}</Project>

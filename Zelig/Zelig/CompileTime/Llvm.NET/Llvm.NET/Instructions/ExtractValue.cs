@@ -9,7 +9,7 @@
         }
 
         internal ExtractValue( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsAExtractValueInst ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAExtractValueInst ) )
         {
         }
     }

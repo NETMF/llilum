@@ -8,19 +8,19 @@ namespace Llvm.NET
     public class Target
     {
         /// <summary>Name of this target</summary>
-        public string Name => Marshal.PtrToStringAnsi( LLVMNative.GetTargetName( TargetHandle ) );
+        public string Name => Marshal.PtrToStringAnsi( NativeMethods.GetTargetName( TargetHandle ) );
 
         /// <summary>Description of this target</summary>
-        public string Description => Marshal.PtrToStringAnsi( LLVMNative.GetTargetDescription( TargetHandle ) );
+        public string Description => NativeMethods.NormalizeLineEndings( NativeMethods.GetTargetDescription( TargetHandle ) );
 
         /// <summary>Flag indicating if this target has JIT support</summary>
-        public bool HasJIT => 0 != LLVMNative.TargetHasJIT( TargetHandle ).Value;
+        public bool HasJIT => 0 != NativeMethods.TargetHasJIT( TargetHandle ).Value;
 
         /// <summary>Flag indicating if this target has a TargetMachine initialized</summary>
-        public bool HasTargetMachine => 0 != LLVMNative.TargetHasTargetMachine( TargetHandle ).Value;
+        public bool HasTargetMachine => 0 != NativeMethods.TargetHasTargetMachine( TargetHandle ).Value;
 
         /// <summary>Flag indicating if this target has an Assembly code generating back end initialized</summary>
-        public bool HasAsmBackEnd => 0 != LLVMNative.TargetHasAsmBackend( TargetHandle ).Value;
+        public bool HasAsmBackEnd => 0 != NativeMethods.TargetHasAsmBackend( TargetHandle ).Value;
 
         /// <summary>Creates a <see cref="TargetMachine"/> for the target and specified parameters</summary>
         /// <param name="triple">Target triple for this machine (e.g. -mtriple)</param>
@@ -38,7 +38,7 @@ namespace Llvm.NET
                                                 , CodeModel codeModel
                                                 )
         {
-            var targetMachineHandle = LLVMNative.CreateTargetMachine( TargetHandle
+            var targetMachineHandle = NativeMethods.CreateTargetMachine( TargetHandle
                                                                     , triple
                                                                     , cpu
                                                                     , features
@@ -60,11 +60,11 @@ namespace Llvm.NET
         {
             get
             {
-                var current = LLVMNative.GetFirstTarget( );
+                var current = NativeMethods.GetFirstTarget( );
                 while( current.Pointer != IntPtr.Zero )
                 {
                     yield return FromHandle( current );
-                    current = LLVMNative.GetNextTarget( current );
+                    current = NativeMethods.GetNextTarget( current );
                 }
             }
         }
@@ -73,10 +73,9 @@ namespace Llvm.NET
         {
             LLVMTargetRef targetHandle;
             IntPtr msgPtr;
-            if( 0 != LLVMNative.GetTargetFromTriple( targetTriple, out targetHandle, out msgPtr ).Value )
+            if( 0 != NativeMethods.GetTargetFromTriple( targetTriple, out targetHandle, out msgPtr ).Value )
             {
-                var msg = Marshal.PtrToStringAnsi( msgPtr );
-                LLVMNative.DisposeMessage( msgPtr );
+                var msg = NativeMethods.MarshalMsg( msgPtr );
                 throw new InternalCodeGeneratorException( msg );
             }
 

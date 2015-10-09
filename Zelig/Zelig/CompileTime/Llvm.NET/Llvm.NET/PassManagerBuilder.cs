@@ -13,32 +13,32 @@ namespace Llvm.NET
     {
         public PassManagerBuilder( )
         {
-            PassManagerBuilderHandle = LLVMNative.PassManagerBuilderCreate( );
+            PassManagerBuilderHandle = NativeMethods.PassManagerBuilderCreate( );
         }
 
         public void SetOptLevel( uint optLevel )
         {
-            LLVMNative.PassManagerBuilderSetOptLevel( PassManagerBuilderHandle, optLevel );
+            NativeMethods.PassManagerBuilderSetOptLevel( PassManagerBuilderHandle, optLevel );
         }
 
         public void SetSizeLevel( uint sizeLevel )
         {
-            LLVMNative.PassManagerBuilderSetSizeLevel( PassManagerBuilderHandle, sizeLevel );
+            NativeMethods.PassManagerBuilderSetSizeLevel( PassManagerBuilderHandle, sizeLevel );
         }
 
         public void SetDisableUnitAtATime( bool value )
         {
-            LLVMNative.PassManagerBuilderSetDisableUnitAtATime( PassManagerBuilderHandle, value );
+            NativeMethods.PassManagerBuilderSetDisableUnitAtATime( PassManagerBuilderHandle, value );
         }
 
         public void SetDisableUnrollLoops( bool value )
         {
-            LLVMNative.PassManagerBuilderSetDisableUnrollLoops( PassManagerBuilderHandle, value );
+            NativeMethods.PassManagerBuilderSetDisableUnrollLoops( PassManagerBuilderHandle, value );
         }
 
         public void SetDisableSimplifyLibCalls( bool value )
         {
-            LLVMNative.PassManagerBuilderSetDisableSimplifyLibCalls( PassManagerBuilderHandle, value );
+            NativeMethods.PassManagerBuilderSetDisableSimplifyLibCalls( PassManagerBuilderHandle, value );
         }
 
         //public void PopulateFunctionPassManager( PassManager passManager )
@@ -64,7 +64,7 @@ namespace Llvm.NET
         {
             if( PassManagerBuilderHandle.Pointer != IntPtr.Zero )
             {
-                LLVMNative.PassManagerBuilderDispose( PassManagerBuilderHandle );
+                NativeMethods.PassManagerBuilderDispose( PassManagerBuilderHandle );
                 PassManagerBuilderHandle = default( LLVMPassManagerBuilderRef );
             }
         }

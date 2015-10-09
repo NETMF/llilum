@@ -10,6 +10,8 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
     using System.Threading;
 
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
+    using RT = Microsoft.Zelig.Runtime;
+
 
     public abstract partial class ProcessorARMv7M : Runtime.Processor
     {
@@ -66,11 +68,24 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             SupervisorCall__RetireThread    = 0x13,
         }
 
+        public struct StandardFrame
+        {
+            public UIntPtr R0;
+            public UIntPtr R1;
+            public UIntPtr R2;
+            public UIntPtr R3;
+            public UIntPtr R12;
+            public UIntPtr LR;
+            public UIntPtr PC;
+            public UIntPtr PSR;
+        }
+
         //
         // Exception priorities
         //
         
         public const byte c_Priority__MASK                  = 0x000000FF;
+        public const byte c_Priority__NeverDisabled         = 0x00000000;
         public const byte c_Priority__Highest               = 0x00000001;
         public const byte c_Priority__Lowest                = 0x000000FF;
         public const byte c_Priority__HigherThanAnyWeOwn    = 0x00000004;
@@ -233,14 +248,58 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         //--//
                     
         public const int  c_SCB_SHCSR_USGFAULTENA__SHIFT = 18;
+        public const uint c_SCB_SHCSR_USGFAULTENA__MASK  = 1u << c_SCB_SHCSR_USGFAULTENA__SHIFT;
         public const uint c_SCB_SHCSR_USGFAULTENA__SET   = 1u << c_SCB_SHCSR_USGFAULTENA__SHIFT;
 
         public const int  c_SCB_SHCSR_BUSFAULTENA__SHIFT = 17;
+        public const uint c_SCB_SHCSR_BUSFAULTENA__MASK  = 1u << c_SCB_SHCSR_BUSFAULTENA__SHIFT;
         public const uint c_SCB_SHCSR_BUSFAULTENA__SET   = 1u << c_SCB_SHCSR_BUSFAULTENA__SHIFT;
 
         public const int  c_SCB_SHCSR_MEMFAULTENA__SHIFT = 16;
         public const uint c_SCB_SHCSR_MEMFAULTENA__SET   = 1u << c_SCB_SHCSR_MEMFAULTENA__SHIFT;
         
+        //--//
+
+        public const int  c_SCB_HFSR_FORCED_SHIFT        = 30; 
+        public const uint c_SCB_HFSR_FORCED_MASK         = 1u << c_SCB_HFSR_FORCED_SHIFT; 
+        public const uint c_SCB_HFSR_FORCED_FORCED       = 1u << c_SCB_HFSR_FORCED_SHIFT;  // escalated hard fault
+        
+        public const int  c_SCB_HFSR_VECTTBL_SHIFT       = 1; 
+        public const uint c_SCB_HFSR_VECTTBL_MASK        = 1u << c_SCB_HFSR_VECTTBL_SHIFT; 
+        public const uint c_SCB_HFSR_VECTTBL_READ        = 1u << c_SCB_HFSR_VECTTBL_SHIFT; // fault on vector table read
+
+        //--//
+        
+        public const int  c_SCB_CFSR_MEMFAULT_SHIFT      = 0; 
+        public const uint c_SCB_CFSR_MEMFAULT_MASK       = 0xFFu << c_SCB_CFSR_MEMFAULT_SHIFT; 
+        public const uint c_SCB_CFSR_MEMFAULT_IACCVIOL   = 0x01u << c_SCB_CFSR_MEMFAULT_SHIFT; // instruction access violation
+        public const uint c_SCB_CFSR_MEMFAULT_DACCVIOL   = 0x02u << c_SCB_CFSR_MEMFAULT_SHIFT; // load or store at invalid address
+        public const uint c_SCB_CFSR_MEMFAULT_MUNSTKERR  = 0x08u << c_SCB_CFSR_MEMFAULT_SHIFT; // memory access fault on unstacking 
+        public const uint c_SCB_CFSR_MEMFAULT_MSTKERR    = 0x10u << c_SCB_CFSR_MEMFAULT_SHIFT; // memory access fault on stacking 
+        public const uint c_SCB_CFSR_MEMFAULT_MLSPERR    = 0x20u << c_SCB_CFSR_MEMFAULT_SHIFT; // fault on lazy state preservation
+        public const uint c_SCB_CFSR_MEMFAULT_MMFARVALID = 0x80u << c_SCB_CFSR_MEMFAULT_SHIFT; 
+        
+        public const int  c_SCB_CFSR_BUSFAULT_SHIFT      = 8; 
+        public const uint c_SCB_CFSR_BUSFAULT_MASK       = 0xFFu << c_SCB_CFSR_BUSFAULT_SHIFT; 
+        public const uint c_SCB_CFSR_BUSFAULT_IBUSERR    = 0x01u << c_SCB_CFSR_BUSFAULT_SHIFT; // bus error on instruction fetch and attempted execution
+        public const uint c_SCB_CFSR_BUSFAULT_PRECISERR  = 0x02u << c_SCB_CFSR_BUSFAULT_SHIFT; // stacked PC points to actual location of fault
+        public const uint c_SCB_CFSR_BUSFAULT_IMPRCISERR = 0x04u << c_SCB_CFSR_BUSFAULT_SHIFT; // unknow fault location 
+        public const uint c_SCB_CFSR_BUSFAULT_UNSTKERR   = 0x08u << c_SCB_CFSR_BUSFAULT_SHIFT; // bus fault on unstacking 
+        public const uint c_SCB_CFSR_BUSFAULT_STKERR     = 0x10u << c_SCB_CFSR_BUSFAULT_SHIFT; // bus fault on stacking 
+        public const uint c_SCB_CFSR_MEMFAULT_LSPERR     = 0x20u << c_SCB_CFSR_MEMFAULT_SHIFT; // fault on lazy state preservation
+        public const uint c_SCB_CFSR_BUSFAULT_BFARVALID  = 0x80u << c_SCB_CFSR_BUSFAULT_SHIFT; 
+        
+        public const int  c_SCB_CFSR_USGFAULT_SHIFT      = 16; 
+        public const uint c_SCB_CFSR_USGFAULT_MASK       = 0xFFFFu << c_SCB_CFSR_USGFAULT_SHIFT; 
+        public const uint c_SCB_CFSR_USGFAULT_UNDEFINSTR = 0x0001u << c_SCB_CFSR_USGFAULT_SHIFT; // undefined instruction
+        public const uint c_SCB_CFSR_USGFAULT_INVSTATE   = 0x0002u << c_SCB_CFSR_USGFAULT_SHIFT; // instruction makes illegal use of the EPSR
+        public const uint c_SCB_CFSR_USGFAULT_INVPC      = 0x0004u << c_SCB_CFSR_USGFAULT_SHIFT; // illegal load of EXC_RETURN to the PC, as a result of an invalid context, or an invalid EXC_RETURN value
+        public const uint c_SCB_CFSR_USGFAULT_NOPC       = 0x0008u << c_SCB_CFSR_USGFAULT_SHIFT; // coprocessor access 
+        public const uint c_SCB_CFSR_USGFAULT_UNALIGNED  = 0x0100u << c_SCB_CFSR_USGFAULT_SHIFT; // unaligned access
+        public const uint c_SCB_CFSR_USGFAULT_DIVBYZERO  = 0x0200u << c_SCB_CFSR_USGFAULT_SHIFT; // divide by zero 
+
+        public const uint c_COREDEBUG_DHCSR_CONNECTED    = 0x00000001; 
+
         #endregion 
 
         //--//
@@ -359,6 +418,14 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             // Enforce 8 bytes alignment
             //
             Set_8_BytesAlignment( );
+
+            //
+            // Enable system exceptions we intercept
+            //
+            EnableSystemHandler( IRQn_Type.HardFault_IRQn        ); 
+            EnableSystemHandler( IRQn_Type.BusFault_IRQn         ); 
+            EnableSystemHandler( IRQn_Type.MemoryManagement_IRQn ); 
+            EnableSystemHandler( IRQn_Type.UsageFault_IRQn       ); 
         }
                 
         internal static void Set_8_BytesAlignment( )
@@ -437,21 +504,20 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
             switch(ex)
             {
-                case IRQn_Type.Reset_IRQn         :
-                case IRQn_Type.NonMaskableInt_IRQn:
-                case IRQn_Type.HardFault_IRQn     :  
-                    // Cannot enable or disable NMI, Reset or HardFault
-                    //BugCheck.Assert( false, BugCheck.StopCode.IllegalMode );
-                    break;
-                case IRQn_Type.SVCall_IRQn:
                 case IRQn_Type.DebugMonitor_IRQn:  
                     // Not implemented, we should never do this
-                    //BugCheck.Assert( false, BugCheck.StopCode.IllegalMode );
+                    BugCheck.Assert( false, BugCheck.StopCode.IllegalMode );
                     break;
                 case IRQn_Type.PendSV_IRQn:
                 case IRQn_Type.SysTick_IRQn:
-                    // NOT IMPLEMENTED: call NVIC
-                    //BugCheck.Assert( false, BugCheck.StopCode.IncorrectArgument );
+                    // Should use NVIC for this ones
+                    BugCheck.Assert( false, BugCheck.StopCode.IncorrectArgument );
+                    break;
+                case IRQn_Type.Reset_IRQn         :
+                case IRQn_Type.NonMaskableInt_IRQn:  
+                case IRQn_Type.SVCall_IRQn        :
+                case IRQn_Type.HardFault_IRQn     :
+                    // always enabled 
                     break;
                 case IRQn_Type.MemoryManagement_IRQn:
                     mask = c_SHCSR__MEMFAULTENA__ENABLE;
@@ -467,7 +533,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                     break;
             }
 
-            CUSTOM_STUB_SCB_SHCRS_EnableSystemHandler( mask );
+            CUSTOM_STUB_SCB_SHCRS_EnableSystemHandler( mask ); 
         }
         
         private static void DisableSystemHandler( IRQn_Type ex )
@@ -589,6 +655,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         {
             CMSIS_STUB_SCB__set_PRIMASK( c_PRIMASK__InterruptsOff ); 
         }
+
         public static void EnableInterruptsByPrimask()
         {
             CMSIS_STUB_SCB__set_PRIMASK( c_PRIMASK__InterruptsOn ); 
@@ -730,14 +797,193 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             CUSTOM_STUB_SetExcReturn( ret );
         }
         
-        //--//
-         
         //
-        // We will implement the intrernal methods below with CMSIS-Core
+        // Fault diagnostic
         //
 
-        // TODO: do we need well-known methods?
+        protected static bool WasHardFaultForced()
+        {
+            return ( CUSTOM_STUB_SCB__get_HFSR( ) & c_SCB_HFSR_FORCED_FORCED ) == c_SCB_HFSR_FORCED_FORCED; 
+        } 
         
+        protected static bool WasHardFaultOnVectorTableRead()
+        {
+            return ( CUSTOM_STUB_SCB__get_HFSR( ) & c_SCB_HFSR_VECTTBL_READ ) == c_SCB_HFSR_VECTTBL_READ; 
+        } 
+
+        protected static bool MemFaultAddressIsValid()
+        {
+            return ( CUSTOM_STUB_SCB__get_CFSR( ) & c_SCB_CFSR_MEMFAULT_MMFARVALID) == c_SCB_CFSR_MEMFAULT_MMFARVALID; 
+        }
+
+        protected static bool IsBusFaultAddressValid()
+        {
+            return ( CUSTOM_STUB_SCB__get_CFSR( ) & c_SCB_CFSR_BUSFAULT_BFARVALID) == c_SCB_CFSR_BUSFAULT_BFARVALID; 
+        }
+
+        protected static bool IsBusFaultAddressPrecise()
+        {
+            return ( CUSTOM_STUB_SCB__get_CFSR( ) & c_SCB_CFSR_BUSFAULT_PRECISERR) == c_SCB_CFSR_BUSFAULT_PRECISERR; 
+        }
+
+        protected static uint GetProgramCounter()
+        {
+            return CUSTOM_STUB_GetProgramCounter( ); 
+        }
+        
+        protected static bool DebuggerConnected()
+        {
+            return CUSTOM_STUB_DebuggerConnected( ) == c_COREDEBUG_DHCSR_CONNECTED; 
+        }
+        
+        [RT.Inline]
+        protected static unsafe StandardFrame* PointerToStdFrame( UIntPtr SP )
+        {
+            return (StandardFrame*)SP.ToPointer( );
+        }
+        
+        //
+        // All overridable exceptions
+        //
+
+        //////[RT.BottomOfCallStack( )]
+        //////[RT.HardwareExceptionHandler( RT.HardwareException.NMI )]
+        //////[ExportedMethod]
+        ////////[TS.WellKnownMethod( "Hardware_InvokeNMIHandler" )]
+        //////private static void NMI_Handler( )
+        //////{
+        //////    //
+        //////    // The processor clears the FAULTMASK bit to 0 on exit from any exception handler except the NMI handler.
+        //////    //
+
+        //////    EnableFaults( );
+        //////}
+        
+        /// <summary>
+        /// Hard Fault is caused by Bus Fault, Memory Management Fault, or Usage Fault if their handler 
+        /// cannot be executed.
+        /// </summary>
+        [RT.BottomOfCallStack( )]
+        [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
+        [RT.NoReturn]
+        [ExportedMethod]
+        //[TS.WellKnownMethod( "Hardware_InvokeHardFaultHandler" )]
+        private static void HardFault_Handler( )
+        {
+            if(DebuggerConnected( ))
+            {
+                if(WasHardFaultOnVectorTableRead( ))
+                {
+                    BugCheck.Raise( BugCheck.StopCode.Fault_Vectors );
+                }
+                
+                // TODO
+                BugCheck.Raise( BugCheck.StopCode.Fault_Unknown );
+            }
+            else
+            {
+                while(true); 
+            }
+        }
+        
+        /// <summary>
+        /// Detects memory access violations to regions that are defined in the Memory Management Unit (MPU). 
+        /// For example code execution from a memory region with read/write access only.
+        /// </summary>
+        private static void MemManage_Handler( ref StandardFrame registers )
+        {
+            BugCheck.Log( "CFSR=0x%08x", (int)CUSTOM_STUB_SCB__get_CFSR( ) ); 
+            BugCheck.Log( "BFAR=0x%08x", (int)CUSTOM_STUB_SCB__get_MMFAR( ) ); 
+            BugCheck.Log( "PC  =0x%08x", (int)registers.PC.ToUInt32( )     );
+
+            if(IsBusFaultAddressValid( ) && IsBusFaultAddressPrecise( ))
+            {
+                Breakpoint( CUSTOM_STUB_SCB__get_MMFAR( ) );
+            }
+            else
+            {
+                Breakpoint( CUSTOM_STUB_SCB__get_CFSR( ) );
+            }
+        }
+
+        /// <summary>
+        /// Detects memory access errors on instruction fetch, data read/write, interrupt vector fetch, and 
+        /// register stacking (save/restore) on interrupt (entry/exit).
+        /// </summary>
+        private static void BusFault_Handler( ref StandardFrame registers )
+        {
+            BugCheck.Log( "CFSR=0x%08x", (int)CUSTOM_STUB_SCB__get_CFSR( ) ); 
+            BugCheck.Log( "BFAR=0x%08x", (int)CUSTOM_STUB_SCB__get_BFAR( ) ); 
+            BugCheck.Log( "PC  =0x%08x", (int)registers.PC.ToUInt32( )     );
+
+            if(IsBusFaultAddressValid( ) && IsBusFaultAddressPrecise( ))
+            {
+                Breakpoint( CUSTOM_STUB_SCB__get_BFAR( ) );
+            }
+            else
+            {
+                Breakpoint( CUSTOM_STUB_SCB__get_CFSR( ) );
+            }
+        }
+
+        /// <summary>
+        /// Detects execution of undefined instructions, unaligned memory access for load/store multiple. 
+        /// When enabled, divide-by-zero and other unaligned memory accesses are also detected.
+        /// </summary>
+        private static void UsageFault_Handler( )
+        {
+            BugCheck.Log( "CFSR=0x%08x", (int)CUSTOM_STUB_SCB__get_CFSR( ) ); 
+            Breakpoint( CUSTOM_STUB_SCB__get_CFSR( ) );
+        }
+        
+        [ExportedMethod]
+        private static unsafe void Generic_FaultHandler_Zelig( uint sp )
+        {
+            StandardFrame* regs = PointerToStdFrame( new UIntPtr( sp ) );
+
+            BusFault_Handler( ref *regs ); 
+        }
+
+        //////[RT.BottomOfCallStack( )]
+        //////[RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
+        //////[RT.NoReturn]
+        //////[ExportedMethod]
+        ////////[TS.WellKnownMethod( "Hardware_InvokeResetHandler")]
+        //////private static void Reset_Handler( )
+        //////{
+        //////}
+        
+        //////[RT.BottomOfCallStack( )]
+        //////[RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
+        //////[RT.NoReturn]
+        //////[ExportedMethod]
+        ////////[TS.WellKnownMethod( "Hardware_InvokeDebugMonHandler" )]
+        //////private static void DebugMon_Handler( )
+        //////{
+        //////}
+        
+        //
+        // We will implement the intrernal methods below with CMSIS-Core or custom stubs
+        //      
+        
+        [DllImport( "C" )]
+        internal static extern uint CUSTOM_STUB_DebuggerConnected( );
+        
+        [DllImport( "C" )]
+        internal static extern uint CUSTOM_STUB_GetProgramCounter( );
+       
+        [DllImport( "C" )]
+        internal static extern uint CUSTOM_STUB_SCB__get_HFSR( );
+       
+        [DllImport( "C" )]
+        internal static extern uint CUSTOM_STUB_SCB__get_CFSR( );
+
+        [DllImport( "C" )]
+        internal static extern uint CUSTOM_STUB_SCB__get_MMFAR( );
+       
+        [DllImport( "C" )]
+        internal static extern uint CUSTOM_STUB_SCB__get_BFAR( );
+               
         [DllImport( "C" )]
         internal static extern uint CMSIS_STUB_SCB__get_CONTROL( );
 
@@ -749,8 +995,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
         [DllImport( "C" )]
         internal static extern uint CMSIS_STUB_SCB__get_APSR( );
-
-
+        
         [DllImport( "C" )]
         internal static extern uint CMSIS_STUB_SCB__get_xPSR( );
 

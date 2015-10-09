@@ -9,7 +9,7 @@
         }
 
         internal InsertValue( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsAInsertValueInst ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAInsertValueInst ) )
         {
         }
     }

@@ -26,4 +26,11 @@ extern "C"
         auto pModule = unwrap( module );
         return pModule->getModuleIdentifier( ).c_str( );
     }
+
+    LLVMValueRef LLVMGetGlobalAlias( LLVMModuleRef module, char const* name )
+    {
+        auto pModule = unwrap( module );
+        return wrap( pModule->getNamedAlias( name ) );
+    }
+
 }

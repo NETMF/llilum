@@ -5,20 +5,30 @@ namespace Microsoft.Zelig.LLVM
 {
     public class _Value
     {
-        public _Type Type( ) => Owner.GetOrInsertType( Impl.TypeImpl );
-        public _Module Module( ) => Owner;
+        public _Type Type { get; }
 
-        public bool IsInteger( ) => Impl.GetLLVMObject().Type.IsInteger();
-        public bool IsFloat( ) => Impl.GetLLVMObject().Type.IsFloat( );
-        public bool IsDouble( ) => Impl.GetLLVMObject().Type.IsDouble( );
-        public bool IsFloatingPoint( ) => Impl.GetLLVMObject().Type.IsFloatingPoint( );
-        public bool IsPointer( ) => Impl.GetLLVMObject().Type.IsPointer();
-        public bool IsPointerPointer( ) => Impl.GetLLVMObject().Type.IsPointerPointer( );
+        // in LLVM a module doesn't own a value, the context does
+        // however, here a _Module is a container for the context,
+        // a module and DiBuilder with assorted other state info.
+        public _Module Module { get; }
 
-        public bool IsImmediate( ) => Impl.IsImmediate;
+        public bool IsInteger => LlvmValue.Type.IsInteger();
+
+        public bool IsFloat => LlvmValue.Type.IsFloat( );
+
+        public bool IsDouble => LlvmValue.Type.IsDouble( );
+
+        public bool IsFloatingPoint => LlvmValue.Type.IsFloatingPoint( );
+
+        public bool IsPointer => LlvmValue.Type.IsPointer();
+
+        public bool IsPointerPointer => LlvmValue.Type.IsPointerPointer( );
+
+        public bool IsImmediate { get; }
+
         public bool IsZeroedValue( )
         {
-            var constant = Impl.GetLLVMObject() as Constant;
+            var constant = LlvmValue as Constant;
             if( constant == null )
                 return false;
 
@@ -27,7 +37,7 @@ namespace Microsoft.Zelig.LLVM
 
         public bool IsAnUninitializedGlobal( )
         {
-            var gv = Impl.GetLLVMObject() as GlobalVariable;
+            var gv = LlvmValue as GlobalVariable;
             if( gv == null )
                 return false;
 
@@ -36,7 +46,7 @@ namespace Microsoft.Zelig.LLVM
 
         public void SetGlobalInitializer( Constant val )
         {
-            var gv = Impl.GetLLVMObject() as GlobalVariable;
+            var gv = LlvmValue as GlobalVariable;
             if( gv != null )
             {
                 gv.Initializer = val;
@@ -45,17 +55,17 @@ namespace Microsoft.Zelig.LLVM
 
         public void MergeToAndRemove( _Value targetVal )
         {
-            GlobalVariable gv = Impl.GetLLVMObject() as GlobalVariable;
+            GlobalVariable gv = LlvmValue as GlobalVariable;
             if( gv != null )
             {
-                gv.ReplaceAllUsesWith( targetVal.Impl.GetLLVMObject() );
+                gv.ReplaceAllUsesWith( targetVal.LlvmValue );
                 gv.RemoveFromParent( );
             }
         }
 
         public void FlagAsConstant( )
         {
-            var gv = Impl.GetLLVMObject() as GlobalVariable;
+            var gv = LlvmValue as GlobalVariable;
             if( gv != null )
             {
                 gv.IsConstant = true;
@@ -64,53 +74,14 @@ namespace Microsoft.Zelig.LLVM
             }
         }
 
-        public void Dump( )
+        internal _Value( _Module module, _Type type, Value value, bool isImmediate )
         {
-            Impl.Dump( );
-            Console.WriteLine( "{0}", IsImmediate( ) ? "IS IMMEDIATE\n" : "" );
-        }
-
-        internal _Value( _Module module )
-            : this( module, null )
-        {
-        }
-
-        internal _Value( _Module module, ValueImpl impl )
-        {
-            Owner = module;
-            Impl = impl;
-        }
-
-        // in LLVM a module doesn't own a value, the context does
-        // however, here a _Module is a container for the context,
-        // a module and DiBuilder with assorted other state info.
-        protected _Module Owner { get; }
-        internal ValueImpl Impl { get; set; }
-    }
-
-    // replicates model from C++/CLI as it isn't clear if multiple
-    // _Value instances might refer to the same Value_impl instance
-    internal class ValueImpl
-    {
-        internal ValueImpl( TypeImpl typeImpl, Value value, bool isImmediate )
-        {
-            TypeImpl = typeImpl;
-            Value = value;
+            Module = module;
+            Type = type;
+            LlvmValue = value;
             IsImmediate = isImmediate;
         }
 
-        internal void Dump( )
-        {
-            Console.WriteLine( "Value: \n" );
-            Console.WriteLine( Value.ToString() );
-            Console.WriteLine( "Of Type: \n" );
-            TypeImpl.Dump( );
-        }
-
-        internal TypeImpl TypeImpl { get; }
-        internal bool IsImmediate  { get; }
-        internal Value GetLLVMObject( ) => Value;
-
-        private readonly Value Value;
+        internal Value LlvmValue { get; }
     }
 }

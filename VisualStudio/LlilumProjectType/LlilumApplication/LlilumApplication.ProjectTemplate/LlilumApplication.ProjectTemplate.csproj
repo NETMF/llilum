@@ -76,6 +76,8 @@
   -->
   <ItemGroup>
     <None Include="LlilumNative\mbed_simple.FrontEndConfig" />
+    <None Include="LlilumNative\mbed_simple_K64F.FrontEndConfig" />
+    <None Include="LlilumNative\mbed_simple_LPC1768.FrontEndConfig" />
     <None Include="LlilumNative\Native.vcxproj" />
     <None Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -113,6 +115,7 @@
     <Content Include="LlilumNative\InteropExports_spi.cpp" />
     <Content Include="LlilumNative\InteropExports_system_timer.cpp" />
     <Content Include="LlilumNative\InteropExports_systick.cpp" />
+    <Content Include="LlilumNative\InteropExports_serial.cpp" />
     <Content Include="LlilumNative\InteropExports_threading.cpp" />
     <Content Include="LlilumNative\MyTemplate.vstemplate" />
     <Content Include="LlilumNative\pch.h" />

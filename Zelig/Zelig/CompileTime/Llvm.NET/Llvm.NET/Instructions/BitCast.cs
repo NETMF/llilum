@@ -9,7 +9,7 @@
         }
 
         internal BitCast( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsABitCastInst ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsABitCastInst ) )
         {
         }
     }

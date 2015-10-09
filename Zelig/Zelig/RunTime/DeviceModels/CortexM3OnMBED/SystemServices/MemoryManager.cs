@@ -14,10 +14,6 @@ using System;
     {
         private UIntPtr ManagedHeap;
         private UIntPtr ManagedHeapEnd;
-
-        // Value hardcoded to fit in LPC1768 RAM (Device RAM=32KB)
-        // TODO: LT72: make this part of the configuration
-        private const uint ManagedHeapSize = 0x5800; 
         
         //--//
 
@@ -25,11 +21,11 @@ using System;
         {
             base.InitializeMemoryManager( );
 
-            uint stackSize = ManagedHeapSize;
+            uint stackSize = Device.Instance.ManagedHeapSize;
 
             byte *zeligHeap = MBED.Memory.RequestMemoryPool( &stackSize );
 
-            if( zeligHeap == null || stackSize < ManagedHeapSize / 2 )
+            if( zeligHeap == null || stackSize < Device.Instance.ManagedHeapSize / 2 )
             {
                 MBED.Memory.FreeMemoryPool( zeligHeap );
 

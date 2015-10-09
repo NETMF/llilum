@@ -1,18 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" InitialTargets="VerifyZeligPaths" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ZELIG_ROOT Condition="'$(ZELIG_ROOT)'==''">$(MSBuildThisFileDirectory)</ZELIG_ROOT>
-    <LLVM_SRCROOT_DIR>$(ZELIG_ROOT)external\LLVM\</LLVM_SRCROOT_DIR>
-    <LLVM_BUILD_DIR>$(LLVM_SRCROOT_DIR)</LLVM_BUILD_DIR>
-    <LLVM_PLATFORM_DIR>$(LLVM_BUILD_DIR)</LLVM_PLATFORM_DIR>
-    <LLVM_BIN Condition="'$(LLVM_BIN)'==''">$(ZELIG_ROOT)external\LLVM\Debug\bin</LLVM_BIN>
-    <LLVM_INCLUDE Condition="'$(LLVM_INCLUDE)'==''">$(ZELIG_ROOT)external\LLVM\include</LLVM_INCLUDE>
-    <LLVM_LIBS Condition="'$(LLVM_LIBS)'==''">$(ZELIG_ROOT)external\LLVM\</LLVM_LIBS>
+    <ZELIG_ROOT Condition="'$(ZELIG_ROOT)'==''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))</ZELIG_ROOT>
+    <!-- For builds from the local tree, setup the SDK to use the local headers etc... in case the environment var
+         isn't set or currently not avaliable in this process.
+    -->
+    <LLILUM_SDK Condition="'$(LLILUM_SDK)'==''">$(ZELIG_ROOT)Zelig\</LLILUM_SDK>
+    <!-- LLILUM_LLVM contains the full source of LLVM -->
+    <LLVM_VERSION Condition="'$(LLVM_VERSION)'==''">3.7.0</LLVM_VERSION>
+    <LLILUM_LLVM Condition="'$(LLVM_SRCROOT_DIR)'==''">$([MSBuild]::GetRegistryValue(`HKEY_CURRENT_USER\Software\LLVM\$(LLVM_VERSION)\`, `SrcRoot`))</LLILUM_LLVM>
+    <LLILUM_LLVM Condition="'$(LLVM_SRCROOT_DIR)'!='' AND !HasTrailingSlash('$(LLVM_SRCROOT_DIR)')">$(LLVM_SRCROOT_DIR)\</LLILUM_LLVM>
+    <ZeligBuildRoot Condition="'$(ZeligBuildRoot)'==''">$(MSBuildThisFileDirectory)Zelig\ZeligBuild</ZeligBuildRoot>
+    <GnuWin32MakeInstallPath Condition="'$(GnuWin32MakeInstallPath)'==''">$([MSBuild]::GetRegistryValueFromView(`HKEY_LOCAL_MACHINE\Software\GnuWin32\`, `InstallPath`, null, RegistryView.Registry32))</GnuWin32MakeInstallPath>
+    <GnuWin32MakeInstallPath Condition="'$(GnuWin32MakeInstallPath)'!='' AND !HasTrailingSlash('$(GnuWin32MakeInstallPath)')">$(GnuWin32MakeInstallPath)\</GnuWin32MakeInstallPath>
   </PropertyGroup>
   <Target Name="VerifyZeligPaths">
     <Error Condition="!EXISTS('$(ZELIG_ROOT)')" Text="Invalid ZELIG_ROOT: '$(ZELIG_ROOT)'" />
-    <Error Condition="!EXISTS('$(LLVM_BIN)')" Text="Invalid LLVM_BIN: '$(LLVM_BIN)'" />
-    <Error Condition="!EXISTS('$(LLVM_INCLUDE)')" Text="Invalid LLVM_INCLUDE: '$(LLVM_INCLUDE)'" />
-    <Error Condition="!EXISTS('$(LLVM_LIBS)')" Text="Invalid LLVM_LIBS: '$(LLVM_LIBS)'" />
+    <Error Condition="!EXISTS('$(LLILUM_SDK)')" Text="Invalid LLILUM_SDK: '$(LLILUM_SDK)'" />
+    <Message Importance="high" Text="LLILUM_LLVM=$(LLILUM_LLVM)"/>
+    <Message Importance="high" Text="ZELIG_ROOT=$(ZELIG_ROOT)"/>
+    <Message Importance="high" Text="LLILUM_SDK=$(LLILUM_SDK)"/>
   </Target>
 </Project>

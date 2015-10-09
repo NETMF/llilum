@@ -248,6 +248,7 @@
     <Compile Include="System\Object.cs" />
     <Compile Include="System\ObjectDisposedException.cs" />
     <Compile Include="System\ObsoleteAttribute.cs" />
+    <Compile Include="System\OperationCanceledException.cs" />
     <Compile Include="System\OutOfMemoryException.cs" />
     <Compile Include="System\OverflowException.cs" />
     <Compile Include="System\ParamArrayAttribute.cs" />
@@ -352,6 +353,9 @@
     <Compile Include="System\Text\UTF8Encoding.cs" />
     <Compile Include="System\Threading\ApartmentState.cs" />
     <Compile Include="System\Threading\AutoResetEvent.cs" />
+    <Compile Include="System\Threading\CancellationToken.cs" />
+    <Compile Include="System\Threading\CancellationTokenRegistration.cs" />
+    <Compile Include="System\Threading\CancellationTokenSource.cs" />
     <Compile Include="System\Threading\EventResetMode.cs" />
     <Compile Include="System\Threading\EventWaitHandle.cs" />
     <Compile Include="System\Threading\Interlocked.cs" />
@@ -362,7 +366,9 @@
     <Compile Include="System\Threading\SpinWait.cs" />
     <Compile Include="System\Threading\Tasks\GenericTask.cs" />
     <Compile Include="System\Threading\Tasks\Task.cs" />
+    <Compile Include="System\Threading\Tasks\TaskCanceledException.cs" />
     <Compile Include="System\Threading\Tasks\TaskContinuation.cs" />
+    <Compile Include="System\Threading\Tasks\TaskScheduler.cs" />
     <Compile Include="System\Threading\Thread.cs" />
     <Compile Include="System\Threading\ThreadAbortException.cs" />
     <Compile Include="System\Threading\ThreadPool.cs" />

@@ -9,7 +9,7 @@
         }
 
         internal IntToPointer( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsAIntToPtrInst ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAIntToPtrInst ) )
         {
         }
     }

@@ -28,13 +28,19 @@ namespace Microsoft.CortexM3OnCMSISCore
         {
             RT.BugCheck.AssertInterruptsOff();
             
-            // TODO: move to configuration, we set SysTick priority just below highest possible 
-            CMSIS.NVIC.SetPriority( ProcessorARMv7M.IRQn_Type.SVCall_IRQn, ProcessorARMv7M.c_Priority__SVCCall ); 
-
-            // TODO: move to configuration, we set SysTick priority just below SVC  
+            //
+            // Faults, never disabled
+            //
+            CMSIS.NVIC.SetPriority( ProcessorARMv7M.IRQn_Type.HardFault_IRQn       , ProcessorARMv7M.c_Priority__NeverDisabled ); 
+            CMSIS.NVIC.SetPriority( ProcessorARMv7M.IRQn_Type.MemoryManagement_IRQn, ProcessorARMv7M.c_Priority__NeverDisabled ); 
+            CMSIS.NVIC.SetPriority( ProcessorARMv7M.IRQn_Type.BusFault_IRQn        , ProcessorARMv7M.c_Priority__NeverDisabled ); 
+            CMSIS.NVIC.SetPriority( ProcessorARMv7M.IRQn_Type.UsageFault_IRQn      , ProcessorARMv7M.c_Priority__NeverDisabled ); 
+            
+            //
+            // System exceptions 
+            //
+            CMSIS.NVIC.SetPriority( ProcessorARMv7M.IRQn_Type.SVCall_IRQn , ProcessorARMv7M.c_Priority__SVCCall ); 
             CMSIS.NVIC.SetPriority( ProcessorARMv7M.IRQn_Type.SysTick_IRQn, ProcessorARMv7M.c_Priority__SysTick ); 
-
-            // TODO: move to configuration, we set the PendSV priority to the lowest 
             CMSIS.NVIC.SetPriority( ProcessorARMv7M.IRQn_Type.PendSV_IRQn , ProcessorARMv7M.c_Priority__PendSV ); 
         }
         

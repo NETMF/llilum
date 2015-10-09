@@ -1,9 +1,16 @@
 #include "ValueBindings.h"
 #include <llvm\IR\Constant.h>
 #include <llvm\IR\GlobalVariable.h>
+#include <llvm\IR\GlobalAlias.h>
 #include <llvm\IR\IRBuilder.h>
 
 using namespace llvm;
+
+uint32_t LLVMGetArgumentIndex( LLVMValueRef valueRef )
+{
+    auto pArgument = unwrap<Argument>( valueRef );
+    return pArgument->getArgNo();
+}
 
 LLVMBool LLVMIsConstantZeroValue( LLVMValueRef valueRef )
 {
@@ -39,4 +46,11 @@ LLVMValueRef LLVMMetadataAsValue( LLVMContextRef context, LLVMMetadataRef metada
     auto md = unwrap( metadataRef );
     return wrap( MetadataAsValue::get( *ctx, md ) );
 }
+
+LLVMValueRef LLVMGetAliasee( LLVMValueRef Val )
+{
+    auto pAlias = unwrap<GlobalAlias>( Val );
+    return wrap( pAlias->getAliasee( ) );
+}
+
 

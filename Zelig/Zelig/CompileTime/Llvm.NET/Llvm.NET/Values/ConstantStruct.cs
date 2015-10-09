@@ -8,7 +8,7 @@
         }
 
         internal ConstantStruct( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsAConstantStruct ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAConstantStruct ) )
         {
         }
     }

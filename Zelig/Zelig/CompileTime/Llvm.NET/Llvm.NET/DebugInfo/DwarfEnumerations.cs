@@ -130,6 +130,12 @@ namespace Llvm.NET.DebugInfo
         HiUser = LLVMDwarfTag.LLVMDwarfTagHiUser
     }
 
+    public enum QualifiedTypeTag
+    {
+        Const = Tag.ConstType,
+        Volatile = Tag.VolatileType,
+    }
+
     public enum DiTypeKind : uint
     {
         // Encoding attribute values

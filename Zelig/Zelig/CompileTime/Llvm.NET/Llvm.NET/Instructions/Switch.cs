@@ -5,10 +5,10 @@ namespace Llvm.NET.Instructions
     public class Switch
         : Terminator
     {
-        public BasicBlock Default => BasicBlock.FromHandle( LLVMNative.GetSwitchDefaultDest( ValueHandle ) );
+        public BasicBlock Default => BasicBlock.FromHandle( NativeMethods.GetSwitchDefaultDest( ValueHandle ) );
         public void AddCase( Value onVal, BasicBlock destination )
         {
-            LLVMNative.AddCase( ValueHandle, onVal.ValueHandle, destination.BlockHandle );
+            NativeMethods.AddCase( ValueHandle, onVal.ValueHandle, destination.BlockHandle );
         }
 
         internal Switch( LLVMValueRef valueRef )
@@ -17,7 +17,7 @@ namespace Llvm.NET.Instructions
         }
 
         internal Switch( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsASwitchInst ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsASwitchInst ) )
         {
         }
 

@@ -9,7 +9,7 @@
         }
 
         internal SignExtend( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsASExtInst ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsASExtInst ) )
         {
         }
     }

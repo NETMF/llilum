@@ -51,7 +51,7 @@ namespace Microsoft.Zelig.LLVM
             }
 
             LLVM._Type llvmType = m_module.GetOrInsertType( "LLVM." + tr.FullName, ( int )tr.Size * 8 );
-            llvmType.SetValueTypeFlag( tr is TS.ValueTypeRepresentation );
+            llvmType.IsValueType = tr is TS.ValueTypeRepresentation;
             return llvmType;
         }
 
@@ -149,7 +149,7 @@ namespace Microsoft.Zelig.LLVM
                 m_typeRepresentationsToType[ tr ] = llvmType;
 
 
-                llvmType.SetValueTypeFlag( tr is TS.ValueTypeRepresentation );
+                llvmType.IsValueType = tr is TS.ValueTypeRepresentation;
 
                 //
                 // We will represent unboxed Value types as flat, c++ style, types because they are 'inlined' 
@@ -224,7 +224,7 @@ namespace Microsoft.Zelig.LLVM
                     llvmType.AddField( 0, GetObjectHeaderType( ), true, "object_header" );
                 }
 
-                llvmType.SetValueTypeFlag( tr is TS.ValueTypeRepresentation );
+                llvmType.IsValueType = tr is TS.ValueTypeRepresentation;
                 llvmType.SetupFields( );
             }
 
@@ -250,10 +250,16 @@ namespace Microsoft.Zelig.LLVM
                 retType = m_module.GetVoidType( );
             }
 
-            return m_module.GetOrInsertFunctionType( GetFullMethodName( mr ) + "_func_signature", retType, args );
+            string sigName;
+            if( mr.Flags.HasFlag( TS.MethodRepresentation.Attributes.PinvokeImpl ) )
+                sigName = mr.Name;
+            else
+                sigName = mr.ToShortString( );
+
+            return m_module.GetOrInsertFunctionType( sigName, retType, args );
         }
 
-        string IModuleManager.GetFullNameFor( TS.MethodRepresentation method ) => GetFullMethodName( method );
+        string IModuleManager.GetMangledNameFor( TS.MethodRepresentation method ) => GetFullMethodName( method );
 
         _Type IModuleManager.LookupNativeTypeFor( TS.TypeRepresentation tr ) => GetOrInsertType( tr );
 

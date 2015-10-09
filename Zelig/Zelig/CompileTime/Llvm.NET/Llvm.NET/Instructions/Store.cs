@@ -5,8 +5,8 @@
     {
         public bool IsVolatile
         {
-            get { return LLVMNative.GetVolatile( ValueHandle ); }
-            set { LLVMNative.SetVolatile( ValueHandle, value ); }
+            get { return NativeMethods.GetVolatile( ValueHandle ); }
+            set { NativeMethods.SetVolatile( ValueHandle, value ); }
         }
 
         internal Store( LLVMValueRef valueRef )
@@ -15,7 +15,7 @@
         }
 
         internal Store( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsAStoreInst ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAStoreInst ) )
         {
         }
     }

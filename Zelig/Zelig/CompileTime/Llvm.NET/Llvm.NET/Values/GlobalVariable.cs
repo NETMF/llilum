@@ -11,12 +11,12 @@ namespace Llvm.NET.Values
         {
             get
             {
-                return LLVMNative.IsExternallyInitialized( ValueHandle );
+                return NativeMethods.IsExternallyInitialized( ValueHandle );
             }
 
             set
             {
-                LLVMNative.SetExternallyInitialized( ValueHandle, value );
+                NativeMethods.SetExternallyInitialized( ValueHandle, value );
             }
         }
 
@@ -25,12 +25,12 @@ namespace Llvm.NET.Values
         {
             get
             {
-                return LLVMNative.IsGlobalConstant( ValueHandle );
+                return NativeMethods.IsGlobalConstant( ValueHandle );
             }
 
             set
             {
-                LLVMNative.SetGlobalConstant( ValueHandle, value );
+                NativeMethods.SetGlobalConstant( ValueHandle, value );
             }
         }
 
@@ -39,12 +39,12 @@ namespace Llvm.NET.Values
         {
             get
             {
-                return LLVMNative.IsThreadLocal( ValueHandle );
+                return NativeMethods.IsThreadLocal( ValueHandle );
             }
 
             set
             {
-                LLVMNative.SetThreadLocal( ValueHandle, value );
+                NativeMethods.SetThreadLocal( ValueHandle, value );
             }
         }
 
@@ -53,23 +53,23 @@ namespace Llvm.NET.Values
         {
             get
             {
-                var handle = LLVMNative.GetInitializer( ValueHandle );
+                var handle = NativeMethods.GetInitializer( ValueHandle );
                 if( handle.Pointer == IntPtr.Zero )
                     return null;
 
-                return Constant.FromHandle( handle );
+                return FromHandle<Constant>( handle );
             }
 
             set
             {
-                LLVMNative.SetInitializer( ValueHandle, value.ValueHandle );
+                NativeMethods.SetInitializer( ValueHandle, value.ValueHandle );
             }
         }
 
         /// <summary>Removes the value from its parent module, but does not delete it</summary>
         public void RemoveFromParent()
         {
-            LLVMNative.RemoveGlobalFromParent( ValueHandle );
+            NativeMethods.RemoveGlobalFromParent( ValueHandle );
         }
 
         internal GlobalVariable( LLVMValueRef valueRef )
@@ -78,7 +78,7 @@ namespace Llvm.NET.Values
         }
 
         internal GlobalVariable( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsAGlobalVariable ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAGlobalVariable ) )
         {
         }
     }

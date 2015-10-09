@@ -16,7 +16,7 @@ set LLVM_LIBS=%LLVM_SRCROOT_DIR%\
 :: Add pyOCD and and make to path.
 ::
 
-set PATH=%ZELIG_ROOT%external\tools;%PATH%
+set PATH=%ZELIG_ROOT%Zelig\tools;%PATH%
 
 cd Zelig
 echo Welcome to LLILUM! 

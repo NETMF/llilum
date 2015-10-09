@@ -8,14 +8,9 @@ namespace Llvm.NET.Instructions
         : User
     {
         /// <summary>Block that contains this instruction</summary>
-        public BasicBlock ContainingBlock => BasicBlock.FromHandle( LLVMNative.GetInstructionParent( ValueHandle ) );
+        public BasicBlock ContainingBlock => BasicBlock.FromHandle( NativeMethods.GetInstructionParent( ValueHandle ) );
 
-        public void SetDebugLocation( uint line, uint column, DebugInfo.DIScope scope )
-        {
-            LLVMNative.SetDebugLoc( ValueHandle, line, column, scope.MetadataHandle );
-        }
-        
-        public Opcode Opcode => (Opcode)LLVMNative.GetInstructionOpcode( ValueHandle );
+        public Opcode Opcode => (Opcode)NativeMethods.GetInstructionOpcode( ValueHandle );
         public bool IsMemoryAccess
         {
             get
@@ -37,20 +32,47 @@ namespace Llvm.NET.Instructions
         {
             get
             {
-                return IsMemoryAccess ? LLVMNative.GetAlignment( ValueHandle ) : 0;
+                return IsMemoryAccess ? NativeMethods.GetAlignment( ValueHandle ) : 0;
             }
 
             set
             {
                 if( !IsMemoryAccess )
                     throw new InvalidOperationException( "Alignment can only be set for instructions dealing with memory read/write (alloca, load, store)" );
-                LLVMNative.SetAlignment( ValueHandle, value );
+                NativeMethods.SetAlignment( ValueHandle, value );
             }
         }
 
         internal Instruction( LLVMValueRef valueRef )
-            : base( ValidateConversion( valueRef, LLVMNative.IsAInstruction ) )
+            : base( ValidateConversion( valueRef, NativeMethods.IsAInstruction ) )
         { 
+        }
+    }
+
+    /// <summary>Provides extension methods to <see cref="Instruction"/> that cannot be achieved as members of the class</summary>
+    /// <remarks>
+    /// Using generic static extension methods allows for fluent coding while retaining the type of the "this" parameter.
+    /// If these were members of the <see cref="Instruction"/> class then the only return type could be <see cref="Instruction"/>
+    /// thus losing the orignal type and requiring a cast to get back to it.
+    /// </remarks>
+    public static class InstructionExtensions
+    {
+        public static T Alignment<T>( this T inst, uint alignment )
+            where T : Instruction
+        {
+            if( inst.IsMemoryAccess )
+                inst.Alignment = alignment;
+
+            return inst;
+        }
+
+        public static T IsVolatile<T>( this T inst, uint alignment )
+            where T : Instruction
+        {
+            if( inst.IsMemoryAccess )
+                inst.Alignment = alignment;
+
+            return inst;
         }
     }
 }

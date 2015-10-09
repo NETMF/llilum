@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using Llvm.NET.Types;
 using Llvm.NET.Values;
 
@@ -10,26 +9,26 @@ namespace Llvm.NET
     public class TargetData
         : IDisposable
     {
-        public ByteOrdering Endianess => (ByteOrdering)LLVMNative.ByteOrder( OpaqueHandle );
-        public uint PointerSize() => LLVMNative.PointerSize( OpaqueHandle );
-        public uint PointerSize( uint addressSpace ) => LLVMNative.PointerSizeForAS( OpaqueHandle, addressSpace );
+        public ByteOrdering Endianess => (ByteOrdering)NativeMethods.ByteOrder( OpaqueHandle );
+        public uint PointerSize() => NativeMethods.PointerSize( OpaqueHandle );
+        public uint PointerSize( uint addressSpace ) => NativeMethods.PointerSizeForAS( OpaqueHandle, addressSpace );
 
-        public TypeRef IntPtrType() => TypeRef.FromHandle( LLVMNative.IntPtrType( OpaqueHandle ) );
-        public TypeRef IntPtrType( uint addressSpace )
+        public ITypeRef IntPtrType() => TypeRef.FromHandle( NativeMethods.IntPtrType( OpaqueHandle ) );
+        public ITypeRef IntPtrType( uint addressSpace )
         {
-            var typeHandle = LLVMNative.IntPtrTypeForAS( OpaqueHandle, addressSpace );
+            var typeHandle = NativeMethods.IntPtrTypeForAS( OpaqueHandle, addressSpace );
             return TypeRef.FromHandle( typeHandle );
         }
 
-        public TypeRef IntPtrType( Context context )
+        public ITypeRef IntPtrType( Context context )
         {
-            var typeHandle = LLVMNative.IntPtrTypeInContext( context.ContextHandle, OpaqueHandle );
+            var typeHandle = NativeMethods.IntPtrTypeInContext( context.ContextHandle, OpaqueHandle );
             return TypeRef.FromHandle( typeHandle );
         }
 
-        public TypeRef IntPtrType( Context context, uint addressSpace )
+        public ITypeRef IntPtrType( Context context, uint addressSpace )
         {
-            var typeHandle = LLVMNative.IntPtrTypeInContext( context.ContextHandle, OpaqueHandle );
+            var typeHandle = NativeMethods.IntPtrTypeInContext( context.ContextHandle, OpaqueHandle );
             return TypeRef.FromHandle( typeHandle );
         }
 
@@ -62,73 +61,84 @@ namespace Llvm.NET
         /// The values in the example table are for x86-32 linux.
         /// </note>
         ///</remarks>
-        public ulong BitSizeOf( TypeRef typeRef )
+        public ulong BitSizeOf( ITypeRef typeRef )
         {
-            if( !LLVMNative.TypeIsSized( typeRef.TypeHandle ) )
-                throw new ArgumentException( "Type must be sized to get target size information" );
-
-            return LLVMNative.SizeOfTypeInBits( OpaqueHandle, typeRef.TypeHandle );
-        }
-        public ulong StoreSizeOf( TypeRef typeRef )
-        {
-            if( !LLVMNative.TypeIsSized( typeRef.TypeHandle ) )
-                throw new ArgumentException( "Type must be sized to get target size information" );
-
-            return LLVMNative.StoreSizeOfType( OpaqueHandle, typeRef.TypeHandle );
+            VerifySized( typeRef, nameof( typeRef ) );
+            return NativeMethods.SizeOfTypeInBits( OpaqueHandle, typeRef.GetTypeRef() );
         }
 
-        public ulong AbiSizeOf( TypeRef typeRef )
+        public ulong StoreSizeOf( ITypeRef typeRef )
         {
-            if( !LLVMNative.TypeIsSized( typeRef.TypeHandle ) )
-                throw new ArgumentException( "Type must be sized to get target size information" );
-
-            return LLVMNative.ABISizeOfType( OpaqueHandle, typeRef.TypeHandle );
+            VerifySized( typeRef, nameof( typeRef ) );
+            return NativeMethods.StoreSizeOfType( OpaqueHandle, typeRef.GetTypeRef() );
         }
 
-        public uint AbiAlignmentOf( TypeRef typeRef )
+        public ulong AbiSizeOf( ITypeRef typeRef )
         {
-            if( !LLVMNative.TypeIsSized( typeRef.TypeHandle ) )
-                throw new ArgumentException( "Type must be sized to get target size information" );
-
-            return LLVMNative.ABIAlignmentOfType( OpaqueHandle, typeRef.TypeHandle );
+            VerifySized( typeRef, nameof( typeRef ) );
+            return NativeMethods.ABISizeOfType( OpaqueHandle, typeRef.GetTypeRef() );
         }
 
-        public uint CallFrameAlignmentOf( TypeRef typeRef )
+        public uint AbiAlignmentOf( ITypeRef typeRef )
         {
-            if( !LLVMNative.TypeIsSized( typeRef.TypeHandle ) )
-                throw new ArgumentException( "Type must be sized to get target size information" );
-
-            return LLVMNative.CallFrameAlignmentOfType( OpaqueHandle, typeRef.TypeHandle );
+            VerifySized( typeRef, nameof( typeRef ) );
+            return NativeMethods.ABIAlignmentOfType( OpaqueHandle, typeRef.GetTypeRef() );
         }
 
-        public uint PreferredAlignmentOf( TypeRef typeRef )
+        public uint CallFrameAlignmentOf( ITypeRef typeRef )
         {
-            if( !LLVMNative.TypeIsSized( typeRef.TypeHandle ) )
-                throw new ArgumentException( "Type must be sized to get target size information" );
-
-            return LLVMNative.PreferredAlignmentOfType( OpaqueHandle, typeRef.TypeHandle );
+            VerifySized( typeRef, nameof( typeRef ) );
+            return NativeMethods.CallFrameAlignmentOfType( OpaqueHandle, typeRef.GetTypeRef() );
         }
 
-        public uint PreferredAlignmentOf( Value value ) => LLVMNative.PreferredAlignmentOfGlobal( OpaqueHandle, value.ValueHandle );
-        public uint ElementAtOffset( StructType structType, ulong offset ) => LLVMNative.ElementAtOffset( OpaqueHandle, structType.TypeHandle, offset );
-        public ulong OffsetOfElement( StructType structType, uint element ) => LLVMNative.OffsetOfElement( OpaqueHandle, structType.TypeHandle, element );
+        public uint PreferredAlignmentOf( ITypeRef typeRef )
+        {
+            VerifySized( typeRef, nameof( typeRef ) );
+            return NativeMethods.PreferredAlignmentOfType( OpaqueHandle, typeRef.GetTypeRef() );
+        }
+
+        public uint PreferredAlignmentOf( Value value )
+        {
+            VerifySized( value.Type, nameof( value ) );
+            return NativeMethods.PreferredAlignmentOfGlobal( OpaqueHandle, value.ValueHandle );
+        }
+
+        public uint ElementAtOffset( IStructType structType, ulong offset )
+        {
+            VerifySized( structType, nameof( structType ) );
+            return NativeMethods.ElementAtOffset( OpaqueHandle, structType.GetTypeRef(), offset );
+        }
+
+        public ulong OffsetOfElement( IStructType structType, uint element )
+        {
+            VerifySized( structType, nameof( structType ) );
+            return NativeMethods.OffsetOfElement( OpaqueHandle, structType.GetTypeRef(), element );
+        }
 
         public override string ToString( )
         {
-            IntPtr msgPtr = LLVMNative.CopyStringRepOfTargetData( OpaqueHandle );
-            return LLVMNative.MarshalMsg( msgPtr );
+            IntPtr msgPtr = NativeMethods.CopyStringRepOfTargetData( OpaqueHandle );
+            return NativeMethods.MarshalMsg( msgPtr );
+        }
+
+        public ulong ByteSizeOf( ITypeRef llvmType ) => BitSizeOf( llvmType ) / 8u;
+
+        public uint PreferredBitAlignementOf( ITypeRef llvmType ) => PreferredAlignmentOf( llvmType ) * 8;
+
+        public uint AbiBitAlignmentOf( ITypeRef llvmType ) => AbiAlignmentOf( llvmType ) * 8;
+
+        public ulong BitOffsetOfElement( IStructType llvmType, uint element ) => OffsetOfElement( llvmType, element ) * 8;
+
+        public static TargetData Parse( string layoutString )
+        {
+            var handle = NativeMethods.CreateTargetData( layoutString );
+            return FromHandle( handle, true );
         }
 
         internal TargetData( LLVMTargetDataRef targetDataHandle, bool isDisposable )
         {
             OpaqueHandle = targetDataHandle;
             IsDisposable = isDisposable;
-        }
-
-        internal static TargetData Parse( string layoutString )
-        {
-            var handle = LLVMNative.CreateTargetData( layoutString );
-            return FromHandle( handle, true );
         }
 
         internal static TargetData FromHandle( LLVMTargetDataRef targetDataRef, bool isDisposable )
@@ -146,6 +156,13 @@ namespace Llvm.NET
         }
 
         internal LLVMTargetDataRef OpaqueHandle { get; private set; }
+
+        private static void VerifySized( ITypeRef type, string name )
+        {
+            if( !type.IsSized )
+                throw new ArgumentException( "Type must be sized to get target size information", name );
+        }
+
         private readonly bool IsDisposable;
 
         private static readonly Dictionary<IntPtr, TargetData> TargetDataMap = new Dictionary<IntPtr, TargetData>( );
@@ -155,7 +172,7 @@ namespace Llvm.NET
         {
             if( OpaqueHandle.Pointer != IntPtr.Zero && IsDisposable )
             {
-                LLVMNative.DisposeTargetData( OpaqueHandle );
+                NativeMethods.DisposeTargetData( OpaqueHandle );
                 OpaqueHandle = default(LLVMTargetDataRef);
             }
         }

@@ -25,8 +25,8 @@ namespace Microsoft.Zelig.Runtime
         // concrete HW Provider (e.g. mBed HW provider)
         // Consider that LPC1768 board has 32 exposed pins and K64F has 64 pins only
         //
-        static BitArray m_reservedPins = new BitArray( 256 );
-        
+        static BitArray m_reservedPins = new BitArray(256);
+
         //--//
 
         //protected HardwareProvider( )
@@ -34,16 +34,16 @@ namespace Microsoft.Zelig.Runtime
         //    // BUGBUGBUG: fix singleton factory to call the default ctor when available
         //    m_used = new BitArray( this.PinCount );
         //}
-        
+
         //
         // Spi discovery 
         //
 
-        public abstract int GetSpiChannelIndexFromString( string busId );
+        public abstract int GetSpiChannelIndexFromString(string busId);
 
-        public abstract bool GetSpiPinsFromBusId( int id, out int mosi, out int miso, out int sclk, out int chipSelect );
+        public abstract bool GetSpiPinsFromBusId(int id, out int mosi, out int miso, out int sclk, out int chipSelect);
 
-        public abstract bool GetSpiChannelInfo( int id, out int csLineCount, out int maxFreq, out int minFreq, out bool supports16 );
+        public abstract bool GetSpiChannelInfo(int id, out int csLineCount, out int maxFreq, out int minFreq, out bool supports16);
 
         public abstract bool GetSpiChannelTimingInfo(int id, out int setupTime, out int holdTime);
 
@@ -55,7 +55,7 @@ namespace Microsoft.Zelig.Runtime
         // Spi creation
         //
 
-        public abstract SpiChannel CreateSpiChannel( );
+        public abstract SpiChannel CreateSpiChannel();
 
         //
         // I2C Discovery
@@ -72,6 +72,13 @@ namespace Microsoft.Zelig.Runtime
         //
 
         public abstract I2cChannel CreateI2cChannel();
+
+        //
+        // Serial Discovery
+        //
+        public abstract string[] GetSerialPorts();
+
+        public abstract bool GetSerialPinsFromPortName(string portName, out int txPin, out int rxPin, out int rtsPin, out int ctsPin);
 
         //
         // Gpio discovery and reservation service
@@ -92,24 +99,27 @@ namespace Microsoft.Zelig.Runtime
         /// </summary>
         /// <param name="pin"></param>
         /// <returns></returns>
-        public abstract int PinToIndex( int pin ); 
+        public abstract int PinToIndex(int pin);
 
-        public abstract bool IsPinNC(int pin);
-        
+        public abstract int InvalidPin
+        {
+            get;
+        }
+
         //
         // Gpio reservation
         //
 
-        internal bool TryReservePins(params int[] pins)
+        public bool TryReservePins(params int[] pins)
         {
             int failIndex = -1;
-            
+
             lock (pinLock)
             {
                 for (int i = 0; i < pins.Length; i++)
                 {
                     // Do not try to release NC pins
-                    if(!IsPinNC(pins[i]))
+                    if (InvalidPin != pins[i])
                     {
                         int index = PinToIndex(pins[i]);
                         if (m_reservedPins[index] == true)
@@ -126,7 +136,7 @@ namespace Microsoft.Zelig.Runtime
                     for (int i = 0; i < failIndex; i++)
                     {
                         // Do not touch NC pins
-                        if (!IsPinNC(pins[i]))
+                        if (InvalidPin != pins[i])
                         {
                             int index = PinToIndex(pins[i]);
                             m_reservedPins[index] = false;
@@ -138,14 +148,14 @@ namespace Microsoft.Zelig.Runtime
             }
         }
 
-        internal void ReleasePins(params int[] pins)
+        public void ReleasePins(params int[] pins)
         {
             lock (pinLock)
             {
                 foreach (int pin in pins)
                 {
                     // Don't touch NC pins
-                    if (!IsPinNC(pin))
+                    if (InvalidPin != pin)
                     {
                         int index = PinToIndex(pin);
 
@@ -171,7 +181,7 @@ namespace Microsoft.Zelig.Runtime
         public static extern HardwareProvider Instance
         {
             [SingletonFactory()]
-            [MethodImpl( MethodImplOptions.InternalCall )]
+            [MethodImpl(MethodImplOptions.InternalCall)]
             get;
         }
     }

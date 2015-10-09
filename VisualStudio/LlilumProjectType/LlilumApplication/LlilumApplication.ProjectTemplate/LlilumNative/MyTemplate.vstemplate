@@ -25,11 +25,14 @@
       <ProjectItem ReplaceParameters="false" TargetFileName="InteropExports_mem.cpp">InteropExports_mem.cpp</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="InteropExports_nvic.cpp">InteropExports_nvic.cpp</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="InteropExports_spi.cpp">InteropExports_spi.cpp</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="InteropExports_serial.cpp">InteropExports_serial.cpp</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="InteropExports_system_timer.cpp">InteropExports_system_timer.cpp</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="InteropExports_systick.cpp">InteropExports_systick.cpp</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="InteropExports_threading.cpp">InteropExports_threading.cpp</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="pch.h">pch.h</ProjectItem>
-      <ProjectItem ReplaceParameters="false" TargetFileName="mbed_simple.FrontEndConfig2">mbed_simple.FrontEndConfig</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="mbed_simple.FrontEndConfig">mbed_simple.FrontEndConfig</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="mbed_simple_K64F.FrontEndConfig">mbed_simple_K64F.FrontEndConfig</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="mbed_simple_LPC1768.FrontEndConfig">mbed_simple_LPC1768.FrontEndConfig</ProjectItem>
     </Project>
   </TemplateContent>
 </VSTemplate>

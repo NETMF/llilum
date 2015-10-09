@@ -48,7 +48,7 @@ namespace Microsoft.Zelig.Runtime
 
         public override unsafe UIntPtr Allocate( uint size )
         {
-            //using(SmartHandles.YieldLockHolder hnd = new SmartHandles.YieldLockHolder( MemoryManager.Lock ))
+            using(SmartHandles.YieldLockHolder hnd = new SmartHandles.YieldLockHolder( MemoryManager.Lock ))
             {
                 MemorySegment* ptr = m_active;
 
@@ -76,7 +76,7 @@ namespace Microsoft.Zelig.Runtime
 
                     ptr = ptr->Next;
                 }
-
+                
                 return UIntPtr.Zero;
             }
         }
@@ -85,7 +85,7 @@ namespace Microsoft.Zelig.Runtime
         {
             if (address != UIntPtr.Zero)
             {
-                //using (SmartHandles.YieldLockHolder hnd = new SmartHandles.YieldLockHolder(MemoryManager.Lock))
+                using (SmartHandles.YieldLockHolder hnd = new SmartHandles.YieldLockHolder(MemoryManager.Lock))
                 {
                     for (MemorySegment* heap = m_heapHead; heap != null; heap = heap->Next)
                     {

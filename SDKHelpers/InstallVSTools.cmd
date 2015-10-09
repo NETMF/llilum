@@ -63,9 +63,9 @@ if exist "%PROG_FILE_DIR%\MSBuild\Microsoft.Cpp\v4.0\V140\Application Type\Llilu
 )
 
 mkdir "%PROG_FILE_DIR%\MSBuild\Microsoft.Cpp\v4.0\V140\Application Type\Llilum"
-robocopy /E .\LlilumApplicationType\Llilum "%PROG_FILE_DIR%\MSBuild\Microsoft.Cpp\v4.0\V140\Application Type\Llilum"
+robocopy /E ".\LlilumApplicationType\Llilum" "%PROG_FILE_DIR%\MSBuild\Microsoft.Cpp\v4.0\V140\Application Type\Llilum"
 
-start .\LlilumProjectType\LlilumApplication\LlilumApplication.ProjectType\bin\Debug\LlilumApplication.vsix
+start LlilumApplication.vsix
 
 echo DONE!
 echo See SDKDrop\tools\readme.txt for the PY_OCD download link

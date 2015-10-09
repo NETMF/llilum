@@ -9,7 +9,7 @@
         }
 
         internal GetElementPtr( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, LLVMNative.IsAGetElementPtrInst ) )
+            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAGetElementPtrInst ) )
         {
         }
     }

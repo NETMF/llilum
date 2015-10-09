@@ -17,10 +17,10 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         // Gpio Discovery 
         //
         public override int PinCount => Board.Instance.PinCount;
-        
-        public override int PinToIndex( int pin )
+
+        public override int PinToIndex(int pin)
         {
-            return Board.Instance.PinToIndex( pin );
+            return Board.Instance.PinToIndex(pin);
         }
 
         public override GPIO_FRAMEWORK.GpioPinProvider CreateGpioPin()
@@ -28,30 +28,34 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
             return new GpioPinMbed();
         }
 
-        public override bool IsPinNC(int pin)
+        public override int InvalidPin
         {
-            return (Board.Instance.NCPin == pin);
+            get
+            {
+                return Board.Instance.NCPin;
+            }
         }
 
         //
         // Spi
         //
 
-        public override int GetSpiChannelIndexFromString( string busId )
+        public override int GetSpiChannelIndexFromString(string busId)
         {
-            return Board.Instance.GetSpiChannelIndexFromString( busId );
+            return Board.Instance.GetSpiChannelIndexFromString(busId);
         }
 
-        public override bool GetSpiPinsFromBusId( int id, out int mosi, out int miso, out int sclk, out int chipSelect )
+        public override bool GetSpiPinsFromBusId(int id, out int mosi, out int miso, out int sclk, out int chipSelect)
         {
-            ChipsetAbstration.Board.SpiChannelInfo channelInfo = Board.Instance.GetSpiChannelInfo( id );
-            if(channelInfo == null)
+            ChipsetAbstration.Board.SpiChannelInfo channelInfo = Board.Instance.GetSpiChannelInfo(id);
+            if (channelInfo == null)
             {
                 // The spi bus was not found
-                mosi = Board.Instance.NCPin;
-                miso = Board.Instance.NCPin;
-                sclk = Board.Instance.NCPin;
-                chipSelect = Board.Instance.NCPin;
+                int invalidPin = this.InvalidPin;
+                mosi = invalidPin;
+                miso = invalidPin;
+                sclk = invalidPin;
+                chipSelect = invalidPin;
 
                 return false;
             }
@@ -64,10 +68,10 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
             return true;
         }
 
-        public override bool GetSpiChannelInfo( int id, out int csLineCount, out int maxFreq, out int minFreq, out bool supports16 )
+        public override bool GetSpiChannelInfo(int id, out int csLineCount, out int maxFreq, out int minFreq, out bool supports16)
         {
-            ChipsetAbstration.Board.SpiChannelInfo channelInfo = Board.Instance.GetSpiChannelInfo( id );
-            if(channelInfo == null)
+            ChipsetAbstration.Board.SpiChannelInfo channelInfo = Board.Instance.GetSpiChannelInfo(id);
+            if (channelInfo == null)
             {
                 // The bus was not found
                 csLineCount = -1;
@@ -88,10 +92,9 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
 
         public override bool GetSpiChannelActiveLow(int id, out bool activeLow)
         {
-            ChipsetAbstration.Board.SpiChannelInfo channelInfo = Board.Instance.GetSpiChannelInfo( id );
+            ChipsetAbstration.Board.SpiChannelInfo channelInfo = Board.Instance.GetSpiChannelInfo(id);
             if (channelInfo == null)
             {
-                // Failed
                 activeLow = true;
                 return false;
             }
@@ -100,24 +103,24 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
             return true;
         }
 
-        public override string[] GetSpiChannels( )
+        public override string[] GetSpiChannels()
         {
             return Board.Instance.GetSpiChannels();
         }
-        
-        public override SPI_FRAMEWORK.SpiChannel CreateSpiChannel( )
+
+        public override SPI_FRAMEWORK.SpiChannel CreateSpiChannel()
         {
-            return new SpiChannel();            
+            return new SpiChannel();
         }
 
         public override bool GetSpiChannelTimingInfo(int id, out int setupTime, out int holdTime)
         {
-            ChipsetAbstration.Board.SpiChannelInfo channelInfo = Board.Instance.GetSpiChannelInfo( id );
+            ChipsetAbstration.Board.SpiChannelInfo channelInfo = Board.Instance.GetSpiChannelInfo(id);
             if (channelInfo == null)
             {
                 // Fail. Returning 0 because time should not be negative
                 setupTime = 0;
-                holdTime  = 0;
+                holdTime = 0;
                 return false;
             }
 
@@ -146,8 +149,9 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
             if (channelInfo == null)
             {
                 // Channel does not exist
-                sdaPin = Board.Instance.NCPin;
-                sclPin = Board.Instance.NCPin;
+                int invalidPin = this.InvalidPin;
+                sdaPin = invalidPin;
+                sclPin = invalidPin;
                 return false;
             }
 
@@ -163,6 +167,35 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         public override I2C_FRAMEWORK.I2cChannel CreateI2cChannel()
         {
             return new I2cChannelMbed();
+        }
+
+        //
+        // Serial Discovery
+        //
+
+        public override string[] GetSerialPorts()
+        {
+            return Board.Instance.GetSerialPorts();
+        }
+
+        public override bool GetSerialPinsFromPortName(string portName, out int txPin, out int rxPin, out int rtsPin, out int ctsPin)
+        {
+            ChipsetAbstration.Board.SerialPortInfo portInfo = Board.Instance.GetSerialPortInfo(portName);
+            if (portInfo == null)
+            {
+                int invalidPin = this.InvalidPin;
+                txPin = invalidPin;
+                rxPin = invalidPin;
+                ctsPin = invalidPin;
+                rtsPin = invalidPin;
+                return false;
+            }
+
+            txPin =  portInfo.TxPin;
+            rxPin =  portInfo.RxPin;
+            ctsPin = portInfo.CtsPin;
+            rtsPin = portInfo.RtsPin;
+            return true;
         }
     }
 }
