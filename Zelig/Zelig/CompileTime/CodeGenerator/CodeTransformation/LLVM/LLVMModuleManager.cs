@@ -288,23 +288,19 @@ namespace Microsoft.Zelig.LLVM
             return m_module.GetUCVArray( GetOrInsertType( elTR ), fields );
         }
 
-        private Constant GetScalarTypeUCV( TS.TypeRepresentation tr, UInt64 v )
+        private Constant GetScalarTypeUCV( TS.TypeRepresentation tr, ulong v )
         {
+            _Type type = GetOrInsertType( tr );
+
             if( v == 0 )
             {
-                return m_module.GetUCVZeroInitialized( GetOrInsertType( tr ) );
+                return m_module.GetUCVZeroInitialized( type );
             }
             else
             {
-                Constant ucv = GetUCVIntAsSVT( tr, ( UInt64 )v );
-                ucv = GetUCVStruct( GetOrInsertType( tr ), false, ucv );
-                return ucv;
+                Constant ucv = m_module.GetUCVInt( type.GetBTUnderlyingType(), v, tr.IsSigned );
+                return GetUCVStruct( type, false, ucv );
             }
-        }
-
-        private Constant GetUCVIntAsSVT( TS.TypeRepresentation tr, UInt64 v )
-        {
-            return m_module.GetUCVInt( GetOrInsertBasicTypeAsLLVMSingleValueType( tr ), v, tr.IsSigned );
         }
 
         private bool TypeChangesAfterCreation( IR.DataManager.DataDescriptor dd )
@@ -373,7 +369,7 @@ namespace Microsoft.Zelig.LLVM
             return m_module.GetUCVStruct( GetOrInsertType( wkt.Microsoft_Zelig_Runtime_ObjectHeader ), fields, false );
         }
 
-        public Constant UCVFromDataDescriptor( IR.DataManager.DataDescriptor dd, TS.TypeRepresentation treatObjectDescriptorAsType = null )
+        private Constant UCVFromDataDescriptor( IR.DataManager.DataDescriptor dd, TS.TypeRepresentation treatObjectDescriptorAsType = null )
         {
             TS.WellKnownFields wkf = m_typeSystem.WellKnownFields;
             TS.WellKnownTypes wkt = m_typeSystem.WellKnownTypes;

@@ -158,6 +158,49 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
+        /// <summary>
+        /// Coerce constant call arguments to their target type. This saves having to inject a cast at translation time.
+        /// </summary>
+        /// <param name="nc">Context for this transformation.</param>
+        [CompilationSteps.OperatorHandler(typeof(CallOperator))]
+        private void CoerceConstantParameters( PhaseExecution.NotificationContext nc )
+        {
+            CallOperator         call         = nc.GetOperatorAndThrowIfNotCall();
+            TypeRepresentation[] argTypes     = call.TargetMethod.ThisPlusArguments;
+            Expression[]         arguments    = call.Arguments;
+            bool                 isIndirect   = call is IndirectCallOperator;
+
+            // We always skip the 'this' pointer, so start at 1.
+            for( int i = 1 ; i < argTypes.Length; ++i )
+            {
+                CoerceConstantParameter(ref arguments[isIndirect ? (i + 1) : i], argTypes[i]);
+            }
+        }
+
+        private static void CoerceConstantParameter( ref Expression argExpr, TypeRepresentation targetType )
+        {
+            var constExpr = argExpr as ConstantExpression;
+            if( constExpr == null )
+            {
+                return;
+            }
+
+            if ( targetType != argExpr.Type )
+            {
+                // This works for all scalar numeric types, including enums.
+                ulong valueAsUInt64;
+                if( constExpr.GetAsRawUlong( out valueAsUInt64 ) )
+                {
+                    object value = ConstantExpression.ConvertToType( targetType, valueAsUInt64 );
+                    argExpr = new ConstantExpression( targetType, value );
+                }
+            }
+        }
+
+        //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
+        //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
+        //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
+
         [CompilationSteps.OperatorHandler( typeof(CallOperator) )]
         private static void AttemptDevirtualization( PhaseExecution.NotificationContext nc )
         {

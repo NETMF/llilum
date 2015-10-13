@@ -297,24 +297,22 @@ namespace Microsoft.Zelig.Runtime
 
                 if(ri.IsEraseBlock)
                 {
-                    uint* dst   = (uint*)ri.Destination.ToPointer();
-                    uint  count = ri.SizeInWords;
-
-                    while(count != 0)
-                    {
-                        *dst++ = 0;
-                        count--;
-                    }
+                    UIntPtr destinationEnd = AddressMath.Increment( ri.Destination, ri.SizeInWords * sizeof( uint ) );
+                    Memory.Zero(ri.Destination, destinationEnd);
                 }
                 else
                 {
-                    Memory.CopyNonOverlapping( ri.Start, ri.End, ri.Destination );
+                    Buffer.InternalMemoryMove(
+                        (byte*)ri.Start.ToPointer(),
+                        (byte*)ri.Destination.ToPointer(),
+                        (int)AddressMath.RangeSize( ri.Start, ri.End ) );
                 }
             }
         }
 
         //--//
 
+        [Inline]
         [DisableNullChecks]
         public static void Zero( UIntPtr start ,
                                  UIntPtr end   )
@@ -322,65 +320,36 @@ namespace Microsoft.Zelig.Runtime
             Fill( start, end, 0 );
         }
 
+        [Inline]
         public static void Dirty( UIntPtr start ,
                                   UIntPtr end   )
         {
-            Fill( start, end, 0xDEADBEEF );
+            Fill( start, end, 0xDD );
         }
 
+        [Inline]
         [DisableNullChecks]
         public static unsafe void Fill( UIntPtr start ,
                                         UIntPtr end   ,
-                                        uint    value )
+                                        byte    value )
         {
-            uint* startPtr = (uint*)start.ToPointer();
-            uint* endPtr   = (uint*)end  .ToPointer();
-            
-            BugCheck.Assert( startPtr != null, BugCheck.StopCode.HeapCorruptionDetected );
-            BugCheck.Assert( endPtr   != null, BugCheck.StopCode.HeapCorruptionDetected );
+            byte* startPtr = (byte*)start.ToPointer();
+            byte* endPtr   = (byte*)end.  ToPointer();
 
-            endPtr -= 7;
-
-            while(startPtr < endPtr)
-            {
-                startPtr[0] = value;
-                startPtr[1] = value;
-                startPtr[2] = value;
-                startPtr[3] = value;
-                startPtr[4] = value;
-                startPtr[5] = value;
-                startPtr[6] = value;
-                startPtr[7] = value;
-
-                startPtr += 8;
-            }
-
-            uint leftOver = (uint)((endPtr + 7) - startPtr);
-
-            switch(leftOver)
-            {
-                case 7: startPtr[6] = value; goto case 6;
-                case 6: startPtr[5] = value; goto case 5;
-                case 5: startPtr[4] = value; goto case 4;
-                case 4: startPtr[3] = value; goto case 3;
-                case 3: startPtr[2] = value; goto case 2;
-                case 2: startPtr[1] = value; goto case 1;
-                case 1: startPtr[0] = value; break;
-            }
+            Fill( startPtr, (int)(endPtr - startPtr), value );
         }
 
-        [DisableNullChecks( ApplyRecursively=true )]
-        public static unsafe void CopyNonOverlapping( UIntPtr srcStart ,
-                                                      UIntPtr srcEnd   ,
-                                                      UIntPtr dstStart )
+        [NoInline]
+        [TS.WellKnownMethod( "Microsoft_Zelig_Runtime_Memory_Fill" )]
+        public static unsafe void Fill( byte* dst,
+                                        int size,
+                                        byte value )
         {
-            uint* srcPtr = (uint*)srcStart.ToPointer();
-            uint* endPtr = (uint*)srcEnd  .ToPointer();
-            uint* dstPtr = (uint*)dstStart.ToPointer();
-
-            while(srcPtr < endPtr)
+            byte* end = dst + size;
+            while( dst < end )
             {
-                *dstPtr++ = *srcPtr++;
+                *dst = value;
+                ++dst;
             }
         }
 

@@ -41,7 +41,7 @@ namespace Microsoft.NohauLPC3180
             if(ValidateAddress     ( addressStart ) &&
                ValidateAddressPlus1( addressEnd   )  )
             {
-                Memory.Fill( addressStart, addressEnd, ErasedValuePair );
+                Memory.Fill( addressStart, addressEnd, 0xFF );
 
                 return true;
             }

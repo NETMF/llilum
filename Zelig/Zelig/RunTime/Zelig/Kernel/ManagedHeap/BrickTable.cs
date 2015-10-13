@@ -14,7 +14,7 @@ namespace Microsoft.Zelig.Runtime
     {
         private const uint c_PageSize                             = 2048;
 
-        private const int  c_BrickEncoding_Uninitialized          = short.MaxValue;
+        private const int  c_BrickEncoding_Uninitialized          = 0x33;
         private const int  c_BrickEncoding_MaxBacktrackingOffset  = short.MinValue;
         private const int  c_BrickEncoding_SafeBacktrackingOffset = c_BrickEncoding_MaxBacktrackingOffset / 2;
 
@@ -56,10 +56,8 @@ namespace Microsoft.Zelig.Runtime
 
             uint* start = array.GetDataPointer   ();
             uint* end   = array.GetEndDataPointer();
-            uint  mask  = (((uint)c_BrickEncoding_Uninitialized) <<  0) |
-                          (((uint)c_BrickEncoding_Uninitialized) << 16) ;
                           
-            Memory.Fill( new UIntPtr( start ), new UIntPtr( end ), mask );
+            Memory.Fill( (byte*)start, (int)(end - start) * sizeof(uint), c_BrickEncoding_Uninitialized );
         }
 
         [DisableBoundsChecks(ApplyRecursively=true)]

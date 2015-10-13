@@ -92,7 +92,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                     break;
             }
 
-            if(md.ThisPlusArguments.Length + offset != rhs.Length) return false;
+            if(md.ThisPlusArguments.Length + offset != rhs.Length)
+            {
+                return false;
+            }
 
             for(; i < md.ThisPlusArguments.Length; i++)
             {
@@ -101,16 +104,13 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
                 if(!td.CanBeAssignedFrom( ex.Type, null ))
                 {
-                    if(ex is ConstantExpression)
+                    // Allow passing null object pointers as any type.
+                    var constEx = ex as ConstantExpression;
+                    if( (constEx != null) &&
+                        (constEx.Value == null) &&
+                        !(td is ValueTypeRepresentation) )
                     {
-                        ConstantExpression cEx = (ConstantExpression)ex;
-
-                        if(cEx.Value == null)
-                        {
-                            if(td is ValueTypeRepresentation) return false;
-
-                            continue;
-                        }
+                        continue;
                     }
 
                     return false;

@@ -40,7 +40,7 @@ namespace Microsoft.iMote2
             if(ValidateAddress     ( addressStart ) &&
                ValidateAddressPlus1( addressEnd   )  )
             {
-                Memory.Fill( addressStart, addressEnd, ErasedValuePair );
+                RT.Memory.Fill( addressStart, addressEnd, ErasedValueByte );
 
                 return true;
             }

@@ -92,6 +92,8 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         public readonly MethodRepresentation Microsoft_Zelig_Runtime_AbstractMethodWrapper_Epilogue;
         public readonly MethodRepresentation Microsoft_Zelig_Runtime_AbstractMethodWrapper_Epilogue2;
 
+        public readonly MethodRepresentation Microsoft_Zelig_Runtime_Memory_Fill;
+
         //--//
         
         //

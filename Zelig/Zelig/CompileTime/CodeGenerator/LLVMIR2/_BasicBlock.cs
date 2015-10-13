@@ -298,24 +298,21 @@ namespace Microsoft.Zelig.LLVM
                             );
         }
 
-        
-        public void InsertMemSet( _Value dst, _Value src, _Value size )
+        public void InsertMemSet( _Value dst, _Value value, _Value size )
         {
             dst = LoadToImmediate( dst );
-            src = LoadToImmediate( src );
-
-            Debug.Assert( src != null && dst != null && size != null );
-            Debug.Assert( src.IsPointer );
+            Debug.Assert( dst != null && size != null && value != null );
             Debug.Assert( dst.IsPointer );
             Debug.Assert( size.IsInteger );
+            Debug.Assert( value.IsInteger);
 
             IrBuilder.MemSet( Module.LlvmModule
-                                , dst.LlvmValue
-                                , src.LlvmValue
-                                , size.LlvmValue
-                                , 4
-                                , false
-                                );
+                            , dst.LlvmValue
+                            , value.LlvmValue
+                            , size.LlvmValue
+                            , 0
+                            , false
+                            );
         }
 
         enum BinaryOperator
@@ -649,9 +646,9 @@ namespace Microsoft.Zelig.LLVM
                 return newVal;
             }
 
-                _Value retVal = RevertImmediate( val );
-                if( retVal == null )
-                    return val;
+            _Value retVal = RevertImmediate( val );
+            if( retVal == null )
+                return val;
 
             var bitCast = IrBuilder.BitCast( val.LlvmValue, ty.DebugType.CreatePointerType() )
                                    .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );

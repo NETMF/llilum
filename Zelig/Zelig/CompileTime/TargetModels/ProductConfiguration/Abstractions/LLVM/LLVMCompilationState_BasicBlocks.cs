@@ -64,6 +64,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
                 {
                     return m_manager.Module.GetNullPointer( m_manager.GetOrInsertType( ce.Type ) );
                 }
+
                 if( ce.Type.IsFloatingPoint )
                 {
                     if( ce.Value is float )
@@ -71,18 +72,34 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
                     else
                         return m_manager.Module.GetDoubleConstant( ( double )ce.Value );
                 }
+
                 if( ce.Type.IsInteger )
                 {
                     if( ce.SizeOfValue == 0 )
                     {
                         throw new System.InvalidOperationException( "Integer constant with 0 bits width." );
                     }
+
                     ulong uVal;
                     ce.GetAsRawUlong( out uVal );
                     LLVM._Type intType = m_manager.GetOrInsertBasicTypeAsLLVMSingleValueType( ce.Type );
-
                     return m_manager.Module.GetIntConstant( intType, uVal, ce.Type.IsSigned );
                 }
+
+#if FUTURE // In the future we should be able to get rid of GetInt/Float/DoubleConstant and replace with the following.
+                if( ce.Type.IsInteger || ce.Type.IsFloatingPoint )
+                {
+                    if( ce.SizeOfValue == 0 )
+                    {
+                        throw new System.InvalidOperationException( "Integer constant with 0 bits width." );
+                    }
+
+                    ulong uVal;
+                    ce.GetAsRawUlong( out uVal );
+                    Constant ucv = m_manager.GetScalarTypeUCV( ce.Type, uVal );
+                    return m_manager.Module.WrapConstant( ucv, m_manager.GetOrInsertType( ce.Type ) );
+                }
+#endif // FUTURE
 
                 IR.DataManager.DataDescriptor dd = ce.Value as IR.DataManager.DataDescriptor;
                 if( dd != null )
@@ -732,22 +749,31 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
             m_basicBlock.InsertUnconditionalBranch( m_basicBlock );
         }
 
-        private bool ReplaceMethodCallWithIntrinsic( IR.CallOperator op )
+        private bool ReplaceMethodCallWithIntrinsic( IR.CallOperator op, List<_Value> convertedArgs )
         {
             TS.WellKnownMethods wkm = m_cfg.TypeSystem.WellKnownMethods;
 
             // System.Buffer.InternalMemoryCopy(byte*, byte*, int) => llvm.memcpy
             // System.Buffer.InternalBackwardMemoryCopy(byte*, byte*, int) => llvm.memmove
-            // Microsoft.Zelig.Runtime.Memory.Fill(byte*, byte*, int) => llvm.memset
-            if((op.TargetMethod == wkm.System_Buffer_InternalMemoryCopy)            ||
-               (op.TargetMethod == wkm.System_Buffer_InternalBackwardMemoryCopy))
+            if( ( op.TargetMethod == wkm.System_Buffer_InternalMemoryCopy ) ||
+                ( op.TargetMethod == wkm.System_Buffer_InternalBackwardMemoryCopy ) )
             {
                 bool overlapping = op.TargetMethod != wkm.System_Buffer_InternalMemoryCopy;
 
-                _Value src = m_arguments[1];
-                _Value dst = m_arguments[2];
-                _Value size = ExtractFirstElementFromBasicType( m_arguments[3] );
+                _Value src = convertedArgs[ 0 ];
+                _Value dst = convertedArgs[ 1 ];
+                _Value size = ExtractFirstElementFromBasicType( convertedArgs[ 2 ] );
                 m_basicBlock.InsertMemCpy( dst, src, size, overlapping );
+                return true;
+            }
+
+            // Microsoft.Zelig.Runtime.Memory.Fill(byte*, int, byte) => llvm.memset
+            if( op.TargetMethod == wkm.Microsoft_Zelig_Runtime_Memory_Fill )
+            {
+                _Value dst = convertedArgs[ 0 ];
+                _Value size = ExtractFirstElementFromBasicType( convertedArgs[ 1 ] );
+                _Value value = ExtractFirstElementFromBasicType( convertedArgs[ 2 ] );
+                m_basicBlock.InsertMemSet( dst, value, size );
                 return true;
             }
 
@@ -756,18 +782,6 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         private void BuildMethodCallInstructions( IR.CallOperator op, bool callIndirect = false )
         {
-            if( ReplaceMethodCallWithIntrinsic( op ) )
-            {
-                return;
-            }
-
-            LLVM._Function targetFunc = m_manager.GetOrInsertFunction( op.TargetMethod );
-
-            if( op.TargetMethod.Flags.HasFlag( TS.MethodRepresentation.Attributes.PinvokeImpl ) )
-            {
-                targetFunc.SetExternalLinkage( );
-            }
-
             List<_Value> args = new List<_Value>( );
 
             int i = 0;
@@ -783,6 +797,18 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
                 var opArgType = m_manager.GetOrInsertType( opArgTypeRep );
                 var convertedArg = ConvertValueToStoreToTarget( m_arguments[ i ], opArgType );
                 args.Add( convertedArg );
+            }
+
+            if( ReplaceMethodCallWithIntrinsic( op, args ) )
+            {
+                return;
+            }
+
+            LLVM._Function targetFunc = m_manager.GetOrInsertFunction( op.TargetMethod );
+
+            if( op.TargetMethod.Flags.HasFlag( TS.MethodRepresentation.Attributes.PinvokeImpl ) )
+            {
+                targetFunc.SetExternalLinkage( );
             }
 
             _Value ret;
