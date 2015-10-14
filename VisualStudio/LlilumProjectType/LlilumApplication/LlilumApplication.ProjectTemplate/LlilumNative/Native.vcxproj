@@ -149,9 +149,6 @@
     <None Include="mbed_simple_K64F.FrontEndConfig" />
     <None Include="mbed_simple_LPC1768.FrontEndConfig" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="helpers.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
 </Project>
