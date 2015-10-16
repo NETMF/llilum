@@ -2,10 +2,8 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-
 namespace Microsoft.Zelig.LLVM
 {
-
     using System;
     using System.Collections.Generic;
     using System.Text;
@@ -194,7 +192,7 @@ namespace Microsoft.Zelig.LLVM
             {
                 return method.Name;
             }
-            return $"{method.OwnerType.Name}_{method.Name}${method.m_identity}";
+            return $"{method.OwnerType.Name}::{method.Name}${method.m_identity}";
         }
 
         private void CompleteMissingDataDescriptors( )
@@ -225,6 +223,7 @@ namespace Microsoft.Zelig.LLVM
             {
                 fields.Add( val );
             }
+
             return m_module.GetUCVStruct( type, fields, anon );
         }
 
@@ -298,8 +297,7 @@ namespace Microsoft.Zelig.LLVM
             }
             else
             {
-                Constant ucv = m_module.GetUCVInt( type.GetBTUnderlyingType(), v, tr.IsSigned );
-                return GetUCVStruct( type, false, ucv );
+                return m_module.GetUCVInt( type, v, tr.IsSigned );
             }
         }
 
@@ -328,16 +326,15 @@ namespace Microsoft.Zelig.LLVM
         {
             if( !m_globalInitializedValues.ContainsKey( dd ) )
             {
-                //I force initialization of arrays and strings to correctly set the static
-                //type for the array.
+                // Force initialization of arrays and strings to correctly set the static type for the array.
                 if( TypeChangesAfterCreation( dd ) )
                 {
                     Constant ucv = UCVFromDataDescriptor( dd );
-                    AddToGlobalInitializedValues(dd, m_module.GetGlobalFromUCV(GetOrInsertType(dd.Context), ucv, dd.IsMutable));
+                    AddToGlobalInitializedValues( dd, m_module.GetGlobalFromUCV( GetOrInsertInlineType( dd.Context ), ucv, dd.IsMutable ) );
                 }
                 else
                 {
-                    AddToGlobalInitializedValues( dd, m_module.GetUninitializedGlobal( GetOrInsertType( dd.Context ) ) );
+                    AddToGlobalInitializedValues( dd, m_module.GetUninitializedGlobal( GetOrInsertInlineType( dd.Context ) ) );
                 }
             }
 
@@ -362,11 +359,12 @@ namespace Microsoft.Zelig.LLVM
                 flags = Runtime.ObjectHeader.GarbageCollectorFlags.ReadOnlyObject;
             }
 
+            _Value virtualTable = GetConstantPointerToDD( ( IR.DataManager.DataDescriptor )dd.Owner.GetObjectDescriptor( dd.Context.VirtualTable ) );
+            fields.Add( GetScalarTypeUCV( wkf.ObjectHeader_MultiUseWord.FieldType, ( ulong )flags ) );
+            fields.Add( m_module.GetUCVConstantPointerFromValue( virtualTable ) );
 
-            fields.Add( GetScalarTypeUCV( wkf.ObjectHeader_MultiUseWord.FieldType, ( UInt64 )flags ) ); //MultiUser Word
-            fields.Add( m_module.GetUCVConstantPointerFromValue( GetConstantPointerToDD( ( IR.DataManager.DataDescriptor )dd.Owner.GetObjectDescriptor( dd.Context.VirtualTable ) ) ) ); //VTable
-
-            return m_module.GetUCVStruct( GetOrInsertType( wkt.Microsoft_Zelig_Runtime_ObjectHeader ), fields, false );
+            _Type headerType = GetOrInsertType( wkt.Microsoft_Zelig_Runtime_ObjectHeader );
+            return m_module.GetUCVStruct( headerType.UnderlyingType, fields, false );
         }
 
         private Constant UCVFromDataDescriptor( IR.DataManager.DataDescriptor dd, TS.TypeRepresentation treatObjectDescriptorAsType = null )
@@ -380,13 +378,15 @@ namespace Microsoft.Zelig.LLVM
                 TS.TypeRepresentation currentType = treatObjectDescriptorAsType;
 
                 if( currentType == null )
+                {
                     currentType = dd.Context;
-
+                }
 
                 if( currentType == wkt.System_Object )
                 {
                     Constant ucv = GetUCVObjectHeader( dd );
-                    return GetUCVStruct( GetOrInsertType( wkt.System_Object ), false, ucv );
+                    _Type objectType = GetOrInsertType( wkt.System_Object );
+                    return GetUCVStruct( objectType.UnderlyingType, false, ucv );
                 }
 
                 var fields = new List<Constant>( );
@@ -395,7 +395,6 @@ namespace Microsoft.Zelig.LLVM
                 {
                     fields.Add( UCVFromDataDescriptor( dd, currentType.Extends ) );
                 }
-
 
                 for( uint i = 0; i < currentType.Size - ( currentType.Extends == null ? 0 : currentType.Extends.Size ); i++ )
                 {
@@ -438,7 +437,6 @@ namespace Microsoft.Zelig.LLVM
                             {
                                 throw new Exception( "I'm not sure what kind of code pointer is this:" + ptr );
                             }
-
                         }
                         else if( fdVal == null )
                         {
@@ -477,26 +475,25 @@ namespace Microsoft.Zelig.LLVM
                     var chars = new List<Constant>( );
                     foreach( var c in ( ( string )od.Source ).ToCharArray( ) )
                     {
-                        chars.Add( GetScalarTypeUCV( wkf.StringImpl_FirstChar.FieldType, ( ulong )c ) );
-
+                        chars.Add( GetScalarTypeUCV( wkf.StringImpl_FirstChar.FieldType, c ) );
                     }
+
                     fields.Add( m_module.GetUCVArray( GetOrInsertType( wkf.StringImpl_FirstChar.FieldType ), chars ) );
                 }
 
-                return m_module.GetUCVStruct( GetOrInsertType( currentType ), fields, currentType == wkt.System_String );
-
+                return m_module.GetUCVStruct( GetOrInsertInlineType( currentType ), fields, currentType == wkt.System_String );
             }
             else if( dd is IR.DataManager.ArrayDescriptor )
             {
                 IR.DataManager.ArrayDescriptor ad = ( IR.DataManager.ArrayDescriptor )dd;
 
                 Constant ucv = GetUCVObjectHeader( dd );
-                ucv = GetUCVStruct( GetOrInsertType( wkt.System_Object ), false, ucv );
+                ucv = GetUCVStruct( GetOrInsertInlineType( wkt.System_Object ), false, ucv );
 
                 ulong arrayLen = (ulong)((ad.Source != null) ? ad.Source.Length : ad.Length);
 
-                ucv = GetUCVStruct( GetOrInsertType( wkt.System_Array ), false, ucv, GetScalarTypeUCV( wkf.ArrayImpl_m_numElements.FieldType, arrayLen) );
-                return GetUCVStruct( GetOrInsertType( dd.Context ), true, ucv, GetUCVArray( ad ) );
+                ucv = GetUCVStruct( GetOrInsertInlineType( wkt.System_Array ), false, ucv, GetScalarTypeUCV( wkf.ArrayImpl_m_numElements.FieldType, arrayLen) );
+                return GetUCVStruct( GetOrInsertInlineType( dd.Context ), true, ucv, GetUCVArray( ad ) );
             }
             else
             {
@@ -504,24 +501,21 @@ namespace Microsoft.Zelig.LLVM
             }
         }
 
-
         public LLVM._Value GlobalValueFromDataDescriptor( IR.DataManager.DataDescriptor dd )
         {
             if( !m_globalInitializedValues.ContainsKey( dd ) )
             {
                 Constant ucv = UCVFromDataDescriptor( dd );
-                
-                //Split the global creation in two step for DDs that keep their type the same
-                //after conversion
 
+                // Split the global creation in two step for DDs that keep their type the same after conversion
                 if( TypeChangesAfterCreation( dd ) )
                 {
-                    AddToGlobalInitializedValues( dd, m_module.GetGlobalFromUCV( GetOrInsertType( dd.Context ), ucv, dd.IsMutable ) );
+                    AddToGlobalInitializedValues( dd, m_module.GetGlobalFromUCV( GetOrInsertInlineType( dd.Context ), ucv, dd.IsMutable ) );
                 }
                 else
                 {
-                    AddToGlobalInitializedValues(dd, m_module.GetUninitializedGlobal(GetOrInsertType(dd.Context)));
-                    m_globalInitializedValues[dd].SetGlobalInitializer(ucv);
+                    AddToGlobalInitializedValues( dd, m_module.GetUninitializedGlobal( GetOrInsertInlineType( dd.Context ) ) );
+                    m_globalInitializedValues[ dd ].SetGlobalInitializer( ucv );
                 }
             }
 
@@ -550,6 +544,5 @@ namespace Microsoft.Zelig.LLVM
                 return m_debugInfoForMethods;
             }
         }
-
     }
 }

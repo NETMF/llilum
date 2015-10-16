@@ -49,7 +49,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
                         rhs[i] = cfg.Arguments[i];
                     }
 
-                    bb.AddOperator( InstanceCallOperator.New( null, CallOperator.CallKind.OverriddenNoCheck, mdParent, rhs, true ) );
+                    // Wrap the IntPtr param in a CodePointer struct and call the parent constructor.
+                    rhs[2] = cfg.AllocateTemporary( wkt.Microsoft_Zelig_Runtime_TypeSystem_CodePointer, null );
+                    bb.AddOperator( StoreInstanceFieldOperator.New( null, wkf.CodePointer_Target, rhs[2], cfg.Arguments[2], false ) );
+                    bb.AddOperator( InstanceCallOperator.New( null, CallOperator.CallKind.Overridden, mdParent, rhs, true ) );
                 }
                 else if(md.Name == "Invoke")
                 {

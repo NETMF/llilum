@@ -17,25 +17,20 @@ namespace Microsoft.Zelig.LLVM
 
         internal List< DebugMemberInfo > DiFields = new List< DebugMemberInfo >( );
 
-        // REVIEW: Any reason these can't be consolidated into a single UnderlyingElementType?
-        //         Not like you can have a boxed pointer...
-        internal _Type UnderlyingBoxedType;
-        internal _Type UnderlyingPointerType;
-
-        public _Type( _Module module, string name, int sizeInBits, IDebugType<ITypeRef,DIType> typeRef )
+        public _Type( _Module module, string name, int sizeInBits, bool isValueType, IDebugType<ITypeRef,DIType> typeRef )
         {
             Module = module;
             SizeInBits = sizeInBits;
-            IsValueType = true;
+            IsValueType = isValueType;
             Name = name;
             DebugType = typeRef;
             TypeImplsReverseLookupForLlvmTypes[ DebugType.TypeHandle ] = this;
         }
 
-        public _Type( _Module owner, string name, int sizeInBits )
+        public _Type( _Module owner, string name, int sizeInBits, bool isValueType )
         {
             SizeInBits = sizeInBits;
-            IsValueType = true;
+            IsValueType = isValueType;
             Name = name;
             Module = owner;
 
@@ -43,7 +38,7 @@ namespace Microsoft.Zelig.LLVM
 
             // basic types need to use DebugBasicType since the LLVM primitive types are all uniqued
             // and some of them would end up overlapping (i.e. System.UInt16 and Char are both i16 to
-            // LLVM but need distinct DIBasicType instances to describe them for the debugger )
+            // LLVM but need distinct DIBasicType instances to describe them for the debugger)
             switch( name )
             {
             case "System.Void":
@@ -51,42 +46,49 @@ namespace Microsoft.Zelig.LLVM
                 DebugType = Llvm.NET.DebugInfo.DebugType.Create( LlvmModule.Context.VoidType, ( DIType )null );
                 break;
 
-            case "LLVM.System.Char":
+            case "System.Char":
                 DebugType = new DebugBasicType( LlvmModule.Context.GetIntType( ( uint )sizeInBits ), LlvmModule, name, DiTypeKind.UTF );
+                IsPrimitiveType = true;
                 break;
 
-            case "LLVM.System.Boolean":
+            case "System.Boolean":
                 DebugType = new DebugBasicType( LlvmModule.Context.GetIntType( ( uint )sizeInBits ), LlvmModule, name, DiTypeKind.Boolean );
+                IsPrimitiveType = true;
                 break;
 
-            case "LLVM.System.SByte":
-            case "LLVM.System.Int16":
-            case "LLVM.System.Int32":
-            case "LLVM.System.Int64":
+            case "System.SByte":
+            case "System.Int16":
+            case "System.Int32":
+            case "System.Int64":
                 DebugType = new DebugBasicType( LlvmModule.Context.GetIntType( ( uint )sizeInBits ), LlvmModule, name, DiTypeKind.Signed );
+                IsPrimitiveType = true;
                 break;
 
-            case "LLVM.System.Byte":
-            case "LLVM.System.UInt16":
-            case "LLVM.System.UInt32":
-            case "LLVM.System.UInt64":
+            case "System.Byte":
+            case "System.UInt16":
+            case "System.UInt32":
+            case "System.UInt64":
                 DebugType = new DebugBasicType( LlvmModule.Context.GetIntType( ( uint )sizeInBits ), LlvmModule, name, DiTypeKind.Unsigned );
+                IsPrimitiveType = true;
                 break;
 
-            case "LLVM.System.Single":
+            case "System.Single":
                 DebugType = new DebugBasicType( LlvmModule.Context.FloatType, LlvmModule, name, DiTypeKind.Float );
+                IsPrimitiveType = true;
                 break;
 
-            case "LLVM.System.Double":
+            case "System.Double":
                 DebugType = new DebugBasicType( LlvmModule.Context.DoubleType, LlvmModule, name, DiTypeKind.Float );
+                IsPrimitiveType = true;
                 break;
 
-            case "LLVM.System.IntPtr":
-            case "LLVM.System.UIntPtr":
+            case "System.IntPtr":
+            case "System.UIntPtr":
                 // REVIEW: Shouldn't this be an integer value and not a pointer? 
                 //         Standard  semantics for IntPtr is that of an integer
                 //         that is the same size as a native pointer.
-                DebugType = new DebugPointerType( LlvmModule.Context.Int8Type, LlvmModule, null);
+                DebugType = new DebugPointerType( LlvmModule.Context.Int8Type, LlvmModule, null );
+                IsPrimitiveType = true;
                 break;
 
             default:
@@ -108,20 +110,15 @@ namespace Microsoft.Zelig.LLVM
 
         public bool IsInteger => DebugType.IsInteger;
 
-        public bool IsPointer => GetLLVMObjectForStorage( ).IsPointer;
+        public bool IsPointer => DebugType.IsPointer;
 
-        public bool IsPointerPointer => DebugType.IsPointerPointer;
+        public bool IsStruct => DebugType.IsStruct;
 
-        public bool IsStruct => GetLLVMObjectForStorage( ).IsStruct;
-
-        public bool IsValueType { get; set; }
+        public bool IsValueType { get; }
 
         public bool IsBoxed { get; set; }
 
-        // REVIEW:
-        //  This appears to be unused, it is set from the constructors
-        //  but has no calls to the getter... 
-        public bool HasHeader { get; set; }
+        public bool IsPrimitiveType { get; }
 
         internal _Module Module { get; }
 
@@ -129,29 +126,34 @@ namespace Microsoft.Zelig.LLVM
 
         internal List< TypeField > Fields { get; } = new List< TypeField >( );
 
-        internal List< _Type > FunctionArgs { get; } = new List< _Type >( );
-
         public IDebugType<ITypeRef,DIType> DebugType { get; }
 
         public int SizeInBits { get; }
 
         public string Name { get; }
 
-        internal static _Type GetOrInsertTypeImpl( _Module owner, string name, int sizeInBits, IDebugType<ITypeRef,DIType> ty )
+        public _Type UnderlyingType { get; internal set; }
+
+        internal static _Type GetOrInsertTypeImpl(
+            _Module owner,
+            string name,
+            int sizeInBits,
+            bool isValueType,
+            IDebugType<ITypeRef,DIType> ty )
         {
             if( !TypeImplMap.ContainsKey( name ) )
             {
-                TypeImplMap[ name ] = new _Type( owner, name, sizeInBits, ty );
+                TypeImplMap[ name ] = new _Type( owner, name, sizeInBits, isValueType, ty );
             }
 
             return TypeImplMap[ name ];
         }
 
-        internal static _Type GetOrInsertTypeImpl( _Module owner, string name, int sizeInBits )
+        internal static _Type GetOrInsertTypeImpl( _Module owner, string name, int sizeInBits, bool isValueType )
         {
             if( !TypeImplMap.ContainsKey( name ) )
             {
-                TypeImplMap[ name ] = new _Type( owner, name, sizeInBits );
+                TypeImplMap[ name ] = new _Type( owner, name, sizeInBits, isValueType );
             }
 
             return TypeImplMap[ name ];
@@ -182,17 +184,9 @@ namespace Microsoft.Zelig.LLVM
             return null;
         }
 
-        public int GetSizeInBitsForStorage( )
+        public void AddField( uint offset, _Type type, string name )
         {
-            if( IsValueType )
-                return SizeInBits;
-
-            return ( int ) ( LlvmModule.Layout.PointerSize( ) )*8;
-        }
-
-        public void AddField( uint offset, _Type type, bool forceInline, string name )
-        {
-            var f = new TypeField( name, type, offset, forceInline );
+            TypeField field = new TypeField( name, type, offset );
 
             // Add the field in offset order, by moving all other pointer to fields
             // Not the most efficient approach for C# but mirrors the original C++ code
@@ -201,29 +195,20 @@ namespace Microsoft.Zelig.LLVM
             var i = 0;
             for( i = Fields.Count - 1; i > 0; --i )
             {
-                if( Fields[ i - 1 ].Offset <= f.Offset )
+                if( Fields[ i - 1 ].Offset <= field.Offset )
                     break;
 
                 Fields[ i ] = Fields[ i - 1 ];
             }
-            Fields[ i ] = f;
-        }
 
-        public _Type GetBTUnderlyingType( ) => Module.GetType( $"LLVM.{Name}" );
+            Fields[ i ] = field;
+        }
 
         private void AddTypeToStruct( TypeField field, ICollection< ITypeRef > llvmFields, ref uint offset )
         {
             field.FinalIdx = ( uint ) llvmFields.Count;
-            if( field.ForceInline )
-            {
-                llvmFields.Add( field.MemberType.DebugType );
-                offset += ( uint ) field.MemberType.SizeInBits/8;
-            }
-            else
-            {
-                llvmFields.Add( field.MemberType.GetLLVMObjectForStorage( ) );
-                offset += ( uint ) field.MemberType.GetSizeInBitsForStorage( )/8u;
-            }
+            llvmFields.Add( field.MemberType.DebugType );
+            offset += ( uint ) field.MemberType.SizeInBits / 8;
         }
 
         public void SetupFields( )
@@ -240,14 +225,14 @@ namespace Microsoft.Zelig.LLVM
                 if( ( idx < Fields.Count ) && ( Fields[ idx ].Offset == offset ) )
                 {
                     AddTypeToStruct( Fields[ idx ], llvmFields, ref offset );
-                    AddDiField( Fields[ idx ], idx, offset );
+                    AddDiField( Fields[ idx ], idx, offset, flags: 0 );
                     ++idx;
                 }
                 else
                 {
                     // Add explicit padding if necessary.
                     // TODO: Clean this up with a single byte array [ n x i8 ]
-                    llvmFields.Add( GetOrInsertTypeImpl( Module, "System.Byte", 8 ).DebugType );
+                    llvmFields.Add( GetOrInsertTypeImpl( Module, "System.Byte", 8, true ).DebugType );
                     ++offset;
                 }
             }
@@ -256,9 +241,8 @@ namespace Microsoft.Zelig.LLVM
             // such as System.Object and the elements trailing strings/arrays.
             for( ; idx < Fields.Count; ++idx )
             {
-                // NOTE: order of calls matters here as offset is a ref param and updated
-                //       in the call to AddTypeToStruct
-                AddDiField( Fields[ idx ], idx, offset );
+                // NOTE: order of calls matters here as offset is a ref param and updated in the call to AddTypeToStruct.
+                AddDiField( Fields[ idx ], idx, offset, flags: 0 );
                 AddTypeToStruct( Fields[ idx ], llvmFields, ref offset );
             }
 
@@ -267,14 +251,12 @@ namespace Microsoft.Zelig.LLVM
             structType.SetBody( true, LlvmModule, LlvmModule.DICompileUnit, null, 0, 0, llvmFields, DiFields, (uint)SizeInBits, 0 );
         }
 
-        private void AddDiField( TypeField field, int index, uint offset )
+        private void AddDiField( TypeField field, int index, uint offset, DebugInfoFlags flags )
         {
             var structType = DebugType as IStructType;
             Debug.Assert( structType != null );
             Debug.Assert( field.MemberType.DIType != null );
-            var memberDiType = field.MemberType.GetDiTypeForStack( );
-            if( field.ForceInline )
-                memberDiType = field.MemberType.DebugType;
+            var memberDiType = field.MemberType.DebugType;
 
             // TODO: since Zelig takes explicit control of layout the alignment needs to come from Zelig somewhere...
             var debugMemberInfo = new DebugMemberInfo { Name = field.Name
@@ -283,32 +265,10 @@ namespace Microsoft.Zelig.LLVM
                                                       , BitSize = (uint)field.MemberType.SizeInBits
                                                       , BitOffset = offset * 8UL
                                                       , BitAlignment = 0  /* ???? */
+                                                      , Flags = flags
                                                       /* todo: file, line...*/
                                                       };
             DiFields.Add( debugMemberInfo );
-        }
-
-        internal IDebugType<ITypeRef, DIType> GetLLVMObjectForStorage( )
-        {
-            if( IsValueType )
-                return DebugType;
-
-            return new DebugPointerType( DebugType, LlvmModule );
-        }
-
-        internal IDebugType<ITypeRef,DIType> GetDiTypeForStack( )
-        {
-            if( IsValueType )
-                return DebugType;
-
-            return new DebugPointerType( DebugType, LlvmModule );
-        }
-
-        internal void Dump( )
-        {
-            Console.WriteLine( "Name:{0}\n", Name );
-            Console.WriteLine( DebugType.ToString( ) );
-            Console.WriteLine( );
         }
     }
 }

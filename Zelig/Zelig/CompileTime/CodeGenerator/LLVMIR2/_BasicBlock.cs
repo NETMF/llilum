@@ -38,13 +38,9 @@ namespace Microsoft.Zelig.LLVM
             llvmValue = IrBuilder.ExtractValue( llvmValue, 0 )
                                  .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
 
-            llvmValue = IrBuilder.ExtractValue( llvmValue, 0 )
-                                 .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
-
-            var resultValue = IrBuilder.BitCast( llvmValue
-                                               , timpl.GetLLVMObjectForStorage( )
-                                               ).RegisterName( "indirect_function_pointer_cast" )
-                                                .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+            var resultValue = IrBuilder.BitCast( llvmValue, timpl.DebugType )
+                                       .RegisterName( "indirect_function_pointer_cast" )
+                                       .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
 
             return new _Value( Module, timpl, resultValue, false );
        }
@@ -58,19 +54,7 @@ namespace Microsoft.Zelig.LLVM
                                        .RegisterName( "LoadToImmediate" )
                                        .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
 
-            return new _Value( Module, val.Type, resultValue, true );
-        }
-
-        private _Value RevertImmediate( _Value val )
-        {
-            if( !val.IsImmediate )
-                return val;
-
-            var loadInst = val.LlvmValue as Load;
-            if( loadInst == null )
-                return null;
-
-            return new _Value( Module, val.Type, loadInst.Operands[ 0 ], false );
+            return new _Value( Module, val.Type.UnderlyingType, resultValue, true );
         }
 
         public void InsertASMString( string ASM )
@@ -84,8 +68,6 @@ namespace Microsoft.Zelig.LLVM
             bldr.Call( asmFunc );
 #endif
         }
-
-        //void InsertWarning(string msg);
 
         public void SetDebugInfo( int curLine, int curCol, string srcFile, IModuleManager manager, TS.MethodRepresentation method )
         {
@@ -166,95 +148,53 @@ namespace Microsoft.Zelig.LLVM
         {
             Value llvmSrc = src.LlvmValue;
             Value llvmDst = dst.LlvmValue;
-            var ptrType = llvmDst.Type as IPointerType;
 
-            if( ptrType == null )
+            if( llvmDst.Type is IPointerType )
             {
-                IrBuilder.InsertValue( llvmDst, llvmSrc, 0 );
+                InsertStore( llvmSrc, llvmDst );
             }
             else
             {
-                llvmDst = IrBuilder.GetStructElementPointer( llvmDst, 0 );
-                InsertStore(llvmSrc, llvmDst);
+                IrBuilder.InsertValue( llvmDst, llvmSrc, 0 );
             }
         }
 
-        public _Value LoadIndirect( _Value val, _Type ptrTy )
+        public _Value LoadIndirect( _Value val, _Type loadedType )
         {
             val = LoadToImmediate( val );
 
-            if( val.Type.IsBoxed )
+            _Type pointerType = val.Type;
+            Value resultVal;
+
+            _Type underlyingType = pointerType.UnderlyingType;
+            if( ( underlyingType != null ) && underlyingType.IsBoxed )
             {
-                return new _Value( Module
-                                 , val.Type.UnderlyingBoxedType
-                                 , IrBuilder.GetStructElementPointer( val.LlvmValue, 1 )
-                                 , false
-                                 );
+                pointerType = Module.GetOrInsertPointerType( underlyingType.UnderlyingType );
+                resultVal = IrBuilder.GetStructElementPointer( val.LlvmValue, 1 );
+            }
+            else
+            {
+                pointerType = Module.GetOrInsertPointerType( loadedType );
+                resultVal = IrBuilder.BitCast( val.LlvmValue, pointerType.DebugType );
             }
 
-            var value = IrBuilder.BitCast( val.LlvmValue
-                                         , ptrTy.GetLLVMObjectForStorage( ).CreatePointerType( )
-                                         );
-
-            return new _Value( Module, ptrTy, value, false );
+            return new _Value( Module, pointerType, resultVal, false );
         }
 
         public void InsertMemCpy( _Value dst, _Value src )
         {
-            dst = RevertImmediate( dst );
-            _Value riSrc = RevertImmediate( src );
-            Context ctx = Module.LlvmModule.Context;
-
-            //I can't do a memcopy because I can't find a
-            //src address, so I do a copy by copy instead
-            if( riSrc == null )
-            {
-                Value llvmDst = dst.LlvmValue;
-                Value llvmSrc = src.LlvmValue;
-
-                //INSERT FIELD BY FIELD LOAD/STORE AND RETURN
-                var ptrType = ( IPointerType )llvmDst.Type;
-                var numFields = ( ( IStructType )ptrType.ElementType ).Members.Count;
-                for( uint i = 0; i < numFields; ++i )
-                {
-                    Value[] idxs = { ctx.CreateConstant( 0 ), ctx.CreateConstant( (int)i ) };
-
-                    Value tmpSrc = IrBuilder.ExtractValue( llvmSrc, i)
-                                            .RegisterName( "fieldByFieldSrcExtract" )
-                                            .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
-
-                    Value tmpDst = IrBuilder.GetElementPtrInBounds( llvmDst, idxs)
-                                            .RegisterName( "fieldByFieldDstGep" )
-                                            .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
-
-                    IrBuilder.Store( tmpSrc, tmpDst )
-                             .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
-                }
-
-                return;
-            }
-
-            src = riSrc;
-
             Debug.Assert( src != null && dst != null );
             Debug.Assert( src.IsPointer );
             Debug.Assert( dst.IsPointer );
             Debug.Assert( src.Type == dst.Type );
 
-            IrBuilder.MemCpy( Module.LlvmModule
-                            , dst.LlvmValue
-                            , src.LlvmValue
-                            , ctx.CreateConstant( dst.Type.SizeInBits / 8)
-                            , 0
-                            , false
-                            );
+            Context ctx = Module.LlvmModule.Context;
+            Value dstSize = ctx.CreateConstant( dst.Type.UnderlyingType.SizeInBits / 8);
+            IrBuilder.MemCpy( Module.LlvmModule, dst.LlvmValue, src.LlvmValue, dstSize, 0, false);
         }
 
         public void InsertMemCpy( _Value dst, _Value src, _Value size, bool overlapping )
         {
-            dst = LoadToImmediate( dst );
-            src = LoadToImmediate( src );
-
             Debug.Assert( src != null && dst != null && size != null );
             Debug.Assert( src.IsPointer );
             Debug.Assert( dst.IsPointer );
@@ -262,57 +202,34 @@ namespace Microsoft.Zelig.LLVM
 
             if( overlapping )
             {
-                IrBuilder.MemMove( Module.LlvmModule
-                                 , dst.LlvmValue
-                                 , src.LlvmValue
-                                 , size.LlvmValue
-                                 , 0
-                                 , false
-                                 );
+                IrBuilder.MemMove( Module.LlvmModule, dst.LlvmValue, src.LlvmValue, size.LlvmValue, 0, false );
             }
             else
             {
-                IrBuilder.MemCpy( Module.LlvmModule
-                                , dst.LlvmValue
-                                , src.LlvmValue
-                                , size.LlvmValue
-                                , 0
-                                , false
-                                );
+                IrBuilder.MemCpy( Module.LlvmModule, dst.LlvmValue, src.LlvmValue, size.LlvmValue, 0, false );
             }
         }
 
         public void InsertMemSet( _Value dst, byte value )
         {
-            dst = RevertImmediate( dst );
             Debug.Assert( dst != null );
             Debug.Assert( dst.IsPointer );
-            Context ctx = Module.LlvmModule.Context;
 
-            IrBuilder.MemSet( Module.LlvmModule
-                            , dst.LlvmValue
-                            , ctx.CreateConstant( value )
-                            , ctx.CreateConstant( dst.Type.SizeInBits / 8 )
-                            , 0
-                            , false
-                            );
+            Context ctx = Module.LlvmModule.Context;
+            Value fillValue = ctx.CreateConstant( value );
+            Value dstSize = ctx.CreateConstant( dst.Type.UnderlyingType.SizeInBits / 8 );
+
+            IrBuilder.MemSet( Module.LlvmModule, dst.LlvmValue, fillValue, dstSize, 0, false);
         }
 
         public void InsertMemSet( _Value dst, _Value value, _Value size )
         {
-            dst = LoadToImmediate( dst );
             Debug.Assert( dst != null && size != null && value != null );
             Debug.Assert( dst.IsPointer );
             Debug.Assert( size.IsInteger );
             Debug.Assert( value.IsInteger);
 
-            IrBuilder.MemSet( Module.LlvmModule
-                            , dst.LlvmValue
-                            , value.LlvmValue
-                            , size.LlvmValue
-                            , 0
-                            , false
-                            );
+            IrBuilder.MemSet( Module.LlvmModule, dst.LlvmValue, value.LlvmValue, size.LlvmValue, 0, false);
         }
 
         enum BinaryOperator
@@ -490,7 +407,7 @@ namespace Microsoft.Zelig.LLVM
             Value llvmValA = valA.LlvmValue;
             Value llvmValB = valB.LlvmValue;
 
-            _Type booleanImpl = Module.GetType( "LLVM.System.Boolean" );
+            _Type booleanImpl = Module.GetType( "System.Boolean" );
 
             if( valA.IsInteger && valB.IsInteger )
             {
@@ -532,7 +449,7 @@ namespace Microsoft.Zelig.LLVM
             var retVal = IrBuilder.TruncOrBitCast( val.LlvmValue, Module.LlvmModule.Context.GetIntType( ( uint )significantBits ) )
                                   .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
 
-            retVal = IrBuilder.ZeroExtendOrBitCast( retVal, ty.GetLLVMObjectForStorage( ) )
+            retVal = IrBuilder.ZeroExtendOrBitCast( retVal, ty.DebugType )
                               .RegisterName( "zext" )
                               .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
 
@@ -547,7 +464,7 @@ namespace Microsoft.Zelig.LLVM
             var retVal = IrBuilder.TruncOrBitCast( val.LlvmValue, Module.LlvmModule.Context.GetIntType( ( uint )significantBits ) )
                                   .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
 
-            retVal = IrBuilder.SignExtendOrBitCast( retVal, ty.GetLLVMObjectForStorage( ) )
+            retVal = IrBuilder.SignExtendOrBitCast( retVal, ty.DebugType )
                               .RegisterName( "sext" )
                               .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
 
@@ -559,21 +476,34 @@ namespace Microsoft.Zelig.LLVM
             Debug.Assert( val.IsInteger );
             val = LoadToImmediate( val );
 
-            Value retVal = IrBuilder.TruncOrBitCast( val.LlvmValue, ty.GetLLVMObjectForStorage( ) )
+            Value retVal = IrBuilder.TruncOrBitCast( val.LlvmValue, ty.DebugType )
                                     .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
 
             return new _Value( Module, ty, retVal, true );
         }
 
+        public _Value InsertBitCast( _Value val, _Type type )
+        {
+            var bitCast = IrBuilder.BitCast( val.LlvmValue, type.DebugType )
+                                   .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+
+            return new _Value( Module, type, bitCast, true );
+        }
+
         public _Value InsertPointerToInt( _Value val, bool skipObjectHeader )
         {
             Debug.Assert( val.IsPointer );
-            val = LoadToImmediate( val );
-            _Type ty = Module.GetType( "LLVM.System.UInt32" );
+            Debug.Assert( val.IsImmediate );
 
-            Value llvmVal = IrBuilder.PointerToInt( val.LlvmValue, ty.GetLLVMObjectForStorage( ) );
+            _Type intType = Module.GetType( "System.UInt32" );
+            Value llvmVal = IrBuilder.PointerToInt( val.LlvmValue, intType.DebugType )
+                                     .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
 
-            if( skipObjectHeader && !val.Type.IsValueType && val.Type.Name != "Microsoft.Zelig.Runtime.ObjectHeader" )
+            _Type underlyingType = val.Type.UnderlyingType;
+            if( skipObjectHeader &&
+                ( underlyingType != null ) &&
+                !underlyingType.IsValueType &&
+                ( underlyingType.Name != "Microsoft.Zelig.Runtime.ObjectHeader" ) )
             {
                 _Type ohTy = Module.GetType( "Microsoft.Zelig.Runtime.ObjectHeader" );
                 var constantInt = Module.LlvmModule.Context.CreateConstant( ohTy.SizeInBits / 8 );
@@ -582,146 +512,76 @@ namespace Microsoft.Zelig.LLVM
                                    .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
             }
 
-            return new _Value( Module, ty, llvmVal, true );
+            return new _Value( Module, intType, llvmVal, true );
         }
 
-        public _Value InsertIntToPointer( _Value val, _Type ptrTy )
+        public _Value InsertIntToPointer( _Value val, _Type pointerType )
         {
             Debug.Assert( val.IsInteger );
-            val = LoadToImmediate( val );
+            Debug.Assert( val.IsImmediate );
 
             Value llvmVal = val.LlvmValue;
 
-            if (!ptrTy.IsValueType && ptrTy.Name != "Microsoft.Zelig.Runtime.ObjectHeader")
+            _Type underlyingType = pointerType.UnderlyingType;
+            if( ( underlyingType != null ) &&
+                !underlyingType.IsValueType &&
+                ( underlyingType.Name != "Microsoft.Zelig.Runtime.ObjectHeader" ) )
             {
                 _Type ohTy = Module.GetType( "Microsoft.Zelig.Runtime.ObjectHeader" );
                 llvmVal = IrBuilder.Sub( llvmVal, Module.LlvmModule.Context.CreateConstant( ohTy.SizeInBits / 8 ) )
-                                   .RegisterName("headerOffsetSub" )
+                                   .RegisterName( "headerOffsetSub" )
                                    .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
             }
 
-            llvmVal = IrBuilder.IntToPointer( llvmVal, (IPointerType)ptrTy.GetLLVMObjectForStorage( ) )
+            llvmVal = IrBuilder.IntToPointer( llvmVal, (IPointerType)pointerType.DebugType )
                                .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
 
-            return new _Value( Module, ptrTy, llvmVal, true );
+            return new _Value( Module, pointerType, llvmVal, true );
         }
 
         public _Value GetAddressAsUIntPtr( _Value val )
         {
-            _Type ptrTy = Module.GetType( "LLVM.System.UIntPtr" );
-            val = RevertImmediate( val );
+            _Type ptrTy = Module.GetType( "System.UIntPtr" );
 
             Debug.Assert( val != null );
 
             return new _Value( Module, ptrTy, val.LlvmValue, true );
         }
 
-        public _Value GetBTCast( _Value val, _Type ty )
-        {
-            if( val.Type.GetBTUnderlyingType( ) == null )
-                return val;
-
-            if( ty.GetBTUnderlyingType( ) == null )
-                return val;
-
-            if( val.Type.GetSizeInBitsForStorage( ) != ty.GetSizeInBitsForStorage( ) )
-            {
-                //Needs integer cast:
-                val = LoadToImmediate( val );
-                _Value newVal = Owner.GetLocalStackValue( "ForParameterIntegerCast", ty );
-
-                Value llvmVal = IrBuilder.ExtractValue( val.LlvmValue, 0 )
-                                         .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
-
-                var structType = ( IStructType )newVal.Type.DebugType;
-
-                llvmVal = IrBuilder.IntCast( llvmVal, structType.Members[0], false )
-                                   .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
-
-                var gep = IrBuilder.GetStructElementPointer( newVal.LlvmValue, 0 )
-                                   .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
-                IrBuilder.Store( llvmVal, gep )
-                         .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
-
-                return newVal;
-            }
-
-            _Value retVal = RevertImmediate( val );
-            if( retVal == null )
-                return val;
-
-            var bitCast = IrBuilder.BitCast( val.LlvmValue, ty.DebugType.CreatePointerType() )
-                                   .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
-
-            return new _Value( Module, ty, bitCast, false );
-        }
-
-        public _Value ExtractFirstElementFromBasicType( _Value val )
-        {
-            _Type ty = Module.GetType( $"LLVM.{val.Type.Name}" );
-
-            Debug.Assert( ty != null );
-
-            Value llvmVal = val.LlvmValue;
-
-            if( llvmVal.Type.IsPointer )
-            {
-                llvmVal = IrBuilder.Load( llvmVal );
-            }
-
-            llvmVal = IrBuilder.ExtractValue( llvmVal, 0)
-                               .RegisterName( ".m_value" )
-                               .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
-
-            return new _Value( Module, ty, llvmVal, true );
-        }
-
-        public _Value InsertSIToFPFloat( _Value val )
+        public _Value InsertIntToFP( _Value val, _Type type )
         {
             Debug.Assert( val.IsInteger );
-            _Type ty = Module.GetType( "LLVM.System.Single" );
             val = LoadToImmediate( val );
 
-            var value = IrBuilder.SIToFPCast( val.LlvmValue, ty.DebugType )
+            // TODO: This is hard-coded as a signed conversion, but we should respect whether the value is signed.
+            var value = IrBuilder.SIToFPCast( val.LlvmValue, type.DebugType )
                                  .RegisterName( "sitofp" )
                                  .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
 
-            return new _Value( Module, ty, value, true );
-        }
-
-        public _Value InsertSIToFPDouble( _Value val )
-        {
-            Debug.Assert( val.IsInteger );
-            _Type ty = Module.GetType( "LLVM.System.Double" );
-            val = LoadToImmediate( val );
-
-            var value = IrBuilder.SIToFPCast( val.LlvmValue, ty.DebugType)
-                                 .RegisterName( "sitofp" )
-                                 .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
-
-            return new _Value( Module, ty, value, true );
+            return new _Value( Module, type, value, true );
         }
 
         public _Value InsertFPFloatToFPDouble( _Value val )
         {
             Debug.Assert( val.IsFloatingPoint );
-            _Type ty = Module.GetType( "LLVM.System.Double" );
+            _Type ty = Module.GetType( "System.Double" );
             val = LoadToImmediate( val );
 
-            var value = IrBuilder.FPExt( val.LlvmValue, ty.DebugType)
+            var value = IrBuilder.FPExt( val.LlvmValue, ty.DebugType )
                                  .RegisterName( "fpext" )
                                  .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
 
             return new _Value( Module, ty, value, true );
         }
 
-        public _Value InsertFPToUI( _Value val, _Type ty )
+        public _Value InsertFPToInt( _Value val, _Type ty )
         {
             Debug.Assert( val.IsFloatingPoint );
             _Type intType = ty;
             val = LoadToImmediate( val );
 
-            var value = IrBuilder.FPToUICast( val.LlvmValue, intType.DebugType)
+            // TODO: This is hard-coded as an unsigned conversion, but we should respect whether the value is signed.
+            var value = IrBuilder.FPToUICast( val.LlvmValue, intType.DebugType )
                                  .RegisterName( "fptoui" )
                                  .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
 
@@ -766,51 +626,26 @@ namespace Microsoft.Zelig.LLVM
             }
         }
 
-        void LoadParams( _Function func, IList<_Value> args, IList<Value> parameters )
+        private void LoadParams( _Function func, IList<_Value> args, IList<Value> parameters )
         {
             for( int i = 0; i < args.Count; ++i )
             {
-                args[ i ] = LoadToImmediate( args[ i ] );
+                ITypeRef pty = ( ( Function )func.LlvmValue ).Parameters[ i ].Type;
+                _Type paramType = _Type.GetTypeImpl( pty );
 
-                Value llvmValue = args[ i ].LlvmValue;
-                ITypeRef pty = ((Function)func.LlvmValue).Parameters[ i ].Type;
-                _Type tiPty = _Type.GetTypeImpl( pty );
+                _Value argument = LoadToImmediate( args[ i ] );
+                Value llvmValue = argument.LlvmValue;
 
-                //IntPtr/UIntPtr can be casted to anything
-                if( args[ i ].Type.Name == "System.IntPtr"
-                    || args[ i ].Type.Name == "System.UIntPtr" )
+                // IntPtr/UIntPtr can be cast to anything.
+                if ( argument.Type.Name == "System.IntPtr" || argument.Type.Name == "System.UIntPtr" )
                 {
-                    args[ i ] = RevertImmediate( args[ i ] );
-                    Debug.Assert( args[ i ] != null );
-                    llvmValue = args[ i ].LlvmValue;
-                    llvmValue = IrBuilder.Load( IrBuilder.BitCast( llvmValue, pty.CreatePointerType() ) );
+                    llvmValue = IrBuilder.BitCast( llvmValue, pty );
                 }
 
-                //Anything can be casted to IntPtr/UIntPtr
-                if( tiPty.Name == "System.IntPtr"
-                    || tiPty.Name == "System.UIntPtr" )
+                // Anything can be cast to IntPtr/UIntPtr.
+                if( paramType.Name == "System.IntPtr" || paramType.Name == "System.UIntPtr" )
                 {
-                    args[ i ] = RevertImmediate( args[ i ] );
-                    Debug.Assert( args[ i ] != null );
-                    llvmValue = args[ i ].LlvmValue;
-                    llvmValue = IrBuilder.Load( IrBuilder.BitCast( llvmValue, pty.CreatePointerType() ) );
-                }
-
-                if( args[ i ].Type.Name.StartsWith( "LLVM." ) )
-                {
-                    var constVal = llvmValue as Constant;
-                    if( constVal != null )
-                    {
-                        llvmValue = Module.LlvmModule.AddGlobal( llvmValue.Type, true, Linkage.Internal, constVal );
-                    }
-                    else
-                    {
-                        args[ i ] = RevertImmediate( args[ i ] );
-                        Debug.Assert( args[ i ] != null );
-                        llvmValue = args[ i ].LlvmValue;
-                    }
-
-                    llvmValue = IrBuilder.Load( IrBuilder.BitCast( llvmValue, pty.CreatePointerType( ) ) );
+                    llvmValue = IrBuilder.BitCast( llvmValue, pty );
                 }
 
                 parameters.Add( llvmValue );
@@ -849,7 +684,7 @@ namespace Microsoft.Zelig.LLVM
             return new _Value( Module, _Type.GetTypeImpl( llvmFunc.ReturnType ), retVal, true );
         }
 
-        static _Type SetValuesForByteOffsetAccess( _Type ty, List<uint> values, int offset, ref string fieldName )
+        static _Type SetValuesForByteOffsetAccess( _Type ty, List<uint> values, int offset, out string fieldName )
         {
             for( int i = 0; i < ty.Fields.Count; ++i )
             {
@@ -857,11 +692,7 @@ namespace Microsoft.Zelig.LLVM
 
                 // The first field of a managed object is either its object header or a super-class.
                 bool fieldIsParent = ( i == 0 && !ty.IsValueType && ty != _Type.GetTypeImpl( "Microsoft.Zelig.Runtime.ObjectHeader" ) );
-                int thisFieldSize = thisField.MemberType.GetSizeInBitsForStorage( ) / 8;
-                if( fieldIsParent )
-                {
-                    thisFieldSize = thisField.MemberType.SizeInBits / 8;
-                }
+                int thisFieldSize = thisField.MemberType.SizeInBits / 8;
 
                 int curOffset = ( int )thisField.Offset;
                 int nextOffset = curOffset + thisFieldSize;
@@ -877,47 +708,67 @@ namespace Microsoft.Zelig.LLVM
                     // force inspection of parent classes even on an exact match.
                     if ( fieldIsParent || ( curOffset != offset ) )
                     {
-                        return SetValuesForByteOffsetAccess( thisField.MemberType, values, offset - curOffset, ref fieldName );
+                        return SetValuesForByteOffsetAccess( thisField.MemberType, values, offset - curOffset, out fieldName );
                     }
 
                     return thisField.MemberType;
                 }
             }
 
-            throw new ApplicationException( "Invalid offset for field access!!" );
+            throw new ApplicationException( "Invalid offset for field access." );
         }
 
-        public _Value GetField( _Value obj, _Type zTy, _Type fieldType, int offset )
+        public _Value GetField( _Value obj, int offset )
         {
-            obj = LoadToImmediate( obj );
             Context ctx = Module.LlvmModule.Context;
 
-            //Special case for boxed types
-            if( obj.Type.IsBoxed )
+            // If the given address is *not* a value type on the stack, load it.
+            Debug.Assert( !obj.IsImmediate || obj.Type.IsPointer, "Cannot get field address on a loaded value type." );
+            if( obj.Type.UnderlyingType.IsPointer )
             {
-                var structType = ( IStructType )( obj.Type.DebugType );
-                Value[] indexValues = { ctx.CreateConstant( 0 ), ctx.CreateConstant( 1 ) };
-
-                var gep = IrBuilder.GetElementPtr( obj.LlvmValue, indexValues )
-                                   .RegisterName( "BoxedFieldAccessGep" )
-                                   .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
-
-                _Value rVal = new _Value( Module, _Type.GetTypeImpl( structType.Members[ 1 ] ), gep, false );
-                obj = rVal;
+                obj = LoadToImmediate( obj );
             }
 
-            _Type finalTimpl = obj.Type;
-
-            //Special case for indexing into pointer to value types
-            if( obj.Type.UnderlyingPointerType != null &&
-                obj.Type.UnderlyingPointerType.IsValueType )
+            // Special case: For boxed types, pull out the wrapped element.
+            _Type underlyingType = obj.Type.UnderlyingType;
+            if( ( underlyingType != null ) && underlyingType.IsBoxed )
             {
-                finalTimpl = obj.Type.UnderlyingPointerType;
+                var structType = ( IStructType )underlyingType.DebugType;
+                Value[] indexValues = { ctx.CreateConstant( 0 ), ctx.CreateConstant( 1 ) };
+
+                var unbox = IrBuilder.GetElementPtr( obj.LlvmValue, indexValues )
+                                     .RegisterName( "unboxedValue" )
+                                     .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+
+                underlyingType = underlyingType.UnderlyingType;
+                _Type pointerType = Module.GetOrInsertPointerType( underlyingType );
+                obj = new _Value( Module, pointerType, unbox, false );
+            }
+
+            // If the object isn't a pointer, revert the LoadToImmediate.
+            if( !obj.IsPointer )
+            {
+                underlyingType = obj.Type;
+            }
+
+            // Special case: If this is a basic type, we assume the field is m_value (e.g. UIntPtr.m_value).
+            if( underlyingType.IsPrimitiveType )
+            {
+                Debug.Assert( offset == 0, "Native types can only have one member, and it must be at offset zero." );
+
+                // Reinterpret the object as non-immediate if necessary. We create a new value here instead of modifying
+                // the old one as the passed in parameter may be used by subsequent operations.
+                if( obj.IsImmediate )
+                {
+                    obj = new _Value( Module, obj.Type, obj.LlvmValue, false );
+                }
+
+                return obj;
             }
 
             List<uint> values = new List<uint>();
-            string fieldName = string.Empty;
-            _Type timpl = SetValuesForByteOffsetAccess( finalTimpl, values, offset, ref fieldName );
+            string fieldName;
+            _Type fieldType = SetValuesForByteOffsetAccess( underlyingType, values, offset, out fieldName );
 
             List<Value> valuesForGep = new List<Value>();
             valuesForGep.Add( ctx.CreateConstant( 0 ) );
@@ -927,13 +778,12 @@ namespace Microsoft.Zelig.LLVM
                 valuesForGep.Add( ctx.CreateConstant( values[ i ] ) );
             }
 
-            var gep2 = IrBuilder.GetElementPtr( obj.LlvmValue, valuesForGep )
-                                .RegisterName( finalTimpl.Name + "." + fieldName )
-                                .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+            var gep = IrBuilder.GetElementPtr( obj.LlvmValue, valuesForGep )
+                               .RegisterName( $"{underlyingType.Name}.{fieldName}" )
+                               .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
 
-            _Value retVal = new _Value( Module, timpl, gep2, false );
-
-            return retVal;
+            fieldType = Module.GetOrInsertPointerType( fieldType );
+            return new _Value( Module, fieldType, gep, false );
         }
 
         public _Value IndexLLVMArray( _Value obj, _Value idx )
@@ -944,8 +794,9 @@ namespace Microsoft.Zelig.LLVM
             Value retVal = IrBuilder.GetElementPtr( obj.LlvmValue, idxs )
                                     .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
 
-            var arrayType = ( IArrayType )( obj.Type.DebugType );
-            return new _Value( Module, _Type.GetTypeImpl( arrayType.ElementType ), retVal, false );
+            var arrayType = ( IArrayType )obj.Type.UnderlyingType.DebugType;
+            _Type pointerType = Module.GetOrInsertPointerType( _Type.GetTypeImpl( arrayType.ElementType ) );
+            return new _Value( Module, pointerType, retVal, false );
         }
 
         public void InsertRet( _Value val )

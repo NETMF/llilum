@@ -62,78 +62,59 @@ namespace Microsoft.Zelig.LLVM
             CurDiFile = DIFile;
         }
 
-        public bool CheckTypeExistenceByName( string name ) => LlvmModule.GetTypeByName( name ) != null;
-
-        public _Type GetOrInsertType( string name, int sizeInBits ) => _Type.GetOrInsertTypeImpl( this, name, sizeInBits );
+        public _Type GetOrInsertType( string name, int sizeInBits, bool isValueType )
+        {
+            return _Type.GetOrInsertTypeImpl( this, name, sizeInBits, isValueType );
+        }
 
         public _Type GetOrInsertFunctionType( string name, _Type returnType, List<_Type> argTypes )
         {
-            var llvmArgs = argTypes.Select( t => t.GetLLVMObjectForStorage( ) );
+            var llvmArgs = argTypes.Select( t => t.DebugType );
 
             var funcType = LlvmModule.Context.CreateFunctionType( LlvmModule.DIBuilder
                                                                 , CurDiFile
-                                                                , returnType.GetLLVMObjectForStorage( )
+                                                                , returnType.DebugType
                                                                 , llvmArgs
                                                                 );
-            _Type timpl = _Type.GetOrInsertTypeImpl( this, name, 0, funcType );
-            timpl.FunctionArgs.AddRange( argTypes );
+            _Type timpl = _Type.GetOrInsertTypeImpl( this, name, 0, true, funcType );
             return timpl;
         }
 
         public _Type GetOrInsertPointerType( string name, _Type underlyingType )
         {
-            Debug.Assert( !underlyingType.GetLLVMObjectForStorage( ).IsVoid( ) );
+            Debug.Assert( !underlyingType.DebugType.IsVoid( ) );
 
-            var ptrType = new DebugPointerType( underlyingType.GetLLVMObjectForStorage( ),  LlvmModule );
+            var ptrType = new DebugPointerType( underlyingType.DebugType, LlvmModule );
             var sizeAndAlign = PointerSize;
-            var retVal = _Type.GetOrInsertTypeImpl( this, name, (int)sizeAndAlign, ptrType );
-            retVal.IsValueType = true;
-            retVal.HasHeader =  false;
+            var retVal = _Type.GetOrInsertTypeImpl( this, name, ( int )sizeAndAlign, true, ptrType );
             retVal.IsBoxed = false;
-            retVal.UnderlyingPointerType = underlyingType;
+            retVal.UnderlyingType = underlyingType;
             return retVal;
         }
 
         public _Type GetOrInsertPointerType( _Type underlyingType )
         {
-            return GetOrInsertPointerType( $"{underlyingType.Name}*", underlyingType );
+            return GetOrInsertPointerType( underlyingType.Name + "*", underlyingType );
         }
 
         public _Type GetOrInsertBoxedType( string name, _Type headerType, _Type underlyingType )
         {
-            var structType = new DebugStructType( LlvmModule, name, LlvmModule.DICompileUnit, name );
-            var debugFields = new[ ]
-                              { new DebugMemberInfo { Type = headerType.DebugType, Index=0, Name="$header", Flags=DebugInfoFlags.Artificial }
-                              , new DebugMemberInfo { Type = underlyingType.DebugType, Index=1, Name="m_value", Flags=DebugInfoFlags.Artificial }
-                              };
-
-            structType.SetBody( true
-                              , LlvmModule
-                              , LlvmModule.DICompileUnit
-                              , null
-                              , 0
-                              , DebugInfoFlags.Artificial
-                              , debugFields
-                              );
-            var retVal = _Type.GetOrInsertTypeImpl( this
-                                                  , name
-                                                  , headerType.SizeInBits + underlyingType.GetSizeInBitsForStorage( )
-                                                  , structType
-                                                  );
-            retVal.IsValueType = false;
-            retVal.HasHeader = true;
+            int sizeInBits = headerType.SizeInBits + underlyingType.SizeInBits;
+            _Type retVal = _Type.GetOrInsertTypeImpl( this, name, sizeInBits, isValueType: false );
             retVal.IsBoxed = true;
-            retVal.UnderlyingBoxedType = underlyingType;
+            retVal.UnderlyingType = underlyingType;
+
+            retVal.AddField( 0, headerType, "$header" );
+            retVal.AddField( 0, underlyingType, "m_value" );
+            retVal.SetupFields( );
+
             return retVal;
         }
 
         public _Type GetOrInsertZeroSizedArray( _Type type )
         {
-            type.GetLLVMObjectForStorage( );
-            var arrayType = new DebugArrayType( type.GetLLVMObjectForStorage( ), LlvmModule, 0 );
-            var retVal = _Type.GetOrInsertTypeImpl( this, $"MemoryArray of {type.Name}", type.GetSizeInBitsForStorage( ), arrayType );
-            retVal.IsValueType = true;
-            retVal.HasHeader = false;
+            var arrayType = new DebugArrayType( type.DebugType, LlvmModule, 0 );
+            var retVal = _Type.GetOrInsertTypeImpl( this, $"MemoryArray of {type.Name}", type.SizeInBits, true, arrayType );
             retVal.IsBoxed = false;
             return retVal;
         }
@@ -146,7 +127,7 @@ namespace Microsoft.Zelig.LLVM
         {
             Constant val = LlvmModule.Context.CreateConstant( (uint)type.SizeInBits, v, isSigned );
             string name = type.Name;
-            if( name == "LLVM.System.IntPtr" || name == "LLVM.System.UIntPtr" )
+            if( name == "System.IntPtr" || name == "System.UIntPtr" )
             {
                 val = ConstantExpression.IntToPtrExpression( val, type.DebugType );
             }
@@ -156,22 +137,23 @@ namespace Microsoft.Zelig.LLVM
 
         public _Value GetFloatConstant( float c )
         {
-            _Type t = GetType( "LLVM.System.Single" );
+            _Type t = GetType( "System.Single" );
             Value val = LlvmModule.Context.CreateConstant( c );
             return new _Value( this, t, val, true );
         }
 
         public _Value GetDoubleConstant( double c )
         {
-            _Type t = GetType( "LLVM.System.Double" );
+            _Type t = GetType( "System.Double" );
             Value val = LlvmModule.Context.CreateConstant( c );
             return new _Value( this, t, val, true );
         }
 
         public _Value GetNullPointer( _Type type )
         {
-            var val = type.GetLLVMObjectForStorage( ).GetNullValue( );
-            return new _Value( this, type, val, true );
+            // In addition to the usual pointer types (Object*, IntPtr, byte*, etc.), the runtime also treats some
+            // structs as pointers, such as RuntimeTypeHandle and CodePointer. In those cases, we'll return a struct.
+            return new _Value( this, type, type.DebugType.GetNullValue( ), true );
         }
 
         // REVIEW: Why does code at this low a level or stage need to be concerned with 
@@ -226,6 +208,12 @@ namespace Microsoft.Zelig.LLVM
 
         public Constant GetUCVStruct( _Type structType, List<Constant> structMembers, bool anon )
         {
+            // Special case: Primitive types aren't wrapped in structs, so return the wrapped value directly.
+            if ( structType.IsPrimitiveType )
+            {
+                return structMembers[0];
+            }
+
             List<Constant> fields = new List<Constant>( );
             var llvmStructType = ( IStructType )( structType.DebugType );
             if( structMembers != null )
@@ -240,12 +228,9 @@ namespace Microsoft.Zelig.LLVM
                     {
                         curVal = curType.GetNullValue( );
                     }
-                    else
+                    else if( curType.IsPointer( ) && curVal.Type != curType )
                     {
-                        if( curType.IsPointer( ) && curVal.Type != curType )
-                        {
-                            curVal = ConstantExpression.BitCast( curVal, curType );
-                        }
+                        curVal = ConstantExpression.BitCast( curVal, curType );
                     }
 
                     fields.Add( curVal );
@@ -268,7 +253,7 @@ namespace Microsoft.Zelig.LLVM
         public Constant GetUCVArray( _Type arrayMemberType, List<Constant> arrayMembers )
         {
             var members = new List<Constant>( );
-            ITypeRef curType = arrayMemberType.GetLLVMObjectForStorage( );
+            ITypeRef curType = arrayMemberType.DebugType;
 
             if( arrayMembers != null )
             {
@@ -293,33 +278,34 @@ namespace Microsoft.Zelig.LLVM
             return LlvmModule.Context.CreateConstant( type.DebugType, v, isSigned );
         }
 
-        //REVIEW: This smells fishy...
-        // Both the NullPointer and ZeroInitialized variants are identical (even in the original C++)
-        // This seems problematic as, at least in LLVM, there's a distinction between a NullValue
-        // (e.g. all zero value of type T) and a NullPointer ( e.g. a value with Type T* and contents all zero)
-        public Constant GetUCVNullPointer( _Type type ) => type.GetLLVMObjectForStorage( ).GetNullValue( );
-
-        public Constant GetUCVZeroInitialized( _Type type ) => type.GetLLVMObjectForStorage( ).GetNullValue( );
+        public Constant GetUCVZeroInitialized( _Type type )
+        {
+            return type.DebugType.GetNullValue( );
+        }
 
         public Constant GetUCVConstantPointerFromValue( _Value val ) => ( Constant )val.LlvmValue;
 
         public _Value GetGlobalFromUCV( _Type type, Constant ucv, bool isConstant )
         {
-            var name = $"{type.Name}_{GetMonotonicUniqueId( )}";
-            var gv =LlvmModule.AddGlobal( ucv.Type, name );
+            string name = $"{type.Name}_{GetMonotonicUniqueId( )}";
+            var gv = LlvmModule.AddGlobal( ucv.Type, name );
             gv.IsConstant = isConstant;
             gv.Linkage = Linkage.Internal;
             gv.Initializer = ucv;
-            return new _Value( this, type, gv, !type.IsValueType );
+
+            _Type pointerType = GetOrInsertPointerType( type );
+            return new _Value( this, pointerType, gv, !type.IsValueType );
         }
 
         public _Value GetUninitializedGlobal( _Type type )
         {
-            var name = $"{type.Name}_{GetMonotonicUniqueId( )}";
+            string name = $"{type.Name}_{GetMonotonicUniqueId( )}";
             var gv = LlvmModule.AddGlobal( type.DebugType, name );
             gv.IsConstant = false;
             gv.Linkage = Linkage.Internal;
-            return new _Value( this, type, gv, !type.IsValueType );
+
+            _Type pointerType = GetOrInsertPointerType( type );
+            return new _Value( this, pointerType, gv, !type.IsValueType );
         }
 
         public void CreateAlias( _Value val, string name )

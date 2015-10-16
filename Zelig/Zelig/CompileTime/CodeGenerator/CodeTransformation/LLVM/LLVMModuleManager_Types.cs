@@ -17,20 +17,13 @@ namespace Microsoft.Zelig.LLVM
             // LT72NOTE: are we thread safe??
             if( !m_typeSystemAlreadyConverted )
             {
-
                 foreach( TS.TypeRepresentation type in m_typeSystem.Types )
                 {
                     GetOrInsertType( type );
                 }
+
                 m_typeSystemAlreadyConverted = true;
             }
-        }
-
-        //--//
-
-        internal LLVM._Type GetObjectHeaderType( )
-        {
-            return GetOrInsertType( m_typeSystem.WellKnownTypes.Microsoft_Zelig_Runtime_ObjectHeader );
         }
 
         public LLVM._Type GetOrInsertBasicTypeAsLLVMSingleValueType( TS.TypeRepresentation tr )
@@ -50,9 +43,21 @@ namespace Microsoft.Zelig.LLVM
                 tr = m_typeSystem.WellKnownTypes.System_IntPtr;
             }
 
-            LLVM._Type llvmType = m_module.GetOrInsertType( "LLVM." + tr.FullName, ( int )tr.Size * 8 );
-            llvmType.IsValueType = tr is TS.ValueTypeRepresentation;
-            return llvmType;
+            bool isValueType = ( tr is TS.ValueTypeRepresentation );
+            return m_module.GetOrInsertType( tr.FullName, ( int )tr.Size * 8, isValueType );
+        }
+
+        public LLVM._Type GetOrInsertInlineType( TS.TypeRepresentation tr )
+        {
+            _Type type = GetOrInsertType( tr );
+            if( type.IsPointer &&
+                ( type.UnderlyingType != null ) &&
+                !type.UnderlyingType.IsValueType )
+            {
+                type = type.UnderlyingType;
+            }
+
+            return type;
         }
 
         public LLVM._Type GetOrInsertType( TS.TypeRepresentation tr )
@@ -91,8 +96,6 @@ namespace Microsoft.Zelig.LLVM
                 }
             }
 
-            //--//
-
             if( !tr.ValidLayout )
             {
                 // only unresolved generics get here
@@ -104,129 +107,133 @@ namespace Microsoft.Zelig.LLVM
                 tr = tr.UnderlyingType;
             }
 
-            if( !m_typeRepresentationsToType.ContainsKey( tr ) )
+            // Try to get the cached type before we create a new one.
+            _Type cachedType;
+            if( m_typeRepresentationsToType.TryGetValue( tr, out cachedType ) )
             {
-                string typeName = tr.FullName;
-
-                //
-                // Pointer and Boxed type representation 
-                //
-                if( tr is TS.PointerTypeRepresentation )
-                {
-                    if( tr.UnderlyingType == wkt.System_Void )
-                    {
-                        //Special case, we remap void * to an IntPtr
-                        //to allow LLVM to function
-                        return GetOrInsertType( wkt.System_IntPtr );
-                    }
-
-                    _Type ty = GetOrInsertType( tr.UnderlyingType );
-
-                    if( ty == null )
-                        return null;
-
-                    m_typeRepresentationsToType[ tr ] = m_module.GetOrInsertPointerType( typeName, ty );
-
-                    return m_typeRepresentationsToType[ tr ];
-                }
-                else if( tr is TS.BoxedValueTypeRepresentation )
-                {
-                    _Type ty = GetOrInsertType( tr.UnderlyingType );
-
-                    if( ty == null )
-                        return null;
-
-                    m_typeRepresentationsToType[ tr ] = m_module.GetOrInsertBoxedType( typeName, GetOrInsertType( wkt.System_Object ), ty );
-
-                    return m_typeRepresentationsToType[ tr ];
-                }
-
-                //
-                // All other types
-                //
-                LLVM._Type llvmType = m_module.GetOrInsertType( typeName, ( int )tr.Size * 8 );
-
-                m_typeRepresentationsToType[ tr ] = llvmType;
-
-
-                llvmType.IsValueType = tr is TS.ValueTypeRepresentation;
-
-                //
-                // We will represent unboxed Value types as flat, c++ style, types because they are 'inlined' 
-                // in the object layout and their fields offset are based on such layout
-                // Also, Object header does not extend anything.
-                if( tr.Extends != null && tr.Extends != wkt.System_ValueType
-                    && tr != wkt.Microsoft_Zelig_Runtime_ObjectHeader )
-                {
-                    llvmType.AddField( 0, GetOrInsertType( tr.Extends ), true, ".extends" );
-                }
-
-                //
-                // Fields
-                //
-
-                //Special case for native pointers bodies
-                if( tr.FullName == "System.IntPtr" || tr.FullName == "System.UIntPtr" )
-                {
-                    llvmType.AddField( 0, GetOrInsertBasicTypeAsLLVMSingleValueType( tr ), false, "m_value" );
-                }
-                else
-                {
-                    foreach( var f in tr.Fields )
-                    {
-                        // static fields are not part of object layout
-                        if( f is TS.StaticFieldRepresentation )
-                        {
-                            continue;
-                        }
-
-                        if( f.ValidLayout == false )
-                        {
-                            continue;
-                        }
-
-                        //
-                        // Strings are implemented inside the type
-                        //
-                        if( f == wkf.StringImpl_FirstChar )
-                        {
-                            llvmType.AddField( ( uint )f.Offset, m_module.GetOrInsertZeroSizedArray( GetOrInsertType( wkt.System_Char ) ), false, f.Name );
-
-                            continue;
-                        }
-
-                        if( ( f.FieldType is TS.ScalarTypeRepresentation && f.FieldType == tr ) )
-                        {
-                            //To respect zelig semantics, we are allowing it to create types with
-                            //circluar references for basic types. 
-                            //We must catch their fields here and switch them to LLVM basics.
-                            llvmType.AddField( ( uint )f.Offset, GetOrInsertBasicTypeAsLLVMSingleValueType( f.FieldType ), false, f.Name );
-                        }
-                        else
-                        {
-                            llvmType.AddField( ( uint )f.Offset, GetOrInsertType( f.FieldType ), false, f.Name );
-                        }
-
-                    }
-                }
-
-                if( tr is TS.ArrayReferenceTypeRepresentation )
-                {
-                    llvmType.AddField( ( uint )wkt.System_Array.Size, m_module.GetOrInsertZeroSizedArray( GetOrInsertType( tr.ContainedType ) ), false, "array_data" );
-
-                }
-
-                //
-                // Object is a special case and gets the ObjectHeader
-                //
-                if( tr == wkt.System_Object )
-                {
-                    llvmType.AddField( 0, GetObjectHeaderType( ), true, "object_header" );
-                }
-
-                llvmType.IsValueType = tr is TS.ValueTypeRepresentation;
-                llvmType.SetupFields( );
+                return cachedType;
             }
+
+            // Remap scalar basic types to native types.
+            if( tr == wkt.System_Boolean ||
+                tr == wkt.System_Char ||
+                tr == wkt.System_SByte ||
+                tr == wkt.System_Byte ||
+                tr == wkt.System_Int16 ||
+                tr == wkt.System_UInt16 ||
+                tr == wkt.System_Int32 ||
+                tr == wkt.System_UInt32 ||
+                tr == wkt.System_Int64 ||
+                tr == wkt.System_UInt64 ||
+                tr == wkt.System_Single ||
+                tr == wkt.System_Double ||
+                tr == wkt.System_IntPtr ||
+                tr == wkt.System_UIntPtr )
+            {
+                m_typeRepresentationsToType[ tr ] = GetOrInsertBasicTypeAsLLVMSingleValueType( tr );
+                return m_typeRepresentationsToType[ tr ];
+            }
+
+            string typeName = tr.FullName;
+
+            //
+            // Pointer and Boxed type representation
+            //
+            if( tr is TS.PointerTypeRepresentation )
+            {
+                if( tr.UnderlyingType == wkt.System_Void )
+                {
+                    // Special case: we remap void * to an IntPtr to allow LLVM to function.
+                    return GetOrInsertType( wkt.System_IntPtr );
+                }
+
+                _Type underlyingType = GetOrInsertType( tr.UnderlyingType );
+                m_typeRepresentationsToType[ tr ] = m_module.GetOrInsertPointerType( typeName, underlyingType );
+                return m_typeRepresentationsToType[ tr ];
+            }
+            else if( tr is TS.BoxedValueTypeRepresentation )
+            {
+                _Type objectType = GetOrInsertType( wkt.System_Object ).UnderlyingType;
+                _Type underlyingType = GetOrInsertType( tr.UnderlyingType );
+                _Type boxedType = m_module.GetOrInsertBoxedType( typeName, objectType, underlyingType );
+                m_typeRepresentationsToType[ tr ] = m_module.GetOrInsertPointerType( boxedType );
+                return m_typeRepresentationsToType[ tr ];
+            }
+
+            //
+            // All other types
+            //
+
+            bool isValueType = (tr is TS.ValueTypeRepresentation);
+            LLVM._Type llvmType = m_module.GetOrInsertType( typeName, ( int )tr.Size * 8, isValueType );
+
+            // Ensure that we always return the correct type for storage. If this is a value type, then we're done.
+            // Otherwise, return the type as a pointer.
+            if( llvmType.IsValueType )
+            {
+                m_typeRepresentationsToType[ tr ] = llvmType;
+            }
+            else
+            {
+                m_typeRepresentationsToType[ tr ] = m_module.GetOrInsertPointerType( llvmType );
+            }
+
+            // Inline the parent class for object types. We will represent unboxed Value types as flat, c++ style, types
+            // because they are 'inlined' in the object layout and their fields offset are based on such layout. We also
+            // exempt ObjectHeader as a special case, since it can't inherit anythnig.
+            if( ( tr.Extends != null ) &&
+                ( tr.Extends != wkt.System_ValueType ) &&
+                ( tr != wkt.Microsoft_Zelig_Runtime_ObjectHeader ) )
+            {
+                _Type parentType = GetOrInsertType( tr.Extends );
+                llvmType.AddField( 0, parentType.UnderlyingType, ".extends" );
+            }
+
+            // Special case: System.Object always gets an ObjectHeader.
+            if( tr == wkt.System_Object )
+            {
+                _Type headerType = GetOrInsertType( m_typeSystem.WellKnownTypes.Microsoft_Zelig_Runtime_ObjectHeader );
+                llvmType.AddField( 0, headerType.UnderlyingType, "object_header" );
+            }
+
+            //
+            // Fields
+            //
+
+            foreach( var field in tr.Fields )
+            {
+                // static fields are not part of object layout
+                if( field is TS.StaticFieldRepresentation )
+                {
+                    continue;
+                }
+
+                if( !field.ValidLayout )
+                {
+                    continue;
+                }
+
+                //
+                // Strings are implemented inside the type
+                //
+                if( field == wkf.StringImpl_FirstChar )
+                {
+                    _Type arrayType = m_module.GetOrInsertZeroSizedArray( GetOrInsertType( wkt.System_Char ) );
+                    llvmType.AddField( ( uint )field.Offset, arrayType, field.Name );
+
+                    continue;
+                }
+
+                llvmType.AddField( ( uint )field.Offset, GetOrInsertType( field.FieldType ), field.Name );
+            }
+
+            if( tr is TS.ArrayReferenceTypeRepresentation )
+            {
+                _Type arrayType = m_module.GetOrInsertZeroSizedArray( GetOrInsertType( tr.ContainedType ) );
+                llvmType.AddField( wkt.System_Array.Size, arrayType, "array_data" );
+            }
+
+            llvmType.SetupFields( );
 
             return m_typeRepresentationsToType[ tr ];
         }

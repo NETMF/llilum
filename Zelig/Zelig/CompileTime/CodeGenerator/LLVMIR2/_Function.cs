@@ -48,7 +48,7 @@ namespace Microsoft.Zelig.LLVM
         public _Function( _Module module, string name, _Type funcType )
             : base( module
                   , funcType
-                  , module.LlvmModule.AddFunction( name, ( DebugFunctionType )( funcType.DebugType ) )
+                  , module.LlvmModule.AddFunction( name, ( DebugFunctionType )funcType.DebugType )
                   , false
                   )
         {
@@ -59,25 +59,25 @@ namespace Microsoft.Zelig.LLVM
 
         public void AddAttribute( FunctionAttribute kind )
         {
-            var func = ( Function )( LlvmValue );
+            var func = ( Function )LlvmValue;
             func.AddAttributes( ( AttributeKind )kind );
         }
 
         public void AddAttribute( FunctionAttribute kind, ulong value )
         {
-            var func = ( Function )( LlvmValue );
+            var func = ( Function )LlvmValue;
             func.AddAttributes( new AttributeValue( (AttributeKind )kind, value ) );
         }
 
         public void RemoveAttribute( FunctionAttribute kind )
         {
-            var func = ( Function )( LlvmValue );
+            var func = ( Function )LlvmValue;
             func.Attributes.Remove( ( AttributeKind )kind );
         }
 
         public _BasicBlock GetOrInsertBasicBlock( string blockName )
         {
-            var func = ( Function )( LlvmValue );
+            var func = ( Function )LlvmValue;
 
             return new _BasicBlock( this, func.FindOrCreateNamedBlock( blockName ) );
         }
@@ -89,25 +89,28 @@ namespace Microsoft.Zelig.LLVM
                 block.SetDebugInfo( 0, 0, null, manager, method );
             }
 
-            var valType = manager.LookupNativeTypeFor( val.Type );
             int index = 0;
             var tag = Tag.AutoVariable;
             var argExpression = val as IR.ArgumentVariableExpression;
             if( argExpression != null )
             {
-                var fn = ( Function )( LlvmValue );
+                var fn = ( Function )LlvmValue;
                 index = argExpression.Number;
                 if( method is TS.StaticMethodRepresentation )
                     index--;
 
-                fn.Parameters[ index ].Name = argExpression?.DebugName?.Name;
+                fn.Parameters[ index ].Name = argExpression?.DebugName?.Name ?? $"$ARG{argExpression.Number}";
                 tag = Tag.ArgVariable;
             }
 
-            var retVal = GetLocalStackValue( val.ToString( ), manager.LookupNativeTypeFor( val.Type ) );
-            // if the local had a valid symbolic name in the source code, generate debug info for it
+            _Type valType = manager.LookupNativeTypeFor( val.Type );
+            _Value retVal = GetLocalStackValue( val.ToString( ), valType );
+
+            // If the local had a valid symbolic name in the source code, generate debug info for it.
             if( string.IsNullOrWhiteSpace( val.DebugName?.Name ) )
+            {
                 return retVal;
+            }
 
             var module = Module;
             DILocalVariable localSym;
@@ -117,7 +120,7 @@ namespace Microsoft.Zelig.LLVM
                                                           , val.DebugName.Name
                                                           , module.CurDiFile
                                                           , ( uint )block.DebugCurLine
-                                                          , valType.GetDiTypeForStack( ).DIType
+                                                          , valType.DIType
                                                           , true
                                                           , 0
                                                           , ( uint )index
@@ -129,26 +132,28 @@ namespace Microsoft.Zelig.LLVM
                                                                , val.DebugName.Name
                                                                , module.CurDiFile
                                                                , ( uint )block.DebugCurLine
-                                                               , valType.GetDiTypeForStack( ).DIType
+                                                               , valType.DIType
                                                                , true
                                                                , 0
                                                                , ( uint )index
                                                                );
             }
 
-            var loc = new DILocation( module.LlvmContext, ( uint )block.DebugCurLine, ( uint )block.DebugCurLine, block.CurDiSubProgram );
-            // for reference types passed as a pointer, tell debugger to deref the pointer
+            // For reference types passed as a pointer, tell debugger to deref the pointer.
             DIExpression expr = module.DIBuilder.CreateExpression( );
             if( !retVal.Type.IsValueType )
+            {
                 expr = module.DIBuilder.CreateExpression( ExpressionOp.deref );
+            }
 
+            var loc = new DILocation( module.LlvmContext, ( uint )block.DebugCurLine, ( uint )block.DebugCurLine, block.CurDiSubProgram );
             module.DIBuilder.InsertDeclare( retVal.LlvmValue, localSym, expr, loc, block.LlvmBasicBlock );
             return retVal;
         }
 
         public _Value GetLocalStackValue( string name, _Type type )
         {
-            var fn = (Function)( LlvmValue );
+            var fn = (Function)LlvmValue;
 
             if( fn.BasicBlocks.Count == 0 )
             {
@@ -168,16 +173,11 @@ namespace Microsoft.Zelig.LLVM
                 bldr.PositionBefore(bb.FirstInstruction);
             }
 
-            Value retVal = bldr.Alloca( type.GetLLVMObjectForStorage( ) )
-                               .RegisterName( name );
+            Value retVal = bldr.Alloca( type.DebugType ).RegisterName( name );
 
-            return new _Value( Module, type, retVal, false );
+            _Type pointerType = Module.GetOrInsertPointerType( type );
+            return new _Value( Module, pointerType, retVal, false );
         }
-
-        //public void DeleteBody( )
-        //{
-        //    throw new NotImplementedException( );
-        //}
 
         public void SetExternalLinkage( )
         {
