@@ -1702,7 +1702,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         {
             if( td is ValueTypeRepresentation )
             {
-                td = GetBoxedValueType( ( ValueTypeRepresentation )td );
+                td = GetManagedPointerToType( ( ValueTypeRepresentation )td );
             }
 
             return CreateConstant( td, null );

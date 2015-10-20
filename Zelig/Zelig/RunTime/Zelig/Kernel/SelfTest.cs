@@ -7,18 +7,18 @@ using System.Runtime.InteropServices;
 namespace Microsoft.Zelig.Runtime
 {
     using System;
-    
+
     internal static class SelfTest
-    {   
+    {
         [DllImport( "C" )]
         public static unsafe extern int GetANumber( );
-        
+
         [DllImport( "C" )]
         public static unsafe extern void BreakWithTrap( );
-        
+
         [DllImport( "C" )]
         public static unsafe extern void Breakpoint( uint n );
-        
+
         internal static bool AlwaysTrueNonOptimizableCondition()
         {
             return GetANumber( ) >= 42;
@@ -65,7 +65,8 @@ namespace Microsoft.Zelig.Runtime
         //--//
         //--//
 
-        #region basic math, and flow controls
+        #region Basic math and flow controls
+
         private static int FibonacciInterative( int num )
         {
             int a = 0, b = 1, c = 0;
@@ -200,37 +201,52 @@ namespace Microsoft.Zelig.Runtime
 
             while( count++ < iterations )
             {
-                
                 int rec = FibonacciRecursive( count );
                 int ite = FibonacciInterative( count );
 
                 SELFTEST_ASSERT( ite == rec );
             }
         }
-        
-        #endregion 
 
-        #region native types, basic casts
+        #endregion Basic math and flow controls
 
-        private static void SelfTest__Test__NativeTypes_Casts()
+        #region Native types, basic casts
+
+        private static void SelfTest__Test__NativeTypes_IntCasts()
         {
             const int mask = ( 1 << 16 ) - 1;
 
-            // get a number smaller than 16 bits
+            // Get a number smaller than 16 bits and shift it to the high word.
             int seed = GetANumber() % mask;
-
             SELFTEST_ASSERT( seed < mask );
-            
             int i = seed << 16;
 
-            // downcast
-            short s = ( short )i;            
+            // Downcast the number and ensure low bits are zero.
+            short s = ( short )i;
             SELFTEST_ASSERT( s == 0 );
         }
 
-        #endregion
+        private static void SelfTest__Test__NativeTypes_FloatCasts()
+        {
+            int intValue = GetANumber();
+            double d = intValue;
+            float f = ( float )d;
 
-        #region Value Types, basic copy semantic
+            SELFTEST_ASSERT( f == intValue );
+        }
+
+        private static void SelfTest__Test__NativeTypes_IntToFloatCasts()
+        {
+            int intValue = GetANumber();
+            double d = intValue;
+            float f = intValue;
+
+            SELFTEST_ASSERT( d == f );
+        }
+
+        #endregion Native types, basic casts
+
+        #region Value Types
 
         struct ToCopy
         {
@@ -238,174 +254,230 @@ namespace Microsoft.Zelig.Runtime
             public char c;
         }
 
-        private static void SelfTest__Test__ValueTypesCopy_1()
+        private static void SelfTest__Test__ValueTypes_Copy()
         {
-            //
-            // Vanilla assignment between value types
-            //
+            // Explicit field assignment
             ToCopy a;
             a.i = 1;
             a.c = 'a';
-
             SELFTEST_ASSERT( a.i == 1 && a.c == 'a' );
 
-            ToCopy b;
-            b.i = 2;
-            b.c = 'b';
-            
+            // Initializer lists
+            ToCopy b = new ToCopy { i = 2, c = 'b' };
             SELFTEST_ASSERT( b.i == 2 && b.c == 'b' );
 
-
-            ToCopy aa = a;
-
-            a = b;
-            
-            // new values
-            SELFTEST_ASSERT(  a.i == 2 &&  a.c == 'b' );
-            // old values
-            SELFTEST_ASSERT( aa.i == 1 && aa.c == 'a' );
-        }
-        
-        private static void SelfTest__Test__ValueTypesCopy_2()
-        {
-            //
-            // Vanilla assignment between value types
-            //
-            ToCopy a;
-            a.i = 1;
-            a.c = 'a';
-
+            // Basic copy on initialization
+            ToCopy copy = a;
             SELFTEST_ASSERT( a.i == 1 && a.c == 'a' );
+            SELFTEST_ASSERT( copy.i == 1 && copy.c == 'a' );
 
-            ToCopy aa = a;
-            
-            PassByValue( a );
+            // Assignment after initialization
+            copy = b;
+            SELFTEST_ASSERT( b.i == 2 && b.c == 'b' );
+            SELFTEST_ASSERT( copy.i == 2 && copy.c == 'b' );
 
-            // new values
-            SELFTEST_ASSERT(  a.i == 1 &&  a.c == 'a' );
-            // old values
-            SELFTEST_ASSERT( aa.i == 1 && aa.c == 'a' );
-            // cross check values
-            SELFTEST_ASSERT( aa.i == a.i && aa.c == a.c );
+            // Pass by value should not modify.
+            ModifyPassByValue( copy );
+            SELFTEST_ASSERT( copy.i == 2 && copy.c == 'b' );
+
+            // Pass by ref should modify.
+            ModifyPassByRef( ref copy );
+            SELFTEST_ASSERT( copy.i == 3 && copy.c == 'c' );
+
+            // Copy from return value.
+            copy = ReturnByValue( );
+            SELFTEST_ASSERT( copy.i == 2 && copy.c == 'b' );
         }
 
-        private static void PassByValue( ToCopy byValue )
+        private static void ModifyPassByValue( ToCopy byValue )
         {
-            byValue.i = 2;
-            byValue.c = 'b';
+            byValue.i = 3;
+            byValue.c = 'c';
         }
-        
-        private static void SelfTest__Test__ValueTypesCopy_3()
+
+        private static void ModifyPassByRef( ref ToCopy byValue )
         {
-            //
-            // Vanilla assignment between value types
-            //
-            ToCopy a;
-            a.i = 1;
-            a.c = 'a';
-
-            SELFTEST_ASSERT( a.i == 1 && a.c == 'a' );
-
-            ToCopy aa = a;
-            
-            PassByRef( ref a );
-
-            // new values
-            SELFTEST_ASSERT(  a.i == 2 &&  a.c == 'b' );
-            // old values
-            SELFTEST_ASSERT( aa.i == 1 && aa.c == 'a' );
-            // cross check values
-            SELFTEST_ASSERT( aa.i + 1 == a.i );
+            byValue.i = 3;
+            byValue.c = 'c';
         }
 
-        private static void PassByRef( ref ToCopy byValue )
+        private static ToCopy ReturnByValue()
         {
-            byValue.i = 2;
-            byValue.c = 'b';
+            return new ToCopy { i = 2, c = 'b' };
         }
-        
-        private static void SelfTest__Test__ValueTypesCopy_4()
+
+        struct BasicStruct
         {
-            //
-            // Vanilla assignment between value types
-            //
-            ToCopy a;
-            a.i = 1;
-            a.c = 'a';
+            public int Value;
 
-            SELFTEST_ASSERT( a.i == 1 && a.c == 'a' );
+            public int GetValue()
+            {
+                return Value;
+            }
 
-            ToCopy aa = a;
-
-            a = ReturnByValue(); 
-
-            // new values
-            SELFTEST_ASSERT(  a.i == 2 &&  a.c == 'b' );
-            // old values
-            SELFTEST_ASSERT( aa.i == 1 && aa.c == 'a' );
+            public override int GetHashCode()
+            {
+                // Return something easily verifiable.
+                return 17;
+            }
         }
 
-        private static ToCopy ReturnByValue(  )
+        private static void SelfTest__Test__ValueTypes_BoxUnbox()
         {
-            ToCopy b;
-            
-            b.i = 2;
-            b.c = 'b';
+            // Boxing on initialization
+            int intVal = 5;
+            object boxedInt = intVal;
+            SELFTEST_ASSERT( boxedInt is int );
+            SELFTEST_ASSERT( (int)boxedInt == intVal );
 
-            return b;
+            // Ensure identity.
+            object boxedInt2 = intVal;
+            SELFTEST_ASSERT( boxedInt.Equals(boxedInt2) );
+            SELFTEST_ASSERT( !ReferenceEquals(boxedInt, boxedInt2) );
+
+            // Ensure modifying boxed copy does not alter stack value.
+            boxedInt = 19;
+            SELFTEST_ASSERT( intVal == 5 );
+            SELFTEST_ASSERT( (int)boxedInt == 19 );
+
+            // Method calls on value types vs. boxed objects.
+            BasicStruct structVal = new BasicStruct { Value = 7 };
+            SELFTEST_ASSERT( structVal.GetValue() == 7 );       // Unconstrained call (no box).
+            SELFTEST_ASSERT( structVal.GetHashCode() == 17 );   // Constrained call (no box).
+            SELFTEST_ASSERT( !structVal.Equals(boxedInt) );     // Boxed call to object.
         }
 
-        #endregion
+        private struct Mixed
+        {
+            public int     ii;
+            public byte    bb;
+            public long    ll;
+
+            public static Mixed operator +( Mixed a, Mixed b )
+            {
+                Mixed c;
+
+                c.ii = a.ii + b.ii;
+                c.bb = ( byte )( a.bb + b.bb );
+                c.ll = a.ll + b.ll;
+
+                return c;
+            }
+        }
+
+        private static void SelfTest__Test__ValueTypes_PassByValue( )
+        {
+            Mixed a;
+            a.ii = 5;
+            a.bb = 10;
+            a.ll = 20;
+
+            const int delta = 1;
+
+            Mixed b;
+            b.ii = 5 + delta;
+            b.bb = 10 + delta;
+            b.ll = 5 + delta;
+
+            Mixed c = PassByValue( a, b );
+
+            SELFTEST_ASSERT( c.ii == a.ii + b.ii );
+            SELFTEST_ASSERT( c.bb == a.bb + b.bb );
+            SELFTEST_ASSERT( c.ll == a.ll + b.ll );
+        }
+
+        private static Mixed PassByValue( Mixed a, Mixed b )
+        {
+            return a + b;
+        }
+
+        private static void SelfTest__Test__ValueTypes_PassByRef( )
+        {
+            Mixed a;
+            a.ii = 5;
+            a.bb = 10;
+            a.ll = 20;
+
+            const int delta = 1;
+
+            Mixed b;
+            b.ii = 5 + delta;
+            b.bb = 10 + delta;
+            b.ll = 5 + delta;
+
+            Mixed aa = a;
+            Mixed bb = b;
+
+            Mixed c = PassByRef( ref a, ref b );
+
+            Mixed d = aa + bb;
+
+            SELFTEST_ASSERT( c.ii == a.ii + b.ii );
+            SELFTEST_ASSERT( c.bb == a.bb + b.bb );
+            SELFTEST_ASSERT( c.ll == a.ll + b.ll );
+
+            SELFTEST_ASSERT( d.ii == aa.ii + bb.ii );
+            SELFTEST_ASSERT( d.bb == aa.bb + bb.bb );
+            SELFTEST_ASSERT( d.ll == aa.ll + bb.ll );
+        }
+
+        private static Mixed PassByRef( ref Mixed a, ref Mixed b )
+        {
+            a += b;
+            b += a;
+
+            return a + b;
+        }
+
+        #endregion Value Types
 
         //--//
         //--//
         //--//
 
-        internal static void SelfTest__Bootstrap( )
+        internal unsafe static void SelfTest__Bootstrap( )
         {
             //
-            // Basic math and flow controls 
+            // Basic math and flow controls
             //
+
             SelfTest__Test__Fibonacci( );
-            SelfTest__Test__CallsAndControls( ); 
+            SelfTest__Test__CallsAndControls( );
 
             //
-            // Native types, basic casts 
+            // Native types, basic casts
             //
-            SelfTest__Test__NativeTypes_Casts( );
-            
+
+            SelfTest__Test__NativeTypes_IntCasts( );
+            SelfTest__Test__NativeTypes_FloatCasts( );
+            SelfTest__Test__NativeTypes_IntToFloatCasts( );
+
             //
-            // Value Types, basic copy semantic 
+            // Value Types
             //
-            SelfTest__Test__ValueTypesCopy_1( );
-            SelfTest__Test__ValueTypesCopy_2( );
-            SelfTest__Test__ValueTypesCopy_3( );
-            //SelfTest__Test__ValueTypesCopy_4(); KNOWN FAILURE
+
+            SelfTest__Test__ValueTypes_Copy( );
+            SelfTest__Test__ValueTypes_PassByValue( );
+            SelfTest__Test__ValueTypes_PassByRef( );
+            // TODO: Enable this after memory initialization.
+            //SelfTest__Test__ValueTypes_BoxUnbox( );
 
             //
             // pointers...
             //
+
             SelfTest__Test__Pointers_Conversions_1( );
             SelfTest__Test__Pointers_Conversions_2( );
             SelfTest__Test__Pointers_Conversions_3( );
             SelfTest__Test__Pointers_Conversions_4( );
-
 
             SelfTest__Test__RawPointers_Arithmetic_Pointer_1( ); 
             SelfTest__Test__RawPointers_Arithmetic_Pointer_2( ); 
             SelfTest__Test__RawPointers_Arithmetic_Values_1 ( ); 
             SelfTest__Test__RawPointers_Arithmetic_Values_2 ( ); 
 
-
             SelfTest__Test__Pointers_PassByValue( );
             SelfTest__Test__Pointers_PassByRef( );
-            
-            //--//
-            //--// ...value types...
-            //--//
-
-            SelfTest__Test__ValueTypes_PassByValue( );
-            SelfTest__Test__ValueTypes_PassByRef( );
 
             //
             // ...else...
@@ -414,8 +486,6 @@ namespace Microsoft.Zelig.Runtime
             SelfTest__Test__Integers_Conversions( );
             SelfTest__Test__Integers_PassByValue( );
             SelfTest__Test__Integers_PassByRef( );
-            SelfTest__Test__Integers_BoxUnbox( );
-            SelfTest__Test__Integers_BoxUnboxInverted( );
 
             //Trap end of tests
             SELFTEST_ASSERT( false );
@@ -1465,96 +1535,6 @@ namespace Microsoft.Zelig.Runtime
         //--//
         //--//
         //--//
-
-        #region value types advanced
-
-        private struct Mixed
-        {
-            public int     ii;
-            public byte    bb;
-            public long    ll;
-
-            public static Mixed operator +( Mixed a, Mixed b )
-            {
-                Mixed c;
-
-                c.ii = a.ii + b.ii;
-                c.bb = ( byte )( a.bb + b.bb );
-                c.ll = a.ll + b.ll;
-
-                return c;
-            }
-        }
-
-        private static void SelfTest__Test__ValueTypes_PassByValue( )
-        {
-            Mixed a;
-            a.ii = 5;
-            a.bb = 10;
-            a.ll = 20;
-
-            const int delta = 1;
-
-            Mixed b;
-            b.ii = 5 + delta;
-            b.bb = 10 + delta;
-            b.ll = 5 + delta;
-
-            Mixed c = PassByValue( a, b );
-
-            SELFTEST_ASSERT( c.ii == a.ii + b.ii );
-            SELFTEST_ASSERT( c.bb == a.bb + b.bb );
-            SELFTEST_ASSERT( c.ll == a.ll + b.ll );
-        }
-
-        private static Mixed PassByValue( Mixed a, Mixed b )
-        {
-            return a + b;
-        }
-
-        private static void SelfTest__Test__ValueTypes_PassByRef( )
-        {
-            Mixed a;
-            a.ii = 5;
-            a.bb = 10;
-            a.ll = 20;
-
-            const int delta = 1;
-
-            Mixed b;
-            b.ii = 5 + delta;
-            b.bb = 10 + delta;
-            b.ll = 5 + delta;
-
-            Mixed aa = a;
-            Mixed bb = b;
-
-            Mixed c = PassByRef( ref a, ref b );
-
-            Mixed d = aa + bb;
-
-            SELFTEST_ASSERT( c.ii == a.ii + b.ii );
-            SELFTEST_ASSERT( c.bb == a.bb + b.bb );
-            SELFTEST_ASSERT( c.ll == a.ll + b.ll );
-
-            SELFTEST_ASSERT( d.ii == aa.ii + bb.ii );
-            SELFTEST_ASSERT( d.bb == aa.bb + bb.bb );
-            SELFTEST_ASSERT( d.ll == aa.ll + bb.ll );
-        }
-
-        private static Mixed PassByRef( ref Mixed a, ref Mixed b )
-        {
-            a += b;
-            b += a;
-
-            return a + b;
-        }
-
-        #endregion value types advanced
-
-        //--//
-        //--//
-        //--//
         
 
         #region integers
@@ -1703,30 +1683,6 @@ namespace Microsoft.Zelig.Runtime
         {
             a += 1;
             b += 2;
-        }
-
-        //--//
-        //--//
-        //--//
-
-        private static void SelfTest__Test__Integers_BoxUnbox( )
-        {
-            int a = 20;
-            int b = 22;
-
-            PassByRef( ref a, ref b ); SELFTEST_ASSERT( 45 == a + b );
-            PassByValue( a, b ); SELFTEST_ASSERT( 45 == a + b );
-            PassByRef( ref a, ref b ); SELFTEST_ASSERT( 48 == a + b );
-        }
-
-        private static void SelfTest__Test__Integers_BoxUnboxInverted( )
-        {
-            int a = 20;
-            int b = 22;
-
-            PassByValue( a, b ); SELFTEST_ASSERT( 42 == a + b );
-            PassByRef( ref a, ref b ); SELFTEST_ASSERT( 45 == a + b );
-            PassByValue( a, b ); SELFTEST_ASSERT( 45 == a + b );
         }
 
         #endregion integers

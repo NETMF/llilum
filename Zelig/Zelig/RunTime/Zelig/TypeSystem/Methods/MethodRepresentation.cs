@@ -350,7 +350,7 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
                 //
                 if( td is ValueTypeRepresentation )
                 {
-                    td = typeSystem.CreateBoxedValueType( ( ValueTypeRepresentation )td );
+                    td = typeSystem.CreateManagedPointerToType( ( ValueTypeRepresentation )td );
                 }
 
                 m_thisPlusArguments[ 0 ] = td;
@@ -459,16 +459,12 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
             m_thisPlusArguments = ArrayUtility.CopyNotNullArray( mdSource.m_thisPlusArguments );
             m_argumentNames = mdSource.m_argumentNames;
 
-            //--//
-
             TypeRepresentation td = m_ownerType;
 
-            //
             // Instance method for value types get a managed pointer to the value type as the "this" argument.
-            //
             if( td is ValueTypeRepresentation )
             {
-                td = typeSystem.GetBoxedValueType( ( ValueTypeRepresentation )td );
+                td = typeSystem.GetManagedPointerToType( ( ValueTypeRepresentation )td );
             }
 
             m_thisPlusArguments[ 0 ] = td;

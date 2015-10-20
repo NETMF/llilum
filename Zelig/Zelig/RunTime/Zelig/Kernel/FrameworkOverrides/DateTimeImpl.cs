@@ -10,7 +10,7 @@ namespace Microsoft.Zelig.Runtime
 
 
     [ExtendClass(typeof(System.DateTime), NoConstructors=true)]
-    public class DateTimeImpl
+    public struct DateTimeImpl
     {
         //
         // State

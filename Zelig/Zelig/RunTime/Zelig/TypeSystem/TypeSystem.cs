@@ -1313,9 +1313,21 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
                     {
                         return RegisterAndAnalyze( ref lookup, new ScalarTypeRepresentation( asmlIR, builtinType, flags, genericContext, td2.ScalarSize ) );
                     }
+                    else if(IsEnumType( td2 ))
+                    {
+                        // Special case: System.Enum extends System.ValueType, but is not itself a value type.
+                        return RegisterAndAnalyze( ref lookup, new ConcreteReferenceTypeRepresentation( asmlIR, builtinType, flags, genericContext ) );
+                    }
                     else
                     {
-                        return RegisterAndAnalyze( ref lookup, new ValueTypeRepresentation( asmlIR, builtinType, flags, genericContext ) );
+                        TypeRepresentation valueType = RegisterAndAnalyze( ref lookup, new ValueTypeRepresentation( asmlIR, builtinType, flags, genericContext ) );
+
+                        // For value types, it's extremely likely we'll want to create a managed pointer to the type.
+                        // This is usually done when adding a method to the type. Rather than dirtying the type system
+                        // later, we create the managed pointer type in advance.
+                        CreateManagedPointerToType( valueType );
+
+                        return valueType;
                     }
                 }
                 else if(tdExtends is MetaDataTypeDefinitionBase && IsEnumType( (MetaDataTypeDefinitionBase)tdExtends ))

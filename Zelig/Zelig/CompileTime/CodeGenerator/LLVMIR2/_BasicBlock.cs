@@ -561,17 +561,28 @@ namespace Microsoft.Zelig.LLVM
             return new _Value( Module, type, value, true );
         }
 
-        public _Value InsertFPFloatToFPDouble( _Value val )
+        public _Value InsertFPExt( _Value val, _Type type )
         {
             Debug.Assert( val.IsFloatingPoint );
-            _Type ty = Module.GetType( "System.Double" );
             val = LoadToImmediate( val );
 
-            var value = IrBuilder.FPExt( val.LlvmValue, ty.DebugType )
+            var value = IrBuilder.FPExt( val.LlvmValue, type.DebugType )
                                  .RegisterName( "fpext" )
                                  .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
 
-            return new _Value( Module, ty, value, true );
+            return new _Value( Module, type, value, true );
+        }
+
+        public _Value InsertFPTrunc( _Value val, _Type type )
+        {
+            Debug.Assert( val.IsFloatingPoint );
+            val = LoadToImmediate( val );
+
+            var value = IrBuilder.FPTrunc( val.LlvmValue, type.DebugType )
+                                 .RegisterName( "fpext" )
+                                 .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+
+            return new _Value( Module, type, value, true );
         }
 
         public _Value InsertFPToInt( _Value val, _Type ty )

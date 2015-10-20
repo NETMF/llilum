@@ -525,6 +525,17 @@ namespace Llvm.NET
             return Value.FromHandle( handle );
         }
 
+        public Value FPTrunc( Value valueRef, ITypeRef toType )
+        {
+            LLVMValueRef handle;
+            if( valueRef is Constant )
+                handle = NativeMethods.ConstFPTrunc( valueRef.ValueHandle, toType.GetTypeRef() );
+            else
+                handle = NativeMethods.BuildFPTrunc( BuilderHandle, valueRef.ValueHandle, toType.GetTypeRef(), string.Empty );
+
+            return Value.FromHandle( handle );
+        }
+
         public PhiNode PhiNode( ITypeRef resultType )
         {
             var handle = NativeMethods.BuildPhi( BuilderHandle, resultType.GetTypeRef(), string.Empty );

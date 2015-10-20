@@ -5,13 +5,11 @@
 namespace Microsoft.Zelig.CodeGeneration.IR
 {
     using System;
-    using System.Collections.Generic;
+    using System.Diagnostics;
 
     using Microsoft.Zelig.MetaData;
     using Microsoft.Zelig.MetaData.Normalized;
-
     using Microsoft.Zelig.Runtime.TypeSystem;
-
 
     public sealed partial class ByteCodeConverter
     {
@@ -998,7 +996,6 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 // TODO: Implement the modifier.
             }
 
-
             switch(instr.Operator.ActionCall)
             {
                 case Instruction.OpcodeActionCall.Direct:
@@ -1064,7 +1061,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                                 }
                             }
 
-                            if(CanBeAssignedFromEvaluationStack( tdThis, exActual[0] ) == false)
+                            if(!CanBeAssignedFromEvaluationStack( tdThis, exActual[0] ))
                             {
                                 throw TypeConsistencyErrorException.Create( "Incorrect 'this' argument on call to {0} from {1}: got {2}, expecting {3}", md, m_md, exActual[0].Type, md.OwnerType );
                             }
@@ -1079,10 +1076,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                             TypeRepresentation tdFormal = args[i];
 
                             Expression exArg = GetArgumentFromStack( i - 1, argsNum - 1 );
-
                             exActual[i] = exArg;
 
-                            if(CanBeAssignedFromEvaluationStack( tdFormal, exArg ) == false)
+                            if(!CanBeAssignedFromEvaluationStack( tdFormal, exArg ))
                             {
                                 throw TypeConsistencyErrorException.Create( "Incorrect argument {0} on call to {1} from {2}: got {3}, expecting {4}", i - 1, md, m_md, exArg.Type, tdFormal );
                             }
@@ -1844,7 +1840,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                         int                         argsNum  = args.Length;
                         Expression[]                exActual = new Expression[argsNum];
                         TypeRepresentation          thisTd   = args[0];
-                        LocalVariableExpression     loc;
+                        LocalVariableExpression     local = null;
                         TemporaryVariableExpression tmp;
 
                         //
@@ -1856,16 +1852,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                         //   4) call the constructor using the address as the this pointer.
                         //   5) put the local variable on the evaluation stack.
                         //
-                        if(thisTd is BoxedValueTypeRepresentation)
+                        if(thisTd is ManagedPointerTypeRepresentation)
                         {
-                            BoxedValueTypeRepresentation boxed = (BoxedValueTypeRepresentation)thisTd;
-
-                            loc    = m_cfg.AllocateLocal( boxed.UnderlyingType, null );
-                            thisTd = m_typeSystem.CreateManagedPointerToType( loc.Type );
-                        }
-                        else
-                        {
-                            loc = null;
+                            Debug.Assert(thisTd.UnderlyingType is ValueTypeRepresentation, "Only value types can be passed as managed pointers for 'this' argument.");
+                            local  = m_cfg.AllocateLocal( thisTd.UnderlyingType, null );
                         }
 
                         tmp = CreateNewTemporary( thisTd );
@@ -1880,18 +1870,18 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
                             exActual[i] = exArg;
 
-                            if(CanBeAssignedFromEvaluationStack( tdFormal, exArg ) == false)
+                            if(!CanBeAssignedFromEvaluationStack( tdFormal, exArg ))
                             {
                                 throw TypeConsistencyErrorException.Create( "Incorrect argument {0} on call to {1} from {2}: got {3}, expecting {4}", i - 1, md, m_md, exArg.Type, tdFormal );
                             }
                         }
 
-                        ModifyStackModel( argsNum - 1, loc != null ? loc : exActual[0] );
+                        ModifyStackModel( argsNum - 1, local ?? exActual[0] );
 
-                        if(loc != null)
+                        if(local != null)
                         {
-                            AddOperator( m_cfg.GenerateVariableInitialization( instr.DebugInfo,      loc ) );
-                            AddOperator( AddressAssignmentOperator.New       ( instr.DebugInfo, tmp, loc ) );
+                            AddOperator( m_cfg.GenerateVariableInitialization( instr.DebugInfo,      local ) );
+                            AddOperator( AddressAssignmentOperator.New       ( instr.DebugInfo, tmp, local ) );
                         }
                         else
                         {
@@ -2206,7 +2196,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                         // the implementation chooses to add. Specifically, array elements lie sizeof bytes apart. end rationale]
                         // 
                         TypeRepresentation td = this.CurrentArgumentAsType;
-                        if((td is ValueTypeRepresentation) == false)
+                        if(!(td is ValueTypeRepresentation))
                         {
                             td = m_typeSystem.WellKnownTypes.System_UIntPtr;
                         }

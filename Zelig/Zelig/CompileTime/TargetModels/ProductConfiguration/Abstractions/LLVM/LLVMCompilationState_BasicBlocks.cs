@@ -393,13 +393,11 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
             {
                 if( val.Type.SizeInBits > targetType.SizeInBits )
                 {
-                    // TODO: Downcast to float.
-                    throw new NotImplementedException( "Not implemented: double->float" );
+                    return m_basicBlock.InsertFPTrunc( val, targetType );
                 }
                 else
                 {
-                    // TODO: Upcast to double.
-                    throw new NotImplementedException( "Not implemented: float->double" );
+                    return m_basicBlock.InsertFPExt( val, targetType );
                 }
             }
 
@@ -515,49 +513,8 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         private void Translate_ConvertOperator( IR.ConvertOperator op )
         {
-            //TODO: Add support for overflow exceptions
-
-            TS.TypeRepresentation.BuiltInTypes kindInput = op.InputKind;
-            TS.TypeRepresentation.BuiltInTypes kindOutput = op.OutputKind;
-
+            // TODO: Add support for overflow exceptions
             _Value v = ConvertValueToALUOperableType( m_arguments[ 0 ], true );
-
-            switch( kindInput )
-            {
-                case TS.TypeRepresentation.BuiltInTypes.I4:
-                case TS.TypeRepresentation.BuiltInTypes.U4:
-                case TS.TypeRepresentation.BuiltInTypes.I8:
-                case TS.TypeRepresentation.BuiltInTypes.U8:
-                    switch( kindOutput )
-                    {
-                        case TS.TypeRepresentation.BuiltInTypes.R4:
-                            v = m_basicBlock.InsertIntToFP( v, m_manager.GetOrInsertType( m_wkt.System_Single ) );
-                            break;
-                        case TS.TypeRepresentation.BuiltInTypes.R8:
-                            v = m_basicBlock.InsertIntToFP( v, m_manager.GetOrInsertType( m_wkt.System_Double ) );
-                            break;
-                    }
-                    break;
-                case TS.TypeRepresentation.BuiltInTypes.R4:
-                    v = m_basicBlock.InsertFPFloatToFPDouble( v );
-                    break;
-                case TS.TypeRepresentation.BuiltInTypes.R8:
-                    switch( kindOutput )
-                    {
-                        case TS.TypeRepresentation.BuiltInTypes.I4:
-                            v = m_basicBlock.InsertFPToInt( v, m_manager.GetOrInsertType( m_wkt.System_Int32 ) );
-                            break;
-                        case TS.TypeRepresentation.BuiltInTypes.I8:
-                            v = m_basicBlock.InsertFPToInt( v, m_manager.GetOrInsertType( m_wkt.System_Int64 ) );
-                            break;
-                        default:
-                            throw new Exception( "Unimplemented Convert Operator: " + op.ToString( ) );
-                    }
-                    break;
-                default:
-                    throw new Exception( "Unimplemented Convert Operator: " + op.ToString( ) );
-            }
-
             StoreValue( m_results[ 0 ], v );
         }
 
