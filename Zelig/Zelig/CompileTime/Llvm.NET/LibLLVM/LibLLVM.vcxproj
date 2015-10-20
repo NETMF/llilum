@@ -77,7 +77,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\..\..\..\ZeligBuild\Host\bin\$(Configuration)\</OutDir>
-    <IntDir>\..\..\..\ZeligBuild\Host\bin\$(Configuration)\</IntDir>
+    <IntDir>..\..\..\..\ZeligBuild\Host\bin\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -87,7 +87,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\..\ZeligBuild\Host\bin\$(Configuration)\</OutDir>
-    <IntDir>\..\..\..\ZeligBuild\Host\bin\$(Configuration)\</IntDir>
+    <IntDir>..\..\..\..\ZeligBuild\Host\bin\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
