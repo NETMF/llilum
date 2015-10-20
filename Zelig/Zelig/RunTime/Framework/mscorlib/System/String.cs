@@ -263,21 +263,9 @@ namespace System
                 char* a = ap;
                 char* b = bp;
 
-                // unroll the loop
-
-                while(length >= 8)
-                {
-                    if(*(int*) a      != *(int*) b     ) break;
-                    if(*(int*)(a + 2) != *(int*)(b + 2)) break;
-                    if(*(int*)(a + 4) != *(int*)(b + 4)) break;
-                    if(*(int*)(a + 6) != *(int*)(b + 6)) break;
-                    a += 8; b += 8; length -= 8;
-                }
-
-                // This depends on the fact that the String objects are
-                // always zero terminated and that the terminating zero is not included
-                // in the length. For odd string sizes, the last compare will include
-                // the zero terminator.
+                // This depends on the fact that the String objects are always zero terminated and
+                // that the terminating zero is not included in the length. For odd string sizes,
+                // the last compare will include the zero terminator.
                 while(length > 0)
                 {
                     if(*(int*)a != *(int*)b) break;
@@ -294,66 +282,14 @@ namespace System
             BCLDebug.Assert( strA != null && strB != null, "strings cannot be null!" );
 
             int length     = Math.Min( strA.Length, strB.Length );
-            int diffOffset = -1;
 
             fixed(char* ap = strA) fixed(char* bp = strB)
             {
                 char* a = ap;
                 char* b = bp;
 
-                // unroll the loop
-                while(length >= 8)
-                {
-                    if(*(int*)a != *(int*)b)
-                    {
-                        diffOffset = 0;
-                        break;
-                    }
-
-                    if(*(int*)(a + 2) != *(int*)(b + 2))
-                    {
-                        diffOffset = 2;
-                        break;
-                    }
-
-                    if(*(int*)(a + 4) != *(int*)(b + 4))
-                    {
-                        diffOffset = 4;
-                        break;
-                    }
-
-                    if(*(int*)(a + 6) != *(int*)(b + 6))
-                    {
-                        diffOffset = 6;
-                        break;
-                    }
-
-                    a      += 8;
-                    b      += 8;
-                    length -= 8;
-                }
-
-                if(diffOffset != -1)
-                {
-                    // we already see a difference in the unrolled loop above
-                    a += diffOffset;
-                    b += diffOffset;
-
-                    int order;
-
-                    if((order = (int)*a - (int)*b) != 0)
-                    {
-                        return order;
-                    }
-
-                    BCLDebug.Assert( *(a + 1) != *(b + 1), "This byte must be different if we reach here!" );
-                    return ((int)*(a + 1) - (int)*(b + 1));
-                }
-
-                // now go back to slower code path and do comparison on 4 bytes one time.
-                // Following code also take advantage of the fact strings will
-                // use even numbers of characters (runtime will have a extra zero at the end.)
-                // so even if length is 1 here, we can still do the comparsion.
+                // Compare the strings four bytes at a time. The following code takes advantage of the fact that strings
+                // always have a null terminator, so even if length is 1 here, we can still do the comparsion.
                 while(length > 0)
                 {
                     if(*(int*)a != *(int*)b)
@@ -523,7 +459,7 @@ namespace System
                 {
                     fixed(char* dest = destination)
                     {
-                        wstrcpy( dest + destinationIndex, src + sourceIndex, count );
+                        Buffer.InternalMemoryCopy( src + sourceIndex, dest + destinationIndex, count );
                     }
                 }
             }
@@ -542,7 +478,7 @@ namespace System
                 {
                     fixed(char* dest = chars)
                     {
-                        wstrcpyPtrAligned( dest, src, length );
+                        Buffer.InternalMemoryCopy( src, dest, length );
                     }
                 }
             }
@@ -580,7 +516,7 @@ namespace System
                 {
                     fixed(char* dest = chars)
                     {
-                        wstrcpy( dest, src + startIndex, length );
+                        Buffer.InternalMemoryCopy( src + startIndex, dest, length );
                     }
                 }
             }
@@ -1120,7 +1056,7 @@ namespace System
             {
                 fixed(char* src = &this.m_firstChar)
                 {
-                    wstrcpy( dest, src + startIndex, length );
+                    Buffer.InternalMemoryCopy( src + startIndex, dest, length );
                 }
             }
 
@@ -1377,7 +1313,7 @@ namespace System
             {
                 fixed(char* pSrc = &src.m_firstChar)
                 {
-                    wstrcpy( pDest + destPos, pSrc, length );
+                    Buffer.InternalMemoryCopy( pSrc, pDest + destPos, length );
                 }
             }
         }
@@ -1398,163 +1334,6 @@ namespace System
         [MethodImpl( MethodImplOptions.InternalCall )]
         public extern String( char[] value );
 
-        //
-        // This handles the case where both smem and dmem pointers are
-        //  aligned on a pointer boundary
-        //
-        private static unsafe void wstrcpyPtrAligned( char* dmem, char* smem, int charCount )
-        {
-#if _DEBUG
-            BCLDebug.Assert(((int)dmem & (IntPtr.Size-1)) == 0, "dmem is pointer size aligned");
-            BCLDebug.Assert(((int)smem & (IntPtr.Size-1)) == 0, "smem is pointer size aligned");
-#endif
-
-#if !WIN64
-            while(charCount >= 8)
-            {
-                ((uint*)dmem)[0] = ((uint*)smem)[0];
-                ((uint*)dmem)[1] = ((uint*)smem)[1];
-                ((uint*)dmem)[2] = ((uint*)smem)[2];
-                ((uint*)dmem)[3] = ((uint*)smem)[3];
-
-                dmem      += 8;
-                smem      += 8;
-                charCount -= 8;
-            }
-
-            if((charCount & 4) != 0)
-            {
-                ((uint*)dmem)[0] = ((uint*)smem)[0];
-                ((uint*)dmem)[1] = ((uint*)smem)[1];
-
-                dmem += 4;
-                smem += 4;
-            }
-#else
-            while (charCount >= 16)
-            {
-                ((ulong *)dmem)[0] = ((ulong *)smem)[0];
-                ((ulong *)dmem)[1] = ((ulong *)smem)[1];
-                ((ulong *)dmem)[2] = ((ulong *)smem)[2];
-                ((ulong *)dmem)[3] = ((ulong *)smem)[3];
-
-                dmem      += 16;
-                smem      += 16;
-                charCount -= 16;
-            }
-
-            if ((charCount & 8) != 0)
-            {
-                ((ulong *)dmem)[0] = ((ulong *)smem)[0];
-                ((ulong *)dmem)[1] = ((ulong *)smem)[1];
-
-                dmem += 8;
-                smem += 8;
-            }
-
-            if ((charCount & 4) != 0)
-            {
-                ((ulong *)dmem)[0] = ((ulong *)smem)[0];
-
-                dmem += 4;
-                smem += 4;
-            }
-#endif
-            if((charCount & 2) != 0)
-            {
-                ((uint*)dmem)[0] = ((uint*)smem)[0];
-
-                dmem += 2;
-                smem += 2;
-            }
-
-            if((charCount & 1) != 0)
-            {
-                dmem[0] = smem[0];
-            }
-        }
-
-        private static unsafe void wstrcpy( char* dmem, char* smem, int charCount )
-        {
-            if(charCount > 0)
-            {
-                if((((int)dmem | (int)smem) & (IntPtr.Size - 1)) == 0) // Both pointers word-aligned?
-                {
-                    while(charCount >= 8)
-                    {
-                        ((uint*)dmem)[0] = ((uint*)smem)[0];
-                        ((uint*)dmem)[1] = ((uint*)smem)[1];
-                        ((uint*)dmem)[2] = ((uint*)smem)[2];
-                        ((uint*)dmem)[3] = ((uint*)smem)[3];
-
-                        dmem      += 8;
-                        smem      += 8;
-                        charCount -= 8;
-                    }
-
-                    if((charCount & 4) != 0)
-                    {
-                        ((uint*)dmem)[0] = ((uint*)smem)[0];
-                        ((uint*)dmem)[1] = ((uint*)smem)[1];
-
-                        dmem += 4;
-                        smem += 4;
-                    }
-
-                    if((charCount & 2) != 0)
-                    {
-                        ((uint*)dmem)[0] = ((uint*)smem)[0];
-
-                        dmem += 2;
-                        smem += 2;
-                    }
-                }
-                else
-                {
-                    while(charCount >= 8)
-                    {
-                        dmem[0] = smem[0];
-                        dmem[1] = smem[1];
-                        dmem[2] = smem[2];
-                        dmem[3] = smem[3];
-                        dmem[4] = smem[4];
-                        dmem[5] = smem[5];
-                        dmem[6] = smem[6];
-                        dmem[7] = smem[7];
-
-                        dmem      += 8;
-                        smem      += 8;
-                        charCount -= 8;
-                    }
-
-                    if((charCount & 4) != 0)
-                    {
-                        dmem[0] = smem[0];
-                        dmem[1] = smem[1];
-                        dmem[2] = smem[2];
-                        dmem[3] = smem[3];
-
-                        dmem += 4;
-                        smem += 4;
-                    }
-
-                    if((charCount & 2) != 0)
-                    {
-                        dmem[0] = smem[0];
-                        dmem[1] = smem[1];
-
-                        dmem += 2;
-                        smem += 2;
-                    }
-                }
-
-                if((charCount & 1) != 0)
-                {
-                    dmem[0] = smem[0];
-                }
-            }
-        }
-
 ////    private String CtorCharArray( char[] value )
 ////    {
 ////        if(value != null && value.Length != 0)
@@ -1565,7 +1344,7 @@ namespace System
 ////            {
 ////                fixed(char* dest = result, source = value)
 ////                {
-////                    wstrcpyPtrAligned( dest, source, value.Length );
+////                    Buffer.InternalMemoryCopy( source, dest, value.Length );
 ////                }
 ////            }
 ////            return result;
@@ -1606,7 +1385,7 @@ namespace System
 ////            {
 ////                fixed(char* dest = result, source = value)
 ////                {
-////                    wstrcpy( dest, source + startIndex, length );
+////                    Buffer.InternalMemoryCopy( source + startIndex, dest, length );
 ////                }
 ////            }
 ////            return result;
@@ -1723,7 +1502,7 @@ namespace System
 ////
 ////                fixed(char* dest = result)
 ////                {
-////                    wstrcpy( dest, ptr, count );
+////                    Buffer.InternalMemoryCopy( ptr, dest, count );
 ////                }
 ////
 ////                return result;
@@ -1770,7 +1549,7 @@ namespace System
 ////        {
 ////            fixed(char* dest = result)
 ////            {
-////                wstrcpy( dest, pFrom, length );
+////                Buffer.InternalMemoryCopy( pFrom, dest, length );
 ////            }
 ////
 ////            return result;
@@ -2969,7 +2748,7 @@ namespace System
             {
                 fixed(char* src = &str.m_firstChar)
                 {
-                    wstrcpyPtrAligned( dest, src, length );
+                    Buffer.InternalMemoryCopy( src, dest, length );
                 }
             }
 
@@ -2987,7 +2766,7 @@ namespace System
             {
                 fixed(char* src = &str.m_firstChar)
                 {
-                    wstrcpyPtrAligned( dest, src, length );
+                    Buffer.InternalMemoryCopy( src, dest, length );
                 }
             }
 
@@ -3474,7 +3253,7 @@ namespace System
             {
                 fixed(char* src = &value.m_firstChar)
                 {
-                    wstrcpy( dest + currentLength, src, count );
+                    Buffer.InternalMemoryCopy( src, dest + currentLength, count );
                 }
 
                 dest[newLength] = '\0';
@@ -3500,7 +3279,7 @@ namespace System
             {
                 fixed(char* src = &value.m_firstChar)
                 {
-                    wstrcpy( dest + currentLength, src + startIndex, count );
+                    Buffer.InternalMemoryCopy( src + startIndex, dest + currentLength, count );
                 }
                 dest[newLength] = '\0';
             }
@@ -3521,7 +3300,7 @@ namespace System
 
             fixed(char* p = &this.m_firstChar)
             {
-                wstrcpy( p + currentLength, value, count );
+                Buffer.InternalMemoryCopy( value, p + currentLength, count );
 
                 p[newLength] = '\0';
             }
@@ -3550,7 +3329,7 @@ namespace System
                 {
                     fixed(char* src = value)
                     {
-                        wstrcpy( dest + currentLength, src + start, count );
+                        Buffer.InternalMemoryCopy( src + start, dest + currentLength, count );
                     }
                 }
 
@@ -3612,7 +3391,7 @@ namespace System
             {
                 fixed(char* src = &value.m_firstChar)
                 {
-                    wstrcpy( dest, src + startIndex, length );
+                    Buffer.InternalMemoryCopy( src + startIndex, dest, length );
                 }
             }
             newStr.SetLength( length );

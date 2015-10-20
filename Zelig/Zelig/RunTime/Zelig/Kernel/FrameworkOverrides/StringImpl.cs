@@ -52,7 +52,7 @@ namespace Microsoft.Zelig.Runtime
                 {
                     fixed(char* src = &value[startIndex])
                     {
-                        wstrcpy( dest, src, length );
+                        Buffer.InternalMemoryCopy( src, dest, length);
                     }
                 }
             }
@@ -216,16 +216,6 @@ namespace Microsoft.Zelig.Runtime
 
             return -1;
         }
-
-        //
-        // Aliasing to access private methods in mscorlib.
-        //
-
-        [AliasForBaseMethod( "wstrcpy" )]
-        [MethodImpl( MethodImplOptions.InternalCall )]
-        private static extern unsafe void wstrcpy( char* dmem, char* smem, int charCount );
-
-        //--//
 
         //
         // This is used to cast between an object and and ArrayImpl, which is not possible in C#.

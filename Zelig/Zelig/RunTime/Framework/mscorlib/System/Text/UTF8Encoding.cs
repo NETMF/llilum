@@ -1834,25 +1834,11 @@ namespace System.Text
                         pSrc += 2;
                     }
 
-                    // Run 8 + 8 characters at a time!
+                    // Run 8 characters at a time!
                     while(pSrc < pStop)
                     {
                         ch = *(int*)pSrc;
                         int chb = *(int*)(pSrc + 4);
-                        if(((ch | chb) & unchecked( (int)0x80808080 )) != 0)
-                        {
-                            goto LongCodeWithMask32;
-                        }
-                        pSrc += 8;
-
-                        // This is a really small loop - unroll it
-                        if(pSrc >= pStop)
-                        {
-                            break;
-                        }
-
-                        ch = *(int*)pSrc;
-                        chb = *(int*)(pSrc + 4);
                         if(((ch | chb) & unchecked( (int)0x80808080 )) != 0)
                         {
                             goto LongCodeWithMask32;
