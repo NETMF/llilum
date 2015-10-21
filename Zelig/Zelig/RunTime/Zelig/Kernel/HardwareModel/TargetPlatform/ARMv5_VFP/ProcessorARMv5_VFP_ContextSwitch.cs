@@ -283,11 +283,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv5
                 this.Registers.PC    = new UIntPtr( dlgImpl.InnerGetCodePointer().Target.ToPointer() );
                 this.Registers.SP    = new UIntPtr( stackImpl.GetEndDataPointer()                    );
                 this.Registers.FPSCR = EncDef_VFP.c_fpscr_DN | EncDef_VFP.c_fpscr_FZ;
-
-                if(objImpl != null)
-                {
-                    this.Registers.R0 = new UIntPtr( objImpl.Unpack() );
-                }
+                this.Registers.R0    = objImpl.ToPointer();
             }
 
             [NoInline]

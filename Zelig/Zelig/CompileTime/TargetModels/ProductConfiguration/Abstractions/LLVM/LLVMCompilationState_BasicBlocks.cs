@@ -6,7 +6,6 @@
 
 namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 {
-
     using System;
     using System.Collections.Generic;
     using Microsoft.Zelig.LLVM;
@@ -312,19 +311,15 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         }
 
-        _Value ConvertValueToALUOperableType( _Value val, bool skipObjectHeader )
+        _Value ConvertValueToALUOperableType( _Value val )
         {
             val = m_basicBlock.LoadToImmediate( val );
 
-            if( !val.IsInteger && !val.IsFloatingPoint )
+            // LLVM doesn't accept pointers as operands for arithmetic operations, so convert them to integers.
+            if( val.IsPointer )
             {
-                if( ( !val.IsImmediate && val.IsPointerPointer ) ||
-                    ( val.IsImmediate && val.IsPointer ) )
-                {
-                    return m_basicBlock.InsertPointerToInt( val, skipObjectHeader );
-                }
-
-                throw new Exception( "Unhandled type." );
+                _Type intPtrType = m_manager.GetOrInsertType( m_wkt.System_UInt32 );
+                return m_basicBlock.InsertPointerToInt( val, intPtrType );
             }
 
             return val;
@@ -351,9 +346,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
             if( val.Type.IsPointer && targetType.IsPointer )
             {
-                // We round-trip all pointers through an int to adjust for offset differences between objects and value
-                // types. This guarantees that we always point to the beginning of an object.
-                return m_basicBlock.InsertIntToPointer( m_basicBlock.InsertPointerToInt( val, true ), targetType );
+                return m_basicBlock.InsertBitCast( val, targetType );
             }
 
             // Trivial case: Value is already the desired type. We check this *after* pointer-to-pointer conversions
@@ -386,7 +379,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
             if( val.Type.IsPointer && targetType.IsInteger )
             {
-                return ConvertValueToStoreToTarget( m_basicBlock.InsertPointerToInt( val, true ), targetType );
+                return m_basicBlock.InsertPointerToInt( val, targetType );
             }
 
             if( val.Type.IsFloatingPoint && targetType.IsFloatingPoint )
@@ -451,8 +444,8 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
             if( op is IR.BinaryOperator )
             {
                 //Todo: add exceptions 
-                _Value valA = ConvertValueToALUOperableType( m_arguments[ 0 ], true );
-                _Value valB = ConvertValueToALUOperableType( m_arguments[ 1 ], true );
+                _Value valA = ConvertValueToALUOperableType( m_arguments[ 0 ] );
+                _Value valB = ConvertValueToALUOperableType( m_arguments[ 1 ] );
                 MatchIntegerLengths( ref valA, ref valB );
                 _Value result = m_basicBlock.InsertBinaryOp( ( int )op.Alu, valA, valB, op.Signed );
                 StoreValue( m_results[ 0 ], result );
@@ -470,7 +463,8 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
             if( op is IR.UnaryOperator )
             {
-                _Value result = m_basicBlock.InsertUnaryOp( ( int )op.Alu, ConvertValueToALUOperableType( m_arguments[ 0 ], true ), op.Signed );
+                _Value val = ConvertValueToALUOperableType( m_arguments[ 0 ] );
+                _Value result = m_basicBlock.InsertUnaryOp( ( int )op.Alu, val, op.Signed );
                 StoreValue( m_results[ 0 ], result );
             }
             else
@@ -481,7 +475,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         private void Translate_ConversionOperator( IR.ConversionOperator op )
         {
-            _Value v = ConvertValueToALUOperableType( m_arguments[ 0 ], true );
+            _Value v = ConvertValueToALUOperableType( m_arguments[ 0 ] );
             LLVM._Type resultType = m_manager.GetOrInsertBasicTypeAsLLVMSingleValueType( op.FirstResult.Type );
 
             if( op.FirstResult.Type == m_wkt.System_IntPtr ||
@@ -514,7 +508,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
         private void Translate_ConvertOperator( IR.ConvertOperator op )
         {
             // TODO: Add support for overflow exceptions
-            _Value v = ConvertValueToALUOperableType( m_arguments[ 0 ], true );
+            _Value v = ConvertValueToALUOperableType( m_arguments[ 0 ] );
             StoreValue( m_results[ 0 ], v );
         }
 
@@ -546,10 +540,8 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         _Value DoCmpOp( _Value valA, _Value valB, int cond, bool signed )
         {
-            // We don't want adjust for object headers when comparing pointers. Instead, we compare their raw values in
-            // case we're comparing against a literal (such as null).
-            valA = ConvertValueToALUOperableType( valA, false );
-            valB = ConvertValueToALUOperableType( valB, false );
+            valA = ConvertValueToALUOperableType( valA );
+            valB = ConvertValueToALUOperableType( valB );
             return m_basicBlock.InsertCmp( cond, signed, valA, valB );
         }
 
@@ -590,7 +582,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
         private _Value ArrayAccessByIDX( _Value array, _Value idx )
         {
             array = m_basicBlock.GetField( array, ( int )m_wkt.System_Array.Size );
-            return m_basicBlock.IndexLLVMArray( array, ConvertValueToALUOperableType( idx, true ) );
+            return m_basicBlock.IndexLLVMArray( array, ConvertValueToALUOperableType( idx ) );
         }
 
         private void Translate_LoadElementOperator( IR.LoadElementOperator op )
@@ -618,9 +610,8 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         private void Translate_BinaryConditionalControlOperator( IR.BinaryConditionalControlOperator op )
         {
-            // We don't want adjust for object headers when comparing pointers. Instead, we compare their raw values in
-            // case we're comparing against a literal (such as null).
-            m_basicBlock.InsertConditionalBranch( ConvertValueToALUOperableType( m_arguments[ 0 ], false ),
+            m_basicBlock.InsertConditionalBranch(
+                ConvertValueToALUOperableType( m_arguments[ 0 ] ),
                 GetOrInsertBasicBlock( op.TargetBranchTaken ),
                 GetOrInsertBasicBlock( op.TargetBranchNotTaken ) );
         }
@@ -644,9 +635,9 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
                 caseBBs.Add( GetOrInsertBasicBlock( op.Targets[ i ] ) );
             }
 
-            m_basicBlock.InsertSwitchAndCases( ConvertValueToALUOperableType( m_arguments[ 0 ], true ),
-                                              GetOrInsertBasicBlock( op.TargetBranchNotTaken ),
-                                              caseValues, caseBBs );
+            _Value argument = ConvertValueToALUOperableType( m_arguments[ 0 ] );
+            _BasicBlock defaultBlock = GetOrInsertBasicBlock( op.TargetBranchNotTaken );
+            m_basicBlock.InsertSwitchAndCases( argument, defaultBlock, caseValues, caseBBs );
         }
 
         private void Translate_ReturnControlOperator( IR.ReturnControlOperator op )

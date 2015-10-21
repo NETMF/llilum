@@ -13,20 +13,6 @@ namespace Microsoft.Zelig.Runtime
     [ExtendClass(typeof(System.Object), NoConstructors=true)]
     public class ObjectImpl
     {
-        //
-        // State
-        //
-
-        //
-        // Constructor Methods
-        //
-
-        //--//
-
-        //
-        // Helper Methods
-        //
-
         [AliasForBaseMethod( "Finalize" )]
         [MethodImpl( MethodImplOptions.InternalCall )]
         public extern virtual void FinalizeImpl();
@@ -40,17 +26,12 @@ namespace Microsoft.Zelig.Runtime
         protected unsafe new Object MemberwiseClone()
         {
             TS.VTable vTable = TS.VTable.Get( this );
-
             object obj  = TypeSystemManager.Instance.AllocateObject( vTable );
-            int    size =  (int)       vTable.BaseSize;
-            uint*  src  =              this .Unpack();
-            uint*  dst  = ((ObjectImpl)obj ).Unpack();
 
-            while(size > 0)
-            {
-                *dst++ = *src++;
-                size -= sizeof(uint);
-            }
+            byte* src = (byte*)GetFieldPointer().ToPointer();
+            byte* dst = (byte*)((ObjectImpl)obj).GetFieldPointer().ToPointer();
+            int size  = (int)vTable.BaseSize;
+            Buffer.InternalMemoryCopy( src, dst, size );
 
             return obj;
         }
@@ -65,33 +46,27 @@ namespace Microsoft.Zelig.Runtime
             return SyncBlockTable.GetHashCode( this );
         }
 
-        //--//
+        [Inline]
+        public UIntPtr GetFieldPointer()
+        {
+            return AddressMath.Increment( ToPointer(), ObjectHeader.HeaderSize );
+        }
 
-        //
-        // This is used to get the pointer to the data, which is not possible in C#.
-        //
+        [Inline]
+        public static ObjectImpl FromFieldPointer(UIntPtr fieldPointer)
+        {
+            return FromPointer( AddressMath.Decrement( fieldPointer, ObjectHeader.HeaderSize ) );
+        }
+
         [TS.GenerateUnsafeCast]
-        public extern unsafe uint* Unpack();
+        public extern UIntPtr ToPointer();
 
         [TS.GenerateUnsafeCast]
-        public extern static ObjectImpl CastAsObject( UIntPtr ptr );
-
-
-        [TS.GenerateUnsafeCast]
-        public extern UIntPtr CastAsUIntPtr();
-
+        public extern static ObjectImpl FromPointer( UIntPtr ptr );
 
         [TS.WellKnownMethod( "Object_NullCheck" )]
         [MethodImpl( MethodImplOptions.InternalCall )]
         public extern static void NullCheck( object a );
-
-
-        //--//
-
-        //
-        // Access Methods
-        //
-
     }
 }
 

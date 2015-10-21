@@ -31,7 +31,7 @@ namespace Microsoft.CortexM3OnMBED
 
         public override unsafe void ProcessLog(string format)
         {
-            fixed (char* pS = (string)(object)format)
+            fixed (char* pS = format)
             {
                 uint length = (uint)format.Length;
                 RTOS.Utilities.DebugLog0(pS, length);
@@ -40,7 +40,7 @@ namespace Microsoft.CortexM3OnMBED
 
         public override unsafe void ProcessLog(string format, int p1)
         {
-            fixed (char* pS = (string)(object)format)
+            fixed (char* pS = format)
             {
                 uint length = (uint)format.Length;
                 RTOS.Utilities.DebugLog1(pS, length, p1);
@@ -49,7 +49,7 @@ namespace Microsoft.CortexM3OnMBED
 
         public override unsafe void ProcessLog(string format, int p1, int p2)
         {
-            fixed (char* pS = (string)(object)format)
+            fixed (char* pS = format)
             {
                 uint length = (uint)format.Length;
                 RTOS.Utilities.DebugLog2(pS, length, p1, p2);
@@ -58,7 +58,7 @@ namespace Microsoft.CortexM3OnMBED
 
         public override unsafe void ProcessLog(string format, int p1, int p2, int p3)
         {
-            fixed (char* pS = (string)(object)format)
+            fixed (char* pS = format)
             {
                 uint length = (uint)format.Length;
                 RTOS.Utilities.DebugLog3(pS, length, p1, p2, p3);
@@ -67,7 +67,7 @@ namespace Microsoft.CortexM3OnMBED
 
         public override unsafe void ProcessLog(string format, int p1, int p2, int p3, int p4)
         {
-            fixed (char* pS = (string)(object)format)
+            fixed (char* pS = format)
             {
                 uint length = (uint)format.Length;
                 RTOS.Utilities.DebugLog4(pS, length, p1, p2, p3, p4);
@@ -76,7 +76,7 @@ namespace Microsoft.CortexM3OnMBED
 
         public override unsafe void ProcessLog(string format, int p1, int p2, int p3, int p4, int p5)
         {
-            fixed (char* pS = (string)(object)format)
+            fixed (char* pS = format)
             {
                 uint length = (uint)format.Length;
                 RTOS.Utilities.DebugLog5(pS, length, p1, p2, p3, p4, p5);

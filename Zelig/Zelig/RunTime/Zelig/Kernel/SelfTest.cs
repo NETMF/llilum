@@ -541,7 +541,7 @@ namespace Microsoft.Zelig.Runtime
 
             var oh = ObjectHeader.Unpack(array);
             var ptr = oh.ToPointer();
-            BugCheck.Log("Allocated oh = 0x%x of total size %d", (int)ptr.ToUInt32(), (int)oh.Size);
+            BugCheck.Log("Allocated oh = 0x%x of total size %d", (int)ptr.ToUInt32(), (int)oh.TotalSize);
 
             return ptr;
         }
@@ -558,7 +558,7 @@ namespace Microsoft.Zelig.Runtime
 
             var oh = ObjectHeader.Unpack(array);
             var ptr = oh.ToPointer();
-            BugCheck.Log("Allocated oh = 0x%x of total size %d with fake gaps", (int)ptr.ToUInt32(), (int)oh.Size);
+            BugCheck.Log("Allocated oh = 0x%x of total size %d with fake gaps", (int)ptr.ToUInt32(), (int)oh.TotalSize);
 
             return ptr;
         }

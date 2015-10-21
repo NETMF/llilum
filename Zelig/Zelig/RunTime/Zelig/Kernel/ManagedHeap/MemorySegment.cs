@@ -129,7 +129,7 @@ namespace Microsoft.Zelig.Runtime
         public void Release(UIntPtr address)
         {
             UIntPtr newFreeBlockBaseAddress = address;
-            uint newFreeBlockSize = ObjectHeader.CastAsObjectHeader(address).Size;
+            uint newFreeBlockSize = ObjectHeader.CastAsObjectHeader(address).TotalSize;
 
             Log("MemorySegment(0x%x).Release - address 0x%x, size: %d", (int)this.Beginning.ToUInt32(), (int)address.ToUInt32(), (int)newFreeBlockSize);
 
@@ -173,7 +173,7 @@ namespace Microsoft.Zelig.Runtime
                 {
                     // We need to merge with the previous block
                     newFreeBlockBaseAddress = previousBlockObjectHeader.ToPointer();
-                    newFreeBlockSize += previousBlockObjectHeader.Size;
+                    newFreeBlockSize += previousBlockObjectHeader.TotalSize;
                     mergeWithPrevious = true;
 
                     Log("Need to merge with previous block! New address 0x%x, size:%d",
@@ -192,7 +192,7 @@ namespace Microsoft.Zelig.Runtime
                 if (AddressMath.Increment(newFreeBlockBaseAddress, newFreeBlockSize) == nextBlockBaseAddress)
                 {
                     // We need to merge with the next block
-                    newFreeBlockSize += ObjectHeader.CastAsObjectHeader(nextBlockBaseAddress).Size;
+                    newFreeBlockSize += ObjectHeader.CastAsObjectHeader(nextBlockBaseAddress).TotalSize;
                     mergeWithNext = true;
 
                     Log("Need to merge with next block! New address 0x%x, size:%d",
@@ -432,7 +432,11 @@ namespace Microsoft.Zelig.Runtime
                 bool isGapPlug = gcFlags == ObjectHeader.GarbageCollectorFlags.GapPlug;
 
                 Log("oh:0x%x, gcFlags:%x(fb:%d, gp:%d), size %d",
-                    (int)objectPointer.ToUInt32(), (int)gcFlags, isFreeBlock ? 1 : 0, isGapPlug ? 1 : 0, isGapPlug ? sizeof(uint) : (int)oh.Size);
+                    (int)objectPointer.ToUInt32(),
+                    (int)gcFlags,
+                    isFreeBlock ? 1 : 0,
+                    isGapPlug ? 1 : 0,
+                    isGapPlug ? sizeof(uint) : (int)oh.TotalSize);
 
                 if (isFreeBlock)
                 {

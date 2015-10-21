@@ -490,28 +490,13 @@ namespace Microsoft.Zelig.LLVM
             return new _Value( Module, type, bitCast, true );
         }
 
-        public _Value InsertPointerToInt( _Value val, bool skipObjectHeader )
+        public _Value InsertPointerToInt( _Value val, _Type intType )
         {
             Debug.Assert( val.IsPointer );
             Debug.Assert( val.IsImmediate );
 
-            _Type intType = Module.GetType( "System.UInt32" );
             Value llvmVal = IrBuilder.PointerToInt( val.LlvmValue, intType.DebugType )
                                      .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
-
-            _Type underlyingType = val.Type.UnderlyingType;
-            if( skipObjectHeader &&
-                ( underlyingType != null ) &&
-                !underlyingType.IsValueType &&
-                ( underlyingType.Name != "Microsoft.Zelig.Runtime.ObjectHeader" ) )
-            {
-                _Type ohTy = Module.GetType( "Microsoft.Zelig.Runtime.ObjectHeader" );
-                var constantInt = Module.LlvmModule.Context.CreateConstant( ohTy.SizeInBits / 8 );
-                llvmVal = IrBuilder.Add( llvmVal, constantInt )
-                                   .RegisterName( "headerOffsetAdd" )
-                                   .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
-            }
-
             return new _Value( Module, intType, llvmVal, true );
         }
 
@@ -520,22 +505,8 @@ namespace Microsoft.Zelig.LLVM
             Debug.Assert( val.IsInteger );
             Debug.Assert( val.IsImmediate );
 
-            Value llvmVal = val.LlvmValue;
-
-            _Type underlyingType = pointerType.UnderlyingType;
-            if( ( underlyingType != null ) &&
-                !underlyingType.IsValueType &&
-                ( underlyingType.Name != "Microsoft.Zelig.Runtime.ObjectHeader" ) )
-            {
-                _Type ohTy = Module.GetType( "Microsoft.Zelig.Runtime.ObjectHeader" );
-                llvmVal = IrBuilder.Sub( llvmVal, Module.LlvmModule.Context.CreateConstant( ohTy.SizeInBits / 8 ) )
-                                   .RegisterName( "headerOffsetSub" )
-                                   .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
-            }
-
-            llvmVal = IrBuilder.IntToPointer( llvmVal, (IPointerType)pointerType.DebugType )
-                               .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
-
+            Value llvmVal = IrBuilder.IntToPointer( val.LlvmValue, (IPointerType)pointerType.DebugType )
+                                     .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
             return new _Value( Module, pointerType, llvmVal, true );
         }
 

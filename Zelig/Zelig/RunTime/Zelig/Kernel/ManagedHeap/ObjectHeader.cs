@@ -68,21 +68,11 @@ namespace Microsoft.Zelig.Runtime
         // Helper Methods
         //      
 
-        [Inline]
-        public object Pack()
-        {
-            int size = System.Runtime.InteropServices.Marshal.SizeOf( typeof(ObjectHeader ) );
+        [TS.GenerateUnsafeCast]
+        public extern ObjectImpl Pack();
 
-            return ObjectImpl.CastAsObject( AddressMath.Increment( this.ToPointer(), (uint)size ) );
-        }
-
-        [Inline]
-        public static ObjectHeader Unpack( object obj )
-        {
-            int size = System.Runtime.InteropServices.Marshal.SizeOf( typeof(ObjectHeader ) );
-
-            return CastAsObjectHeader( AddressMath.Decrement( ((ObjectImpl)obj).CastAsUIntPtr(), (uint)size ) );
-        }
+        [TS.GenerateUnsafeCast]
+        public extern static ObjectHeader Unpack( object obj );
 
         [TS.GenerateUnsafeCast]
         public extern UIntPtr ToPointer();
@@ -93,31 +83,35 @@ namespace Microsoft.Zelig.Runtime
         [Inline]
         public unsafe UIntPtr GetNextObjectPointer()
         {
-            ObjectImpl obj    = (ObjectImpl)this.Pack();
+            return AddressMath.Increment( ToPointer(), this.TotalSize );
+        }
 
-            return new UIntPtr( (uint)obj.Unpack() + this.ObjectSize );
+        public static uint HeaderSize
+        {
+            [Inline]
+            get
+            {
+                return (uint)System.Runtime.InteropServices.Marshal.SizeOf(typeof(ObjectHeader));
+            }
         }
 
         public uint ObjectSize
         {
             get
             {
-                ObjectImpl obj = (ObjectImpl)this.Pack();
+                ObjectImpl obj = this.Pack();
                 TS.VTable vTable = this.VirtualTable;
                 ArrayImpl array = ArrayImpl.CastAsArray(obj);
                 uint size = vTable.BaseSize + vTable.ElementSize * (uint)array.Length;
-
-                size = AddressMath.AlignToWordBoundary(size);
-
-                return size;
+                return AddressMath.AlignToWordBoundary(size);
             }
         }
 
-        public uint Size
+        public uint TotalSize
         {
             get
             {
-                return this.ObjectSize + (uint)System.Runtime.InteropServices.Marshal.SizeOf(typeof(ObjectHeader));
+                return HeaderSize + ObjectSize;
             }
         }
 

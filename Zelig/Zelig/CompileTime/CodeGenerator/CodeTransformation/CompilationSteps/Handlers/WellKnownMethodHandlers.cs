@@ -141,7 +141,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             CallOperator                    op = nc.GetOperatorAndThrowIfNotCall();
             TypeSystemForCodeTransformation ts = nc.TypeSystem;
 
-            var opNew = SingleAssignmentOperator.New( op.DebugInfo, op.FirstResult, ts.CreateConstantForFieldOffset( ts.WellKnownFields.StringImpl_FirstChar ) );
+            // Return an adjusted offset, accounting for the header size.
+            ConstantExpression offset = ts.CreateConstantForFieldOffset( ts.WellKnownFields.StringImpl_FirstChar );
+            ConstantExpression headerSize = ts.CreateConstantForTypeSize( ts.WellKnownTypes.Microsoft_Zelig_Runtime_ObjectHeader );
+            var opNew = BinaryOperator.New( op.DebugInfo, BinaryOperator.ALU.ADD, false, false, op.FirstResult, offset, headerSize );
             op.SubstituteWithOperator( opNew, Operator.SubstitutionFlags.Default );
 
             nc.MarkAsModified();

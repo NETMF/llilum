@@ -12,8 +12,8 @@ namespace Microsoft.Zelig.Runtime
         private const int c_defaultObjectStackCapacity = 100;
         private const int c_defaultArrayStackCapacity = 10;
 
-        private UIntPtr[] m_objectStack;
-        private int       m_objectStackPos;
+        private ObjectHeader[] m_objectStack;
+        private int            m_objectStackPos;
 
         // Helper struct to store the tracking information when traversing through
         // the arrays.
@@ -34,20 +34,18 @@ namespace Microsoft.Zelig.Runtime
             }
 
             // Clear the struct and return the address of the array's ObjectHeader 
-            public UIntPtr Pop( )
+            public ObjectHeader Pop( )
             {
                 BugCheck.Assert( m_numOfElementsLeft == 0, BugCheck.StopCode.InvalidOperation );
 
                 // Need to calculate the address of the array's ObjectHeader to return
                 UIntPtr arrayImplAddress = AddressMath.Decrement(m_address, (uint)System.Runtime.InteropServices.Marshal.SizeOf(typeof(ArrayImpl)));
-                Object arrayObject = ObjectImpl.CastAsObject(arrayImplAddress);
+                Object arrayObject = ObjectImpl.FromFieldPointer(arrayImplAddress);
                 ObjectHeader arrayObjectHeader = ObjectHeader.Unpack(arrayObject);
-                UIntPtr arrayObjectHeaderPtr = arrayObjectHeader.ToPointer();
 
                 m_address = UIntPtr.Zero;
                 m_vTableElement = null;
-
-                return arrayObjectHeaderPtr;
+                return arrayObjectHeader;
             }
 
             // Get the next set of element to visit. Return true when we've reached the last one.
@@ -73,7 +71,7 @@ namespace Microsoft.Zelig.Runtime
 
         public ReleaseReferenceHelper( int objectStackCapacity, int arrayStackCapacity )
         {
-            m_objectStack = new UIntPtr[ objectStackCapacity ];
+            m_objectStack = new ObjectHeader[ objectStackCapacity ];
             m_objectStackPos = 0;
 
             _arrayStack = new ArrayInfo[ arrayStackCapacity ];
@@ -82,7 +80,7 @@ namespace Microsoft.Zelig.Runtime
 
         public bool ReleaseReference( ObjectHeader oh )
         {
-            Log( "ReleaseReference 0x%x", (int)oh.ToPointer( ).ToUInt32( ) );
+            Log( "ReleaseReference 0x%x", (int)oh.ToPointer( ) );
 
             // DecrementRefCount returns true when the ref count of oh reaches 0
             if(DecrementRefCount( oh ))
@@ -124,7 +122,7 @@ namespace Microsoft.Zelig.Runtime
                 }
                 else
                 {
-                    PushToObjectStack( oh.ToPointer( ) );
+                    PushToObjectStack( oh );
                 }
 
                 return true;
@@ -159,25 +157,23 @@ namespace Microsoft.Zelig.Runtime
         }
 
         // Helper that calls the finalizer and free up the memory.
-        private void DeleteObject( UIntPtr objectHeaderAddress )
+        private void DeleteObject( ObjectHeader oh )
         {
-            ObjectHeader oh = ObjectHeader.CastAsObjectHeader(objectHeaderAddress);
-
-            Log( "Releasing oh:0x%x from memory.", (int)objectHeaderAddress.ToUInt32( ) );
-            ( (ObjectImpl)oh.Pack( ) ).FinalizeImpl( );
-            MemoryManager.Instance.Release( objectHeaderAddress );
+            Log( "Releasing oh:0x%x from memory.", (int)oh.ToPointer( ) );
+            oh.Pack().FinalizeImpl( );
+            MemoryManager.Instance.Release( oh.ToPointer() );
         }
 
         // Helper called by the main loop to iterate through the object stack.
         private void VisitObjectStack( )
         {
-            ObjectHeader oh = ObjectHeader.CastAsObjectHeader(PopFromObjectStack());
+            ObjectHeader oh = PopFromObjectStack();
 
-            Log( "VisitObjectStack address:0x%x", (int)oh.ToPointer( ).ToUInt32( ) );
+            Log( "VisitObjectStack address:0x%x", (int)oh.ToPointer() );
 
-            UIntPtr baseAddress = ((ObjectImpl)oh.Pack()).CastAsUIntPtr();
+            UIntPtr baseAddress = oh.Pack().GetFieldPointer();
             DecrementFieldsRefCount( baseAddress, oh.VirtualTable );
-            DeleteObject( oh.ToPointer( ) );
+            DeleteObject( oh );
         }
 
         // Helper called by the main loop to iterate through the array stack.
@@ -199,9 +195,7 @@ namespace Microsoft.Zelig.Runtime
             {
                 // address points to an object, so make sure it's not null and decrement
                 // its ref count
-                UIntPtr* ptr = (UIntPtr*)address.ToPointer();
-                UIntPtr obj = ptr[0];
-
+                UIntPtr obj = *(UIntPtr*)address.ToPointer();
                 if(obj != UIntPtr.Zero)
                 {
                     DecrementRefCount( ObjectHeader.CastAsObjectHeader( obj ) );
@@ -216,13 +210,13 @@ namespace Microsoft.Zelig.Runtime
             }
         }
 
-        private void PushToObjectStack( UIntPtr objectHeaderPtr )
+        private void PushToObjectStack( ObjectHeader oh )
         {
-            Log( "Adding 0x%x to delete object stack at pos:%d", (int)objectHeaderPtr.ToUInt32( ), m_objectStackPos );
+            Log( "Adding 0x%x to delete object stack at pos:%d", (int)oh.ToPointer(), m_objectStackPos );
 
             BugCheck.Assert( m_objectStackPos < m_objectStack.Length - 1, BugCheck.StopCode.NoMarkStack );
 
-            m_objectStack[ m_objectStackPos++ ] = objectHeaderPtr;
+            m_objectStack[ m_objectStackPos++ ] = oh;
         }
 
         private void PushToArrayStack( ObjectHeader oh )
@@ -233,7 +227,7 @@ namespace Microsoft.Zelig.Runtime
             if(numOfElements == 0)
             {
                 // Empty array, we can just delete the array object itself and return.
-                DeleteObject( oh.ToPointer( ) );
+                DeleteObject( oh );
                 return;
             }
 
@@ -245,7 +239,7 @@ namespace Microsoft.Zelig.Runtime
                 {
                     // It's an array of value types with no pointers, no need to push it.
                     // Just delete the array object and return.
-                    DeleteObject( oh.ToPointer( ) );
+                    DeleteObject( oh );
                     return;
                 }
 
@@ -258,29 +252,29 @@ namespace Microsoft.Zelig.Runtime
                 vTableElement = null;
             }
 
-            Log( "Adding 0x%x (len %d) to delete array stack at pos:%d", (int)oh.ToPointer( ).ToUInt32( ), (int)numOfElements, _arrayStackPos );
+            Log( "Adding 0x%x (len %d) to delete array stack at pos:%d", (int)oh.ToPointer( ), (int)numOfElements, _arrayStackPos );
 
             BugCheck.Assert( _arrayStackPos < _arrayStack.Length - 1, BugCheck.StopCode.NoMarkStack );
 
             _arrayStack[ _arrayStackPos++ ].Push( array, oh.VirtualTable.ElementSize, numOfElements, vTableElement );
         }
 
-        private UIntPtr PopFromObjectStack( )
+        private ObjectHeader PopFromObjectStack( )
         {
-            UIntPtr objectHeaderPtr = m_objectStack[--m_objectStackPos];
+            ObjectHeader oh = m_objectStack[--m_objectStackPos];
 
-            Log( "Removing 0x%x from delete object stack at pos:%d", (int)objectHeaderPtr.ToUInt32( ), m_objectStackPos );
+            Log( "Removing 0x%x from delete object stack at pos:%d", (int)oh.ToPointer( ), m_objectStackPos );
 
-            return objectHeaderPtr;
+            return oh;
         }
 
-        private UIntPtr PopFromArrayStack( )
+        private ObjectHeader PopFromArrayStack( )
         {
-            UIntPtr objectHeaderPtr = _arrayStack[--_arrayStackPos].Pop();
+            ObjectHeader oh = _arrayStack[--_arrayStackPos].Pop();
 
-            Log( "Removing 0x%x from delete array stack at pos:%d", (int)objectHeaderPtr.ToUInt32( ), _arrayStackPos );
+            Log( "Removing 0x%x from delete array stack at pos:%d", (int)oh.ToPointer( ), _arrayStackPos );
 
-            return objectHeaderPtr;
+            return oh;
         }
 
         private bool IsObjectStackEmpty
@@ -302,32 +296,32 @@ namespace Microsoft.Zelig.Runtime
 #if RELEASEREFERENCEHELPER_LOG
         private static void Log( string format )
         {
-            Log( format );
+            BugCheck.Log( format );
         }
 
         private static void Log( string format, int p1 )
         {
-            Log( format, p1 );
+            BugCheck.Log( format, p1 );
         }
 
         private static void Log( string format, int p1, int p2 )
         {
-            Log( format, p1, p2 );
+            BugCheck.Log( format, p1, p2 );
         }
 
         private static void Log( string format, int p1, int p2, int p3 )
         {
-            Log( format, p1, p2, p3 );
+            BugCheck.Log( format, p1, p2, p3 );
         }
 
         private static void Log( string format, int p1, int p2, int p3, int p4 )
         {
-            Log( format, p1, p2, p3, p4 );
+            BugCheck.Log( format, p1, p2, p3, p4 );
         }
 
         private static void Log( string format, int p1, int p2, int p3, int p4, int p5 )
         {
-            Log( format, p1, p2, p3, p4, p5 );
+            BugCheck.Log( format, p1, p2, p3, p4, p5 );
         }
 #else
         private static void Log( string format )
@@ -354,6 +348,5 @@ namespace Microsoft.Zelig.Runtime
         {
         }
 #endif
-
     }
 }

@@ -179,11 +179,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv4
                 this.Registers.CPSR = c_psr_mode_SYS;
                 this.Registers.PC   = new UIntPtr( dlgImpl.InnerGetCodePointer().Target.ToPointer() );
                 this.Registers.SP   = new UIntPtr( stackImpl.GetEndDataPointer()                    );
-    
-                if(objImpl != null)
-                {
-                    this.Registers.R0 = new UIntPtr( objImpl.Unpack() );
-                }
+                this.Registers.R0   = objImpl.ToPointer();
             }
 
             [NoInline]

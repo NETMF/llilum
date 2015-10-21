@@ -494,7 +494,7 @@ namespace Microsoft.Zelig.Runtime
 
                                 if(AddressMath.IsLessThan( interiorPtr, nextAddress ))
                                 {
-                                    return (ObjectImpl)oh.Pack();
+                                    return oh.Pack();
                                 }
 
                                 address = nextAddress;
@@ -649,7 +649,7 @@ namespace Microsoft.Zelig.Runtime
             var objImpl = (ObjectImpl)obj;
             if(objImpl != null)
             {
-                VisitHeapObject( objImpl.CastAsUIntPtr() );
+                VisitHeapObject( objImpl.ToPointer() );
             }
         }
 
@@ -769,7 +769,7 @@ namespace Microsoft.Zelig.Runtime
         private void MarkGlobalRoot()
         {
             object  root    = TS.GlobalRoot.Instance;
-            UIntPtr address = ((ObjectImpl)root).CastAsUIntPtr();
+            UIntPtr address = ((ObjectImpl)root).ToPointer();
 
             VisitHeapObject( address );
         }
@@ -996,7 +996,7 @@ namespace Microsoft.Zelig.Runtime
             ObjectImpl obj = FindObject( address );
             if(obj != null)
             {
-                VisitHeapObject( obj.CastAsUIntPtr() );
+                VisitHeapObject( obj.ToPointer() );
             }
         }
 
@@ -1010,7 +1010,7 @@ namespace Microsoft.Zelig.Runtime
                 BugCheck.Assert( MemoryManager.Instance.RefersToMemory( address ), BugCheck.StopCode.NotAMemoryReference );
             }
 
-            ObjectHeader                       oh    = ObjectHeader.Unpack( ObjectImpl.CastAsObject( address ) );
+            ObjectHeader                       oh    = ObjectHeader.Unpack( ObjectImpl.FromPointer( address ) );
             ObjectHeader.GarbageCollectorFlags flags = oh.GarbageCollectorState;
 
             switch(flags)
@@ -1183,7 +1183,7 @@ namespace Microsoft.Zelig.Runtime
         private void PushArrayReference( UIntPtr   address ,
                                          TS.VTable vTable  )
         {
-            ArrayImpl array         = ArrayImpl.CastAsArray( ObjectImpl.CastAsObject( address ) );
+            ArrayImpl array         = ArrayImpl.CastAsArray( ObjectImpl.FromPointer( address ) );
             int       numOfElements = array.Length;
 
             if(numOfElements == 0)
@@ -1245,7 +1245,7 @@ namespace Microsoft.Zelig.Runtime
 
                     m_maskStackForObjects_Pos = pos - 1;
 
-                    ObjectImpl obj    = ObjectImpl.CastAsObject( address );
+                    ObjectImpl obj    = ObjectImpl.FromPointer( address );
                     TS.VTable  vTable = TS.VTable.Get( obj );
 
                     VisitHeapObjectFieldsInline( address, vTable );

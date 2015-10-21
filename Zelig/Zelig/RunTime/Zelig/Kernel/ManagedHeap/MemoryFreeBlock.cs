@@ -27,7 +27,7 @@ namespace Microsoft.Zelig.Runtime
         {
             fixed(MemoryFreeBlock* ptr = &this)
             {
-                return CastAsArray( AddressMath.Decrement( new UIntPtr( ptr ), PointerOffset() ) );
+                return CastAsArray( AddressMath.Decrement( new UIntPtr( ptr ), FixedSize() ) );
             }
         }
 
@@ -46,9 +46,7 @@ namespace Microsoft.Zelig.Runtime
         public uint Size()
         {
             byte[] array = Pack();
-            uint   size  = (uint)array.Length + FixedSize();
-
-            return size;
+            return (uint)array.Length + FixedSize();
         }
 
         public ObjectHeader ToObjectHeader()
@@ -67,8 +65,8 @@ namespace Microsoft.Zelig.Runtime
             byte[] array = Pack();
             byte*  ptr   = (byte*)ArrayImpl.CastAsArray( array ).GetDataPointer();
 
-            UIntPtr start = new UIntPtr( ptr + System.Runtime.InteropServices.Marshal.SizeOf( typeof(MemoryFreeBlock) ) );
-            UIntPtr end   = new UIntPtr( ptr + array.Length                                                             );
+            UIntPtr start = new UIntPtr( ptr + sizeof(MemoryFreeBlock) );
+            UIntPtr end   = new UIntPtr( ptr + array.Length );
 
             Memory.Zero( start, end );
         }
@@ -79,15 +77,14 @@ namespace Microsoft.Zelig.Runtime
             byte[] array = Pack();
             byte*  ptr   = (byte*)ArrayImpl.CastAsArray( array ).GetDataPointer();
 
-            UIntPtr start = new UIntPtr( ptr + System.Runtime.InteropServices.Marshal.SizeOf( typeof(MemoryFreeBlock) ) );
-            UIntPtr end   = new UIntPtr( ptr + array.Length                                                             );
+            UIntPtr start = new UIntPtr( ptr + sizeof(MemoryFreeBlock) );
+            UIntPtr end   = new UIntPtr( ptr + array.Length );
 
             Memory.Dirty( start, end );
         }
 
         [TS.WellKnownMethod("DebugGC_MemoryFreeBlock_Allocate")]
-        public UIntPtr Allocate( ref MemorySegment memorySegment ,
-                                     uint          size          )
+        public UIntPtr Allocate( ref MemorySegment memorySegment, uint size )
         {
             ArrayImpl array         = ArrayImpl.CastAsArray( Pack() );
             uint      fixedSize     = FixedSize();
@@ -138,12 +135,6 @@ namespace Microsoft.Zelig.Runtime
         }
 
         [Inline]
-        private static uint PointerOffset()
-        {
-            return (uint)System.Runtime.InteropServices.Marshal.SizeOf( typeof(ArrayImpl) );
-        }
-
-        [Inline]
         public static uint FixedSize()
         {
             int size;
@@ -157,20 +148,13 @@ namespace Microsoft.Zelig.Runtime
         [Inline]
         public static uint MinimumSpaceRequired()
         {
-            int size;
-
-            size  = System.Runtime.InteropServices.Marshal.SizeOf( typeof(ObjectHeader   ) );
-            size += System.Runtime.InteropServices.Marshal.SizeOf( typeof(ArrayImpl      ) );
-            size += System.Runtime.InteropServices.Marshal.SizeOf( typeof(MemoryFreeBlock) );
-
-            return (uint)size;
+            return FixedSize() + (uint)sizeof(MemoryFreeBlock);
         }
 
         //--//
 
         [TS.WellKnownMethod("DebugGC_MemoryFreeBlock_InitializeFromRawMemory")]
-        public static MemoryFreeBlock* InitializeFromRawMemory( UIntPtr baseAddress ,
-                                                                uint    sizeInBytes )
+        public static MemoryFreeBlock* InitializeFromRawMemory( UIntPtr baseAddress, uint sizeInBytes )
         {
             TS.VTable vTable        = TS.VTable.GetFromType( typeof(byte[]) );
             uint      numOfElements = sizeInBytes - FixedSize();

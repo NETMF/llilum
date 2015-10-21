@@ -460,15 +460,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 registers.PSR           = new UIntPtr( ProcessorARMv7M.c_psr_InitialValue );
                 registers.EXC_RETURN    = c_MODE_RETURN__THREAD_PSP; // !!! here we assume that no context starts with FP context active !!!
                 registers.CONTROL       = c_CONTROL__MODE__THRD_PRIV;
-                
-                if(objImpl != null)
-                {
-                    registers.R0 = AddressMath.Decrement( new UIntPtr( objImpl.Unpack( ) ), 8 );
-                }
-                else
-                {
-                    registers.R0 = new UIntPtr( 0 );
-                }
+                registers.R0            = objImpl.ToPointer( );
 
 #if DEBUG_CTX_SWITCH
                 //this.Registers.R1  = new UIntPtr( 0x11111111 ); //UIntPtr.Zero;

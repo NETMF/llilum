@@ -3,6 +3,7 @@
 //
 
 //#define SELF_TEST
+//#define SELF_TEST_MEMORY
 
 //--//
 
