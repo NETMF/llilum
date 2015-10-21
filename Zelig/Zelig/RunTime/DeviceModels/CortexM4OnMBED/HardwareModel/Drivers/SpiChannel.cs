@@ -10,5 +10,9 @@ namespace Microsoft.CortexM4OnMBED.HardwareModel
 
     public sealed class SpiChannel : Microsoft.CortexM3OnMBED.HardwareModel.SpiChannel
     {
+        public SpiChannel(Microsoft.Llilum.Devices.Spi.ISpiChannelInfo info) : base(info)
+        {
+
+        }
     }
 }

@@ -92,14 +92,25 @@
     <Compile Include="FrameworkOverrides\Threading\InterlockedImpl.cs" />
     <Compile Include="FrameworkOverrides\Threading\ThreadImpl.cs" />
     <Compile Include="FrameworkOverrides\TypeImpl.cs" />
+    <Compile Include="FrameworkOverrides_Llilum\Devices\Adc\AdcPinImpl.cs" />
+    <Compile Include="FrameworkOverrides_Llilum\Devices\Adc\AdcProvider.cs" />
+    <Compile Include="FrameworkOverrides_Llilum\Devices\Gpio\GpioPinImpl.cs" />
+    <Compile Include="FrameworkOverrides_Llilum\Devices\Gpio\GpioProvider.cs" />
+    <Compile Include="FrameworkOverrides_Llilum\Devices\I2c\I2cDeviceImpl.cs" />
+    <Compile Include="FrameworkOverrides_Llilum\Devices\I2c\I2cProvider.cs" />
+    <Compile Include="FrameworkOverrides_Llilum\Devices\Spi\SpiDeviceImpl.cs" />
+    <Compile Include="FrameworkOverrides_Llilum\Devices\Spi\SpiProvider.cs" />
     <Compile Include="FrameworkOverrides_System\IO\MediaManagerImpl.cs" />
     <Compile Include="FrameworkOverrides_System\IO\NativeFileImpl.cs" />
     <Compile Include="FrameworkOverrides_System\IO\Ports\BaseSerialStream.cs" />
     <Compile Include="FrameworkOverrides_System\IO\Ports\SerialStreamImpl.cs" />
     <Compile Include="FrameworkOverrides_System\IO\Ports\SerialPortImpl.cs" />
-    <Compile Include="FrameworkOverrides_Windows\Devices\Gpio\GpioControllerImpl.cs" />
-    <Compile Include="FrameworkOverrides_Windows\Devices\I2c\I2cDeviceImpl.cs" />
-    <Compile Include="FrameworkOverrides_Windows\Devices\Spi\SpiDeviceImpl.cs" />
+    <Compile Include="FrameworkOverrides_Windows\Devices\Adc\AdcControllerImpl.cs" />
+    <Compile Include="FrameworkOverrides_Windows\Devices\Adc\AdcProviderUwp.cs" />
+    <Compile Include="FrameworkOverrides_Windows\Devices\I2c\I2cDeviceImplUwp.cs" />
+    <Compile Include="FrameworkOverrides_Windows\Devices\I2c\I2cProviderUwp.cs" />
+    <Compile Include="FrameworkOverrides_Windows\Devices\Spi\SpiDeviceImplUwp.cs" />
+    <Compile Include="FrameworkOverrides_Windows\Devices\Spi\SpiProviderUwp.cs" />
     <Compile Include="GarbageCollectors\MarkAndSweepCollector.cs" />
     <Compile Include="HardwareModel\HardwareProvider.cs" />
     <Compile Include="HardwareModel\TargetPlatform\AbstractMethodWrapper.cs" />
@@ -196,6 +207,10 @@
       <Project>{186F31A3-EF89-4A25-B2D5-20060720AA01}</Project>
       <Name>TypeSystem</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Framework\Llilum\Devices\Microsoft.Llilum.Devices.csproj">
+      <Project>{d68ee51b-a898-4a77-97d8-c61254cac122}</Project>
+      <Name>Microsoft.Llilum.Devices</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Framework\Windows\Devices\Windows.Devices.csproj">
       <Project>{dc8c38d7-780b-4b13-8ace-9050e39cc51c}</Project>

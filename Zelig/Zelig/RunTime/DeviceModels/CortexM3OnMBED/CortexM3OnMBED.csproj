@@ -49,14 +49,19 @@
   <ItemGroup>
     <Compile Include="HardwareModel\Board.cs" />
     <Compile Include="HardwareModel\Device.cs" />
-    <Compile Include="HardwareModel\Drivers\GpioPinMbed.cs" />
-    <Compile Include="HardwareModel\Drivers\I2cChannelMbed.cs" />
+    <Compile Include="HardwareModel\Drivers\AdcChannel.cs" />
+    <Compile Include="HardwareModel\Drivers\GpioPin.cs" />
+    <Compile Include="HardwareModel\Drivers\I2cChannel.cs" />
     <Compile Include="HardwareModel\Drivers\InterruptController.cs" />
     <Compile Include="HardwareModel\Drivers\SerialPortsManager.cs" />
     <Compile Include="HardwareModel\Drivers\SpiChannel.cs" />
     <Compile Include="HardwareModel\Drivers\StandardSerialPort.cs" />
     <Compile Include="HardwareModel\Drivers\SystemTimer.cs" />
     <Compile Include="HardwareModel\HardwareProvider.cs" />
+    <Compile Include="HardwareModel\HardwareProviders\AdcProvider.cs" />
+    <Compile Include="HardwareModel\HardwareProviders\GpioProvider.cs" />
+    <Compile Include="HardwareModel\HardwareProviders\I2cProvider.cs" />
+    <Compile Include="HardwareModel\HardwareProviders\SpiProvider.cs" />
     <Compile Include="HardwareModel\Memory.cs" />
     <Compile Include="HardwareModel\Peripherals.cs" />
     <Compile Include="HardwareModel\Processor.cs" />
@@ -89,6 +94,10 @@
       <Project>{186F31A3-EF89-4A25-B2D5-20060720AA01}</Project>
       <Name>TypeSystem</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Framework\Llilum\Devices\Microsoft.Llilum.Devices.csproj">
+      <Project>{d68ee51b-a898-4a77-97d8-c61254cac122}</Project>
+      <Name>Microsoft.Llilum.Devices</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Framework\system\system.csproj">
       <Project>{186f31a3-ef89-4a25-b2d5-20070702aa01}</Project>

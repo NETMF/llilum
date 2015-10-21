@@ -8,6 +8,7 @@
 //#define USE_SPI
 #define USE_GPIO
 #define USE_THREADING
+#define USE_ADC
 
 
 namespace Microsoft.Zelig.Test.mbed.Simple
@@ -22,6 +23,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
     using Windows.Devices.Spi;
     using Windows.Devices.I2c;
     using Windows.Devices.Enumeration;
+    using Windows.Devices.Adc;
 
     using ZeligSupport = Microsoft.Zelig.Support.mbed;
 
@@ -33,7 +35,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 #else
 #error No target board defined.
 #endif
-    
+
     //--//
 
     internal abstract class LedToggler
@@ -115,7 +117,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             }
         }
     }
-    
+
     class Program
     {
         public static byte[] i2cReadWrite1 = new byte[1];
@@ -131,7 +133,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 
         const float period = 0.75f;
         const float timePerMode = 4.0f;
-        
+
 #if LPC1768
         static int threadPin = (int)LPC1768.PinName.LED4;
 #elif K64F
@@ -155,38 +157,39 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 #endif
         };
 
-        static void Main( )
+        static void Main()
         {
             int currentMode = 0;
             int count = 0;
+            float periodDivider = 1;
 
             var controller = GpioController.GetDefault();
             var pins = new GpioPin[pinNumbers.Length];
 
-            for(int i = 0; i < pinNumbers.Length; ++i)
+            for (int i = 0; i < pinNumbers.Length; ++i)
             {
                 GpioPin pin = controller.OpenPin(pinNumbers[i]);
 
                 // Start with all LEDs on.
-                pin.Write( GpioPinValue.High );
-                pin.SetDriveMode( GpioPinDriveMode.Output );
+                pin.Write(GpioPinValue.High);
+                pin.SetDriveMode(GpioPinDriveMode.Output);
 
-                pins[ i ] = pin;
+                pins[i] = pin;
             }
 
             var solitary = controller.OpenPin( threadPin );
             solitary.SetDriveMode( GpioPinDriveMode.Output );
 
             LedToggler[] blinkingModes = new LedToggler[3];
-            blinkingModes[ 0 ] = new LedTogglerSimultaneous( pins );
-            blinkingModes[ 1 ] = new LedTogglerSequential( pins );
-            blinkingModes[ 2 ] = new LedTogglerAlternate( pins );
+            blinkingModes[0] = new LedTogglerSimultaneous(pins);
+            blinkingModes[1] = new LedTogglerSequential(pins);
+            blinkingModes[2] = new LedTogglerAlternate(pins);
 
             var blinkingTimer = new ZeligSupport.Timer();
             var blinkingModeSwitchTimer = new ZeligSupport.Timer();
 
-            blinkingTimer.start( );
-            blinkingModeSwitchTimer.start( );
+            blinkingTimer.start();
+            blinkingModeSwitchTimer.start();
 
             #region SPI
 #if USE_GPIO
@@ -203,7 +206,8 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 #else
 #error No target board defined.
 #endif
-            SpiConnectionSettings settings = new SpiConnectionSettings(chipSelect) {
+            SpiConnectionSettings settings = new SpiConnectionSettings(chipSelect)
+            {
                 ClockFrequency = 1000000,
                 Mode = SpiMode.Mode2
             };
@@ -239,29 +243,29 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             #endregion
 
             int pinState = 1;
-            solitary.Write( (GpioPinValue)pinState );
-            ZeligSupport.Timer.wait_ms( 300 );
-            solitary.Write( (GpioPinValue)0 );
-            ZeligSupport.Timer.wait_ms( 300 );
-            solitary.Write( (GpioPinValue)pinState );
+            solitary.Write((GpioPinValue)pinState);
+            ZeligSupport.Timer.wait_ms(300);
+            solitary.Write((GpioPinValue)0);
+            ZeligSupport.Timer.wait_ms(300);
+            solitary.Write((GpioPinValue)pinState);
             pinState = 0;
 
 #if (USE_THREADING)
-            var ev = new AutoResetEvent( false );
-            var solitaryBlinker = new Thread( delegate()
+            var ev = new AutoResetEvent(false);
+            var solitaryBlinker = new Thread(delegate ()
             {
-                while(true)
+                while (true)
                 {
-                    ev.WaitOne( 1000, false );
-                    
-                    solitary.Write( (GpioPinValue)pinState );
+                    ev.WaitOne(1000, false);
+
+                    solitary.Write((GpioPinValue)pinState);
 
                     pinState = ++pinState % 2;
                 }
-            } );
-            solitaryBlinker.Start( );
-            
-            var solitaryAlerter = new System.Threading.Timer( ( obj ) =>
+            });
+            solitaryBlinker.Start();
+
+            var solitaryAlerter = new System.Threading.Timer((obj) =>
             {
                 // blink 20 times very fast
                 int fastBlinks = 20;
@@ -274,10 +278,23 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             }, ev, 2000, 5000);
 
 #endif
+
+#if (USE_ADC)
+            AdcController adcController = AdcController.GetDefaultAsync();
+
+            // This is the left potentiometer on the mBed application board
+            AdcChannel adcChannel = adcController.OpenChannel(4);
+#endif
+            float readVal = 0;
             while (true)
             {
+#if (USE_ADC)
+                readVal = ((float)adcChannel.ReadValue()) / adcController.MaxValue * 2;
+#endif
+                // If ADC isn't in use, this will always be 1
+                periodDivider = 1 + readVal;
 
-                if (blinkingTimer.read() >= period)
+                if (blinkingTimer.read() >= (period / periodDivider))
                 {
                     blinkingTimer.reset();
                 }
@@ -287,7 +304,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                     currentMode = (currentMode + 1) % blinkingModes.Length;
                     blinkingModeSwitchTimer.reset();
 
-#region I2C_Impl
+                    #region I2C_Impl
 #if USE_I2C
                     try
                     {
@@ -311,9 +328,9 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                         // Continue as normal in this case
                     }
 #endif
-#endregion
+                    #endregion
 
-#region SPI_Impl
+                    #region SPI_Impl
 #if USE_SPI
                     writeBuffer[0] = (byte)currentMode;
                     spiDevice.TransferFullDuplex(writeBuffer, readBuffer);
@@ -324,14 +341,14 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                     }
                     spiDevice.Write(writeBuffer2);
 #endif
-#endregion
+                    #endregion
 
                     count++;
 
                 }
 
 
-                blinkingModes[currentMode].run(blinkingTimer.read() / period);
+                blinkingModes[currentMode].run(blinkingTimer.read() / (period / periodDivider));
 
             }
         }

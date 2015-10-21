@@ -73,6 +73,11 @@
     <Compile Include="HardwareModel\Drivers\SystemTimer.cs" />
     <Compile Include="HardwareModel\GPIO.cs" />
     <Compile Include="HardwareModel\Drivers\InterruptController.cs" />
+    <Compile Include="HardwareModel\HardwareProvidersUwp\AdcProviderUwp.cs" />
+    <Compile Include="HardwareModel\HardwareProvidersUwp\I2cProviderUwp.cs" />
+    <Compile Include="HardwareModel\HardwareProvidersUwp\SpiProviderUwp.cs" />
+    <Compile Include="HardwareModel\HardwareProviders\I2cProvider.cs" />
+    <Compile Include="HardwareModel\HardwareProviders\SpiProvider.cs" />
     <Compile Include="HardwareModel\NVIC.cs" />
     <Compile Include="HardwareModel\Peripherals.cs" />
     <Compile Include="HardwareModel\Processor.cs" />
@@ -80,6 +85,10 @@
     <Compile Include="SystemServices\ThreadManager.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Framework\system\system.csproj">
+      <Project>{186f31a3-ef89-4a25-b2d5-20070702aa01}</Project>
+      <Name>system</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Zelig\Common\Common.csproj">
       <Project>{186f31a3-ef89-4a25-b2d5-20061218aa01}</Project>
       <Name>Common</Name>

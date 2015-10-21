@@ -17,6 +17,7 @@
   <TemplateContent>
     <Project TargetFileName="$projectname$.Native.vcxproj" File="Native.vcxproj" ReplaceParameters="true">
       <ProjectItem ReplaceParameters="false" TargetFileName="helpers.h">helpers.h</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="InteropExports_adc.cpp">InteropExports_adc.cpp</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="InteropExports_clock.cpp">InteropExports_clock.cpp</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="InteropExports_core.cpp">InteropExports_core.cpp</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="InteropExports_debug.cpp">InteropExports_debug.cpp</ProjectItem>

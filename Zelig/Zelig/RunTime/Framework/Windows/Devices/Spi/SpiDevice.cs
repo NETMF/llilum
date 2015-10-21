@@ -8,6 +8,7 @@ namespace Windows.Devices.Spi
     using System;
     using System.Collections.Generic;
     using System.Runtime.CompilerServices;
+    using Llilum = Microsoft.Llilum.Devices.Spi;
     using Windows.Devices.Spi.Provider;
 
     //--//
@@ -16,14 +17,14 @@ namespace Windows.Devices.Spi
     {
         // Connection 
         private bool                           m_disposed;
-        private readonly SpiChannel            m_channel;
+        private readonly Llilum.SpiDevice      m_channel;
         private readonly SpiConnectionSettings m_connectionSettings;
         private readonly String                m_deviceId;
 
         /// <summary>
         /// Private SpiDevice constructor
         /// </summary>
-        internal SpiDevice(string busId, SpiConnectionSettings settings, SpiChannel channel)
+        internal SpiDevice(string busId, SpiConnectionSettings settings, Llilum.SpiDevice channel)
         {
             m_deviceId = busId;
             m_connectionSettings = settings;
@@ -56,7 +57,6 @@ namespace Windows.Devices.Spi
         {
             if (disposing)
             {
-                ReleaseSpiBus(m_deviceId);
                 m_channel.Dispose( );
             }
         }
@@ -70,12 +70,31 @@ namespace Windows.Devices.Spi
         /// [RemoteAsync]
         public static SpiDevice FromIdAsync( string busId, SpiConnectionSettings settings)
         {
-            SpiChannel ch = AcquireSpiChannel(busId, settings);
-            if(ch != null)
+            Llilum.ISpiChannelInfoUwp channelInfoUwp = GetSpiChannelInfo(busId);
+            if(channelInfoUwp == null)
             {
-                return new SpiDevice( busId, settings, ch );
+                throw new InvalidOperationException();
             }
-            return null;
+
+            Llilum.ISpiChannelInfo channelInfo = channelInfoUwp.ChannelInfo;
+            if (channelInfo == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            Llilum.SpiDevice spiChannel = new Llilum.SpiDevice(channelInfo);
+            if(spiChannel == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            spiChannel.ChipSelectPin = settings.ChipSelectLine;
+            spiChannel.ClockFrequency = settings.ClockFrequency;
+            spiChannel.DataBitLength = settings.DataBitLength;
+            spiChannel.Mode = (Llilum.SpiMode)settings.Mode;
+            spiChannel.Open();
+
+            return new SpiDevice(busId, settings, spiChannel);
         }
 
         
@@ -110,9 +129,8 @@ namespace Windows.Devices.Spi
         /// <returns>The bus info requested.</returns>
         public static SpiBusInfo GetBusInfo(string busId)
         {
-            int csLineCount, maxFreq, minFreq;
-            bool supports16;
-            if (!GetSpiChannelInfo(busId, out csLineCount, out maxFreq, out minFreq, out supports16))
+            Llilum.ISpiChannelInfoUwp channelInfo = GetSpiChannelInfo(busId);
+            if (channelInfo == null)
             {
                 return null;
             }
@@ -121,15 +139,15 @@ namespace Windows.Devices.Spi
             {
                 8,
             };
-            if (supports16)
+            if (channelInfo.Supports16)
             {
                 supportedDataBitLengths.Add(16);
             }
 
             return new SpiBusInfo() {
-                ChipSelectLineCount = csLineCount,
-                MaxClockFrequency = maxFreq,
-                MinClockFrequency = minFreq,
+                ChipSelectLineCount = channelInfo.ChipSelectLines,
+                MaxClockFrequency = channelInfo.MaxFreq,
+                MinClockFrequency = channelInfo.MinFreq,
                 SupportedDataBitLengths = supportedDataBitLengths,
             };
         }
@@ -239,15 +257,9 @@ namespace Windows.Devices.Spi
         //--//
 
         [MethodImpl( MethodImplOptions.InternalCall )]
-        private static extern SpiChannel AcquireSpiChannel(string busId, SpiConnectionSettings settings);
-
-        [MethodImpl( MethodImplOptions.InternalCall )]
-        private static extern bool GetSpiChannelInfo( string busId, out int csLineCount, out int maxFreq, out int minFreq, out bool supports16 );
+        private static extern Llilum.ISpiChannelInfoUwp GetSpiChannelInfo(string busId);
 
         [MethodImpl( MethodImplOptions.InternalCall )]
         private static extern string[] GetSpiChannels( );
-
-        [MethodImpl( MethodImplOptions.InternalCall )]
-        private static extern void ReleaseSpiBus( string busId );
     }
 }

@@ -6,13 +6,13 @@ namespace Windows.Devices.I2c
 {
     using System;
     using System.Runtime.CompilerServices;
-    using Windows.Devices.I2c.Provider;
-    
+    using Llilum = Microsoft.Llilum.Devices.I2c;
+
     public sealed class I2cDevice : IDisposable
     {
         private struct I2cChannelContainer
         {
-            public I2cChannel Channel;
+            public Llilum.I2cDevice Channel;
             public object TransactionLock;
             public bool Exclusive;
             public int RefCount;
@@ -62,7 +62,6 @@ namespace Windows.Devices.I2c
                     if (System.Threading.Interlocked.Decrement(ref m_channelContainer.RefCount) == 0)
                     {
                         // There are no more references to the channel. Release the pins and channel
-                        ReleaseI2cBus(m_deviceId);
                         m_channelContainer.Channel.Dispose();
                         m_channelContainer.Channel = null;
                     }
@@ -101,13 +100,13 @@ namespace Windows.Devices.I2c
         /// <returns></returns>
         public static /*IAsyncOperation<I2cDevice>*/I2cDevice FromIdAsync(string deviceId, I2cConnectionSettings settings)
         {
-            int channelIndex = GetI2cChannelIndex(deviceId);
-
-            if (channelIndex < 0)
+            Llilum.II2cChannelInfo channelInfo = GetI2cChannelInfo(deviceId);
+            if(channelInfo == null)
             {
-                // The deviceId was invalid
-                return null;
+                throw new ArgumentException();
             }
+
+            int channelIndex = channelInfo.PortIndex;
 
             // Ensure that we do not double-create channels
             lock (channelLock)
@@ -117,7 +116,7 @@ namespace Windows.Devices.I2c
                     if (channels[channelIndex].Exclusive)
                     {
                         // The user is making a mistake by trying to access an exclusive resource
-                        throw new Exception("DeviceId is marked as exclusive");
+                        throw new InvalidOperationException("DeviceId is marked as exclusive");
                     }
 
                     // The channel is open and we have access to it. Increase the ref count
@@ -129,23 +128,25 @@ namespace Windows.Devices.I2c
                     channels[channelIndex].TransactionLock = new object();
 
                     // The channel has not been opened. We create it here
-                    I2cChannel newChannel = AcquireI2cChannel(channelIndex);
+                    Llilum.I2cDevice newChannel = new Llilum.I2cDevice(channelInfo);
                     if (newChannel == null)
                     {
                         // We were unable to get a channel. It is either busy or does not exist
-                        return null;
+                        throw new ArgumentException();
                     }
 
                     // Set the new channel frequency
                     if (settings.BusSpeed == I2cBusSpeed.FastMode)
                     {
-                        newChannel.SetFrequency(HIGH_SPEED_FREQUENCY);
+                        newChannel.Frequency = HIGH_SPEED_FREQUENCY;
                     }
                     else
                     {
                         // Default
-                        newChannel.SetFrequency(LOW_SPEED_FREQUENCY);
+                        newChannel.Frequency = LOW_SPEED_FREQUENCY;
                     }
+
+                    newChannel.Open();
 
                     channels[channelIndex].Channel = newChannel;
                     channels[channelIndex].Exclusive = (settings.SharingMode == I2cSharingMode.Exclusive);
@@ -379,9 +380,9 @@ namespace Windows.Devices.I2c
         private void ChangeFrequencyIfneeded()
         {
             int requiredFrequency = (m_settings.BusSpeed == I2cBusSpeed.FastMode) ? HIGH_SPEED_FREQUENCY : LOW_SPEED_FREQUENCY;
-            if (m_channelContainer.Channel.CurrentFrequency != requiredFrequency)
+            if (m_channelContainer.Channel.Frequency != requiredFrequency)
             {
-                m_channelContainer.Channel.SetFrequency(requiredFrequency);
+                m_channelContainer.Channel.Frequency = requiredFrequency;
             }
         }
 
@@ -430,12 +431,6 @@ namespace Windows.Devices.I2c
         private static extern string[] GetI2cChannels();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern int GetI2cChannelIndex(string deviceId);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern I2cChannel AcquireI2cChannel(int index);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void ReleaseI2cBus(string deviceId);
+        private static extern Llilum.II2cChannelInfo GetI2cChannelInfo(string busId);
     }
 }

@@ -7,9 +7,7 @@ namespace Microsoft.Zelig.Runtime
     using System;
     using System.Collections;
     using System.Runtime.CompilerServices;
-    using Windows.Devices.Spi.Provider;
     using Windows.Devices.Gpio.Provider;
-    using Windows.Devices.I2c.Provider;
 
     //--//
 
@@ -35,43 +33,6 @@ namespace Microsoft.Zelig.Runtime
         //    m_used = new BitArray( this.PinCount );
         //}
 
-        //
-        // Spi discovery 
-        //
-
-        public abstract int GetSpiChannelIndexFromString(string busId);
-
-        public abstract bool GetSpiPinsFromBusId(int id, out int mosi, out int miso, out int sclk, out int chipSelect);
-
-        public abstract bool GetSpiChannelInfo(int id, out int csLineCount, out int maxFreq, out int minFreq, out bool supports16);
-
-        public abstract bool GetSpiChannelTimingInfo(int id, out int setupTime, out int holdTime);
-
-        public abstract bool GetSpiChannelActiveLow(int id, out bool activeLow);
-
-        public abstract string[] GetSpiChannels();
-
-        //
-        // Spi creation
-        //
-
-        public abstract SpiChannel CreateSpiChannel();
-
-        //
-        // I2C Discovery
-        //
-
-        public abstract string[] GetI2CChannels();
-
-        public abstract int GetI2cChannelIndexFromString(string busId);
-
-        public abstract bool GetI2CPinsFromChannelIndex(int index, out int sdaPin, out int sclPin);
-
-        //
-        // I2C Creation
-        //
-
-        public abstract I2cChannel CreateI2cChannel();
 
         //
         // Serial Discovery
@@ -167,12 +128,6 @@ namespace Microsoft.Zelig.Runtime
                 }
             }
         }
-
-        //
-        // Gpio creation
-        //
-
-        public abstract GpioPinProvider CreateGpioPin();
 
         //
         // Factory methods

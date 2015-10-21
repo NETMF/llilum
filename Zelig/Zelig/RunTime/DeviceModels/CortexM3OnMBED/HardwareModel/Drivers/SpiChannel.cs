@@ -6,19 +6,27 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
 {
     using System;
     using System.Runtime.InteropServices;
-    using GPIO = Windows.Devices.Gpio.Provider;
+    using Microsoft.Zelig.Runtime;
+    using Microsoft.Llilum.Devices.Spi;
+    using LlilumGpio = Microsoft.Llilum.Devices.Gpio;
 
-    public class SpiChannel : Windows.Devices.Spi.Provider.SpiChannel
+    public class SpiChannel : Microsoft.Llilum.Devices.Spi.SpiChannel
     {
-        private unsafe SpiImpl*    m_spi;
-        private unsafe GpioPinMbed m_altCsPin;
-        private UInt16             m_dataWidth;
-        private bool               m_disposed;
-        private int                m_setupTimeInCycles;
-        private int                m_holdTimeInCycles;
-        private bool               m_activeLow;
+        private unsafe SpiImpl*             m_spi;
+        private unsafe LlilumGpio.GpioPin   m_altCsPin;
+        private UInt16                      m_dataWidth;
+        private bool                        m_disposed;
+        private int                         m_setupTimeInCycles;
+        private int                         m_holdTimeInCycles;
+        private bool                        m_activeLow;
+        private ISpiChannelInfo             m_channelInfo;
 
         //--//
+
+        public SpiChannel(ISpiChannelInfo info)
+        {
+            m_channelInfo = info;
+        }
         
         ~SpiChannel()
         {
@@ -50,6 +58,15 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
             if (disposing)
             {
             }
+        }
+
+        /// <summary>
+        /// Gets hardware information for this channel
+        /// </summary>
+        /// <returns></returns>
+        public override ISpiChannelInfo GetChannelInfo()
+        {
+            return m_channelInfo;
         }
 
         /// <summary>
@@ -126,7 +143,7 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
             if (m_altCsPin != null)
             {
                 // Some boards (K64F) do not support checking if SPI is busy through mbed
-                if (Board.Instance.SpiBusySupported)
+                if (SpiProvider.Instance.SpiBusySupported)
                 {
                     while (tmp_spi_busy(m_spi) != 0)
                     {
@@ -141,7 +158,7 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
             }
         }
                 
-        public unsafe override void SetupChannel(int bits, int mode, bool isSlave)
+        public unsafe override void SetupChannel(int bits, SpiMode mode, bool isSlave)
         {
             int slave = isSlave ? 1 : 0;
 
@@ -155,7 +172,7 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
                 m_dataWidth = 8;
             }
 
-            tmp_spi_format( m_spi, m_dataWidth, mode, slave );
+            tmp_spi_format( m_spi, m_dataWidth, (int)mode, slave );
         }
         
         public unsafe override void SetupTiming(int frequencyInHz, int setupTime, int holdTime)
@@ -185,7 +202,7 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         /// <param name="csPin"></param>
         /// <param name="useAlternateCsPin">True if the chip select pin is not the default one</param>
         /// <returns></returns>
-        public unsafe override void SetupPins( int mosiPin, int misoPin, int sclPin, int csPin, bool useAlternateCsPin, bool activeLowCS )
+        public unsafe override void SetupPins( ISpiChannelInfo channelInfo, bool useAlternateCsPin, int alternateCsPin )
         {
             fixed (SpiImpl** spi_ptr = &m_spi)
             {
@@ -193,19 +210,25 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
             }
 
             // Mbed specific SPI initialization
-            tmp_spi_init(m_spi, mosiPin, misoPin, sclPin, useAlternateCsPin ? Board.Instance.NCPin : csPin);
+            tmp_spi_init(m_spi, channelInfo.Mosi, channelInfo.Miso, channelInfo.Sclk, useAlternateCsPin ? Board.Instance.NCPin : channelInfo.ChipSelect);
             
 
             // Set up alternate pin for manual toggling
             if (useAlternateCsPin)
             {
                 // Mbed assumes active low, so we only set up active low/high when using the alternate CS pin
-                m_activeLow = activeLowCS;
+                m_activeLow = channelInfo.ActiveLow;
                 
                 // Set up the pin. It has already been reserved
-                m_altCsPin = new GpioPinMbed();
-                m_altCsPin.InitializePin(csPin);
-                m_altCsPin.SetPinDriveMode(GPIO.GpioDriveMode.Output);
+                m_altCsPin = GpioPin.TryCreateGpioPin(alternateCsPin);
+
+                if(m_altCsPin == null)
+                {
+                    return;
+                }
+
+                m_altCsPin.Direction = LlilumGpio.PinDirection.Output;
+                m_altCsPin.Mode = LlilumGpio.PinMode.PullDefault;
 
                 // Set to high for the lifetime of the SpiChannel (except on transfers)
                 m_altCsPin.Write(m_activeLow ? 1 : 0);
@@ -232,6 +255,7 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
 
         [DllImport("C")]
         private static unsafe extern int tmp_spi_busy(SpiImpl* obj);
+
     }
 
     internal unsafe struct SpiImpl

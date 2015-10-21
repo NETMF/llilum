@@ -6,19 +6,43 @@ namespace Windows.Devices.Gpio.Provider
 {
     using System;
 
-    public abstract class GpioPinProvider : IDisposable
+    public interface IGpioPinProvider : IDisposable
     {
-        public abstract void InitializePin(int pinNumber);
+        //event TypedEventHandler<IGpioPinProvider, GpioPinProviderValueChangedEventArgs> ValueChanged;
 
-        public abstract int Read();
+        TimeSpan DebounceTimeout
+        {
+            get;
+            set;
+        }
 
-        public abstract void Write(int value);
+        int PinNumber
+        {
+            get;
+        }
 
-        public abstract void SetPinDriveMode(GpioDriveMode driveMode);
-        public abstract void Dispose();
+        GpioSharingMode SharingMode
+        {
+            get;
+        }
+
+        bool IsDriveModeSupported(GpioPinDriveMode driveMode);
+
+        GpioPinDriveMode GetDriveMode();
+
+        GpioPinValue Read();
+
+        void Write(GpioPinValue value);
+
+        void SetPinDriveMode(GpioDriveMode driveMode);
     }
 
-    // Duplicating the definition in UWP, so we have our own, internal DriveMode
+    public enum ProviderGpioPinEdge
+    {
+        FallingEdge,
+        RisingEdge,
+    }
+
     public enum GpioDriveMode
     {
         Input = 0,

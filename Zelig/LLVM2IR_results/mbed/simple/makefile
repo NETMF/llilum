@@ -4,6 +4,7 @@
 VERBOSE=1
 PROJECT = mbed_simple
 OBJECTS = .\Microsoft.Zelig.Test.mbed.Simple_opt.o \
+	$(TARGET)\InteropExports_adc.o \
 	$(TARGET)\InteropExports_clock.o \
 	$(TARGET)\InteropExports_core.o \
 	$(TARGET)\InteropExports_debug.o \

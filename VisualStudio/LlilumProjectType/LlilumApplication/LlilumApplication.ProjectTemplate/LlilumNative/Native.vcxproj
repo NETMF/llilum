@@ -122,6 +122,7 @@
     <ClCompile Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="InteropExports_adc.cpp" />
     <ClCompile Include="InteropExports_clock.cpp" />
     <ClCompile Include="InteropExports_core.cpp" />
     <ClCompile Include="InteropExports_debug.cpp" />
@@ -146,9 +147,10 @@
 
   <ItemGroup>
     <None Include="mbed_simple.FrontEndConfig" />
-    <None Include="mbed_simple_K64F.FrontEndConfig" />
     <None Include="mbed_simple_LPC1768.FrontEndConfig" />
+    <None Include="mbed_simple_K64F.FrontEndConfig" />
   </ItemGroup>
+
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
 </Project>

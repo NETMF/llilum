@@ -17,20 +17,17 @@ namespace Windows.Devices.Gpio
     /// </summary>
     public sealed class GpioPin : IDisposable
     {
-        private GpioPinProvider _provider;
-        private int _pinNumber = -1;
-        private bool _disposed = false;
+        private IGpioPinProvider _provider;
 
         private GpioPinDriveMode _driveMode = GpioPinDriveMode.Input;
         private GpioPinValue _lastOutputValue = GpioPinValue.Low;
         private GpioPinValueChangedEventHandler _callbacks = null;
 
-        internal GpioPin(int pinNumber)
+        internal GpioPin()
         {
-            _pinNumber = pinNumber;
         }
 
-        internal GpioPinProvider PinProvider
+        internal IGpioPinProvider PinProvider
         {
             set
             {
@@ -52,10 +49,7 @@ namespace Windows.Devices.Gpio
         {
             add
             {
-                if (_disposed)
-                {
-                    throw new ObjectDisposedException(this.GetType().FullName);
-                }
+                ThrowIfDisposed();
 
                 var callbacksOld = _callbacks;
                 var callbacksNew = (GpioPinValueChangedEventHandler)Delegate.Combine(callbacksOld, value);
@@ -74,10 +68,7 @@ namespace Windows.Devices.Gpio
 
             remove
             {
-                if (_disposed)
-                {
-                    throw new ObjectDisposedException(this.GetType().FullName);
-                }
+                ThrowIfDisposed();
 
                 var callbacksOld = _callbacks;
                 var callbacksNew = (GpioPinValueChangedEventHandler)Delegate.Remove(callbacksOld, value);
@@ -106,20 +97,14 @@ namespace Windows.Devices.Gpio
         {
             get
             {
-                if (_disposed)
-                {
-                    throw new ObjectDisposedException(this.GetType().FullName);
-                }
+                ThrowIfDisposed();
 
                 throw new NotImplementedException();
             }
 
             set
             {
-                if (_disposed)
-                {
-                    throw new ObjectDisposedException(this.GetType().FullName);
-                }
+                ThrowIfDisposed();
 
                 throw new NotImplementedException();
             }
@@ -133,12 +118,9 @@ namespace Windows.Devices.Gpio
         {
             get
             {
-                if (_disposed)
-                {
-                    throw new ObjectDisposedException(this.GetType().FullName);
-                }
+                ThrowIfDisposed();
 
-                return _pinNumber;
+                return _provider.PinNumber;
             }
         }
 
@@ -155,10 +137,7 @@ namespace Windows.Devices.Gpio
         ///     value written to the pin.</returns>
         public GpioPinValue Read()
         {
-            if(_disposed)
-            {
-                throw new ObjectDisposedException(this.GetType().FullName);
-            }
+            ThrowIfDisposed();
 
             return (GpioPinValue)_provider.Read();
         }
@@ -178,17 +157,14 @@ namespace Windows.Devices.Gpio
         ///     and drive the signal the when the mode is set.</remarks>
         public void Write(GpioPinValue value)
         {
-            if(_disposed)
-            {
-                throw new ObjectDisposedException(this.GetType().FullName);
-            }
+            ThrowIfDisposed();
 
             // Remember this value in case we switch drive mode
             _lastOutputValue = value;
 
             if (_driveMode == GpioPinDriveMode.Output)
             {
-                _provider.Write((int)value);
+                _provider.Write(value);
             }
         }
 
@@ -222,10 +198,7 @@ namespace Windows.Devices.Gpio
         ///     onto the pin.</returns>
         public GpioPinDriveMode GetDriveMode()
         {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(this.GetType().FullName);
-            }
+            ThrowIfDisposed();
 
             return _driveMode;
         }
@@ -239,17 +212,14 @@ namespace Windows.Devices.Gpio
         ///     driven onto the pin.</param>
         public void SetDriveMode(GpioPinDriveMode driveMode)
         {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(this.GetType().FullName);
-            }
+            ThrowIfDisposed();
 
             if (driveMode != _driveMode)
             {
                 _provider.SetPinDriveMode((GpioDriveMode)driveMode);
                 if (driveMode == GpioPinDriveMode.Output)
                 {
-                    _provider.Write((int)_lastOutputValue);
+                    _provider.Write(_lastOutputValue);
                 }
 
                 _driveMode = driveMode;
@@ -261,11 +231,11 @@ namespace Windows.Devices.Gpio
         /// </summary>
         public void Dispose()
         {
-            if (!_disposed)
+            if (_provider != null)
             {
                 Dispose(true);
+                _provider = null;
                 GC.SuppressFinalize(this);
-                _disposed = true;
             }
         }
 
@@ -277,7 +247,7 @@ namespace Windows.Devices.Gpio
         {
             GpioPinValueChangedEventHandler callbacks = null;
 
-            if (!_disposed)
+            if (_provider != null)
             {
                 callbacks = _callbacks;
             }
@@ -293,13 +263,18 @@ namespace Windows.Devices.Gpio
         {
             if (disposing)
             {
-                if (_pinNumber != -1)
+                if (_provider != null)
                 {
                     _provider.Dispose();
-
-                    // Mark the pin as available in the hardware provider
-                    GpioController.ReleaseGpioPin(_pinNumber);
                 }
+            }
+        }
+
+        private void ThrowIfDisposed()
+        {
+            if (_provider == null)
+            {
+                throw new ObjectDisposedException(this.GetType().FullName);
             }
         }
     }

@@ -21,7 +21,6 @@
     <Optimize>false</Optimize>
     <IntermediateOutputPath>$(ZeligBuildRoot)\Target\obj\$(MSBuildProjectName)\$(Configuration)\</IntermediateOutputPath>
     <OutputPath>$(ZeligBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
-
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -56,6 +55,10 @@
     <ProjectReference Include="..\..\..\RunTime\DeviceModels\mbed\mbed.csproj">
       <Project>{d7f2bc4e-1406-47aa-90e1-07bc4ce9410f}</Project>
       <Name>mbed</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\RunTime\Framework\Llilum\Devices\Microsoft.Llilum.Devices.csproj">
+      <Project>{d68ee51b-a898-4a77-97d8-c61254cac122}</Project>
+      <Name>Microsoft.Llilum.Devices</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\RunTime\Framework\system\system.csproj">
       <Project>{186f31a3-ef89-4a25-b2d5-20070702aa01}</Project>

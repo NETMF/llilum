@@ -19,15 +19,10 @@ extern "C"
 		return gpio_read(obj);
 	}
 
-	void tmp_gpio_alloc(gpio_t **obj)
+	void tmp_gpio_alloc_init(gpio_t **obj, int32_t pinNumber)
 	{
 		*obj = (gpio_t*)calloc(sizeof(gpio_t), 1);
-	}
-
-	void tmp_gpio_init(gpio_t *obj, int32_t pinNumber)
-	{
-		// Defaulting to input for gpio pins
-		gpio_init_in(obj, (PinName)pinNumber);
+		gpio_init_in(*obj, (PinName)pinNumber);
 	}
 
 	void tmp_gpio_free(gpio_t *obj)

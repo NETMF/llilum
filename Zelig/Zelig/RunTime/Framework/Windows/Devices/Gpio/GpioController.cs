@@ -5,6 +5,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using Windows.Devices.Gpio.Provider;
+using Llilum = Microsoft.Llilum.Devices.Gpio;
 
 namespace Windows.Devices.Gpio
 {
@@ -25,7 +26,7 @@ namespace Windows.Devices.Gpio
         /// <value>The number of pins on the GPIO controller. Some pins may not be available in user mode. For
         ///     information about how the pin numbers correspond to physical pins, see the documentation for your
         ///     circuit board.</value>
-        public int PinCount => GetBoardPinCount();
+        public int PinCount => Llilum.GpioPin.BoardPinCount;
 
         /// <summary>
         /// Gets the default general-purpose I/O (GPIO) controller for the system.
@@ -87,10 +88,10 @@ namespace Windows.Devices.Gpio
         {
             // Following a builder-like pattern to avoid try-catch on new operator, and having 
             // to call ReleasePin in the catch case
-            pin = new GpioPin(pinNumber);
+            pin = new GpioPin();
 
             // Call to the kernel and get the object that implements the pin functions
-            GpioPinProvider provider = AcquireGpioPin(pinNumber);
+            IGpioPinProvider provider = new DefaultPinProvider(pinNumber);
 
             if(provider == null)
             {
@@ -106,14 +107,5 @@ namespace Windows.Devices.Gpio
 
             return true;
         }
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern GpioPinProvider AcquireGpioPin(int pin);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern int GetBoardPinCount();
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern void ReleaseGpioPin(int pinNumber);
     }
 }
