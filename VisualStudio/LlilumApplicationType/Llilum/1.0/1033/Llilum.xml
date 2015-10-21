@@ -16,13 +16,14 @@
     <DataSource Persistence="ProjectFile" Label="Llilum" />
   </Rule.DataSource>
 
-  <StringProperty Name="LlilumSDK" DisplayName="LlilumSDK" Category="General" Description="" />
-  <StringProperty Name="LlilumLLVM" DisplayName="LlilumLLVM" Category="General" Description="" />
-  <StringProperty Name="LlilumCompiler" DisplayName="LlilumCompiler" Category="General" Description="" />
-  <StringProperty Name="LlilumConfig" DisplayName="LlilumConfig" Category="General" Description="" />
-  <StringProperty Name="LlilumOutputName" DisplayName="LlilumOutputName" Category="General" Description="" />
-  <StringProperty Name="LlilumGccBin" DisplayName="LlilumGccBin" Category="General" Description="" />
-  <StringProperty Name="LlilumOutputBin" DisplayName="LlilumOutputBin" Category="General" Description="" />
+  <StringProperty Name="LlilumSDK" DisplayName="Llilum SDK Path" Category="General" Description="" />
+  <StringProperty Name="LlilumLLVM" DisplayName="LLVM Path" Category="General" Description="" />
+  <StringProperty Name="LlilumCompiler" DisplayName="Llilum Compiler" Category="General" Description="" />
+  <StringProperty Name="LlilumConfig" DisplayName="Llilum Config File" Category="General" Description="" />
+  <StringProperty Name="LlilumOutputName" DisplayName="Compile Output Name" Category="General" Description="" />
+  <StringProperty Name="LlilumGccBin" DisplayName="GCC Binaries Path" Category="General" Description="" />
+  <StringProperty Name="LlilumOutputBin" DisplayName="Output Binary" Category="General" Description="" />
+  <StringProperty Name="LlilumInteropFilePath" DisplayName="Llilum Interop File Path" Category="General" Description="" />
   
   <EnumProperty Name="LlilumBoardName" DisplayName="Board Name" Description="Llilum board name" Category="Board">
     <EnumValue Name="LPC1768" DisplayName="LPC1768" Description="LPC1768 Target" />

@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_adc.cpp">
+      <Filter>Interop External</Filter>
+    </ClCompile>
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_clock.cpp">
+      <Filter>Interop External</Filter>
+    </ClCompile>
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_core.cpp">
+      <Filter>Interop External</Filter>
+    </ClCompile>
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_debug.cpp">
+      <Filter>Interop External</Filter>
+    </ClCompile>
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_gpio.cpp">
+      <Filter>Interop External</Filter>
+    </ClCompile>
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_i2c.cpp">
+      <Filter>Interop External</Filter>
+    </ClCompile>
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_mem.cpp">
+      <Filter>Interop External</Filter>
+    </ClCompile>
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_nvic.cpp">
+      <Filter>Interop External</Filter>
+    </ClCompile>
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_serial.cpp">
+      <Filter>Interop External</Filter>
+    </ClCompile>
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_spi.cpp">
+      <Filter>Interop External</Filter>
+    </ClCompile>
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_system_timer.cpp">
+      <Filter>Interop External</Filter>
+    </ClCompile>
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_systick.cpp">
+      <Filter>Interop External</Filter>
+    </ClCompile>
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_threading.cpp">
+      <Filter>Interop External</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Interop External">
+      <UniqueIdentifier>{$guid4$}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(LlilumInteropFilePath)helpers.h">
+      <Filter>Interop External</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -79,6 +79,7 @@
     <None Include="LlilumNative\mbed_simple_K64F.FrontEndConfig" />
     <None Include="LlilumNative\mbed_simple_LPC1768.FrontEndConfig" />
     <None Include="LlilumNative\Native.vcxproj" />
+    <None Include="LlilumNative\Native.vcxproj.filters" />
     <None Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -104,20 +105,9 @@
     <Content Include="LlilumManaged\MyTemplate.vstemplate" />
     <Content Include="LlilumManaged\__PreviewImage.ico" />
     <Content Include="LlilumManaged\__TemplateIcon.ico" />
-    <Content Include="LlilumNative\helpers.h" />
-    <Content Include="LlilumNative\InteropExports_clock.cpp" />
-    <Content Include="LlilumNative\InteropExports_core.cpp" />
-    <Content Include="LlilumNative\InteropExports_debug.cpp" />
-    <Content Include="LlilumNative\InteropExports_gpio.cpp" />
-    <Content Include="LlilumNative\InteropExports_i2c.cpp" />
-    <Content Include="LlilumNative\InteropExports_mem.cpp" />
-    <Content Include="LlilumNative\InteropExports_nvic.cpp" />
-    <Content Include="LlilumNative\InteropExports_spi.cpp" />
-    <Content Include="LlilumNative\InteropExports_system_timer.cpp" />
-    <Content Include="LlilumNative\InteropExports_systick.cpp" />
-    <Content Include="LlilumNative\InteropExports_serial.cpp" />
-    <Content Include="LlilumNative\InteropExports_threading.cpp" />
-    <Content Include="LlilumNative\MyTemplate.vstemplate" />
+    <Content Include="LlilumNative\MyTemplate.vstemplate">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="LlilumNative\pch.h" />
     <Content Include="LlilumNative\__PreviewImage.ico" />
     <Content Include="LlilumNative\__TemplateIcon.ico" />

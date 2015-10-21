@@ -58,13 +58,9 @@
     <Reference Include="Microsoft.Zelig.Support.mbed">
       <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\Microsoft.Zelig.Support.mbed.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <Reference Include="System">
+      <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\System.dll</HintPath>
+    </Reference>
     <Reference Include="Windows.Devices">
       <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\Windows.Devices.dll</HintPath>
     </Reference>

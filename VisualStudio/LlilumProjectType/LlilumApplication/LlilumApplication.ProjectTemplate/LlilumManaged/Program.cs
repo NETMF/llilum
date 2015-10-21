@@ -7,11 +7,10 @@
 
 namespace Managed
 {
-    using System.Collections.Generic;
+    using System;
     using Windows.Devices.Gpio;
-    using Microsoft.Zelig.Support.mbed;
-
-    //--//
+    using System.Runtime.InteropServices;
+    using System.Threading;
 
 #if LPC1768
     using Microsoft.Zelig.LPC1768;
@@ -19,152 +18,76 @@ namespace Managed
     using Microsoft.Zelig.K64F;
 #endif
 
-    //--//
-
-    internal abstract class LedToggler
-    {
-        public LedToggler(GpioPin[] pins)
-        {
-            _pins = pins;
-        }
-
-        public abstract void run(float t);
-
-        public int PinCount
-        {
-            get
-            {
-                return _pins.Length;
-            }
-        }
-
-        public GpioPinValue this[int key]
-        {
-            get
-            {
-                return _pins[key].Read();
-            }
-            set
-            {
-                _pins[key].Write(value);
-            }
-        }
-
-        private readonly GpioPin[] _pins;
-    };
-
-    internal class LedTogglerSimultaneous : LedToggler
-    {
-        public LedTogglerSimultaneous(GpioPin[] pins)
-            : base(pins)
-        {
-        }
-
-        public override void run(float t)
-        {
-            for (int i = 0; i < PinCount; ++i)
-            {
-                this[i] = (t < 0.5) ? GpioPinValue.High : GpioPinValue.Low;
-            }
-        }
-    }
-
-    internal class LedTogglerSequential : LedToggler
-    {
-        public LedTogglerSequential(GpioPin[] pins)
-            : base(pins)
-        {
-        }
-
-        public override void run(float t)
-        {
-            for (int i = 0; i < PinCount; ++i)
-            {
-                this[i] = ((int)(t * 4) == i) ? GpioPinValue.High : GpioPinValue.Low;
-            }
-        }
-    }
-
-    internal class LedTogglerAlternate : LedToggler
-    {
-        public LedTogglerAlternate(GpioPin[] pins)
-            : base(pins)
-        {
-        }
-
-        public override void run(float t)
-        {
-            for (int i = 0; i < PinCount; ++i)
-            {
-                this[i] = ((i % 2) == (int)(t * 2)) ? GpioPinValue.High : GpioPinValue.Low;
-            }
-        }
-    }
-
-
     class Program
     {
+        // Example of C interop functions
+        [DllImport("C")]
+        private static extern int AddOneInterop(int input);
+
+
         const float period = 0.75f;
         const float timePerMode = 4.0f;
 
         static int[] pinNumbers =
         {
 #if (LPC1768)
-        (int)PinName.LED1,
-        (int)PinName.LED2,
-        (int)PinName.LED3,
-        (int)PinName.LED4,
+            (int)PinName.LED1,
+            (int)PinName.LED4,
 #elif (K64F)
-        (1 << 12) | 22,
-        (1 << 12) | 21,
+            (int)PinName.LED_BLUE,
+            (int)PinName.LED_RED,
 #else
-        #error No target board defined.
+            #error No target board defined.
 #endif
-    };
+        };
 
         static void Main()
         {
             var controller = GpioController.GetDefault();
-            var pins = new GpioPin[pinNumbers.Length];
 
-            for (int i = 0; i < pinNumbers.Length; ++i)
+            var threadToggledPin = controller.OpenPin(pinNumbers[0]);
+            var loopToggledPin = controller.OpenPin(pinNumbers[1]);
+
+            threadToggledPin.SetDriveMode(GpioPinDriveMode.Output);
+            loopToggledPin.SetDriveMode(GpioPinDriveMode.Output);
+
+            int threadPinState = 1;
+            int loopPinState = 1;
+
+            // Toggling a pin with a thread
+            var ev = new AutoResetEvent(false);
+            var solitaryBlinker = new Thread(delegate ()
             {
-                GpioPin pin = controller.OpenPin(pinNumbers[i]);
+                while (true)
+                {
+                    ev.WaitOne(1000, false);
 
-                // Start with all LEDs on.
-                pin.Write(GpioPinValue.High);
-                pin.SetDriveMode(GpioPinDriveMode.Output);
+                    threadToggledPin.Write((GpioPinValue)threadPinState);
 
-                pins[i] = pin;
-            }
+                    // Using the C interop here
+                    threadPinState = AddOneInterop(threadPinState) % 2;
+                }
+            });
+            solitaryBlinker.Start();
 
-            LedToggler[] blinkingModes = new LedToggler[3];
-            blinkingModes[0] = new LedTogglerSimultaneous(pins);
-            blinkingModes[1] = new LedTogglerSequential(pins);
-            blinkingModes[2] = new LedTogglerAlternate(pins);
-
-            var blinkingTimer = new Timer();
-            var blinkingModeSwitchTimer = new Timer();
-
-            blinkingTimer.start();
-            blinkingModeSwitchTimer.start();
-
-            int currentMode = 0;
+            // Toggling a pin in a loop
+            long last = DateTime.Now.Ticks;
 
             while (true)
             {
-                if (blinkingTimer.read() >= period)
-                {
-                    blinkingTimer.reset();
-                }
+                long now = DateTime.Now.Ticks;
 
-                if (blinkingModeSwitchTimer.read() >= timePerMode)
+                // Toggle every 500ms
+                if (now > (last + 5000000))
                 {
-                    currentMode = (currentMode + 1) % blinkingModes.Length;
-                    blinkingModeSwitchTimer.reset();
-                }
+                    last = now;
 
-                blinkingModes[currentMode].run(blinkingTimer.read() / period);
+                    // Toggle the pin
+                    loopToggledPin.Write((GpioPinValue)loopPinState);
+
+                    // Using the C interop here
+                    loopPinState = AddOneInterop(loopPinState) % 2;
+                }
             }
         }
     }

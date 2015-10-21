@@ -120,24 +120,25 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="pch.h" />
+    <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="InteropExports_adc.cpp" />
-    <ClCompile Include="InteropExports_clock.cpp" />
-    <ClCompile Include="InteropExports_core.cpp" />
-    <ClCompile Include="InteropExports_debug.cpp" />
-    <ClCompile Include="InteropExports_gpio.cpp" />
-    <ClCompile Include="InteropExports_i2c.cpp" />
-    <ClCompile Include="InteropExports_mem.cpp" />
-    <ClCompile Include="InteropExports_nvic.cpp" />
-    <ClCompile Include="InteropExports_serial.cpp" />
-    <ClCompile Include="InteropExports_spi.cpp" />
-    <ClCompile Include="InteropExports_system_timer.cpp" />
-    <ClCompile Include="InteropExports_systick.cpp" />
-    <ClCompile Include="InteropExports_threading.cpp" />
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_adc.cpp" />
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_clock.cpp" />
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_core.cpp" />
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_debug.cpp" />
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_gpio.cpp" />
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_i2c.cpp" />
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_mem.cpp" />
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_nvic.cpp" />
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_serial.cpp" />
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_spi.cpp" />
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_system_timer.cpp" />
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_systick.cpp" />
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_threading.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="helpers.h" />
+    <ClInclude Include="$(LlilumInteropFilePath)helpers.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Managed\Managed.csproj">
