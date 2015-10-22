@@ -18,9 +18,28 @@ namespace Llvm.NET
         public static implicit operator bool( LLVMBool value ) => value.Value != 0;
     }
 
-    internal partial struct LLVMMetadataRef
+    internal partial struct LLVMMetadataRef 
+        : IEquatable<LLVMMetadataRef>
     {
         internal static LLVMMetadataRef Zero = new LLVMMetadataRef( IntPtr.Zero );
+
+        public override int GetHashCode( ) => Pointer.GetHashCode( );
+
+        public override bool Equals( object obj )
+        {
+            if( obj is LLVMMetadataRef )
+                return Equals( ( LLVMMetadataRef )obj );
+
+            if( obj is IntPtr )
+                return Pointer.Equals( obj );
+
+            return base.Equals( obj );
+        }
+
+        public bool Equals( LLVMMetadataRef other ) => Pointer == other.Pointer;
+        
+        public static bool operator ==( LLVMMetadataRef lhs, LLVMMetadataRef rhs ) => lhs.Equals( rhs );
+        public static bool operator !=( LLVMMetadataRef lhs, LLVMMetadataRef rhs ) => !lhs.Equals( rhs );
     }
 
     internal static partial class NativeMethods

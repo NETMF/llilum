@@ -122,13 +122,32 @@ namespace Llvm.NET.DebugInfo
 
         private DIDerivedType CreateMemberType( Module module, DebugMemberInfo memberInfo )
         {
+            ulong bitSize;
+            ulong bitAlign;
+            ulong bitOffset;
+
+            // if explicit layout info provided, use it;
+            // otherwise use module.Layout as the default
+            if( memberInfo.ExplicitLayout.HasValue )
+            {
+                bitSize = memberInfo.ExplicitLayout.Value.BitSize;
+                bitAlign = memberInfo.ExplicitLayout.Value.BitAlignment;
+                bitOffset = memberInfo.ExplicitLayout.Value.BitOffset;
+            }
+            else
+            {
+                bitSize = module.Layout.BitSizeOf( memberInfo.Type.NativeType );
+                bitAlign = module.Layout.AbiBitAlignmentOf( memberInfo.Type.NativeType );
+                bitOffset = module.Layout.BitOffsetOfElement( NativeType, memberInfo.Index );
+            }
+
             return module.DIBuilder.CreateMemberType( scope: DIType
                                                     , name: memberInfo.Name
                                                     , file: memberInfo.File
                                                     , line: memberInfo.Line
-                                                    , bitSize: memberInfo.BitSize ?? module.Layout.BitSizeOf( memberInfo.Type.NativeType )
-                                                    , bitAlign: memberInfo.BitAlignment ?? module.Layout.AbiBitAlignmentOf( memberInfo.Type.NativeType )
-                                                    , bitOffset: memberInfo.BitOffset ?? module.Layout.BitOffsetOfElement( NativeType, memberInfo.Index )
+                                                    , bitSize: bitSize
+                                                    , bitAlign: bitAlign
+                                                    , bitOffset: bitOffset
                                                     , flags: (uint)memberInfo.Flags
                                                     , type: memberInfo.Type.DIType
                                                     );

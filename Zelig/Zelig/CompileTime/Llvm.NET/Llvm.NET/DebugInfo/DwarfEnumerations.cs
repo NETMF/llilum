@@ -167,6 +167,7 @@ namespace Llvm.NET.DebugInfo
     [Flags]
     public enum DebugInfoFlags
     {
+        None = 0,
         Private = 1,
         Protected = 2,
         Public = 3,

@@ -8,6 +8,6 @@
         {
         }
 
-        public DIFile File => new DIFile( NativeMethods.DIScopeGetFile( MetadataHandle ) );
+        public DIFile File => DINode.FromHandle< DIFile >( NativeMethods.DIScopeGetFile( MetadataHandle ) );
     }
 }

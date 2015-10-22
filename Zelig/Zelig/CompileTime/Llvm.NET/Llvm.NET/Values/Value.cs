@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using Llvm.NET.DebugInfo;
 using Llvm.NET.Types;
 
 namespace Llvm.NET.Values
@@ -302,10 +303,8 @@ namespace Llvm.NET.Values
             default:
                 if( kind >= ValueKind.ConstantFirstVal && kind <= ValueKind.ConstantLastVal )
                     return new Constant( h, true );
-                else if( kind > ValueKind.Instruction )
-                    return new Instructions.Instruction( h );
-                else
-                    return new Value( h );
+
+                return kind > ValueKind.Instruction ? new Instructions.Instruction( h ) : new Value( h );
             }
         }
 
@@ -337,7 +336,7 @@ namespace Llvm.NET.Values
             throw ex;
         }
 
-        private ExtensiblePropertyContainer ExtensibleProperties = new ExtensiblePropertyContainer( );
+        private readonly ExtensiblePropertyContainer ExtensibleProperties = new ExtensiblePropertyContainer( );
     }
 
     /// <summary>Provides extension methods to <see cref="Value"/> that cannot be achieved as members of the class</summary>
@@ -348,6 +347,36 @@ namespace Llvm.NET.Values
     /// </remarks>
     public static class ValueExtensions
     {
+        /// <summary>Sets the debugging location for a value</summary>
+        /// <typeparam name="T"> Type of the value to tag</typeparam>
+        /// <param name="value">Value to set debug location for</param>
+        /// <param name="location">Debug location information</param>
+        /// <remarks>
+        /// <para>Technically speaking only an <see cref="Instructions.Instruction"/> can have debug location
+        /// information. However, since LLVM will perform constant folding in the <see cref="InstructionBuilder"/>
+        /// most of the methods in <see cref="InstructionBuilder"/> return a <see cref="Value"/> rather than a
+        /// more specific <see cref="Instructions.Instruction"/>. Thus, without this extension method here,
+        /// code would need to know ahead of time that an actual instruction would be produced then cast the result
+        /// to an <see cref="Instructions.Instruction"/> and then set the debug location. This makes the code rather
+        /// ugly and tedious to manage. Placing this as a generic extension method ensures that the return type matches
+        /// the original and no additional casting is needed, which would defeat the purpose of doing this. For
+        /// <see cref="Value"/> types that are not instructions this does nothing. This allows for a simpler fluent
+        /// style of programming where the actual type is retained even in cases where an <see cref="InstructionBuilder"/>
+        /// method will always return an atual instruction.</para>
+        /// <para>In order to help simplify code generation for cases where not all of the source information is
+        /// available this is a NOP if <paramref name="location"/> is null. Thus, it is safe to call even when debugging
+        /// information isn't actually available. This helps to avoid cluttering calling code with test for debug info
+        /// before trying to add it.</para>
+        /// </remarks>
+        public static T SetDebugLocation<T>( this T value, DILocation location )
+            where T : Value
+        {
+            if( value is Instructions.Instruction && location != null )
+                NativeMethods.SetDILocation( value.ValueHandle, location.MetadataHandle );
+
+            return value;
+        }
+
         /// <summary>Sets the debugging location for a value</summary>
         /// <typeparam name="T"> Type of the value to tag</typeparam>
         /// <param name="value">Value to set debug location for</param>

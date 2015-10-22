@@ -26,6 +26,36 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS( DIBuilder, LLVMDIBuilderRef )
 
 extern "C"
 {
+    LLVMMetadataRef /*DILocalScope*/ LLVMGetDILocationScope( LLVMMetadataRef /*DILocation*/ location )
+    {
+        DILocation* loc = unwrap<DILocation>( location );
+        return wrap( loc->getScope() );
+    }
+
+    unsigned LLVMGetDILocationLine( LLVMMetadataRef /*DILocation*/ location )
+    {
+        DILocation* loc = unwrap<DILocation>( location );
+        return loc->getLine();
+    }
+
+    unsigned LLVMGetDILocationColumn( LLVMMetadataRef /*DILocation*/ location )
+    {
+        DILocation* loc = unwrap<DILocation>( location );
+        return loc->getColumn();
+    }
+
+    LLVMMetadataRef /*DILocation*/ LLVMGetDILocationInlinedAt( LLVMMetadataRef /*DILocation*/ location )
+    {
+        DILocation* loc = unwrap<DILocation>( location );
+        return wrap( loc->getInlinedAt() );
+    }
+
+    void LLVMSetDILocation( LLVMValueRef inst, LLVMMetadataRef location )
+    {
+        DILocation* loc = unwrap<DILocation>( location );
+        unwrap<Instruction>( inst )->setDebugLoc( loc );
+    }
+
     void LLVMSetDebugLoc( LLVMValueRef inst, unsigned line, unsigned column, LLVMMetadataRef scope )
     {
         unwrap<Instruction>( inst )->setDebugLoc( DebugLoc::get( line, column, unwrap<MDNode>( scope ) ) );
@@ -88,7 +118,7 @@ extern "C"
     {
         DIBuilder *D = unwrap( Dref );
         DILexicalBlock* LB = D->createLexicalBlock( unwrap<DILocalScope>( Scope )
-                                                  , unwrap<DIFile>( File )
+                                                  , File ? unwrap<DIFile>( File ) : nullptr
                                                   , Line
                                                   , Column
                                                   );
@@ -197,7 +227,7 @@ extern "C"
         DIVariable* V = D->createLocalVariable( Tag
                                                , unwrap<DIScope>( Scope )
                                                , Name
-                                               , unwrap<DIFile>( File )
+                                               , File ? unwrap<DIFile>( File ) : nullptr
                                                , Line
                                                , unwrap<DIType>( Ty )
                                                , AlwaysPreserve
@@ -378,7 +408,7 @@ LLVMMetadataRef LLVMDIBuilderCreateReplaceableCompositeType( LLVMDIBuilderRef Dr
                                                 )
     {
         DIBuilder *D = unwrap( Dref );
-        DIDerivedType* DT = D->createTypedef( unwrap<DIType>( Ty )
+        DIDerivedType* DT = D->createTypedef( Ty ? unwrap<DIType>( Ty ) : nullptr
                                              , Name
                                              , File ? unwrap<DIFile>( File ) : nullptr
                                              , Line
@@ -484,7 +514,7 @@ LLVMMetadataRef LLVMDIBuilderCreateReplaceableCompositeType( LLVMDIBuilderRef Dr
         DIBuilder* D = unwrap( Dref );
         DICompositeType* type = D->createEnumerationType( unwrap<DIScope>( Scope )
                                                         , Name
-                                                        , unwrap<DIFile>( File )
+                                                        , File ? unwrap<DIFile>( File ) : nullptr
                                                         , LineNumber
                                                         , SizeInBits
                                                         , AlignInBits
@@ -585,5 +615,16 @@ LLVMMetadataRef LLVMDIBuilderCreateReplaceableCompositeType( LLVMDIBuilderRef Dr
     {
         DISubprogram* pSub = unwrap<DISubprogram>( subProgram );
         return pSub->describes( unwrap<Function>( F ) );
+    }
+
+    LLVMMetadataRef LLVMDIBuilderCreateNamespace( LLVMDIBuilderRef Dref, LLVMMetadataRef scope, char const* name, LLVMMetadataRef file, unsigned line )
+    {
+        DIBuilder* D = unwrap( Dref );
+        DINamespace* pNamespace = D->createNameSpace( scope ? unwrap<DIScope>( scope ) : nullptr
+                                                    , name
+                                                    , file ? unwrap<DIFile>( file ) : nullptr
+                                                    , line
+                                                    );
+        return wrap( pNamespace );
     }
 }

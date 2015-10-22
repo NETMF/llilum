@@ -5,7 +5,6 @@ namespace Llvm.NET
 {
     public static class GlobalPassRegistry
     {
-
         public static void InitializeAll()
         {
            InitializeCore( );

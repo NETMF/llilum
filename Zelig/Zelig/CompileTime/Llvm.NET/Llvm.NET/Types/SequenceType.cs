@@ -2,22 +2,23 @@
 
 namespace Llvm.NET.Types
 {
+    /// <summary>Interface for an LLVM sequence type</summary>
+    /// <remarks>
+    /// Sequence types represent a sequence of elements of the same type
+    /// that are contiguous in memory. These include Vectors, Arrays, and
+    /// pointers.
+    /// </remarks>
     public interface ISequenceType
         : ITypeRef
     {
+        /// <summary>Type of elements in the sequence</summary>
         ITypeRef ElementType { get; }
     }
 
-    /// <summary>LLVM Sequence type</summary>
-    /// <remarks>
-    /// Sequence types represent a sequence of elements that are contiguous 
-    /// in memory. These include Vectors, Arrays, and pointers
-    /// </remarks>
     internal class SequenceType
         : TypeRef
         , ISequenceType
     {
-        /// <summary>Type of element stored in the sequence</summary>
         public ITypeRef ElementType
         {
             get

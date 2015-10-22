@@ -107,7 +107,13 @@ extern "C" {
 
     typedef struct LLVMOpaqueDIBuilder *LLVMDIBuilderRef;
 
+    void LLVMSetDILocation( LLVMValueRef inst, LLVMMetadataRef location );
     void LLVMSetDebugLoc( LLVMValueRef inst, unsigned line, unsigned column, LLVMMetadataRef scope );
+    
+    LLVMMetadataRef /*DILocalScope*/ LLVMGetDILocationScope( LLVMMetadataRef /*DILocation*/ location );
+    unsigned LLVMGetDILocationLine( LLVMMetadataRef /*DILocation*/ location );
+    unsigned LLVMGetDILocationColumn( LLVMMetadataRef /*DILocation*/ location );
+    LLVMMetadataRef /*DILocation*/ LLVMGetDILocationInlinedAt( LLVMMetadataRef /*DILocation*/ location );
 
     LLVMDIBuilderRef LLVMNewDIBuilder( LLVMModuleRef m, LLVMBool allowUnresolved );
 
@@ -383,6 +389,7 @@ LLVMMetadataRef LLVMDIBuilderCreateReplaceableCompositeType( LLVMDIBuilderRef D
 
     LLVMMetadataRef LLVMDILocation( LLVMContextRef context, unsigned Line, unsigned Column, LLVMMetadataRef scope, LLVMMetadataRef InlinedAt );
     LLVMBool LLVMSubProgramDescribes( LLVMMetadataRef subProgram, LLVMValueRef /*const Function **/F );
+    LLVMMetadataRef LLVMDIBuilderCreateNamespace( LLVMDIBuilderRef Dref, LLVMMetadataRef scope, char const* name, LLVMMetadataRef file, unsigned line );
 
 #ifdef __cplusplus
 } // extern "C"

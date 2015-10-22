@@ -56,6 +56,7 @@ namespace Llvm.NET
 
         internal LLVMTargetRef TargetHandle { get; }
 
+        /// <summary>Retrives an enumerable collection of the available targets built into this library</summary>
         public static IEnumerable<Target> AvailableTargets
         {
             get
@@ -69,6 +70,9 @@ namespace Llvm.NET
             }
         }
 
+        /// <summary>Gets the target for a given target "triple" value</summary>
+        /// <param name="targetTriple">Target triple string describing the target</param>
+        /// <returns>Target for the given triple</returns>
         public static Target FromTriple( string targetTriple )
         {
             LLVMTargetRef targetHandle;

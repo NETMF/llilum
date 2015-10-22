@@ -3,6 +3,7 @@ using Llvm.NET.Values;
 
 namespace Llvm.NET
 {
+    /// <summary>Enumeration to define debug information metadata nodes</summary>
     public enum MetadataKind : uint
     {
         MDTuple,

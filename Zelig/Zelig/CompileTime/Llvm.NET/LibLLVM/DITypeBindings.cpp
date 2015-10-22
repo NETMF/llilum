@@ -51,9 +51,9 @@ extern "C"
         return pType->getName( ).data( );
     }
 
-    LLVMMetadataRef LLVMDIScopeGetFile( LLVMMetadataRef typeRef )
+    LLVMMetadataRef LLVMDIScopeGetFile( LLVMMetadataRef scopeRef )
     {
-        DIType* pType = unwrap<DIType>( typeRef );
+        DIScope* pType = unwrap<DIScope>( scopeRef );
         return wrap( pType->getFile() );
     }
 }

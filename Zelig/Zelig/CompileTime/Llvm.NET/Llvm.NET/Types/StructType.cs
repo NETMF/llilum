@@ -1,10 +1,10 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
-using Llvm.NET.DebugInfo;
 
 namespace Llvm.NET.Types
 {
+    /// <summary>Interface for an LLVM structure type</summary>
     public interface IStructType
         : ITypeRef
     {
@@ -29,17 +29,10 @@ namespace Llvm.NET.Types
         void SetBody( bool packed, params ITypeRef[ ] elements );
     }
 
-    /// <summary>LLVM Structural type used for laying out types and computing offsets via the <see cref="Instructions.GetElementPtr"/> instruction</summary>
     internal class StructType
         : TypeRef
         , IStructType
     {
-        /// <summary>Sets the body of the structure</summary>
-        /// <param name="packed">Flag to indicate if the body elements are packed (e.g. no padding)</param>
-        /// <param name="elements">Optional types of each element</param>
-        /// <remarks>
-        /// To set the body , at least one element type is required. If none are provided this is a NOP.
-        /// </remarks>
         public void SetBody( bool packed, params ITypeRef[ ] elements )
         {
             LLVMTypeRef[ ] llvmArgs = elements.Select( e => e.GetTypeRef() ).ToArray( );
@@ -52,7 +45,6 @@ namespace Llvm.NET.Types
             NativeMethods.StructSetBody( TypeHandle_, out llvmArgs[ 0 ], argsLength, packed );
         }
 
-        /// <summary>Name of the structure</summary>
         public string Name
         {
             get
@@ -62,13 +54,8 @@ namespace Llvm.NET.Types
             }
         }
 
-        /// <summary>Indicates if the structure is opaque (e.g. has no body defined yet)</summary>
         public bool IsOpaque => NativeMethods.IsOpaqueStruct( TypeHandle_ );
-
-        /// <summary>Indicates if the structure is packed (e.g. no automatic alignment padding between elements)</summary>
         public bool IsPacked => NativeMethods.IsPackedStruct( TypeHandle_ );
-
-        /// <summary>List of types for all member elements of the structure</summary>
         public IReadOnlyList<ITypeRef> Members
         {
             get

@@ -69,7 +69,21 @@ namespace Llvm.NET.Values
         public ITypeRef ReturnType => Signature.ReturnType;
 
         /// <summary>Debug information for this function</summary>
-        public DISubProgram DISubProgram { get; internal set; }
+        public DISubProgram DISubProgram
+        {
+            get
+            {
+                return DISubProgram_;
+            }
+            set
+            {
+                if( !value.Describes( this ) )
+                    throw new ArgumentException( "Subprogram does not describe this Function" );
+
+                DISubProgram_ = value;
+            }
+        }
+        private DISubProgram DISubProgram_;
 
         /// <summary>Garbage collection engine name that this function is generated to work with</summary>
         /// <remarks>For details on GC support in LLVM see: http://llvm.org/docs/GarbageCollection.html </remarks>

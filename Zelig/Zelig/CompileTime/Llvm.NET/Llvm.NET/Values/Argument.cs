@@ -3,12 +3,14 @@ using System.Collections.Generic;
 
 namespace Llvm.NET.Values
 {
-    /// <summary>An LLVM Value representing an Argument in a function</summary>
+    /// <summary>An LLVM Value representing an Argument to a function</summary>
     public class Argument
         : Value
     {
         /// <summary>Function this argument belongs to</summary>
         public Function ContainingFunction => FromHandle<Function>( NativeMethods.GetParamParent( ValueHandle ) );
+        
+        /// <summary>Zero based index of the argument</summary>
         public uint Index => NativeMethods.GetArgumentIndex( ValueHandle );
 
         /// <summary>Sets the alignment for the argument</summary>

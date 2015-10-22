@@ -28,6 +28,7 @@ namespace Llvm.NET
             PositionAtEnd( block );
         }
 
+        /// <summary>Gets the context this builder is creating instructions for</summary>
         public Context Context { get; }
 
         /// <summary>Positions the builder at the end of a given <see cref="BasicBlock"/></summary>
@@ -37,6 +38,15 @@ namespace Llvm.NET
             NativeMethods.PositionBuilderAtEnd( BuilderHandle, basicBlock.BlockHandle );
         }
 
+        /// <summary>Positions the builder before the given instruction</summary>
+        /// <param name="instr">Instruction to position the builder before</param>
+        /// <remarks>This method will position the builder to add new instructions
+        /// immeidiately before the specified instruction.
+        /// <note type="note">It is important to keep in mind that this can change the
+        /// block this builder is targeting. That is, <paramref name="instr"/>
+        /// is not required to come from the same block the instruction builder is
+        /// currently referencing.</note>
+        /// </remarks>
         public void PositionBefore( Instruction instr )
         {
             NativeMethods.PositionBuilderBefore( BuilderHandle, instr.ValueHandle );
@@ -111,9 +121,9 @@ namespace Llvm.NET
         /// <returns><see cref="Instructions.Store"/> instruction</returns>
         /// <remarks>
         /// Since store targets memory the type of <paramref name="destination"/>
-        /// must be a <see cref="IPointerType"/>. Furthermore, the element type of
-        /// the pointer must match the type of <paramref name="value"/> Otherwise an
-        /// <see cref="ArgumentException"/> is thrown.
+        /// must be an <see cref="IPointerType"/>. Furthermore, the element type of
+        /// the pointer must match the type of <paramref name="value"/>. Otherwise,
+        /// an <see cref="ArgumentException"/> is thrown.
         /// </remarks>
         public Store Store( Value value, Value destination )
         {
@@ -137,11 +147,11 @@ namespace Llvm.NET
             return Value.FromHandle<Load>( handle );
         }
 
-        /// <summary>Creates a <see cref="User"/> that accesses an element (field) of a structure</summary>
+        /// <summary>Creates a <see cref="Value"/> that accesses an element (field) of a structure</summary>
         /// <param name="pointer">pointer to the strucure to get an element from</param>
         /// <param name="index">element index</param>
         /// <returns>
-        /// <para><see cref="User"/> for the member access. This is a User as LLVM may 
+        /// <para><see cref="Value"/> for the member access. This is a User as LLVM may 
         /// optimize the expression to a <see cref="ConstantExpression"/> if it 
         /// can so the actual type of the result may be <see cref="ConstantExpression"/>
         /// or <see cref="Instructions.GetElementPtr"/>.</para>

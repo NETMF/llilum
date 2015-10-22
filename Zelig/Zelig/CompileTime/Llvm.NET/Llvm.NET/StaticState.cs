@@ -2,18 +2,28 @@
 
 namespace Llvm.NET
 {
+    /// <summary>Target tools to register/enable</summary>
     [Flags]
     public enum TargetRegistration
     {
-                 None = 0x00,
-               Target = 0x01,
-           TargetInfo = 0x02,
+        /// <summary>Register nothing</summary>
+        None = 0x00,
+        /// <summary>Register the Target class</summary>
+        Target = 0x01,
+        /// <summary>Register the Target info for the target</summary>
+        TargetInfo = 0x02,
+        /// <summary>Register the target machine(s) for a target</summary>
         TargetMachine = 0x04,
-           AsmPrinter = 0x08,
-         Disassembler = 0x10,
-            AsmParser = 0x20,
-              CodeGen = Target | TargetInfo | TargetMachine,
-                  All = CodeGen | AsmPrinter | Disassembler | AsmParser
+        /// <summary>Registers the assembly source code generator for a target</summary>
+        AsmPrinter = 0x08,
+        /// <summary>Registers the Disassembler for a target</summary>
+        Disassembler = 0x10,
+        /// <summary>Registers the assembly source parser for a target</summary>
+        AsmParser = 0x20,
+        /// <summary>Registers all the codegeneration components</summary>
+        CodeGen = Target | TargetInfo | TargetMachine,
+        /// <summary>Registers all components</summary>
+        All = CodeGen | AsmPrinter | Disassembler | AsmParser
     }
     
     /// <summary>Provides support for various LLVM static state initialization and manipulation</summary>
@@ -46,6 +56,8 @@ namespace Llvm.NET
         //        LLVMNative.InitializeXXXAsmParser( );
         //}
 
+        /// <summary>Registers components for all available targets</summary>
+        /// <param name="regFlags">Flags indicating which components to register/enable</param>
         public static void RegisterAll( TargetRegistration regFlags = TargetRegistration.All )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
@@ -67,6 +79,8 @@ namespace Llvm.NET
                 NativeMethods.InitializeAllAsmParsers( );
         }
 
+        /// <summary>Registers components for the target representing the system the calling process is running on</summary>
+        /// <param name="regFlags">Flags indicating which components to register/enable</param>
         public static void RegisterNative( TargetRegistration regFlags = TargetRegistration.All )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
@@ -88,6 +102,8 @@ namespace Llvm.NET
                 NativeMethods.InitializeNativeAsmParser( );
         }
 
+        /// <summary>Registers components for ARM AArch64 target(s)</summary>
+        /// <param name="regFlags">Flags indicating which components to register/enable</param>
         public static void RegisterAArch64( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
@@ -109,6 +125,8 @@ namespace Llvm.NET
                 NativeMethods.InitializeAArch64AsmParser( );
         }
 
+        /// <summary>Registers components for ARM 32bit and 16bit thumb targets</summary>
+        /// <param name="regFlags">Flags indicating which components to register/enable</param>
         public static void RegisterARM( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
@@ -130,6 +148,8 @@ namespace Llvm.NET
                 NativeMethods.InitializeARMAsmParser( );
         }
 
+        /// <summary>Registers components for the Hexagon CPU</summary>
+        /// <param name="regFlags">Flags indicating which components to register/enable</param>
         public static void RegisterHexagon( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
@@ -151,6 +171,8 @@ namespace Llvm.NET
             //    LLVMNative.InitializeHexagonAsmParser( );
         }
 
+        /// <summary>Registers components for MIPS targets</summary>
+        /// <param name="regFlags">Flags indicating which components to register/enable</param>
         public static void RegisterMips( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
@@ -172,6 +194,8 @@ namespace Llvm.NET
                 NativeMethods.InitializeMipsAsmParser( );
         }
 
+        /// <summary>Registers components for MSP430 targets</summary>
+        /// <param name="regFlags">Flags indicating which components to register/enable</param>
         public static void RegisterMSP430( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
@@ -193,6 +217,8 @@ namespace Llvm.NET
             //    LLVMNative.InitializeMSP430AsmParser( );
         }
 
+        /// <summary>Registers components for the NVPTX targets</summary>
+        /// <param name="regFlags">Flags indicating which components to register/enable</param>
         public static void RegisterNVPTX( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
@@ -214,6 +240,8 @@ namespace Llvm.NET
             //    LLVMNative.InitializeNVPTXAsmParser( );
         }
 
+        /// <summary>Registers components for the PowerPC targets</summary>
+        /// <param name="regFlags">Flags indicating which components to register/enable</param>
         public static void RegisterPowerPC( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
@@ -235,6 +263,8 @@ namespace Llvm.NET
                 NativeMethods.InitializePowerPCAsmParser( );
         }
 
+        /// <summary>Registers components for AMDGPU targets</summary>
+        /// <param name="regFlags">Flags indicating which components to register/enable</param>
         public static void RegisterAMDGPU( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
@@ -256,6 +286,8 @@ namespace Llvm.NET
                 NativeMethods.InitializeAMDGPUAsmParser( );
         }
 
+        /// <summary>Registers components for SPARC targets</summary>
+        /// <param name="regFlags">Flags indicating which components to register/enable</param>
         public static void RegisterSparc( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
@@ -277,6 +309,8 @@ namespace Llvm.NET
                 NativeMethods.InitializeSparcAsmParser( );
         }
 
+        /// <summary>Registers components for SystemZ targets</summary>
+        /// <param name="regFlags">Flags indicating which components to register/enable</param>
         public static void RegisterSystemZ( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
@@ -298,6 +332,8 @@ namespace Llvm.NET
                 NativeMethods.InitializeSystemZAsmParser( );
         }
 
+        /// <summary>Registers components for X86 targets</summary>
+        /// <param name="regFlags">Flags indicating which components to register/enable</param>
         public static void RegisterX86( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )
@@ -319,6 +355,8 @@ namespace Llvm.NET
                 NativeMethods.InitializeX86AsmParser( );
         }
 
+        /// <summary>Registers components for XCore targets</summary>
+        /// <param name="regFlags">Flags indicating which components to register/enable</param>
         public static void RegisterXCore( TargetRegistration regFlags = TargetRegistration.All  )
         {
             if( regFlags.HasFlag( TargetRegistration.Target ) )

@@ -5,42 +5,26 @@ using Llvm.NET.Values;
 using Llvm.NET.Instructions;
 using System.IO;
 
-// for now the DebugInfo hierarchy is mostly empty
-// classes. This is due to the "in transition" state
-// of the underlying LLVM C++ model. All of these
-// are just a wrapper around a Metadata* allocated
-// in the LLVM native libraries. The only properties
-// or methods exposed are those required by current
-// projects. This keeps the code churn to move into
-// 3.8 minimal while allowing us to achieve progress
-// on current projects.
-
 namespace Llvm.NET.DebugInfo
 {
-    /// <summary>DebugInfoBuilder is a factory class for creating DebugInformation for an LLVM <see cref="Module"/></summary>
+    /// <summary>DebugInfoBuilder is a factory class for creating DebugInformation for an LLVM
+    /// <see cref="Module"/></summary>
     /// <remarks>
-    /// Many Debug information metadata nodes are created with unresolved references to additional metadata. To ensure such
-    /// metadata is resolved applications should call the <see cref="Finish"/> method to resolve and finalize the metadata.
-    /// After this point only fully resolved nodes may be added to ensure that the data remains valid.
+    /// Many Debug information metadata nodes are created with unresolved references to additional
+    /// metadata. To ensure such metadata is resolved applications should call the <see cref="Finish"/>
+    /// method to resolve and finalize the metadata. After this point only fully resolved nodes may
+    /// be added to ensure that the data remains valid.
     /// </remarks>
     public sealed class DebugInfoBuilder : IDisposable
     {
-        internal DebugInfoBuilder( Module owningModule )
-            : this( owningModule, true )
-        {
-        }
-
-        // keeping this private for now as there doesn't seem to be a good reason to support
-        // allowUnresolved == false
-        private DebugInfoBuilder( Module owningModule, bool allowUnresolved )
-        {
-            if( owningModule == null )
-                throw new ArgumentNullException( nameof( owningModule ) );
-
-            BuilderHandle = NativeMethods.NewDIBuilder( owningModule.ModuleHandle, allowUnresolved );
-            OwningModule = owningModule;
-        }
-
+        /// <summary>Creates a new <see cref="DICompileUnit"/></summary>
+        /// <param name="language"><see cref="SourceLanguage"/> for the compilation unit</param>
+        /// <param name="srcFilePath">Full path to the source file of this compilation unit</param>
+        /// <param name="producer">Name of the application processing the compilation unit</param>
+        /// <param name="optimized">Flag to indicate if the code in this compilation unit is optimized</param>
+        /// <param name="flags">Additional tool specific flags</param>
+        /// <param name="runtimeVersion">Runtime version</param>
+        /// <returns><see cref="DICompileUnit"/></returns>
         public DICompileUnit CreateCompileUnit( SourceLanguage language
                                               , string srcFilePath
                                               , string producer
@@ -59,6 +43,15 @@ namespace Llvm.NET.DebugInfo
                                     );
         }
 
+        /// <summary>Creates a new <see cref="DICompileUnit"/></summary>
+        /// <param name="language"><see cref="SourceLanguage"/> for the compilation unit</param>
+        /// <param name="fileName">Name of the source file of this compilation unit (without any path)</param>
+        /// <param name="fileDirectory">Path of the directory containing the file</param>
+        /// <param name="producer">Name of the application processing the compilation unit</param>
+        /// <param name="optimized">Flag to indicate if the code in this compilation unit is optimized</param>
+        /// <param name="flags">Additional tool specific flags</param>
+        /// <param name="runtimeVersion">Runtime version</param>
+        /// <returns><see cref="DICompileUnit"/></returns>
         public DICompileUnit CreateCompileUnit( SourceLanguage language
                                               , string fileName
                                               , string fileDirectory
@@ -80,39 +73,67 @@ namespace Llvm.NET.DebugInfo
                                                                  , flags
                                                                  , runtimeVersion
                                                                  );
-            var retVal = new DICompileUnit( handle );
+            var retVal = DINode.FromHandle< DICompileUnit >( handle );
             OwningModule.DICompileUnit = retVal;
             return retVal;
         }
 
+        /// <summary>Creates a <see cref="DINamespace"/></summary>
+        /// <param name="scope">Containing scope for the namespace or null if the namespace is a global one</param>
+        /// <param name="name">Name of the namespace</param>
+        /// <param name="file">Source file containing the declaration (may be null if more than one or not known)</param>
+        /// <param name="line">Line number of the namespace declaration</param>
+        /// <returns></returns>
+        public DINamespace CreateNamespace( DIScope scope, string name, DIFile file, uint line )
+        {
+            if( string.IsNullOrWhiteSpace( name ) )
+                throw new ArgumentException( "name cannot be null or empty", nameof( name ) );
+
+            var handle = NativeMethods.DIBuilderCreateNamespace( BuilderHandle, scope?.MetadataHandle ?? LLVMMetadataRef.Zero, name, file.MetadataHandle, line );
+            return DINode.FromHandle< DINamespace >( handle );
+        }
+
+        /// <summary>Creates a <see cref="DIFile"/></summary>
+        /// <param name="path">Path of the file (may be <see langword="null"/> or empty)</param>
+        /// <returns>
+        /// <see cref="DIFile"/> or <see langword="null"/> if <paramref name="path"/>
+        /// is <see langword="null"/> empty, or all whitespace
+        /// </returns>
         public DIFile CreateFile( string path )
         {
             if( string.IsNullOrWhiteSpace( path ) )
-                throw new ArgumentException( "Path cannot be null, empty or whitespace" );
+                return null;
 
             return CreateFile( Path.GetFileName( path ), Path.GetDirectoryName( path ) );
         }
 
+        /// <summary>Creates a <see cref="DIFile"/></summary>
+        /// <param name="fileName">Name of the file (may be <see langword="null"/> or empty)</param>
+        /// <param name="directory">Path of the directory containing the file (may be <see langword="null"/> or empty)</param>
+        /// <returns>
+        /// <see cref="DIFile"/> or <see langword="null"/> if <paramref name="fileName"/>
+        /// is <see langword="null"/> empty, or all whitespace
+        /// </returns>
         public DIFile CreateFile( string fileName, string directory )
         {
             if( string.IsNullOrWhiteSpace( fileName ) )
-                throw new ArgumentException( "File name cannot be empty or null" );
+                return null;
 
             var handle = NativeMethods.DIBuilderCreateFile( BuilderHandle, fileName, directory??string.Empty );
             // REVIEW: should this deal with uniquing? if so, is it per context? Per module? ...?
-            return new DIFile( handle );
+            return DINode.FromHandle< DIFile >( handle );
         }
 
         public DILexicalBlock CreateLexicalBlock( DIScope scope, DIFile file, uint line, uint column )
         {
             var handle = NativeMethods.DIBuilderCreateLexicalBlock( BuilderHandle, scope.MetadataHandle, file.MetadataHandle, line, column );
-            return new DILexicalBlock( handle );
+            return DINode.FromHandle< DILexicalBlock >( handle );
         }
 
         public DILexicalBlockFile CreateLexicalBlockFile( DIScope scope, DIFile file, uint discriminator )
         {
             var handle = NativeMethods.DIBuilderCreateLexicalBlockFile( BuilderHandle, scope.MetadataHandle, file.MetadataHandle, discriminator );
-            return new DILexicalBlockFile( handle );
+            return DINode.FromHandle< DILexicalBlockFile >( handle );
         }
 
         public DISubProgram CreateFunction( DIScope scope
@@ -120,11 +141,11 @@ namespace Llvm.NET.DebugInfo
                                           , string mangledName
                                           , DIFile file
                                           , uint line
-                                          , DICompositeType compositeType
+                                          , DISubroutineType signatureType
                                           , bool isLocalToUnit
                                           , bool isDefinition
                                           , uint scopeLine
-                                          , uint flags
+                                          , DebugInfoFlags flags
                                           , bool isOptimized
                                           , Function function
                                           , MDNode TParam = null
@@ -143,17 +164,17 @@ namespace Llvm.NET.DebugInfo
                                                               , mangledName
                                                               , file?.MetadataHandle ?? LLVMMetadataRef.Zero
                                                               , line
-                                                              , compositeType.MetadataHandle
+                                                              , signatureType.MetadataHandle
                                                               , isLocalToUnit ? 1 : 0
                                                               , isDefinition ? 1 : 0
                                                               , scopeLine
-                                                              , flags
+                                                              , (uint)flags
                                                               , isOptimized ? 1 : 0
                                                               , function.ValueHandle
                                                               , TParam?.MetadataHandle ?? LLVMMetadataRef.Zero
                                                               , Decl?.MetadataHandle ?? LLVMMetadataRef.Zero
                                                               );
-            return new DISubProgram( handle );
+            return DINode.FromHandle< DISubProgram >( handle );
         }
 
         public DISubProgram ForwardDeclareFunction( DIScope scope
@@ -194,7 +215,7 @@ namespace Llvm.NET.DebugInfo
                                                                       , TParam?.MetadataHandle ?? LLVMMetadataRef.Zero
                                                                       , Decl?.MetadataHandle ?? LLVMMetadataRef.Zero
                                                                       );
-            return new DISubProgram( handle );
+            return DINode.FromHandle< DISubProgram >( handle );
         }
 
         public DILocalVariable CreateLocalVariable( DIScope scope
@@ -226,7 +247,7 @@ namespace Llvm.NET.DebugInfo
         public DIBasicType CreateBasicType( string name, ulong bitSize, ulong bitAlign, DiTypeKind encoding )
         {
             var handle = NativeMethods.DIBuilderCreateBasicType( BuilderHandle, name, bitSize, bitAlign, (uint)encoding );
-            return new DIBasicType( handle );
+            return DINode.FromHandle< DIBasicType >( handle );
         }
 
         public DIDerivedType CreatePointerType( DIType pointeeType, string name, ulong bitSize, ulong bitAlign)
@@ -237,13 +258,13 @@ namespace Llvm.NET.DebugInfo
                                                                  , bitAlign
                                                                  , name ?? string.Empty
                                                                  );
-            return new DIDerivedType( handle );
+            return DINode.FromHandle< DIDerivedType >( handle );
         }
 
         public DIDerivedType CreateQualifiedType( DIType baseType, QualifiedTypeTag tag )
         {
             var handle = NativeMethods.DIBuilderCreateQualifiedType( BuilderHandle, ( uint )tag, baseType.MetadataHandle );
-            return new DIDerivedType( handle );
+            return DINode.FromHandle< DIDerivedType >( handle );
         }
 
         public DITypeArray CreateTypeArray( params DIType[ ] types ) => CreateTypeArray( ( IEnumerable<DIType> )types );
@@ -262,7 +283,7 @@ namespace Llvm.NET.DebugInfo
         public DISubroutineType CreateSubroutineType( DIFile file, uint flags, DITypeArray types )
         {
             var handle = NativeMethods.DIBuilderCreateSubroutineType( BuilderHandle, file?.MetadataHandle ?? LLVMMetadataRef.Zero , types.MetadataHandle, flags );
-            return new DISubroutineType( handle );
+            return DINode.FromHandle< DISubroutineType >( handle );
         }
 
         public DISubroutineType CreateSubroutineType( DIFile file, uint flags )
@@ -299,7 +320,7 @@ namespace Llvm.NET.DebugInfo
                                                                 , derivedFrom?.MetadataHandle ?? LLVMMetadataRef.Zero
                                                                 , elements.MetadataHandle
                                                                 );
-            return new DICompositeType( handle );
+            return DINode.FromHandle<DICompositeType>( handle );
         }
 
         public DICompositeType CreateStructType( DIScope scope
@@ -352,13 +373,13 @@ namespace Llvm.NET.DebugInfo
                                                                 , flags
                                                                 , type.MetadataHandle
                                                                 );
-            return new DIDerivedType( handle );
+            return DINode.FromHandle< DIDerivedType >( handle );
         }
 
         public DICompositeType CreateArrayType( ulong bitSize, ulong bitAlign, DIType elementType, DIArray subScripts )
         {
             var handle = NativeMethods.DIBuilderCreateArrayType( BuilderHandle, bitSize, bitAlign, elementType.MetadataHandle, subScripts.MetadataHandle );
-            return new DICompositeType( handle );
+            return DINode.FromHandle<DICompositeType>( handle );
         }
 
         public DICompositeType CreateArrayType( ulong bitSize, ulong bitAlign, DIType elementType, params DINode[] subScripts )
@@ -366,16 +387,22 @@ namespace Llvm.NET.DebugInfo
             return CreateArrayType( bitSize, bitAlign, elementType, GetOrCreateArray( subScripts ) );
         }
 
-        public DIDerivedType CreateTypedef(DIType type, string name, DIFile file, uint line, DINode context )
+        public DIDerivedType CreateTypedef( DIType type, string name, DIFile file, uint line, DINode context )
         {
-            var handle = NativeMethods.DIBuilderCreateTypedef( BuilderHandle, type.MetadataHandle, name, file.MetadataHandle, line, context.MetadataHandle );
-            return new DIDerivedType( handle );
+            var handle = NativeMethods.DIBuilderCreateTypedef( BuilderHandle
+                                                             , type?.MetadataHandle ?? LLVMMetadataRef.Zero
+                                                             , name
+                                                             , file?.MetadataHandle  ?? LLVMMetadataRef.Zero
+                                                             , line
+                                                             , context?.MetadataHandle ?? LLVMMetadataRef.Zero
+                                                             );
+            return DINode.FromHandle<DIDerivedType>( handle );
         }
 
         public DISubrange CreateSubrange( long lo, long count )
         {
             var handle = NativeMethods.DIBuilderGetOrCreateSubrange( BuilderHandle, lo, count );
-            return new DISubrange( handle );
+            return DINode.FromHandle<DISubrange>( handle );
         }
 
         public DIArray GetOrCreateArray( IEnumerable<DINode> elements )
@@ -401,7 +428,7 @@ namespace Llvm.NET.DebugInfo
         public DIEnumerator CreateEnumeratorValue( string name, long value )
         {
             var handle = NativeMethods.DIBuilderCreateEnumeratorValue( BuilderHandle, name, value );
-            return new DIEnumerator( handle );
+            return DINode.FromHandle<DIEnumerator>( handle );
         }
 
         public DICompositeType CreateEnumerationType( DIScope scope
@@ -428,7 +455,7 @@ namespace Llvm.NET.DebugInfo
                                                                      , underlyingType.MetadataHandle
                                                                      , uniqueId
                                                                      );
-            return new DICompositeType( handle );
+            return DINode.FromHandle< DICompositeType >( handle );
         }
 
         public DIGlobalVariable CreateGlobalVariable( DINode scope
@@ -453,7 +480,7 @@ namespace Llvm.NET.DebugInfo
                                                                     , value.ValueHandle
                                                                     , decl?.MetadataHandle ?? LLVMMetadataRef.Zero
                                                                     );
-            return new DIGlobalVariable( handle );
+            return DINode.FromHandle< DIGlobalVariable >( handle );
         }
 
         public void Finish()
@@ -534,7 +561,7 @@ namespace Llvm.NET.DebugInfo
                                                                               , alignBits
                                                                               , flags
                                                                               );
-            return new DICompositeType( handle );
+            return DINode.FromHandle< DICompositeType >( handle );
         }
 
         public void Dispose( )
@@ -544,6 +571,22 @@ namespace Llvm.NET.DebugInfo
                 NativeMethods.DIBuilderDestroy( BuilderHandle );
                 BuilderHandle = default(LLVMDIBuilderRef);
             }
+        }
+
+        internal DebugInfoBuilder( Module owningModule )
+            : this( owningModule, true )
+        {
+        }
+
+        // keeping this private for now as there doesn't seem to be a good reason to support
+        // allowUnresolved == false
+        private DebugInfoBuilder( Module owningModule, bool allowUnresolved )
+        {
+            if( owningModule == null )
+                throw new ArgumentNullException( nameof( owningModule ) );
+
+            BuilderHandle = NativeMethods.NewDIBuilder( owningModule.ModuleHandle, allowUnresolved );
+            OwningModule = owningModule;
         }
 
         private DILocalVariable CreateLocalVariable( Tag dwarfTag
@@ -561,14 +604,14 @@ namespace Llvm.NET.DebugInfo
                                                                    , (uint)dwarfTag
                                                                    , scope.MetadataHandle
                                                                    , name
-                                                                   , file.MetadataHandle
+                                                                   , file?.MetadataHandle ?? LLVMMetadataRef.Zero
                                                                    , line
                                                                    , type.MetadataHandle
                                                                    , alwaysPreserve ? 1 : 0
                                                                    , flags
                                                                    , argNo
                                                                    );
-            return new DILocalVariable( handle );
+            return DINode.FromHandle< DILocalVariable >( handle );
         }
 
         private readonly Module OwningModule;

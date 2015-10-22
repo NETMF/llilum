@@ -2,14 +2,33 @@
 
 namespace Llvm.NET
 {
+    /// <summary>Target specific code generation information</summary>
     public class TargetMachine : IDisposable
     {
+        /// <summary>Retrieves the Target that owns this <see cref="TargetMachine"/></summary>
         public Target Target => Target.FromHandle( NativeMethods.GetTargetMachineTarget( TargetMachineHandle ) );
+
+        /// <summary>Target triple describing this machine</summary>
         public string Triple => NativeMethods.MarshalMsg( NativeMethods.GetTargetMachineTriple( TargetMachineHandle ) );
+
+        /// <summary>CPU Type for this machine</summary>
         public string Cpu => NativeMethods.MarshalMsg( NativeMethods.GetTargetMachineCPU( TargetMachineHandle ) );
+
+        /// <summary>CPU specific features for this machine</summary>
         public string Features => NativeMethods.MarshalMsg( NativeMethods.GetTargetMachineFeatureString( TargetMachineHandle ) );
+
+        /// <summary>Layout information for this machine</summary>
+        /// <remarks>
+        /// <note type="warning">This property is currently planned for removal in LLVM v4.0.
+        /// Though it is unclear what the replacement will be as there is no other way to get
+        /// the layout information if it isn't already known.</note>
+        /// </remarks>
         public TargetData TargetData => TargetData.FromHandle( NativeMethods.GetTargetMachineData( TargetMachineHandle), isDisposable: false );
 
+        /// <summary>Generate code for the target machine from a module</summary>
+        /// <param name="module"><see cref="Module"/> to generate the code from</param>
+        /// <param name="path">Path to the output file</param>
+        /// <param name="fileType">Type of file to emit</param>
         public void EmitToFile( Module module, string path, CodeGenFileType fileType )
         {
             if( module == null )
@@ -67,6 +86,5 @@ namespace Llvm.NET
         #endregion
 
         internal LLVMTargetMachineRef TargetMachineHandle { get; private set; }
-
     }
 }

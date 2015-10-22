@@ -1,6 +1,7 @@
 ﻿namespace Llvm.NET.DebugInfo
 {
-    /// <summary>see <a href="http://llvm.org/docs/LangRef.html#dibasictype"/></summary>
+    /// <summary>Debug information for a basic type</summary>
+    /// <seealso cref="DebugInfoBuilder.CreateBasicType(string, ulong, ulong, DiTypeKind)"/>
     public class DIBasicType : DIType
     {
         internal DIBasicType( LLVMMetadataRef handle )

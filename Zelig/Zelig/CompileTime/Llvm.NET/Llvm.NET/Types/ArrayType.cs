@@ -2,9 +2,11 @@
 
 namespace Llvm.NET.Types
 {
+    /// <summary>Interface for an LLVM array type </summary>
     public interface IArrayType
         : ISequenceType
     {
+        /// <summary>Length of the array</summary>
         uint Length { get; }
     }
 

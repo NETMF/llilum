@@ -262,9 +262,7 @@ namespace Microsoft.Zelig.LLVM
             var debugMemberInfo = new DebugMemberInfo { Name = field.Name
                                                       , Type = memberDiType
                                                       , Index = (uint)index
-                                                      , BitSize = (uint)field.MemberType.SizeInBits
-                                                      , BitOffset = offset * 8UL
-                                                      , BitAlignment = 0  /* ???? */
+                                                      , ExplicitLayout = new DebugMemberLayout( (uint)field.MemberType.SizeInBits, 0  /* ???? */, offset * 8UL )
                                                       , Flags = flags
                                                       /* todo: file, line...*/
                                                       };

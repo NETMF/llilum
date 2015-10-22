@@ -315,7 +315,7 @@ namespace Llvm.NET
                                                                                     // Enum values starting at InstructionVal are used for Instructions;
 
         // instruction values come directly from LLVM Instruction.def which is different from the "stable"
-        // LLVM-C API, therefore they are less :stable and bound to the C++ implementation version and
+        // LLVM-C API, therefore they are less "stable" and bound to the C++ implementation version and
         // subject to change from version to version.
         Return         = 1 + Instruction,
         Branch         = 2 + Instruction,

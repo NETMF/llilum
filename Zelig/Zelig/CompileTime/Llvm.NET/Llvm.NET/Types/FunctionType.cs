@@ -1,15 +1,19 @@
-﻿using System.Linq;
-using System.Collections.Generic;
-using Llvm.NET.DebugInfo;
-using System;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Llvm.NET.Types
 {
+    /// <summary>Interface to repersent the LLVM type of a function (e.g. a signature)</summary>
     public interface IFunctionType
         : ITypeRef
     {
+        /// <summary>Flag to indicate if this signature is for a variadic function</summary>
         bool IsVarArg { get; }
+        
+        /// <summary>Return type of the function</summary>
         ITypeRef ReturnType { get; }
+
+        /// <summary>Collection of types of the paramters for the function</summary>
         IReadOnlyList<ITypeRef> ParameterTypes { get; }
     }
 
@@ -23,12 +27,13 @@ namespace Llvm.NET.Types
         {
         }
 
-        /// <summary>Flag to indicate if this signature is for a variadic function</summary>
+        /// <inheritdoc/>
         public bool IsVarArg => NativeMethods.IsFunctionVarArg( TypeHandle_ );
 
-        /// <summary></summary>
+        /// <inheritdoc/>
         public ITypeRef ReturnType => FromHandle<ITypeRef>( NativeMethods.GetReturnType( TypeHandle_ ) );
 
+        /// <inheritdoc/>
         public IReadOnlyList<ITypeRef> ParameterTypes
         {
             get

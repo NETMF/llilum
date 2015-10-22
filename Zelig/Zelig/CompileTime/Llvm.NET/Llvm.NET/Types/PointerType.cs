@@ -2,9 +2,11 @@
 
 namespace Llvm.NET.Types
 {
+    /// <summary>Interface for a pointer type in LLVM</summary>
     public interface IPointerType
         : ISequenceType
     {
+        /// <summary>Address space the pointer referes to</summary>
         uint AddressSpace { get; }
     }
 

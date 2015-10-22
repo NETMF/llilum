@@ -22,11 +22,22 @@ namespace Llvm.NET.DebugInfo
             }
         }
 
+        public DIScope Scope
+        {
+            get
+            {
+                var handle = NativeMethods.DITypeGetScope( MetadataHandle );
+                if( handle.Pointer == IntPtr.Zero )
+                    return null;
+
+                return FromHandle< DIScope >( handle );
+            }
+        }
+
         public UInt32 Line => NativeMethods.DITypeGetLine( MetadataHandle );
         public UInt64 BitSize => NativeMethods.DITypeGetSizeInBits( MetadataHandle );
         public UInt64 BitAlignment => NativeMethods.DITypeGetAlignInBits( MetadataHandle );
         public UInt64 BitOffset => NativeMethods.DITypeGetOffsetInBits( MetadataHandle );
-        public DIScope Scope => new DIScope( NativeMethods.DITypeGetScope( MetadataHandle ) );
         public bool IsPrivate => ( Flags & DebugInfoFlags.AccessibilityMask ) == DebugInfoFlags.Private;
         public bool IsProtected => ( Flags & DebugInfoFlags.AccessibilityMask ) == DebugInfoFlags.Protected;
         public bool IsPublic => ( Flags & DebugInfoFlags.AccessibilityMask ) == DebugInfoFlags.Public;

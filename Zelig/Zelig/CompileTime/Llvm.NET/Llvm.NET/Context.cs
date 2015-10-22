@@ -21,24 +21,25 @@ namespace Llvm.NET
     ///</para>
     /// <para>LLVM Debug information is ultimately all parented to a top level
     /// <see cref="DebugInfo.DICompileUnit"/> as the scope, and a compilation
-    /// unit is bound to a module, even though, technically the types are owned
-    /// by a context. Thus, to keep things simpler and help make working with
-    /// debug infomration easier, Lllvm.NET encapsulates the context into a
-    /// <see cref="Module"/>. This establishes a strict one to one <see cref="Module"/>
-    /// and context. Doing this allows Llvm.NET to add debug information
-    /// properties to <see cref="Types.ITypeRef"/>s and other classes. It also
-    /// allows for establishing a fluent style programming for adding debug
-    /// location information to instructions. While this is a technical departure
-    /// from the underlying LLVM implementation the significant simplification
-    /// of managing debug information makes it worth the small deviation.</para>
+    /// unit is bound to a <see cref="Module"/>, even though, technically the
+    /// types are owned by a Context. Thus to keep things simpler and help make
+    /// working with debug infomration easier. Lllvm.NET encapsulates the native
+    /// type and the debug type in seperate classes that are instances of the
+    /// <see cref="IDebugType{NativeT, DebugT}"/> interface </para>
     /// <note type="note">It is important to be aware of the fact that a Context
     /// is not thread safe. The context itself and the object instances it owns
     /// are intended for use by a single thread only. Accessing and manipulating
     /// LLVM objects from multiple threads may lead to race conditions corrupted
     /// state and any number of other issues.</note>
     /// </remarks>
-    public sealed class Context 
+    public sealed class Context : IDisposable
     {
+        /// <summary>Creates a new context</summary>
+        public Context( )
+            : this( NativeMethods.ContextCreate( ) )
+        {
+        }
+
         /// <summary>Flag to indicate if this instance is still valid</summary>
         public bool IsDisposed => ContextHandle.Pointer == IntPtr.Zero;
 
@@ -548,15 +549,7 @@ namespace Llvm.NET
 
         internal void Close()
         {
-            if( ContextHandle.Pointer != IntPtr.Zero )
-            {
-                lock( ContextCache )
-                {
-                    ContextCache.Remove( ContextHandle );
-                }
-                NativeMethods.ContextDispose( ContextHandle );
-                ContextHandle = default( LLVMContextRef );
-            }
+            Dispose( );
         }
 
         #region Interning Factories
@@ -673,11 +666,6 @@ namespace Llvm.NET
         }
         #endregion
 
-        internal Context( )
-            : this( NativeMethods.ContextCreate( ) )
-        {
-        }
-
         private Context( LLVMContextRef contextRef )
         {
             ContextHandle = contextRef;
@@ -708,5 +696,32 @@ namespace Llvm.NET
         // lazy init a singleton unmanaged delegate and hold on to it so it is never collected
         private static Lazy<LLVMFatalErrorHandler> FatalErrorHandlerDelegate 
             = new Lazy<LLVMFatalErrorHandler>( ( ) => FatalErrorHandler, LazyThreadSafetyMode.PublicationOnly );
+
+        #region IDisposable Support
+        void Dispose( bool disposing )
+        {
+            if( ContextHandle.Pointer != IntPtr.Zero )
+            {
+                lock( ContextCache )
+                {
+                    ContextCache.Remove( ContextHandle );
+                }
+                NativeMethods.ContextDispose( ContextHandle );
+                ContextHandle = default( LLVMContextRef );
+            }
+        }
+
+        ~Context()
+        {
+           Dispose(false);
+        }
+
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose( )
+        {
+            Dispose( true );
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

@@ -156,50 +156,6 @@ namespace Microsoft.Zelig.LLVM
             return new _Value( this, type, type.DebugType.GetNullValue( ), true );
         }
 
-        // REVIEW: Why does code at this low a level or stage need to be concerned with 
-        // type hierarchy details? Shouldn't any such issues already be covered in the
-        // layers above this?
-        public bool CheckIfAExtendsB( _Type a, _Type b )
-        {
-            ITypeRef tyA = a.DebugType;
-            ITypeRef tyB = b.DebugType;
-
-            // REVIEW:
-            // While this is from the original C++ it seems a bit odd
-            // given the name of this method...
-            // A type is generally not considered an extension of itself
-            // ( It is possible the original semantic intent of this
-            // function is more along the lines of IsAssignmentCompatible(a,b) )
-            if( tyA == tyB )
-                return true;
-
-            if( tyA.IsStruct() && tyB.IsStruct( ) )
-            {
-                var stA = ( IStructType )tyA;
-
-                if( stA.IsOpaque )
-                    return false;
-
-                ITypeRef tSuper = stA.Members[ 0 ];
-                while( tSuper.IsStruct() )
-                {
-                    if( tSuper == tyB )
-                        return true;
-
-                    var stSuper = ( IStructType )tSuper;
-                    if( stSuper.IsOpaque )
-                        return false;
-
-                    tSuper = stSuper.Members[ 0 ];
-                }
-            }
-            return false;
-        }
-
-        public bool CheckIfBothTypesPertainToTheSameHierarchy( _Type a, _Type b )
-        {
-            return CheckIfAExtendsB( a, b ) || CheckIfAExtendsB( b, a );
-        }
 
         public _Function GetOrInsertFunction( string name, _Type funcType )
         {
@@ -375,9 +331,9 @@ namespace Microsoft.Zelig.LLVM
             }
         }
 
-        internal uint NativeIntSize => LlvmModule.Layout.IntPtrType( LlvmModule.Context ).IntegerBitWidth;
+        internal uint NativeIntSize => LlvmModule.Layout.IntPtrType( ).IntegerBitWidth;
 
-        internal uint PointerSize => LlvmModule.Layout.IntPtrType( LlvmModule.Context ).IntegerBitWidth;
+        internal uint PointerSize => LlvmModule.Layout.IntPtrType( ).IntegerBitWidth;
 
         internal Context LlvmContext => LlvmModule.Context;
 

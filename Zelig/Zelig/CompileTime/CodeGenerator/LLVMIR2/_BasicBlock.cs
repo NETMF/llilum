@@ -98,7 +98,7 @@ namespace Microsoft.Zelig.LLVM
                                                                         , mangledName
                                                                         , diFile
                                                                         , ( uint )DebugCurLine
-                                                                        , (DICompositeType)functionType.DIType
+                                                                        , (DISubroutineType)functionType.DIType
                                                                         , true
                                                                         , true
                                                                         , ( uint )DebugCurLine

@@ -1,5 +1,4 @@
 ﻿using System;
-using Llvm.NET.DebugInfo;
 using Llvm.NET.Values;
 
 namespace Llvm.NET.Types

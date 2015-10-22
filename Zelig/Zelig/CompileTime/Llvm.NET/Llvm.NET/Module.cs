@@ -19,18 +19,32 @@ namespace Llvm.NET
     {
         /// <summary>Creates an unnamed module without debug information</summary>
         public Module( )
-            :this( string.Empty )
+            :this( string.Empty, null)
         {
         }
 
-        /// <summary>Creates an named module without debug information</summary>
+        /// <summary>Creates a new module with the specified id in a new context</summary>
+        /// <param name="moduleId">Module's ID</param>
         public Module( string moduleId )
+            : this( moduleId, null )
+        {
+        }
+
+        /// <summary>Creates an named module in a given context</summary>
+        /// <param name="moduleId">Module's ID</param>
+        /// <param name="context">Context for the module</param>
+        public Module( string moduleId, Context context )
         {
             if( moduleId == null )
-                throw new ArgumentNullException( nameof( moduleId ) );
+                moduleId = string.Empty;
 
-            var hContext = NativeMethods.ContextCreate( );
-            ModuleHandle = NativeMethods.ModuleCreateWithNameInContext( moduleId, hContext );
+            if( context == null )
+            {
+                context = new Context( );
+                OwnsContext = true;
+            }
+
+            ModuleHandle = NativeMethods.ModuleCreateWithNameInContext( moduleId, context.ContextHandle );
             if( ModuleHandle.Pointer == IntPtr.Zero )
                 throw new InternalCodeGeneratorException("Could not create module in context");
 
@@ -54,9 +68,45 @@ namespace Llvm.NET
                      , string flags
                      , uint runtimeVersion
                      )
-            : this( moduleId )
+            : this( moduleId
+                  , null
+                  , language
+                  , srcFilePath
+                  , producer
+                  , optimized
+                  , flags
+                  , runtimeVersion
+                  )
         {
-            DIBuilder.CreateCompileUnit( language, srcFilePath, producer, optimized, flags, runtimeVersion );
+        }
+
+        /// <summary>Creates a named module with a root <see cref="DICompileUnit"/> to contain debugging information</summary>
+        /// <param name="moduleId">Module name</param>
+        /// <param name="context">Context for the module</param>
+        /// <param name="language">Language to store in the debugging information</param>
+        /// <param name="srcFilePath">path of source file to set for the compilation unit</param>
+        /// <param name="producer">Name of the application producing this module</param>
+        /// <param name="optimized">Flag to indicate if the module is optimized</param>
+        /// <param name="flags">Additional flags</param>
+        /// <param name="runtimeVersion">Runtime version if any (use 0 if the runtime version has no meaning)</param>
+        public Module( string moduleId
+                     , Context context
+                     , SourceLanguage language
+                     , string srcFilePath
+                     , string producer
+                     , bool optimized
+                     , string flags
+                     , uint runtimeVersion
+                     )
+            : this( moduleId, context )
+        {
+            DICompileUnit = DIBuilder.CreateCompileUnit( language
+                                                       , srcFilePath
+                                                       , producer
+                                                       , optimized
+                                                       , flags
+                                                       , runtimeVersion
+                                                       );
         }
 
         #region IDisposable Pattern
@@ -73,19 +123,31 @@ namespace Llvm.NET
 
         void Dispose( bool disposing )
         {
-            // if not already disposed, dispose the context
-            // NOTE: the module itself is released when the 
-            // containing context is release, so only the
-            // context is explicitly closed.
-            if( Context != null )
-                Context.Close( );
+            // if not already disposed, dispose the module
+            // Do this only on dispose. The containing context
+            // will clean up the module when it is disposed or
+            // finalized. Since finalization order isn't
+            // deterministic it is possible that the module is
+            // finalized after the context has already run its
+            // finalizer, which would cause an access violation
+            // in the native LLVM layer.
+            if( disposing && ModuleHandle.Pointer != IntPtr.Zero )
+            {
+                // if this module created the context then just dispose
+                // the context as that will clean up the module as well.
+                if( OwnsContext )
+                    Context.Dispose( );
+                else
+                    NativeMethods.DisposeModule( ModuleHandle );
 
-            ModuleHandle = default( LLVMModuleRef );
+                ModuleHandle = default( LLVMModuleRef );
+            }
         }
         #endregion
 
         /// <summary>Name of the Debug Version information module flag</summary>
         public const string DebugVersionValue = "Debug Info Version";
+        
         /// <summary>Name of the Dwarf Version module flag</summary>
         public const string DwarfVersionValue = "Dwarf Version";
 
@@ -114,10 +176,10 @@ namespace Llvm.NET
         /// <remarks>
         /// Note the data layout string doesn't do what seems obvious.
         /// That is, it doesn't force the target back-end to generate code
-        /// or types with a particular layout. Rather the layout string has
-        /// to match the implicit layout of the target. Instead the layout
-        /// string provides hints to the optimization passes about the target
-        /// at the expense of making the bit code and front-end a bit target
+        /// or types with a particular layout. Rather, the layout string has
+        /// to match the implicit layout of the target. The layout string
+        /// provides hints to the optimization passes about the target at
+        /// the expense of making the bit code and front-end a bit target
         /// dependent.
         /// </remarks>
         public string DataLayoutString
@@ -453,11 +515,11 @@ namespace Llvm.NET
                                                  , mangledName: linkageName
                                                  , file: file
                                                  , line: line
-                                                 , compositeType: diSignature
+                                                 , signatureType: diSignature
                                                  , isLocalToUnit: isLocalToUnit
                                                  , isDefinition: isDefinition
                                                  , scopeLine: scopeLine
-                                                 , flags: ( uint )flags
+                                                 , flags: flags
                                                  , isOptimized: isOptimized
                                                  , function: func
                                                  , TParam: tParam
@@ -485,23 +547,31 @@ namespace Llvm.NET
         /// <returns>Loaded <see cref="Module"/></returns>
         public static Module LoadFrom( string path )
         {
+            return LoadFrom( path, new Context( ) );
+        }
+
+        /// <summary>Load a bit-code module from a given file</summary>
+        /// <param name="path">path of the file to load</param>
+        /// <param name="context">Context to use for creating the module</param>
+        /// <returns>Loaded <see cref="Module"/></returns>
+        public static Module LoadFrom( string path, Context context )
+        {
             if( string.IsNullOrWhiteSpace( path ) )
                 throw new ArgumentException( "path cannot be null or an empty string", nameof( path ) );
 
             if( !File.Exists( path ) )
                 throw new FileNotFoundException( "Specified bit-code file does not exist", path );
 
-            var ctx = new Context( );
             using( var buffer = new MemoryBuffer( path ) )
             {
                 LLVMModuleRef modRef;
                 IntPtr errMsgPtr;
-                if( NativeMethods.ParseBitcodeInContext( ctx.ContextHandle, buffer.BufferHandle, out modRef, out errMsgPtr ).Failed )
+                if( NativeMethods.ParseBitcodeInContext( context.ContextHandle, buffer.BufferHandle, out modRef, out errMsgPtr ).Failed )
                 {
                     var errMsg = NativeMethods.MarshalMsg( errMsgPtr );
                     throw new InternalCodeGeneratorException( errMsg );
                 }
-                return ctx.GetModuleFor( modRef );
+                return context.GetModuleFor( modRef );
             }
         }
 
@@ -509,5 +579,6 @@ namespace Llvm.NET
 
         private readonly ExtensiblePropertyContainer PropertyBag = new ExtensiblePropertyContainer( );
         private readonly Lazy<DebugInfoBuilder> DIBuilder_;
+        private readonly bool OwnsContext;
     }
 }
