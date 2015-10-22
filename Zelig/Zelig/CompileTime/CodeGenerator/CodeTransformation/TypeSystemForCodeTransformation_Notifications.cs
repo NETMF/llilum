@@ -249,9 +249,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         {
             fKeep = false;
 
-            if(owner.IsOpenMethod)
+            if(owner.IsGenericInstantiation)
             {
-                throw TypeConsistencyErrorException.Create( "WellKnownMethodAttribute cannot be applied to a generic method: {0}", owner );
+                owner = owner.GenericTemplate;
             }
 
             string               methodName = (string)ca.FixedArgsValues[0];

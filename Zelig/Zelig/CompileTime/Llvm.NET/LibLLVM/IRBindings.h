@@ -187,6 +187,8 @@ void LLVMMDNodeResolveCycles( LLVMMetadataRef M );
 char const* LLVMGetDIFileName( LLVMMetadataRef /*DIFile*/ file );
 char const* LLVMGetDIFileDirectory( LLVMMetadataRef /*DIFile*/ file );
 
+LLVMValueRef LLVMBuildAtomicCmpXchg( LLVMBuilderRef B, LLVMValueRef Ptr, LLVMValueRef Cmp, LLVMValueRef New, LLVMAtomicOrdering successOrdering, LLVMAtomicOrdering failureOrdering, LLVMBool singleThread );
+
 #ifdef __cplusplus
 }
 

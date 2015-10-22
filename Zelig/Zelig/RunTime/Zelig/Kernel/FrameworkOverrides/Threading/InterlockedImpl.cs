@@ -2,6 +2,8 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+#define LLVM
+
 namespace Microsoft.Zelig.Runtime
 {
     using System;
@@ -19,10 +21,7 @@ namespace Microsoft.Zelig.Runtime
 
         public static int Increment( ref int location )
         {
-            using(SmartHandles.InterruptState.DisableAll())
-            {
-                return ++location;
-            }
+            return InternalAdd( ref location, 1 );
         }
 
         public static long Increment( ref long location )
@@ -35,10 +34,7 @@ namespace Microsoft.Zelig.Runtime
 
         public static int Decrement( ref int location )
         {
-            using(SmartHandles.InterruptState.DisableAll())
-            {
-                return --location;
-            }
+            return InternalAdd( ref location, -1 );
         }
 
         public static long Decrement( ref long location )
@@ -52,14 +48,7 @@ namespace Microsoft.Zelig.Runtime
         public static int Exchange( ref int location1 ,
                                         int value     )
         {
-            using(SmartHandles.InterruptState.DisableAll())
-            {
-                int oldValue = location1;
-
-                location1 = value;
-
-                return oldValue;
-            }
+            return InternalExchange( ref location1, value );
         }
 
         public static long Exchange( ref long location1 ,
@@ -78,14 +67,7 @@ namespace Microsoft.Zelig.Runtime
         public static float Exchange( ref float location1 ,
                                           float value     )
         {
-            using(SmartHandles.InterruptState.DisableAll())
-            {
-                float oldValue = location1;
-
-                location1 = value;
-
-                return oldValue;
-            }
+            return InternalExchange( ref location1, value );
         }
 
         public static double Exchange( ref double location1 ,
@@ -104,39 +86,18 @@ namespace Microsoft.Zelig.Runtime
         public static Object Exchange( ref Object location1 ,
                                            Object value     )
         {
-            using(SmartHandles.InterruptState.DisableAll())
-            {
-                object oldValue = location1;
-
-                location1 = value;
-
-                return oldValue;
-            }
+            return InternalExchange( ref location1, value );
         }
 
         public static IntPtr Exchange( ref IntPtr location1, IntPtr value )
         {
-            using(SmartHandles.InterruptState.DisableAll())
-            {
-                IntPtr oldValue = location1;
-
-                location1 = value;
-
-                return oldValue;
-            }
+            return InternalExchange( ref location1, value );
         }
 
         public static T Exchange<T>( ref T location1 ,
                                          T value     ) where T : class
         {
-            using(SmartHandles.InterruptState.DisableAll())
-            {
-                T oldValue = location1;
-
-                location1 = value;
-
-                return oldValue;
-            }
+            return InternalExchange( ref location1, value );
         }
 
         //--//
@@ -145,17 +106,7 @@ namespace Microsoft.Zelig.Runtime
                                                int value     ,
                                                int comparand )
         {
-            using(SmartHandles.InterruptState.DisableAll())
-            {
-                int oldValue = location1;
-
-                if(oldValue == comparand)
-                {
-                    location1 = value;
-                }
-
-                return oldValue;
-            }
+            return InternalCompareExchange( ref location1, value, comparand );
         }
 
         public static long CompareExchange( ref long location1 ,
@@ -179,17 +130,7 @@ namespace Microsoft.Zelig.Runtime
                                                  float value     ,
                                                  float comparand )
         {
-            using(SmartHandles.InterruptState.DisableAll())
-            {
-                float oldValue = location1;
-
-                if(oldValue == comparand)
-                {
-                    location1 = value;
-                }
-
-                return oldValue;
-            }
+            return InternalCompareExchange( ref location1, value, comparand );
         }
 
         public static double CompareExchange( ref double location1 ,
@@ -213,64 +154,29 @@ namespace Microsoft.Zelig.Runtime
                                                   Object value     ,
                                                   Object comparand )
         {
-            using(SmartHandles.InterruptState.DisableAll())
-            {
-                object oldValue = location1;
-
-                if(oldValue == comparand)
-                {
-                    location1 = value;
-                }
-
-                return oldValue;
-            }
+            return InternalCompareExchange( ref location1, value, comparand );
         }
 
         public static IntPtr CompareExchange( ref IntPtr location1 ,
                                                   IntPtr value     ,
                                                   IntPtr comparand )
         {
-            using(SmartHandles.InterruptState.DisableAll())
-            {
-                IntPtr oldValue = location1;
+            return InternalCompareExchange( ref location1, value, comparand );
 
-                if(oldValue == comparand)
-                {
-                    location1 = value;
-                }
-
-                return oldValue;
-            }
         }
 
         public static T CompareExchange<T>( ref T location1 ,
                                                 T value     ,
                                                 T comparand ) where T : class
         {
-            using(SmartHandles.InterruptState.DisableAll())
-            {
-                T oldValue = location1;
+            return InternalCompareExchange( ref location1, value, comparand );
 
-                if(Object.ReferenceEquals( oldValue, comparand ))
-                {
-                    location1 = value;
-                }
-
-                return oldValue;
-            }
         }
 
         public static int Add( ref int location1 ,
                                    int value     )
         {
-            using(SmartHandles.InterruptState.DisableAll())
-            {
-                int res = location1 + value;
-
-                location1 = res;
-
-                return res;
-            }
+            return InternalAdd( ref location1, value );
         }
 
         public static long Add( ref long location1 ,
@@ -284,6 +190,240 @@ namespace Microsoft.Zelig.Runtime
 
                 return res;
             }
+        }
+
+        //--//
+
+#if LLVM
+        [NoInline] // Disable inlining so we always have a chance to replace the method.
+#else
+        [Inline]
+#endif
+        [TS.WellKnownMethod( "InterlockedImpl_InternalExchange_int" )]
+        internal static int InternalExchange( ref int location1,
+                                                  int value )
+        {
+#if LLVM
+            BugCheck.Assert( false, BugCheck.StopCode.InvalidOperation );
+            return 0;
+#else
+            using(SmartHandles.InterruptState.DisableAll( ))
+            {
+                int oldValue = location1;
+
+                location1 = value;
+
+                return oldValue;
+            }
+#endif
+        }
+
+#if LLVM
+        [NoInline] // Disable inlining so we always have a chance to replace the method.
+#else
+        [Inline]
+#endif
+        [TS.WellKnownMethod( "InterlockedImpl_InternalExchange_float" )]
+        internal static float InternalExchange( ref float location1,
+                                                    float value )
+        {
+#if LLVM
+            BugCheck.Assert( false, BugCheck.StopCode.InvalidOperation );
+            return 0.0f;
+#else
+            using(SmartHandles.InterruptState.DisableAll( ))
+            {
+                float oldValue = location1;
+
+                location1 = value;
+
+                return oldValue;
+            }
+#endif
+        }
+
+#if LLVM
+        [NoInline] // Disable inlining so we always have a chance to replace the method.
+#else
+        [Inline]
+#endif
+        [TS.WellKnownMethod( "InterlockedImpl_InternalExchange_IntPtr" )]
+        internal static IntPtr InternalExchange( ref IntPtr location1,
+                                                     IntPtr value )
+        {
+#if LLVM
+            BugCheck.Assert( false, BugCheck.StopCode.InvalidOperation );
+            return IntPtr.Zero;
+#else
+            using(SmartHandles.InterruptState.DisableAll( ))
+            {
+                IntPtr oldValue = location1;
+
+                location1 = value;
+
+                return oldValue;
+            }
+#endif
+        }
+
+#if LLVM
+        [NoInline] // Disable inlining so we always have a chance to replace the method.
+#else
+        [Inline]
+#endif
+        [TS.WellKnownMethod( "InterlockedImpl_InternalExchange_Template" )]
+        internal static T InternalExchange<T>( ref T location1,
+                                                   T value ) where T : class
+        {
+#if LLVM
+            BugCheck.Assert( false, BugCheck.StopCode.InvalidOperation );
+            return null;
+#else
+            using(SmartHandles.InterruptState.DisableAll( ))
+            {
+                T oldValue = location1;
+
+                location1 = value;
+
+                return oldValue;
+            }
+#endif
+        }
+
+#if LLVM
+        [NoInline] // Disable inlining so we always have a chance to replace the method.
+#else
+        [Inline]
+#endif
+        [TS.WellKnownMethod( "InterlockedImpl_InternalCompareExchange_int" )]
+        internal static int InternalCompareExchange( ref int location1,
+                                                         int value,
+                                                         int comparand )
+        {
+#if LLVM
+            BugCheck.Assert( false, BugCheck.StopCode.InvalidOperation );
+            return 0;
+#else
+            using(SmartHandles.InterruptState.DisableAll( ))
+            {
+                int oldValue = location1;
+
+                if(oldValue == comparand)
+                {
+                    location1 = value;
+                }
+
+                return oldValue;
+            }
+#endif
+        }
+        
+#if LLVM
+        [NoInline] // Disable inlining so we always have a chance to replace the method.
+#else
+        [Inline]
+#endif
+        [TS.WellKnownMethod( "InterlockedImpl_InternalCompareExchange_float" )]
+        internal static float InternalCompareExchange( ref float location1,
+                                                           float value,
+                                                           float comparand )
+        {
+#if LLVM
+            BugCheck.Assert( false, BugCheck.StopCode.InvalidOperation );
+            return 0.0f;
+#else
+            using(SmartHandles.InterruptState.DisableAll( ))
+            {
+                float oldValue = location1;
+
+                if(oldValue == comparand)
+                {
+                    location1 = value;
+                }
+
+                return oldValue;
+            }
+#endif
+        }
+
+#if LLVM
+        [NoInline] // Disable inlining so we always have a chance to replace the method.
+#else
+        [Inline]
+#endif
+        [TS.WellKnownMethod( "InterlockedImpl_InternalCompareExchange_IntPtr" )]
+        internal static IntPtr InternalCompareExchange( ref IntPtr location1,
+                                                            IntPtr value,
+                                                            IntPtr comparand )
+        {
+#if LLVM
+            BugCheck.Assert( false, BugCheck.StopCode.InvalidOperation );
+            return IntPtr.Zero;
+#else
+            using(SmartHandles.InterruptState.DisableAll( ))
+            {
+                IntPtr oldValue = location1;
+
+                if(oldValue == comparand)
+                {
+                    location1 = value;
+                }
+
+                return oldValue;
+            }
+#endif
+        }
+
+#if LLVM
+        [NoInline] // Disable inlining so we always have a chance to replace the method.
+#else
+        [Inline]
+#endif
+        [TS.WellKnownMethod( "InterlockedImpl_InternalCompareExchange_Template" )]
+        internal static T InternalCompareExchange<T>( ref T location1,
+                                                          T value,
+                                                          T comparand ) where T : class
+        {
+#if LLVM
+            BugCheck.Assert( false, BugCheck.StopCode.InvalidOperation );
+            return null;
+#else
+            using(SmartHandles.InterruptState.DisableAll( ))
+            {
+                T oldValue = location1;
+
+                if(Object.ReferenceEquals( oldValue, comparand ))
+                {
+                    location1 = value;
+                }
+
+                return oldValue;
+            }
+#endif
+        }
+
+#if LLVM
+        [NoInline] // Disable inlining so we always have a chance to replace the method.
+#else
+        [Inline]
+#endif
+        [TS.WellKnownMethod( "InterlockedImpl_InternalAdd_int" )]
+        internal static int InternalAdd( ref int location1,
+                                             int value )
+        {
+#if LLVM
+            BugCheck.Assert( false, BugCheck.StopCode.InvalidOperation );
+            return 0;
+#else
+            using(SmartHandles.InterruptState.DisableAll( ))
+            {
+                int res = location1 + value;
+
+                location1 = res;
+
+                return res;
+            }
+#endif
         }
     }
 }

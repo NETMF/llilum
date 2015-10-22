@@ -56,6 +56,15 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
 
         public readonly MethodRepresentation TypeImpl_GetTypeFromHandle;
 
+        public readonly MethodRepresentation InterlockedImpl_InternalExchange_int;
+        public readonly MethodRepresentation InterlockedImpl_InternalExchange_float;
+        public readonly MethodRepresentation InterlockedImpl_InternalExchange_IntPtr;
+        public readonly MethodRepresentation InterlockedImpl_InternalExchange_Template;
+        public readonly MethodRepresentation InterlockedImpl_InternalCompareExchange_int;
+        public readonly MethodRepresentation InterlockedImpl_InternalCompareExchange_float;
+        public readonly MethodRepresentation InterlockedImpl_InternalCompareExchange_IntPtr;
+        public readonly MethodRepresentation InterlockedImpl_InternalCompareExchange_Template;
+        public readonly MethodRepresentation InterlockedImpl_InternalAdd_int;
         //--//
 
         public readonly MethodRepresentation Object_Equals;

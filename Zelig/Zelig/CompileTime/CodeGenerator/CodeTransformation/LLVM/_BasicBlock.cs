@@ -798,6 +798,39 @@ namespace Microsoft.Zelig.LLVM
             }
         }
 
+        public _Value InsertAtomicXchg( _Value ptr, _Value val ) => InsertAtomicBinaryOp( IrBuilder.AtomicXchg, ptr, val );
+        public _Value InsertAtomicAdd( _Value ptr, _Value val ) => InsertAtomicBinaryOp( IrBuilder.AtomicAdd, ptr, val );
+        public _Value InsertAtomicSub( _Value ptr, _Value val ) => InsertAtomicBinaryOp( IrBuilder.AtomicSub, ptr, val );
+        public _Value InsertAtomicAnd( _Value ptr, _Value val ) => InsertAtomicBinaryOp( IrBuilder.AtomicAnd, ptr, val );
+        public _Value InsertAtomicNand( _Value ptr, _Value val ) => InsertAtomicBinaryOp( IrBuilder.AtomicNand, ptr, val );
+        public _Value InsertAtomicOr( _Value ptr, _Value val ) => InsertAtomicBinaryOp( IrBuilder.AtomicOr, ptr, val );
+        public _Value InsertAtomicXor( _Value ptr, _Value val ) => InsertAtomicBinaryOp( IrBuilder.AtomicXor, ptr, val );
+        public _Value InsertAtomicMax( _Value ptr, _Value val ) => InsertAtomicBinaryOp( IrBuilder.AtomicMax, ptr, val );
+        public _Value InsertAtomicMin( _Value ptr, _Value val ) => InsertAtomicBinaryOp( IrBuilder.AtomicMin, ptr, val );
+        public _Value InsertAtomicUMax( _Value ptr, _Value val ) => InsertAtomicBinaryOp( IrBuilder.AtomicUMax, ptr, val );
+        public _Value InsertAtomicUMin( _Value ptr, _Value val ) => InsertAtomicBinaryOp( IrBuilder.AtomicUMin, ptr, val );
+
+        private _Value InsertAtomicBinaryOp( Func<Value, Value, Value> fn, _Value ptr, _Value val)
+        {
+            // LLVM atomicRMW returns the old value at ptr
+            var retVal = fn( ptr.LlvmValue, val.LlvmValue );
+
+            retVal = retVal.SetDebugLocation( CurDILocation );
+            return new _Value( Module, val.Type, retVal, true );
+        }
+
+        public _Value InsertAtomicCmpXchg( _Value ptr, _Value cmp, _Value val )
+        {
+            // LLVM cmpxchg instruction returns { ty, i1 } for { oldValue, isSuccess }
+            var retVal = IrBuilder.AtomicCmpXchg( ptr.LlvmValue, cmp.LlvmValue, val.LlvmValue );
+
+            // And we only want the old value
+            var oldVal = IrBuilder.ExtractValue( retVal, 0 );
+
+            oldVal = oldVal.SetDebugLocation( CurDILocation );
+            return new _Value( Module, val.Type, oldVal, true );
+        }
+
         internal InstructionBuilder IrBuilder { get; }
 
         internal BasicBlock LlvmBasicBlock { get; }

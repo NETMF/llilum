@@ -147,6 +147,45 @@ namespace Llvm.NET
             return Value.FromHandle<Load>( handle );
         }
 
+        public Value AtomicXchg( Value ptr, Value val ) => BuildAtomicBinOp( LLVMAtomicRMWBinOp.LLVMAtomicRMWBinOpXchg, ptr, val );
+        public Value AtomicAdd( Value ptr, Value val ) => BuildAtomicBinOp( LLVMAtomicRMWBinOp.LLVMAtomicRMWBinOpAdd, ptr, val );
+        public Value AtomicSub( Value ptr, Value val ) => BuildAtomicBinOp( LLVMAtomicRMWBinOp.LLVMAtomicRMWBinOpSub, ptr, val );
+        public Value AtomicAnd( Value ptr, Value val ) => BuildAtomicBinOp( LLVMAtomicRMWBinOp.LLVMAtomicRMWBinOpAnd, ptr, val );
+        public Value AtomicNand( Value ptr, Value val ) => BuildAtomicBinOp( LLVMAtomicRMWBinOp.LLVMAtomicRMWBinOpNand, ptr, val );
+        public Value AtomicOr( Value ptr, Value val ) => BuildAtomicBinOp( LLVMAtomicRMWBinOp.LLVMAtomicRMWBinOpOr, ptr, val );
+        public Value AtomicXor( Value ptr, Value val ) => BuildAtomicBinOp( LLVMAtomicRMWBinOp.LLVMAtomicRMWBinOpXor, ptr, val );
+        public Value AtomicMax( Value ptr, Value val ) => BuildAtomicBinOp( LLVMAtomicRMWBinOp.LLVMAtomicRMWBinOpMax, ptr, val );
+        public Value AtomicMin( Value ptr, Value val ) => BuildAtomicBinOp( LLVMAtomicRMWBinOp.LLVMAtomicRMWBinOpMin, ptr, val );
+        public Value AtomicUMax( Value ptr, Value val ) => BuildAtomicBinOp( LLVMAtomicRMWBinOp.LLVMAtomicRMWBinOpUMax, ptr, val );
+        public Value AtomicUMin( Value ptr, Value val ) => BuildAtomicBinOp( LLVMAtomicRMWBinOp.LLVMAtomicRMWBinOpUMin, ptr, val );
+
+        public Value AtomicCmpXchg( Value ptr, Value cmp, Value value )
+        {
+            var ptrType = ptr.Type as IPointerType;
+            if(ptrType == null)
+            {
+                throw new ArgumentException( "Expected pointer value", nameof( ptr ) );
+            }
+            if(ptrType.ElementType != cmp.Type)
+            {
+                throw new ArgumentException( string.Format( IncompatibleTypeMsgFmt, ptrType.ElementType, cmp.Type ) );
+            }
+            if(ptrType.ElementType != value.Type)
+            {
+                throw new ArgumentException( string.Format( IncompatibleTypeMsgFmt, ptrType.ElementType, value.Type ) );
+            }
+
+            var handle = NativeMethods.BuildAtomicCmpXchg( BuilderHandle
+                                                         , ptr.ValueHandle
+                                                         , cmp.ValueHandle
+                                                         , value.ValueHandle
+                                                         , LLVMAtomicOrdering.LLVMAtomicOrderingSequentiallyConsistent
+                                                         , LLVMAtomicOrdering.LLVMAtomicOrderingSequentiallyConsistent
+                                                         , false
+                                                         );
+            return Value.FromHandle( handle );
+        }
+
         /// <summary>Creates a <see cref="Value"/> that accesses an element (field) of a structure</summary>
         /// <param name="pointer">pointer to the strucure to get an element from</param>
         /// <param name="index">element index</param>
@@ -849,6 +888,22 @@ namespace Llvm.NET
         {
             var valueRef = opFactory( BuilderHandle, lhs.ValueHandle, rhs.ValueHandle, string.Empty );
             return Value.FromHandle( valueRef );
+        }
+
+        private Value BuildAtomicBinOp( LLVMAtomicRMWBinOp op, Value ptr, Value val )
+        {
+            var ptrType = ptr.Type as IPointerType;
+            if(ptrType == null)
+            {
+                throw new ArgumentException( "Expected pointer type", nameof( ptr ) );
+            }
+            if(ptrType.ElementType != val.Type)
+            {
+                throw new ArgumentException( string.Format( IncompatibleTypeMsgFmt, ptrType.ElementType, val.Type ) );
+            }
+
+            var handle = NativeMethods.BuildAtomicRMW( BuilderHandle, op, ptr.ValueHandle, val.ValueHandle, LLVMAtomicOrdering.LLVMAtomicOrderingSequentiallyConsistent, false );
+            return Value.FromHandle( handle );
         }
 
         private LLVMValueRef BuildCall( Value func, params Value[ ] args ) => BuildCall( func, ( IReadOnlyList<Value> )args );

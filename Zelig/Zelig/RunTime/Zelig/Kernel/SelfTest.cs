@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 namespace Microsoft.Zelig.Runtime
 {
     using System;
+    using System.Threading;
 
     internal static class SelfTest
     {
@@ -515,6 +516,27 @@ namespace Microsoft.Zelig.Runtime
             SelfTest__Memory__BasicAddrefRelease6( );
             SelfTest__Memory__BasicAddrefRelease7( );
 
+            SelfTest__Interlocked__Add_int( );
+            SelfTest__Interlocked__Add_long( );
+            SelfTest__Interlocked__Increment_int( );
+            SelfTest__Interlocked__Increment_long( );
+            SelfTest__Interlocked__Decrement_int( );
+            SelfTest__Interlocked__Decrement_long( );
+            SelfTest__Interlocked__Exchange_int( );
+            SelfTest__Interlocked__Exchange_long( );
+            SelfTest__Interlocked__Exchange_float( );
+            SelfTest__Interlocked__Exchange_double( );
+            SelfTest__Interlocked__Exchange_Object( );
+            SelfTest__Interlocked__Exchange_IntPtr( );
+            SelfTest__Interlocked__Exchange_Template( );
+            SelfTest__Interlocked__CompareExchange_int( );
+            SelfTest__Interlocked__CompareExchange_long( );
+            SelfTest__Interlocked__CompareExchange_float( );
+            SelfTest__Interlocked__CompareExchange_double( );
+            SelfTest__Interlocked__CompareExchange_Object( );
+            SelfTest__Interlocked__CompareExchange_IntPtr( );
+            SelfTest__Interlocked__CompareExchange_Template( );
+
             BugCheck.Log("!!DONE!!");
 
             // Trap end of tests
@@ -522,7 +544,7 @@ namespace Microsoft.Zelig.Runtime
 
         }
 
-        #region memory tests
+        #region Memory Tests
 
         private const uint ArrayFixedSize = 3 * sizeof(uint); // 2 for ObjectHelper (MultiUseWord and VTable), 1 for length
         private const uint StandardAllocSize = 32;
@@ -833,7 +855,7 @@ namespace Microsoft.Zelig.Runtime
             BugCheck.Log("Random Succeeded.");
         }
 
-        #endregion
+        #endregion // Memory Tests
 
         #region AddRef/Release Tests
 
@@ -1263,7 +1285,296 @@ namespace Microsoft.Zelig.Runtime
             BugCheck.Log( "BasicAddrefRelease7 Succeeded." );
         }
 
-        #endregion
+        #endregion // AddRef/Release Tests
+
+        #region Interlocked Tests
+
+        private static void SelfTest__Interlocked__Add_int()
+        {
+            BugCheck.Log( "Interlocked Add int Started..." );
+
+            int i = 0;
+            BugCheck.Log( "Before: i = %d", i );
+            int newi = Interlocked.Add( ref i, 10 );
+            BugCheck.Log( "After: i = %d, newi = %d", i, newi );
+
+            BugCheck.Assert( i == 10 && newi == i, BugCheck.StopCode.Impossible );
+            BugCheck.Log( "Interlocked Add int Succeeded." );
+        }
+
+        private static void SelfTest__Interlocked__Add_long( )
+        {
+            BugCheck.Log( "Interlocked Add long Started..." );
+
+            long l = 110;
+            BugCheck.Log( "Before: l = %d", (int)l );
+            long newl = Interlocked.Add( ref l, 10L );
+            BugCheck.Log( "After: l = %d, newl = %d", (int)l, (int)newl );
+
+            BugCheck.Assert( l == 120 && newl == l, BugCheck.StopCode.Impossible );
+            BugCheck.Log( "Interlocked Add long Succeeded." );
+        }
+
+        private static void SelfTest__Interlocked__Increment_int( )
+        {
+            BugCheck.Log( "Interlocked Increment int Started..." );
+
+            int i = 0;
+            BugCheck.Log( "Before: i = %d", (int)i );
+            int newi = Interlocked.Increment( ref i );
+            BugCheck.Log( "After: i = %d, newi = %d", (int)i, (int)newi );
+
+            BugCheck.Assert( i == 1 && newi == i, BugCheck.StopCode.Impossible );
+            BugCheck.Log( "Interlocked Increment int Succeeded." );
+        }
+
+        private static void SelfTest__Interlocked__Increment_long( )
+        {
+            BugCheck.Log( "Interlocked Increment long Started..." );
+
+            long l = 3;
+            BugCheck.Log( "Before: l = %d", (int)l );
+            long newl = Interlocked.Increment( ref l );
+            BugCheck.Log( "After: l = %d, newl = %d", (int)l, (int)newl );
+
+            BugCheck.Assert( l == 4 && newl == l, BugCheck.StopCode.Impossible );
+            BugCheck.Log( "Interlocked Increment long Succeeded." );
+        }
+
+        private static void SelfTest__Interlocked__Decrement_int( )
+        {
+            BugCheck.Log( "Interlocked Decrement int Started..." );
+
+            int i = 0;
+            BugCheck.Log( "Before: i = %d", (int)i );
+            int newi = Interlocked.Decrement( ref i );
+            BugCheck.Log( "After: i = %d, newi = %d", (int)i, (int)newi );
+
+            BugCheck.Assert( i == -1 && newi == i, BugCheck.StopCode.Impossible );
+            BugCheck.Log( "Interlocked Decrement int Succeeded." );
+        }
+
+        private static void SelfTest__Interlocked__Decrement_long( )
+        {
+            BugCheck.Log( "Interlocked Decrement long Started..." );
+
+            long l = 20;
+            BugCheck.Log( "Before: l = %d", (int)l );
+            long newl = Interlocked.Decrement( ref l );
+            BugCheck.Log( "After: l = %d, newl = %d", (int)l, (int)newl );
+
+            BugCheck.Assert( l == 19 && newl == l, BugCheck.StopCode.Impossible );
+            BugCheck.Log( "Interlocked Decrement long Succeeded." );
+        }
+
+        private static void SelfTest__Interlocked__Exchange_int( )
+        {
+            BugCheck.Log( "Interlocked Exchange int Started..." );
+
+            int i = 5;
+            BugCheck.Log( "Before: i = %d", (int)i );
+            int oldi = Interlocked.Exchange( ref i, 10 );
+            BugCheck.Log( "After: i = %d, oldi = %d", (int)i, (int)oldi );
+
+            BugCheck.Assert( i == 10 && oldi == 5, BugCheck.StopCode.Impossible );
+            BugCheck.Log( "Interlocked Exchange int Succeeded." );
+        }
+
+        private static void SelfTest__Interlocked__Exchange_long( )
+        {
+            BugCheck.Log( "Interlocked Exchange long Started..." );
+
+            long l = 20;
+            BugCheck.Log( "Before: l = %d", (int)l );
+            long oldl = Interlocked.Exchange( ref l, 100 );
+            BugCheck.Log( "After: l = %d, oldl = %d", (int)l, (int)oldl );
+
+            BugCheck.Assert( l == 100 && oldl == 20, BugCheck.StopCode.Impossible );
+            BugCheck.Log( "Interlocked Exchange long Succeeded." );
+        }
+
+        private static void SelfTest__Interlocked__Exchange_float( )
+        {
+            BugCheck.Log( "Interlocked Exchange float Started..." );
+
+            float f = 100.0f;
+            BugCheck.Log( "Before: f = %d", (int)f );
+            float oldf = Interlocked.Exchange( ref f, 50.0f );
+            BugCheck.Log( "After: f = %d, oldf = %d", (int)f, (int)oldf );
+
+            BugCheck.Assert( f == 50.0f && oldf == 100.0f, BugCheck.StopCode.Impossible );
+            BugCheck.Log( "Interlocked Exchange float Succeeded." );
+        }
+
+        private static void SelfTest__Interlocked__Exchange_double( )
+        {
+            BugCheck.Log( "Interlocked Exchange double Started..." );
+
+            double d = 1000.0d;
+            BugCheck.Log( "Before: d = %d", (int)d );
+            double oldd = Interlocked.Exchange( ref d, 51.0d );
+            BugCheck.Log( "After: d = %d, oldd = %d", (int)d, (int)oldd );
+
+            BugCheck.Assert( d == 51.0d && oldd == 1000.0d, BugCheck.StopCode.Impossible );
+            BugCheck.Log( "Interlocked Exchange double Succeeded." );
+        }
+
+        class Boo
+        {
+            public Boo(int i)
+            {
+                this.i = i;
+            }
+            public int i;
+        }
+
+        private static void SelfTest__Interlocked__Exchange_Object( )
+        {
+            BugCheck.Log( "Interlocked Exchange Object Started..." );
+
+            Object o = new Boo( 0x123 );
+            Object copy = o;
+            Object sub = new Boo( 0x234 );
+            BugCheck.Log( "Before: o = 0x%x, sub = 0x%x", (int)ObjectHeader.Unpack( o ).ToPointer( ), (int)ObjectHeader.Unpack( sub ).ToPointer( ) );
+            Object oldo = Interlocked.Exchange( ref o, sub );
+            BugCheck.Log( "After: o = 0x%x, oldo = 0x%x", (int)ObjectHeader.Unpack( o ).ToPointer( ), (int)ObjectHeader.Unpack( oldo ).ToPointer( ) );
+
+            BugCheck.Assert( o == sub && oldo == copy, BugCheck.StopCode.Impossible );
+            BugCheck.Log( "Interlocked Exchange Object Succeeded." );
+        }
+
+        private static void SelfTest__Interlocked__Exchange_IntPtr( )
+        {
+            BugCheck.Log( "Interlocked Exchange IntPtr Started..." );
+
+            IntPtr ptr = new IntPtr( 0x123 );
+            IntPtr copy = ptr;
+            IntPtr sub = new IntPtr( 0x456 );
+            BugCheck.Log( "Before: ptr = 0x%x, sub = 0x%x", (int)ptr, (int)sub);
+            IntPtr oldptr = Interlocked.Exchange( ref ptr, sub );
+            BugCheck.Log( "After: ptr = 0x%x, oldptr = 0x%x", (int)ptr, (int)oldptr );
+
+            BugCheck.Assert( ptr == sub && oldptr == copy, BugCheck.StopCode.Impossible );
+            BugCheck.Log( "Interlocked Exchange IntPtr Succeeded." );
+        }
+
+        private static void SelfTest__Interlocked__Exchange_Template( )
+        {
+            BugCheck.Log( "Interlocked Exchange Template Started..." );
+
+            UIntPtr nodeptr;
+            Node node = Node.New( out nodeptr, null, null );
+            Node copy = node;
+            UIntPtr subptr;
+            Node sub = Node.New( out subptr, null, null );
+            BugCheck.Log( "Before: node = 0x%x, sub = 0x%x", (int)nodeptr, (int)subptr );
+            Node oldnode = Interlocked.Exchange( ref node, sub );
+            BugCheck.Log( "After: node = 0x%x, oldnode = 0x%x", (int)ObjectHeader.Unpack( node ).ToPointer( ), (int)ObjectHeader.Unpack( oldnode ).ToPointer( ) );
+
+            BugCheck.Assert( node == sub && oldnode == copy, BugCheck.StopCode.Impossible );
+            BugCheck.Log( "Interlocked Exchange Template Succeeded." );
+        }
+
+        private static void SelfTest__Interlocked__CompareExchange_int( )
+        {
+            BugCheck.Log( "Interlocked CompareExchange int Started..." );
+
+            int i = 5;
+            BugCheck.Log( "Before: i = %d", (int)i );
+            int oldi = Interlocked.CompareExchange( ref i, 10, 5 );
+            BugCheck.Log( "After: i = %d, oldi = %d", (int)i, (int)oldi );
+
+            BugCheck.Assert( i == 10 && oldi == 5, BugCheck.StopCode.Impossible );
+            BugCheck.Log( "Interlocked CompareExchange int Succeeded." );
+        }
+
+        private static void SelfTest__Interlocked__CompareExchange_long( )
+        {
+            BugCheck.Log( "Interlocked CompareExchange long Started..." );
+
+            long l = 20;
+            BugCheck.Log( "Before: l = %d", (int)l );
+            long oldl = Interlocked.CompareExchange( ref l, 100, 20 );
+            BugCheck.Log( "After: l = %d, oldl = %d", (int)l, (int)oldl );
+
+            BugCheck.Assert( l == 100 && oldl == 20, BugCheck.StopCode.Impossible );
+            BugCheck.Log( "Interlocked CompareExchange long Succeeded." );
+        }
+
+        private static void SelfTest__Interlocked__CompareExchange_float( )
+        {
+            BugCheck.Log( "Interlocked CompareExchange float Started..." );
+
+            float f = 100.0f;
+            BugCheck.Log( "Before: f = %d", (int)f );
+            float oldf = Interlocked.CompareExchange( ref f, 50.0f, 100.0f );
+            BugCheck.Log( "After: f = %d, oldf = %d", (int)f, (int)oldf );
+
+            BugCheck.Assert( f == 50.0f && oldf == 100.0f, BugCheck.StopCode.Impossible );
+            BugCheck.Log( "Interlocked CompareExchange float Succeeded." );
+        }
+
+        private static void SelfTest__Interlocked__CompareExchange_double( )
+        {
+            BugCheck.Log( "Interlocked CompareExchange double Started..." );
+
+            double d = 1000.0d;
+            BugCheck.Log( "Before: d = %d", (int)d );
+            double oldd = Interlocked.CompareExchange( ref d, 51.0d, 1000.0d );
+            BugCheck.Log( "After: d = %d, oldd = %d", (int)d, (int)oldd );
+
+            BugCheck.Assert( d == 51.0d && oldd == 1000.0d, BugCheck.StopCode.Impossible );
+            BugCheck.Log( "Interlocked CompareExchange double Succeeded." );
+        }
+
+        private static void SelfTest__Interlocked__CompareExchange_Object( )
+        {
+            BugCheck.Log( "Interlocked CompareExchange Object Started..." );
+
+            Object o = new Object( );
+            Object copy = o;
+            Object sub = new Object( );
+            BugCheck.Log( "Before: o = 0x%x, sub = 0x%x", (int)ObjectHeader.Unpack( o ).ToPointer( ), (int)ObjectHeader.Unpack( sub ).ToPointer( ) );
+            Object oldo = Interlocked.CompareExchange( ref o, sub, copy );
+            BugCheck.Log( "After: o = 0x%x, oldo = 0x%x", (int)ObjectHeader.Unpack( o ).ToPointer( ), (int)ObjectHeader.Unpack( oldo ).ToPointer( ) );
+
+            BugCheck.Assert( o == sub && oldo == copy, BugCheck.StopCode.Impossible );
+            BugCheck.Log( "Interlocked CompareExchange Object Succeeded." );
+        }
+
+        private static void SelfTest__Interlocked__CompareExchange_IntPtr( )
+        {
+            BugCheck.Log( "Interlocked CompareExchange IntPtr Started..." );
+
+            IntPtr ptr = new IntPtr( 0x123 );
+            IntPtr copy = ptr;
+            IntPtr sub = new IntPtr( 0x456 );
+            BugCheck.Log( "Before: ptr = 0x%x, sub = 0x%x", (int)ptr, (int)sub );
+            IntPtr oldptr = Interlocked.CompareExchange( ref ptr, sub, copy );
+            BugCheck.Log( "After: ptr = 0x%x, oldptr = 0x%x", (int)ptr, (int)oldptr );
+
+            BugCheck.Assert( ptr == sub && oldptr == copy, BugCheck.StopCode.Impossible );
+            BugCheck.Log( "Interlocked CompareExchange IntPtr Succeeded." );
+        }
+
+        private static void SelfTest__Interlocked__CompareExchange_Template( )
+        {
+            BugCheck.Log( "Interlocked CompareExchange Template Started..." );
+
+            UIntPtr nodeptr;
+            Node node = Node.New( out nodeptr, null, null );
+            Node copy = node;
+            UIntPtr subptr;
+            Node sub = Node.New( out subptr, null, null );
+            BugCheck.Log( "Before: node = 0x%x, sub = 0x%x", (int)nodeptr, (int)subptr );
+            Node oldnode = Interlocked.CompareExchange( ref node, sub, copy );
+            BugCheck.Log( "After: node = 0x%x, oldnode = 0x%x", (int)ObjectHeader.Unpack( node ).ToPointer( ), (int)ObjectHeader.Unpack( oldnode ).ToPointer( ) );
+
+            BugCheck.Assert( node == sub && oldnode == copy, BugCheck.StopCode.Impossible );
+            BugCheck.Log( "Interlocked CompareExchange Template Succeeded." );
+        }
+
+        #endregion // Interlocked Tests
 
         //--//
         //--//

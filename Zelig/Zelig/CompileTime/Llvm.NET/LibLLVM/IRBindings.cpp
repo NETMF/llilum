@@ -236,4 +236,49 @@ extern "C"
 
         pNode->resolveCycles( );
     }
+
+    static AtomicOrdering mapFromLLVMOrdering( LLVMAtomicOrdering Ordering )
+    {
+        switch( Ordering )
+        {
+        case LLVMAtomicOrderingNotAtomic:
+            return NotAtomic;
+        case LLVMAtomicOrderingUnordered:
+            return Unordered;
+        case LLVMAtomicOrderingMonotonic:
+            return Monotonic;
+        case LLVMAtomicOrderingAcquire:
+            return Acquire;
+        case LLVMAtomicOrderingRelease:
+            return Release;
+        case LLVMAtomicOrderingAcquireRelease:
+            return AcquireRelease;
+        case LLVMAtomicOrderingSequentiallyConsistent:
+            return SequentiallyConsistent;
+        }
+
+        llvm_unreachable( "Invalid LLVMAtomicOrdering value!" );
+    }
+
+    LLVMValueRef LLVMBuildAtomicCmpXchg( LLVMBuilderRef B
+                                         , LLVMValueRef Ptr
+                                         , LLVMValueRef Cmp
+                                         , LLVMValueRef New
+                                         , LLVMAtomicOrdering successOrdering
+                                         , LLVMAtomicOrdering failureOrdering
+                                         , LLVMBool singleThread
+                                         )
+    {
+        auto builder = unwrap(B);
+        auto cmpxchg = builder->CreateAtomicCmpXchg( unwrap( Ptr )
+                                                     , unwrap( Cmp )
+                                                     , unwrap( New )
+                                                     , mapFromLLVMOrdering( successOrdering )
+                                                     , mapFromLLVMOrdering( failureOrdering )
+                                                     , singleThread ? SingleThread : CrossThread
+                                                     );
+
+
+        return wrap( cmpxchg );
+    }
 }

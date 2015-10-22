@@ -733,6 +733,123 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                 return true;
             }
 
+            // Microsoft.Zelig.Runtime.InterlockedImpl.InternalAdd(ref int, int) => llvm.atomicrmw add
+            // Note: there's no built-in support for 64bit interlocked methods at the moment.
+            if( op.TargetMethod == wkm.InterlockedImpl_InternalAdd_int )
+            {
+                _Value ptr = convertedArgs[ 0 ];
+                _Value val = convertedArgs[ 1 ];
+                _Value oldVal = m_basicBlock.InsertAtomicAdd( ptr, val );
+                // Because LLVM atomicrmw returns the old value, in order to match the behavior of Interlocked.Add
+                // We need to calculate the new value to return.
+                _Value newVal = m_basicBlock.InsertBinaryOp( (int)IR.BinaryOperator.ALU.ADD, oldVal, val, true );
+                StoreValue( m_results[ 0 ], newVal );
+                return true;
+            }
+
+            // Microsoft.Zelig.Runtime.InterlockedImpl.InternalExchange(ref int, int) => llvm.atomicrmw xchg
+            // Microsoft.Zelig.Runtime.InterlockedImpl.InternalExchange(ref float, float) => llvm.atomicrmw xchg
+            // Microsoft.Zelig.Runtime.InterlockedImpl.InternalExchange(ref IntPtr, IntPtr) => llvm.atomicrmw xchg
+            // Microsoft.Zelig.Runtime.InterlockedImpl.InternalExchange(ref T, T) => llvm.atomicrmw xchg
+            // Note: there's no built-in support for 64bit interlocked methods at the moment.
+            if(( op.TargetMethod == wkm.InterlockedImpl_InternalExchange_int ) ||
+                ( op.TargetMethod == wkm.InterlockedImpl_InternalExchange_float ) ||
+                ( op.TargetMethod == wkm.InterlockedImpl_InternalExchange_IntPtr ) ||
+                ( op.TargetMethod.IsGenericInstantiation && op.TargetMethod.GenericTemplate == wkm.InterlockedImpl_InternalExchange_Template ))
+            {
+                _Value ptr = convertedArgs[ 0 ];
+                _Value val = convertedArgs[ 1 ];
+                _Type type = val.Type;
+
+                // AtomicXchg only supports integer types, so need to convert them if necessary
+                _Type intType = m_manager.GetOrInsertBasicTypeAsLLVMSingleValueType( m_wkt.System_Int32 );
+                _Type intPtrType = m_manager.Module.GetOrInsertPointerType( intType );
+
+                if(!type.IsInteger)
+                {
+                    ptr = m_basicBlock.InsertBitCast( ptr, intPtrType );
+
+                    if(type.IsPointer)
+                    {
+                        val = m_basicBlock.InsertPointerToInt( val, intType );
+                    }
+                    else
+                    {
+                        val = m_basicBlock.InsertBitCast( val, intType );
+                    }
+                }
+
+                _Value oldVal = m_basicBlock.InsertAtomicXchg( ptr, val );
+
+                if(oldVal.Type != type)
+                {
+                    if(type.IsPointer)
+                    {
+                        oldVal = m_basicBlock.InsertIntToPointer( oldVal, type );
+                    }
+                    else
+                    {
+                        oldVal = m_basicBlock.InsertBitCast( oldVal, type );
+                    }
+                }
+
+                StoreValue( m_results[ 0 ], oldVal );
+                return true;
+            }
+
+            // Microsoft.Zelig.Runtime.InterlockedImpl.InternalCompareExchange(ref int, int, int) => llvm.compxchg
+            // Microsoft.Zelig.Runtime.InterlockedImpl.InternalCompareExchange(ref float, float, float) => llvm.compxchg
+            // Microsoft.Zelig.Runtime.InterlockedImpl.InternalCompareExchange(ref IntPtr, IntPtr, IntPtr) => llvm.compxchg
+            // Microsoft.Zelig.Runtime.InterlockedImpl.InternalCompareExchange(ref T, T, T) => llvm.compxchg
+            // Note: there's no built-in support for 64bit interlocked methods at the moment.
+            if(( op.TargetMethod == wkm.InterlockedImpl_InternalCompareExchange_int ) ||
+                ( op.TargetMethod == wkm.InterlockedImpl_InternalCompareExchange_float ) ||
+                ( op.TargetMethod == wkm.InterlockedImpl_InternalCompareExchange_IntPtr ) ||
+                ( op.TargetMethod.IsGenericInstantiation && op.TargetMethod.GenericTemplate == wkm.InterlockedImpl_InternalCompareExchange_Template ))
+            {
+                _Value ptr = convertedArgs[ 0 ];
+                _Value val = convertedArgs[ 1 ];
+                _Value cmp = convertedArgs[ 2 ];
+                _Type type = val.Type;
+
+                // AtomicCmpXchg only supports integer types, so need to convert them if necessary
+                _Type intType = m_manager.GetOrInsertBasicTypeAsLLVMSingleValueType( m_wkt.System_Int32 );
+                _Type intPtrType = m_manager.Module.GetOrInsertPointerType( intType );
+
+                if(!type.IsInteger)
+                {
+                    ptr = m_basicBlock.InsertBitCast( ptr, intPtrType );
+
+                    if(type.IsPointer)
+                    {
+                        val = m_basicBlock.InsertPointerToInt( val, intType );
+                        cmp = m_basicBlock.InsertPointerToInt( cmp, intType );
+                    }
+                    else
+                    {
+                        val = m_basicBlock.InsertBitCast( val, intType );
+                        cmp = m_basicBlock.InsertBitCast( cmp, intType );
+                    }
+                }
+
+                _Value oldVal = m_basicBlock.InsertAtomicCmpXchg( ptr, cmp, val );
+
+                if(oldVal.Type != type)
+                {
+                    if(type.IsPointer)
+                    {
+                        oldVal = m_basicBlock.InsertIntToPointer( oldVal, type );
+                    }
+                    else
+                    {
+                        oldVal = m_basicBlock.InsertBitCast( oldVal, type );
+                    }
+                }
+
+                StoreValue( m_results[ 0 ], oldVal );
+                return true;
+            }
+
             return false;
         }
 
