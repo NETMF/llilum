@@ -92,10 +92,8 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
             {
                 if(this == rvalue.UnderlyingType)
                 {
-                    //
-                    // We can always assign a boxed value type to an unboxed value type,
-                    // at most the runtime will raise a null reference exception.
-                    //
+                    // We can always assign a boxed value type to the same unboxed type. At most, this can cause a null
+                    // reference expception, but we should handle that later with injected null checks.
                     return true;
                 }
             }
@@ -108,7 +106,11 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
                 uint thisSize   = this   .Size;
                 uint rvalueSize = rvalue2.Size;
 
-                return (thisSize <= rvalueSize && thisSize != 0); // 'void' yields a zero size.
+                // REVIEW: This check still allows the following operations; we should revisit each case:
+                // - Assign float to int/uint/long/ulong (lossy).
+                // - Assign double to long/ulong (lossy).
+                // - Sign changes for same bit-width (can overflow).
+                return ((thisSize >= rvalueSize) && (rvalueSize != 0)); // 'void' yields a zero size.
             }
 
             return base.CanBeAssignedFrom( rvalue, set );

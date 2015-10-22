@@ -50,7 +50,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
                     }
 
                     // Wrap the IntPtr param in a CodePointer struct and call the parent constructor.
-                    rhs[2] = cfg.AllocateTemporary( wkt.Microsoft_Zelig_Runtime_TypeSystem_CodePointer, null );
+                    rhs[2] = cfg.AllocateLocal( wkt.Microsoft_Zelig_Runtime_TypeSystem_CodePointer, null );
                     bb.AddOperator( StoreInstanceFieldOperator.New( null, wkf.CodePointer_Target, rhs[2], cfg.Arguments[2], false ) );
                     bb.AddOperator( InstanceCallOperator.New( null, CallOperator.CallKind.Overridden, mdParent, rhs, true ) );
                 }

@@ -553,12 +553,11 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 return;
             }
 
-            VariableExpression exRes = CreateNewTemporary( tdVal );
-
             switch(instr.Operator.ActionTarget)
             {
                 case Instruction.OpcodeActionTarget.Field:
                     {
+                        VariableExpression exRes = CreateNewTemporary( tdVal );
                         Expression         exObj = GetArgumentFromStack( 0, 1 );
                         TypeRepresentation tdObj = exObj.Type;
 
@@ -588,6 +587,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
                 case Instruction.OpcodeActionTarget.StaticField:
                     {
+                        VariableExpression exRes = CreateNewTemporary( tdVal );
+
                         PushStackModel( exRes );
 
                         AddOperator( LoadStaticFieldOperator.New( instr.DebugInfo, fdVal, exRes ) );
@@ -627,16 +628,16 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                     //         ; one of the object’s parent classes
                     //         newobj delegateclass::.ctor(object, native int)
                     {
-                        PushStackModel( exRes );
-
                         Operator opNew = null;
 
                         if(tdVal.IsNumeric)
                         {
                             TypeRepresentation tdValInner = tdVal.UnderlyingType;
-
-                            if(tdValInner != exRes.Type)
+                            if(tdValInner != tdVal)
                             {
+                                VariableExpression exRes = CreateNewTemporary( tdVal );
+                                PushStackModel( exRes );
+
                                 if(tdValInner.IsSigned)
                                 {
                                     opNew = SignExtendOperator.New( instr.DebugInfo, tdValInner.Size, false, exRes, exVal );
@@ -645,15 +646,22 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                                 {
                                     opNew = ZeroExtendOperator.New( instr.DebugInfo, tdValInner.Size, false, exRes, exVal );
                                 }
+
+                                AddOperator( opNew );
                             }
                         }
 
                         if(opNew == null)
                         {
-                            opNew = SingleAssignmentOperator.New( instr.DebugInfo, exRes, exVal );
+#if FORCE_LOCAL_EXPANSION
+                            // Expand the loaded argument into a new temporary.
+                            VariableExpression exRes = CreateNewTemporary( tdVal );
+                            PushStackModel( exRes );
+                            AddOperator( SingleAssignmentOperator.New( instr.DebugInfo, exRes, exVal ) );
+#else // FORCE_LOCAL_EXPANSION
+                            PushStackModel( exVal );
+#endif // FORCE_LOCAL_EXPANSION
                         }
-
-                        AddOperator( opNew );
                     }
                     break;
             }
@@ -900,7 +908,12 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 SzArrayReferenceTypeRepresentation tdArray  = (SzArrayReferenceTypeRepresentation)td;
                 TypeRepresentation                 tdFormal = ProcessInstruction_GetTypeFromActionType( instr, tdArray.ContainedType );
 
-                if(CanBeAssignedFromEvaluationStack( tdFormal, exValue ) == false)
+                if(exValue is ConstantExpression)
+                {
+                    exValue = CoerceConstantToType( (ConstantExpression)exValue, tdFormal );
+                }
+
+                if(!CanBeAssignedFromEvaluationStack( tdFormal, exValue ))
                 {
                     throw TypeConsistencyErrorException.Create( "Expecting array type {0}, got {1}", tdFormal, exValue.Type );
                 }
@@ -1068,19 +1081,16 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                         }
                         else
                         {
-                            exActual[0] = CreateNewNullPointer( md.ThisPlusArguments[0] );
+                            exActual[0] = CreateNewNullPointer( args[0] );
                         }
 
                         for(int i = 1; i < argsNum; i++)
                         {
-                            TypeRepresentation tdFormal = args[i];
+                            exActual[i] = GetArgumentFromStack( i - 1, argsNum - 1, args[i] );
 
-                            Expression exArg = GetArgumentFromStack( i - 1, argsNum - 1 );
-                            exActual[i] = exArg;
-
-                            if(!CanBeAssignedFromEvaluationStack( tdFormal, exArg ))
+                            if(!CanBeAssignedFromEvaluationStack( args[i], exActual[i] ))
                             {
-                                throw TypeConsistencyErrorException.Create( "Incorrect argument {0} on call to {1} from {2}: got {3}, expecting {4}", i - 1, md, m_md, exArg.Type, tdFormal );
+                                throw TypeConsistencyErrorException.Create( "Incorrect argument {0} on call to {1} from {2}: got {3}, expecting {4}", i - 1, md, m_md, exActual[i].Type, args[i] );
                             }
                         }
 
@@ -1156,7 +1166,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
                 PopStackModel( 1 );
 
-                if(CanBeAssignedFromEvaluationStack( m_cfg.ReturnValue.Type, exRes ) == false)
+                if(!CanBeAssignedFromEvaluationStack( m_cfg.ReturnValue.Type, exRes ))
                 {
                     throw TypeConsistencyErrorException.Create( "Incorrect return type on evaluation stack on method exit for {0}", m_md );
                 }
@@ -1841,38 +1851,32 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                         Expression[]                exActual = new Expression[argsNum];
                         TypeRepresentation          thisTd   = args[0];
                         LocalVariableExpression     local = null;
-                        TemporaryVariableExpression tmp;
 
                         //
                         // If we are allocate a value type on the stack, we need to:
                         //
-                        //   1) create a local variable,
-                        //   2) initialize it, 
-                        //   3) take its address,
-                        //   4) call the constructor using the address as the this pointer.
-                        //   5) put the local variable on the evaluation stack.
+                        //   1) Create a local variable.
+                        //   2) Initialize it to zero.
+                        //   3) Take its address and store it in a temporary.
+                        //   4) Call the constructor using the address as the this pointer.
+                        //   5) Put the local variable on the evaluation stack.
                         //
                         if(thisTd is ManagedPointerTypeRepresentation)
                         {
                             Debug.Assert(thisTd.UnderlyingType is ValueTypeRepresentation, "Only value types can be passed as managed pointers for 'this' argument.");
-                            local  = m_cfg.AllocateLocal( thisTd.UnderlyingType, null );
+                            local = m_cfg.AllocateLocal( thisTd.UnderlyingType, null );
                         }
 
-                        tmp = CreateNewTemporary( thisTd );
-
+                        TemporaryVariableExpression tmp = CreateNewTemporary( thisTd );
                         exActual[0] = tmp;
 
                         for(int i = 1; i < argsNum; i++)
                         {
-                            TypeRepresentation tdFormal = args[i];
+                            exActual[i] = GetArgumentFromStack( i - 1, argsNum - 1, args[i] );
 
-                            Expression exArg = GetArgumentFromStack( i-1, argsNum-1 );
-
-                            exActual[i] = exArg;
-
-                            if(!CanBeAssignedFromEvaluationStack( tdFormal, exArg ))
+                            if(!CanBeAssignedFromEvaluationStack( args[i], exActual[i] ))
                             {
-                                throw TypeConsistencyErrorException.Create( "Incorrect argument {0} on call to {1} from {2}: got {3}, expecting {4}", i - 1, md, m_md, exArg.Type, tdFormal );
+                                throw TypeConsistencyErrorException.Create( "Incorrect argument {0} on call to {1} from {2}: got {3}, expecting {4}", i - 1, md, m_md, exActual[i].Type, args[i] );
                             }
                         }
 

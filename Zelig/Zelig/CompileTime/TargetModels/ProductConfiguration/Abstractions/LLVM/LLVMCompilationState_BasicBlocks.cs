@@ -329,13 +329,27 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
         {
             if( valA.IsInteger && valB.IsInteger )
             {
-                if( valB.Type.SizeInBits > valA.Type.SizeInBits )
+                if (valA.Type.SizeInBits < valB.Type.SizeInBits )
                 {
-                    valA = m_basicBlock.InsertZExt( valA, valB.Type, valA.Type.SizeInBits );
+                    if( valA.Type.IsSigned )
+                    {
+                        valA = m_basicBlock.InsertSExt( valA, valB.Type, valA.Type.SizeInBits );
+                    }
+                    else
+                    {
+                        valA = m_basicBlock.InsertZExt( valA, valB.Type, valA.Type.SizeInBits );
+                    }
                 }
-                else
+                else if( valA.Type.SizeInBits > valB.Type.SizeInBits )
                 {
-                    valB = m_basicBlock.InsertZExt( valB, valA.Type, valB.Type.SizeInBits );
+                    if( valA.Type.IsSigned )
+                    {
+                        valB = m_basicBlock.InsertSExt( valB, valA.Type, valB.Type.SizeInBits );
+                    }
+                    else
+                    {
+                        valB = m_basicBlock.InsertZExt( valB, valA.Type, valB.Type.SizeInBits );
+                    }
                 }
             }
         }
@@ -360,8 +374,14 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
             {
                 if( val.Type.SizeInBits < targetType.SizeInBits )
                 {
-                    // TODO: Use SExt when val.Type is signed.
-                    return m_basicBlock.InsertZExt( val, targetType, val.Type.SizeInBits );
+                    if( val.Type.IsSigned )
+                    {
+                        return m_basicBlock.InsertSExt( val, targetType, val.Type.SizeInBits );
+                    }
+                    else
+                    {
+                        return m_basicBlock.InsertZExt( val, targetType, val.Type.SizeInBits );
+                    }
                 }
 
                 if( val.Type.SizeInBits > targetType.SizeInBits )
@@ -439,38 +459,30 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         private void Translate_AbstractBinaryOperator( IR.AbstractBinaryOperator op )
         {
-            //Todo: Add support for overflow exceptions
-
-            if( op is IR.BinaryOperator )
-            {
-                //Todo: add exceptions 
-                _Value valA = ConvertValueToALUOperableType( m_arguments[ 0 ] );
-                _Value valB = ConvertValueToALUOperableType( m_arguments[ 1 ] );
-                MatchIntegerLengths( ref valA, ref valB );
-                _Value result = m_basicBlock.InsertBinaryOp( ( int )op.Alu, valA, valB, op.Signed );
-                StoreValue( m_results[ 0 ], result );
-            }
-            else
+            if( !(op is IR.BinaryOperator) )
             {
                 throw new Exception( "Unhandled Binary Op: " + op );
             }
 
+            // TODO: Add support for overflow exceptions.
+            _Value valA = ConvertValueToALUOperableType( m_arguments[ 0 ] );
+            _Value valB = ConvertValueToALUOperableType( m_arguments[ 1 ] );
+            MatchIntegerLengths( ref valA, ref valB );
+            _Value result = m_basicBlock.InsertBinaryOp( ( int )op.Alu, valA, valB, op.Signed );
+            StoreValue( m_results[ 0 ], result );
         }
 
         private void Translate_AbstractUnaryOperator( IR.AbstractUnaryOperator op )
         {
-            //Todo: Add support for overflow exceptions
-
-            if( op is IR.UnaryOperator )
-            {
-                _Value val = ConvertValueToALUOperableType( m_arguments[ 0 ] );
-                _Value result = m_basicBlock.InsertUnaryOp( ( int )op.Alu, val, op.Signed );
-                StoreValue( m_results[ 0 ], result );
-            }
-            else
+            if( !( op is IR.UnaryOperator ) )
             {
                 throw new Exception( "Unhandled Unary Op: " + op );
             }
+
+            // TODO: Add support for overflow exceptions.
+            _Value val = ConvertValueToALUOperableType( m_arguments[ 0 ] );
+            _Value result = m_basicBlock.InsertUnaryOp( ( int )op.Alu, val, op.Signed );
+            StoreValue( m_results[ 0 ], result );
         }
 
         private void Translate_ConversionOperator( IR.ConversionOperator op )
@@ -542,6 +554,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
         {
             valA = ConvertValueToALUOperableType( valA );
             valB = ConvertValueToALUOperableType( valB );
+            MatchIntegerLengths( ref valA, ref valB );
             return m_basicBlock.InsertCmp( cond, signed, valA, valB );
         }
 

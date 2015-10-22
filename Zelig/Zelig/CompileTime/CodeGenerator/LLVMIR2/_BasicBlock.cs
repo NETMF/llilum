@@ -449,9 +449,13 @@ namespace Microsoft.Zelig.LLVM
         {
             Debug.Assert( val.IsInteger );
             val = LoadToImmediate( val );
+            Value retVal = val.LlvmValue;
 
-            var retVal = IrBuilder.TruncOrBitCast( val.LlvmValue, Module.LlvmModule.Context.GetIntType( ( uint )significantBits ) )
+            if( significantBits != val.Type.SizeInBits )
+            {
+                retVal = IrBuilder.TruncOrBitCast( val.LlvmValue, Module.LlvmModule.Context.GetIntType( ( uint )significantBits ) )
                                   .SetDebugLocation( CurDILocation );
+            }
 
             retVal = IrBuilder.ZeroExtendOrBitCast( retVal, ty.DebugType )
                               .RegisterName( "zext" )
@@ -464,9 +468,13 @@ namespace Microsoft.Zelig.LLVM
         {
             Debug.Assert( val.IsInteger );
             val = LoadToImmediate( val );
+            Value retVal = val.LlvmValue;
 
-            var retVal = IrBuilder.TruncOrBitCast( val.LlvmValue, Module.LlvmModule.Context.GetIntType( ( uint )significantBits ) )
+            if( significantBits != val.Type.SizeInBits )
+            {
+                retVal = IrBuilder.TruncOrBitCast( val.LlvmValue, Module.LlvmModule.Context.GetIntType( ( uint )significantBits ) )
                                   .SetDebugLocation( CurDILocation );
+            }
 
             retVal = IrBuilder.SignExtendOrBitCast( retVal, ty.DebugType )
                               .RegisterName( "sext" )

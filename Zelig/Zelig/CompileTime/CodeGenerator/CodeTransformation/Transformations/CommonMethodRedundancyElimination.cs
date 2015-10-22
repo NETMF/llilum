@@ -35,6 +35,11 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                 fModified = true;
             }
 
+            if(Transformations.InlineScalars.Execute( cfg ))
+            {
+                fModified = true;
+            }
+
             if(Transformations.RemoveSimpleIndirections.Execute( cfg ))
             {
                 fModified = true;

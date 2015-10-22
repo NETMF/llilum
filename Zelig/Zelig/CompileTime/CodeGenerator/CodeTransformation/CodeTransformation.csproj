@@ -217,6 +217,7 @@
     <Compile Include="Transformations\GlobalCopyPropagation.cs" />
     <Compile Include="Transformations\GlobalRegisterAllocation.cs" />
     <Compile Include="Transformations\InlineCall.cs" />
+    <Compile Include="Transformations\InlineScalars.cs" />
     <Compile Include="Transformations\MergeExtendedBasicBlocks.cs" />
     <Compile Include="Transformations\PerformClassExtension.cs" />
     <Compile Include="Transformations\ReduceNumberOfTemporaries.cs" />

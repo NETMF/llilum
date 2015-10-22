@@ -62,6 +62,7 @@ namespace Microsoft.Zelig.LLVM
             case "System.Int64":
                 DebugType = new DebugBasicType( LlvmModule.Context.GetIntType( ( uint )sizeInBits ), LlvmModule, name, DiTypeKind.Signed );
                 IsPrimitiveType = true;
+                IsSigned = true;
                 break;
 
             case "System.Byte":
@@ -84,9 +85,7 @@ namespace Microsoft.Zelig.LLVM
 
             case "System.IntPtr":
             case "System.UIntPtr":
-                // REVIEW: Shouldn't this be an integer value and not a pointer? 
-                //         Standard  semantics for IntPtr is that of an integer
-                //         that is the same size as a native pointer.
+                // While this is generally void* in C#, LLVM prefers typed pointers.
                 DebugType = new DebugPointerType( LlvmModule.Context.Int8Type, LlvmModule, null );
                 IsPrimitiveType = true;
                 break;
@@ -119,6 +118,8 @@ namespace Microsoft.Zelig.LLVM
         public bool IsBoxed { get; set; }
 
         public bool IsPrimitiveType { get; }
+
+        public bool IsSigned { get; }
 
         internal _Module Module { get; }
 

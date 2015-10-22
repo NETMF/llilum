@@ -190,7 +190,12 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         {
             TypeRepresentation td = ProcessInstruction_ExtractAddressType( instr, exAddr, tdFormal );
 
-            if(CanBeAssignedFromEvaluationStack( td, exValue ) == false)
+            if(exValue is ConstantExpression)
+            {
+                exValue = CoerceConstantToType( (ConstantExpression)exValue, td );
+            }
+
+            if(!CanBeAssignedFromEvaluationStack( td, exValue ))
             {
                 throw TypeConsistencyErrorException.Create( "Expecting value of type {0}, got {1}", td, exValue.Type );
             }
@@ -308,8 +313,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             m_activeStackModel = Expression.SharedEmptyArray;
         }
 
-        internal Expression GetArgumentFromStack( int pos ,
-                                                  int tot )
+        internal Expression GetArgumentFromStack( int pos, int tot )
         {
             pos = tot - 1 - pos;
 
@@ -319,7 +323,39 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             return m_activeStackModel[pos];
         }
 
+        internal Expression GetArgumentFromStack( int pos, int tot, TypeRepresentation formalType )
+        {
+            Expression argument = GetArgumentFromStack( pos, tot );
+
+            if(argument is ConstantExpression)
+            {
+                argument = CoerceConstantToType( (ConstantExpression)argument, formalType );
+            }
+
+            return argument;
+        }
+
         //--//--//--//--//--//--//--//--//--//
+
+        private ConstantExpression CoerceConstantToType( ConstantExpression expr, TypeRepresentation type )
+        {
+            if (expr.Type != type)
+            {
+                // Null pointers can be cast to any non-value type.
+                if((expr.Value == null) && !(type is ValueTypeRepresentation))
+                {
+                    return CreateNewNullPointer( type );
+                }
+
+                // Scalar literals are validated before MSIL, so we can cast without validating.
+                if((type is ScalarTypeRepresentation) && (expr.Value != null))
+                {
+                    return CreateNewConstant( type, expr.Value );
+                }
+            }
+
+            return expr;
+        }
 
         private bool CanBeAssignedFromEvaluationStack( TypeRepresentation dst ,
                                                        Expression         src )
@@ -337,7 +373,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 }
             }
 
-            return dst.CanBeAssignedFrom( ExpandForEvaluationStack( src.Type ), null );
+            TypeRepresentation expandedDst = ExpandForEvaluationStack( dst );
+            return expandedDst.CanBeAssignedFrom( src.Type, null );
         }
 
         private TypeRepresentation ExpandForEvaluationStack( TypeRepresentation td )
@@ -379,7 +416,6 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         private TemporaryVariableExpression CreateNewTemporary( TypeRepresentation td )
         {
             td = ExpandForEvaluationStack( td );
-
             return m_cfg.AllocateTemporary( td, null );
         }
 
