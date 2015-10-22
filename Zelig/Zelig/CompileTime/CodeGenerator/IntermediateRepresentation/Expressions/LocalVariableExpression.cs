@@ -51,7 +51,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
         public override void InnerToString( System.Text.StringBuilder sb )
         {
-            sb.Append( "Local_" );
+            sb.Append( "Local" );
 
             base.InnerToString( sb );
         }

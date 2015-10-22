@@ -65,7 +65,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
         public override void InnerToString( System.Text.StringBuilder sb )
         {
-            sb.Append( "$exception_" );
+            sb.Append( "Exception" );
 
             base.InnerToString( sb );
         }

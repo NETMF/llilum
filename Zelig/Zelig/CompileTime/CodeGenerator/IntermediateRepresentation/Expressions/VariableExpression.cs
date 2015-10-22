@@ -243,11 +243,14 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             string name;
             string fmt;
 
-            sb.AppendFormat( "{0}", (m_number < 0) ? "<x>" : (object)m_number );
+            if (m_number >= 0)
+            {
+                sb.Append( m_number );
+            }
 
             if(m_index >= 0)
             {
-                sb.AppendFormat( "[{0}]", m_index );
+                sb.AppendFormat( "_{0}", m_index );
             }
 
             AppendIdentity( sb );
