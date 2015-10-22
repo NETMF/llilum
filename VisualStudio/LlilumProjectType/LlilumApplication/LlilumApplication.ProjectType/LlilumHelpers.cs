@@ -6,14 +6,16 @@ namespace LlilumApplication
 
     public static class LlilumHelpers
     {
-        public static void TryKillPyocd()
+        public static Task TryKillPyocdAsync()
         {
-            Process[] procs = Process.GetProcessesByName("pyocd_win");
-            foreach(var proc in procs)
+            return Task.Run( ( ) =>
             {
-                proc.Kill();
-                proc.WaitForExit();
-            }
+                foreach( var proc in Process.GetProcessesByName( "pyocd_win" ) )
+                {
+                    proc.Kill( );
+                    proc.WaitForExit( );
+                }
+            } );
         }
     }
 }

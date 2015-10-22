@@ -26,46 +26,54 @@ namespace LlilumApplication
         public async Task DeployAsync( CancellationToken cancellationToken, TextWriter outputPaneWriter )
         {
             // Kill all instances of PyOcd because they affect the flash-tool and debugger
-            LlilumHelpers.TryKillPyocd();
+            await LlilumHelpers.TryKillPyocdAsync();
 
-            var properties = await this.Properties.GetLlilumDebuggerPropertiesAsync();
+            var properties = await Properties.GetLlilumDebuggerPropertiesAsync();
             var deployWithFlashTool = await properties.LlilumUseFlashTool.GetEvaluatedValueAtEndAsync();
 
-            if (string.Compare(deployWithFlashTool, "true", true) == 0)
+            if( string.Compare( deployWithFlashTool, "true", StringComparison.OrdinalIgnoreCase ) != 0 )
+                return;
+
+            string flashToolPath = await properties.LlilumFlashToolPath.GetEvaluatedValueAtEndAsync( );
+            flashToolPath = Path.GetFullPath( flashToolPath.Trim( '"' ) );
+
+            string binaryPath = await properties.LlilumOutputBin.GetEvaluatedValueAtEndAsync( );
+            binaryPath = Path.GetFullPath( binaryPath.Trim( '"' ) );
+
+            string flashToolArgs = await properties.LlilumFlashToolArgs.GetEvaluatedValueAtEndAsync( );
+
+            if( !File.Exists( flashToolPath ) )
             {
-                string flashToolPath = await properties.LlilumFlashToolPath.GetEvaluatedValueAtEndAsync();
-                string flashToolArgs = await properties.LlilumFlashToolArgs.GetEvaluatedValueAtEndAsync();
-                string binaryPath = await properties.LlilumOutputBin.GetEvaluatedValueAtEndAsync();
+                var msg = $"Flash programming tool not found: '{flashToolPath}'";
+                outputPaneWriter.Write( msg );
+                throw new FileNotFoundException( msg );
+            }
 
-                if(!string.IsNullOrEmpty(flashToolPath))
-                {
-                    if( !File.Exists( binaryPath ) )
-                    {
-                        var msg = $"Flash binary file not found: '{binaryPath}'";
-                        outputPaneWriter.Write( msg );
-                        throw new FileNotFoundException( msg );
-                    }
+            if( !File.Exists( binaryPath ) )
+            {
+                var msg = $"Flash binary file not found: '{binaryPath}'";
+                outputPaneWriter.Write( msg );
+                throw new FileNotFoundException( msg );
+            }
 
-                    ProcessStartInfo start = new ProcessStartInfo();
-                    start.FileName = flashToolPath;
-                    start.Arguments = $"{EnsureQuotedPathIfNeeded(binaryPath)} {flashToolArgs}";
-                    start.UseShellExecute = false;
-                    start.RedirectStandardOutput = true;
-                    start.RedirectStandardError = true;
-                    start.CreateNoWindow = true;
+            ProcessStartInfo start = new ProcessStartInfo( );
+            start.FileName = flashToolPath;
+            start.Arguments = $"{EnsureQuotedPathIfNeeded( binaryPath )} {flashToolArgs}";
+            start.UseShellExecute = false;
+            start.RedirectStandardOutput = true;
+            start.RedirectStandardError = true;
+            start.CreateNoWindow = true;
 
-                    using( Process process = Process.Start( start ) )
-                    using( StreamReader stdOut = process.StandardOutput )
-                    using( StreamReader stdErr = process.StandardError )
-                    {
-                        var stdoutTask = Task.Run( ( ) => SendProcessOutputToPaneAsync( outputPaneWriter, stdOut, cancellationToken ) );
-                        var stderrTask = Task.Run( ( ) => SendProcessOutputToPaneAsync( outputPaneWriter, stdErr, cancellationToken ) );
+            using( Process process = Process.Start( start ) )
+            using( StreamReader stdOut = process.StandardOutput )
+            using( StreamReader stdErr = process.StandardError )
+            {
+                var stdoutTask = Task.Run( ( ) => SendProcessOutputToPaneAsync( outputPaneWriter, stdOut, cancellationToken ) );
+                var stderrTask = Task.Run( ( ) => SendProcessOutputToPaneAsync( outputPaneWriter, stdErr, cancellationToken ) );
 
-                        await Task.WhenAll( stdoutTask, stderrTask );
-                        if( process.ExitCode != 0 )
-                            throw new ApplicationException( $"Flash tool failed with exit code {process.ExitCode}" );
-                    }
-                }
+                await Task.WhenAll( stdoutTask, stderrTask );
+                if( process.ExitCode != 0 )
+                    throw new ApplicationException( $"Flash tool failed with exit code {process.ExitCode}" );
             }
         }
 

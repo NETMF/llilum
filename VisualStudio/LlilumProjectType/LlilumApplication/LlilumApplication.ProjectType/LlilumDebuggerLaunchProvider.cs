@@ -100,7 +100,7 @@ namespace LlilumApplication
             if(!string.IsNullOrEmpty(pyOcdPath))
             {
                 // Even though we did it in deploy, do it here just in case we go straight to debug
-                LlilumHelpers.TryKillPyocd();
+                await LlilumHelpers.TryKillPyocdAsync();
 
                 ProcessStartInfo start = new ProcessStartInfo();
                 start.FileName = pyOcdPath;
