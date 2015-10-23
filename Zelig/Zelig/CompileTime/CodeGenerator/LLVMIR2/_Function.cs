@@ -2,6 +2,8 @@
 using Llvm.NET.DebugInfo;
 using Llvm.NET.Values;
 using System;
+using System.Diagnostics;
+using Llvm.NET.Types;
 using IR = Microsoft.Zelig.CodeGeneration.IR;
 using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
@@ -43,12 +45,30 @@ namespace Microsoft.Zelig.LLVM
         UnwindTable = AttributeKind.UWTable,
     }
 
+    // REVIEW:
+    // Given that this has no data members beyond those from the base class
+    // this class probably ought to be a static class with extensions methods 
+    // on the Llvm.NET.Values.Function class. 
     public class _Function : _Value
     {
-        public _Function( _Module module, string name, _Type funcType )
+        internal _Function( _Module module, IModuleManager manager, TS.MethodRepresentation method )
             : base( module
-                  , funcType
-                  , module.LlvmModule.AddFunction( name, ( DebugFunctionType )funcType.DebugType )
+                  , manager.GetOrInsertType( method )
+#if CREATE_FUNCTION_DEBUGINFO
+                  // Ideally it would be cleaner to create the debug information at the same time as the function itself
+                  // (Llvm.NET Debug info was designed to support that). Unfortunately, given how the Zelig engine
+                  // processes the transformations in phases and handlers,etc.. not enough of the required debug
+                  // information is available at the time this is called to pull that off. [ In fact, If this code and
+                  // the related method below are enabled, then LLVM will crash deep in the call to DiBuilder.Finalize() ]
+                  // So, for now, the information is created on-the-fly in _BasicBlock. This mixes the roles and
+                  // responsibilites a bit, but gets the job done until we can fully unwind the final code gen from the
+                  // transform engine. 
+                  , CreateLLvmFunctionWithDebugInfo( module, manager, method )
+#else
+                  , module.LlvmModule.AddFunction( manager.GetMangledNameFor( method )
+                                                 , ( IFunctionType )manager.GetOrInsertType( method ).DebugType
+                                                 )
+#endif
                   , false
                   )
         {
@@ -56,6 +76,8 @@ namespace Microsoft.Zelig.LLVM
             if( function.BasicBlocks.Count == 0 )
                 function.Linkage( Linkage.ExternalWeak );
         }
+
+        public Function LlvmFunction => ( Function )LlvmValue;
 
         public void AddAttribute( FunctionAttribute kind )
         {
@@ -84,10 +106,12 @@ namespace Microsoft.Zelig.LLVM
 
         public _Value GetLocalStackValue( TS.MethodRepresentation method, _BasicBlock block, IR.VariableExpression val, IModuleManager manager )
         {
-            if( block.CurDiSubProgram == null )
+            if( block.CurDILocation == null )
             {
-                block.SetDebugInfo( 0, 0, null, manager, method );
+                block.SetDebugInfo( manager, method, null );
             }
+            Debug.Assert( block.CurDILocation != null );
+            Debug.Assert( block.CurDISubProgram != null );
 
             int index = 0;
             var tag = Tag.AutoVariable;
@@ -103,8 +127,7 @@ namespace Microsoft.Zelig.LLVM
                 tag = Tag.ArgVariable;
             }
 
-            _Type valType = manager.LookupNativeTypeFor( val.Type );
-            _Value retVal = GetLocalStackValue( val.ToString( ), valType );
+            var retVal = GetLocalStackValue( val.ToString( ), manager.GetOrInsertType( val.Type ) );
 
             // If the local had a valid symbolic name in the source code, generate debug info for it.
             if( string.IsNullOrWhiteSpace( val.DebugName?.Name ) )
@@ -112,14 +135,14 @@ namespace Microsoft.Zelig.LLVM
                 return retVal;
             }
 
-            var module = Module;
+            _Type valType = manager.GetOrInsertType( val.Type );
             DILocalVariable localSym;
             if( tag == Tag.ArgVariable )
             {
-                localSym = module.DIBuilder.CreateArgument( block.CurDiSubProgram
+                localSym = Module.DIBuilder.CreateArgument( block.CurDISubProgram
                                                           , val.DebugName.Name
-                                                          , module.CurDiFile
-                                                          , ( uint )block.DebugCurLine
+                                                          , block.CurDILocation?.Scope.File
+                                                          , block.CurDILocation?.Line ?? 0U
                                                           , valType.DIType
                                                           , true
                                                           , 0
@@ -128,10 +151,10 @@ namespace Microsoft.Zelig.LLVM
             }
             else
             {
-                localSym = module.DIBuilder.CreateLocalVariable( block.CurDiSubProgram
+                localSym = Module.DIBuilder.CreateLocalVariable( block.CurDISubProgram
                                                                , val.DebugName.Name
-                                                               , module.CurDiFile
-                                                               , ( uint )block.DebugCurLine
+                                                               , block.CurDILocation?.Scope.File
+                                                               , block.CurDILocation?.Line ?? 0U
                                                                , valType.DIType
                                                                , true
                                                                , 0
@@ -140,14 +163,13 @@ namespace Microsoft.Zelig.LLVM
             }
 
             // For reference types passed as a pointer, tell debugger to deref the pointer.
-            DIExpression expr = module.DIBuilder.CreateExpression( );
+            DIExpression expr = Module.DIBuilder.CreateExpression( );
             if( !retVal.Type.IsValueType )
             {
-                expr = module.DIBuilder.CreateExpression( ExpressionOp.deref );
+                expr = Module.DIBuilder.CreateExpression( ExpressionOp.deref );
             }
 
-            var loc = new DILocation( module.LlvmContext, ( uint )block.DebugCurLine, ( uint )block.DebugCurLine, block.CurDiSubProgram );
-            module.DIBuilder.InsertDeclare( retVal.LlvmValue, localSym, expr, loc, block.LlvmBasicBlock );
+            Module.DIBuilder.InsertDeclare( retVal.LlvmValue, localSym, expr, block.CurDILocation, block.LlvmBasicBlock );
             return retVal;
         }
 
@@ -173,7 +195,8 @@ namespace Microsoft.Zelig.LLVM
                 bldr.PositionBefore(bb.FirstInstruction);
             }
 
-            Value retVal = bldr.Alloca( type.DebugType ).RegisterName( name );
+            Value retVal = bldr.Alloca( type.DebugType )
+                               .RegisterName( name );
 
             _Type pointerType = Module.GetOrInsertPointerType( type );
             return new _Value( Module, pointerType, retVal, false );
@@ -188,5 +211,30 @@ namespace Microsoft.Zelig.LLVM
         {
             ( ( Function )LlvmValue ).Linkage = Linkage.Internal;
         }
+
+#if CREATE_FUNCTION_DEBUGINFO
+        private static Function CreateLLvmFunctionWithDebugInfo( _Module module, IModuleManager manager, TS.MethodRepresentation method )
+        {
+            string mangledName = manager.GetMangledNameFor( method );
+            _Type functionType = manager.GetOrInsertType( method );
+            DebugInfo loc = manager.GetDebugInfoFor( method );
+            Debug.Assert( loc != null );
+
+            // Create the DISupprogram info
+            var retVal = module.LlvmModule.CreateFunction( module.DICompileUnit
+                                                         , method.Name
+                                                         , mangledName
+                                                         , module.GetOrCreateDIFile( loc.SrcFileName )
+                                                         , ( uint )loc.BeginLineNumber
+                                                         , (DebugFunctionType)functionType.DebugType
+                                                         , true
+                                                         , true
+                                                         , ( uint )loc.EndLineNumber
+                                                         , DebugInfoFlags.None // TODO: Map Zelig accesibility info etc... to flags
+                                                         , false
+                                                         );
+            return retVal;
+        }
+#endif
     }
 }

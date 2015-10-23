@@ -1,20 +1,26 @@
 ﻿using Llvm.NET;
 using Llvm.NET.DebugInfo;
-using Llvm.NET.Instructions;
 using Llvm.NET.Types;
 using Llvm.NET.Values;
+using Microsoft.Zelig.CodeGeneration.IR;
+using Microsoft.Zelig.Debugging;
+using Microsoft.Zelig.Runtime.TypeSystem;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using TS = Microsoft.Zelig.Runtime.TypeSystem;
+using System.Linq;
+
+using BasicBlock = Llvm.NET.Values.BasicBlock;
 
 namespace Microsoft.Zelig.LLVM
 {
+    /// <summary>This interface is used to break an otherwise circular dependency between this assembly and the CodeTransformation assembly</summary>
     public interface IModuleManager
     {
-        string GetMangledNameFor( TS.MethodRepresentation method );
-        _Type LookupNativeTypeFor( TS.TypeRepresentation type );
-        Debugging.DebugInfo GetDebugInfoFor( TS.MethodRepresentation method );
+        string GetMangledNameFor( MethodRepresentation method );
+        _Type GetOrInsertType( TypeRepresentation type );
+        _Type GetOrInsertType( MethodRepresentation method );
+        Debugging.DebugInfo GetDebugInfoFor( MethodRepresentation method );
     }
 
     public class _BasicBlock
@@ -36,11 +42,11 @@ namespace Microsoft.Zelig.LLVM
             Value llvmValue = val.LlvmValue;
 
             llvmValue = IrBuilder.ExtractValue( llvmValue, 0 )
-                                 .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                                 .SetDebugLocation( CurDILocation );
 
             var resultValue = IrBuilder.BitCast( llvmValue, timpl.DebugType )
                                        .RegisterName( "indirect_function_pointer_cast" )
-                                       .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                                       .SetDebugLocation( CurDILocation );
 
             return new _Value( Module, timpl, resultValue, false );
        }
@@ -52,7 +58,7 @@ namespace Microsoft.Zelig.LLVM
 
             var resultValue = IrBuilder.Load( val.LlvmValue )
                                        .RegisterName( "LoadToImmediate" )
-                                       .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                                       .SetDebugLocation( CurDILocation );
 
             return new _Value( Module, val.Type.UnderlyingType, resultValue, true );
         }
@@ -69,45 +75,43 @@ namespace Microsoft.Zelig.LLVM
 #endif
         }
 
-        public void SetDebugInfo( int curLine, int curCol, string srcFile, IModuleManager manager, TS.MethodRepresentation method )
+        public void SetDebugInfo( IModuleManager manager, MethodRepresentation method, Operator op )
         {
-            string mangledName = manager.GetMangledNameFor( method );
-            if( srcFile != null )
+            // ensure the function has debug information
+            var func = Module.GetFunctionWithDebugInfoFor( manager, method );
+            Debug.Assert( Owner == func );
+
+            if( op != null )
             {
-                DebugCurLine = curLine;
-                DebugCurCol = curCol;
-                Module.SetCurrentDIFile( srcFile );
+                SetDebugInfo( op.DebugInfo );
             }
-
-            CurDiSubProgram = Module.GetDISubprogram( mangledName );
-
-            if( CurDiSubProgram == null )
+            else
             {
-                CreateDiSubProgram( manager, method, mangledName );
+                SetDebugInfo( method.DebugInfo ?? manager.GetDebugInfoFor( method ) ); 
             }
         }
 
-        private void CreateDiSubProgram( IModuleManager manager, TS.MethodRepresentation method, string mangledName )
+        private void SetDebugInfo( DebugInfo debugInfo )
         {
-            var diFile = Module.CurDiFile;
-            var functionType = Owner.Type;
+            if( debugInfo == null )
+                return;
 
-            // Create the DiSupprogram info
-            CurDiSubProgram = Module.LlvmModule.DIBuilder.CreateFunction( diFile
-                                                                        , method.Name
-                                                                        , mangledName
-                                                                        , diFile
-                                                                        , ( uint )DebugCurLine
-                                                                        , (DISubroutineType)functionType.DIType
-                                                                        , true
-                                                                        , true
-                                                                        , ( uint )DebugCurLine
-                                                                        , 0U
-                                                                        , false
-                                                                        , ( Function )( Owner.LlvmValue )
-                                                                        );
+            // don't allow inlined code to change the file scope of the location
+            // - that either requires a new DILexicalFileBlock (i.e. preprocessor
+            // macro expansion) or it requires the location to include the InlinedAt
+            // location scoping. In order to build the InlinedAt we'd need the
+            // DISubProgram corresponding to the method the operator is inlined
+            // from, which the Zelig inlining doesn't currently provide all we get
+            // is the source and line data.
+            string curPath = Owner.LlvmFunction.DISubProgram.File?.Path ?? string.Empty;
+            if( 0 != string.Compare( debugInfo.SrcFileName, curPath, StringComparison.OrdinalIgnoreCase ) )
+                return;
 
-            Module.SetDISubprogram( mangledName, CurDiSubProgram );
+            CurDILocation = new DILocation( LlvmBasicBlock.Context
+                                          , ( uint )( debugInfo?.BeginLineNumber ?? 0 )
+                                          , ( uint )( debugInfo?.BeginColumn ?? 0 )
+                                          , Owner.LlvmFunction.DISubProgram
+                                          );
         }
 
         private void InsertStore(Value src, Value dst)
@@ -330,7 +334,7 @@ namespace Microsoft.Zelig.LLVM
             else
                 throw new ApplicationException( $"Parameters combination not supported for Binary Operator: {binOp}" );
 
-            retVal = retVal.SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+            retVal = retVal.SetDebugLocation( CurDILocation );
             return new _Value( Module, a.Type, retVal, true );
         }
 
@@ -366,7 +370,7 @@ namespace Microsoft.Zelig.LLVM
                 retVal = IrBuilder.Not( retVal );
                 break;
             }
-            retVal = retVal.SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+            retVal = retVal.SetDebugLocation( CurDILocation );
             return new _Value( Module, val.Type, retVal, true );
         }
         const int SignedBase = 10;
@@ -416,7 +420,7 @@ namespace Microsoft.Zelig.LLVM
                                     .RegisterName("icmp" );
 
                 var inst = IrBuilder.ZeroExtendOrBitCast( icmp, booleanImpl.DebugType )
-                                    .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                                    .SetDebugLocation( CurDILocation );
 
                 return new _Value( Module, booleanImpl, inst, true );
             }
@@ -429,7 +433,7 @@ namespace Microsoft.Zelig.LLVM
                                    .RegisterName("fcmp" );
 
                 var value = IrBuilder.ZeroExtendOrBitCast( cmp, booleanImpl.DebugType )
-                                     .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                                     .SetDebugLocation( CurDILocation );
 
                 return new _Value( Module, booleanImpl, value, true );
             }
@@ -447,11 +451,11 @@ namespace Microsoft.Zelig.LLVM
             val = LoadToImmediate( val );
 
             var retVal = IrBuilder.TruncOrBitCast( val.LlvmValue, Module.LlvmModule.Context.GetIntType( ( uint )significantBits ) )
-                                  .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                                  .SetDebugLocation( CurDILocation );
 
             retVal = IrBuilder.ZeroExtendOrBitCast( retVal, ty.DebugType )
                               .RegisterName( "zext" )
-                              .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                              .SetDebugLocation( CurDILocation );
 
             return new _Value( Module, ty, retVal, true );
         }
@@ -462,11 +466,11 @@ namespace Microsoft.Zelig.LLVM
             val = LoadToImmediate( val );
 
             var retVal = IrBuilder.TruncOrBitCast( val.LlvmValue, Module.LlvmModule.Context.GetIntType( ( uint )significantBits ) )
-                                  .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                                  .SetDebugLocation( CurDILocation );
 
             retVal = IrBuilder.SignExtendOrBitCast( retVal, ty.DebugType )
                               .RegisterName( "sext" )
-                              .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                              .SetDebugLocation( CurDILocation );
 
             return new _Value( Module, ty, retVal, true );
         }
@@ -477,7 +481,7 @@ namespace Microsoft.Zelig.LLVM
             val = LoadToImmediate( val );
 
             Value retVal = IrBuilder.TruncOrBitCast( val.LlvmValue, ty.DebugType )
-                                    .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                                    .SetDebugLocation( CurDILocation );
 
             return new _Value( Module, ty, retVal, true );
         }
@@ -485,7 +489,7 @@ namespace Microsoft.Zelig.LLVM
         public _Value InsertBitCast( _Value val, _Type type )
         {
             var bitCast = IrBuilder.BitCast( val.LlvmValue, type.DebugType )
-                                   .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                                   .SetDebugLocation( CurDILocation );
 
             return new _Value( Module, type, bitCast, true );
         }
@@ -496,7 +500,7 @@ namespace Microsoft.Zelig.LLVM
             Debug.Assert( val.IsImmediate );
 
             Value llvmVal = IrBuilder.PointerToInt( val.LlvmValue, intType.DebugType )
-                                     .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                                     .SetDebugLocation( CurDILocation );
             return new _Value( Module, intType, llvmVal, true );
         }
 
@@ -506,7 +510,7 @@ namespace Microsoft.Zelig.LLVM
             Debug.Assert( val.IsImmediate );
 
             Value llvmVal = IrBuilder.IntToPointer( val.LlvmValue, (IPointerType)pointerType.DebugType )
-                                     .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                                     .SetDebugLocation( CurDILocation );
             return new _Value( Module, pointerType, llvmVal, true );
         }
 
@@ -527,7 +531,7 @@ namespace Microsoft.Zelig.LLVM
             // TODO: This is hard-coded as a signed conversion, but we should respect whether the value is signed.
             var value = IrBuilder.SIToFPCast( val.LlvmValue, type.DebugType )
                                  .RegisterName( "sitofp" )
-                                 .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                                 .SetDebugLocation( CurDILocation );
 
             return new _Value( Module, type, value, true );
         }
@@ -539,7 +543,7 @@ namespace Microsoft.Zelig.LLVM
 
             var value = IrBuilder.FPExt( val.LlvmValue, type.DebugType )
                                  .RegisterName( "fpext" )
-                                 .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                                 .SetDebugLocation( CurDILocation );
 
             return new _Value( Module, type, value, true );
         }
@@ -551,7 +555,7 @@ namespace Microsoft.Zelig.LLVM
 
             var value = IrBuilder.FPTrunc( val.LlvmValue, type.DebugType )
                                  .RegisterName( "fpext" )
-                                 .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                                 .SetDebugLocation( CurDILocation );
 
             return new _Value( Module, type, value, true );
         }
@@ -565,7 +569,7 @@ namespace Microsoft.Zelig.LLVM
             // TODO: This is hard-coded as an unsigned conversion, but we should respect whether the value is signed.
             var value = IrBuilder.FPToUICast( val.LlvmValue, intType.DebugType )
                                  .RegisterName( "fptoui" )
-                                 .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                                 .SetDebugLocation( CurDILocation );
 
             return new _Value( Module, intType, value, true );
         }
@@ -573,7 +577,7 @@ namespace Microsoft.Zelig.LLVM
         public void InsertUnconditionalBranch( _BasicBlock bb )
         {
             IrBuilder.Branch( bb.LlvmBasicBlock )
-                     .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                     .SetDebugLocation( CurDILocation );
         }
 
         public void InsertConditionalBranch( _Value cond, _BasicBlock trueBB, _BasicBlock falseBB )
@@ -589,10 +593,10 @@ namespace Microsoft.Zelig.LLVM
 
             Value condVal = IrBuilder.Compare(IntPredicate.NotEqual, vA, vB)
                                      .RegisterName( "icmpe" )
-                                     .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                                     .SetDebugLocation( CurDILocation );
 
             IrBuilder.Branch( condVal, trueBB.LlvmBasicBlock, falseBB.LlvmBasicBlock )
-                     .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                     .SetDebugLocation( CurDILocation );
         }
 
         public void InsertSwitchAndCases( _Value cond, _BasicBlock defaultBB, List<int> casesValues, List<_BasicBlock> casesBBs )
@@ -600,7 +604,7 @@ namespace Microsoft.Zelig.LLVM
             Debug.Assert( cond.IsInteger );
             cond = LoadToImmediate( cond );
             var si = IrBuilder.Switch( cond.LlvmValue, defaultBB.LlvmBasicBlock, ( uint )casesBBs.Count )
-                              .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                              .SetDebugLocation( CurDILocation );
 
             for( int i = 0; i < casesBBs.Count; ++i )
             {
@@ -640,7 +644,7 @@ namespace Microsoft.Zelig.LLVM
             LoadParams( func, args, parameters );
 
             Value retVal = IrBuilder.Call( func.LlvmValue, parameters )
-                                    .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                                    .SetDebugLocation( CurDILocation );
 
             var llvmFunc = (Function)(func.LlvmValue);
             if( llvmFunc.ReturnType.IsVoid )
@@ -657,7 +661,7 @@ namespace Microsoft.Zelig.LLVM
             ptr = CastToFunctionPointer( ptr, func.Type );
 
             Value retVal = IrBuilder.Call( ptr.LlvmValue, parameters )
-                                    .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                                    .SetDebugLocation( CurDILocation );
 
             var llvmFunc = ( Function )( func.LlvmValue );
             if( llvmFunc.ReturnType.IsVoid )
@@ -720,7 +724,7 @@ namespace Microsoft.Zelig.LLVM
 
                 var unbox = IrBuilder.GetElementPtr( obj.LlvmValue, indexValues )
                                      .RegisterName( "unboxedValue" )
-                                     .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                                     .SetDebugLocation( CurDILocation );
 
                 underlyingType = underlyingType.UnderlyingType;
                 _Type pointerType = Module.GetOrInsertPointerType( underlyingType );
@@ -762,7 +766,7 @@ namespace Microsoft.Zelig.LLVM
 
             var gep = IrBuilder.GetElementPtr( obj.LlvmValue, valuesForGep )
                                .RegisterName( $"{underlyingType.Name}.{fieldName}" )
-                               .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                               .SetDebugLocation( CurDILocation );
 
             fieldType = Module.GetOrInsertPointerType( fieldType );
             return new _Value( Module, fieldType, gep, false );
@@ -774,7 +778,7 @@ namespace Microsoft.Zelig.LLVM
 
             Value[] idxs = { Module.LlvmModule.Context.CreateConstant( 0 ), idx.LlvmValue };
             Value retVal = IrBuilder.GetElementPtr( obj.LlvmValue, idxs )
-                                    .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                                    .SetDebugLocation( CurDILocation );
 
             var arrayType = ( IArrayType )obj.Type.UnderlyingType.DebugType;
             _Type pointerType = Module.GetOrInsertPointerType( _Type.GetTypeImpl( arrayType.ElementType ) );
@@ -786,24 +790,22 @@ namespace Microsoft.Zelig.LLVM
             if( val == null )
             {
                 IrBuilder.Return( )
-                         .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                         .SetDebugLocation( CurDILocation );
             }
             else
             {
                 IrBuilder.Return( LoadToImmediate( val ).LlvmValue )
-                         .SetDebugLocation( ( uint )DebugCurLine, ( uint )DebugCurCol, CurDiSubProgram );
+                         .SetDebugLocation( CurDILocation );
             }
         }
-
-        internal DISubProgram CurDiSubProgram { get; private set; }
-
-        internal int DebugCurCol { get; private set; }
-
-        internal int DebugCurLine { get; private set; }
 
         internal InstructionBuilder IrBuilder { get; }
 
         internal BasicBlock LlvmBasicBlock { get; }
+
+        public DISubProgram CurDISubProgram => CurDILocation?.Scope as DISubProgram;
+
+        internal DILocation CurDILocation;
 
         readonly _Module Module;
         readonly _Function Owner;

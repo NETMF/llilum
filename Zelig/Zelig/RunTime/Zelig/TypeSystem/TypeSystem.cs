@@ -1493,6 +1493,7 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
 
             if(md is MetaDataMethodBase)
             {
+                MethodRepresentation retVal;
                 MetaDataMethodBase md2  = (MetaDataMethodBase)md;
                 TypeRepresentation tdIR = GetDefiningType( md2, ref context );
 
@@ -1501,17 +1502,17 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
                     throw TypeConsistencyErrorException.Create( "Cannot define a new method '{0}' without its owner {0}", md );
                 }
 
-                //--//
-
                 if((md2.Flags & MetaData.MethodAttributes.RTSpecialName) != 0)
                 {
                     switch(md2.Name)
                     {
                         case ".cctor":
-                            return RegisterAndAnalyze( ref lookup, new StaticConstructorMethodRepresentation( tdIR, genericContext ) );
+                            retVal = RegisterAndAnalyze( ref lookup, new StaticConstructorMethodRepresentation( tdIR, genericContext ) );
+                            break;
 
                         case ".ctor":
-                            return RegisterAndAnalyze( ref lookup, new ConstructorMethodRepresentation( tdIR, genericContext ) );
+                            retVal = RegisterAndAnalyze( ref lookup, new ConstructorMethodRepresentation( tdIR, genericContext ) );
+                            break;
 
                             //
                             // Runtime-generated methods for multi-dimensional arrays.
@@ -1605,7 +1606,8 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
                         case "GetEnumerator":
                             CHECKS.ASSERT( (md2.Flags & MetaData.MethodAttributes.Static) == 0, "Unexpected static context for runtime method" );
 
-                            return RegisterAndAnalyze( ref lookup, new RuntimeMethodRepresentation( tdIR, genericContext ) );
+                            retVal = RegisterAndAnalyze( ref lookup, new RuntimeMethodRepresentation( tdIR, genericContext ) );
+                            break;
 
                         default:
                             throw FeatureNotSupportedException.Create( "Unknown special name method '{0}'", md2 );
@@ -1613,29 +1615,47 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
                 }
                 else if((md2.Flags & MetaData.MethodAttributes.Static) != 0)
                 {
-                    return RegisterAndAnalyze( ref lookup, new StaticMethodRepresentation( tdIR, genericContext ) );
+                    retVal = RegisterAndAnalyze( ref lookup, new StaticMethodRepresentation( tdIR, genericContext ) );
                 }
                 else if((md2.Flags & MetaData.MethodAttributes.Virtual) != 0)
                 {
-                    switch(md2.Name)
+                    if(md2.Name == "Finalize" )
                     {
-                        case "Finalize":
-                            return RegisterAndAnalyze( ref lookup, new FinalizerMethodRepresentation( tdIR, genericContext ) );
-                    }
-
-                    if((md2.Flags & MetaData.MethodAttributes.Final) != 0)
-                    {
-                        return RegisterAndAnalyze( ref lookup, new FinalMethodRepresentation( tdIR, genericContext ) );
+                        retVal = RegisterAndAnalyze( ref lookup, new FinalizerMethodRepresentation( tdIR, genericContext ) );
                     }
                     else
                     {
-                        return RegisterAndAnalyze( ref lookup, new VirtualMethodRepresentation( tdIR, genericContext ) );
+                        if( ( md2.Flags & MetaData.MethodAttributes.Final ) != 0 )
+                        {
+                            retVal = RegisterAndAnalyze( ref lookup, new FinalMethodRepresentation( tdIR, genericContext ) );
+                        }
+                        else
+                        {
+                            retVal = RegisterAndAnalyze( ref lookup, new VirtualMethodRepresentation( tdIR, genericContext ) );
+                        }
                     }
                 }
                 else
                 {
-                    return RegisterAndAnalyze( ref lookup, new NonVirtualMethodRepresentation( tdIR, genericContext ) );
+                    retVal = RegisterAndAnalyze( ref lookup, new NonVirtualMethodRepresentation( tdIR, genericContext ) );
                 }
+
+                // Either the PDB information doesn't capture the debug info for a method or the
+                // Zelig metadata importer doesn't read/use it, either way there's no debug info
+                // for the method definition itself. To get around that this scans the original
+                // IL instructions to find the first one with debug info.
+                if( md2.Instructions != null )
+                {
+                    foreach( var instruction in md2.Instructions )
+                    {
+                        if( instruction.DebugInfo != null )
+                        {
+                            retVal.DebugInfo = instruction.DebugInfo;
+                            break;
+                        }
+                    }
+                }
+                return retVal;
             }
             else
             {

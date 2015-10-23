@@ -7,6 +7,7 @@ using Llvm.NET;
 using Llvm.NET.Types;
 using Llvm.NET.DebugInfo;
 using Microsoft.Zelig.Runtime.TypeSystem;
+using Microsoft.Zelig.Debugging;
 
 namespace Microsoft.Zelig.LLVM
 {
@@ -47,19 +48,6 @@ namespace Microsoft.Zelig.LLVM
                         };
 
             LlvmModule.AddModuleFlag( ModuleFlagBehavior.Override, Module.DebugVersionValue, Module.DebugMetadataVersion );
-            SetCurrentDIFile( "out.bc" );
-        }
-
-        public void SetCurrentDIFile( string fn )
-        {
-            DIFile DIFile;
-            if( !DiFiles.TryGetValue( fn, out DIFile ) )
-            {
-                DIFile = DIBuilder.CreateFile( fn );
-                DiFiles.Add( fn, DIFile );
-            }
-
-            CurDiFile = DIFile;
         }
 
         public _Type GetOrInsertType( string name, int sizeInBits, bool isValueType )
@@ -72,7 +60,7 @@ namespace Microsoft.Zelig.LLVM
             var llvmArgs = argTypes.Select( t => t.DebugType );
 
             var funcType = LlvmModule.Context.CreateFunctionType( LlvmModule.DIBuilder
-                                                                , CurDiFile
+                                                                , null
                                                                 , returnType.DebugType
                                                                 , llvmArgs
                                                                 );
@@ -156,10 +144,15 @@ namespace Microsoft.Zelig.LLVM
             return new _Value( this, type, type.DebugType.GetNullValue( ), true );
         }
 
-
-        public _Function GetOrInsertFunction( string name, _Type funcType )
+        public _Function GetOrInsertFunction( IModuleManager manager, MethodRepresentation method )
         {
-            return new _Function( this, name, funcType );
+            _Function retVal;
+            if( m_FunctionMap.TryGetValue( method.m_identity, out retVal ) )
+                return retVal;
+
+            retVal = new _Function( this, manager, method );
+            m_FunctionMap.Add( method.m_identity, retVal );
+            return retVal;
         }
 
         public Constant GetUCVStruct( _Type structType, List<Constant> structMembers, bool anon )
@@ -279,13 +272,26 @@ namespace Microsoft.Zelig.LLVM
             }
         }
 
+        public _Function GetFunctionWithDebugInfoFor( IModuleManager manager, MethodRepresentation method )
+        {
+            // get the function for this method, if it doesn't have debug info yet - generate it. 
+            _Function func = GetOrInsertFunction( manager, method );
+            if( func.LlvmFunction.DISubProgram == null )
+            {
+                var func2 = CreateLLvmFunctionWithDebugInfo( manager, method );
+                Debug.Assert( func2 == func.LlvmFunction );
+                Debug.Assert( func.LlvmFunction.DISubProgram != null );
+            }
+            return func;
+        }
+
         public bool Compile( )
         {
             DIBuilder.Finish( );
             // performing a verify pass here is just a waste of time...
             // Emiting the bit code file will perform a verify
             //string msg;
-            //if( !Module.Verify( out msg ) )
+            //if( !LlvmModule.Verify( out msg ) )
             //{
             //    // TODO: we need a better error handling strategy than this!
             //    Console.Error.WriteLine( msg );
@@ -345,26 +351,47 @@ namespace Microsoft.Zelig.LLVM
         
         internal TargetMachine TargetMachine { get; }
 
-        internal DISubProgram GetDISubprogram( string fn )
+        internal DIFile GetOrCreateDIFile( string fn )
         {
-            DISubProgram retVal;
-            if( DiSubPrograms.TryGetValue( fn, out retVal ) )
+            if( string.IsNullOrWhiteSpace( fn ) )
+                return null;
+
+            DIFile retVal;
+            if( m_DiFiles.TryGetValue( fn, out retVal ) )
                 return retVal;
 
-            return null;
+            retVal = DIBuilder.CreateFile( fn );
+            m_DiFiles.Add( fn, retVal );
+
+            return retVal;
         }
 
-        internal void SetDISubprogram( string fn, DISubProgram disub )
+
+        private Function CreateLLvmFunctionWithDebugInfo( IModuleManager manager, MethodRepresentation method )
         {
-            if( !DiSubPrograms.ContainsKey( fn ) )
-            {
-                DiSubPrograms[ fn ] = disub;
-            }
+            string mangledName = manager.GetMangledNameFor( method );
+            _Type functionType = manager.GetOrInsertType( method );
+            DebugInfo loc = method.DebugInfo ?? manager.GetDebugInfoFor( method );
+            Debug.Assert( loc != null );
+
+            // Create the DISupprogram info
+            var retVal = LlvmModule.CreateFunction( DICompileUnit
+                                                  , method.Name
+                                                  , mangledName
+                                                  , GetOrCreateDIFile( loc.SrcFileName )
+                                                  , ( uint )loc.BeginLineNumber
+                                                  , ( DebugFunctionType )functionType.DebugType
+                                                  , true
+                                                  , true
+                                                  , ( uint )loc.EndLineNumber
+                                                  , DebugInfoFlags.None // TODO: Map Zelig accesibility info etc... to flags
+                                                  , false
+                                                  );
+            return retVal;
         }
 
-        internal DIFile CurDiFile;
-        readonly Dictionary<string, DIFile> DiFiles = new Dictionary<string, DIFile>( );
-        readonly Dictionary<string, DISubProgram> DiSubPrograms = new Dictionary<string, DISubProgram>( );
+        private readonly Dictionary<string, DIFile> m_DiFiles = new Dictionary<string, DIFile>( );
+        private readonly Dictionary<int, _Function> m_FunctionMap = new Dictionary<int, _Function>( );
 
         static int GetMonotonicUniqueId( )
         {

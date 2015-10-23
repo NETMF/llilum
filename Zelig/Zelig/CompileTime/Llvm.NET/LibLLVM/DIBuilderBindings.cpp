@@ -50,6 +50,18 @@ extern "C"
         return wrap( loc->getInlinedAt() );
     }
 
+    char const* LLVMGetDIFileName( LLVMMetadataRef /*DIFile*/ file )
+    {
+        DIFile* pFile = unwrap<DIFile>( file );
+        return pFile->getFilename().data();
+    }
+
+    char const* LLVMGetDIFileDirectory( LLVMMetadataRef /*DIFile*/ file )
+    {
+        DIFile* pFile = unwrap<DIFile>( file );
+        return pFile->getDirectory().data();
+    }
+
     void LLVMSetDILocation( LLVMValueRef inst, LLVMMetadataRef location )
     {
         DILocation* loc = unwrap<DILocation>( location );
@@ -316,31 +328,32 @@ extern "C"
         return wrap( CT );
     }
 
-LLVMMetadataRef LLVMDIBuilderCreateReplaceableCompositeType( LLVMDIBuilderRef Dref
-                                                           , unsigned Tag
-                                                           , const char *Name
-                                                           , LLVMMetadataRef Scope
-                                                           , LLVMMetadataRef File
-                                                           , unsigned Line
-                                                           , unsigned RuntimeLang
-                                                           , uint64_t SizeInBits
-                                                           , uint64_t AlignInBits
-                                                           , unsigned Flags
-                                                           )
-{
-    DIBuilder *D = unwrap(Dref);
-    DICompositeType* type = D->createReplaceableCompositeType( Tag
-                                                               , Name
-                                                               , unwrap<DIScope>( Scope )
-                                                               , File ? unwrap<DIFile>( File ) : nullptr
-                                                               , Line
-                                                               , RuntimeLang
-                                                               , SizeInBits
-                                                               , AlignInBits
-                                                               , Flags
-                                                               );
-    return wrap( type );
-}
+    LLVMMetadataRef LLVMDIBuilderCreateReplaceableCompositeType( LLVMDIBuilderRef Dref
+                                                               , unsigned Tag
+                                                               , const char *Name
+                                                               , LLVMMetadataRef Scope
+                                                               , LLVMMetadataRef File
+                                                               , unsigned Line
+                                                               , unsigned RuntimeLang
+                                                               , uint64_t SizeInBits
+                                                               , uint64_t AlignInBits
+                                                               , unsigned Flags
+                                                               )
+    {
+        DIBuilder *D = unwrap(Dref);
+        DICompositeType* type = D->createReplaceableCompositeType( Tag
+                                                                   , Name
+                                                                   , unwrap<DIScope>( Scope )
+                                                                   , File ? unwrap<DIFile>( File ) : nullptr
+                                                                   , Line
+                                                                   , RuntimeLang
+                                                                   , SizeInBits
+                                                                   , AlignInBits
+                                                                   , Flags
+                                                                   );
+        return wrap( type );
+    }
+
     LLVMMetadataRef LLVMDIBuilderCreateMemberType( LLVMDIBuilderRef Dref
                                                    , LLVMMetadataRef Scope
                                                    , const char *Name

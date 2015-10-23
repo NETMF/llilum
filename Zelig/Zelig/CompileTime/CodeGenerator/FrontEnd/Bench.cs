@@ -1475,29 +1475,6 @@ namespace Microsoft.Zelig.FrontEnd
             Console.Out.Flush( );
 #endif
 
-            //LLVM/DWARF debugging support.
-            m_typeSystem.EnumerateMethods( delegate ( TS.MethodRepresentation md )
-            {
-                var cfg = IR.TypeSystemForCodeTransformation.GetCodeForMethod( md );
-                if( cfg != null )
-                {
-                    Debugging.DebugInfo di = null;
-                    foreach( var op in cfg.DataFlow_SpanningTree_Operators )
-                    {
-                        if( op.DebugInfo != null )
-                        {
-                            di = op.DebugInfo;
-                            break;
-                        }
-                    }
-
-                    if( di != null )
-                    {
-                        m_typeSystem.Module.DebugInfoForMethods.Add( md, new Debugging.DebugInfo( di.SrcFileName, di.MethodName, di.BeginLineNumber, di.BeginColumn, di.EndLineNumber, di.EndColumn ) );
-                    }
-                }
-            } );
-
             if( PerformanceCounters.ContextualTiming.IsEnabled( ) )
             {
                 Console.WriteLine( "{0}: Dumping Performance Counters", GetTime( ) );

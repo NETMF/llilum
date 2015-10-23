@@ -145,9 +145,9 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
         {
             //Load Debug metadata            
             // Miguel: (Hack to remove processor.cs epilogue/prologue debug data)
-            if( op.DebugInfo != null && !op.DebugInfo.SrcFileName.EndsWith( "ProcessorARMv7M.cs" ) )
+            if( op.DebugInfo != null && !op.DebugInfo.SrcFileName.EndsWith( "ProcessorARMv7M.cs" ) /*&& m_method.OwnerType != LLVMPlatform.GetMethodWrapperType()*/ )
             {
-                m_basicBlock.SetDebugInfo( op.DebugInfo.BeginLineNumber, op.DebugInfo.BeginColumn, op.DebugInfo.SrcFileName, m_manager, m_method );
+                m_basicBlock.SetDebugInfo( m_manager, m_method, op );
             }
 
             OutputStringInline( op.ToString( ) );

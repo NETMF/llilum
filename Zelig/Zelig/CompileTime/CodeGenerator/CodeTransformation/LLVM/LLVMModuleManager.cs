@@ -18,8 +18,9 @@ namespace Microsoft.Zelig.LLVM
 
     public partial class LLVMModuleManager : IModuleManager
     {
-        private _Module m_module;
-        private readonly string m_imageName;
+        private readonly Debugging.DebugInfo                m_dummyDebugInfo;
+        private _Module                                     m_module;
+        private readonly string                             m_imageName;
         private readonly IR.TypeSystemForCodeTransformation m_typeSystem;
 
         private GrowOnlyHashTable <TS.TypeRepresentation,LLVM._Type>                 m_typeRepresentationsToType;
@@ -44,6 +45,7 @@ namespace Microsoft.Zelig.LLVM
             m_turnOffCompilationAndValidation = false;
 
             m_module = new _Module( m_imageName );
+            m_dummyDebugInfo = new Debugging.DebugInfo( m_imageName, 0, 0, 0, 0 );
         }
 
         public void Compile( )
@@ -149,23 +151,22 @@ namespace Microsoft.Zelig.LLVM
 
         public LLVM._Function GetOrInsertFunction( TS.MethodRepresentation md )
         {
-            LLVM._Function function = m_module.GetOrInsertFunction( GetFullMethodName( md ), GetOrInsertType( md ) );
+            LLVM._Function function = m_module.GetOrInsertFunction( this, md );
 
             // FUTURE: We might see a very slight performance improvement by checking whether these already exist before
             // setting them. However, setting each attribute is relatively cheap so we'll do it the naive way for now.
-
-            if ( md.HasBuildTimeFlag( TS.MethodRepresentation.BuildTimeAttributes.Inline ) )
+            if( md.HasBuildTimeFlag( TS.MethodRepresentation.BuildTimeAttributes.Inline ) )
             {
                 // BUGBUG: Should this be AlwaysInline?
                 function.AddAttribute( FunctionAttribute.InlineHint );
             }
 
-            if ( md.HasBuildTimeFlag( TS.MethodRepresentation.BuildTimeAttributes.NoInline ) )
+            if( md.HasBuildTimeFlag( TS.MethodRepresentation.BuildTimeAttributes.NoInline ) )
             {
                 function.AddAttribute( FunctionAttribute.NoInline );
             }
 
-            if ( md.HasBuildTimeFlag( TS.MethodRepresentation.BuildTimeAttributes.BottomOfCallStack ) )
+            if( md.HasBuildTimeFlag( TS.MethodRepresentation.BuildTimeAttributes.BottomOfCallStack ) )
             {
                 function.AddAttribute( FunctionAttribute.Naked );
             }

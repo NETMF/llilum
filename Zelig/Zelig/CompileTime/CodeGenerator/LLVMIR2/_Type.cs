@@ -262,9 +262,9 @@ namespace Microsoft.Zelig.LLVM
             var debugMemberInfo = new DebugMemberInfo { Name = field.Name
                                                       , Type = memberDiType
                                                       , Index = (uint)index
-                                                      , ExplicitLayout = new DebugMemberLayout( (uint)field.MemberType.SizeInBits, 0  /* ???? */, offset * 8UL )
                                                       , Flags = flags
-                                                      /* todo: file, line...*/
+                                                      , ExplicitLayout = new DebugMemberLayout( ( uint )field.MemberType.SizeInBits, 0  /* ???? */, offset * 8UL)
+                                                      /* todo: file, line... (Zelig IL parsing doesn't seem to capture source locations for fields)*/
                                                       };
             DiFields.Add( debugMemberInfo );
         }

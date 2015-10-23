@@ -184,6 +184,8 @@ void LLVMSetCurrentDebugLocation2(LLVMBuilderRef Bref, unsigned Line, unsigned C
 LLVMBool LLVMIsTemporary( LLVMMetadataRef M );
 LLVMBool LLVMIsResolved( LLVMMetadataRef M );
 void LLVMMDNodeResolveCycles( LLVMMetadataRef M );
+char const* LLVMGetDIFileName( LLVMMetadataRef /*DIFile*/ file );
+char const* LLVMGetDIFileDirectory( LLVMMetadataRef /*DIFile*/ file );
 
 #ifdef __cplusplus
 }

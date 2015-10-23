@@ -486,5 +486,11 @@ namespace Llvm.NET
 
         [DllImport( libraryPath, EntryPoint = "LLVMGetFunctionAttributesAsString", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true )]
         internal static extern LLVMBool LLVMHasTargetDependentAttribute( LLVMValueRef Fn, int index, [MarshalAs( UnmanagedType.LPStr )]string name );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMGetDIFileName", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true )]
+        internal static extern IntPtr GetDIFileName( LLVMMetadataRef /*DIFile*/ file );
+
+        [DllImport( libraryPath, EntryPoint = "LLVMGetDIFileDirectory", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true )]
+        internal static extern IntPtr GetDIFileDirectory( LLVMMetadataRef /*DIFile*/ file );
     }
 }

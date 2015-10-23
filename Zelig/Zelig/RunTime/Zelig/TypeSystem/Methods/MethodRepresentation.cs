@@ -224,6 +224,21 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         protected CodePointer                       m_codePointer;
         protected CodeMap                           m_codeMap;
 
+        
+        public Debugging.DebugInfo DebugInfo
+        {
+            get
+            {
+                return m_DebugInfo;
+            }
+
+            set
+            {
+                m_DebugInfo = value;
+            }
+        }
+        private Debugging.DebugInfo m_DebugInfo;
+
         //
         // Constructor Methods
         //
@@ -506,6 +521,7 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
 
             base.ApplyTransformation( context );
 
+            context.Transform( ref m_DebugInfo );
             context.Transform( ref m_ownerType );
             context.Transform( ref m_flags );
             context.Transform( ref m_buildFlags );

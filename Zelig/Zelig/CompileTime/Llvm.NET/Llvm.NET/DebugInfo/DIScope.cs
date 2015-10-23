@@ -8,6 +8,15 @@
         {
         }
 
-        public DIFile File => DINode.FromHandle< DIFile >( NativeMethods.DIScopeGetFile( MetadataHandle ) );
+        public DIFile File
+        {
+            get
+            {
+                var handle = NativeMethods.DIScopeGetFile( MetadataHandle );
+                if( handle == LLVMMetadataRef.Zero )
+                    return null;
+                return DINode.FromHandle<DIFile>( handle );
+            }
+        }
     }
 }

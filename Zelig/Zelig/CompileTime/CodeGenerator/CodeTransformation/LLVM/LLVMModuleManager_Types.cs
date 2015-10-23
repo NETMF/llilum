@@ -2,6 +2,9 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+using System.Collections.ObjectModel;
+using Microsoft.Zelig.Debugging;
+
 namespace Microsoft.Zelig.LLVM
 {
     using System;
@@ -9,8 +12,9 @@ namespace Microsoft.Zelig.LLVM
     using System.Collections.Generic;
     using IR = Microsoft.Zelig.CodeGeneration.IR;
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
+    using System.Linq;
 
-    public partial class LLVMModuleManager : IModuleManager
+    public partial class LLVMModuleManager
     {
         public void ConvertTypeLayoutsToLLVM( )
         {
@@ -136,9 +140,7 @@ namespace Microsoft.Zelig.LLVM
 
             string typeName = tr.FullName;
 
-            //
-            // Pointer and Boxed type representation
-            //
+            // Pointer and Boxed type representation 
             if( tr is TS.PointerTypeRepresentation )
             {
                 if( tr.UnderlyingType == wkt.System_Void )
@@ -160,10 +162,7 @@ namespace Microsoft.Zelig.LLVM
                 return m_typeRepresentationsToType[ tr ];
             }
 
-            //
             // All other types
-            //
-
             bool isValueType = (tr is TS.ValueTypeRepresentation);
             LLVM._Type llvmType = m_module.GetOrInsertType( typeName, ( int )tr.Size * 8, isValueType );
 
@@ -196,10 +195,6 @@ namespace Microsoft.Zelig.LLVM
                 llvmType.AddField( 0, headerType.UnderlyingType, "object_header" );
             }
 
-            //
-            // Fields
-            //
-
             foreach( var field in tr.Fields )
             {
                 // static fields are not part of object layout
@@ -213,9 +208,7 @@ namespace Microsoft.Zelig.LLVM
                     continue;
                 }
 
-                //
                 // Strings are implemented inside the type
-                //
                 if( field == wkf.StringImpl_FirstChar )
                 {
                     _Type arrayType = m_module.GetOrInsertZeroSizedArray( GetOrInsertType( wkt.System_Char ) );
@@ -238,9 +231,9 @@ namespace Microsoft.Zelig.LLVM
             return m_typeRepresentationsToType[ tr ];
         }
 
-        internal LLVM._Type GetOrInsertType( TS.MethodRepresentation mr )
+        public _Type GetOrInsertType( TS.MethodRepresentation mr )
         {
-            var args = new List<LLVM._Type>( );
+            var args = new List<_Type>( );
 
             foreach( var param in mr.ThisPlusArguments )
             {
@@ -250,7 +243,7 @@ namespace Microsoft.Zelig.LLVM
             if( mr is TS.StaticMethodRepresentation )
                 args.RemoveAt( 0 );
 
-            LLVM._Type retType = GetOrInsertType( mr.ReturnType );
+            _Type retType = GetOrInsertType( mr.ReturnType );
 
             if( retType == null )
             {
@@ -268,17 +261,23 @@ namespace Microsoft.Zelig.LLVM
 
         string IModuleManager.GetMangledNameFor( TS.MethodRepresentation method ) => GetFullMethodName( method );
 
-        _Type IModuleManager.LookupNativeTypeFor( TS.TypeRepresentation tr ) => GetOrInsertType( tr );
-
-        Debugging.DebugInfo IModuleManager.GetDebugInfoFor( TS.MethodRepresentation method )
+        DebugInfo IModuleManager.GetDebugInfoFor( TS.MethodRepresentation method )
         {
-            Debugging.DebugInfo retVal;
-            if( m_debugInfoForMethods.TryGetValue( method, out retVal ) )
-                return retVal;
+            if( method.DebugInfo == null )
+            {
+                var cfg = IR.TypeSystemForCodeTransformation.GetCodeForMethod( method );
+                if( cfg == null )
+                    return m_dummyDebugInfo;
 
-            return DummyDebugInfo;
+                method.DebugInfo = ( from op in cfg.DataFlow_SpanningTree_Operators
+                                      where op.DebugInfo != null
+                                      select op.DebugInfo
+                                   ).FirstOrDefault( );
+
+                if( method.DebugInfo == null )
+                    method.DebugInfo = m_dummyDebugInfo;
+            }
+            return method.DebugInfo;
         }
-
-        static Debugging.DebugInfo DummyDebugInfo = new Debugging.DebugInfo( string.Empty, 0, 0, 0, 0 );
     }
 }

@@ -4,6 +4,7 @@
 
 //#define SELF_TEST
 //#define SELF_TEST_MEMORY
+//#define SELF_TEST_DEBUGINFO
 
 //--//
 
@@ -60,6 +61,8 @@ namespace Microsoft.Zelig.Runtime
             HeapInitialization();
             SoftwareInitialization(Device.Instance.BootstrapStack);
             SelfTest.SelfTest__Memory();
+#elif SELF_TEST_DEBUGINFO
+            Configuration.ExecuteApplication( );
 #else
             //
             // This should only minimally setup hardware so that the system is functional.
