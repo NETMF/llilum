@@ -137,7 +137,6 @@
     <None Include="Test\FileSystem_Tester.FrontEndConfig" />
     <None Include="Legacy\iMoteQuickTest_Tester.FrontEndConfig" />
     <None Include="Test\LLVM_test.FrontEndConfig" />
-    <None Include="mbed_simple.FrontEndConfig" />
     <None Include="Legacy\tester_FF.FrontEndConfig" />
     <None Include="Legacy\tester_NXP.FrontEndConfig" />
     <None Include="Legacy\tester_PXA.FrontEndConfig" />
