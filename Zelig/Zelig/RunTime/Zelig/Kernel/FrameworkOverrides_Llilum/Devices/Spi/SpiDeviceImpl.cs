@@ -11,33 +11,23 @@ namespace Microsoft.Zelig.Runtime
     [ExtendClass(typeof(SpiDevice), NoConstructors = true)]
     public class SpiDeviceImpl
     {
-        public static SpiChannel AcquireSpiChannel(int port)
+        public static SpiChannel TryAcquireSpiChannel(int port)
         {
             SpiChannelInfo channelInfo = SpiProvider.Instance.GetSpiChannelInfo(port);
 
-            return AcquireSpiChannel(channelInfo);
+            return TryAcquireSpiChannel(channelInfo, channelInfo.DefaultChipSelect);
         }
 
-        public static SpiChannel AcquireSpiChannel(ISpiChannelInfo channelInfo)
+        public static SpiChannel TryAcquireSpiChannel(ISpiChannelInfo channelInfo, int chipSelectPin)
         {
             SpiProvider spiProvider = SpiProvider.Instance;
 
             if (channelInfo != null)
             {
                 // Ensure all pins are available
-                if (channelInfo.ReserveMisoPin)
+                if (!HardwareProvider.Instance.TryReservePins(channelInfo.Mosi, channelInfo.Miso, channelInfo.Sclk, chipSelectPin))
                 {
-                    if (!HardwareProvider.Instance.TryReservePins(channelInfo.Mosi, channelInfo.Miso, channelInfo.Sclk, channelInfo.ChipSelect))
-                    {
-                        return null;
-                    }
-                }
-                else
-                {
-                    if (!HardwareProvider.Instance.TryReservePins(channelInfo.Mosi, channelInfo.Sclk, channelInfo.ChipSelect))
-                    {
-                        return null;
-                    }
+                    return null;
                 }
 
                 return spiProvider.CreateSpiChannel(channelInfo);

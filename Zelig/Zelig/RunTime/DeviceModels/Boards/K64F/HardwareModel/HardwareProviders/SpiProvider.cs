@@ -16,10 +16,9 @@ namespace Microsoft.Zelig.K64F
             Mosi = (int)PinName.PTD2,
             Miso = unchecked((int)PinName.NC),
             Sclk = (int)PinName.PTD1,
-            ChipSelect = unchecked((int)PinName.NC),
+            DefaultChipSelect = unchecked((int)PinName.NC),
             SetupTime = 10,
             HoldTime = 10,
-            ReserveMisoPin = true,
             ActiveLow = true,
         };
 
@@ -28,10 +27,9 @@ namespace Microsoft.Zelig.K64F
             Mosi = (int)PinName.PTD6,
             Miso = (int)PinName.PTD7,
             Sclk = (int)PinName.PTD5,
-            ChipSelect = (int)PinName.PTD4,
+            DefaultChipSelect = (int)PinName.PTD4,
             SetupTime = 10,
             HoldTime = 10,
-            ReserveMisoPin = true,
             ActiveLow = true,
         };
 
@@ -40,10 +38,9 @@ namespace Microsoft.Zelig.K64F
             Mosi = (int)PinName.PTE3,
             Miso = (int)PinName.PTE1,
             Sclk = (int)PinName.PTE2,
-            ChipSelect = (int)PinName.PTE4,
+            DefaultChipSelect = (int)PinName.PTE4,
             SetupTime = 10,
             HoldTime = 10,
-            ReserveMisoPin = true,
             ActiveLow = true,
         };
 

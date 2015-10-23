@@ -15,10 +15,9 @@ namespace Microsoft.Zelig.LPC1768
             Mosi = (int)PinName.p5,
             Miso = (int)PinName.p6,
             Sclk = (int)PinName.p7,
-            ChipSelect = (int)PinName.p8,
+            DefaultChipSelect = (int)PinName.p8,
             SetupTime = 0,
             HoldTime = 0,
-            ReserveMisoPin = false,
             ActiveLow = true,
         };
 
@@ -27,10 +26,9 @@ namespace Microsoft.Zelig.LPC1768
             Mosi = (int)PinName.p11,
             Miso = (int)PinName.p12,
             Sclk = (int)PinName.p13,
-            ChipSelect = (int)PinName.p14,
+            DefaultChipSelect = (int)PinName.p14,
             SetupTime = 10,
             HoldTime = 10,
-            ReserveMisoPin = true,
             ActiveLow = true,
         };
 

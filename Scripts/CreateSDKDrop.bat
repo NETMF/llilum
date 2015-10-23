@@ -19,8 +19,9 @@ echo.
 echo Building Zelig compiler...
 msbuild /m "%ZELIG_ROOT_DIR%\Zelig\Zelig\Zelig.sln" /t:Build /p:Configuration=Debug /p:Platform="Any CPU" /flp:verbosity=diagnostic;LogFile=ZeligCompilerBuild.log /clp:verbosity=minimal
 if NOT %errorlevel%==0 (
+    echo.
     echo Error: Failed to build Zelig compiler.
-    goto Error
+    goto CheckSDKIssue
 )
 
 echo.
@@ -131,6 +132,14 @@ if not exist %SDK_DIR%\SDKDrop\tools\readme.txt (
 echo Complete.
 echo.
 goto :EOF
+
+:CheckSDKIssue
+if not "%LLILUM_SDK%"=="" (
+    if not exist %LLILUM_SDK% (
+        echo NOTE: You have previously installed the SDK, and may have moved or removed it.
+        echo Please remove the "LLILUM_SDK" environment variable, restart Windows Explorer, open a new CMD prompt, and run this script again
+    )
+)
 
 :Error
 exit /B 1

@@ -16,7 +16,6 @@
   </TemplateData>
   <TemplateContent>
     <Project TargetFileName="$projectname$.Native.vcxproj" File="Native.vcxproj" ReplaceParameters="true">
-      <ProjectItem ReplaceParameters="true" TargetFileName="Native.vcxproj.filters">Native.vcxproj.filters</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="pch.h">pch.h</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="Source.cpp">Source.cpp</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="mbed_simple.FrontEndConfig">mbed_simple.FrontEndConfig</ProjectItem>

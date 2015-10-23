@@ -24,19 +24,15 @@ extern "C"
 		spi_frequency(obj, hz);
 	}
 
-	void tmp_spi_alloc(spi_t** obj)
+	void tmp_spi_alloc_init(spi_t** obj, int32_t mosi, int32_t miso, int32_t scl, int32_t cs)
 	{
 		*obj = (spi_t*)calloc(sizeof(spi_t), 1);
+		spi_init(*obj, (PinName)mosi, (PinName)miso, (PinName)scl, (PinName)cs);
 	}
 
 	void tmp_spi_free(spi_t* obj)
 	{
 		free(obj);
-	}
-
-	void tmp_spi_init(spi_t* obj, int32_t mosi, int32_t miso, int32_t scl, int32_t cs)
-	{
-		spi_init(obj, (PinName)mosi, (PinName)miso, (PinName)scl, (PinName)cs);
 	}
 
 	int tmp_spi_busy(spi_t* obj)

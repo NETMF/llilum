@@ -16,10 +16,10 @@ namespace Windows.Devices.Spi
     public sealed class SpiDevice : IDisposable
     {
         // Connection 
-        private bool                           m_disposed;
-        private readonly Llilum.SpiDevice      m_channel;
+        private bool m_disposed;
+        private readonly Llilum.SpiDevice m_channel;
         private readonly SpiConnectionSettings m_connectionSettings;
-        private readonly String                m_deviceId;
+        private readonly String m_deviceId;
 
         /// <summary>
         /// Private SpiDevice constructor
@@ -57,10 +57,10 @@ namespace Windows.Devices.Spi
         {
             if (disposing)
             {
-                m_channel.Dispose( );
+                m_channel.Dispose();
             }
         }
-        
+
         /// <summary>
         /// Opens a device with the connection settings provided.
         /// </summary>
@@ -68,10 +68,10 @@ namespace Windows.Devices.Spi
         /// <param name="settings">The connection settings.</param>
         /// <returns>The SPI device requested.</returns>
         /// [RemoteAsync]
-        public static SpiDevice FromIdAsync( string busId, SpiConnectionSettings settings)
+        public static SpiDevice FromIdAsync(string busId, SpiConnectionSettings settings)
         {
             Llilum.ISpiChannelInfoUwp channelInfoUwp = GetSpiChannelInfo(busId);
-            if(channelInfoUwp == null)
+            if (channelInfoUwp == null)
             {
                 throw new InvalidOperationException();
             }
@@ -82,13 +82,12 @@ namespace Windows.Devices.Spi
                 throw new InvalidOperationException();
             }
 
-            Llilum.SpiDevice spiChannel = new Llilum.SpiDevice(channelInfo);
-            if(spiChannel == null)
+            Llilum.SpiDevice spiChannel = new Llilum.SpiDevice(channelInfo, settings.ChipSelectLine);
+            if (spiChannel == null)
             {
                 throw new InvalidOperationException();
             }
 
-            spiChannel.ChipSelectPin = settings.ChipSelectLine;
             spiChannel.ClockFrequency = settings.ClockFrequency;
             spiChannel.DataBitLength = settings.DataBitLength;
             spiChannel.Mode = (Llilum.SpiMode)settings.Mode;
@@ -97,7 +96,7 @@ namespace Windows.Devices.Spi
             return new SpiDevice(busId, settings, spiChannel);
         }
 
-        
+
         /// <summary>
         /// Gets the connection settings for the device.
         /// </summary>
@@ -144,14 +143,15 @@ namespace Windows.Devices.Spi
                 supportedDataBitLengths.Add(16);
             }
 
-            return new SpiBusInfo() {
+            return new SpiBusInfo()
+            {
                 ChipSelectLineCount = channelInfo.ChipSelectLines,
                 MaxClockFrequency = channelInfo.MaxFreq,
                 MinClockFrequency = channelInfo.MinFreq,
                 SupportedDataBitLengths = supportedDataBitLengths,
             };
         }
-        
+
         /// <summary>
         /// Gets all the SPI buses found on the system.
         /// </summary>
@@ -159,9 +159,9 @@ namespace Windows.Devices.Spi
         /// [Overload("GetDeviceSelector")]
         public static string GetDeviceSelector()
         {
-            string[] channels = GetSpiChannels( );
+            string[] channels = GetSpiChannels();
             string allChannels = "";
-            
+
             if (channels != null)
             {
                 foreach (string channel in channels)
@@ -169,10 +169,10 @@ namespace Windows.Devices.Spi
                     allChannels += (channel + ";");
                 }
             }
-            
+
             return allChannels;
         }
-        
+
         /// <summary>
         /// Gets all the SPI buses found on the system that match the input parameter.
         /// </summary>
@@ -181,7 +181,7 @@ namespace Windows.Devices.Spi
         public static string GetDeviceSelector(string friendlyName)
         {
             // UWP prescribes returning the channels as one single string that looks like the following: "CH1;CH2;"
-            string[] channels = GetSpiChannels( );
+            string[] channels = GetSpiChannels();
 
             foreach (string channel in channels)
             {
@@ -193,7 +193,7 @@ namespace Windows.Devices.Spi
 
             return null;
         }
-        
+
         /// <summary>
         /// Reads from the connected device.
         /// </summary>
@@ -201,9 +201,9 @@ namespace Windows.Devices.Spi
         public void Read(byte[] buffer)
         {
             // Read sends buffer.Length 0s, and places read values into buffer
-            if(buffer != null && buffer.Length > 0)
+            if (buffer != null && buffer.Length > 0)
             {
-                m_channel.WriteRead( null, buffer, 0 );
+                m_channel.WriteRead(null, buffer, 0);
             }
         }
 
@@ -217,17 +217,17 @@ namespace Windows.Devices.Spi
             if (writeBuffer != null && writeBuffer.Length > 0)
             {
                 int readOffset = writeBuffer.Length;
-                if(readBuffer != null)
+                if (readBuffer != null)
                 {
                     // If the read buffer is smaller than the write buffer, we want to read
                     // the last part of the transmission. Otherwise, read from the start
                     readOffset = writeBuffer.Length - readBuffer.Length;
-                    if(readOffset < 0)
+                    if (readOffset < 0)
                     {
                         readOffset = 0;
                     }
                 }
-                m_channel.WriteRead( writeBuffer, readBuffer, readOffset );
+                m_channel.WriteRead(writeBuffer, readBuffer, readOffset);
             }
         }
 
@@ -238,28 +238,28 @@ namespace Windows.Devices.Spi
         /// <param name="readBuffer">Array containing data read from the device.</param>
         public void TransferSequential(byte[] writeBuffer, byte[] readBuffer)
         {
-            Write( writeBuffer );
-            Read( readBuffer );
+            Write(writeBuffer);
+            Read(readBuffer);
         }
 
         /// <summary>
         /// Writes to the connected device.
         /// </summary>
         /// <param name="buffer">Array containing the data to write to the device.</param>
-        public void Write( byte[ ] buffer )
+        public void Write(byte[] buffer)
         {
             if (buffer != null && buffer.Length > 0)
             {
-                m_channel.WriteRead( buffer, null, 0 );
+                m_channel.WriteRead(buffer, null, 0);
             }
         }
 
         //--//
 
-        [MethodImpl( MethodImplOptions.InternalCall )]
+        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Llilum.ISpiChannelInfoUwp GetSpiChannelInfo(string busId);
 
-        [MethodImpl( MethodImplOptions.InternalCall )]
-        private static extern string[] GetSpiChannels( );
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string[] GetSpiChannels();
     }
 }

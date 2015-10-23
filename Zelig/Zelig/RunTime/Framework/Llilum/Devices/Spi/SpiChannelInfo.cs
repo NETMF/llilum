@@ -14,10 +14,9 @@ namespace Microsoft.Llilum.Devices.Spi
         int Mosi { get; }
         int Miso { get; }
         int Sclk { get; }
-        int ChipSelect { get; }
+        int DefaultChipSelect { get; }
         int SetupTime { get; }
         int HoldTime { get; }
-        bool ReserveMisoPin { get; }
         bool ActiveLow { get; }
     }
 

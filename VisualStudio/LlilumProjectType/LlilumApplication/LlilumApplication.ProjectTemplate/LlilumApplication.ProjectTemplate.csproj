@@ -79,7 +79,6 @@
     <None Include="LlilumNative\mbed_simple_K64F.FrontEndConfig" />
     <None Include="LlilumNative\mbed_simple_LPC1768.FrontEndConfig" />
     <None Include="LlilumNative\Native.vcxproj" />
-    <None Include="LlilumNative\Native.vcxproj.filters" />
     <None Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

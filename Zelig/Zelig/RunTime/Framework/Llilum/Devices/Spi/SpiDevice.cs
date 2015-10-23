@@ -24,30 +24,34 @@ namespace Microsoft.Llilum.Devices.Spi
         /// <param name="portIndex">Index of the port that maps to the board assembly</param>
         public SpiDevice(int portIndex)
         {
-            m_spiChannel = AcquireSpiChannel(portIndex);
+            m_spiChannel = TryAcquireSpiChannel(portIndex);
             if (m_spiChannel == null)
             {
                 throw new ArgumentException();
             }
 
             // Set default values
-            Initialize();
+            Initialize(m_spiChannel.GetChannelInfo().DefaultChipSelect);
         }
 
         /// <summary>
         /// SpiDevice constructor
         /// </summary>
         /// <param name="channelInfo">Channel information necesssary to create a SPI channel</param>
-        public SpiDevice(ISpiChannelInfo channelInfo)
+        public SpiDevice(ISpiChannelInfo channelInfo) : this(channelInfo, channelInfo.DefaultChipSelect)
         {
-            m_spiChannel = AcquireSpiChannel(channelInfo);
+        }
+
+        public SpiDevice(ISpiChannelInfo channelInfo, int chipSelectPin)
+        {
+            m_spiChannel = TryAcquireSpiChannel(channelInfo, chipSelectPin);
             if (m_spiChannel == null)
             {
                 throw new ArgumentException();
             }
 
             // Set default values
-            Initialize();
+            Initialize(chipSelectPin);
         }
 
         ~SpiDevice()
@@ -58,9 +62,9 @@ namespace Microsoft.Llilum.Devices.Spi
         /// <summary>
         /// Initializes the default values
         /// </summary>
-        private void Initialize()
+        private void Initialize(int chipSelectPin)
         {
-            SetChipSelect(m_spiChannel.GetChannelInfo().ChipSelect, true);
+            SetChipSelect(chipSelectPin, true);
             DataBitLength = defaultBitLength;
             Mode = defaultMode;
             ClockFrequency = defaultFrequency;
@@ -84,7 +88,15 @@ namespace Microsoft.Llilum.Devices.Spi
 
             ISpiChannelInfo channelInfo = m_spiChannel.GetChannelInfo();
 
-            m_spiChannel.SetupPins(channelInfo, (ChipSelectPin != channelInfo.ChipSelect), ChipSelectPin);
+            if (ChipSelectPin != channelInfo.DefaultChipSelect)
+            {
+                m_spiChannel.SetupPins(channelInfo, ChipSelectPin);
+            }
+            else
+            {
+                m_spiChannel.SetupPins(channelInfo);
+            }
+                
             m_spiChannel.SetupChannel(DataBitLength, Mode, IsSlave);
             m_spiChannel.SetupTiming(ClockFrequency, channelInfo.SetupTime, channelInfo.HoldTime);
         }
@@ -94,7 +106,7 @@ namespace Microsoft.Llilum.Devices.Spi
         /// Slave mode is currently not supported
         /// </summary>
         public bool IsSlave { get; private set; }
-        
+
         /// <summary>
         /// Gets or sets the chip select line for the connection to the SPI device.
         /// </summary>
@@ -160,7 +172,7 @@ namespace Microsoft.Llilum.Devices.Spi
                 if (m_chipSelectPin != newPin)
                 {
                     // Release the old CS pin and reserve the new one
-                    if(TryChangeCsPin(m_chipSelectPin, newPin))
+                    if (TryChangeCsPin(m_chipSelectPin, newPin))
                     {
                         m_chipSelectPin = newPin;
                     }
@@ -186,7 +198,7 @@ namespace Microsoft.Llilum.Devices.Spi
                 }
             }
         }
-        
+
         public void Dispose()
         {
             Dispose(true);
@@ -195,10 +207,10 @@ namespace Microsoft.Llilum.Devices.Spi
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern SpiChannel AcquireSpiChannel(int port);
+        private static extern SpiChannel TryAcquireSpiChannel(int port);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern SpiChannel AcquireSpiChannel(ISpiChannelInfo channelInfo);
+        private static extern SpiChannel TryAcquireSpiChannel(ISpiChannelInfo channelInfo, int alternateCsPin);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool TryChangeCsPin(int oldPin, int newPin);

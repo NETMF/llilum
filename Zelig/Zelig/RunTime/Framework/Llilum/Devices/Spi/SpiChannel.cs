@@ -10,7 +10,9 @@ namespace Microsoft.Llilum.Devices.Spi
     {
         public abstract ISpiChannelInfo GetChannelInfo();
 
-        public abstract void SetupPins(ISpiChannelInfo channelInfo, bool useAlternateCsPin, int alternateCsPin);
+        public abstract void SetupPins(ISpiChannelInfo channelInfo);
+
+        public abstract void SetupPins(ISpiChannelInfo channelInfo, int alternateCsPin);
 
         public abstract void SetupChannel(int bits, SpiMode mode, bool isSlave);
 

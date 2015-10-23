@@ -123,19 +123,7 @@
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_adc.cpp" />
-    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_clock.cpp" />
-    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_core.cpp" />
-    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_debug.cpp" />
-    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_gpio.cpp" />
-    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_i2c.cpp" />
-    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_mem.cpp" />
-    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_nvic.cpp" />
-    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_serial.cpp" />
-    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_spi.cpp" />
-    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_system_timer.cpp" />
-    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_systick.cpp" />
-    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_threading.cpp" />
+    <ClCompile Include="$(LlilumInteropFilePath)InteropExports_*.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(LlilumInteropFilePath)helpers.h" />
