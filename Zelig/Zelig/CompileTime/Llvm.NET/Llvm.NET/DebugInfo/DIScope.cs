@@ -15,6 +15,7 @@
                 var handle = NativeMethods.DIScopeGetFile( MetadataHandle );
                 if( handle == LLVMMetadataRef.Zero )
                     return null;
+
                 return DINode.FromHandle<DIFile>( handle );
             }
         }

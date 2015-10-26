@@ -350,7 +350,7 @@ namespace Llvm.NET.Values
 
         internal bool HasAttribute( FunctionAttributeIndex index, string name )
         {
-            return NativeMethods.LLVMHasTargetDependentAttribute( ValueHandle, ( int )index, name );
+            return NativeMethods.HasTargetDependentAttribute( ValueHandle, ( int )index, name );
         }
         #endregion
 
