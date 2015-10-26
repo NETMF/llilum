@@ -51,7 +51,7 @@ namespace Microsoft.Zelig.LLVM
     // on the Llvm.NET.Values.Function class. 
     public class _Function : _Value
     {
-        internal _Function( _Module module, IModuleManager manager, TS.MethodRepresentation method )
+        internal _Function( _Module module, LLVMModuleManager manager, TS.MethodRepresentation method )
             : base( module
                   , manager.GetOrInsertType( method )
 #if CREATE_FUNCTION_DEBUGINFO
@@ -65,7 +65,7 @@ namespace Microsoft.Zelig.LLVM
                   // transform engine. 
                   , CreateLLvmFunctionWithDebugInfo( module, manager, method )
 #else
-                  , module.LlvmModule.AddFunction( manager.GetMangledNameFor( method )
+                  , module.LlvmModule.AddFunction( LLVMModuleManager.GetFullMethodName( method )
                                                  , ( IFunctionType )manager.GetOrInsertType( method ).DebugType
                                                  )
 #endif
@@ -104,7 +104,10 @@ namespace Microsoft.Zelig.LLVM
             return new _BasicBlock( this, func.FindOrCreateNamedBlock( blockName ) );
         }
 
-        public _Value GetLocalStackValue( TS.MethodRepresentation method, _BasicBlock block, IR.VariableExpression val, IModuleManager manager )
+        public _Value GetLocalStackValue( TS.MethodRepresentation method
+                                        , _BasicBlock block
+                                        , IR.VariableExpression val
+                                        , LLVMModuleManager manager )
         {
             if( block.CurDILocation == null )
             {
@@ -213,9 +216,9 @@ namespace Microsoft.Zelig.LLVM
         }
 
 #if CREATE_FUNCTION_DEBUGINFO
-        private static Function CreateLLvmFunctionWithDebugInfo( _Module module, IModuleManager manager, TS.MethodRepresentation method )
+        private static Function CreateLLvmFunctionWithDebugInfo( _Module module, LLVMModuleManager manager, TS.MethodRepresentation method )
         {
-            string mangledName = manager.GetMangledNameFor( method );
+            string mangledName = manager.GetFullMethodName( method );
             _Type functionType = manager.GetOrInsertType( method );
             DebugInfo loc = manager.GetDebugInfoFor( method );
             Debug.Assert( loc != null );

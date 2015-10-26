@@ -70,7 +70,7 @@ namespace Microsoft.Zelig.LLVM
 
         public _Type GetOrInsertPointerType( string name, _Type underlyingType )
         {
-            Debug.Assert( !underlyingType.DebugType.IsVoid( ) );
+            Debug.Assert( !underlyingType.DebugType.IsVoid );
 
             var ptrType = new DebugPointerType( underlyingType.DebugType, LlvmModule );
             var sizeAndAlign = PointerSize;
@@ -144,7 +144,7 @@ namespace Microsoft.Zelig.LLVM
             return new _Value( this, type, type.DebugType.GetNullValue( ), true );
         }
 
-        public _Function GetOrInsertFunction( IModuleManager manager, MethodRepresentation method )
+        public _Function GetOrInsertFunction( LLVMModuleManager manager, MethodRepresentation method )
         {
             _Function retVal;
             if( m_FunctionMap.TryGetValue( method.m_identity, out retVal ) )
@@ -177,7 +177,7 @@ namespace Microsoft.Zelig.LLVM
                     {
                         curVal = curType.GetNullValue( );
                     }
-                    else if( curType.IsPointer( ) && curVal.Type != curType )
+                    else if( curType.IsPointer && curVal.Type != curType )
                     {
                         curVal = ConstantExpression.BitCast( curVal, curType );
                     }
@@ -210,7 +210,7 @@ namespace Microsoft.Zelig.LLVM
                 {
                     Constant curVal = ucv;
 
-                    if( curType.IsPointer( ) && curVal.Type != curType )
+                    if( curType.IsPointer && curVal.Type != curType )
                     {
                         curVal = ConstantExpression.BitCast( curVal, curType );
                     }
@@ -272,7 +272,7 @@ namespace Microsoft.Zelig.LLVM
             }
         }
 
-        public _Function GetFunctionWithDebugInfoFor( IModuleManager manager, MethodRepresentation method )
+        public _Function GetFunctionWithDebugInfoFor( LLVMModuleManager manager, MethodRepresentation method )
         {
             // get the function for this method, if it doesn't have debug info yet - generate it. 
             _Function func = GetOrInsertFunction( manager, method );
@@ -367,9 +367,9 @@ namespace Microsoft.Zelig.LLVM
         }
 
 
-        private Function CreateLLvmFunctionWithDebugInfo( IModuleManager manager, MethodRepresentation method )
+        private Function CreateLLvmFunctionWithDebugInfo( LLVMModuleManager manager, MethodRepresentation method )
         {
-            string mangledName = manager.GetMangledNameFor( method );
+            string mangledName = LLVMModuleManager.GetFullMethodName( method );
             _Type functionType = manager.GetOrInsertType( method );
             DebugInfo loc = method.DebugInfo ?? manager.GetDebugInfoFor( method );
             Debug.Assert( loc != null );

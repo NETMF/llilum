@@ -17,17 +17,11 @@ namespace Microsoft.Zelig.LLVM
         // a module and DiBuilder with assorted other state info.
         public _Module Module { get; }
 
-        public bool IsInteger => LlvmValue.Type.IsInteger();
+        public bool IsInteger => LlvmValue.Type.IsInteger;
 
-        public bool IsFloat => LlvmValue.Type.IsFloat( );
+        public bool IsFloatingPoint => LlvmValue.Type.IsFloatingPoint;
 
-        public bool IsDouble => LlvmValue.Type.IsDouble( );
-
-        public bool IsFloatingPoint => LlvmValue.Type.IsFloatingPoint( );
-
-        public bool IsPointer => LlvmValue.Type.IsPointer();
-
-        public bool IsPointerPointer => LlvmValue.Type.IsPointerPointer( );
+        public bool IsPointer => LlvmValue.Type.IsPointer;
 
         public bool IsImmediate { get; }
 

@@ -259,9 +259,7 @@ namespace Microsoft.Zelig.LLVM
             return m_module.GetOrInsertFunctionType( sigName, retType, args );
         }
 
-        string IModuleManager.GetMangledNameFor( TS.MethodRepresentation method ) => GetFullMethodName( method );
-
-        DebugInfo IModuleManager.GetDebugInfoFor( TS.MethodRepresentation method )
+        public DebugInfo GetDebugInfoFor( TS.MethodRepresentation method )
         {
             if( method.DebugInfo == null )
             {
@@ -277,6 +275,7 @@ namespace Microsoft.Zelig.LLVM
                 if( method.DebugInfo == null )
                     method.DebugInfo = m_dummyDebugInfo;
             }
+
             return method.DebugInfo;
         }
     }

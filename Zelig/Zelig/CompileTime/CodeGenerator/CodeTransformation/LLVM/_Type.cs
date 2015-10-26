@@ -176,7 +176,7 @@ namespace Microsoft.Zelig.LLVM
                 return retVal;
 
             var pointerType = ty as IPointerType;
-            if( pointerType != null && pointerType.ElementType.IsStruct( ) )
+            if( pointerType != null && pointerType.ElementType.IsStruct )
             {
                 return TypeImplsReverseLookupForLlvmTypes[ pointerType.ElementType.TypeHandle ];
             }

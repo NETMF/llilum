@@ -16,7 +16,7 @@ namespace Microsoft.Zelig.LLVM
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
     using Llvm.NET.Values;
 
-    public partial class LLVMModuleManager : IModuleManager
+    public partial class LLVMModuleManager
     {
         private readonly Debugging.DebugInfo                m_dummyDebugInfo;
         private _Module                                     m_module;

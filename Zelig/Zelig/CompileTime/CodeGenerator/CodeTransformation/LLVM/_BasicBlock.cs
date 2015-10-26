@@ -14,15 +14,6 @@ using BasicBlock = Llvm.NET.Values.BasicBlock;
 
 namespace Microsoft.Zelig.LLVM
 {
-    /// <summary>This interface is used to break an otherwise circular dependency between this assembly and the CodeTransformation assembly</summary>
-    public interface IModuleManager
-    {
-        string GetMangledNameFor( MethodRepresentation method );
-        _Type GetOrInsertType( TypeRepresentation type );
-        _Type GetOrInsertType( MethodRepresentation method );
-        Debugging.DebugInfo GetDebugInfoFor( MethodRepresentation method );
-    }
-
     public class _BasicBlock
     {
         internal _BasicBlock( _Function owner, BasicBlock block )
@@ -75,7 +66,7 @@ namespace Microsoft.Zelig.LLVM
 #endif
         }
 
-        public void SetDebugInfo( IModuleManager manager, MethodRepresentation method, Operator op )
+        public void SetDebugInfo( LLVMModuleManager manager, MethodRepresentation method, Operator op )
         {
             // ensure the function has debug information
             var func = Module.GetFunctionWithDebugInfoFor( manager, method );
