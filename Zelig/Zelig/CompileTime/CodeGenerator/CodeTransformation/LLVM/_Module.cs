@@ -120,28 +120,28 @@ namespace Microsoft.Zelig.LLVM
                 val = ConstantExpression.IntToPtrExpression( val, type.DebugType );
             }
 
-            return new _Value( this, type, val, true );
+            return new _Value( this, type, val );
         }
 
         public _Value GetFloatConstant( float c )
         {
             _Type t = GetType( "System.Single" );
             Value val = LlvmModule.Context.CreateConstant( c );
-            return new _Value( this, t, val, true );
+            return new _Value( this, t, val );
         }
 
         public _Value GetDoubleConstant( double c )
         {
             _Type t = GetType( "System.Double" );
             Value val = LlvmModule.Context.CreateConstant( c );
-            return new _Value( this, t, val, true );
+            return new _Value( this, t, val );
         }
 
         public _Value GetNullPointer( _Type type )
         {
             // In addition to the usual pointer types (Object*, IntPtr, byte*, etc.), the runtime also treats some
             // structs as pointers, such as RuntimeTypeHandle and CodePointer. In those cases, we'll return a struct.
-            return new _Value( this, type, type.DebugType.GetNullValue( ), true );
+            return new _Value( this, type, type.DebugType.GetNullValue( ) );
         }
 
         public _Function GetOrInsertFunction( LLVMModuleManager manager, MethodRepresentation method )
@@ -242,8 +242,9 @@ namespace Microsoft.Zelig.LLVM
             gv.Linkage = Linkage.Internal;
             gv.Initializer = ucv;
 
+            // This returns the equivalent of a "this" pointer for the object.
             _Type pointerType = GetOrInsertPointerType( type );
-            return new _Value( this, pointerType, gv, !type.IsValueType );
+            return new _Value( this, pointerType, gv );
         }
 
         public _Value GetUninitializedGlobal( _Type type )
@@ -253,8 +254,9 @@ namespace Microsoft.Zelig.LLVM
             gv.IsConstant = false;
             gv.Linkage = Linkage.Internal;
 
+            // This returns the equivalent of a "this" pointer for the object.
             _Type pointerType = GetOrInsertPointerType( type );
-            return new _Value( this, pointerType, gv, !type.IsValueType );
+            return new _Value( this, pointerType, gv );
         }
 
         public void CreateAlias( _Value val, string name )

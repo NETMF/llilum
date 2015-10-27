@@ -8,6 +8,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using Microsoft.Zelig.LLVM;
 
     using IR = Microsoft.Zelig.CodeGeneration.IR;
@@ -37,24 +38,23 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
         protected override void EmitCodeForBasicBlock_FlushOperators( )
         {
-
         }
 
-        private LLVM._BasicBlock m_basicBlock;
+        private _BasicBlock m_basicBlock;
         private List<_Value> m_arguments;
         private List<_Value> m_results;
 
-        private _Value GetValue( IR.Expression exp )
+        private _Value GetValue( IR.Expression exp, bool wantImmediate )
         {
             if( exp is IR.VariableExpression )
             {
-                if( !m_localValues.ContainsKey( exp ) )
+                _Value value = m_localValues[ exp ];
+                if( wantImmediate )
                 {
-                    _Value v = m_function.GetLocalStackValue( m_method, m_basicBlock, ( IR.VariableExpression )exp, m_manager );
-                    m_localValues[ exp ] = v;
+                    value = m_basicBlock.LoadToImmediate( value );
                 }
 
-                return m_localValues[ exp ];
+                return value;
             }
             else if( exp is IR.ConstantExpression )
             {
@@ -62,11 +62,13 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
                 if( ce.Value == null )
                 {
+                    Debug.Assert( wantImmediate, "Cannot take the address of a null constant." );
                     return m_manager.Module.GetNullPointer( m_manager.GetOrInsertType( ce.Type ) );
                 }
 
                 if( ce.Type.IsFloatingPoint )
                 {
+                    Debug.Assert( wantImmediate, "Cannot take the address of a scalar constant." );
                     if( ce.Value is float )
                         return m_manager.Module.GetFloatConstant( ( float )ce.Value );
                     else
@@ -75,6 +77,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
                 if( ce.Type.IsInteger )
                 {
+                    Debug.Assert( wantImmediate, "Cannot take the address of a scalar constant." );
                     if( ce.SizeOfValue == 0 )
                     {
                         throw new System.InvalidOperationException( "Integer constant with 0 bits width." );
@@ -89,7 +92,16 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                 IR.DataManager.DataDescriptor dd = ce.Value as IR.DataManager.DataDescriptor;
                 if( dd != null )
                 {
-                    return m_manager.GlobalValueFromDataDescriptor( dd );
+                    Debug.Assert( wantImmediate || ( dd.Context is TS.ValueTypeRepresentation ), "Cannot take the address of a global object reference." );
+
+                    // This call always returns a pointer to global storage, so value types may need to be loaded.
+                    _Value value = m_manager.GlobalValueFromDataDescriptor( dd, true );
+                    if( wantImmediate && ( dd.Context is TS.ValueTypeRepresentation ) )
+                    {
+                        value = m_basicBlock.LoadToImmediate( value );
+                    }
+
+                    return value;
                 }
 
                 throw new Exception( "Constant type not supported." );
@@ -119,7 +131,6 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             m_basicBlock.InsertASMString( "####################################################" );
         }
 
-
         public override void EmitCodeForBasicBlock( IR.BasicBlock bb )
         {
 #if GENERATE_ONLY_TYPESYSTEM_AND_FUNCTION_DEFINITIONS
@@ -128,6 +139,16 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             m_basicBlock = null;
 #else // GENERATE_ONLY_TYPESYSTEM_AND_FUNCTION_DEFINITIONS
             m_basicBlock = GetOrInsertBasicBlock( bb );
+
+            // If this is the entry block, set up local variable storage.
+            if( bb == m_basicBlocks[ 0 ] )
+            {
+                foreach( IR.VariableExpression exp in m_variables )
+                {
+                    Debug.Assert( !m_localValues.ContainsKey( exp ), "Tried to create duplicate storage for variable." );
+                    m_localValues[ exp ] = m_function.GetLocalStackValue( m_method, m_basicBlock, exp, m_manager );
+                }
+            }
 
             foreach( var op in bb.Operators )
             {
@@ -143,36 +164,62 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
         private void TranslateOperator( IR.Operator op, IR.BasicBlock bb )
         {
-            //Load Debug metadata            
+            if( ShouldSkipOperator( op ) )
+            {
+                return;
+            }
+
+            // Load Debug metadata
             // Miguel: (Hack to remove processor.cs epilogue/prologue debug data)
-            if( op.DebugInfo != null && !op.DebugInfo.SrcFileName.EndsWith( "ProcessorARMv7M.cs" ) /*&& m_method.OwnerType != LLVMPlatform.GetMethodWrapperType()*/ )
+            if( op.DebugInfo != null && !op.DebugInfo.SrcFileName.EndsWith( "ProcessorARMv7M.cs" ) )
             {
                 m_basicBlock.SetDebugInfo( m_manager, m_method, op );
             }
 
             OutputStringInline( op.ToString( ) );
-            //Console.WriteLine( "||| " + op );
-            //Console.WriteLine( "DoesNotReadThroughPointerOperands: " + op.Capabilities.HasFlag( IR.Operator.OperatorCapabilities.DoesNotReadThroughPointerOperands ) );
 
             m_arguments = new List<_Value>( );
             m_results = new List<_Value>( );
 
             foreach( IR.Expression varExp in op.Arguments )
             {
-                if( IsNotSuitableForLLVMTranslation( varExp ) )
+                if( !IsSuitableForLLVMTranslation( varExp ) )
                 {
                     //throw new System.InvalidOperationException( "ZELIG TOO NEAR ARM: Op argument in physical register" );
                 }
-                m_arguments.Add( GetValue( varExp ) );
+
+                // REVIEW: Is there a cleaner way to determine which operators want addresses? Long term, we'll want to
+                // get this information from the code flow graph that's already been analyzed in an earlier phase.
+                bool wantImmediate = true;
+                if( op is IR.AddressAssignmentOperator )
+                {
+                    wantImmediate = false;
+                }
+                else if( ( op is IR.StoreInstanceFieldOperator ) ||
+                         ( op is IR.LoadInstanceFieldOperator ) ||
+                         ( op is IR.LoadInstanceFieldAddressOperator ) )
+                {
+                    // Field accessors need the first argument to be an address, so value types need to stay indirected.
+                    if( ( varExp == op.FirstArgument ) && ( varExp.Type is TS.ValueTypeRepresentation ) )
+                    {
+                        wantImmediate = false;
+                    }
+                }
+
+                Debug.Assert( wantImmediate || !( varExp is IR.TemporaryVariableExpression ), "Cannot take the address of a temporary variable." );
+                _Value value = GetValue( varExp, wantImmediate );
+
+                m_arguments.Add( value );
             }
 
             foreach( IR.VariableExpression varExp in op.Results )
             {
-                if( IsNotSuitableForLLVMTranslation( varExp ) )
+                if( !IsSuitableForLLVMTranslation( varExp ) )
                 {
                     //throw new System.InvalidOperationException( "ZELIG TOO NEAR ARM: Op result to physical register" );
                 }
-                m_results.Add( GetValue( varExp ) );
+
+                m_results.Add( GetValue( varExp, wantImmediate: false ) );
             }
 
             //ALU
@@ -286,24 +333,6 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             {
                 Translate_IndirectCallOperator( ( IR.IndirectCallOperator )op );
             }
-            //Checks
-            else if( op is IR.NullCheckOperator )
-            {
-                //NOT IMPLEMENTED BUT MUTED
-            }
-            else if( op is IR.OutOfBoundCheckOperator )
-            {
-                //NOT IMPLEMENTED BUT MUTED
-            }
-            //Misc
-            else if( op is IR.CompilationConstraintsOperator )
-            {
-                //NOT IMPLEMENTED BUT MUTED
-            }
-            else if( op is IR.NopOperator )
-            {
-                Translate_NopOperator( ( IR.NopOperator )op );
-            }
             else if( op is IR.CompareOperator )
             {
                 Translate_CompareOperator( ( IR.CompareOperator )op );
@@ -324,37 +353,38 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             {
                 WarnUnimplemented( op.ToString( ) );
             }
-
         }
 
-        private bool IsNotSuitableForLLVMTranslation( IR.Expression varExp )
+        private static bool ShouldSkipOperator( IR.Operator op )
         {
-            if( varExp is IR.PhysicalRegisterExpression |
-                varExp is IR.StackLocationExpression     )
+            if( ( op is IR.NullCheckOperator ) ||
+                ( op is IR.OutOfBoundCheckOperator ) ||
+                ( op is IR.CompilationConstraintsOperator ) ||
+                ( op is IR.NopOperator ) )
             {
                 return true;
             }
 
-            return false; 
+            return false;
         }
 
-        private _Value ConvertValueToALUOperableType( _Value val )
+        private bool IsSuitableForLLVMTranslation( IR.Expression varExp )
         {
-            val = m_basicBlock.LoadToImmediate( val );
-
-            // LLVM doesn't accept pointers as operands for arithmetic operations, so convert them to integers.
-            if( val.IsPointer )
+            if( varExp is IR.PhysicalRegisterExpression ||
+                varExp is IR.StackLocationExpression )
             {
-                _Type intPtrType = m_manager.GetOrInsertType( m_wkt.System_UInt32 );
-                return m_basicBlock.InsertPointerToInt( val, intPtrType );
+                return false;
             }
 
-            return val;
+            return true;
         }
 
         void MatchIntegerLengths( ref _Value valA, ref _Value valB )
         {
-            if( valA.IsInteger && valB.IsInteger )
+            valA = ConvertValueToALUOperableType( valA );
+            valB = ConvertValueToALUOperableType( valB );
+
+            if ( valA.IsInteger && valB.IsInteger )
             {
                 if (valA.Type.SizeInBits < valB.Type.SizeInBits )
                 {
@@ -381,20 +411,30 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             }
         }
 
+        _Value ConvertValueToALUOperableType( _Value val )
+        {
+            // LLVM doesn't accept pointers as operands for arithmetic operations, so convert them to integers.
+            if( val.IsPointer )
+            {
+                _Type intPtrType = m_manager.GetOrInsertType( m_wkt.System_UInt32 );
+                return m_basicBlock.InsertPointerToInt( val, intPtrType );
+            }
+
+            return val;
+        }
+
         _Value ConvertValueToStoreToTarget( _Value val, LLVM._Type targetType )
         {
-            val = m_basicBlock.LoadToImmediate( val );
+            // Trivial case: Value is already the desired type. We compare the inner types directly because the outer
+            // types will be the same between pointer types for arrays and strings, while the inner types won't.
+            if ( val.LlvmValue.Type == targetType.DebugType.NativeType )
+            {
+                return val;
+            }
 
             if( val.Type.IsPointer && targetType.IsPointer )
             {
                 return m_basicBlock.InsertBitCast( val, targetType );
-            }
-
-            // Trivial case: Value is already the desired type. We check this *after* pointer-to-pointer conversions
-            // because this check can have false positives between pointer types for arrays and strings.
-            if( val.Type == targetType )
-            {
-                return val;
             }
 
             if( val.Type.IsInteger && targetType.IsInteger )
@@ -456,32 +496,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
         void StoreValue( _Value dst, _Value src )
         {
-            LLVM._Type underlyingType = dst.Type.UnderlyingType;
-            _Value srcVal = m_basicBlock.LoadToImmediate( src );
-
-            // Optimization: If we're copying a struct, use a memset or memcopy instead. This saves on code size.
-            if( srcVal.Type.IsStruct && underlyingType.IsStruct && ( srcVal.Type == underlyingType ) )
-            {
-                if( srcVal.IsZeroedValue( ) )
-                {
-                    m_basicBlock.InsertMemSet( dst, 0 );
-                    return;
-                }
-                else if( src.IsPointer )
-                {
-                    m_basicBlock.InsertMemCpy( dst, src );
-                    return;
-                }
-            }
-
-            if( underlyingType.IsPrimitiveType )
-            {
-                m_basicBlock.InsertStoreIntoBT( dst, ConvertValueToStoreToTarget( srcVal, underlyingType ) );
-            }
-            else
-            {
-                m_basicBlock.InsertStore( dst, ConvertValueToStoreToTarget( srcVal, underlyingType ) );
-            }
+            m_basicBlock.InsertStore( dst, ConvertValueToStoreToTarget( src, dst.Type.UnderlyingType ) );
         }
 
         private void Translate_AbstractBinaryOperator( IR.AbstractBinaryOperator op )
@@ -491,9 +506,10 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                 throw new Exception( "Unhandled Binary Op: " + op );
             }
 
+            _Value valA = m_arguments[ 0 ];
+            _Value valB = m_arguments[ 1 ];
+
             // TODO: Add support for overflow exceptions.
-            _Value valA = ConvertValueToALUOperableType( m_arguments[ 0 ] );
-            _Value valB = ConvertValueToALUOperableType( m_arguments[ 1 ] );
             MatchIntegerLengths( ref valA, ref valB );
             _Value result = m_basicBlock.InsertBinaryOp( ( int )op.Alu, valA, valB, op.Signed );
             StoreValue( m_results[ 0 ], result );
@@ -514,41 +530,41 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
         private void Translate_ConversionOperator( IR.ConversionOperator op )
         {
-            _Value v = ConvertValueToALUOperableType( m_arguments[ 0 ] );
-            LLVM._Type resultType = m_manager.GetOrInsertBasicTypeAsLLVMSingleValueType( op.FirstResult.Type );
+            _Value value = ConvertValueToALUOperableType( m_arguments[ 0 ] );
+            _Type resultType = m_manager.GetOrInsertType( op.FirstResult.Type );
 
             if( op.FirstResult.Type == m_wkt.System_IntPtr ||
                 op.FirstResult.Type == m_wkt.System_UIntPtr ||
                 op.FirstResult.Type is TS.PointerTypeRepresentation )
             {
-                resultType = m_manager.GetOrInsertBasicTypeAsLLVMSingleValueType( m_wkt.System_UInt32 );
+                resultType = m_manager.GetOrInsertType( m_wkt.System_UInt32 );
             }
 
             if( op is IR.ZeroExtendOperator )
             {
-                v = m_basicBlock.InsertZExt( v, resultType, 8 * ( int )op.SignificantSize );
+                value = m_basicBlock.InsertZExt( value, resultType, 8 * ( int )op.SignificantSize );
             }
             else if( op is IR.SignExtendOperator )
             {
-                v = m_basicBlock.InsertSExt( v, resultType, 8 * ( int )op.SignificantSize );
+                value = m_basicBlock.InsertSExt( value, resultType, 8 * ( int )op.SignificantSize );
             }
             else if( op is IR.TruncateOperator )
             {
-                v = m_basicBlock.InsertTrunc( v, resultType, 8 * ( int )op.SignificantSize );
+                value = m_basicBlock.InsertTrunc( value, resultType, 8 * ( int )op.SignificantSize );
             }
             else
             {
                 throw new Exception( "Unimplemented Conversion Operator: " + op.ToString( ) );
             }
 
-            StoreValue( m_results[ 0 ], v );
+            StoreValue( m_results[ 0 ], value );
         }
 
         private void Translate_ConvertOperator( IR.ConvertOperator op )
         {
             // TODO: Add support for overflow exceptions
-            _Value v = ConvertValueToALUOperableType( m_arguments[ 0 ] );
-            StoreValue( m_results[ 0 ], v );
+            _Value value = ConvertValueToALUOperableType( m_arguments[ 0 ] );
+            StoreValue( m_results[ 0 ], value );
         }
 
         private void Translate_SingleAssignmentOperator( IR.SingleAssignmentOperator op )
@@ -558,20 +574,20 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
         private void Translate_AddressAssignmentOperator( IR.AddressAssignmentOperator op )
         {
-            StoreValue( m_results[ 0 ], m_basicBlock.GetAddressAsUIntPtr( m_arguments[ 0 ] ) );
+            StoreValue( m_results[ 0 ], m_arguments[ 0 ] );
         }
 
         private void Translate_InitialValueOperator( IR.InitialValueOperator op )
         {
             IR.VariableExpression exp = op.FirstResult is IR.PhiVariableExpression ? op.FirstResult.AliasedVariable : op.FirstResult;
 
-            int index =  exp.Number;
+            int index = exp.Number;
             if (m_method is TS.StaticMethodRepresentation)
             {
                 --index;
             }
 
-            m_basicBlock.InsertStoreArgument( m_results[ 0 ], index ); 
+            m_basicBlock.InsertStoreArgument( m_results[0], index );
         }
 
         _Value DoCmpOp( _Value valA, _Value valB, int cond, bool signed )
@@ -584,60 +600,65 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
         private void Translate_CompareAndSetOperator( IR.CompareAndSetOperator op )
         {
-            _Value v = DoCmpOp( m_arguments[ 0 ], m_arguments[ 1 ], ( int )op.Condition, op.Signed );
-            StoreValue( m_results[ 0 ], v );
+            _Value value = DoCmpOp( m_arguments[ 0 ], m_arguments[ 1 ], ( int )op.Condition, op.Signed );
+            StoreValue( m_results[ 0 ], value );
         }
 
         private void Translate_LoadIndirectOperator( IR.LoadIndirectOperator op )
         {
-            StoreValue( m_results[ 0 ], m_basicBlock.LoadIndirect( m_arguments[ 0 ], m_manager.GetOrInsertType( op.Type ) ) );
+            _Value address = m_basicBlock.LoadIndirect( m_arguments[ 0 ], m_manager.GetOrInsertType( op.Type ) );
+            _Value value = m_basicBlock.LoadToImmediate( address );
+            StoreValue( m_results[ 0 ], value );
         }
 
         private void Translate_StoreIndirectOperator( IR.StoreIndirectOperator op )
         {
-            StoreValue( m_basicBlock.LoadIndirect( m_arguments[ 0 ], m_manager.GetOrInsertType( op.Type ) ), m_arguments[ 1 ] );
+            _Value address = m_basicBlock.LoadIndirect( m_arguments[ 0 ], m_manager.GetOrInsertType( op.Type ) );
+            StoreValue( address, m_arguments[ 1 ] );
         }
 
         private void Translate_StoreInstanceFieldOperator( IR.StoreInstanceFieldOperator op )
         {
-            _Value value = m_basicBlock.GetField( m_arguments[ 0 ], op.Field.Offset );
-            StoreValue( value, m_arguments[ 1 ] );
+            _Value address = m_basicBlock.GetFieldAddress( m_arguments[ 0 ], op.Field.Offset );
+            StoreValue( address, m_arguments[ 1 ] );
         }
 
         private void Translate_LoadInstanceFieldOperator( IR.LoadInstanceFieldOperator op )
         {
-            _Value value = m_basicBlock.GetField( m_arguments[ 0 ], op.Field.Offset );
+            _Value address = m_basicBlock.GetFieldAddress( m_arguments[ 0 ], op.Field.Offset );
+            _Value value = m_basicBlock.LoadToImmediate( address );
             StoreValue( m_results[ 0 ], value );
         }
 
         private void Translate_LoadInstanceFieldAddressOperator( IR.LoadInstanceFieldAddressOperator op )
         {
-            _Value value = m_basicBlock.GetField( m_arguments[ 0 ], op.Field.Offset );
-            StoreValue( m_results[ 0 ], m_basicBlock.GetAddressAsUIntPtr( value ) );
+            _Value address = m_basicBlock.GetFieldAddress( m_arguments[ 0 ], op.Field.Offset );
+            StoreValue( m_results[ 0 ], address );
         }
 
         private _Value ArrayAccessByIDX( _Value array, _Value idx )
         {
-            array = m_basicBlock.GetField( array, ( int )m_wkt.System_Array.Size );
+            array = m_basicBlock.GetFieldAddress( array, ( int )m_wkt.System_Array.Size );
             return m_basicBlock.IndexLLVMArray( array, ConvertValueToALUOperableType( idx ) );
         }
 
         private void Translate_LoadElementOperator( IR.LoadElementOperator op )
         {
-            _Value v = ArrayAccessByIDX( m_arguments[ 0 ], m_arguments[ 1 ] );
-            StoreValue( m_results[ 0 ], v );
+            _Value address = ArrayAccessByIDX( m_arguments[ 0 ], m_arguments[ 1 ] );
+            _Value value = m_basicBlock.LoadToImmediate( address );
+            StoreValue( m_results[ 0 ], value );
         }
 
         private void Translate_LoadElementAddressOperator( IR.LoadElementAddressOperator op )
         {
-            _Value v = ArrayAccessByIDX( m_arguments[ 0 ], m_arguments[ 1 ] );
-            StoreValue( m_results[ 0 ], m_basicBlock.GetAddressAsUIntPtr( v ) );
+            _Value address = ArrayAccessByIDX( m_arguments[ 0 ], m_arguments[ 1 ] );
+            StoreValue( m_results[ 0 ], address );
         }
 
         private void Translate_StoreElementOperator( IR.StoreElementOperator op )
         {
-            _Value v = ArrayAccessByIDX( m_arguments[ 0 ], m_arguments[ 1 ] );
-            StoreValue( v, m_arguments[ 2 ] ); 
+            _Value address = ArrayAccessByIDX( m_arguments[ 0 ], m_arguments[ 1 ] );
+            StoreValue( address, m_arguments[ 2 ] ); 
         }
 
         private void Translate_UnconditionalControlOperator( IR.UnconditionalControlOperator op )
@@ -655,10 +676,10 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
         private void Translate_CompareConditionalControlOperator( IR.CompareConditionalControlOperator op )
         {
-            _Value v = DoCmpOp( m_arguments[ 0 ], m_arguments[ 1 ], ( int )op.Condition, op.Signed );
-            m_basicBlock.InsertConditionalBranch( v,
-                GetOrInsertBasicBlock( op.TargetBranchTaken ),
-                GetOrInsertBasicBlock( op.TargetBranchNotTaken ) );
+            _Value value = DoCmpOp( m_arguments[ 0 ], m_arguments[ 1 ], ( int )op.Condition, op.Signed );
+            _BasicBlock taken = GetOrInsertBasicBlock( op.TargetBranchTaken );
+            _BasicBlock notTaken = GetOrInsertBasicBlock( op.TargetBranchNotTaken );
+            m_basicBlock.InsertConditionalBranch( value, taken, notTaken );
         }
 
         private void Translate_MultiWayConditionalControlOperator( IR.MultiWayConditionalControlOperator op )
@@ -694,14 +715,13 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
         private void Translate_LeaveControlOperator( IR.LeaveControlOperator op )
         {
-            //Jump to a finally block.           
+            // Jump to a finally block.
             m_basicBlock.InsertUnconditionalBranch( GetOrInsertBasicBlock( op.TargetBranch ) );
         }
 
         private void Translate_DeadControlOperator( IR.DeadControlOperator op )
         {
-            //Basic Block marked as dead code by Zelig.
-            //To keep LLVM able to compile, insert a branch to itself.
+            // Basic Block marked as dead code by Zelig. To keep LLVM able to compile, insert a branch to itself.
             m_basicBlock.InsertUnconditionalBranch( m_basicBlock );
         }
 
@@ -918,12 +938,6 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         private void Translate_IndirectCallOperator( IR.IndirectCallOperator op )
         {
             BuildMethodCallInstructions( op, true );
-        }
-
-        private void Translate_NopOperator( IR.NopOperator op )
-        {
-            //No Operation.
-            //TODO: Add no-op equivalent for debug builds to avoid losing debug metadata.
         }
 
         private void Translate_CompareOperator( IR.CompareOperator op )

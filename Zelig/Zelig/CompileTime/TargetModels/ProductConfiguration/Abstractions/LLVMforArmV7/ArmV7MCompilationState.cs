@@ -11,28 +11,30 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
     using System.Collections.Generic;
     using Microsoft.Zelig.LLVM;
 
-    using ZeligIR = Microsoft.Zelig.CodeGeneration.IR;
+    using IR = Microsoft.Zelig.CodeGeneration.IR;
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
-    public partial class ArmV7MCompilationState : ZeligIR.ImageBuilders.CompilationState
+    public partial class ArmV7MCompilationState : IR.ImageBuilders.CompilationState
     {
-        private LLVM._Function m_function;
+        private _Function m_function;
         private LLVMModuleManager m_manager;
         private TS.MethodRepresentation m_method;
-        private GrowOnlyHashTable<ZeligIR.Expression, LLVM._Value> m_localValues;
         private TS.WellKnownFields m_wkf;
         private TS.WellKnownTypes m_wkt;
+
+        // Cache of stack addresses for all locals in the function being processed.
+        private GrowOnlyHashTable<IR.Expression, _Value> m_localValues;
 
         protected ArmV7MCompilationState( ) // Default constructor required by TypeSystemSerializer.
         {
         }
 
-        internal ArmV7MCompilationState( ZeligIR.ImageBuilders.Core owner,
-                                      ZeligIR.ControlFlowGraphStateForCodeTransformation cfg )
+        internal ArmV7MCompilationState( IR.ImageBuilders.Core owner,
+                                         IR.ControlFlowGraphStateForCodeTransformation cfg )
             : base( owner, cfg )
         {
             m_method = cfg.Method;
-            m_localValues = HashTableFactory.New<ZeligIR.Expression, LLVM._Value>( );
+            m_localValues = HashTableFactory.New<IR.Expression, _Value>( );
             m_wkf = cfg.TypeSystem.WellKnownFields;
             m_wkt = cfg.TypeSystem.WellKnownTypes;
         }
@@ -41,7 +43,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         // Helper Methods
         //
 
-        public override void ApplyTransformation( ZeligIR.TransformationContextForCodeTransformation context )
+        public override void ApplyTransformation( IR.TransformationContextForCodeTransformation context )
         {
             context.Push( this );
 
@@ -59,51 +61,43 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             m_manager = Owner.TypeSystem.Module;
             m_function = m_manager.GetOrInsertFunction( m_method );
             m_function.SetInternalLinkage( );
-
-            //Miguel: Review: I can probably get rid of this...
             m_manager.ConvertTypeLayoutsToLLVM( );
 
-            ReleaseAllLocks( );   
+            ReleaseAllLocks( );
         }
 
 
-        protected ZeligIR.Abstractions.RegisterDescriptor GetNextRegister( ZeligIR.Abstractions.RegisterDescriptor reg )
+        protected IR.Abstractions.RegisterDescriptor GetNextRegister( IR.Abstractions.RegisterDescriptor reg )
         {
-            ZeligIR.Abstractions.Platform pa = m_cfg.TypeSystem.PlatformAbstraction;
+            IR.Abstractions.Platform pa = m_cfg.TypeSystem.PlatformAbstraction;
             return pa.GetRegisterForEncoding( reg.Encoding + 1 );
         }
 
         //--//
 
-        protected override void AssignStackLocations_RecordRegister( ZeligIR.PhysicalRegisterExpression regVar )
+        protected override void AssignStackLocations_RecordRegister( IR.PhysicalRegisterExpression regVar )
         {
 
         }
 
-        protected override void AssignStackLocations_RecordStackOut( ZeligIR.StackLocationExpression stackVar )
+        protected override void AssignStackLocations_RecordStackOut( IR.StackLocationExpression stackVar )
         {
-
         }
 
         protected override void AssignStackLocations_RecordStackLocal( List<StateForLocalStackAssignment> states )
         {
-
         }
 
         protected override void AssignStackLocations_Finalize( )
         {
-
         }
 
-
-        protected override void FixupEmptyRegion( ZeligIR.ImageBuilders.SequentialRegion reg )
+        protected override void FixupEmptyRegion( IR.ImageBuilders.SequentialRegion reg )
         {
-
         }
 
         protected override void DumpOpcodes( System.IO.TextWriter textWriter )
         {
-
         }
 
         public override bool CreateCodeMaps( )

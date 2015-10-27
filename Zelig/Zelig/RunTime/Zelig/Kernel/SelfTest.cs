@@ -489,8 +489,8 @@ namespace Microsoft.Zelig.Runtime
             SelfTest__Test__Integers_PassByRef( );
 
             //Trap end of tests
-            SELFTEST_ASSERT( false );
-
+            BugCheck.Log("!!! ALL TESTS PASSED !!!");
+            BreakWithTrap();
         }
 
         internal static void SelfTest__Memory()

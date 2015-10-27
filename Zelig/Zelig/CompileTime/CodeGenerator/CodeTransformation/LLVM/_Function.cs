@@ -69,7 +69,6 @@ namespace Microsoft.Zelig.LLVM
                                                  , ( IFunctionType )manager.GetOrInsertType( method ).DebugType
                                                  )
 #endif
-                  , false
                   )
         {
             var function = ( Function )LlvmValue;
@@ -185,24 +184,14 @@ namespace Microsoft.Zelig.LLVM
                 throw new Exception( "Trying to add local value to empty function." );
             }
 
-            BasicBlock bb = fn.EntryBlock;
-
             var bldr = new InstructionBuilder( type.DebugType.Context );
-            if (bb.FirstInstruction == null)
-            {
-                // The entry block is empty, which can happen when we're inserting the first InitialValueOperator.
-                bldr.PositionAtEnd(bb);
-            }
-            else
-            {
-                bldr.PositionBefore(bb.FirstInstruction);
-            }
+            bldr.PositionAtEnd( fn.EntryBlock );
 
             Value retVal = bldr.Alloca( type.DebugType )
                                .RegisterName( name );
 
             _Type pointerType = Module.GetOrInsertPointerType( type );
-            return new _Value( Module, pointerType, retVal, false );
+            return new _Value( Module, pointerType, retVal );
         }
 
         public void SetExternalLinkage( )

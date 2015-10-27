@@ -23,9 +23,9 @@ namespace Microsoft.Zelig.LLVM
         private readonly string                             m_imageName;
         private readonly IR.TypeSystemForCodeTransformation m_typeSystem;
 
-        private GrowOnlyHashTable <TS.TypeRepresentation,LLVM._Type>                 m_typeRepresentationsToType;
+        private GrowOnlyHashTable <TS.TypeRepresentation, _Type>                     m_typeRepresentationsToType;
         private GrowOnlyHashTable <TS.MethodRepresentation, Debugging.DebugInfo >    m_debugInfoForMethods;
-        private GrowOnlyHashTable < IR.DataManager.DataDescriptor, LLVM._Value >     m_globalInitializedValues;
+        private GrowOnlyHashTable < IR.DataManager.DataDescriptor, _Value >          m_globalInitializedValues;
         private uint                                                                 m_nativeIntSize;
         private bool                                                                 m_typeSystemAlreadyConverted;
         private bool                                                                 m_turnOffCompilationAndValidation;
@@ -125,7 +125,7 @@ namespace Microsoft.Zelig.LLVM
 
             foreach(TS.MethodRepresentation md in exportedMethods)
             {
-                LLVM._Function handler = GetOrInsertFunction( md );
+                _Function handler = GetOrInsertFunction( md );
 
                 m_module.CreateAlias( handler, md.Name );
             }
@@ -133,7 +133,7 @@ namespace Microsoft.Zelig.LLVM
             if ( !m_turnOffCompilationAndValidation )
             {
                 TS.MethodRepresentation bootstrapResetMR = m_typeSystem.GetWellKnownMethod( "Bootstrap_Initialization" );
-                LLVM._Function bootstrapReset = GetOrInsertFunction( bootstrapResetMR );
+                _Function bootstrapReset = GetOrInsertFunction( bootstrapResetMR );
                 m_module.CreateAlias( bootstrapReset, "main" );
                 m_module.Compile( );
             }
@@ -149,9 +149,9 @@ namespace Microsoft.Zelig.LLVM
             m_turnOffCompilationAndValidation = true;
         }
 
-        public LLVM._Function GetOrInsertFunction( TS.MethodRepresentation md )
+        public _Function GetOrInsertFunction( TS.MethodRepresentation md )
         {
-            LLVM._Function function = m_module.GetOrInsertFunction( this, md );
+            _Function function = m_module.GetOrInsertFunction( this, md );
 
             // FUTURE: We might see a very slight performance improvement by checking whether these already exist before
             // setting them. However, setting each attribute is relatively cheap so we'll do it the naive way for now.
@@ -217,7 +217,7 @@ namespace Microsoft.Zelig.LLVM
 
         }
 
-        private Constant GetUCVStruct( LLVM._Type type, bool anon, params Constant[ ] vals )
+        private Constant GetUCVStruct( _Type type, bool anon, params Constant[ ] vals )
         {
             var fields = new List<Constant>( );
             foreach( var val in vals )
@@ -271,7 +271,7 @@ namespace Microsoft.Zelig.LLVM
                         }
                         else
                         {
-                            fields.Add( m_module.GetUCVConstantPointerFromValue( GetConstantPointerToDD( valDD ) ) );
+                            fields.Add( m_module.GetUCVConstantPointerFromValue( GlobalValueFromDataDescriptor( valDD, false ) ) );
                         }
                     }
                     else if( ad.Context.ContainedType is TS.ScalarTypeRepresentation )
@@ -307,7 +307,7 @@ namespace Microsoft.Zelig.LLVM
             return dd is IR.DataManager.ArrayDescriptor || dd.Context == m_typeSystem.WellKnownTypes.System_String;
         }
 
-        private void AddToGlobalInitializedValues( IR.DataManager.DataDescriptor dd, LLVM._Value global )
+        private void AddToGlobalInitializedValues( IR.DataManager.DataDescriptor dd, _Value global )
         {
             if( m_globalInitializedValues.ContainsKey( dd ) )
             {
@@ -323,19 +323,30 @@ namespace Microsoft.Zelig.LLVM
             }
         }
 
-        private LLVM._Value GetConstantPointerToDD( IR.DataManager.DataDescriptor dd )
+        public _Value GlobalValueFromDataDescriptor( IR.DataManager.DataDescriptor dd, bool setInitializer )
         {
             if( !m_globalInitializedValues.ContainsKey( dd ) )
             {
-                // Force initialization of arrays and strings to correctly set the static type for the array.
                 if( TypeChangesAfterCreation( dd ) )
                 {
+                    // Force initialization of arrays and strings to correctly set the static type for the array.
                     Constant ucv = UCVFromDataDescriptor( dd );
                     AddToGlobalInitializedValues( dd, m_module.GetGlobalFromUCV( GetOrInsertInlineType( dd.Context ), ucv, dd.IsMutable ) );
                 }
                 else
                 {
-                    AddToGlobalInitializedValues( dd, m_module.GetUninitializedGlobal( GetOrInsertInlineType( dd.Context ) ) );
+                    // Split the global creation in two step for DDs that keep their type the same after conversion
+                    if( setInitializer )
+                    {
+                        // TODO: Why does order matter here? Creating the constant after Add increases code size by about 20-30 bytes.
+                        Constant ucv = UCVFromDataDescriptor(dd);
+                        AddToGlobalInitializedValues( dd, m_module.GetUninitializedGlobal( GetOrInsertInlineType( dd.Context ) ) );
+                        m_globalInitializedValues[ dd ].SetGlobalInitializer( ucv );
+                    }
+                    else
+                    {
+                        AddToGlobalInitializedValues( dd, m_module.GetUninitializedGlobal( GetOrInsertInlineType( dd.Context ) ) );
+                    }
                 }
             }
 
@@ -360,7 +371,8 @@ namespace Microsoft.Zelig.LLVM
                 flags = Runtime.ObjectHeader.GarbageCollectorFlags.ReadOnlyObject;
             }
 
-            _Value virtualTable = GetConstantPointerToDD( ( IR.DataManager.DataDescriptor )dd.Owner.GetObjectDescriptor( dd.Context.VirtualTable ) );
+            var descriptor = ( IR.DataManager.DataDescriptor )dd.Owner.GetObjectDescriptor( dd.Context.VirtualTable );
+            _Value virtualTable = GlobalValueFromDataDescriptor( descriptor, false );
             fields.Add( GetScalarTypeUCV( wkf.ObjectHeader_MultiUseWord.FieldType, ( ulong )flags ) );
             fields.Add( m_module.GetUCVConstantPointerFromValue( virtualTable ) );
 
@@ -453,7 +465,7 @@ namespace Microsoft.Zelig.LLVM
                             }
                             else
                             {
-                                fields.Add( m_module.GetUCVConstantPointerFromValue( GetConstantPointerToDD( valDD ) ) );
+                                fields.Add( m_module.GetUCVConstantPointerFromValue( GlobalValueFromDataDescriptor( valDD, false ) ) );
                             }
                         }
                         else if( fd.FieldType is TS.ScalarTypeRepresentation )
@@ -502,28 +514,7 @@ namespace Microsoft.Zelig.LLVM
             }
         }
 
-        public LLVM._Value GlobalValueFromDataDescriptor( IR.DataManager.DataDescriptor dd )
-        {
-            if( !m_globalInitializedValues.ContainsKey( dd ) )
-            {
-                Constant ucv = UCVFromDataDescriptor( dd );
-
-                // Split the global creation in two step for DDs that keep their type the same after conversion
-                if( TypeChangesAfterCreation( dd ) )
-                {
-                    AddToGlobalInitializedValues( dd, m_module.GetGlobalFromUCV( GetOrInsertInlineType( dd.Context ), ucv, dd.IsMutable ) );
-                }
-                else
-                {
-                    AddToGlobalInitializedValues( dd, m_module.GetUninitializedGlobal( GetOrInsertInlineType( dd.Context ) ) );
-                    m_globalInitializedValues[ dd ].SetGlobalInitializer( ucv );
-                }
-            }
-
-            return m_globalInitializedValues[ dd ];
-        }
-
-        public LLVM._Module Module
+        public _Module Module
         {
             get
             {

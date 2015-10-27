@@ -10,6 +10,13 @@ namespace Microsoft.Zelig.LLVM
    // extra layer of abstraction (and source of confusion).
     public class _Value
     {
+        internal _Value( _Module module, _Type type, Value value )
+        {
+            Module = module;
+            Type = type;
+            LlvmValue = value;
+        }
+
         public _Type Type { get; }
 
         // in LLVM a module doesn't own a value, the context does
@@ -22,17 +29,6 @@ namespace Microsoft.Zelig.LLVM
         public bool IsFloatingPoint => LlvmValue.Type.IsFloatingPoint;
 
         public bool IsPointer => LlvmValue.Type.IsPointer;
-
-        public bool IsImmediate { get; }
-
-        public bool IsZeroedValue( )
-        {
-            var constant = LlvmValue as Constant;
-            if( constant == null )
-                return false;
-
-            return constant.IsZeroValue;
-        }
 
         public bool IsAnUninitializedGlobal( )
         {
@@ -73,14 +69,6 @@ namespace Microsoft.Zelig.LLVM
             }
         }
 
-        internal _Value( _Module module, _Type type, Value value, bool isImmediate )
-        {
-            Module = module;
-            Type = type;
-            LlvmValue = value;
-            IsImmediate = isImmediate;
-        }
-
-        internal Value LlvmValue { get; }
+        public Value LlvmValue { get; }
     }
 }
