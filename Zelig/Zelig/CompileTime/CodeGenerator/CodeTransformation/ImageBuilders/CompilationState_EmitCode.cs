@@ -29,7 +29,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ImageBuilders
         {
             foreach(BasicBlock bb in m_basicBlocks)
             {
-                EmitCodeForBasicBlock( bb );
+                if(bb.SpanningTreeIndex != -1)
+                {
+                    EmitCodeForBasicBlock( bb );
+                }
             }
         }
 

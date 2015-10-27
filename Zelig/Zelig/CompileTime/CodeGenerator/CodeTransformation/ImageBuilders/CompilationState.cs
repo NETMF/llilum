@@ -363,19 +363,24 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ImageBuilders
         {
             PrepareDataStructures();
 
-            AssignStackLocations();
+            AssignStackLocations( );
 
-            AllocateBasicBlockRegions();
+            AllocateBasicBlockRegions( );
 
-            CollectSchedulingPreferences();
+            CollectSchedulingPreferences( );
 
-            PropagateColdCodeHints();
+            PropagateColdCodeHints( );
 
-            AllocateSchedulingSlots();
+            AllocateSchedulingSlots( );
 
-            OrderBasicBlocks();
+            OrderBasicBlocks( );
 
-            AssignSchedulingIndex();
+            AssignSchedulingIndex( );
+            
+            //if(m_owner.TypeSystem.PlatformAbstraction.PlatformName == "LLVM")
+            //{
+            //    IR.Transformations.StaticSingleAssignmentForm.ConvertOut( m_cfg, true );
+            //}
 
             EmitCodeForBasicBlocks();
         }
@@ -507,6 +512,15 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ImageBuilders
                     m_naturalLoops = null;
                 }
 
+                m_cfgLock.Dispose();
+                m_cfgLock = null;
+            }
+        }
+
+        public void ReleaseAllLocks()
+        {
+            if(m_cfgLock != null)
+            {
                 m_cfgLock.Dispose();
                 m_cfgLock = null;
             }

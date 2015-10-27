@@ -5,7 +5,7 @@
 
 
 
-namespace Microsoft.Zelig.Configuration.Environment.Abstractions
+namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 {
     using System;
     using System.Collections.Generic;
@@ -14,7 +14,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
     using ZeligIR = Microsoft.Zelig.CodeGeneration.IR;
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
-    public partial class LLVMCompilationState : ZeligIR.ImageBuilders.CompilationState
+    public partial class ArmV7MCompilationState : ZeligIR.ImageBuilders.CompilationState
     {
         private LLVM._Function m_function;
         private LLVMModuleManager m_manager;
@@ -23,11 +23,11 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
         private TS.WellKnownFields m_wkf;
         private TS.WellKnownTypes m_wkt;
 
-        protected LLVMCompilationState( ) // Default constructor required by TypeSystemSerializer.
+        protected ArmV7MCompilationState( ) // Default constructor required by TypeSystemSerializer.
         {
         }
 
-        internal LLVMCompilationState( ZeligIR.ImageBuilders.Core owner,
+        internal ArmV7MCompilationState( ZeligIR.ImageBuilders.Core owner,
                                       ZeligIR.ControlFlowGraphStateForCodeTransformation cfg )
             : base( owner, cfg )
         {
@@ -63,6 +63,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
             //Miguel: Review: I can probably get rid of this...
             m_manager.ConvertTypeLayoutsToLLVM( );
 
+            ReleaseAllLocks( );   
         }
 
 
@@ -114,11 +115,11 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
         // Access Methods
         //
 
-        public LLVMPlatform LLVMPlatform
+        public ArmV7M LLVMPlatform
         {
             get
             {
-                return ( LLVMPlatform )m_cfg.TypeSystem.PlatformAbstraction;
+                return ( ArmV7M )m_cfg.TypeSystem.PlatformAbstraction;
             }
         }
     }

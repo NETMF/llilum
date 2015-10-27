@@ -45,11 +45,11 @@
 -CompilationPhaseDisabled FuseOperators
 -CompilationPhaseDisabled Optimizations
 -CompilationPhaseDisabled ConvertToSSA
-#-CompilationPhaseDisabled GenerateImage
 -CompilationPhaseDisabled PrepareForRegisterAllocation
 -CompilationPhaseDisabled CollectRegisterAllocationConstraints
 -CompilationPhaseDisabled AllocateRegisters
 -CompilationPhaseDisabled ConvertToLLVMIntermediateRepresentation
+#-CompilationPhaseDisabled GenerateImage
 #-CompilationPhaseDisabled Done
 
 ###

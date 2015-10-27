@@ -24,8 +24,8 @@ namespace Microsoft.Zelig.Configuration.Environment
     }
 
     [DisplayName( "LLVM Hosted Compilation for LPC1768" )]
-    [Defaults( "Platform", typeof( Microsoft.Zelig.Configuration.Environment.Abstractions.LLVMPlatform ) )]
-    [Defaults( "CallingConvention", typeof( Microsoft.Zelig.Configuration.Environment.Abstractions.LLVMCallingConvention ) )]
+    [Defaults( "Platform", typeof( Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV7M ) )]
+    [Defaults( "CallingConvention", typeof( Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV7MCallingConvention ) )]
     [Defaults( "Product", typeof( LPC1768MBEDHosted ) )]
     [Defaults( "MemoryMap", typeof( LPC1768CMSISCoreMemoryMap ) )]
     public sealed class LPC1768MBEDHostedCompilationSetup : CompilationSetupCategory
@@ -52,8 +52,8 @@ namespace Microsoft.Zelig.Configuration.Environment
     }
 
     [DisplayName( "LLVM Hosted Compilation for K64F" )]
-    [Defaults( "Platform", typeof( Microsoft.Zelig.Configuration.Environment.Abstractions.LLVMPlatform ) )]
-    [Defaults( "CallingConvention", typeof( Microsoft.Zelig.Configuration.Environment.Abstractions.LLVMCallingConvention ) )]
+    [Defaults( "Platform", typeof( Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV7M_VFP ) )]
+    [Defaults( "CallingConvention", typeof( Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV7MCallingConvention ) )]
     [Defaults( "Product", typeof( K64FMBEDHosted ) )]
     [Defaults( "MemoryMap", typeof( K64FCMSISCoreMemoryMap ) )]
     public sealed class K64FMBEDHostedCompilationSetup : CompilationSetupCategory

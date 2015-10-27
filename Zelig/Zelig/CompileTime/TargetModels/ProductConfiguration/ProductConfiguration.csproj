@@ -95,10 +95,11 @@
     <Compile Include="Abstractions\ARM\Operators\MoveFromCoprocessor.cs" />
     <Compile Include="Abstractions\ARM\Operators\MoveToCoprocessor.cs" />
     <Compile Include="Abstractions\ARM\Operators\SetStatusRegisterOperator.cs" />
-    <Compile Include="Abstractions\LLVM\LLVM.cs" />
-    <Compile Include="Abstractions\LLVM\LLVMCallingConvention.cs" />
-    <Compile Include="Abstractions\LLVM\LLVMCompilationState.cs" />
-    <Compile Include="Abstractions\LLVM\LLVMCompilationState_BasicBlocks.cs" />
+    <Compile Include="Abstractions\LLVMforArmV7\ArmV7M.cs" />
+    <Compile Include="Abstractions\LLVMforArmV7\ArmV7MCallingConvention.cs" />
+    <Compile Include="Abstractions\LLVMforArmV7\ArmV7MCompilationState.cs" />
+    <Compile Include="Abstractions\LLVMforArmV7\ArmV7MCompilationState_BasicBlocks.cs" />
+    <Compile Include="Abstractions\LLVMforArmV7\ArmV7M_VFP.cs" />
     <Compile Include="Models\LegacyProducts.cs" />
     <Compile Include="NandFlashJTagLoaderCategory.cs" />
     <Compile Include="RamJTagLoaderCategory.cs" />

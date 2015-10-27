@@ -402,6 +402,10 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
                 {
                     ver = InstructionSetVersion.PlatformVersion_5;
                 }
+                else if(0 != ( m_processorCapabilities & Capabilities.ARMv7M ))
+                {
+                    ver = InstructionSetVersion.PlatformVersion_7M;
+                }
 
                 return ver;
             }

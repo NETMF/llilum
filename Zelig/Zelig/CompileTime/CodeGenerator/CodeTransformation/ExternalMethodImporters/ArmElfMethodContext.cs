@@ -64,6 +64,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ExternalMethodImporters
                     arch = ElfObject.SystemArchitecture.ArmV5;
                     break;
 
+                case InstructionSetVersion.PlatformVersion_7M:
+                    arch = ElfObject.SystemArchitecture.Thumb2;
+                    break;
+
                 default:
                     throw new ArgumentException("Unknown platform version");
             }

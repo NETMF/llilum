@@ -4,7 +4,7 @@
 
 //#define GENERATE_ONLY_TYPESYSTEM_AND_FUNCTION_DEFINITIONS
 
-namespace Microsoft.Zelig.Configuration.Environment.Abstractions
+namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 {
     using System;
     using System.Collections.Generic;
@@ -13,7 +13,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
     using IR = Microsoft.Zelig.CodeGeneration.IR;
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
-    public partial class LLVMCompilationState : IR.ImageBuilders.CompilationState
+    public partial class ArmV7MCompilationState : IR.ImageBuilders.CompilationState
     {
         public LLVM._BasicBlock GetOrInsertBasicBlock( IR.BasicBlock bb )
         {
@@ -159,18 +159,18 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
             foreach( IR.Expression varExp in op.Arguments )
             {
-                if( varExp is IR.PhysicalRegisterExpression )
+                if( IsNotSuitableForLLVMTranslation( varExp ) )
                 {
-                    throw new System.InvalidOperationException( "ZELIG TOO NEAR ARM: Op argument in physical register" );
+                    //throw new System.InvalidOperationException( "ZELIG TOO NEAR ARM: Op argument in physical register" );
                 }
                 m_arguments.Add( GetValue( varExp ) );
             }
 
             foreach( IR.VariableExpression varExp in op.Results )
             {
-                if( varExp is IR.PhysicalRegisterExpression )
+                if( IsNotSuitableForLLVMTranslation( varExp ) )
                 {
-                    throw new System.InvalidOperationException( "ZELIG TOO NEAR ARM: Op result to physical register" );
+                    //throw new System.InvalidOperationException( "ZELIG TOO NEAR ARM: Op result to physical register" );
                 }
                 m_results.Add( GetValue( varExp ) );
             }
@@ -304,6 +304,22 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
             {
                 Translate_NopOperator( ( IR.NopOperator )op );
             }
+            else if( op is IR.CompareOperator )
+            {
+                Translate_CompareOperator( ( IR.CompareOperator )op );
+            }
+            else if( op is IR.ConditionCodeConditionalControlOperator )
+            {
+                Translate_ConditionCodeConditionalControlOperator( ( IR.ConditionCodeConditionalControlOperator )op );
+            }
+            else if( op is IR.DirectSubroutineOperator )
+            {
+                Translate_DirectSubroutineOperator( ( IR.DirectSubroutineOperator )op );
+            }
+            else if( op is IR.SetIfConditionIsTrueOperator )
+            {
+                Translate_SetIfConditionIsTrueOperator( ( IR.SetIfConditionIsTrueOperator )op );
+            }
             else
             {
                 WarnUnimplemented( op.ToString( ) );
@@ -311,7 +327,18 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         }
 
-        _Value ConvertValueToALUOperableType( _Value val )
+        private bool IsNotSuitableForLLVMTranslation( IR.Expression varExp )
+        {
+            if( varExp is IR.PhysicalRegisterExpression |
+                varExp is IR.StackLocationExpression     )
+            {
+                return true;
+            }
+
+            return false; 
+        }
+
+        private _Value ConvertValueToALUOperableType( _Value val )
         {
             val = m_basicBlock.LoadToImmediate( val );
 
@@ -536,18 +563,15 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         private void Translate_InitialValueOperator( IR.InitialValueOperator op )
         {
-            if (!(op.FirstResult is IR.ArgumentVariableExpression))
-            {
-                throw new Exception("InitialValueOperator implemented only for argument variables: " + op.ToString());
-            }
+            IR.VariableExpression exp = op.FirstResult is IR.PhiVariableExpression ? op.FirstResult.AliasedVariable : op.FirstResult;
 
-            int index = op.FirstResult.Number;
+            int index =  exp.Number;
             if (m_method is TS.StaticMethodRepresentation)
             {
                 --index;
             }
 
-            m_basicBlock.InsertStoreArgument(m_results[0], index);
+            m_basicBlock.InsertStoreArgument( m_results[ 0 ], index ); 
         }
 
         _Value DoCmpOp( _Value valA, _Value valB, int cond, bool signed )
@@ -673,6 +697,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
             //Jump to a finally block.           
             m_basicBlock.InsertUnconditionalBranch( GetOrInsertBasicBlock( op.TargetBranch ) );
         }
+
         private void Translate_DeadControlOperator( IR.DeadControlOperator op )
         {
             //Basic Block marked as dead code by Zelig.
@@ -767,10 +792,12 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
         {
             BuildMethodCallInstructions( op );
         }
+
         private void Translate_InstanceCallOperator( IR.InstanceCallOperator op )
         {
             BuildMethodCallInstructions( op );
         }
+
         private void Translate_IndirectCallOperator( IR.IndirectCallOperator op )
         {
             BuildMethodCallInstructions( op, true );
@@ -780,6 +807,30 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
         {
             //No Operation.
             //TODO: Add no-op equivalent for debug builds to avoid losing debug metadata.
+        }
+
+        private void Translate_CompareOperator( IR.CompareOperator op )
+        {
+            WarnUnimplemented( op.ToString( ) ); 
+            throw new NotImplementedException( );
+        }
+
+        private void Translate_SetIfConditionIsTrueOperator( IR.SetIfConditionIsTrueOperator op )
+        {
+            WarnUnimplemented( op.ToString( ) ); 
+            throw new NotImplementedException( );
+        }
+
+        private void Translate_DirectSubroutineOperator( IR.DirectSubroutineOperator op )
+        {
+            WarnUnimplemented( op.ToString( ) ); 
+            throw new NotImplementedException( );
+        }
+
+        private void Translate_ConditionCodeConditionalControlOperator( IR.ConditionCodeConditionalControlOperator op )
+        {
+            WarnUnimplemented( op.ToString( ) ); 
+            throw new NotImplementedException( );
         }
     }
 }

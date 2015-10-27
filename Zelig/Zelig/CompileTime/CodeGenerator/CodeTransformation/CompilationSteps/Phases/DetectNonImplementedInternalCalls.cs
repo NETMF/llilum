@@ -2,7 +2,7 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-//#define DEBUG_MISSING_METHODS_CALLERS
+#define DEBUG_MISSING_METHODS_CALLERS
 //#define STOP_ON_POSITIVE_DETECTION
 
 namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
@@ -44,33 +44,25 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
 
                         if(md.IsOpenMethod == false && TypeSystemForCodeTransformation.GetCodeForMethod( md ) == null)
                         {
-#if DEBUG
                             missingMethods.Add( md );
-#else
-                            throw TypeConsistencyErrorException.Create( "ERROR: missing implementation for {0}", md.ToShortString() );
-#endif
                         }
                     }
                 }
             }
 
-#if DEBUG
+
+#if STOP_ON_POSITIVE_DETECTION
             if(missingMethods.Count > 0)
             {
                 DumpMissingMethods( missingMethods );
-
-                // LT72: TODO TODO TODO
-                // added ifdef to cope with missing external calls in LLVM
-#if STOP_ON_POSITIVE_DETECTION
+                
                 throw TypeConsistencyErrorException.Create( "ERROR: found methods without an implementation" );
-#endif
             }
 #endif
 
             return this.NextPhase;
         }
-
-#if DEBUG
+        
         private void DumpMissingMethods( List< MethodRepresentation > lst )
         {
             var reverseIndex = new Transformations.ReverseIndexTypeSystem( this.TypeSystem );
@@ -79,7 +71,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
 
             foreach(MethodRepresentation md in lst)
             {
-                Console.WriteLine( "ERROR: missing implementation for {0}", md.ToShortString() );
+                Console.WriteLine( "WARNING: missing implementation for {0}", md.ToShortString() );
 
 #if DEBUG_MISSING_METHODS_CALLERS
                 var set = SetFactory.New< MethodRepresentation >();
@@ -164,6 +156,5 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
 
             return res;
         }
-#endif
     }
 }
