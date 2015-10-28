@@ -355,10 +355,9 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
 
         //--//
         
-        //[RT.BottomOfCallStack( )]
         [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
         [RT.ExportedMethod]
-        private void SysTick_Handler( )
+        private void SysTick_Handler_Zelig( )
         {
             using(RT.SmartHandles.InterruptState.Disable())
             {

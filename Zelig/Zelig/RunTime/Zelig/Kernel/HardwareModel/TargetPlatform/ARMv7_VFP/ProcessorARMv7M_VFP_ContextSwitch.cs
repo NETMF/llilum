@@ -881,11 +881,9 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             //
             // All overridable exceptions for Ctx Switch
             //
-
-            //[RT.BottomOfCallStack( )]
-            //[RT.HardwareExceptionHandler( RT.HardwareException.Service )] // TODO: use LongJump instead of Service?
-            [ExportedMethod]
-            //[TS.WellKnownMethod( "Hardware_InvokeSVCHandler" )]
+            
+            [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
+            [RT.ExportedMethod]
             private static unsafe void SVC_Handler_Zelig_VFP_NoFPContext( uint* args )
             {
                 SVC_Code svc_number = (SVC_Code)((byte*)args[6])[-2]; // svc number is at stacked PC offset - 2 bytes
@@ -907,10 +905,9 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 }
             }
             
-            //[RT.BottomOfCallStack( )]
-            //[RT.HardwareExceptionHandler( RT.HardwareException.SoftwareInterrupt )] // TODO: dfine PendSV instead?
-            [ExportedMethod]
-            //[TS.WellKnownMethod( "Hardware_InvokePendSVHandler" )]
+            
+            [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
+            [RT.ExportedMethod]
             private static void PendSV_Handler_Zelig_VFP_FullFPContext( )
             {
                 using(SmartHandles.InterruptState.Disable( ))
@@ -918,11 +915,9 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                     ContextSwitchFull( );
                 }
             }
-
-            //[RT.BottomOfCallStack( )]
-            //[RT.HardwareExceptionHandler( RT.HardwareException.SoftwareInterrupt )] // TODO: dfine PendSV instead?
-            [ExportedMethod]
-            //[TS.WellKnownMethod( "Hardware_InvokePendSVHandler" )]
+            
+            [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
+            [RT.ExportedMethod]
             private static void PendSV_Handler_Zelig_VFP_NoFPContext( )
             {
                 using(SmartHandles.InterruptState.Disable( ))
@@ -930,11 +925,9 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                     ContextSwitch( );
                 }
             }
-
-            [RT.BottomOfCallStack( )]
+            
             [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
             [ExportedMethod]
-            //[TS.WellKnownMethod( "Hardware_InvokeAnyInterruptHandler" )]
             private static void AnyInterrupt( )
             {
 

@@ -614,11 +614,9 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             //
             // All overridable exceptions for Ctx switch
             //
-
-            //[RT.BottomOfCallStack( )]
-            //[RT.HardwareExceptionHandler( RT.HardwareException.Service )] // TODO: use LongJump instead of Service?
-            [ExportedMethod]
-            //[TS.WellKnownMethod( "Hardware_InvokeSVCHandler" )]
+            
+            [RT.HardwareExceptionHandler( RT.HardwareException.Service )]
+            [RT.ExportedMethod]
             private static unsafe void SVC_Handler_Zelig( uint* args )
             {
                 SVC_Code svc_number = (SVC_Code)((byte*)args[6])[-2]; // svc number is at stacked PC offset - 2 bytes
@@ -639,11 +637,9 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                         break;
                 }
             }
-
-            //[RT.BottomOfCallStack( )]
-            //[RT.HardwareExceptionHandler( RT.HardwareException.SoftwareInterrupt )] // TODO: dfine PendSV instead?
-            [ExportedMethod]
-            //[TS.WellKnownMethod( "Hardware_InvokePendSVHandler" )]
+            
+            [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
+            [RT.ExportedMethod]
             private static void PendSV_Handler_Zelig( )
             {
                 using(SmartHandles.InterruptState.Disable( ))
@@ -652,10 +648,8 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 }
             }
 
-            [RT.BottomOfCallStack( )]
             [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
-            [ExportedMethod]
-            //[TS.WellKnownMethod( "Hardware_InvokeAnyInterruptHandler" )]
+            [RT.ExportedMethod]
             private static void AnyInterrupt( )
             {
 

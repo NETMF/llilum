@@ -231,7 +231,23 @@ extern "C"
     // Stubs for Faults
     //
 
-    extern void Generic_FaultHandler_Zelig();
+    extern void MemManage_Handler_Zelig();
+    extern void BusFault_Handler_Zelig  ();
+    extern void UsageFault_Handler_Zelig();
+    
+    //--//
+
+    __attribute__((naked)) void MemManage_Handler(void)
+    {
+        __ASM volatile ("TST    LR, #0x4");                 // Test bit 3 to use decide which stack pointer we are coming from 
+        __ASM volatile ("ITE    EQ");
+        __ASM volatile ("MRSEQ  R0, msp");
+        __ASM volatile ("MRSNE  R0, psp");
+
+        MemManage_Handler_Zelig();
+
+        __ASM volatile ("BX     LR");
+    }
 
     __attribute__((naked)) void BusFault_Handler(void)
     {
@@ -240,7 +256,19 @@ extern "C"
         __ASM volatile ("MRSEQ  R0, msp");
         __ASM volatile ("MRSNE  R0, psp");
 
-        Generic_FaultHandler_Zelig();
+        BusFault_Handler_Zelig(); 
+
+        __ASM volatile ("BX     LR");
+    }
+
+    __attribute__((naked)) void UsageFault_Handler(void)
+    {
+        __ASM volatile ("TST    LR, #0x4");                 // Test bit 3 to use decide which stack pointer we are coming from 
+        __ASM volatile ("ITE    EQ");
+        __ASM volatile ("MRSEQ  R0, msp");
+        __ASM volatile ("MRSNE  R0, psp");
+
+        UsageFault_Handler_Zelig();
 
         __ASM volatile ("BX     LR");
     }

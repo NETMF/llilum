@@ -848,8 +848,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
         //////[RT.BottomOfCallStack( )]
         //////[RT.HardwareExceptionHandler( RT.HardwareException.NMI )]
-        //////[ExportedMethod]
-        ////////[TS.WellKnownMethod( "Hardware_InvokeNMIHandler" )]
+        //////[RT.ExportedMethod]
         //////private static void NMI_Handler( )
         //////{
         //////    //
@@ -866,8 +865,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         [RT.BottomOfCallStack( )]
         [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
         [RT.NoReturn]
-        [ExportedMethod]
-        //[TS.WellKnownMethod( "Hardware_InvokeHardFaultHandler" )]
+        [RT.ExportedMethod]
         private static void HardFault_Handler( )
         {
             if(DebuggerConnected( ))
@@ -930,14 +928,34 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         /// Detects execution of undefined instructions, unaligned memory access for load/store multiple. 
         /// When enabled, divide-by-zero and other unaligned memory accesses are also detected.
         /// </summary>
-        private static void UsageFault_Handler( )
+        private static void UsageFault_Handler( ref StandardFrame registers )
         {
             BugCheck.Log( "CFSR=0x%08x", (int)CUSTOM_STUB_SCB__get_CFSR( ) ); 
+
             Breakpoint( CUSTOM_STUB_SCB__get_CFSR( ) );
         }
         
-        [ExportedMethod]
-        private static unsafe void Generic_FaultHandler_Zelig( uint sp )
+        [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
+        [RT.ExportedMethod]
+        private static unsafe void MemManage_Handler_Zelig( uint sp )
+        {
+            StandardFrame* regs = PointerToStdFrame( new UIntPtr( sp ) );
+
+            MemManage_Handler( ref *regs ); 
+        }
+        
+        [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
+        [RT.ExportedMethod]
+        private static unsafe void UsageFault_Handler_Zelig( uint sp )
+        {
+            StandardFrame* regs = PointerToStdFrame( new UIntPtr( sp ) );
+
+            UsageFault_Handler( ref *regs ); 
+        }
+        
+        [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
+        [RT.ExportedMethod]
+        private static unsafe void BusFault_Handler_Zelig( uint sp )
         {
             StandardFrame* regs = PointerToStdFrame( new UIntPtr( sp ) );
 
@@ -945,19 +963,17 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         }
 
         //////[RT.BottomOfCallStack( )]
-        //////[RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
+        //////[RT.HardwareExceptionHandler( RT.HardwareException.Reset )]
         //////[RT.NoReturn]
-        //////[ExportedMethod]
-        ////////[TS.WellKnownMethod( "Hardware_InvokeResetHandler")]
+        //////[RT.ExportedMethod]
         //////private static void Reset_Handler( )
         //////{
         //////}
         
         //////[RT.BottomOfCallStack( )]
-        //////[RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
+        //////[RT.HardwareExceptionHandler( RT.HardwareException.Debug )]
         //////[RT.NoReturn]
-        //////[ExportedMethod]
-        ////////[TS.WellKnownMethod( "Hardware_InvokeDebugMonHandler" )]
+        //////[RT.ExportedMethod]
         //////private static void DebugMon_Handler( )
         //////{
         //////}

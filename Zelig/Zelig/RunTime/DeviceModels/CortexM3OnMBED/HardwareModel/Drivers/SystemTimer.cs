@@ -373,9 +373,9 @@ namespace Microsoft.CortexM3OnMBED.Drivers
         //
         // Interop Methods
         //
-
+        
+        [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
         [RT.ExportedMethod]
-        //[TS.WellKnownMethod("Hardware_InvokeSystemTimerHandler")]
         private static void SystemTimer_Handler(uint id)
         {
             using(RT.SmartHandles.InterruptState.Disable())
