@@ -10,7 +10,7 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
     using Framework = Microsoft.Llilum.Devices.Gpio;
     using Runtime = Microsoft.Zelig.Runtime;
 
-    public sealed class GpioProvider : Runtime.GpioProvider
+    public abstract class GpioProvider : Runtime.GpioProvider
     {
         public sealed override Framework.GpioPin CreateGpioPin(int pinNumber)
         {

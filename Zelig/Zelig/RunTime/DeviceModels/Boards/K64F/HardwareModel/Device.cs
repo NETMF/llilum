@@ -4,12 +4,12 @@
 
 namespace Microsoft.Zelig.K64F
 {
-    using RT            = Microsoft.Zelig.Runtime;
-    using ChipsetModel  = Microsoft.CortexM4OnMBED;
-
+    using RT = Microsoft.Zelig.Runtime;
+    using ChipsetModel = Microsoft.CortexM4OnMBED;
     
     public sealed class Device : Microsoft.CortexM4OnMBED.Device
     {
+        [RT.MemoryUsage(RT.MemoryUsage.Stack, ContentsUninitialized = true, AllocateFromHighAddress = true)]
         static readonly uint[] s_bootstrapStackK64F = new uint[ (4 * 1024) / sizeof( uint ) ]; 
 
         //
@@ -18,7 +18,6 @@ namespace Microsoft.Zelig.K64F
 
         public override uint[] BootstrapStack
         {
-            [RT.NoInline]
             get
             {
                 return s_bootstrapStackK64F;

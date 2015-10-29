@@ -79,6 +79,19 @@ namespace Microsoft.Zelig.LPC1768
             }
         }
 
+        public override int GetSerialPortIRQNumber(string portName)
+        {
+            switch (portName)
+            {
+                case "UART0":
+                    return (int)IRQn.UART0_IRQn;
+                case "UART1":
+                    return (int)IRQn.UART1_IRQn;
+                default:
+                    throw new NotSupportedException();
+            }
+        }
+
         //
         // System timer
         //

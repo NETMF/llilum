@@ -18,9 +18,16 @@ namespace Microsoft.Zelig.Runtime
             {
                 throw new NotImplementedException();
             }
+
+            public override int GetGpioPinIRQNumber(int pinNumber)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public abstract GpioPin CreateGpioPin(int pinNumber);
+
+        public abstract int GetGpioPinIRQNumber(int pinNumber);
 
         public static extern GpioProvider Instance
         {

@@ -34,9 +34,13 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             PendSV_IRQn             = -2,       /*!< Exception#: 14 Cortex-M3 Pend SV Interrupt                   */
             SysTick_IRQn            = -1,       /*!< Exception#: 15 Cortex-M3 System Tick Interrupt               */
             //--//
-            AnyInterrupt16          =  0, 
+            AnyInterrupt16          =  0,
+            
+            //--//
+
+            Invalid                 = 0xFFFF,
         }
-       
+
         public enum ISR_NUMBER : uint
         {
             //  Cortex-M Processor exception Numbers, as reported by the IPSR
@@ -90,8 +94,9 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         public const byte c_Priority__Lowest                = 0x000000FF;
         public const byte c_Priority__HigherThanAnyWeOwn    = 0x00000004;
         public const byte c_Priority__SVCCall               = 0x00000005;
-        public const byte c_Priority__SystemTimer           = 0x00000007;
-        public const byte c_Priority__SysTick               = 0x00000007;
+        public const byte c_Priority__Default               = 0x00000007;
+        public const byte c_Priority__SystemTimer           = c_Priority__Default;
+        public const byte c_Priority__SysTick               = c_Priority__Default;
         public const byte c_Priority__PendSV                = 0x0000000E;
 
         //--//
@@ -150,7 +155,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         public const uint c_MODE_RETURN__HANDLER_MSP    = 0xFFFFFFF1; // handler will return in handler mode using the MSP
         public const uint c_MODE_RETURN__THREAD_MSP     = 0xFFFFFFF9; // handler will return in thread mode using the MSP
         public const uint c_MODE_RETURN__THREAD_PSP     = 0xFFFFFFFD; // handler will return in thread mode using the PSP
-        
+
         //
         // SCR
         //
@@ -602,15 +607,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         [Inline]
         public override bool AreInterruptsDisabled( )
         {
-            uint primask = CMSIS_STUB_SCB__get_PRIMASK( );
-
-            bool disabledByPrimask = ( primask & c_PRIMASK__InterruptsOff ) == c_PRIMASK__InterruptsOff;
-
-            bool disabledByPriority = (GetBasePriRegister() <= c_Priority__Highest);
-
-            return disabledByPrimask | disabledByPriority;
-
-            //return disabledByPriority;
+            return (GetBasePriRegister() <= c_Priority__Highest);
         }
 
         [Inline]
@@ -635,32 +632,14 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
         public static uint EnableInterrupts( )
         {
-            uint basepri = GetBasePriRegister( );
-
-            DisableInterruptsWithPriorityLevelHigherOrEqualTo( c_Priority__Lowest );
-
-            return basepri; 
+            return DisableInterruptsWithPriorityLevelHigherOrEqualTo( c_Priority__Lowest );
         }
         
         public static uint DisableInterrupts( )
         {
-            uint basepri = GetBasePriRegister( );
-
-            DisableInterruptsWithPriorityLevelHigherOrEqualTo( c_Priority__Highest );
-
-            return basepri; 
+            return DisableInterruptsWithPriorityLevelHigherOrEqualTo( c_Priority__Highest );
         }
         
-        public static void DisableInterruptsByPrimask()
-        {
-            CMSIS_STUB_SCB__set_PRIMASK( c_PRIMASK__InterruptsOff ); 
-        }
-
-        public static void EnableInterruptsByPrimask()
-        {
-            CMSIS_STUB_SCB__set_PRIMASK( c_PRIMASK__InterruptsOn ); 
-        }
-
         public static uint EnableFaults( )
         {
             uint faultmask = CMSIS_STUB_SCB__get_FAULTMASK();
@@ -690,9 +669,9 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             return DisableInterrupts( ) | DisableFaults( );
         }
 
-        public static void DisableInterruptsWithPriorityLevelHigherOrEqualTo( uint basepri )
+        public static uint DisableInterruptsWithPriorityLevelHigherOrEqualTo( uint basepri )
         {
-            SetBasePriRegister( basepri );
+            return SetBasePriRegister( basepri );
         }
 
         public static bool VerifyHandlerMode( )
@@ -711,9 +690,9 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         }
 
         [Inline]
-        internal static void SetBasePriRegister( uint basepri )
+        internal static uint SetBasePriRegister( uint basepri )
         {
-            CMSIS_STUB_SCB__set_BASEPRI( basepri );
+            return CMSIS_STUB_SCB__set_BASEPRI( basepri );
         }
 
         //--//
@@ -890,9 +869,9 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         /// </summary>
         private static void MemManage_Handler( ref StandardFrame registers )
         {
-            BugCheck.Log( "CFSR=0x%08x", (int)CUSTOM_STUB_SCB__get_CFSR( ) ); 
-            BugCheck.Log( "BFAR=0x%08x", (int)CUSTOM_STUB_SCB__get_MMFAR( ) ); 
-            BugCheck.Log( "PC  =0x%08x", (int)registers.PC.ToUInt32( )     );
+            BugCheck.Log( "CFSR =0x%08x", (int)CUSTOM_STUB_SCB__get_CFSR( ) ); 
+            BugCheck.Log( "MMFAR=0x%08x", (int)CUSTOM_STUB_SCB__get_MMFAR( ) ); 
+            BugCheck.Log( "PC   =0x%08x", (int)registers.PC.ToUInt32( ) );
 
             if(IsBusFaultAddressValid( ) && IsBusFaultAddressPrecise( ))
             {
@@ -1054,7 +1033,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         internal static extern uint CMSIS_STUB_SCB__get_BASEPRI( );
 
         [DllImport( "C" )]
-        internal static extern void CMSIS_STUB_SCB__set_BASEPRI( uint basePri );
+        internal static extern uint CMSIS_STUB_SCB__set_BASEPRI( uint basePri );
         
         [DllImport( "C" )]
         internal static extern uint CMSIS_STUB_SCB__get_FAULTMASK( );

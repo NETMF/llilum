@@ -3,8 +3,8 @@
 //
 
 using System;
-using System.Runtime.CompilerServices;
 using Windows.Devices.Gpio.Provider;
+using Windows.Foundation;
 using Llilum = Microsoft.Llilum.Devices.Gpio;
 
 namespace Windows.Devices.Gpio
@@ -12,6 +12,7 @@ namespace Windows.Devices.Gpio
     internal class DefaultPinProvider : IGpioPinProvider
     {
         private Llilum.GpioPin m_gpioPin;
+        private TypedEventHandler<GpioPin, GpioPinValueChangedEventArgs> m_evt;
 
         internal DefaultPinProvider(int pinNumber)
         {
@@ -55,6 +56,34 @@ namespace Windows.Devices.Gpio
         public void Dispose()
         {
             m_gpioPin.Dispose();
+        }
+
+        public event TypedEventHandler<GpioPin, GpioPinValueChangedEventArgs> ValueChanged
+        {
+            add
+            {
+                var old = m_evt;
+                m_evt += value;
+
+                if( old == null )
+                {
+                    m_gpioPin.ValueChanged += HandleGpioInterrupt;
+                }
+            }
+            remove
+            {
+                m_evt -= value;
+
+                if( m_evt == null )
+                {
+                    m_gpioPin.ValueChanged -= HandleGpioInterrupt;
+                }
+            }
+        }
+
+        private void HandleGpioInterrupt(object sender, Llilum.PinEdge pinEdge)
+        {
+            m_evt?.Invoke(null, new GpioPinValueChangedEventArgs(pinEdge == Llilum.PinEdge.RisingEdge ? GpioPinEdge.RisingEdge : GpioPinEdge.FallingEdge));
         }
 
         public GpioPinDriveMode GetDriveMode()

@@ -39,11 +39,13 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3
 
         public abstract SerialPortInfo GetSerialPortInfo(string portName);
 
+        public abstract int GetSerialPortIRQNumber(string portName);
+
         //
         // System timer
         //
         public abstract int GetSystemTimerIRQNumber( );
-
+                
         //
         // Factory methods
         //

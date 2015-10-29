@@ -14,7 +14,6 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
     using TS     = Microsoft.Zelig.Runtime.TypeSystem;
     using RT     = Microsoft.Zelig.Runtime;
 
-
     public abstract partial class ProcessorARMv7M
     {
         //--//
@@ -93,30 +92,6 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                     return null;
                 }
 
-                public void Assign( ref RegistersOnStack other )
-                {
-                    // SW frame
-                    this.EXC_RETURN = other.EXC_RETURN;
-                    this.CONTROL    = other.CONTROL;
-                    this.R4         = other.R4;
-                    this.R5         = other.R5;
-                    this.R6         = other.R6;
-                    this.R7         = other.R7;
-                    this.R8         = other.R8;
-                    this.R9         = other.R9;
-                    this.R10        = other.R10;
-                    this.R11        = other.R11;
-                    //--//
-                    this.R0         = other.R0;
-                    this.R1         = other.R1;
-                    this.R2         = other.R2;
-                    this.R3         = other.R3;
-                    this.R12        = other.R12;
-                    this.LR         = other.LR;
-                    this.PC         = other.PC;
-                    this.PSR        = other.PSR;
-                }
-
                 public static unsafe uint TotalFrameSize
                 {
                     [RT.Inline]
@@ -143,37 +118,6 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                         return (uint)sizeof( UIntPtr ) * 10;
                     }
                 }
-
-                //--//
-
-                //public unsafe UIntPtr StackFrame
-                //{
-                //    [RT.Inline]
-                //    get
-                //    {
-                //        return HWStackFrame;
-                //    }
-                //}
-
-                //public unsafe UIntPtr HWStackFrame
-                //{
-                //    [RT.Inline]
-                //    get
-                //    {
-                //        ArrayImpl registersImpl = (ArrayImpl)(object)this;
-                //        return new UIntPtr( registersImpl.GetEndDataPointer() );
-                //    }
-                //}
-
-                //public unsafe UIntPtr SWStackFrame
-                //{
-                //    [RT.Inline]
-                //    get
-                //    {
-                //        ArrayImpl registersImpl = (ArrayImpl)(object)this;
-                //        return new UIntPtr( registersImpl.GetEndDataPointer() + HWStackFrameSize );
-                //    }
-                //}
             }
 
             //--//
@@ -193,15 +137,9 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
             public override unsafe void SwitchTo( )
             {
-                ProcessorARMv7M.SetExcReturn( ProcessorARMv7M.c_MODE_RETURN__THREAD_PSP );
-
                 //
-                // Load new task and fill frame
+                // The long jump selects the current thread's context and sets its EXC_RETURN value
                 //
-                ProcessorARMv7M.SetProcessStackPointer( 
-                    AddressMath.Increment( this.StackPointer, RegistersOnStack.SwitcherFrameSize ) 
-                    );
-                
                 ProcessorARMv7M.RaiseSupervisorCall( SVC_Code.SupervisorCall__LongJump );
 
 #if DEBUG_CTX_SWITCH
@@ -230,37 +168,30 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 ObjectImpl   objImpl   = (ObjectImpl  )(object)dlg.Target;
 
                 //
-                // build the first stack frame
-                //
-                RegistersOnStack registers = new RegistersOnStack();
-                registers.PC            = new UIntPtr( dlgImpl.InnerGetCodePointer( ).Target.ToPointer( ) );
-                registers.PSR           = new UIntPtr( c_psr_InitialValue );
-                registers.EXC_RETURN    = c_MODE_RETURN__THREAD_PSP;
-                registers.CONTROL       = c_CONTROL__MODE__THRD_PRIV;
-                registers.R0            = objImpl.ToPointer( );
-
-#if DEBUG_CTX_SWITCH
-                //registers.R1  = new UIntPtr( 0x11111111 ); //UIntPtr.Zero;
-                //registers.R2  = new UIntPtr( 0x22222222 ); //UIntPtr.Zero;
-                //registers.R3  = new UIntPtr( 0x33333333 ); //UIntPtr.Zero;
-                ////--//
-                //registers.R4  = new UIntPtr( 0x44444444 ); //UIntPtr.Zero; // start of SW frame
-                //registers.R5  = new UIntPtr( 0x55555555 ); //UIntPtr.Zero;
-                //registers.R6  = new UIntPtr( 0x66666666 ); //UIntPtr.Zero;
-                //registers.R7  = new UIntPtr( 0x77777777 ); //UIntPtr.Zero;
-                //registers.R8  = new UIntPtr( 0x88888888 ); //UIntPtr.Zero;
-                //registers.R9  = new UIntPtr( 0x99999999 ); //UIntPtr.Zero;
-                //registers.R10 = new UIntPtr( 0xaaaaaaaa ); //UIntPtr.Zero;
-                //registers.R11 = new UIntPtr( 0xbbbbbbbb ); //UIntPtr.Zero;
-                //registers.R12 = new UIntPtr( 0xcccccccc ); //UIntPtr.Zero;
-#endif
-                //
                 // Save the initial stack pointer
-                // In the general case the SP will be at teh top of the current frame we are building
-                // When we do a LongJump thoug, or we start the thread first, we will have to use the base stack pointer
+                // In the general case the SP will be at the top of the current frame we are building
+                // When we do a LongJump though, or we start the thread first, we will have to use the base stack pointer
                 //
                 this.SP         = GetFirstStackPointerFromPhysicalStack( stackImpl );
                 this.EXC_RETURN = c_MODE_RETURN__THREAD_PSP;
+
+                //
+                // Initial offset from start of stack storage must be at least as large as a frame
+                //
+                RT.BugCheck.Assert((((int)stackImpl.GetEndDataPointer() - this.SP.ToUInt32()) >= RegistersOnStack.TotalFrameSize),
+                    BugCheck.StopCode.StackCorruptionDetected
+                    );
+
+                RegistersOnStack* firstFrame = PointerToFrame(this.SP);
+
+                //
+                // build the first stack frame
+                //
+                firstFrame->PC         = new UIntPtr( dlgImpl.InnerGetCodePointer( ).Target.ToPointer( ) );
+                firstFrame->PSR        = new UIntPtr( c_psr_InitialValue );
+                firstFrame->EXC_RETURN = c_MODE_RETURN__THREAD_PSP;
+                firstFrame->CONTROL    = c_CONTROL__MODE__THRD_PRIV;
+                firstFrame->R0         = objImpl.ToPointer( );
 
 #if DEBUG_CTX_SWITCH
                 RT.BugCheck.Log( "[PFD-ctx] EXC=0x%08x, PSR=0x%08x, PC=0x%08x, R0=0x%08x, SP(aligned)=0x%08x",
@@ -278,36 +209,6 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                     (int)( (int)stackImpl.GetEndDataPointer( ) - this.SP.ToUInt32( ) )
                     );
 #endif
-
-                //
-                // Initial offset from start of stack storage must be at least as large as a frame
-                //
-                RT.BugCheck.Assert( (((int)stackImpl.GetEndDataPointer( ) - this.SP.ToUInt32( )) >= RegistersOnStack.TotalFrameSize), 
-                    BugCheck.StopCode.StackCorruptionDetected 
-                    ); 
-
-                //
-                // set the initial stack values in the physical stack
-                // this used to be done with ARM specific operators
-                // now we need to push manually
-                //
-
-                RegistersOnStack* firstFrame = PointerToFrame( this.SP );
-
-                firstFrame->Assign( ref registers );
-
-                //--//
-                
-                RT.BugCheck.Assert( firstFrame->R0          == registers.R0        , BugCheck.StopCode.StackCorruptionDetected );
-                RT.BugCheck.Assert( firstFrame->R1          == registers.R1        , BugCheck.StopCode.StackCorruptionDetected );
-                RT.BugCheck.Assert( firstFrame->R2          == registers.R2        , BugCheck.StopCode.StackCorruptionDetected );
-                RT.BugCheck.Assert( firstFrame->R3          == registers.R3        , BugCheck.StopCode.StackCorruptionDetected );
-                RT.BugCheck.Assert( firstFrame->R12         == registers.R12       , BugCheck.StopCode.StackCorruptionDetected );
-                RT.BugCheck.Assert( firstFrame->LR          == registers.LR        , BugCheck.StopCode.StackCorruptionDetected );
-                RT.BugCheck.Assert( firstFrame->PC          == registers.PC        , BugCheck.StopCode.StackCorruptionDetected );
-                RT.BugCheck.Assert( firstFrame->PSR         == registers.PSR       , BugCheck.StopCode.StackCorruptionDetected );
-                RT.BugCheck.Assert( firstFrame->EXC_RETURN  == registers.EXC_RETURN, BugCheck.StopCode.StackCorruptionDetected );
-                RT.BugCheck.Assert( firstFrame->CONTROL     == registers.CONTROL   , BugCheck.StopCode.StackCorruptionDetected );
             }
 
             public override void SetupForExceptionHandling( uint mode )
@@ -328,7 +229,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                     //SwitchToHandlerPrivilegedMode( );
 
                     //
-                    // Set the stack pointer in the context to be teh current MSP
+                    // Set the stack pointer in the context to be the current MSP
                     //
                     this.StackPointer = stack;
                     
@@ -360,7 +261,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 #endregion
 
 
-            private static void ContextSwitch( ThreadManager tm, ref RegistersOnStack registers )
+            private static UIntPtr ContextSwitch( ThreadManager tm, UIntPtr stackPointer )
             {
                 ThreadImpl currentThread = tm.CurrentThread;
                 ThreadImpl nextThread    = tm.NextThread;
@@ -370,25 +271,24 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 {
                     ctx = (Context)currentThread.SwappedOutContext;
 
-                    //ctx.Registers.Assign( ref registers );
-
                     //
                     // update SP as well as the EXC_RETURN address
                     //
-                    ctx.EXC_RETURN   = registers.EXC_RETURN;    
-                    ctx.StackPointer = AddressMath.Decrement( GetProcessStackPointer( ), RegistersOnStack.SwitcherFrameSize );                    
+                    unsafe
+                    {
+                        ctx.EXC_RETURN = PointerToFrame(stackPointer)->EXC_RETURN;
+                    }
+
+                    ctx.StackPointer = stackPointer;
                 }
 
                 ctx = (Context)nextThread.SwappedOutContext;
 
-                //registers.Assign( ref ctx.Registers );
-
                 //
-                // Pass PSP and EXC_RETURN down to the native portion of the 
+                // Pass EXC_RETURN down to the native portion of the 
                 // PendSV handler we need to offset to the beginning of the frame
                 //
-                SetProcessStackPointer( ctx.StackPointer );
-                SetExcReturn          ( ctx.EXC_RETURN ); 
+                SetExcReturn( ctx.EXC_RETURN ); 
                     
                 //
                 // Update thread manager state and Thread.CurrentThread static field
@@ -396,29 +296,8 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 tm.CurrentThread = nextThread;
 
                 ThreadImpl.CurrentThread = nextThread;
-            }
 
-            private static unsafe void ContextSwitch( UIntPtr currentStackPointer )
-            {
-                //
-                // This exception executes on the Main Processor stack (MSP), our threads execute on 
-                // the Process Stack (PSP). 
-                //
-
-                //
-                //  Precondition?
-                //
-
-                ContextSwitch( ThreadManager.Instance, ref *PointerToFrame( currentStackPointer ) );
-
-                //RT.BugCheck.Log( "[ContextSwitch] PSP=0x%08x", (int)GetProcessStackPointer( ) );
-
-                //BugCheck.Assert( ThreadManager.Instance.CurrentThread.SwappedOutContext.StackPointer == GetProcessStackPointer( ), BugCheck.StopCode.ContextSwitchFailed );
-            }
-
-            private static unsafe void ContextSwitch( )
-            {
-                ContextSwitch( GetProcessStackPointer() );
+                return ctx.StackPointer;
             }
             
             //--//
@@ -516,16 +395,16 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             {
                 Peripherals.Instance.ProcessInterrupt( );
 
-                ThreadManager tm = ThreadManager.Instance;
+                //ThreadManager tm = ThreadManager.Instance;
 
                 //
                 // We keep looping until the current and next threads are the same,
                 // because when swapping out a dead thread, we might wake up a different thread.
                 //
-                while(tm.ShouldContextSwitch)
-                {
-                    ContextSwitch( tm, ref registers );
-                }
+                //while(tm.ShouldContextSwitch)
+                //{
+                //    ContextSwitch(tm, ref registers);
+                //}
             }
 
             [Inline]
@@ -548,8 +427,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             //--//
 
             [Inline]
-            private static unsafe void PrepareStackForException( uint mode,
-                                                                 Context.RegistersOnStack* ptr )
+            private static unsafe void PrepareStackForException( uint mode, Context.RegistersOnStack* ptr )
             {
 
                 //
@@ -580,8 +458,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             }
 
             [Inline]
-            private static unsafe void RestoreStackForException( uint mode,
-                                                                 Context.RegistersOnStack* ptr )
+            private static unsafe void RestoreStackForException( uint mode, Context.RegistersOnStack* ptr )
             {
 
                 //
@@ -640,11 +517,14 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             
             [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
             [RT.ExportedMethod]
-            private static void PendSV_Handler_Zelig( )
+            private static UIntPtr PendSV_Handler_Zelig( UIntPtr stackPtr )
             {
                 using(SmartHandles.InterruptState.Disable( ))
                 {
-                    ContextSwitch( );
+                    unsafe
+                    {
+                        return ContextSwitch(ThreadManager.Instance, stackPtr );
+                    }
                 }
             }
 

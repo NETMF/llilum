@@ -342,7 +342,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             if (expr.Type != type)
             {
                 // Null pointers can be cast to any non-value type.
-                if((expr.Value == null) && !(type is ValueTypeRepresentation))
+                if(expr.IsEqualToZero() && !(type is ValueTypeRepresentation))
                 {
                     return CreateNewNullPointer( type );
                 }

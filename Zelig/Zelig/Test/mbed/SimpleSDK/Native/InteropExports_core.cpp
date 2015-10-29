@@ -10,11 +10,11 @@ extern "C"
 {
 
     //
-    // We want to run ISRs in privilged Handler mode using the Main Stack Pointer and all the other tasks 
+    // We want to run ISRs in privileged Handler mode using the Main Stack Pointer and all the other tasks 
     // in privileged Thread mode using the Process Stack Pointer. 
     //
     // We will assume that native context switching is possible when processor initialization is carried out in
-    // Handler/Privileged mode. Of course that is not a complete guarantee. After carrying out the initailization of the 
+    // Handler/Privileged mode. Of course that is not a complete guarantee. After carrying out the initialization of the 
     // idle thread task, we will let the initialization thread return to thread mode upon first context switch as per classic 
     // technique mentioned below, from ARM reference manual. As switching the mode is carried out naturally by 
     // setting the appropriate flag, there is nothing else we need to do at initialization time. See context switch code 
@@ -155,9 +155,15 @@ extern "C"
         return __get_BASEPRI() >> (8 - __NVIC_PRIO_BITS);
     }
 
-    /*__STATIC_INLINE*/ void CMSIS_STUB_SCB__set_BASEPRI(uint32_t basePri)
+    /*__STATIC_INLINE*/ uint32_t CMSIS_STUB_SCB__set_BASEPRI(uint32_t basePri)
     {
+        __set_PRIMASK(1);
+        __ISB();
+        register uint32_t prev = __get_BASEPRI() >> (8 - __NVIC_PRIO_BITS);
         __set_BASEPRI(basePri << (8 - __NVIC_PRIO_BITS));
+        __set_PRIMASK(0);
+        __ISB();
+        return prev;
     }
 
     /*__STATIC_INLINE*/ uint32_t CMSIS_STUB_SCB__get_FAULTMASK()
@@ -295,32 +301,23 @@ extern "C"
     //
     // The managed portion of the PendSV_Handler
     //
-    extern void PendSV_Handler_Zelig_VFP_NoFPContext();
-    extern void PendSV_Handler_Zelig_VFP_FullFPContext();
+    extern void PendSV_Handler_Zelig_VFP();
     extern void PendSV_Handler_Zelig();
 
     //
     // A convenience storage space to signal when the floating
     // point context is active 
     //
-    uint32_t fp_ctx_active = 0x0;
 
     __attribute__((naked)) void PendSV_Handler(void)
     {
-        __ASM volatile ("MRS      R0, PSP");                // Save current process stack pointer value into R0
+        __ASM volatile ("MRS      R0, PSP");                 // Save current process stack pointer value into R0
 
 #if __FPU_USED != 0
-        __ASM volatile ("TST      LR, #0x10");              // When bit 4 in LR is zero (0), we need to stack FP registers as well 
-        __ASM volatile ("IT       EQ");        
+        __ASM volatile ("ANDS     R1, LR, #0x10");           // When bit 4 in LR is zero (0), we need to stack FP registers as well 
+        __ASM volatile ("CMP      R1, #0");                  // R1 is the second parameter of PendSV_Handler_Zelig_VFP_FullFPContext
+        __ASM volatile ("IT       EQ");
         __ASM volatile ("VSTMDBEQ R0!, {S16-S31}");
-
-        __ASM volatile ("MOV      R1, %0" : /*output*/ : "r"(&fp_ctx_active));  // signal FP context active
-
-        __ASM volatile ("ITE      EQ");
-        __ASM volatile ("MOVEQ    R2, #1");
-        __ASM volatile ("MOVNE    R2, #0");
-
-        __ASM volatile ("STR      R2, [R1]");
 #endif
 
         __ASM volatile ("MOV      R2, LR");                  // Save LR and CONTROL, to save the status and privilege/stack mode
@@ -329,23 +326,20 @@ extern "C"
         __ASM volatile ("STMDB    R0!, {R2-R11}");           // Stack the SW stack frame, a total of 10 registers, including R2/3
 
 #if __FPU_USED != 0
-        fp_ctx_active ?                                      // Perform context switch, practically setting the stack pointer for the next task
-            PendSV_Handler_Zelig_VFP_FullFPContext() :
-            PendSV_Handler_Zelig_VFP_NoFPContext  () ;          
+        PendSV_Handler_Zelig_VFP();
 #else
         PendSV_Handler_Zelig();                              // Perform context switch, practically setting the stack pointer for the next task
 #endif
-
-        __ASM volatile ("MRS      R0 , psp");                // Retrivee next process stack pointer, as set by the PendSV_Handler_Zelig() call 
 
         __ASM volatile ("LDMIA    R0!, {R2-R11}");           // Unstack the next tasks state
 
         __ASM volatile ("MOV      LR, R2");                  // Restore LR and CONTROL, to restore the status and privilege/stack mode
         __ASM volatile ("MSR      CONTROL, R3");
-        __ASM volatile ("ISB");                              // architectural recommendation, always use ISB after updatign control register
+        __ASM volatile ("ISB");                              // architectural recommendation, always use ISB after updating control register
 
 #if __FPU_USED != 0
-        __ASM volatile ("TST      LR, #0x10");               // When bit 4 in LR is zero (0), we need to stack FP registers as well 
+        __ASM volatile ("ANDS     R1, LR, #0x10");               // When bit 4 in LR is zero (0), we need to stack FP registers as well 
+        __ASM volatile ("CMP      R1, #0");
         __ASM volatile ("IT       EQ");
         __ASM volatile ("VLDMIAEQ R0!, {S16-S31}");
 #endif
@@ -405,15 +399,5 @@ extern "C"
         CESR &= ~(0x00000001);
 
         *((uint32_t volatile *)0x4000D000) = CESR;
-    }
-
-    uint32_t CUSTOM_STUB_GetFPContextFlag()
-    {
-        return fp_ctx_active;
-    }
-
-    void CUSTOM_STUB_SetFPContextFlag(uint32_t flag)
-    {
-        fp_ctx_active = flag;
     }
 }

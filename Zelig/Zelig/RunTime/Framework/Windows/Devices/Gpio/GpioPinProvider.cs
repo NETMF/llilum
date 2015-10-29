@@ -5,10 +5,11 @@
 namespace Windows.Devices.Gpio.Provider
 {
     using System;
+    using Windows.Foundation;
 
     public interface IGpioPinProvider : IDisposable
     {
-        //event TypedEventHandler<IGpioPinProvider, GpioPinProviderValueChangedEventArgs> ValueChanged;
+        event TypedEventHandler<GpioPin, GpioPinValueChangedEventArgs> ValueChanged;
 
         TimeSpan DebounceTimeout
         {

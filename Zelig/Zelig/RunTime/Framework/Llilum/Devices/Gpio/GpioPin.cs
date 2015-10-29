@@ -7,11 +7,37 @@ namespace Microsoft.Llilum.Devices.Gpio
     using System;
     using System.Runtime.CompilerServices;
 
+    public delegate void ValueChangedHandler( object sender, PinEdge args );
+
     public abstract class GpioPin : IDisposable
     {
-        private PinDirection    m_pinDirection;
-        private PinMode         m_pinMode;
+        private PinDirection        m_pinDirection;
+        private PinMode             m_pinMode;
+        private PinEdge             m_activePinEdge;
+        private ValueChangedHandler m_evt;
 
+        public event ValueChangedHandler ValueChanged
+        {
+            add
+            {
+                var old = m_evt;
+                m_evt += value;
+
+                if (old == null)
+                {
+                    EnableInterrupt();
+                }
+            }
+            remove
+            {
+                m_evt -= value;
+
+                if (m_evt == null)
+                {
+                    DisableInterrupt();
+                }
+            }
+        }
 
         public static int BoardPinCount
         {
@@ -49,13 +75,28 @@ namespace Microsoft.Llilum.Devices.Gpio
             }
         }
 
+        public PinEdge ActivePinEdge
+        {
+            get
+            {
+                return m_activePinEdge;
+            }
+            set
+            {
+                m_activePinEdge = value;
+                SetActivePinEdge(value);
+            }
+        }
+
         public abstract void Dispose();
 
         public abstract int Read();
 
-        public abstract void SetPinMode(PinMode pinMode);
+        protected abstract void SetPinMode(PinMode pinMode);
 
-        public abstract void SetPinDirection(PinDirection pinDirection);
+        protected abstract void SetPinDirection(PinDirection pinDirection);
+
+        protected abstract void SetActivePinEdge(PinEdge pinEdge);
 
         public abstract void Write(int value);
 
@@ -73,7 +114,17 @@ namespace Microsoft.Llilum.Devices.Gpio
 
             return newPin;
         }
-        
+
+        protected void SendEventInternal(PinEdge pinEdge)
+        {
+            m_evt?.Invoke(this, pinEdge);
+        }
+
+        protected abstract void EnableInterrupt();
+
+        protected abstract void DisableInterrupt();
+
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern GpioPin TryAcquireGpioPin(int pinNumber);
 
@@ -95,5 +146,15 @@ namespace Microsoft.Llilum.Devices.Gpio
         PullDown = 3,
         OpenDrain = 4,
         PullDefault = PullDown,
+    }
+
+    public enum PinEdge
+    {
+        None        = 0,
+        RisingEdge  = 1,
+        FallingEdge = 2,
+        BothEdges   = 3,
+        LevelLow    = 4,
+        LevelHigh   = 5,
     }
 }

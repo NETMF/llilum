@@ -146,8 +146,8 @@ namespace Microsoft.Zelig.Runtime.Synchronization
         ThreadImpl                         m_source;
         WaitableObject                     m_target;
         SchedulerTime                      m_timeout;
-        bool                               m_processed;
-        bool                               m_fulfilled;
+        volatile bool                      m_processed;
+        volatile bool                      m_fulfilled;
 
         //
         // Constructor Methods
@@ -231,6 +231,7 @@ namespace Microsoft.Zelig.Runtime.Synchronization
             if(s_recycledCount < RecycleLimit)
             {
                 m_processed = false;
+                m_fulfilled = false;
 
                 s_recycledCount++;
                 s_recycledList.InsertAtTail( m_linkTowardTarget );

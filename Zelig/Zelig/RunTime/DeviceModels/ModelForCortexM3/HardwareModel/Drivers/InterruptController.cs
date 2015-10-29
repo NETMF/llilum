@@ -41,7 +41,18 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
 
     public abstract class InterruptController
     {
-        public delegate void Callback( Handler handler );
+        public delegate void Callback( InterruptData data );
+
+        /// <summary>
+        /// This structure contains the interrupt handler and any data associated with the interrupt.
+        /// Context and Subcontext is interrupt dependent data and is not required to be set.
+        /// </summary>
+        public struct InterruptData
+        {
+            public uint    Context;
+            public uint    Subcontext;
+            public Handler Handler;
+        }
 
         public class Handler
         {
@@ -49,24 +60,22 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
             // State
             //
 
-            private  readonly int                      m_index;
-            private  readonly int                      m_section;
-            internal readonly InterruptPriority        m_priority;
-            private  readonly InterruptSettings        m_settings;
-            private  readonly Callback                 m_callback;
-            internal readonly RT.KernelNode< Handler > m_node;
+            private  readonly ProcessorARMv7M.IRQn_Type m_index;
+            internal readonly InterruptPriority         m_priority;
+            private  readonly InterruptSettings         m_settings;
+            private  readonly Callback                  m_callback;
+            internal readonly RT.KernelNode< Handler >  m_node;
 
             //
             // Constructor Methods
             //
 
-            private Handler( int               index    ,
-                             InterruptPriority priority ,
-                             InterruptSettings settings ,
-                             Callback          callback )
+            private Handler( ProcessorARMv7M.IRQn_Type index    ,
+                             InterruptPriority         priority ,
+                             InterruptSettings         settings ,
+                             Callback                  callback )
             {
-                m_index    = index % 32;
-                m_section  = index / 32;
+                m_index    = index;
                 m_priority = priority;
                 m_settings = settings;
                 m_callback = callback;
@@ -78,55 +87,39 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
             // Helper Methods
             //
 
-            public static Handler Create( int               index    ,
-                                          InterruptPriority priority ,
-                                          InterruptSettings settings ,
-                                          Callback          callback )
+            public static Handler Create( ProcessorARMv7M.IRQn_Type index    ,
+                                          InterruptPriority         priority ,
+                                          InterruptSettings         settings ,
+                                          Callback                  callback )
             {
                 return new Handler( index, priority, settings, callback );
             }
 
             public void Enable()
             {
-                NVIC.EnableInterrupt( (ProcessorARMv7M.IRQn_Type)m_index );
+                NVIC.EnableInterrupt( m_index );
             }
 
             public void Disable()
             {
-                NVIC.DisableInterrupt( (ProcessorARMv7M.IRQn_Type)m_index );
+                NVIC.DisableInterrupt( m_index );
             }
 
-            public void Invoke()
+            public void Invoke( InterruptData interruptData )
             {
-                m_callback( this );
+                m_callback( interruptData );
             }
 
             //
             // Access Methods
             //
 
-            public uint Mask
-            {
-                [RT.Inline]
-                get
-                {
-                    return 1U << m_index;
-                }
-            }
 
-            public int Index
+            public ProcessorARMv7M.IRQn_Type Index
             {
                 get
                 {
                     return m_index;
-                }
-            }
-
-            public int Section
-            {
-                get
-                {
-                    return m_section;
                 }
             }
 
@@ -162,8 +155,9 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
         // State
         //
 
-        private RT.KernelList< Handler >    m_handlers;
-        private RT.Peripherals.Continuation m_softCallback;
+        private RT.KernelList< Handler >               m_handlers;
+        private System.Threading.Thread                m_interruptThread;
+        private RT.KernelCircularBuffer<InterruptData> m_interrupts;
 
         //
         // Helper Methods
@@ -172,6 +166,14 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
         public void Initialize()
         {
             m_handlers = new RT.KernelList< Handler >();
+            m_interrupts = new RT.KernelCircularBuffer<InterruptData>(32);
+            m_interruptThread = new System.Threading.Thread(DispatchInterrupts);
+            m_interruptThread.Priority = System.Threading.ThreadPriority.Highest;
+        }
+
+        public void Activate()
+        {
+            m_interruptThread.Start();
         }
 
         //--//
@@ -213,7 +215,7 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
                     break;
                 }
 
-                NVIC.SetPriority( (ProcessorARMv7M.IRQn_Type)node.Target.Index, priorityIdx++ );
+                NVIC.SetPriority( node.Target.Index, priorityIdx++ );
             }
         }
 
@@ -250,71 +252,54 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
 
         public void ProcessInterrupt( bool fFastOnly )
         {
-        //    PXA27x.InterruptController ctrl = PXA27x.InterruptController.Instance;
+            InterruptData data;
+            ProcessorARMv7M.IRQn_Type activeInterrupt = GetNextActiveInterupt();
 
-        //    while(true)
-        //    {
-        //        var  ichp = ctrl.ICHP;
-        //        uint vector;
+            data.Context    = 0;
+            data.Subcontext = 0;
 
-        //        if(fFastOnly)
-        //        {
-        //            if(ichp.VAL_FIQ == false)
-        //            {
-        //                break;
-        //            }
+            while (activeInterrupt != ProcessorARMv7M.IRQn_Type.Invalid)
+            {
+                RT.KernelNode<Handler> node = m_handlers.StartOfForwardWalk;
 
-        //            vector = ichp.FIQ;
-        //        }
-        //        else
-        //        {
-        //            if(ichp.VAL_IRQ == false)
-        //            {
-        //                break;
-        //            }
+                while (true)
+                {
+                    if (node.IsValidForForwardMove == false)
+                    {
+                        break;
+                    }
 
-        //            vector = ichp.IRQ;
-        //        }
+                    Handler hnd = node.Target;
 
-        //        uint index   = vector % 32;
-        //        uint section = vector / 32;
+                    if (hnd.Index == activeInterrupt)
+                    {
+                        data.Handler = hnd;
 
-        //        RT.KernelNode< Handler > node = m_handlers.StartOfForwardWalk;
+                        if ( hnd.IsFastHandler )
+                        {
+                            hnd.Invoke(data);
+                        }
+                        else
+                        {
+                            PostInterrupt(data);
+                        }
+                    }
 
-        //        while(true)
-        //        {
-        //            if(node.IsValidForForwardMove == false)
-        //            {
-        //                //
-        //                // BUGBUG: Unhandled interrupts. We should crash. For now we just disable them.
-        //                //
-        //                uint mask = 1U << (int)index;
+                    node = node.Next;
+                }
 
-        //                if(section == 0)
-        //                {
-        //                    ctrl.ICMR &= ~mask;
-        //                }
-        //                else
-        //                {
-        //                    ctrl.ICMR2 &= ~mask;
-        //                }
-        //                break;
-        //            }
+                ClearInterrupt(activeInterrupt);
+                activeInterrupt = GetNextActiveInterupt();
+            }
+        }
+    
+        public virtual ProcessorARMv7M.IRQn_Type GetNextActiveInterupt()
+        {
+            return ProcessorARMv7M.IRQn_Type.Invalid;
+        }
 
-        //            Handler hnd = node.Target;
-
-        //            if(hnd.Section == section)
-        //            {
-        //                if(hnd.Index == index && hnd.Section == section)
-        //                {
-        //                    hnd.Invoke();
-        //                    break;
-        //                }
-        //            }
-
-        //            node = node.Next;
-        //        }
-        //    }
+        public virtual void ClearInterrupt( ProcessorARMv7M.IRQn_Type interrupt )
+        {
         }
 
         public void CauseInterrupt()
@@ -324,18 +309,25 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
 
         public void ContinueUnderNormalInterrupt( RT.Peripherals.Continuation dlg )
         {
-            m_softCallback = dlg;
-
-            CauseInterrupt();
         }
 
-        internal void ProcessSoftInterrupt()
+        public void PostInterrupt(InterruptData interruptData)
         {
-            RT.Peripherals.Continuation dlg = System.Threading.Interlocked.Exchange( ref m_softCallback, null );
+            RT.BugCheck.AssertInterruptsOff();
 
-            if(dlg != null)
+            m_interrupts.EnqueueNonblocking(interruptData);
+        }
+
+        private void DispatchInterrupts()
+        {
+            while (true)
             {
-                dlg();
+               InterruptData intr = m_interrupts.DequeueBlocking();
+
+                if (intr.Handler != null)
+                {
+                    intr.Handler.Invoke( intr );
+                }
             }
         }
 

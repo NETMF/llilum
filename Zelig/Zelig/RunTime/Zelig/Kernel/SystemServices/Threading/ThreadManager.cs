@@ -167,7 +167,7 @@ namespace Microsoft.Zelig.Runtime
             m_mainThread.Start();
 
             //
-            // Long jump to the idle thread context, which will reenable interrupts and 
+            // Long jump to the idle thread context, which will re-enable interrupts and 
             // cause the first context switch to the process stack of this thread
             //
             bootstrapThread.SwappedOutContext.SwitchTo();
@@ -235,9 +235,12 @@ namespace Microsoft.Zelig.Runtime
 
             BugCheck.Assert( thisThread != null, BugCheck.StopCode.NoCurrentThread );
 
-            InsertInPriorityOrder( thisThread );
+            using (SmartHandles.InterruptState hnd = SmartHandles.InterruptState.Disable())
+            {
+                InsertInPriorityOrder(thisThread);
 
-            RescheduleAndRequestContextSwitchIfNeeded( HardwareException.None );
+                RescheduleAndRequestContextSwitchIfNeeded(HardwareException.None);
+            }
         }
 
         public virtual void SwitchToWait( Synchronization.WaitingRecord wr )

@@ -68,6 +68,10 @@
       <Project>{dc8c38d7-780b-4b13-8ace-9050e39cc51c}</Project>
       <Name>Windows.Devices</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\RunTime\Framework\Windows\Foundation\Windows.Foundation.csproj">
+      <Project>{8EFE86D1-094F-4450-B2D3-4B6045CFEC96}</Project>
+      <Name>Windows.Foundation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\RunTime\Zelig\Kernel\Kernel.csproj">
       <Project>{186f31a3-ef89-4a25-b2d5-20060509aa01}</Project>
       <Name>Kernel</Name>

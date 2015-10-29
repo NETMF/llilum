@@ -15,6 +15,7 @@
 
 #include "analogin_api.h"
 #include "gpio_api.h"
+#include "gpio_irq_api.h"
 #include "spi_api.h"
 #include "i2c_api.h"
 #include "core_cmFunc.h"

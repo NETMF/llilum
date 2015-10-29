@@ -17,7 +17,7 @@ namespace Microsoft.Zelig.K64F
         //
         // Serial Ports
         //
-        private static readonly string[] m_serialPorts = { "UART0", "UART1" };
+        private static readonly string[] m_serialPorts = { "UART0", "UART1", "UART3" };
 
         public static readonly ChipsetAbstration.Board.SerialPortInfo UART0 = new ChipsetAbstration.Board.SerialPortInfo() 
         {
@@ -32,7 +32,15 @@ namespace Microsoft.Zelig.K64F
             TxPin = (int)PinName.USBTX,
             RxPin = (int)PinName.USBRX,
             RtsPin = unchecked((int)PinName.NC),
-            CtsPin = unchecked ((int)PinName.NC)
+            CtsPin = unchecked((int)PinName.NC)
+        };
+
+        public static readonly ChipsetAbstration.Board.SerialPortInfo UART3 = new ChipsetAbstration.Board.SerialPortInfo()
+        {
+            TxPin = (int)PinName.PTC17,
+            RxPin = (int)PinName.PTC16,
+            RtsPin = unchecked((int)PinName.NC),
+            CtsPin = unchecked((int)PinName.NC)
         };
 
         //
@@ -79,6 +87,8 @@ namespace Microsoft.Zelig.K64F
                     return UART0;
                 case "UART1":
                     return UART1;
+                case "UART3":
+                    return UART3;
                 default:
                     return null;
             }
@@ -90,6 +100,21 @@ namespace Microsoft.Zelig.K64F
         public override int GetSystemTimerIRQNumber( )
         {
             return (int)IRQn.PIT3_IRQn;
+        }
+
+        public override int GetSerialPortIRQNumber(string portName)
+        {
+            switch (portName)
+            {
+                case "UART0":
+                    return (int)IRQn.UART0_RX_TX_IRQn;
+                case "UART1":
+                    return (int)IRQn.UART1_RX_TX_IRQn;
+                case "UART3":
+                    return (int)IRQn.UART3_RX_TX_IRQn;
+                default:
+                    throw new NotSupportedException();
+            }
         }
     }
 }

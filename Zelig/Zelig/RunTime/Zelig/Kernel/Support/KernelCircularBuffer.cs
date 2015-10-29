@@ -237,6 +237,94 @@ namespace Microsoft.Zelig.Runtime
             }
         }
 
+        [Inline]
+        private int DequeueMultipleNonblocking(ref T[] val, int offset, int maxCount)
+        {
+            int totalRead = 0;
+
+            if (maxCount == 0 || this.IsEmpty)
+            {
+                return 0;
+            }
+
+            if (this.IsFull)
+            {
+                m_writerEvent.Set();
+            }
+
+            //
+            // Potentially read twice since the data could loop around the circular
+            // buffer.
+            //
+            for (int i = 0; i < 2; i++)
+            {
+                int countToRead     = maxCount;
+                int availableLinear = m_size - m_writerPos;
+
+                if (m_count < availableLinear)
+                {
+                    availableLinear = m_count;
+                }
+
+                if (availableLinear < countToRead)
+                {
+                    countToRead = availableLinear;
+                }
+
+                Array.Copy(m_array, m_readerPos, val, offset, countToRead);
+
+                m_readerPos = NextPosition(m_readerPos + countToRead - 1);
+                m_count    -= countToRead;
+                maxCount   -= countToRead;
+                offset     += countToRead;
+                totalRead  += countToRead;
+
+                if (m_count == 0 || maxCount == 0)
+                {
+                    break;
+                }
+            }
+
+            if (this.IsEmpty)
+            {
+                m_readerEvent.Reset();
+            }
+
+            return totalRead;
+        }
+
+        public int DequeueMultipleBlocking(ref T[] val, int offset, int maxCount, int timeout)
+        {
+            int countRead = 0;
+
+            BugCheck.AssertInterruptsOn();
+
+            if (val.Length < offset + maxCount)
+            {
+                throw new ArgumentException();
+            }
+
+            using (SmartHandles.InterruptState.Disable())
+            {
+                countRead = DequeueMultipleNonblocking(ref val, offset, maxCount);
+            }
+
+            if (countRead == 0)
+            {
+                if (!m_readerEvent.WaitOne(timeout, false))
+                {
+                    throw new TimeoutException();
+                }
+
+                using (SmartHandles.InterruptState.Disable())
+                {
+                    countRead += DequeueMultipleNonblocking(ref val, offset, maxCount);
+                }
+            }
+
+            return countRead;
+        }
+
         //--//
 
         [Inline]

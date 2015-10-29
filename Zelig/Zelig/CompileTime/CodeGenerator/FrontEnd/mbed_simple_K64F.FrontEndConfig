@@ -48,7 +48,6 @@
 -CompilationPhaseDisabled PrepareForRegisterAllocation
 -CompilationPhaseDisabled CollectRegisterAllocationConstraints
 -CompilationPhaseDisabled AllocateRegisters
--CompilationPhaseDisabled ConvertToLLVMIntermediateRepresentation
 #-CompilationPhaseDisabled GenerateImage
 #-CompilationPhaseDisabled Done
 

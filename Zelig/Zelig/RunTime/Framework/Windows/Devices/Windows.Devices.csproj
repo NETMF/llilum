@@ -94,6 +94,10 @@
       <Project>{186f31a3-ef89-4a25-b2d5-20060501aa01}</Project>
       <Name>mscorlib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Foundation\Windows.Foundation.csproj">
+      <Project>{8EFE86D1-094F-4450-B2D3-4B6045CFEC96}</Project>
+      <Name>Windows.Foundation</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

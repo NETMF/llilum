@@ -4,14 +4,10 @@
 
 using System;
 using Windows.Devices.Gpio.Provider;
+using Windows.Foundation;
 
 namespace Windows.Devices.Gpio
 {
-    // FUTURE: This should be "EventHandler<GpioPinValueChangedEventArgs>"
-    public delegate void GpioPinValueChangedEventHandler(
-        Object sender,
-        GpioPinValueChangedEventArgs e);
-
     /// <summary>
     /// Represents a general-purpose I/O (GPIO) pin.
     /// </summary>
@@ -21,18 +17,10 @@ namespace Windows.Devices.Gpio
 
         private GpioPinDriveMode _driveMode = GpioPinDriveMode.Input;
         private GpioPinValue _lastOutputValue = GpioPinValue.Low;
-        private GpioPinValueChangedEventHandler _callbacks = null;
+        private TypedEventHandler<GpioPin, GpioPinValueChangedEventArgs> _callbacks = null;
 
         internal GpioPin()
         {
-        }
-
-        internal IGpioPinProvider PinProvider
-        {
-            set
-            {
-                _provider = value;
-            }
         }
 
         ~GpioPin()
@@ -45,24 +33,18 @@ namespace Windows.Devices.Gpio
         /// when the pin is configured as an input, or when a value is written to the pin when the pin is configured as
         /// an output.
         /// </summary>
-        public event GpioPinValueChangedEventHandler ValueChanged
+        public event TypedEventHandler<GpioPin, GpioPinValueChangedEventArgs> ValueChanged
         {
             add
             {
                 ThrowIfDisposed();
 
                 var callbacksOld = _callbacks;
-                var callbacksNew = (GpioPinValueChangedEventHandler)Delegate.Combine(callbacksOld, value);
+                _callbacks += value;
 
-                try
+                if (callbacksOld == null)
                 {
-                    _callbacks = callbacksNew;
-                    // TODO: Update whether we're signed up for interrupts.
-                }
-                catch
-                {
-                    _callbacks = callbacksOld;
-                    throw;
+                    _provider.ValueChanged += HandlePinChangedEvent;
                 }
             }
 
@@ -70,18 +52,11 @@ namespace Windows.Devices.Gpio
             {
                 ThrowIfDisposed();
 
-                var callbacksOld = _callbacks;
-                var callbacksNew = (GpioPinValueChangedEventHandler)Delegate.Remove(callbacksOld, value);
+                _callbacks -= value;
 
-                try
+                if( _callbacks == null )
                 {
-                    _callbacks = callbacksNew;
-                    // TODO: Update whether we're signed up for interrupts.
-                }
-                catch
-                {
-                    _callbacks = callbacksOld;
-                    throw;
+                    _provider.ValueChanged -= HandlePinChangedEvent;
                 }
             }
         }
@@ -99,14 +74,14 @@ namespace Windows.Devices.Gpio
             {
                 ThrowIfDisposed();
 
-                throw new NotImplementedException();
+                return _provider.DebounceTimeout;
             }
 
             set
             {
                 ThrowIfDisposed();
 
-                throw new NotImplementedException();
+                _provider.DebounceTimeout = value;
             }
         }
 
@@ -129,6 +104,14 @@ namespace Windows.Devices.Gpio
         /// </summary>
         /// <value>The sharing mode in which the GPIO pin is open.</value>
         public GpioSharingMode SharingMode => GpioSharingMode.Exclusive;
+
+        internal IGpioPinProvider PinProvider
+        {
+            set
+            {
+                _provider = value;
+            }
+        }
 
         /// <summary>
         /// Reads the current value of the general-purpose I/O (GPIO) pin.
@@ -239,20 +222,12 @@ namespace Windows.Devices.Gpio
             }
         }
 
-        /// <summary>
-        /// Handles internal events and re-dispatches them to the publicly subsribed delegates.
-        /// </summary>
-        /// <param name="edge">The state transition for this event.</param>
-        internal void OnPinChangedInternal(GpioPinEdge edge)
+        private void HandlePinChangedEvent(GpioPin sender, GpioPinValueChangedEventArgs eventArgs)
         {
-            GpioPinValueChangedEventHandler callbacks = null;
-
             if (_provider != null)
             {
-                callbacks = _callbacks;
+                _callbacks?.Invoke(this, eventArgs);
             }
-
-            callbacks?.Invoke(this, new GpioPinValueChangedEventArgs(edge));
         }
 
         /// <summary>

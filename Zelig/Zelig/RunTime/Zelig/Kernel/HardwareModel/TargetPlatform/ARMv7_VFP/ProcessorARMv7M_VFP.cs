@@ -110,11 +110,5 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
         [DllImport( "C" )]
         private static extern bool CUSTOM_STUB_IsFPContextActiveOnCurrentMode( ); 
-
-        [DllImport( "C" )]
-        private static extern uint CUSTOM_STUB_GetFPContextFlag( ); 
-
-        [DllImport( "C" )]
-        private static extern void CUSTOM_STUB_SetFPContextFlag( uint flag ); 
     }
 }
