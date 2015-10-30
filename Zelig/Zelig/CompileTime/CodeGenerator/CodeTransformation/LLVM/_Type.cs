@@ -35,6 +35,7 @@ namespace Microsoft.Zelig.LLVM
             Module = owner;
 
             Debug.Assert( LlvmModule.GetTypeByName( name ) == null, "Trying to override _Type" );
+            var systemNamespace = LlvmModule.DIBuilder.CreateNamespace( LlvmModule.DICompileUnit, "System", null, 0 );
 
             // basic types need to use DebugBasicType since the LLVM primitive types are all uniqued
             // and some of them would end up overlapping (i.e. System.UInt16 and Char are both i16 to
@@ -85,8 +86,12 @@ namespace Microsoft.Zelig.LLVM
 
             case "System.IntPtr":
             case "System.UIntPtr":
-                // While this is generally void* in C#, LLVM prefers typed pointers.
-                DebugType = new DebugPointerType( LlvmModule.Context.Int8Type, LlvmModule, null );
+                // While this is generally void* in C#, LLVM doesn't have a void pointer type.
+                // To help keep the debug views more readable, this creates a typedef for the
+                // pointer, since pointer types don't have names
+                var baseType = new DebugPointerType( LlvmModule.Context.Int8Type, LlvmModule, null );
+                var typeDef = LlvmModule.DIBuilder.CreateTypedef( baseType, name.Substring( 7 ), null, 0, systemNamespace );
+                DebugType = new DebugPointerType( baseType.NativeType, typeDef );
                 IsPrimitiveType = true;
                 break;
 

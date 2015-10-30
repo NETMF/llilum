@@ -110,8 +110,11 @@ namespace Llvm.NET
         {
             value = default(T);
             object item;
-            if( !Items.TryGetValue( id, out item ) )
-                return false;
+            lock( Items )
+            {
+                if( !Items.TryGetValue( id, out item ) )
+                    return false;
+            }
 
             if( !(item is T) )
                 return false;
@@ -120,6 +123,6 @@ namespace Llvm.NET
             return true;
         }
 
-        Dictionary<string, object> Items = new Dictionary<string, object>();
+        readonly Dictionary<string, object> Items = new Dictionary<string, object>();
     }
 }
