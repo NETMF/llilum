@@ -68,12 +68,22 @@ namespace LlilumApplication
             using( StreamReader stdOut = process.StandardOutput )
             using( StreamReader stdErr = process.StandardError )
             {
-                var stdoutTask = Task.Run( ( ) => SendProcessOutputToPaneAsync( outputPaneWriter, stdOut, cancellationToken ) );
-                var stderrTask = Task.Run( ( ) => SendProcessOutputToPaneAsync( outputPaneWriter, stdErr, cancellationToken ) );
+                try
+                {
+                    var stdoutTask = Task.Run( ( ) => SendProcessOutputToPaneAsync( outputPaneWriter, stdOut, cancellationToken ) );
+                    var stderrTask = Task.Run( ( ) => SendProcessOutputToPaneAsync( outputPaneWriter, stdErr, cancellationToken ) );
 
-                await Task.WhenAll( stdoutTask, stderrTask );
-                if( process.ExitCode != 0 )
-                    throw new ApplicationException( $"Flash tool failed with exit code {process.ExitCode}" );
+                    await Task.WhenAll( stdoutTask, stderrTask );
+                    if( process.ExitCode != 0 )
+                        throw new ApplicationException( $"Flash tool failed with exit code {process.ExitCode}" );
+                }
+                catch( OperationCanceledException )
+                {
+                    if( !process.HasExited )
+                    {
+                        process.CloseMainWindow( );
+                    }
+                }
             }
         }
 
