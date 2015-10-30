@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Native", "I2cTemperatureSensor\Native\Native.vcxproj", "{2A3586B9-7F8B-4215-943F-D7ECC81DBD8F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Managed", "I2cTemperatureSensor\Managed\Managed.csproj", "{82477C67-5E33-437A-9AE5-33F9808CC9F3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|ARM = Debug|ARM
+		Release|Any CPU = Release|Any CPU
+		Release|ARM = Release|ARM
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2A3586B9-7F8B-4215-943F-D7ECC81DBD8F}.Debug|Any CPU.ActiveCfg = Debug|ARM
+		{2A3586B9-7F8B-4215-943F-D7ECC81DBD8F}.Debug|ARM.ActiveCfg = Debug|ARM
+		{2A3586B9-7F8B-4215-943F-D7ECC81DBD8F}.Debug|ARM.Build.0 = Debug|ARM
+		{2A3586B9-7F8B-4215-943F-D7ECC81DBD8F}.Debug|ARM.Deploy.0 = Debug|ARM
+		{2A3586B9-7F8B-4215-943F-D7ECC81DBD8F}.Release|Any CPU.ActiveCfg = Release|ARM
+		{2A3586B9-7F8B-4215-943F-D7ECC81DBD8F}.Release|ARM.ActiveCfg = Release|ARM
+		{2A3586B9-7F8B-4215-943F-D7ECC81DBD8F}.Release|ARM.Build.0 = Release|ARM
+		{2A3586B9-7F8B-4215-943F-D7ECC81DBD8F}.Release|ARM.Deploy.0 = Release|ARM
+		{82477C67-5E33-437A-9AE5-33F9808CC9F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82477C67-5E33-437A-9AE5-33F9808CC9F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82477C67-5E33-437A-9AE5-33F9808CC9F3}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{82477C67-5E33-437A-9AE5-33F9808CC9F3}.Debug|ARM.Build.0 = Debug|Any CPU
+		{82477C67-5E33-437A-9AE5-33F9808CC9F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82477C67-5E33-437A-9AE5-33F9808CC9F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82477C67-5E33-437A-9AE5-33F9808CC9F3}.Release|ARM.ActiveCfg = Release|Any CPU
+		{82477C67-5E33-437A-9AE5-33F9808CC9F3}.Release|ARM.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
