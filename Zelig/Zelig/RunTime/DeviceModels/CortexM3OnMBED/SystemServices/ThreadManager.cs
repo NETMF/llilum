@@ -31,6 +31,7 @@ namespace Microsoft.CortexM3OnMBED
             base.Activate( ); 
 
             m_timerForWaits = Drivers.SystemTimer.Instance.CreateTimer( WaitExpired );
+            DeviceModels.Chipset.CortexM3.Drivers.InterruptController.Instance.Activate();
         }
 
         public override void SetNextWaitTimer( RT.SchedulerTime nextTimeout )

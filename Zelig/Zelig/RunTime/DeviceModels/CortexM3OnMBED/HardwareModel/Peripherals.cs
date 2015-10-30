@@ -29,7 +29,6 @@ namespace Microsoft.CortexM3OnMBED
             base.Activate( ); 
             
             Drivers.SystemTimer.Instance.Initialize();
-            Drivers.InterruptController.Instance.Activate();
 
             //Drivers.GPIO.Instance.Initialize();
             //Drivers.I2C.Instance.Initialize();
