@@ -6,8 +6,10 @@ using Llvm.NET.Values;
 using Llvm.NET;
 using Llvm.NET.Types;
 using Llvm.NET.DebugInfo;
+using Microsoft.Zelig.CodeGeneration.IR;
 using Microsoft.Zelig.Runtime.TypeSystem;
 using Microsoft.Zelig.Debugging;
+using ConstantExpression = Llvm.NET.Values.ConstantExpression;
 
 namespace Microsoft.Zelig.LLVM
 {
@@ -21,7 +23,7 @@ namespace Microsoft.Zelig.LLVM
 
     public class _Module
     {
-        public _Module( string assemblyName )
+        public _Module( string assemblyName, TypeSystemForCodeTransformation typeSystem )
         {
             StaticState.RegisterAll( );
 
@@ -48,11 +50,15 @@ namespace Microsoft.Zelig.LLVM
                         };
 
             LlvmModule.AddModuleFlag( ModuleFlagBehavior.Override, Module.DebugVersionValue, Module.DebugMetadataVersion );
+
+            TypeSystem = typeSystem;
         }
 
-        public _Type GetOrInsertType( string name, int sizeInBits, bool isValueType )
+        internal TypeSystemForCodeTransformation TypeSystem { get; }
+
+        public _Type GetOrInsertType( TypeRepresentation tr )
         {
-            return _Type.GetOrInsertTypeImpl( this, name, sizeInBits, isValueType );
+            return _Type.GetOrInsertTypeImpl( this, tr );
         }
 
         public _Type GetOrInsertFunctionType( string name, _Type returnType, List<_Type> argTypes )
@@ -68,31 +74,37 @@ namespace Microsoft.Zelig.LLVM
             return timpl;
         }
 
-        public _Type GetOrInsertPointerType( string name, _Type underlyingType )
+        public _Type GetOrInsertPointerType( PointerTypeRepresentation tr, _Type underlyingType )
+        {
+            Debug.Assert( !underlyingType.DebugType.IsVoid );
+
+            var ptrType = new DebugPointerType( underlyingType.DebugType, LlvmModule );
+            var retVal = _Type.GetOrInsertTypeImpl( this, tr, ptrType );
+            retVal.UnderlyingType = underlyingType;
+            return retVal;
+        }
+
+        // REVIEW: Figure out if we can remove this, it's one of the reasons we have to keep using strings as the key for cacheing
+        public _Type GetOrInsertPointerType( _Type underlyingType )
         {
             Debug.Assert( !underlyingType.DebugType.IsVoid );
 
             var ptrType = new DebugPointerType( underlyingType.DebugType, LlvmModule );
             var sizeAndAlign = PointerSize;
-            var retVal = _Type.GetOrInsertTypeImpl( this, name, ( int )sizeAndAlign, true, ptrType );
-            retVal.IsBoxed = false;
+            var retVal = _Type.GetOrInsertTypeImpl( this, underlyingType.Name + "*", ( int )sizeAndAlign, true, ptrType );
             retVal.UnderlyingType = underlyingType;
             return retVal;
         }
 
-        public _Type GetOrInsertPointerType( _Type underlyingType )
+        public _Type GetOrInsertBoxedType( BoxedValueTypeRepresentation tr, _Type headerType, _Type underlyingType )
         {
-            return GetOrInsertPointerType( underlyingType.Name + "*", underlyingType );
-        }
+            Debug.Assert( tr.Size * 8 == headerType.SizeInBits + underlyingType.SizeInBits );
 
-        public _Type GetOrInsertBoxedType( string name, _Type headerType, _Type underlyingType )
-        {
-            int sizeInBits = headerType.SizeInBits + underlyingType.SizeInBits;
-            _Type retVal = _Type.GetOrInsertTypeImpl( this, name, sizeInBits, isValueType: false );
+            _Type retVal = _Type.GetOrInsertTypeImpl( this, tr );
             retVal.IsBoxed = true;
             retVal.UnderlyingType = underlyingType;
 
-            retVal.AddField( 0, headerType, "$header" );
+            retVal.AddField( 0, headerType, "header" );
             retVal.AddField( 0, underlyingType, "m_value" );
             retVal.SetupFields( );
 
@@ -103,13 +115,12 @@ namespace Microsoft.Zelig.LLVM
         {
             var arrayType = new DebugArrayType( type.DebugType, LlvmModule, 0 );
             var retVal = _Type.GetOrInsertTypeImpl( this, $"MemoryArray of {type.Name}", type.SizeInBits, true, arrayType );
-            retVal.IsBoxed = false;
             return retVal;
         }
 
-        public _Type GetType( string name ) => _Type.GetTypeImpl( name );
+        public _Type GetType( TypeRepresentation tr ) => _Type.GetOrInsertTypeImpl( this, tr );
 
-        public _Type GetVoidType( ) => GetType( "System.Void" );
+        public _Type GetVoidType( ) => GetType( TypeSystem.WellKnownTypes.System_Void );
 
         public _Value GetIntConstant( _Type type, ulong v, bool isSigned )
         {
@@ -123,16 +134,66 @@ namespace Microsoft.Zelig.LLVM
             return new _Value( this, type, val );
         }
 
+        internal DINamespace GetOrCreateDINamespace( TypeRepresentation tr )
+        {
+            return GetOrCreateDINamespace( tr.Namespace );
+        }
+
+        // Get a debug namespace descriptor from a Fully Qualified Name (FQN) for a namespace
+        // the FQNS name uses the standard .NET dotted form (parent.nested1.nested2[...])
+        private DINamespace GetOrCreateDINamespace( string fullName )
+        {
+            // "global" namespace is null
+            if( string.IsNullOrWhiteSpace( fullName ) )
+                return null;
+
+            // try the cached mapping first
+            DINamespace retVal;
+            if( m_DiNamespaces.TryGetValue( fullName, out retVal ) )
+                return retVal;
+
+            // find last "." in the name to get the most nested name
+            var parentLen = fullName.LastIndexOf( '.' );
+            if( parentLen < 0 )
+                parentLen = fullName.Length;
+
+            var parentNamespaceName = parentLen == fullName.Length ? null : fullName.Substring( 0, parentLen ); // take everything up to, but not including the last '.'
+            var namespaceName = parentNamespaceName == null ? fullName : fullName.Substring( parentLen + 1 ); // take everything after the last '.' in the name
+
+            var parent = GetOrCreateDINamespace( parentNamespaceName );
+            retVal = DIBuilder.CreateNamespace( parent, namespaceName, null, 0 );
+            m_DiNamespaces.Add( fullName, retVal );
+            return retVal;
+        }
+
+        // produces an iterator of all the Fully Qualified Names (FQN) for a given namespace starting with the root name and ending with the given FQN itself
+        IEnumerable<string> GetQualifiedNamespaceNames( string fullName )
+        {
+            if( string.IsNullOrWhiteSpace( fullName ) )
+            {
+                yield return null;
+                yield break;
+            }
+
+            for( int pos = fullName.IndexOf( '.' ); pos > 0 && pos < fullName.Length - 1; pos = fullName.IndexOf( '.', pos + 1 ) )
+            {
+                // produce name up to but not including the next '.' delimiter
+                yield return fullName.Substring( 0, pos );
+            }
+            yield return fullName;
+        }
+
+
         public _Value GetFloatConstant( float c )
         {
-            _Type t = GetType( "System.Single" );
+            _Type t = GetType( TypeSystem.WellKnownTypes.System_Single );
             Value val = LlvmModule.Context.CreateConstant( c );
             return new _Value( this, t, val );
         }
 
         public _Value GetDoubleConstant( double c )
         {
-            _Type t = GetType( "System.Double" );
+            _Type t = GetType( TypeSystem.WellKnownTypes.System_Double );
             Value val = LlvmModule.Context.CreateConstant( c );
             return new _Value( this, t, val );
         }
@@ -368,7 +429,6 @@ namespace Microsoft.Zelig.LLVM
             return retVal;
         }
 
-
         private Function CreateLLvmFunctionWithDebugInfo( LLVMModuleManager manager, MethodRepresentation method )
         {
             string mangledName = LLVMModuleManager.GetFullMethodName( method );
@@ -394,6 +454,7 @@ namespace Microsoft.Zelig.LLVM
 
         private readonly Dictionary<string, DIFile> m_DiFiles = new Dictionary<string, DIFile>( );
         private readonly Dictionary<int, _Function> m_FunctionMap = new Dictionary<int, _Function>( );
+        private readonly Dictionary<string, DINamespace> m_DiNamespaces = new Dictionary<string, DINamespace>( );
 
         static int GetMonotonicUniqueId( )
         {

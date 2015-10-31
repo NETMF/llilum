@@ -30,27 +30,6 @@ namespace Microsoft.Zelig.LLVM
             }
         }
 
-        public LLVM._Type GetOrInsertBasicTypeAsLLVMSingleValueType( TS.TypeRepresentation tr )
-        {
-            if( tr is TS.EnumerationTypeRepresentation )
-            {
-                tr = tr.UnderlyingType;
-            }
-
-            if( tr is TS.PointerTypeRepresentation )
-            {
-                tr = m_typeSystem.WellKnownTypes.System_IntPtr;
-            }
-
-            if( tr is TS.ValueTypeRepresentation && !( tr is TS.ScalarTypeRepresentation ) )
-            {
-                tr = m_typeSystem.WellKnownTypes.System_IntPtr;
-            }
-
-            bool isValueType = ( tr is TS.ValueTypeRepresentation );
-            return m_module.GetOrInsertType( tr.FullName, ( int )tr.Size * 8, isValueType );
-        }
-
         public LLVM._Type GetOrInsertInlineType( TS.TypeRepresentation tr )
         {
             _Type type = GetOrInsertType( tr );
@@ -132,10 +111,12 @@ namespace Microsoft.Zelig.LLVM
                 tr == wkt.System_Single ||
                 tr == wkt.System_Double ||
                 tr == wkt.System_IntPtr ||
-                tr == wkt.System_UIntPtr )
+                tr == wkt.System_UIntPtr ||
+                tr == wkt.System_Void )
             {
-                m_typeRepresentationsToType[ tr ] = GetOrInsertBasicTypeAsLLVMSingleValueType( tr );
-                return m_typeRepresentationsToType[ tr ];
+                _Type type = m_module.GetOrInsertType( tr );
+                m_typeRepresentationsToType[ tr ] = type;
+                return type;
             }
 
             string typeName = tr.FullName;
@@ -150,21 +131,20 @@ namespace Microsoft.Zelig.LLVM
                 }
 
                 _Type underlyingType = GetOrInsertType( tr.UnderlyingType );
-                m_typeRepresentationsToType[ tr ] = m_module.GetOrInsertPointerType( typeName, underlyingType );
+                m_typeRepresentationsToType[ tr ] = m_module.GetOrInsertPointerType( ( TS.PointerTypeRepresentation )tr, underlyingType );
                 return m_typeRepresentationsToType[ tr ];
             }
             else if( tr is TS.BoxedValueTypeRepresentation )
             {
                 _Type objectType = GetOrInsertType( wkt.System_Object ).UnderlyingType;
                 _Type underlyingType = GetOrInsertType( tr.UnderlyingType );
-                _Type boxedType = m_module.GetOrInsertBoxedType( typeName, objectType, underlyingType );
+                _Type boxedType = m_module.GetOrInsertBoxedType( ( TS.BoxedValueTypeRepresentation )tr, objectType, underlyingType );
                 m_typeRepresentationsToType[ tr ] = m_module.GetOrInsertPointerType( boxedType );
                 return m_typeRepresentationsToType[ tr ];
             }
 
             // All other types
-            bool isValueType = (tr is TS.ValueTypeRepresentation);
-            LLVM._Type llvmType = m_module.GetOrInsertType( typeName, ( int )tr.Size * 8, isValueType );
+            LLVM._Type llvmType = m_module.GetOrInsertType( tr );
 
             // Ensure that we always return the correct type for storage. If this is a value type, then we're done.
             // Otherwise, return the type as a pointer.

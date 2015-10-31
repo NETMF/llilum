@@ -322,7 +322,7 @@ namespace Microsoft.Zelig.LLVM
             Value llvmValA = valA.LlvmValue;
             Value llvmValB = valB.LlvmValue;
 
-            _Type booleanImpl = Module.GetType( "System.Boolean" );
+            _Type booleanImpl = Module.GetType( Module.TypeSystem.WellKnownTypes.System_Boolean );
 
             if( valA.IsInteger && valB.IsInteger )
             {
@@ -585,7 +585,7 @@ namespace Microsoft.Zelig.LLVM
                 TypeField thisField = ty.Fields[ i ];
 
                 // The first field of a managed object is either its object header or a super-class.
-                bool fieldIsParent = ( i == 0 && !ty.IsValueType && ty != _Type.GetTypeImpl( "Microsoft.Zelig.Runtime.ObjectHeader" ) );
+                bool fieldIsParent = ( i == 0 && !ty.IsValueType && ty != _Type.GetOrInsertTypeImpl( ty.Module, ty.Module.TypeSystem.WellKnownTypes.Microsoft_Zelig_Runtime_ObjectHeader ) );
                 int thisFieldSize = thisField.MemberType.SizeInBits / 8;
 
                 int curOffset = ( int )thisField.Offset;

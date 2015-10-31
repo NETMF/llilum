@@ -44,7 +44,7 @@ namespace Microsoft.Zelig.LLVM
             m_typeSystemAlreadyConverted = false;
             m_turnOffCompilationAndValidation = false;
 
-            m_module = new _Module( m_imageName );
+            m_module = new _Module( m_imageName, m_typeSystem );
             m_dummyDebugInfo = new Debugging.DebugInfo( m_imageName, 0, 0, 0, 0 );
         }
 

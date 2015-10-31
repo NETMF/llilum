@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text;
 using Llvm.NET;
 using Llvm.NET.DebugInfo;
 using Llvm.NET.Types;
+using Microsoft.Zelig.Runtime.TypeSystem;
 
 namespace Microsoft.Zelig.LLVM
 {
@@ -17,43 +19,61 @@ namespace Microsoft.Zelig.LLVM
 
         internal List< DebugMemberInfo > DiFields = new List< DebugMemberInfo >( );
 
-        public _Type( _Module module, string name, int sizeInBits, bool isValueType, IDebugType<ITypeRef,DIType> typeRef )
+        internal _Type( _Module owner, string name, int sizeInBits, bool isValueType, IDebugType<ITypeRef, DIType> typeRef )
         {
-            Module = module;
+            Debug.Assert( typeRef != null );
+            Module = owner;
             SizeInBits = sizeInBits;
             IsValueType = isValueType;
-            Name = name;
             DebugType = typeRef;
+            Name = name;
             TypeImplsReverseLookupForLlvmTypes[ DebugType.TypeHandle ] = this;
         }
 
-        public _Type( _Module owner, string name, int sizeInBits, bool isValueType )
+        public _Type( _Module owner, TypeRepresentation tr, IDebugType<ITypeRef,DIType> typeRef )
         {
-            SizeInBits = sizeInBits;
-            IsValueType = isValueType;
-            Name = name;
+            TypeRepresentation = tr;
             Module = owner;
+            SizeInBits = (int)tr.Size * 8;
+            IsValueType = tr is ValueTypeRepresentation;
+            Name = tr.FullName;
+            DebugType = typeRef;
 
-            Debug.Assert( LlvmModule.GetTypeByName( name ) == null, "Trying to override _Type" );
-            var systemNamespace = LlvmModule.DIBuilder.CreateNamespace( LlvmModule.DICompileUnit, "System", null, 0 );
+            TypeImplsReverseLookupForLlvmTypes[ DebugType.TypeHandle ] = this;
+        }
 
-            // basic types need to use DebugBasicType since the LLVM primitive types are all uniqued
+        public _Type( _Module owner, TypeRepresentation tr )
+        {
+            TypeRepresentation = tr;
+            Module = owner;
+            SizeInBits = ( int )tr.Size * 8;
+            IsValueType = tr is ValueTypeRepresentation;
+            Name = tr.FullName;
+
+            Debug.Assert( LlvmModule.GetTypeByName( Name ) == null, "Trying to override _Type" );
+            DINamespace diNamespace = Module.GetOrCreateDINamespace( tr );
+            IDebugType<ITypeRef, DIType> baseType;
+
+            // Basic types need to use DebugBasicType since the LLVM primitive types are all uniqued
             // and some of them would end up overlapping (i.e. System.UInt16 and Char are both i16 to
             // LLVM but need distinct DIBasicType instances to describe them for the debugger)
-            switch( name )
+            switch( Name )
             {
             case "System.Void":
                 // DIType == null means void
-                DebugType = Llvm.NET.DebugInfo.DebugType.Create( LlvmModule.Context.VoidType, ( DIType )null );
+                baseType = Llvm.NET.DebugInfo.DebugType.Create( LlvmModule.Context.VoidType, ( DIType )null );
+                DebugType = CreateBasicTypeDef( baseType, tr.Name, diNamespace );
                 break;
 
             case "System.Char":
-                DebugType = new DebugBasicType( LlvmModule.Context.GetIntType( ( uint )sizeInBits ), LlvmModule, name, DiTypeKind.UTF );
+                baseType = new DebugBasicType( LlvmModule.Context.GetIntType( ( uint )SizeInBits ), LlvmModule, tr.FullName, DiTypeKind.UTF );
+                DebugType = CreateBasicTypeDef( baseType, tr.Name, diNamespace );
                 IsPrimitiveType = true;
                 break;
 
             case "System.Boolean":
-                DebugType = new DebugBasicType( LlvmModule.Context.GetIntType( ( uint )sizeInBits ), LlvmModule, name, DiTypeKind.Boolean );
+                baseType = new DebugBasicType( LlvmModule.Context.GetIntType( ( uint )SizeInBits ), LlvmModule, tr.FullName, DiTypeKind.Boolean );
+                DebugType = CreateBasicTypeDef( baseType, tr.Name, diNamespace );
                 IsPrimitiveType = true;
                 break;
 
@@ -61,7 +81,8 @@ namespace Microsoft.Zelig.LLVM
             case "System.Int16":
             case "System.Int32":
             case "System.Int64":
-                DebugType = new DebugBasicType( LlvmModule.Context.GetIntType( ( uint )sizeInBits ), LlvmModule, name, DiTypeKind.Signed );
+                baseType = new DebugBasicType( LlvmModule.Context.GetIntType( ( uint )SizeInBits ), LlvmModule, tr.FullName, DiTypeKind.Signed );
+                DebugType = CreateBasicTypeDef( baseType, tr.Name, diNamespace );
                 IsPrimitiveType = true;
                 IsSigned = true;
                 break;
@@ -70,17 +91,20 @@ namespace Microsoft.Zelig.LLVM
             case "System.UInt16":
             case "System.UInt32":
             case "System.UInt64":
-                DebugType = new DebugBasicType( LlvmModule.Context.GetIntType( ( uint )sizeInBits ), LlvmModule, name, DiTypeKind.Unsigned );
+                baseType = new DebugBasicType( LlvmModule.Context.GetIntType( ( uint )SizeInBits ), LlvmModule, tr.FullName, DiTypeKind.Unsigned );
+                DebugType = CreateBasicTypeDef( baseType, tr.Name, diNamespace );
                 IsPrimitiveType = true;
                 break;
 
             case "System.Single":
-                DebugType = new DebugBasicType( LlvmModule.Context.FloatType, LlvmModule, name, DiTypeKind.Float );
+                baseType = new DebugBasicType( LlvmModule.Context.FloatType, LlvmModule, tr.FullName, DiTypeKind.Float );
+                DebugType = CreateBasicTypeDef( baseType, tr.Name, diNamespace );
                 IsPrimitiveType = true;
                 break;
 
             case "System.Double":
-                DebugType = new DebugBasicType( LlvmModule.Context.DoubleType, LlvmModule, name, DiTypeKind.Float );
+                baseType = new DebugBasicType( LlvmModule.Context.DoubleType, LlvmModule, tr.FullName, DiTypeKind.Float );
+                DebugType = CreateBasicTypeDef( baseType, tr.Name, diNamespace );
                 IsPrimitiveType = true;
                 break;
 
@@ -89,9 +113,9 @@ namespace Microsoft.Zelig.LLVM
                 // While this is generally void* in C#, LLVM doesn't have a void pointer type.
                 // To help keep the debug views more readable, this creates a typedef for the
                 // pointer, since pointer types don't have names
-                var baseType = new DebugPointerType( LlvmModule.Context.Int8Type, LlvmModule, null );
-                var typeDef = LlvmModule.DIBuilder.CreateTypedef( baseType, name.Substring( 7 ), null, 0, systemNamespace );
-                DebugType = new DebugPointerType( baseType.NativeType, typeDef );
+                var basePtrType = new DebugPointerType( LlvmModule.Context.Int8Type, LlvmModule, null );
+                var typeDef = LlvmModule.DIBuilder.CreateTypedef( basePtrType, tr.Name, null, 0, diNamespace );
+                DebugType = new DebugPointerType( basePtrType.NativeType, typeDef );
                 IsPrimitiveType = true;
                 break;
 
@@ -99,13 +123,14 @@ namespace Microsoft.Zelig.LLVM
                 // All other types are created as structures the Debug type is a temporary.
                 // Creation of concrete DIType deferred until SetupFields when full field
                 // layout information is known.
-                DebugType = new DebugStructType( LlvmModule, name, LlvmModule.DICompileUnit, name );
+                DebugType = new DebugStructType( LlvmModule, tr.FullName, (DIScope)diNamespace ?? LlvmModule.DICompileUnit, tr.FullName );
                 break;
             }
 
             TypeImplsReverseLookupForLlvmTypes[ DebugType.TypeHandle ] = this;
         }
 
+        internal TypeRepresentation TypeRepresentation { get; }
         public bool IsDouble => DebugType.IsDouble;
 
         public bool IsFloat => DebugType.IsFloat;
@@ -140,38 +165,39 @@ namespace Microsoft.Zelig.LLVM
 
         public _Type UnderlyingType { get; internal set; }
 
-        internal static _Type GetOrInsertTypeImpl(
-            _Module owner,
-            string name,
-            int sizeInBits,
-            bool isValueType,
-            IDebugType<ITypeRef,DIType> ty )
-        {
-            if( !TypeImplMap.ContainsKey( name ) )
-            {
-                TypeImplMap[ name ] = new _Type( owner, name, sizeInBits, isValueType, ty );
-            }
-
-            return TypeImplMap[ name ];
-        }
-
-        internal static _Type GetOrInsertTypeImpl( _Module owner, string name, int sizeInBits, bool isValueType )
-        {
-            if( !TypeImplMap.ContainsKey( name ) )
-            {
-                TypeImplMap[ name ] = new _Type( owner, name, sizeInBits, isValueType );
-            }
-
-            return TypeImplMap[ name ];
-        }
-
-        internal static _Type GetTypeImpl( string name )
+        // This overload is used for synthetic types such as function signatures, memory arrays, pointers and boxed value types
+        // that don't have a corresponding TypeRepresentation
+        internal static _Type GetOrInsertTypeImpl( _Module owner, string name, int sizeInBits, bool isValueType, IDebugType<ITypeRef, DIType> ty )
         {
             _Type retVal;
             if( TypeImplMap.TryGetValue( name, out retVal ) )
                 return retVal;
 
-            return null;
+            retVal = new _Type( owner, name, sizeInBits, isValueType, ty );
+            TypeImplMap.Add( name, retVal );
+            return retVal;
+        }
+
+        internal static _Type GetOrInsertTypeImpl( _Module owner, TypeRepresentation tr, IDebugType<ITypeRef,DIType> ty )
+        {
+            _Type retVal;
+            if( TypeImplMap.TryGetValue( tr.FullName, out retVal ) )
+                return retVal;
+
+            retVal = new _Type( owner, tr, ty );
+            TypeImplMap.Add( tr.FullName, retVal );
+            return retVal;
+        }
+
+        internal static _Type GetOrInsertTypeImpl( _Module owner, TypeRepresentation tr )
+        {
+            _Type retVal;
+            if( TypeImplMap.TryGetValue( tr.FullName, out retVal ) )
+                return retVal;
+
+            retVal = new _Type( owner, tr );
+            TypeImplMap.Add( tr.FullName, retVal );
+            return retVal;
         }
 
         internal static _Type GetTypeImpl( ITypeRef ty )
@@ -238,7 +264,7 @@ namespace Microsoft.Zelig.LLVM
                 {
                     // Add explicit padding if necessary.
                     // TODO: Clean this up with a single byte array [ n x i8 ]
-                    llvmFields.Add( GetOrInsertTypeImpl( Module, "System.Byte", 8, true ).DebugType );
+                    llvmFields.Add( GetOrInsertTypeImpl( Module, Module.TypeSystem.WellKnownTypes.System_Byte ).DebugType );
                     ++offset;
                 }
             }
@@ -253,7 +279,6 @@ namespace Microsoft.Zelig.LLVM
             }
 
             // BUGBUG: We don't yet handle explicit struct layout with overlapping fields.
-
             structType.SetBody( true, LlvmModule, LlvmModule.DICompileUnit, null, 0, 0, llvmFields, DiFields, (uint)SizeInBits, 0 );
         }
 
@@ -273,6 +298,13 @@ namespace Microsoft.Zelig.LLVM
                                                       /* todo: file, line... (Zelig IL parsing doesn't seem to capture source locations for fields)*/
                                                       };
             DiFields.Add( debugMemberInfo );
+        }
+
+        private IDebugType<ITypeRef, DIType> CreateBasicTypeDef( IDebugType<ITypeRef, DIType> baseType, string name, DINamespace ns )
+        {
+            //baseType = Llvm.NET.DebugInfo.DebugType.Create( LlvmModule.Context.VoidType, ( DIType )null );
+            var typeDef = LlvmModule.DIBuilder.CreateTypedef( baseType.DIType, name, null, 0, ns );
+            return Llvm.NET.DebugInfo.DebugType.Create( baseType.NativeType, typeDef );
         }
     }
 }

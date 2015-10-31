@@ -85,7 +85,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
                     ulong uVal;
                     ce.GetAsRawUlong( out uVal );
-                    LLVM._Type intType = m_manager.GetOrInsertBasicTypeAsLLVMSingleValueType( ce.Type );
+                    LLVM._Type intType = m_manager.GetOrInsertType( ce.Type );
                     return m_manager.Module.GetIntConstant( intType, uVal, ce.Type.IsSigned );
                 }
 
@@ -782,7 +782,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                 _Type type = val.Type;
 
                 // AtomicXchg only supports integer types, so need to convert them if necessary
-                _Type intType = m_manager.GetOrInsertBasicTypeAsLLVMSingleValueType( m_wkt.System_Int32 );
+                _Type intType = m_manager.GetOrInsertType( m_wkt.System_Int32 );
                 _Type intPtrType = m_manager.Module.GetOrInsertPointerType( intType );
 
                 if(!type.IsInteger)
@@ -833,7 +833,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                 _Type type = val.Type;
 
                 // AtomicCmpXchg only supports integer types, so need to convert them if necessary
-                _Type intType = m_manager.GetOrInsertBasicTypeAsLLVMSingleValueType( m_wkt.System_Int32 );
+                _Type intType = m_manager.GetOrInsertType( m_wkt.System_Int32 );
                 _Type intPtrType = m_manager.Module.GetOrInsertPointerType( intType );
 
                 if(!type.IsInteger)
