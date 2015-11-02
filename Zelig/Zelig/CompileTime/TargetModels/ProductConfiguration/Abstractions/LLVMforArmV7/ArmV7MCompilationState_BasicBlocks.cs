@@ -114,7 +114,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
         private void WarnUnimplemented( string msg )
         {
-            msg = "|||[!]|||" + msg;
+            msg = "Unimplemented operator: " + msg;
 
             Console.ForegroundColor = ConsoleColor.Magenta;
             Console.WriteLine( msg );
@@ -579,7 +579,11 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
         private void Translate_InitialValueOperator( IR.InitialValueOperator op )
         {
-            IR.VariableExpression exp = op.FirstResult is IR.PhiVariableExpression ? op.FirstResult.AliasedVariable : op.FirstResult;
+            IR.VariableExpression exp = op.FirstResult;
+            if( exp is IR.PhiVariableExpression )
+            {
+                exp = exp.AliasedVariable;
+            }
 
             int index = exp.Number;
             if (m_method is TS.StaticMethodRepresentation)
@@ -725,16 +729,16 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             m_basicBlock.InsertUnconditionalBranch( m_basicBlock );
         }
 
-        private bool ReplaceMethodCallWithIntrinsic( IR.CallOperator op, List<_Value> convertedArgs )
+        private bool ReplaceMethodCallWithIntrinsic( TS.MethodRepresentation method, List<_Value> convertedArgs )
         {
             TS.WellKnownMethods wkm = m_cfg.TypeSystem.WellKnownMethods;
 
             // System.Buffer.InternalMemoryCopy(byte*, byte*, int) => llvm.memcpy
             // System.Buffer.InternalBackwardMemoryCopy(byte*, byte*, int) => llvm.memmove
-            if( ( op.TargetMethod == wkm.System_Buffer_InternalMemoryCopy ) ||
-                ( op.TargetMethod == wkm.System_Buffer_InternalBackwardMemoryCopy ) )
+            if( ( method == wkm.System_Buffer_InternalMemoryCopy ) ||
+                ( method == wkm.System_Buffer_InternalBackwardMemoryCopy ) )
             {
-                bool overlapping = op.TargetMethod != wkm.System_Buffer_InternalMemoryCopy;
+                bool overlapping = method != wkm.System_Buffer_InternalMemoryCopy;
 
                 _Value src = convertedArgs[ 0 ];
                 _Value dst = convertedArgs[ 1 ];
@@ -744,7 +748,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             }
 
             // Microsoft.Zelig.Runtime.Memory.Fill(byte*, int, byte) => llvm.memset
-            if( op.TargetMethod == wkm.Microsoft_Zelig_Runtime_Memory_Fill )
+            if( method == wkm.Microsoft_Zelig_Runtime_Memory_Fill )
             {
                 _Value dst = convertedArgs[ 0 ];
                 _Value size = convertedArgs[ 1 ];
@@ -755,7 +759,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
             // Microsoft.Zelig.Runtime.InterlockedImpl.InternalAdd(ref int, int) => llvm.atomicrmw add
             // Note: there's no built-in support for 64bit interlocked methods at the moment.
-            if( op.TargetMethod == wkm.InterlockedImpl_InternalAdd_int )
+            if( method == wkm.InterlockedImpl_InternalAdd_int )
             {
                 _Value ptr = convertedArgs[ 0 ];
                 _Value val = convertedArgs[ 1 ];
@@ -772,10 +776,10 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             // Microsoft.Zelig.Runtime.InterlockedImpl.InternalExchange(ref IntPtr, IntPtr) => llvm.atomicrmw xchg
             // Microsoft.Zelig.Runtime.InterlockedImpl.InternalExchange(ref T, T) => llvm.atomicrmw xchg
             // Note: there's no built-in support for 64bit interlocked methods at the moment.
-            if(( op.TargetMethod == wkm.InterlockedImpl_InternalExchange_int ) ||
-                ( op.TargetMethod == wkm.InterlockedImpl_InternalExchange_float ) ||
-                ( op.TargetMethod == wkm.InterlockedImpl_InternalExchange_IntPtr ) ||
-                ( op.TargetMethod.IsGenericInstantiation && op.TargetMethod.GenericTemplate == wkm.InterlockedImpl_InternalExchange_Template ))
+            if(( method == wkm.InterlockedImpl_InternalExchange_int ) ||
+                ( method == wkm.InterlockedImpl_InternalExchange_float ) ||
+                ( method == wkm.InterlockedImpl_InternalExchange_IntPtr ) ||
+                ( method.IsGenericInstantiation && method.GenericTemplate == wkm.InterlockedImpl_InternalExchange_Template ))
             {
                 _Value ptr = convertedArgs[ 0 ];
                 _Value val = convertedArgs[ 1 ];
@@ -822,10 +826,10 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             // Microsoft.Zelig.Runtime.InterlockedImpl.InternalCompareExchange(ref IntPtr, IntPtr, IntPtr) => llvm.compxchg
             // Microsoft.Zelig.Runtime.InterlockedImpl.InternalCompareExchange(ref T, T, T) => llvm.compxchg
             // Note: there's no built-in support for 64bit interlocked methods at the moment.
-            if(( op.TargetMethod == wkm.InterlockedImpl_InternalCompareExchange_int ) ||
-                ( op.TargetMethod == wkm.InterlockedImpl_InternalCompareExchange_float ) ||
-                ( op.TargetMethod == wkm.InterlockedImpl_InternalCompareExchange_IntPtr ) ||
-                ( op.TargetMethod.IsGenericInstantiation && op.TargetMethod.GenericTemplate == wkm.InterlockedImpl_InternalCompareExchange_Template ))
+            if(( method == wkm.InterlockedImpl_InternalCompareExchange_int ) ||
+                ( method == wkm.InterlockedImpl_InternalCompareExchange_float ) ||
+                ( method == wkm.InterlockedImpl_InternalCompareExchange_IntPtr ) ||
+                ( method.IsGenericInstantiation && method.GenericTemplate == wkm.InterlockedImpl_InternalCompareExchange_Template ))
             {
                 _Value ptr = convertedArgs[ 0 ];
                 _Value val = convertedArgs[ 1 ];
@@ -873,53 +877,49 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             return false;
         }
 
-        private void BuildMethodCallInstructions( IR.CallOperator op, bool callIndirect = false )
+        private void BuildMethodCallInstructions( TS.MethodRepresentation method, bool callIndirect )
         {
             List<_Value> args = new List<_Value>( );
 
-            int i = 0;
+            int firstArgument = ( method is TS.StaticMethodRepresentation ) ? 1 : 0;
+            int indirectAdjust = callIndirect ? 1 : 0;
 
-            if( op.TargetMethod is TS.StaticMethodRepresentation )
-                ++i;
-            if( callIndirect )
-                ++i;
-
-            for( ; i < op.Arguments.Length; ++i )
+            for( int i = firstArgument; i < method.ThisPlusArguments.Length; ++i )
             {
-                var opArgTypeRep = op.TargetMethod.ThisPlusArguments[ i - ( callIndirect ? 1 : 0 ) ];
+                var opArgTypeRep = method.ThisPlusArguments[ i ];
                 var opArgType = m_manager.GetOrInsertType( opArgTypeRep );
-                var convertedArg = ConvertValueToStoreToTarget( m_arguments[ i ], opArgType );
+                var convertedArg = ConvertValueToStoreToTarget( m_arguments[ i + indirectAdjust ], opArgType );
                 args.Add( convertedArg );
             }
 
-            if( ReplaceMethodCallWithIntrinsic( op, args ) )
+            if( ReplaceMethodCallWithIntrinsic( method, args ) )
             {
                 return;
             }
 
-            LLVM._Function targetFunc = m_manager.GetOrInsertFunction( op.TargetMethod );
+            LLVM._Function targetFunc = m_manager.GetOrInsertFunction( method );
 
-            if( op.TargetMethod.Flags.HasFlag( TS.MethodRepresentation.Attributes.PinvokeImpl ) )
+            if( method.Flags.HasFlag( TS.MethodRepresentation.Attributes.PinvokeImpl ) )
             {
                 targetFunc.SetExternalLinkage( );
             }
 
             _Value ret;
 
-            if( !callIndirect )
-            {
-                ret = m_basicBlock.InsertCall( targetFunc, args );
-            }
-            else
+            if( callIndirect )
             {
                 ret = m_basicBlock.InsertIndirectCall( targetFunc, m_arguments[ 0 ], args );
             }
+            else
+            {
+                ret = m_basicBlock.InsertCall( targetFunc, args );
+            }
 
-            if( op.Results.Length == 1 )
+            if( m_results.Count == 1 )
             {
                 StoreValue( m_results[ 0 ], ret );
             }
-            else if( op.Results.Length > 1 )
+            else if( m_results.Count > 1 )
             {
                 throw new System.InvalidOperationException( "More than one return values are not handled." );
             }
@@ -927,17 +927,17 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
         private void Translate_StaticCallOperator( IR.StaticCallOperator op )
         {
-            BuildMethodCallInstructions( op );
+            BuildMethodCallInstructions( op.TargetMethod, callIndirect: false );
         }
 
         private void Translate_InstanceCallOperator( IR.InstanceCallOperator op )
         {
-            BuildMethodCallInstructions( op );
+            BuildMethodCallInstructions( op.TargetMethod, callIndirect: false );
         }
 
         private void Translate_IndirectCallOperator( IR.IndirectCallOperator op )
         {
-            BuildMethodCallInstructions( op, true );
+            BuildMethodCallInstructions( op.TargetMethod, callIndirect: true );
         }
 
         private void Translate_CompareOperator( IR.CompareOperator op )
