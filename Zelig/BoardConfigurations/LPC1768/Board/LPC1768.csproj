@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CEE4D575-4B4B-42B0-B2F1-CC7198CB7306}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Llilum.LPC1768</RootNamespace>
+    <AssemblyName>LPC1768</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <Choose>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <When Condition="Exists('..\..\..\ZeligBuild\Target\bin\Debug\')">
+      <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <OutputPath>..\..\..\ZeligBuild\Target\bin\Debug\</OutputPath>
+      </PropertyGroup>
+      <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <OutputPath>..\..\..\ZeligBuild\Target\bin\Release\</OutputPath>
+      </PropertyGroup>
+      <PropertyGroup>
+        <BaseIntermediateOutputPath>..\..\..\ZeligBuild\Target\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+      </PropertyGroup>
+    </When>
+    <!-- ZELIG: Move output directory to the SDK -->
+    <When Condition="!Exists('..\..\..\ZeligBuild\Target\bin\Debug\')">
+      <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <OutputPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\</OutputPath>
+      </PropertyGroup>
+      <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <OutputPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Release\</OutputPath>
+      </PropertyGroup>
+      <PropertyGroup>
+        <BaseIntermediateOutputPath>$(LLILUM_SDK)\ZeligBuild\Target\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+      </PropertyGroup>
+    </When>
+  </Choose>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoStdLib>true</NoStdLib>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+    <OutputPath>..\..\..\ZeligBuild\Target\bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>..\..\..\ZeligBuild\Target\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoStdLib>true</NoStdLib>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="HardwareModel\Board.cs" />
+    <Compile Include="HardwareModel\Device.cs" />
+    <Compile Include="HardwareModel\Drivers\ContextSwitchTimer.cs" />
+    <Compile Include="HardwareModel\GPIO.cs" />
+    <Compile Include="HardwareModel\Drivers\InterruptController.cs" />
+    <Compile Include="HardwareModel\Drivers\SystemTimer.cs" />
+    <Compile Include="HardwareModel\HardwareProvidersUwp\AdcProviderUwp.cs" />
+    <Compile Include="HardwareModel\HardwareProvidersUwp\I2cProviderUwp.cs" />
+    <Compile Include="HardwareModel\HardwareProvidersUwp\SpiProviderUwp.cs" />
+    <Compile Include="HardwareModel\HardwareProviders\GpioProvider.cs" />
+    <Compile Include="HardwareModel\HardwareProviders\I2cProvider.cs" />
+    <Compile Include="HardwareModel\HardwareProviders\SpiProvider.cs" />
+    <Compile Include="HardwareModel\NVIC.cs" />
+    <Compile Include="HardwareModel\Processor.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SystemServices\ThreadManager.cs" />
+  </ItemGroup>
+  <Choose>
+    <When Condition="Exists('..\..\..\ZeligBuild\Target\bin\Debug\')">
+      <ItemGroup>
+        <Reference Include="Microsoft.CortexM3OnCMSISCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\..\ZeligBuild\Target\bin\Debug\Microsoft.CortexM3OnCMSISCore.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.CortexM3OnMBED, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\..\ZeligBuild\Target\bin\Debug\Microsoft.CortexM3OnMBED.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.DeviceModels.ModelForCortexM3, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\..\ZeligBuild\Target\bin\Debug\Microsoft.DeviceModels.ModelForCortexM3.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Zelig.ProductConfiguration.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Zelig.Runtime, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Runtime.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Runtime.Common.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Zelig.Runtime.CommonPC, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Runtime.CommonPC.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Zelig.Runtime.TypeSystem, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Runtime.TypeSystem.dll</HintPath>
+        </Reference>
+        <Reference Include="mscorlib">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\..\ZeligBuild\Host\bin\Debug\mscorlib.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="!Exists('..\..\..\ZeligBuild\Target\bin\Debug\')">
+      <ItemGroup>
+        <Reference Include="Microsoft.CortexM3OnCMSISCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\Microsoft.CortexM3OnCMSISCore.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.CortexM3OnMBED, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\Microsoft.CortexM3OnMBED.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.DeviceModels.ModelForCortexM3, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\Microsoft.DeviceModels.ModelForCortexM3.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(LLILUM_SDK)\ZeligBuild\Host\bin\Debug\Microsoft.Zelig.ProductConfiguration.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Zelig.Runtime, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(LLILUM_SDK)\ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Runtime.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Zelig.Runtime.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(LLILUM_SDK)\ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Runtime.Common.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Zelig.Runtime.CommonPC, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(LLILUM_SDK)\ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Runtime.CommonPC.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Zelig.Runtime.TypeSystem, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(LLILUM_SDK)\ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Runtime.TypeSystem.dll</HintPath>
+        </Reference>
+        <Reference Include="mscorlib">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(LLILUM_SDK)\ZeligBuild\Host\bin\Debug\mscorlib.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

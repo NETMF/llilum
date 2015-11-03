@@ -4,8 +4,8 @@
 #-HostAssemblyDir   ..\..\..\..\ZeligBuild\Host\bin\Debug
 #-DeviceAssemblyDir ..\..\..\..\ZeligBuild\Target\bin\Debug
 
--CompilationSetup Microsoft.Zelig.Configuration.Environment.LPC1768MBEDHostedCompilationSetup
-#-CompilationSetup Microsoft.Zelig.Configuration.Environment.K64FMBEDHostedCompilationSetup
+-CompilationSetup Microsoft.Llilum.BoardConfigurations.LPC1768MBEDHostedCompilationSetup
+#-CompilationSetup Microsoft.Llilum.BoardConfigurations.K64FMBEDHostedCompilationSetup
 #-CompilationSetup Microsoft.Zelig.Configuration.Environment.iMote2CompilationSetup 
 
 

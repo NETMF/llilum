@@ -9,6 +9,15 @@ where /q nuget.exe || (
     goto Error
 )
 
+echo.
+echo Building Board Configurations...
+msbuild /m "%ZELIG_ROOT_DIR%\Zelig\BoardConfigurations\BoardConfigurations.sln" /t:Build /p:Configuration=Debug /p:Platform="Any CPU" /flp:verbosity=diagnostic;LogFile=BoardConfigurationBuild.log /clp:verbosity=minimal
+if NOT %errorlevel%==0 (
+    echo.
+    echo Error: Failed to build Board configurations.
+    goto Error
+)
+
 :: Building the compiler will also build the native code sample target, which needs the SDK, but this is generating the SDK...
 :: To resolve the "Chicken or Egg" circular dependency BuildEnv.props will set build properties to effectively make the SDK
 :: directory the build output. [Technically it is one directory higher so it gets the additional target native headers etc..

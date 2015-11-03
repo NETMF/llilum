@@ -13,9 +13,9 @@ namespace Managed
     using System.Threading;
 
 #if LPC1768
-    using Microsoft.Zelig.LPC1768;
+    using Microsoft.Llilum.LPC1768;
 #elif K64F
-    using Microsoft.Zelig.K64F;
+    using Microsoft.Llilum.K64F;
 #endif
 
     class Program

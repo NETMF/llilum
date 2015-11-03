@@ -336,9 +336,12 @@ Copyright (C) Microsoft Corporation. All rights reserved.
            until we add custom command line parsing to the Llilum transformation engine.
       -->
       <IntDirTrimmed>$(IntDir.TrimEnd('\'))</IntDirTrimmed>
+      <CompilationSetup Condition="'$(LlilumBoardSupportPackage)'!=''">-CompilationSetupPath "$(LlilumBoardSupportPackage)"</CompilationSetup>
+      <CompilationSetup Condition="'$(LlilumBoardSupportPackage)'=='' AND Exists('$(LlilumSDK)ZeligBuild\Host\bin\Debug\Microsoft.Llilum.BoardConfigurations.$(LlilumBoardName).dll')">-CompilationSetupPath "$(LlilumSDK)ZeligBuild\Host\bin\Debug\Microsoft.Llilum.BoardConfigurations.$(LlilumBoardName).dll"</CompilationSetup>
     </PropertyGroup>
     <Exec Command='echo Converting managed code to LLVM BC: "@(ReferencePath)" to "$(IntDir)%(ReferencePath.Filename).bc"' />
-    <Exec Command='$(LlilumCompiler) -cfg "$(LlilumConfig)" "@(ReferencePath)" -OutputName "%(ReferencePath.Filename)" -OutputDir "$(IntDirTrimmed)" -HostAssemblyDir "$(LlilumSDK)ZeligBuild\Host\bin\Debug" -DeviceAssemblyDir "$(LlilumSDK)ZeligBuild\Target\bin\Debug"' ContinueOnError="WarnAndContinue"/>
+    <Exec Command='echo Executing: $(LlilumCompiler) $(CompilationSetup) -cfg "$(LlilumConfig)" "@(ReferencePath)" -OutputName "%(ReferencePath.Filename)" -OutputDir "$(IntDirTrimmed)" -HostAssemblyDir "$(LlilumSDK)ZeligBuild\Host\bin\Debug" -DeviceAssemblyDir "$(LlilumSDK)ZeligBuild\Target\bin\Debug"' />
+    <Exec Command='$(LlilumCompiler) $(CompilationSetup) -cfg "$(LlilumConfig)" "@(ReferencePath)" -OutputName "%(ReferencePath.Filename)" -OutputDir "$(IntDirTrimmed)" -HostAssemblyDir "$(LlilumSDK)ZeligBuild\Host\bin\Debug" -DeviceAssemblyDir "$(LlilumSDK)ZeligBuild\Target\bin\Debug"' />
   </Target>
 
   <Target Name="CreateManagedObject" Condition="'@(ReferencePath)' != ''" Inputs="$(IntDir)%(ReferencePath.Filename).bc" Outputs="$(IntDir)%(ReferencePath.Filename).o">

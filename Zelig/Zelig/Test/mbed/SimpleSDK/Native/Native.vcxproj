@@ -35,11 +35,13 @@
     <LlilumBoardName>LPC1768</LlilumBoardName>
     <LlilumCompiler>$(ProjectDir)..\..\..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Compiler.exe</LlilumCompiler>
     <LlilumConfig>$(MSBuildProjectDirectory)\mbed_simple_$(LlilumBoardName).FrontEndConfig</LlilumConfig>
+    <LlilumProductAssembly>$(ProjectDir)..\..\..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Llilum.BoardConfigurations.$(LlilumBoardName).dll</LlilumProductAssembly>
   </PropertyGroup>
   <PropertyGroup Label="Llilum" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <LlilumBoardName>LPC1768</LlilumBoardName>
     <LlilumCompiler>$(ProjectDir)..\..\..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Compiler.exe</LlilumCompiler>
     <LlilumConfig>$(MSBuildProjectDirectory)\mbed_simple_$(LlilumBoardName).FrontEndConfig</LlilumConfig>
+    <LlilumProductAssembly>$(ProjectDir)..\..\..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Llilum.BoardConfigurations.$(LlilumBoardName).dll</LlilumProductAssembly>
   </PropertyGroup>
   <!-- Platform specific options -->
   <!-- LPC1768 -->

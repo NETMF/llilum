@@ -44,11 +44,11 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\RunTime\DeviceModels\Boards\K64F\K64F.csproj">
+    <ProjectReference Include="..\..\..\..\..\BoardConfigurations\K64F\Board\K64F.csproj">
       <Project>{1705887b-e636-4fa3-ae40-2d431af1511c}</Project>
       <Name>K64F</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\RunTime\DeviceModels\Boards\LPC1768\LPC1768.csproj">
+    <ProjectReference Include="..\..\..\..\..\BoardConfigurations\LPC1768\Board\LPC1768.csproj">
       <Project>{cee4d575-4b4b-42b0-b2f1-cc7198cb7306}</Project>
       <Name>LPC1768</Name>
     </ProjectReference>

@@ -4,7 +4,7 @@
 #-HostAssemblyDir   ..\..\..\..\ZeligBuild\Host\bin\Debug
 #-DeviceAssemblyDir ..\..\..\..\ZeligBuild\Target\bin\Debug
 
--CompilationSetup Microsoft.Zelig.Configuration.Environment.K64FMBEDHostedCompilationSetup
+-CompilationSetup Microsoft.Llilum.BoardConfigurations.K64FMBEDHostedCompilationSetup
 
 ###
 ### We need to include this assembly to get the right drivers.

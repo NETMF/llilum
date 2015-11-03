@@ -26,7 +26,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
     using ZeligSupport = Microsoft.Zelig.Support.mbed;
 
 #if (LPC1768)
-    using LPC1768 = Zelig.LPC1768;
+    using LPC1768 = Llilum.LPC1768;
     using System.Runtime.InteropServices;
 #elif (K64F)
     using K64F = Zelig.K64F;

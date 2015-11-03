@@ -107,6 +107,7 @@ namespace Microsoft.Zelig.FrontEnd
 
         private string                              m_libraryLocation_HostBuild;
         private string                              m_libraryLocation_TargetBuild;
+        private string                              m_compilationSetupBinaryPath;
 
         private List< string >                      m_references;
         private List< string >                      m_searchOrder;
@@ -603,7 +604,7 @@ namespace Microsoft.Zelig.FrontEnd
             {
                 m_configurationManager = new Cfg.Manager( );
 
-                m_configurationManager.AddAllAssemblies( );
+                m_configurationManager.AddAllAssemblies( m_compilationSetupBinaryPath );
 
                 m_configurationManager.ComputeAllPossibleValuesForFields( );
             }
@@ -930,6 +931,17 @@ namespace Microsoft.Zelig.FrontEnd
                             }
 
                             m_references.Add( reference );
+                        }
+                        else if (IsMatch(option, "CompilationSetupPath"))
+                        {
+                            string compilationBinary;
+
+                            if (!GetArgument(arg, args, ref i, out compilationBinary, true))
+                            {
+                                return false;
+                            }
+
+                            m_compilationSetupBinaryPath = compilationBinary;
                         }
                         else if( IsMatch( option, "CompilationSetup" ) )
                         {

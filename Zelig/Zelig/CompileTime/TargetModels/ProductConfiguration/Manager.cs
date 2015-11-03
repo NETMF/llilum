@@ -6,7 +6,7 @@ namespace Microsoft.Zelig.Configuration.Environment
 {
     using System;
     using System.Collections.Generic;
-
+    using System.IO;
 
     public sealed class Manager
     {
@@ -253,7 +253,7 @@ namespace Microsoft.Zelig.Configuration.Environment
 
         private static Type ResolveType( string name )
         {
-            InitializeTypes();
+            InitializeTypes(null);
 
             Type res;
 
@@ -310,35 +310,48 @@ namespace Microsoft.Zelig.Configuration.Environment
 
         //--//
 
-        private static void InitializeTypes()
+        private static void InitializeTypes(string productAssemblyPath)
         {
-            if(s_allTypes == null)
+            if (s_allTypes == null)
             {
-                s_allTypes = HashTableFactory.New< string, Type >();
+                s_allTypes = HashTableFactory.New<string, Type>();
+                List<System.Reflection.Assembly> assemblies = new List<System.Reflection.Assembly>(AppDomain.CurrentDomain.GetAssemblies());
 
-                foreach(System.Reflection.Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+                if(!string.IsNullOrWhiteSpace(productAssemblyPath))
                 {
-                    foreach(Type t in assembly.GetTypes())
+                    FileInfo file = new FileInfo(productAssemblyPath);
+
+                    System.Reflection.Assembly assembly = System.Reflection.Assembly.LoadFrom(file.FullName);
+                        
+                    if(assembly != null)
                     {
-                        s_allTypes[ t.AssemblyQualifiedName ] = t;
+                        assemblies.Add(assembly);
+                    }
+                }
+
+                foreach (System.Reflection.Assembly assembly in assemblies)
+                {
+                    foreach (Type t in assembly.GetTypes())
+                    {
+                        s_allTypes[t.AssemblyQualifiedName] = t;
                     }
                 }
             }
         }
 
-        public void AddAllAssemblies()
+        public void AddAllAssemblies(string productAssemblyPath)
         {
-            InitializeTypes();
+            InitializeTypes(productAssemblyPath);
 
-            foreach(Type t in s_allTypes.Values)
+            foreach (Type t in s_allTypes.Values)
             {
-                if(t.IsSubclassOf( typeof(AbstractCategory) ) && t.IsAbstract == false)
+                if (t.IsSubclassOf(typeof(AbstractCategory)) && t.IsAbstract == false)
                 {
-                    m_allOptions.Add( t );
+                    m_allOptions.Add(t);
 
-                    for(Type lookup = t; lookup != null; lookup = lookup.BaseType)
+                    for (Type lookup = t; lookup != null; lookup = lookup.BaseType)
                     {
-                        HashTableWithListFactory.AddUnique( m_allOptionsByType, lookup, t );
+                        HashTableWithListFactory.AddUnique(m_allOptionsByType, lookup, t);
                     }
                 }
             }

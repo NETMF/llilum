@@ -20,6 +20,7 @@
   <StringProperty Name="LlilumLLVM" DisplayName="LLVM Path" Category="General" Description="" />
   <StringProperty Name="LlilumCompiler" DisplayName="Llilum Compiler" Category="General" Description="" />
   <StringProperty Name="LlilumConfig" DisplayName="Llilum Config File" Category="General" Description="" />
+  <StringProperty Name="LlilumBoardSupportPackage" DisplayName="Board Support Package" Category="General" Description="" />
   <StringProperty Name="LlilumOutputName" DisplayName="Compile Output Name" Category="General" Description="" />
   <StringProperty Name="LlilumGccBin" DisplayName="GCC Binaries Path" Category="General" Description="" />
   <StringProperty Name="LlilumOutputBin" DisplayName="Output Binary" Category="General" Description="" />

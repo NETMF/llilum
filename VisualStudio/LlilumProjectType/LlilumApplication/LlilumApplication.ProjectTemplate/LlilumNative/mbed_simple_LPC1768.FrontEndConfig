@@ -4,7 +4,7 @@
 #-HostAssemblyDir   ..\..\..\..\ZeligBuild\Host\bin\Debug
 #-DeviceAssemblyDir ..\..\..\..\ZeligBuild\Target\bin\Debug
 
--CompilationSetup Microsoft.Zelig.Configuration.Environment.LPC1768MBEDHostedCompilationSetup
+-CompilationSetup Microsoft.Llilum.BoardConfigurations.LPC1768MBEDHostedCompilationSetup
 
 ###
 ### We need to include this assembly to get the right drivers.

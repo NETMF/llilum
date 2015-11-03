@@ -114,7 +114,6 @@
     <Compile Include="Models\Engines.cs" />
     <Compile Include="Models\Memories.cs" />
     <Compile Include="Models\Processors.cs" />
-    <Compile Include="Models\Products.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XScaleNorFlashJTagLoaderCategory.cs">
       <SubType>Code</SubType>

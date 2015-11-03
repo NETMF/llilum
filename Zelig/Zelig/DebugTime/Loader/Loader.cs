@@ -37,7 +37,7 @@ namespace Microsoft.Zelig.Loader
 
             m_configurationManager = new Cfg.Manager();
 
-            m_configurationManager.AddAllAssemblies();
+            m_configurationManager.AddAllAssemblies( null );
             m_configurationManager.ComputeAllPossibleValuesForFields();
 
             //--//
