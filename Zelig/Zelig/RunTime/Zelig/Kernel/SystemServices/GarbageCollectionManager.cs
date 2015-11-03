@@ -81,6 +81,7 @@ namespace Microsoft.Zelig.Runtime
 
             public override void ThrowOutOfMemory( TS.VTable vTable )
             {
+                BugCheck.Raise( BugCheck.StopCode.NoMemory );
             }
 
             public override bool IsMarked( object target )
