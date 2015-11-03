@@ -233,12 +233,9 @@ namespace Microsoft.Zelig.LLVM
                     var curVal = ucv;
                     var curType = llvmStructType.Members[ fields.Count ];
 
-                    //Zero initializer coercion shortcut:
-                    if( curVal.IsZeroValue )
-                    {
-                        curVal = curType.GetNullValue( );
-                    }
-                    else if( curType.IsPointer && curVal.Type != curType )
+                    // Special case: Constant objects containing arrays may not strictly match the target pointer type,
+                    // as the variable type always has zero elements. In these cases, we need to bitcast the pointer.
+                    if( curType.IsPointer && ( curVal.Type != curType ) )
                     {
                         curVal = ConstantExpression.BitCast( curVal, curType );
                     }
