@@ -21,6 +21,7 @@
       <ProjectItem ReplaceParameters="false" TargetFileName="mbed_simple.FrontEndConfig">mbed_simple.FrontEndConfig</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="mbed_simple_K64F.FrontEndConfig">mbed_simple_K64F.FrontEndConfig</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="mbed_simple_LPC1768.FrontEndConfig">mbed_simple_LPC1768.FrontEndConfig</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="mbed_simple_STM32L152.FrontEndConfig">mbed_simple_STM32L152.FrontEndConfig</ProjectItem>
     </Project>
   </TemplateContent>
 </VSTemplate>

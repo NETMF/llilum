@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <LlilumTargetDirSTM32L152>$(LlilumSDK)mbed\</LlilumTargetDirSTM32L152>
+    <LlilumTargetBoardSTM32L152>TARGET_NUCLEO_L152RE</LlilumTargetBoardSTM32L152>
+    <LlilumTargetBrandSTM32L152>TARGET_STM</LlilumTargetBrandSTM32L152>
+    <LlilumTargetToolchainSTM32L152>TOOLCHAIN_GCC_ARM</LlilumTargetToolchainSTM32L152>
+    <LlilumTargetClassSTM32L152>TARGET_STM32L1</LlilumTargetClassSTM32L152>
+    <LlilumTargetBoardMbedSTM32L152>TARGET_NUCLEO_L152RE</LlilumTargetBoardMbedSTM32L152>
+    <LlilumTargetBoardArchitectureSTM32L152>cortex-m3</LlilumTargetBoardArchitectureSTM32L152>
+    <!-- MSBuild includes -->
+    <LlilumClAdditionalOptionsSTM32L152>-mcpu=$(LlilumTargetBoardArchitectureSTM32L152) -mthumb</LlilumClAdditionalOptionsSTM32L152>
+    <LlilumClAdditionalIncludesSTM32L152>$(LlilumTargetDirSTM32L152);$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152);$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152);$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetBrandSTM32L152);$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetBrandSTM32L152)/$(LlilumTargetClassSTM32L152);$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetBrandSTM32L152)/$(LlilumTargetClassSTM32L152)/$(LlilumTargetBoardMbedSTM32L152);</LlilumClAdditionalIncludesSTM32L152>
+    <LlilumClPreprocessorDefsSTM32L152>MBED_BUILD_TIMESTAMP=1445629897.99;TARGET_FF_ARDUINO;TOOLCHAIN_GCC_ARM;TOOLCHAIN_GCC;TARGET_FF_MORPHO;TARGET_CORTEX_M;ARM_MATH_CM3;TARGET_STM32L1;TARGET_STM;__CORTEX_M3;TARGET_NUCLEO_L152RE;TARGET_M3;TARGET_STM32L152RE;__MBED__=1</LlilumClPreprocessorDefsSTM32L152>
+    <LlilumLinkAdditionalDepsSTM32L152>$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/startup_stm32l152xe.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_flash_ramfunc.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/board.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/cmsis_nvic.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/hal_tick.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/mbed_overrides.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/retarget.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_adc.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_adc_ex.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_comp.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_cortex.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_crc.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_cryp.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_cryp_ex.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_dac.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_dac_ex.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_dma.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_flash.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_flash_ex.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_smartcard.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_gpio.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_i2c.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_i2s.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_irda.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_iwdg.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_lcd.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_nor.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_opamp.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_opamp_ex.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_pcd.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_pcd_ex.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_pwr.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_pwr_ex.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_rcc.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_rcc_ex.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_rtc.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_rtc_ex.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_sd.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_spi.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_spi_ex.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_sram.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_tim.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_tim_ex.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_uart.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_usart.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_hal_wwdg.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_ll_fsmc.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/stm32l1xx_ll_sdmmc.o;$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/system_stm32l1xx.o</LlilumLinkAdditionalDepsSTM32L152>
+    <LlilumLinkAdditionalLibDirsSTM32L152>$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)</LlilumLinkAdditionalLibDirsSTM32L152>
+    <LlilumLinkAdditionalOptionsSTM32L152>-T$(LlilumTargetDirSTM32L152)$(LlilumTargetBoardSTM32L152)/$(LlilumTargetToolchainSTM32L152)/STM32L152XE.ld -Wl,--gc-sections --specs=nano.specs -u _printf_float -u _scanf_float -Wl,--wrap,main</LlilumLinkAdditionalOptionsSTM32L152>
+    <LlilumLinkLibDepsSTM32L152>mbed;stdc++;supc++;m;c;gcc;nosys</LlilumLinkLibDepsSTM32L152>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup />
+  <ItemGroup>
+    <BuildMacro Include="LlilumTargetDirSTM32L152">
+      <Value>$(LlilumTargetDirSTM32L152)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumTargetBoardSTM32L152">
+      <Value>$(LlilumTargetBoardSTM32L152)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumTargetBrandSTM32L152">
+      <Value>$(LlilumTargetBrandSTM32L152)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumTargetToolchainSTM32L152">
+      <Value>$(LlilumTargetToolchainSTM32L152)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumTargetClassSTM32L152">
+      <Value>$(LlilumTargetClassSTM32L152)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumTargetBoardMbedSTM32L152">
+      <Value>$(LlilumTargetBoardMbedSTM32L152)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumTargetBoardArchitectureSTM32L152">
+      <Value>$(LlilumTargetBoardArchitectureSTM32L152)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumClAdditionalOptionsSTM32L152">
+      <Value>$(LlilumClAdditionalOptionsSTM32L152)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumClAdditionalIncludesSTM32L152">
+      <Value>$(LlilumClAdditionalIncludesSTM32L152)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumClPreprocessorDefsSTM32L152">
+      <Value>$(LlilumClPreprocessorDefsSTM32L152)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumLinkAdditionalDepsSTM32L152">
+      <Value>$(LlilumLinkAdditionalDepsSTM32L152)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumLinkAdditionalLibDirsSTM32L152">
+      <Value>$(LlilumLinkAdditionalLibDirsSTM32L152)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumLinkAdditionalOptionsSTM32L152">
+      <Value>$(LlilumLinkAdditionalOptionsSTM32L152)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumLinkLibDepsSTM32L152">
+      <Value>$(LlilumLinkLibDepsSTM32L152)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

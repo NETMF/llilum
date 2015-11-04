@@ -25,10 +25,12 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_LPC1768.props" />
     <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_K64F.props" />
+    <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_STM32L152.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_LPC1768.props" />
     <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_K64F.props" />
+    <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_STM32L152.props" />
   </ImportGroup>
   <!-- General Llilum Settings -->
   <PropertyGroup Label="Llilum" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -58,6 +60,18 @@
     <LlilumLinkAdditionalOptions>$(LlilumLinkAdditionalOptionsK64F)</LlilumLinkAdditionalOptions>
     <LlilumLinkLibDeps>$(LlilumLinkLibDepsK64F)</LlilumLinkLibDeps>
     <LlilumTargetBoardArchitecture>$(LlilumTargetBoardArchitectureK64F)</LlilumTargetBoardArchitecture>
+  </PropertyGroup>
+  
+  <!-- STM32L152 -->
+  <PropertyGroup Label="Llilum" Condition="'$(LlilumBoardName)' == 'STM32L152'">
+    <LlilumClAdditionalOptions>$(LlilumClAdditionalOptionsSTM32L152)</LlilumClAdditionalOptions>
+    <LlilumClAdditionalIncludes>$(LlilumClAdditionalIncludesSTM32L152)</LlilumClAdditionalIncludes>
+    <LlilumClPreprocessorDefs>$(LlilumClPreprocessorDefsSTM32L152)</LlilumClPreprocessorDefs>
+    <LlilumLinkAdditionalDeps>$(LlilumLinkAdditionalDepsSTM32L152)</LlilumLinkAdditionalDeps>
+    <LlilumLinkAdditionalLibDirs>$(LlilumLinkAdditionalLibDirsSTM32L152)</LlilumLinkAdditionalLibDirs>
+    <LlilumLinkAdditionalOptions>$(LlilumLinkAdditionalOptionsSTM32L152)</LlilumLinkAdditionalOptions>
+    <LlilumLinkLibDeps>$(LlilumLinkLibDepsSTM32L152)</LlilumLinkLibDeps>
+    <LlilumTargetBoardArchitecture>$(LlilumTargetBoardArchitectureSTM32L152)</LlilumTargetBoardArchitecture>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
@@ -138,6 +152,7 @@
     <None Include="mbed_simple.FrontEndConfig" />
     <None Include="mbed_simple_LPC1768.FrontEndConfig" />
     <None Include="mbed_simple_K64F.FrontEndConfig" />
+    <None Include="mbed_simple_STM32L152.FrontEndConfig" />
   </ItemGroup>
 
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

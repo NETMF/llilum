@@ -55,6 +55,9 @@
     <Reference Include="LPC1768">
       <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\LPC1768.dll</HintPath>
     </Reference>
+    <Reference Include="STM32L152">
+      <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\STM32L152.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Zelig.Support.mbed">
       <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\Microsoft.Zelig.Support.mbed.dll</HintPath>
     </Reference>
