@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props" Condition="Exists('$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -11,7 +12,7 @@
     <RootNamespace>Microsoft.Zelig.CodeGeneration.IR</RootNamespace>
     <AssemblyName>Microsoft.Zelig.CodeGeneration.CodeTransformation</AssemblyName>
     <!-- ZELIG: Move intermediate data out of the source tree -->
-    <BaseIntermediateOutputPath>$(SolutionDir)\..\ZeligBuild\Host\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>$(LlilumBuildRoot)\Host\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -20,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <!-- ZELIG: Move output directory out of the source tree -->
-    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Debug\</OutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Host\bin\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -33,7 +34,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <!-- ZELIG: Move output directory out of the source tree -->
-    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Release\</OutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Host\bin\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -43,7 +44,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Instrumentation|AnyCPU'">
-    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Instrumentation\</OutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Host\bin\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE;DEBUG;DUMP_CONSTRAINTSYSTEM;TRACE_EVERY_SINGLE_IR_CHANGE;TRACE_EVERY_IR_CHANGE</DefineConstants>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -246,46 +247,46 @@
     <Compile Include="TypeSystemSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\CommonPC\CommonPC.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\CommonPC\CommonPC.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20070601AA01}</Project>
       <Name>CommonPC</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\CompileTime\MetaData\Normalized\Normalized.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\CompileTime\MetaData\Normalized\Normalized.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20060510AA01}</Project>
       <Name>Normalized</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\Common\Common.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\Common\Common.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20061218AA01}</Project>
       <Name>Common</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\Kernel\Kernel.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\Kernel\Kernel.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20060509AA01}</Project>
       <Name>Kernel</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\TypeSystem\TypeSystem.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\TypeSystem\TypeSystem.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20060720AA01}</Project>
       <Name>TypeSystem</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\CompileTime\TargetModels\ArmProcessor\ArmProcessor.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\CompileTime\TargetModels\ArmProcessor\ArmProcessor.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20070519AA01}</Project>
       <Name>ArmProcessor</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\CompileTime\CodeGenerator\IntermediateRepresentation\IntermediateRepresentation.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\CompileTime\CodeGenerator\IntermediateRepresentation\IntermediateRepresentation.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20060603AA01}</Project>
       <Name>IntermediateRepresentation</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\Llvm.NET\Llvm.NET\Llvm.NET.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\CompileTime\Llvm.NET\Llvm.NET\Llvm.NET.csproj">
       <Project>{0162c8ce-6641-4922-8664-f8a44356fbf7}</Project>
       <Name>Llvm.NET</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\MetaData\Importer\Importer.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\CompileTime\MetaData\Importer\Importer.csproj">
       <Project>{186f31a3-ef89-4a25-b2d5-20060404aa01}</Project>
       <Name>Importer</Name>
     </ProjectReference>

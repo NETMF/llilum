@@ -1,7 +1,7 @@
 @echo off
 
-set ZELIG_ROOT=%CD%\
-echo Current dir is %ZELIG_ROOT%
+set LLILUM_ROOT=%CD%\
+echo Current dir is %LLILUM_ROOT%
 
 prompt $_$+---$G $P$_$+   $G$_Cmd$G
 
@@ -9,14 +9,14 @@ prompt $_$+---$G $P$_$+   $G$_Cmd$G
 :: Set LLVM environment variables.
 ::
 
-set LLVM_BIN=%ZELIG_ROOT%LLVM\Debug\bin\
-set GCC_BIN=%ZELIG_ROOT%ARM_GCC\4.9\bin\
+set LLVM_BIN=%LLILUM_ROOT%LLVM\Debug\bin\
+set GCC_BIN=%LLILUM_ROOT%ARM_GCC\4.9\bin\
 
 ::
 :: Add pyOCD and and make to path.
 ::
 
-set PATH=%ZELIG_ROOT%tools;%PATH%
+set PATH=%LLILUM_ROOT%tools;%PATH%
 
 echo Welcome to LLILUM! 
 echo --- NOTE ---

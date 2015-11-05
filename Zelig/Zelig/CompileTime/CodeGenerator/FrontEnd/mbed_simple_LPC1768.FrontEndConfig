@@ -70,7 +70,7 @@
 #-ReloadState
 -DumpLLVMIR_TextRepresentation
 
--MaxProcs 1
+-MaxProcs 8
 
 -NoSDK
 

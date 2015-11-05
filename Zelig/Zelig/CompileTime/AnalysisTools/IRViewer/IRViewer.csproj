@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props" Condition="Exists('$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -11,7 +12,7 @@
     <RootNamespace>Microsoft.Zelig.Tools.IRViewer</RootNamespace>
     <AssemblyName>Microsoft.Zelig.Tools.IRViewer</AssemblyName>
     <!-- ZELIG: Move intermediate data out of the source tree -->
-    <BaseIntermediateOutputPath>$(SolutionDir)\..\ZeligBuild\Host\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>$(LlilumBuildRoot)\Host\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -20,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <!-- ZELIG: Move output directory out of the source tree -->
-    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Debug\</OutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Host\bin\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -32,7 +33,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <!-- ZELIG: Move output directory out of the source tree -->
-    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Release\</OutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Host\bin\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -41,7 +42,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Instrumentation|AnyCPU'">
-    <OutputPath>$(SolutionDir)\..\ZeligBuild\Host\bin\Instrumentation\</OutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Host\bin\$(Configuration)\</OutputPath>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
@@ -103,7 +104,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\RunTime\Zelig\Common\Common.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\Common\Common.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20061218AA01}</Project>
       <Name>Common</Name>
     </ProjectReference>

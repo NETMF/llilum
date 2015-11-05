@@ -33,15 +33,16 @@
   <!-- General Llilum Settings -->
   <PropertyGroup Label="Llilum" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <LlilumBoardName>LPC1768</LlilumBoardName>
-    <LlilumCompiler>$(ProjectDir)..\..\..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Compiler.exe</LlilumCompiler>
+    <LlilumCompiler>$(LlilumBuildRoot)\Host\bin\Debug\Microsoft.Zelig.Compiler.exe</LlilumCompiler>
     <LlilumConfig>$(MSBuildProjectDirectory)\mbed_simple_$(LlilumBoardName).FrontEndConfig</LlilumConfig>
-    <LlilumProductAssembly>$(ProjectDir)..\..\..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Llilum.BoardConfigurations.$(LlilumBoardName).dll</LlilumProductAssembly>
+    <LlilumProductAssembly>$(LlilumBuildRoot)\Host\bin\$(Configuration)\Microsoft.Llilum.BoardConfigurations.$(LlilumBoardName).dll</LlilumProductAssembly>
+    <LlilumOutputName>SimpleTestProgram_$(LlilumBoardName)</LlilumOutputName>
   </PropertyGroup>
   <PropertyGroup Label="Llilum" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <LlilumBoardName>LPC1768</LlilumBoardName>
-    <LlilumCompiler>$(ProjectDir)..\..\..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Compiler.exe</LlilumCompiler>
+    <LlilumCompiler>$(LlilumBuildRoot)\Host\bin\Debug\Microsoft.Zelig.Compiler.exe</LlilumCompiler>
     <LlilumConfig>$(MSBuildProjectDirectory)\mbed_simple_$(LlilumBoardName).FrontEndConfig</LlilumConfig>
-    <LlilumProductAssembly>$(ProjectDir)..\..\..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Llilum.BoardConfigurations.$(LlilumBoardName).dll</LlilumProductAssembly>
+    <LlilumProductAssembly>$(LlilumBuildRoot)\Host\bin\$(Configuration)\Microsoft.Llilum.BoardConfigurations.$(LlilumBoardName).dll</LlilumProductAssembly>
   </PropertyGroup>
   <!-- Platform specific options -->
   <!-- LPC1768 -->
@@ -75,9 +76,10 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <ArmArchitecture>$(LlilumTargetBoardArchitecture)</ArmArchitecture>
-    <UseOfStl>system</UseOfStl>
     <UseDebugLibraries>false</UseDebugLibraries>
+    <ArmArchitecture>$(LlilumTargetBoardArchitecture)</ArmArchitecture>
+    <UseOfStl>
+    </UseOfStl>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings" />
@@ -88,16 +90,17 @@
     <TargetName>SimpleTestProgram_$(LlilumBoardName)</TargetName>
     <TargetExt>.elf</TargetExt>
     <ExecutablePath>$(LlilumGccBin);$(ExecutablePath)</ExecutablePath>
-    <OutDir>$(ZeligBuildRoot)\Target\bin\$(ProjectName)\$(Configuration)\</OutDir>
+    <OutDir>$(LlilumBuildRoot)\Target\bin\$(ProjectName)\$(Configuration)\</OutDir>
     <ExtensionsToDeleteOnClean>*.bin;*.hex;*.elf;*.lst;*.d;*.tlog;$(ExtensionsToDeleteOnClean)</ExtensionsToDeleteOnClean>
-    <IntDir>$(ZeligBuildRoot)\Target\obj\$(ProjectName)\$(Configuration)\</IntDir>
+    <IntDir>$(LlilumBuildRoot)\Target\obj\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <TargetName>SimpleTestProgram_$(LlilumBoardName)</TargetName>
     <TargetExt>.elf</TargetExt>
     <ExecutablePath>$(LlilumGccBin);$(ExecutablePath)</ExecutablePath>
-    <OutDir>$(ZeligBuildRoot)\Target\bin\$(ProjectName)\$(Configuration)\</OutDir>
-    <IntDir>$(ZeligBuildRoot)\Target\obj\$(ProjectName)\$(Configuration)\</IntDir>
+    <OutDir>$(LlilumBuildRoot)\Target\bin\$(ProjectName)\$(Configuration)\</OutDir>
+    <ExtensionsToDeleteOnClean>*.bin;*.hex;*.elf;*.lst;*.d;*.tlog;$(ExtensionsToDeleteOnClean)</ExtensionsToDeleteOnClean>
+    <IntDir>$(LlilumBuildRoot)\Target\obj\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
@@ -146,10 +149,10 @@
     <ClCompile Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Managed\SimpleTestProgram.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\Test\mbed\SimpleSDK\Managed\SimpleTestProgram.csproj">
       <Project>{612f2d6b-1976-47dc-8e69-022d42aaf62d}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\CompileTime\CodeGenerator\FrontEnd\FrontEnd.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\CompileTime\CodeGenerator\FrontEnd\FrontEnd.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20070605AA02}</Project>
       <Private>false</Private>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
@@ -157,7 +160,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="mbed_simple.FrontEndConfig" />
     <None Include="mbed_simple_K64F.FrontEndConfig" />
     <None Include="mbed_simple_LPC1768.FrontEndConfig" />
   </ItemGroup>

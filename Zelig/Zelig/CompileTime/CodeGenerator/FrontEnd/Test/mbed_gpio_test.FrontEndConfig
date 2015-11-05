@@ -1,0 +1,10 @@
+###
+### The program to compile.
+###
+..\..\..\..\ZeligBuild\Target\bin\Debug\Microsoft.Zelig.Test.GpioTest.exe
+
+###
+### Where to put the results.
+###
+-OutputName Microsoft.Zelig.Test.GpioTest
+-OutputDir  ..\..\..\..\LLVM2IR_results\mbed\test

@@ -1,10 +1,8 @@
 ###
 ### Location of the Zelig assemblies.
 ###
-#-HostAssemblyDir   ..\..\..\..\ZeligBuild\Host\bin\Debug
-#-DeviceAssemblyDir ..\..\..\..\ZeligBuild\Target\bin\Debug
 
--CompilationSetupPath ..\..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Llilum.BoardConfigurations.LPC1768.dll
+-CompilationSetupPath ..\..\..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Llilum.BoardConfigurations.LPC1768.dll
 -CompilationSetup Microsoft.Llilum.BoardConfigurations.LPC1768MBEDHostedCompilationSetup
 
 ###
@@ -52,17 +50,6 @@
 -CompilationPhaseDisabled ConvertToLLVMIntermediateRepresentation
 #-CompilationPhaseDisabled Done
 
-###
-### The program to compile.
-###
-#..\..\..\..\ZeligBuild\Target\bin\Debug\Microsoft.Zelig.Test.mbed.Simple.exe
-
-###
-### Where to put the results.
-###
-#-OutputName Microsoft.Zelig.Test.mbed.Simple
-#-OutputDir  ..\..\..\..\LLVM2IR_results\mbed\simple
-
 #-DumpIR
 #-DumpIRpre
 #-DumpIRpost
@@ -71,5 +58,5 @@
 #-ReloadState
 #-DumpLLVMIR_TextRepresentation
 
--MaxProcs 1
+-MaxProcs 8
 

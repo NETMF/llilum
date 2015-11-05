@@ -57,23 +57,23 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <LibraryPath>$(SolutionDir)..\external\targets\mbed\TARGET_LPC1768\TOOLCHAIN_GCC_ARM;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)..\..\external\targets\mbed\;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X\TARGET_MBED_LPC1768;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)..\ZeligBuild\Target\bin\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)..\ZeligBuild\Target\obj\$(Configuration)\</IntDir>
+    <LibraryPath>$(LlilumSourceRoot)\..\mbed\TARGET_LPC1768\TOOLCHAIN_GCC_ARM;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(LlilumSourceRoot)\..\mbed\;$(LlilumSourceRoot)\..\mbed\TARGET_LPC1768;$(LlilumSourceRoot)\..\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X;$(LlilumSourceRoot)\..\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X\TARGET_MBED_LPC1768;$(IncludePath)</IncludePath>
+    <OutDir>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutDir>
+    <IntDir>$(LlilumBuildRoot)\Target\obj\$(Configuration)\</IntDir>
     <NMakeBuildCommandLine>"$(GnuWin32MakeInstallPath)bin\make" DEBUG=1 TARGET=LPC1768 HEAP_SIZE=0x6000</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>"$(GnuWin32MakeInstallPath)bin\make" clean all  DEBUG=1 TARGET=LPC1768 HEAP_SIZE=0x6000</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>"$(GnuWin32MakeInstallPath)bin\make" clean TARGET=LPC1768</NMakeCleanCommandLine>
     <NMakeOutput>NativeHelpers.bin</NMakeOutput>
     <NMakePreprocessorDefinitions>__GNUC__;TARGET=LPC1768;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>$(SolutionDir)..\..\external\targets\mbed\;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X\TARGET_MBED_LPC1768;$(IncludePath)</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>$(LlilumSourceRoot)\..\mbed\;$(LlilumSourceRoot)\..\mbed\TARGET_LPC1768;$(LlilumSourceRoot)\..\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X;$(LlilumSourceRoot)\..\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X\TARGET_MBED_LPC1768;$(IncludePath)</NMakeIncludeSearchPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <LibraryPath>$(SolutionDir)..\external\targets\mbed\TARGET_LPC1768\TOOLCHAIN_GCC_ARM;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)..\..\external\targets\mbed\;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X\TARGET_MBED_LPC1768;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)..\ZeligBuild\Target\bin\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)..\ZeligBuild\Target\obj\$(Configuration)\</IntDir>
-    <NMakeIncludeSearchPath>$(SolutionDir)..\..\external\targets\mbed\;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X;$(SolutionDir)..\..\external\targets\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X\TARGET_MBED_LPC1768;$(IncludePath)</NMakeIncludeSearchPath>
+    <LibraryPath>$(LlilumSourceRoot)\mbed\TARGET_LPC1768\TOOLCHAIN_GCC_ARM;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(LlilumSourceRoot)\..\mbed\;$(LlilumSourceRoot)\..\mbed\TARGET_LPC1768;$(LlilumSourceRoot)\..\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X;$(LlilumSourceRoot)\..\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X\TARGET_MBED_LPC1768;$(IncludePath)</IncludePath>
+    <OutDir>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutDir>
+    <IntDir>$(LlilumBuildRoot)\Target\obj\$(Configuration)\</IntDir>
+    <NMakeIncludeSearchPath>$(LlilumSourceRoot)\..\mbed\;$(LlilumSourceRoot)\..\mbed\TARGET_LPC1768;$(LlilumSourceRoot)\..\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X;$(LlilumSourceRoot)\..\mbed\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X\TARGET_MBED_LPC1768;$(IncludePath)</NMakeIncludeSearchPath>
     <NMakePreprocessorDefinitions>__GNUC__;TARGET=LPC1768;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <NMakeOutput>NativeHelpers.bin</NMakeOutput>
     <NMakeCleanCommandLine>"$(GnuWin32MakeInstallPath)bin\make" clean TARGET=LPC1768</NMakeCleanCommandLine>

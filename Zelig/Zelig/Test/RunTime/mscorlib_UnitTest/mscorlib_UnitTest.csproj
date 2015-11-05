@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props" Condition="Exists('$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -19,7 +20,7 @@
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <!-- ZELIG: Move output directory out of the source tree -->
-    <OutputPath>..\..\..\Build\</OutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -34,7 +35,7 @@
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <!-- ZELIG: Move output directory out of the source tree -->
-    <OutputPath>..\..\..\Build\</OutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -50,7 +51,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\Build\</OutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -81,19 +82,19 @@
     <None Include="Resources\ZeligRefreshBinaryDrop.cmd" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\RunTime\Zelig\Common\Common.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\Common\Common.csproj">
       <Project>{186f31a3-ef89-4a25-b2d5-20061218aa01}</Project>
       <Name>Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\RunTime\Framework\mscorlib\mscorlib.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\mscorlib\mscorlib.csproj">
       <Project>{186f31a3-ef89-4a25-b2d5-20060501aa01}</Project>
       <Name>mscorlib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\RunTime\Framework\system\system.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\system\system.csproj">
       <Project>{186f31a3-ef89-4a25-b2d5-20070702aa01}</Project>
       <Name>system</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\RunTime\Zelig\TypeSystem\TypeSystem.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\TypeSystem\TypeSystem.csproj">
       <Project>{186f31a3-ef89-4a25-b2d5-20060720aa01}</Project>
       <Name>TypeSystem</Name>
     </ProjectReference>

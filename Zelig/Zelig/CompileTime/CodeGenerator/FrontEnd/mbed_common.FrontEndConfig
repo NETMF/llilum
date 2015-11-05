@@ -1,0 +1,53 @@
+###
+### Location of the Zelig assemblies.
+###
+-HostAssemblyDir   ..\..\..\..\ZeligBuild\Host\bin\Debug
+-DeviceAssemblyDir ..\..\..\..\ZeligBuild\Target\bin\Debug
+
+###
+### Add compilation phases, in order
+###
+#-CompilationPhaseDisabled ReduceNumberOfTemporaries
+#-CompilationPhaseDisabled TransformFinallyBlocksIntoTryBlocks
+#-CompilationPhaseDisabled ApplyClassExtensions
+#-CompilationPhaseDisabled PrepareImplementationOfInternalMethods  
+#-CompilationPhaseDisabled CrossReferenceTypeSystem
+#-CompilationPhaseDisabled ApplyConfigurationSettings
+-CompilationPhaseDisabled ResourceManagerOptimizations
+#-CompilationPhaseDisabled HighLevelTransformations
+#-CompilationPhaseDisabled PropagateCompilationConstraints
+#-CompilationPhaseDisabled ComputeCallsClosure
+#-CompilationPhaseDisabled EstimateTypeSystemReduction
+#-CompilationPhaseDisabled CompleteImplementationOfInternalMethods
+#-CompilationPhaseDisabled ReduceTypeSystem
+-CompilationPhaseDisabled PrepareExternalMethods
+#-CompilationPhaseDisabled DetectNonImplementedInternalCalls
+#-CompilationPhaseDisabled OrderStaticConstructors
+#-CompilationPhaseDisabled LayoutTypes
+#-CompilationPhaseDisabled HighLevelToMidLevelConversion
+-CompilationPhaseDisabled FromImplicitToExplictExceptions
+-CompilationPhaseDisabled MidLevelToLowLevelConversion
+-CompilationPhaseDisabled ConvertUnsupportedOperatorsToMethodCalls
+-CompilationPhaseDisabled ExpandAggregateTypes
+-CompilationPhaseDisabled SplitComplexOperators
+-CompilationPhaseDisabled FuseOperators
+-CompilationPhaseDisabled Optimizations
+-CompilationPhaseDisabled ConvertToSSA
+-CompilationPhaseDisabled PrepareForRegisterAllocation
+-CompilationPhaseDisabled CollectRegisterAllocationConstraints
+-CompilationPhaseDisabled AllocateRegisters
+#-CompilationPhaseDisabled GenerateImage
+#-CompilationPhaseDisabled Done
+
+-DumpIR
+#-DumpIRpre
+#-DumpIRpost
+#-DumpIRXML
+-DumpLLVMIR
+#-ReloadState
+-DumpLLVMIR_TextRepresentation
+
+-MaxProcs 8
+
+-NoSDK
+

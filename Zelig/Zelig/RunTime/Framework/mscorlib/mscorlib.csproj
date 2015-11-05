@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props" Condition="Exists('$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props')" />
   <!--
   mscorlib is treated special so that the .NET Compiler platform (a.k.a. Roslyn)
   can handle it properly. Ordinarly the compiler assumes that mscorlib is supposed
@@ -24,7 +25,7 @@
     <RootNamespace>mscorlib</RootNamespace>
     <AssemblyName>mscorlib</AssemblyName>
     <!-- ZELIG: Move intermediate data out of the source tree -->
-    <BaseIntermediateOutputPath>$(SolutionDir)\..\ZeligBuild\Target\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>$(LlilumBuildRoot)\Target\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -33,7 +34,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <!-- ZELIG: Move output directory out of the source tree -->
-    <OutputPath>$(SolutionDir)\..\ZeligBuild\Target\bin\Debug\</OutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -47,7 +48,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <!-- ZELIG: Move output directory out of the source tree -->
-    <OutputPath>$(SolutionDir)\..\ZeligBuild\Target\bin\Release\</OutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -62,7 +63,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>$(SolutionDir)\..\ZeligBuild\Target\bin\Instrumentation\</OutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>

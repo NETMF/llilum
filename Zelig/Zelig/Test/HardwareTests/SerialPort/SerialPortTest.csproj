@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props" Condition="Exists('$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{91FF2862-C6E5-45BB-B399-8E363E40361C}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Zelig.Test.SerialPortTest</RootNamespace>
+    <AssemblyName>Microsoft.Zelig.Test.SerialPortTest</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <IntermediateOutputPath>$(LlilumBuildRoot)\Target\obj\$(MSBuildProjectName)\$(Configuration)\</IntermediateOutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>$(LlilumBuildRoot)\Target\obj\$(MSBuildProjectName)\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(LlilumSourceRoot)\..\BoardConfigurations\K64F\Board\K64F.csproj">
+      <Project>{1705887b-e636-4fa3-ae40-2d431af1511c}</Project>
+      <Name>K64F</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\..\BoardConfigurations\LPC1768\Board\LPC1768.csproj">
+      <Project>{cee4d575-4b4b-42b0-b2f1-cc7198cb7306}</Project>
+      <Name>LPC1768</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\mbed\mbed.csproj">
+      <Project>{d7f2bc4e-1406-47aa-90e1-07bc4ce9410f}</Project>
+      <Name>mbed</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\Llilum\Devices\Microsoft.Llilum.Devices.csproj">
+      <Project>{d68ee51b-a898-4a77-97d8-c61254cac122}</Project>
+      <Name>Microsoft.Llilum.Devices</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\system\system.csproj">
+      <Project>{186f31a3-ef89-4a25-b2d5-20070702aa01}</Project>
+      <Name>system</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\Kernel\Kernel.csproj">
+      <Project>{186f31a3-ef89-4a25-b2d5-20060509aa01}</Project>
+      <Name>Kernel</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ReadMe.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

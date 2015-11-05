@@ -24,7 +24,7 @@ OBJECTS = .\Microsoft.Zelig.Test.mbed.Simple_opt.o \
 #
 
 ifndef GCC_BIN
-    $(error GCC_BIN is undefined. Define GCC_BIN to point to arm-none-eabi-xxx tools)
+	$(error GCC_BIN is undefined. Define GCC_BIN to point to arm-none-eabi-xxx tools)
 endif
 
 ifndef TARGET
@@ -38,8 +38,8 @@ else
 endif
 
 # Common settings
-MBED_ROOT = $(ZELIG_ROOT)Zelig\mbed
-SOURCE_ROOT = $(ZELIG_ROOT)Zelig\Zelig\Test\mbed\SimpleSDK\Native
+MBED_ROOT = $(LLILUM_ROOT)Zelig\mbed
+SOURCE_ROOT = $(LLILUM_ROOT)Zelig\Zelig\Test\mbed\SimpleSDK\Native
 LIBRARIES = -lmbed
 LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc -lnosys
 
@@ -47,9 +47,9 @@ LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc -lnosys
 ifeq ($(TARGET),LPC1768)
 
 ifndef $(HEAP_SIZE)
-    AS_FLAGS += --defsym __HEAP_SIZE=0x4000
+	AS_FLAGS += --defsym __HEAP_SIZE=0x4000
 else
-    AS_FLAGS += --defsym __HEAP_SIZE=$(HEAP_SIZE)
+	AS_FLAGS += --defsym __HEAP_SIZE=$(HEAP_SIZE)
 endif
 
 	OBJECTS += $(TARGET)\startup_LPC17xx.o
@@ -126,9 +126,9 @@ OBJDUMP = "$(GCC_BIN)arm-none-eabi-objdump"
 SIZE    = "$(GCC_BIN)arm-none-eabi-size"
 
 ifeq ($(DEBUG), 1)
-    CC_FLAGS += -DDEBUG -O0
+	CC_FLAGS += -DDEBUG -Og
 else
-    CC_FLAGS += -DNDEBUG -Os
+	CC_FLAGS += -DNDEBUG -Os
 endif
 
 #

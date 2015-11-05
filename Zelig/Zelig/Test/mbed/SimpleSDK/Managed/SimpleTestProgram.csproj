@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props" Condition="Exists('$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -19,8 +18,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <IntermediateOutputPath>$(ZeligBuildRoot)\Target\obj\$(MSBuildProjectName)\$(Configuration)\</IntermediateOutputPath>
-    <OutputPath>$(ZeligBuildRoot)\Target\bin\$(MSBuildProjectName)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>$(LlilumBuildRoot)\Target\obj\$(MSBuildProjectName)\$(Configuration)\</IntermediateOutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(MSBuildProjectName)\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -30,8 +29,8 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>$(ZeligBuildRoot)\Target\bin\$(MSBuildProjectName)\$(Configuration)\</OutputPath>
-    <IntermediateOutputPath>$(ZeligBuildRoot)\Target\obj\$(MSBuildProjectName)\$(Configuration)\</IntermediateOutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(MSBuildProjectName)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>$(LlilumBuildRoot)\Target\obj\$(MSBuildProjectName)\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -44,35 +43,35 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\BoardConfigurations\K64F\Board\K64F.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\..\BoardConfigurations\K64F\Board\K64F.csproj">
       <Project>{1705887b-e636-4fa3-ae40-2d431af1511c}</Project>
       <Name>K64F</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\BoardConfigurations\LPC1768\Board\LPC1768.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\..\BoardConfigurations\LPC1768\Board\LPC1768.csproj">
       <Project>{cee4d575-4b4b-42b0-b2f1-cc7198cb7306}</Project>
       <Name>LPC1768</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\RunTime\DeviceModels\mbed\mbed.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\mbed\mbed.csproj">
       <Project>{d7f2bc4e-1406-47aa-90e1-07bc4ce9410f}</Project>
       <Name>mbed</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\RunTime\Framework\system\system.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\system\system.csproj">
       <Project>{186f31a3-ef89-4a25-b2d5-20070702aa01}</Project>
       <Name>system</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\RunTime\Framework\Windows\Devices\Windows.Devices.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\Windows\Devices\Windows.Devices.csproj">
       <Project>{dc8c38d7-780b-4b13-8ace-9050e39cc51c}</Project>
       <Name>Windows.Devices</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\RunTime\Framework\Windows\Foundation\Windows.Foundation.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\Windows\Foundation\Windows.Foundation.csproj">
       <Project>{8efe86d1-094f-4450-b2d3-4b6045cfec96}</Project>
       <Name>Windows.Foundation</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\RunTime\Framework\Windows\System\Windows.System.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\Windows\System\Windows.System.csproj">
       <Project>{a7835e9d-6fee-4b23-8eae-090ae41ef6f0}</Project>
       <Name>Windows.System</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\RunTime\Zelig\Kernel\Kernel.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\Kernel\Kernel.csproj">
       <Project>{186f31a3-ef89-4a25-b2d5-20060509aa01}</Project>
       <Name>Kernel</Name>
     </ProjectReference>

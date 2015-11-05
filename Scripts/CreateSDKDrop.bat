@@ -1,7 +1,7 @@
 @echo OFF
 SETLOCAL ENABLEEXTENSIONS ENABLEDELAYEDEXPANSION
-set ZELIG_ROOT_DIR=%~dp0%..
-set PATH=%ZELIG_ROOT_DIR%\Zelig\tools;%PATH%
+set LLILUM_ROOT_DIR=%~dp0%..
+set PATH=%LLILUM_ROOT_DIR%\Zelig\tools;%PATH%
 call "%VS140COMNTOOLS%"vsvars32.bat
 
 where /q nuget.exe || (
@@ -11,7 +11,7 @@ where /q nuget.exe || (
 
 echo.
 echo Building Board Configurations...
-msbuild /m "%ZELIG_ROOT_DIR%\Zelig\BoardConfigurations\BoardConfigurations.sln" /t:Build /p:Configuration=Debug /p:Platform="Any CPU" /flp:verbosity=diagnostic;LogFile=BoardConfigurationBuild.log /clp:verbosity=minimal
+msbuild /m "%LLILUM_ROOT_DIR%\Zelig\BoardConfigurations\BoardConfigurations.sln" /t:Build /p:Configuration=Debug /p:Platform="Any CPU" /flp:verbosity=diagnostic;LogFile=BoardConfigurationBuild.log /clp:verbosity=minimal
 if NOT %errorlevel%==0 (
     echo.
     echo Error: Failed to build Board configurations.
@@ -25,20 +25,20 @@ if NOT %errorlevel%==0 (
 :: from a single folder that contains only the files intended for redistribution as the SDK. Once we have an MSI installer
 :: then it's build project can pull files directly without needing any additional staging. 
 echo.
-echo Building Zelig compiler...
-msbuild /m "%ZELIG_ROOT_DIR%\Zelig\Zelig\Zelig.sln" /t:Build /p:Configuration=Debug /p:Platform="Any CPU" /flp:verbosity=diagnostic;LogFile=ZeligCompilerBuild.log /clp:verbosity=minimal
+echo Building Llilum compiler...
+msbuild /m "%LLILUM_ROOT_DIR%\Zelig\Zelig\Zelig.sln" /t:Build /p:Configuration=Debug /p:Platform="Any CPU" /flp:verbosity=diagnostic;LogFile=ZeligCompilerBuild.log /clp:verbosity=minimal
 if NOT %errorlevel%==0 (
     echo.
-    echo Error: Failed to build Zelig compiler.
+    echo Error: Failed to build Llilum compiler.
     goto CheckSDKIssue
 )
 
 echo.
-echo Building Zelig VSIX package...
-nuget.exe restore  "%ZELIG_ROOT_DIR%\VisualStudio\LlilumProjectType"
-msbuild /m "%ZELIG_ROOT_DIR%\VisualStudio\LlilumProjectType\LlilumApplication.sln" /t:Build /p:Configuration=Debug;Platform="Any CPU" /flp:verbosity=diagnostic;LogFile=ZeligVSIXBuild.log /clp:verbosity=minimal
+echo Building Llilum VSIX package...
+nuget.exe restore  "%LLILUM_ROOT_DIR%\VisualStudio\LlilumProjectType"
+msbuild /m "%LLILUM_ROOT_DIR%\VisualStudio\LlilumProjectType\LlilumApplication.sln" /t:Build /p:Configuration=Debug;Platform="Any CPU" /flp:verbosity=diagnostic;LogFile=ZeligVSIXBuild.log /clp:verbosity=minimal
 if NOT %errorlevel%==0 (
-    echo Error: Failed to build Zelig VSIX package.
+    echo Error: Failed to build Llilum VSIX package.
     goto Error
 )
 
@@ -53,45 +53,45 @@ echo Set drop directory to %SDK_DIR%
 :: Drop Creation
 echo.
 echo Creating Drop directory...
-xcopy /i /e /q /y %ZELIG_ROOT_DIR%\SDKHelpers %SDK_DIR%\SDKDrop
+xcopy /i /e /q /y %LLILUM_ROOT_DIR%\SDKHelpers %SDK_DIR%\SDKDrop
 
 echo.
 echo Copying Visual Studio files...
-xcopy /s /i /E /q /y "%ZELIG_ROOT_DIR%\VisualStudio\LlilumApplicationType" "%SDK_DIR%\SDKDrop\LlilumApplicationType"
+xcopy /s /i /E /q /y "%LLILUM_ROOT_DIR%\VisualStudio\LlilumApplicationType" "%SDK_DIR%\SDKDrop\LlilumApplicationType"
 
 echo.
 echo Copying files for GCC...
 ::
 :: !!! Relies on naming convention !!!
 ::
-copy /y "%ZELIG_ROOT_DIR%\Zelig\Zelig\Test\mbed\SimpleSDK\Native\helpers.h" "%SDK_DIR%\SDKDrop\output\helpers.h"
-copy /y "%ZELIG_ROOT_DIR%\Zelig\Zelig\Test\mbed\SimpleSDK\Native\InteropExports_*.cpp" "%SDK_DIR%\SDKDrop\output\."
+copy /y "%LLILUM_ROOT_DIR%\Zelig\Zelig\Test\mbed\SimpleSDK\Native\helpers.h" "%SDK_DIR%\SDKDrop\output\helpers.h"
+copy /y "%LLILUM_ROOT_DIR%\Zelig\Zelig\Test\mbed\SimpleSDK\Native\InteropExports_*.cpp" "%SDK_DIR%\SDKDrop\output\."
 
 echo.
 echo Copying target libraries...
-xcopy /i /e /q /y "%ZELIG_ROOT_DIR%\Zelig\mbed\*" "%SDK_DIR%\SDKDrop\mbed\*"
-xcopy /i /e /q /y "%ZELIG_ROOT_DIR%\Zelig\mbed-rtos\*" "%SDK_DIR%\SDKDrop\mbed-rtos\*"
-xcopy /q /y "%ZELIG_ROOT_DIR%\Zelig\mbed-rtos.lib" "%SDK_DIR%\SDKDrop\*"
+xcopy /i /e /q /y "%LLILUM_ROOT_DIR%\Zelig\mbed\*" "%SDK_DIR%\SDKDrop\mbed\*"
+xcopy /i /e /q /y "%LLILUM_ROOT_DIR%\Zelig\mbed-rtos\*" "%SDK_DIR%\SDKDrop\mbed-rtos\*"
+xcopy /q /y "%LLILUM_ROOT_DIR%\Zelig\mbed-rtos.lib" "%SDK_DIR%\SDKDrop\*"
 
 echo.
 echo Copying installation instructions for pyOCD and make for Windows...
-xcopy /i /e /q /y "%ZELIG_ROOT_DIR%\Zelig\tools\*" "%SDK_DIR%\SDKDrop\tools\*"
+xcopy /i /e /q /y "%LLILUM_ROOT_DIR%\Zelig\tools\*" "%SDK_DIR%\SDKDrop\tools\*"
 
 echo.
-echo Copying Zelig compiler...
-xcopy /i /e /q /y "%ZELIG_ROOT_DIR%\Zelig\ZeligBuild" "%SDK_DIR%\SDKDrop\ZeligBuild"
+echo Copying Llilum compiler...
+xcopy /i /e /q /y "%LLILUM_ROOT_DIR%\Zelig\ZeligBuild" "%SDK_DIR%\SDKDrop\ZeligBuild"
 
 echo.
 echo Copying board configurations
-xcopy /i /e /q /y "%ZELIG_ROOT_DIR%\Zelig\Zelig\RunTime\DeviceModels\Boards" "%SDK_DIR%\SDKDrop\Boards"
+xcopy /i /e /q /y "%LLILUM_ROOT_DIR%\Zelig\Zelig\RunTime\DeviceModels\Boards" "%SDK_DIR%\SDKDrop\Boards"
 
 echo.
 echo Copying test project...
-xcopy /i /e /q /y %ZELIG_ROOT_DIR%\Zelig\Zelig\Test "%SDK_DIR%\SDKDrop\Test"
+xcopy /i /e /q /y %LLILUM_ROOT_DIR%\Zelig\Zelig\Test "%SDK_DIR%\SDKDrop\Test"
 
 echo.
 echo Copying VSIX package
-copy "%ZELIG_ROOT_DIR%\VisualStudio\LlilumProjectType\LlilumApplication\LlilumApplication.ProjectType\bin\Debug\LlilumApplication.vsix" "%SDK_DIR%\SDKDrop\*"
+copy "%LLILUM_ROOT_DIR%\VisualStudio\LlilumProjectType\LlilumApplication\LlilumApplication.ProjectType\bin\Debug\LlilumApplication.vsix" "%SDK_DIR%\SDKDrop\*"
 
 :: Drop Verification
 echo.
@@ -114,7 +114,7 @@ if not exist %SDK_DIR%\SDKDrop\output\InteropExports_*.cpp (
     goto Error
 )
 if not exist %SDK_DIR%\SDKDrop\ZeligBuild (
-    @echo Error: Zelig binaries missing
+    @echo Error: Llilum binaries missing
     goto Error
 )
 if not exist %SDK_DIR%\SDKDrop\mbed (

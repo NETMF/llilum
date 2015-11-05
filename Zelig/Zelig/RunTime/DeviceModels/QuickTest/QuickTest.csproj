@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props" Condition="Exists('$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -16,7 +17,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoStdLib>true</NoStdLib>
@@ -26,7 +27,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <NoStdLib>true</NoStdLib>
@@ -37,7 +38,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Instrumentation|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Instrumentation\</OutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -51,27 +52,27 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\RunTime\Framework\mscorlib\mscorlib.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\mscorlib\mscorlib.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20060501AA01}</Project>
       <Name>mscorlib</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\RunTime\Framework\system\system.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\system\system.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20070702AA01}</Project>
       <Name>system</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\Common\Common.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\Common\Common.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20061218AA01}</Project>
       <Name>Common</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\Kernel\Kernel.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\Kernel\Kernel.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20060509AA01}</Project>
       <Name>Kernel</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\TypeSystem\TypeSystem.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\TypeSystem\TypeSystem.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20060720AA01}</Project>
       <Name>TypeSystem</Name>
       <Private>False</Private>

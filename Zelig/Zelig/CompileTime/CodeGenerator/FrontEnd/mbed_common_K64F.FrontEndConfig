@@ -1,0 +1,13 @@
+-CompilationSetup Microsoft.Zelig.Configuration.Environment.K64FMBEDHostedCompilationSetup
+
+###
+### We need to include this assembly to get the right drivers.
+###
+-Reference Microsoft.CortexM4OnMBED
+-Reference Microsoft.CortexM4OnCMSISCore
+-Reference Microsoft.DeviceModels.ModelForCortexM4
+-Reference K64F
+
+-CompilationSetupPath ..\..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Llilum.BoardConfigurations.K64F.dll
+-CompilationSetup Microsoft.Llilum.BoardConfigurations.K64FMBEDHostedCompilationSetup
+

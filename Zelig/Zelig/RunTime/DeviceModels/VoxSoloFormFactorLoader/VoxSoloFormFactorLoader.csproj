@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props" Condition="Exists('$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -11,7 +12,7 @@
     <RootNamespace>Microsoft.VoxSoloFormFactorLoader</RootNamespace>
     <AssemblyName>Microsoft.VoxSoloFormFactorLoader</AssemblyName>
     <!-- ZELIG: Move intermediate data out of the source tree -->
-    <BaseIntermediateOutputPath>$(SolutionDir)\..\ZeligBuild\Target\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>$(LlilumBuildRoot)\Target\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -20,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <!-- ZELIG: Move output directory out of the source tree -->
-    <OutputPath>$(SolutionDir)\..\ZeligBuild\Target\bin\Debug\</OutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -35,7 +36,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <!-- ZELIG: Move output directory out of the source tree -->
-    <OutputPath>$(SolutionDir)\..\ZeligBuild\Target\bin\Release\</OutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -50,7 +51,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>$(SolutionDir)\..\ZeligBuild\Target\bin\Instrumentation\</OutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
@@ -70,27 +71,27 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\RunTime\Framework\mscorlib\mscorlib.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\mscorlib\mscorlib.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20060501AA01}</Project>
       <Name>mscorlib</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\Common\Common.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\Common\Common.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20061218AA01}</Project>
       <Name>Common</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\Kernel\Kernel.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\Kernel\Kernel.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20060509AA01}</Project>
       <Name>Kernel</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\RunTime\Zelig\TypeSystem\TypeSystem.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\TypeSystem\TypeSystem.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20060720AA01}</Project>
       <Name>TypeSystem</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\RunTime\DeviceModels\ModelForMM9691LP\ModelForMM9691LP.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\ModelForMM9691LP\ModelForMM9691LP.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20070724AA02}</Project>
       <Name>ModelForMM9691LP</Name>
       <Private>False</Private>

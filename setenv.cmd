@@ -1,6 +1,6 @@
 @echo off
 
-set ZELIG_ROOT=%~dp0%
+set LLILUM_ROOT=%~dp0%
 
 prompt $_$+---$G $P$_$+   $G$_Cmd$G
 
@@ -16,7 +16,7 @@ set LLVM_LIBS=%LLVM_SRCROOT_DIR%\
 :: Add pyOCD and and make to path.
 ::
 
-set PATH=%ZELIG_ROOT%Zelig\tools;%PATH%
+set PATH=%LLILUM_ROOT%Zelig\tools;%PATH%
 
 cd Zelig
 echo Welcome to LLILUM! 
