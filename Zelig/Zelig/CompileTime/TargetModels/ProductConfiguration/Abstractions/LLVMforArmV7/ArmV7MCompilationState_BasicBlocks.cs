@@ -66,27 +66,26 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                     return m_manager.Module.GetNullPointer( m_manager.GetOrInsertType( ce.Type ) );
                 }
 
-                if( ce.Type.IsFloatingPoint )
+                if( ce.Type.IsInteger || ce.Type.IsFloatingPoint )
                 {
-                    Debug.Assert( wantImmediate, "Cannot take the address of a scalar constant." );
-                    if( ce.Value is float )
-                        return m_manager.Module.GetFloatConstant( ( float )ce.Value );
-                    else
-                        return m_manager.Module.GetDoubleConstant( ( double )ce.Value );
-                }
-
-                if( ce.Type.IsInteger )
-                {
-                    Debug.Assert( wantImmediate, "Cannot take the address of a scalar constant." );
                     if( ce.SizeOfValue == 0 )
                     {
-                        throw new System.InvalidOperationException( "Integer constant with 0 bits width." );
+                        throw new System.InvalidOperationException( "Scalar constant with 0 bits width." );
                     }
 
-                    ulong uVal;
-                    ce.GetAsRawUlong( out uVal );
-                    LLVM._Type intType = m_manager.GetOrInsertType( ce.Type );
-                    return m_manager.Module.GetIntConstant( intType, uVal, ce.Type.IsSigned );
+                    Debug.Assert( wantImmediate, "Cannot take the address of a scalar constant." );
+                    _Type scalarType = m_manager.GetOrInsertType( ce.Type );
+
+                    object value = ce.Value;
+                    if( ce.Type.IsInteger )
+                    {
+                        // Ensure integer types are converted to ulong. This will also catch enums and IntPtr/UIntPtr.
+                        ulong intValue;
+                        ce.GetAsRawUlong(out intValue);
+                        value = intValue;
+                    }
+
+                    return m_manager.Module.GetScalarConstant( scalarType, value );
                 }
 
                 IR.DataManager.DataDescriptor dd = ce.Value as IR.DataManager.DataDescriptor;

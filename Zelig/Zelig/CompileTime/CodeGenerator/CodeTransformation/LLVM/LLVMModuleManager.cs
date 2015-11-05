@@ -228,7 +228,7 @@ namespace Microsoft.Zelig.LLVM
             return m_module.GetUCVStruct( type, fields, anon );
         }
 
-        private object GetDirectFromArrayDescriptor( IR.DataManager.ArrayDescriptor ad, int pos )
+        private object GetDirectFromArrayDescriptor( IR.DataManager.ArrayDescriptor ad, uint pos )
         {
             return ad.Values != null ? ad.Values[ pos ] : ad.Source.GetValue( pos );
         }
@@ -247,19 +247,19 @@ namespace Microsoft.Zelig.LLVM
             {
                 for( uint i = 0; i < arrayLength; i++ )
                 {
-                    object fdVal = GetDirectFromArrayDescriptor( ad, ( int )i );
-                    fields.Add( GetScalarTypeUCV( elTR, fdVal is ulong ? ( ulong )fdVal : ( ulong )Convert.ToInt64( fdVal ) ) );
+                    object fdVal = GetDirectFromArrayDescriptor( ad, i );
+                    fields.Add( GetScalarTypeUCV( elTR, fdVal ) );
                 }
             }
             else
             {
                 for( uint i = 0; i < arrayLength; i++ )
                 {
-                    object val = GetDirectFromArrayDescriptor( ad, ( int )i );
+                    object val = GetDirectFromArrayDescriptor( ad, i );
 
                     if( val == null )
                     {
-                        fields.Add( GetScalarTypeUCV( elTR, 0 ) );
+                        fields.Add( m_module.GetUCVZeroInitialized( GetOrInsertType( elTR ) ) );
                     }
                     else if( val is IR.DataManager.DataDescriptor )
                     {
@@ -276,7 +276,7 @@ namespace Microsoft.Zelig.LLVM
                     }
                     else if( ad.Context.ContainedType is TS.ScalarTypeRepresentation )
                     {
-                        fields.Add( GetScalarTypeUCV( elTR, val is ulong ? ( ulong )val : ( ulong )Convert.ToInt64( val ) ) );
+                        fields.Add( GetScalarTypeUCV( elTR, val ) );
                     }
                     else
                     {
@@ -288,18 +288,10 @@ namespace Microsoft.Zelig.LLVM
             return m_module.GetUCVArray( GetOrInsertType( elTR ), fields );
         }
 
-        private Constant GetScalarTypeUCV( TS.TypeRepresentation tr, ulong v )
+        private Constant GetScalarTypeUCV( TS.TypeRepresentation tr, object value )
         {
             _Type type = GetOrInsertType( tr );
-
-            if( v == 0 )
-            {
-                return m_module.GetUCVZeroInitialized( type );
-            }
-            else
-            {
-                return m_module.GetUCVInt( type, v, tr.IsSigned );
-            }
+            return m_module.GetUCVScalar( type, value );
         }
 
         private bool TypeChangesAfterCreation( IR.DataManager.DataDescriptor dd )
@@ -453,7 +445,7 @@ namespace Microsoft.Zelig.LLVM
                         }
                         else if( fdVal == null )
                         {
-                            fields.Add( GetScalarTypeUCV( fd.FieldType, 0 ) );
+                            fields.Add( m_module.GetUCVZeroInitialized( GetOrInsertType( fd.FieldType ) ) );
                         }
                         else if( fdVal is IR.DataManager.DataDescriptor )
                         {
@@ -470,7 +462,7 @@ namespace Microsoft.Zelig.LLVM
                         }
                         else if( fd.FieldType is TS.ScalarTypeRepresentation )
                         {
-                            fields.Add( GetScalarTypeUCV( fd.FieldType, fdVal is ulong ? ( ulong )fdVal : ( ulong )Convert.ToInt64( fdVal ) ) );
+                            fields.Add( GetScalarTypeUCV( fd.FieldType, fdVal ) );
                         }
                         else
                         {
@@ -486,7 +478,7 @@ namespace Microsoft.Zelig.LLVM
                 if( currentType == wkt.System_String )
                 {
                     var chars = new List<Constant>( );
-                    foreach( var c in ( ( string )od.Source ).ToCharArray( ) )
+                    foreach( char c in ( ( string )od.Source ).ToCharArray( ) )
                     {
                         chars.Add( GetScalarTypeUCV( wkf.StringImpl_FirstChar.FieldType, c ) );
                     }
@@ -499,14 +491,13 @@ namespace Microsoft.Zelig.LLVM
             else if( dd is IR.DataManager.ArrayDescriptor )
             {
                 IR.DataManager.ArrayDescriptor ad = ( IR.DataManager.ArrayDescriptor )dd;
+                int length = ad.Source?.Length ?? ad.Length;
 
-                Constant ucv = GetUCVObjectHeader( dd );
-                ucv = GetUCVStruct( GetOrInsertInlineType( wkt.System_Object ), false, ucv );
-
-                ulong arrayLen = (ulong)((ad.Source != null) ? ad.Source.Length : ad.Length);
-
-                ucv = GetUCVStruct( GetOrInsertInlineType( wkt.System_Array ), false, ucv, GetScalarTypeUCV( wkf.ArrayImpl_m_numElements.FieldType, arrayLen) );
-                return GetUCVStruct( GetOrInsertInlineType( dd.Context ), true, ucv, GetUCVArray( ad ) );
+                Constant header = GetUCVObjectHeader( dd );
+                Constant obj = GetUCVStruct( GetOrInsertInlineType( wkt.System_Object ), false, header );
+                Constant arrayLength = GetScalarTypeUCV( wkf.ArrayImpl_m_numElements.FieldType, length );
+                Constant arrayFields = GetUCVStruct( GetOrInsertInlineType( wkt.System_Array ), false, obj, arrayLength );
+                return GetUCVStruct( GetOrInsertInlineType( dd.Context ), true, arrayFields, GetUCVArray( ad ) );
             }
             else
             {

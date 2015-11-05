@@ -122,18 +122,6 @@ namespace Microsoft.Zelig.LLVM
 
         public _Type GetVoidType( ) => GetType( TypeSystem.WellKnownTypes.System_Void );
 
-        public _Value GetIntConstant( _Type type, ulong v, bool isSigned )
-        {
-            Constant val = LlvmModule.Context.CreateConstant( (uint)type.SizeInBits, v, isSigned );
-            string name = type.Name;
-            if( name == "System.IntPtr" || name == "System.UIntPtr" )
-            {
-                val = ConstantExpression.IntToPtrExpression( val, type.DebugType );
-            }
-
-            return new _Value( this, type, val );
-        }
-
         internal DINamespace GetOrCreateDINamespace( TypeRepresentation tr )
         {
             return GetOrCreateDINamespace( tr.Namespace );
@@ -183,19 +171,10 @@ namespace Microsoft.Zelig.LLVM
             yield return fullName;
         }
 
-
-        public _Value GetFloatConstant( float c )
+        public _Value GetScalarConstant( _Type type, object value )
         {
-            _Type t = GetType( TypeSystem.WellKnownTypes.System_Single );
-            Value val = LlvmModule.Context.CreateConstant( c );
-            return new _Value( this, t, val );
-        }
-
-        public _Value GetDoubleConstant( double c )
-        {
-            _Type t = GetType( TypeSystem.WellKnownTypes.System_Double );
-            Value val = LlvmModule.Context.CreateConstant( c );
-            return new _Value( this, t, val );
+            Constant ucv = GetUCVScalar( type, value );
+            return new _Value( this, type, ucv );
         }
 
         public _Value GetNullPointer( _Type type )
@@ -280,9 +259,34 @@ namespace Microsoft.Zelig.LLVM
             return ConstantArray.From( curType, members );
         }
 
-        public Constant GetUCVInt( _Type type, ulong v, bool isSigned )
+        public Constant GetUCVScalar( _Type type, object value )
         {
-            return LlvmModule.Context.CreateConstant( type.DebugType, v, isSigned );
+            if( type.IsInteger )
+            {
+                // Note: This does not cover enums.
+                ulong intValue = ( value is ulong ) ? (ulong)value : (ulong)Convert.ToInt64( value );
+                return LlvmModule.Context.CreateConstant( type.DebugType, intValue, type.IsSigned );
+            }
+            else if( type.IsFloat )
+            {
+                return LlvmModule.Context.CreateConstant( (float)value );
+            }
+            else if( type.IsDouble )
+            {
+                return LlvmModule.Context.CreateConstant( (double)value );
+            }
+            else if( type.TypeRepresentation == TypeSystem.WellKnownTypes.System_IntPtr )
+            {
+                Constant ucv = LlvmModule.Context.CreateConstant( (uint)type.SizeInBits, (ulong)value, true );
+                return ConstantExpression.IntToPtrExpression( ucv, type.DebugType );
+            }
+            else if( type.TypeRepresentation == TypeSystem.WellKnownTypes.System_UIntPtr )
+            {
+                Constant ucv = LlvmModule.Context.CreateConstant( (uint)type.SizeInBits, (ulong)value, false );
+                return ConstantExpression.IntToPtrExpression( ucv, type.DebugType );
+            }
+
+            throw new InvalidCastException( "Cannot create a scalar constant of non-scalar type." );
         }
 
         public Constant GetUCVZeroInitialized( _Type type )
