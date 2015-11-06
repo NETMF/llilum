@@ -141,6 +141,7 @@
     <ClCompile Include="InteropExports_i2c.cpp" />
     <ClCompile Include="InteropExports_mem.cpp" />
     <ClCompile Include="InteropExports_nvic.cpp" />
+    <ClCompile Include="InteropExports_pwm.cpp" />
     <ClCompile Include="InteropExports_serial.cpp" />
     <ClCompile Include="InteropExports_spi.cpp" />
     <ClCompile Include="InteropExports_system_timer.cpp" />

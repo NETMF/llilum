@@ -82,11 +82,8 @@ namespace Windows.Devices.Spi
                 throw new InvalidOperationException();
             }
 
+            // This will throw if it fails
             Llilum.SpiDevice spiChannel = new Llilum.SpiDevice(channelInfo, settings.ChipSelectLine);
-            if (spiChannel == null)
-            {
-                throw new InvalidOperationException();
-            }
 
             spiChannel.ClockFrequency = settings.ClockFrequency;
             spiChannel.DataBitLength = settings.DataBitLength;

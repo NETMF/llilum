@@ -54,6 +54,7 @@
     <Compile Include="HardwareModel\Drivers\GpioPin.cs" />
     <Compile Include="HardwareModel\Drivers\I2cChannel.cs" />
     <Compile Include="HardwareModel\Drivers\InterruptController.cs" />
+    <Compile Include="HardwareModel\Drivers\PwmChannel.cs" />
     <Compile Include="HardwareModel\Drivers\SerialPortsManager.cs" />
     <Compile Include="HardwareModel\Drivers\SpiChannel.cs" />
     <Compile Include="HardwareModel\Drivers\StandardSerialPort.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="HardwareModel\HardwareProviders\AdcProvider.cs" />
     <Compile Include="HardwareModel\HardwareProviders\GpioProvider.cs" />
     <Compile Include="HardwareModel\HardwareProviders\I2cProvider.cs" />
+    <Compile Include="HardwareModel\HardwareProviders\PwmProvider.cs" />
     <Compile Include="HardwareModel\HardwareProviders\SpiProvider.cs" />
     <Compile Include="HardwareModel\Memory.cs" />
     <Compile Include="HardwareModel\Peripherals.cs" />

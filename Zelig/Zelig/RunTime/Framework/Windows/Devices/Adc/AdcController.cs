@@ -106,13 +106,13 @@ namespace Windows.Devices.Adc
         internal sealed class DefaultAdcProvider : IAdcControllerProvider
         {
             private Llilum.IAdcChannelInfoUwp   m_providerInfo;
-        private Llilum.AdcPin[] m_adcChannels;
+            private Llilum.AdcPin[]             m_adcChannels;
             private object                      m_channelLock;
 
             public DefaultAdcProvider()
             {
                 m_providerInfo = AdcController.GetAdcProviderInfo();
-            m_adcChannels = new Llilum.AdcPin[m_providerInfo.AdcPinNumbers.Length];
+                m_adcChannels = new Llilum.AdcPin[m_providerInfo.AdcPinNumbers.Length];
                 m_channelLock = new object();
             }
 
@@ -175,7 +175,7 @@ namespace Windows.Devices.Adc
                 {
                     if (m_adcChannels[channel] == null)
                     {
-                Llilum.AdcPin newChannel = new Llilum.AdcPin(m_providerInfo.AdcPinNumbers[channel]);
+                        Llilum.AdcPin newChannel = new Llilum.AdcPin(m_providerInfo.AdcPinNumbers[channel]);
                         m_adcChannels[channel] = newChannel;
                     }
                 }

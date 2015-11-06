@@ -26,25 +26,22 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
 
         public override void Dispose()
         {
-            unsafe
-            {
-                if (m_i2c != null)
-                {
-                    Dispose(true);
-                    GC.SuppressFinalize(this);
-                }
-            }
+             Dispose(true);
         }
 
         private unsafe void Dispose(bool disposing)
         {
-            if(disposing)
+            if (m_i2c != null)
             {
-                RT.HardwareProvider.Instance.ReleasePins(m_channelInfo.SclPin, m_channelInfo.SdaPin);
-            }
+                tmp_i2c_free(m_i2c);
+                m_i2c = null;
 
-            tmp_i2c_free(m_i2c);
-            m_i2c = null;
+                if (disposing)
+                {
+                    RT.HardwareProvider.Instance.ReleasePins(m_channelInfo.SclPin, m_channelInfo.SdaPin);
+                    GC.SuppressFinalize(this);
+                }
+            }
         }
 
         public override II2cChannelInfo GetChannelInfo()

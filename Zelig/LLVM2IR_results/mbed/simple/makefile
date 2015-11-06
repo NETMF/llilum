@@ -12,6 +12,7 @@ OBJECTS = .\Microsoft.Zelig.Test.mbed.Simple_opt.o \
 	$(TARGET)\InteropExports_i2c.o \
 	$(TARGET)\InteropExports_mem.o \
 	$(TARGET)\InteropExports_NVIC.o \
+	$(TARGET)\InteropExports_pwm.o \
 	$(TARGET)\InteropExports_serial.o \
 	$(TARGET)\InteropExports_spi.o \
 	$(TARGET)\InteropExports_system_timer.o \

@@ -75,6 +75,12 @@
     <Compile Include="I2c\I2cConnectionSettings.cs" />
     <Compile Include="I2c\I2cDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Pwm\DefaultPwmControllerProvider.cs" />
+    <Compile Include="Pwm\IPwmControllerProvider.cs" />
+    <Compile Include="Pwm\IPwmProvider.cs" />
+    <Compile Include="Pwm\PwmController.cs" />
+    <Compile Include="Pwm\PwmEnums.cs" />
+    <Compile Include="Pwm\PwmPin.cs" />
     <Compile Include="Spi\SpiChannel.cs" />
     <Compile Include="Spi\SpiBusInfo.cs" />
     <Compile Include="Spi\SpiConnectionSettings.cs" />

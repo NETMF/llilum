@@ -47,7 +47,7 @@ namespace Microsoft.Llilum.Devices.Spi
             m_spiChannel = TryAcquireSpiChannel(channelInfo, chipSelectPin);
             if (m_spiChannel == null)
             {
-                throw new ArgumentException();
+                throw new InvalidOperationException();
             }
 
             // Set default values

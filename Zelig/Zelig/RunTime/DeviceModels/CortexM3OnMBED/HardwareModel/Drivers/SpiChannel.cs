@@ -15,7 +15,6 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         private unsafe SpiImpl* m_spi;
         private unsafe LlilumGpio.GpioPin m_altCsPin;
         private UInt16 m_dataWidth;
-        private bool m_disposed;
         private int m_setupTimeInCycles;
         private int m_holdTimeInCycles;
         private bool m_activeLow;
@@ -36,14 +35,9 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         /// <summary>
         /// Closes resources associated with this SPI device
         /// </summary>
-        public override void Dispose()
+        public unsafe override void Dispose()
         {
-            if (!m_disposed)
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-                m_disposed = true;
-            }
+            Dispose(true);
         }
 
         /// <summary>
@@ -53,10 +47,14 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         private unsafe void Dispose(bool disposing)
         {
             // Native resources need to be freed unconditionally
-            tmp_spi_free(m_spi);
-
-            if (disposing)
+            if(m_spi != null)
             {
+                tmp_spi_free(m_spi);
+                m_spi = null;
+            }
+            if(disposing)
+            {
+                GC.SuppressFinalize(this);
             }
         }
 

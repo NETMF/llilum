@@ -9,6 +9,7 @@
 #define USE_GPIO
 #define USE_THREADING
 #define USE_ADC
+#define USE_PWM
 
 //
 // The following test tests GPIO interrupts by using a set of interruptible pins.
@@ -28,6 +29,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
     using Windows.Devices.Enumeration;
     using Windows.Devices.Adc;
     using System.IO.Ports;
+    using Windows.Devices.Pwm;
 
     using ZeligSupport = Microsoft.Zelig.Support.mbed;
 
@@ -139,8 +141,10 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 
 #if LPC1768
         static int threadPin = (int)LPC1768.PinName.LED4;
+        static int pwmPinNumber = (int)LPC1768.PinName.p21;
 #elif K64F
         static int threadPin = (int)K64F.PinName.LED4;
+        static int pwmPinNumber = (int)K64F.PinName.D3;
 #else
 #error No target board defined.
 #endif
@@ -291,6 +295,16 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             // This is the left potentiometer on the mBed application board
             AdcChannel adcChannel = adcController.OpenChannel(4);
 #endif
+
+#if (USE_PWM)
+            var pwmController = PwmController.GetDefaultAsync();
+            pwmController.SetDesiredFrequency(1000000);
+
+            var pwmPin = pwmController.OpenPin(pwmPinNumber);
+            pwmPin.SetActiveDutyCyclePercentage(0.4F);
+            pwmPin.Start();
+
+#endif
             float readVal = 0;
             while (true)
             {
@@ -310,7 +324,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                     currentMode = (currentMode + 1) % blinkingModes.Length;
                     blinkingModeSwitchTimer.reset();
 
-                    #region I2C_Impl
+#region I2C_Impl
 #if USE_I2C
                     try
                     {
@@ -334,9 +348,9 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                         // Continue as normal in this case
                     }
 #endif
-                    #endregion
+#endregion
 
-                    #region SPI_Impl
+#region SPI_Impl
 #if USE_SPI
                     writeBuffer[0] = (byte)currentMode;
                     spiDevice.TransferFullDuplex(writeBuffer, readBuffer);
@@ -347,7 +361,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                     }
                     spiDevice.Write(writeBuffer2);
 #endif
-                    #endregion
+#endregion
 
                     count++;
 

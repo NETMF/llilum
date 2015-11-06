@@ -86,16 +86,19 @@ namespace Windows.Devices.Gpio
         /// <returns>True if the pin could be opened; otherwise false.</returns>
         public bool TryOpenPin(int pinNumber, GpioSharingMode sharingMode, out GpioPin pin, out GpioOpenStatus status)
         {
+            IGpioPinProvider provider;
+
             // Following a builder-like pattern to avoid try-catch on new operator, and having 
             // to call ReleasePin in the catch case
             pin = new GpioPin();
 
             // Call to the kernel and get the object that implements the pin functions
-            IGpioPinProvider provider = new DefaultPinProvider(pinNumber);
-
-            if(provider == null)
+            try
             {
-                pin.Dispose();
+                provider = new DefaultPinProvider(pinNumber);
+            }
+            catch(InvalidOperationException)
+            {
                 pin = null;
                 status = GpioOpenStatus.PinUnavailable;
                 return false;

@@ -10,7 +10,6 @@ namespace Microsoft.Llilum.Devices.Adc
     public class AdcPin : IDisposable
     {
         private AdcChannel m_adcPin;
-        private bool m_disposed = false;
         private int m_pinNumber;
 
         public AdcPin(int pinNumber)
@@ -18,7 +17,7 @@ namespace Microsoft.Llilum.Devices.Adc
             m_adcPin = TryAcquireAdcPin(pinNumber);
             if (m_adcPin == null)
             {
-                throw new ArgumentException();
+                throw new InvalidOperationException();
             }
 
             m_adcPin.InitializePin();
@@ -42,15 +41,14 @@ namespace Microsoft.Llilum.Devices.Adc
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!m_disposed)
+            if (m_adcPin != null)
             {
-                ReleaseAdcPin(m_pinNumber);
                 if (disposing)
                 {
                     m_adcPin.Dispose();
                 }
 
-                m_disposed = true;
+                m_adcPin = null;
             }
         }
 
@@ -62,8 +60,5 @@ namespace Microsoft.Llilum.Devices.Adc
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern AdcChannel TryAcquireAdcPin(int pinNumber);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void ReleaseAdcPin(int pinNumber);
     }
 }

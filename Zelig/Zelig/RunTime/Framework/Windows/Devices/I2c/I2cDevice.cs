@@ -128,12 +128,8 @@ namespace Windows.Devices.I2c
                     channels[channelIndex].TransactionLock = new object();
 
                     // The channel has not been opened. We create it here
+                    // If it fails, this will throw
                     Llilum.I2cDevice newChannel = new Llilum.I2cDevice(channelInfo);
-                    if (newChannel == null)
-                    {
-                        // We were unable to get a channel. It is either busy or does not exist
-                        throw new ArgumentException();
-                    }
 
                     // Set the new channel frequency
                     if (settings.BusSpeed == I2cBusSpeed.FastMode)

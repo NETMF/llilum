@@ -19,7 +19,7 @@ namespace Windows.Devices.Gpio
             Llilum.GpioPin newPin = Llilum.GpioPin.TryCreateGpioPin(pinNumber);
             if (newPin == null)
             {
-                throw new ArgumentException();
+                throw new InvalidOperationException();
             }
             m_gpioPin = newPin;
         }

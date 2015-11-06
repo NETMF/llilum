@@ -76,6 +76,7 @@
     <Compile Include="HardwareModel\Drivers\InterruptController.cs" />
     <Compile Include="HardwareModel\HardwareProvidersUwp\AdcProviderUwp.cs" />
     <Compile Include="HardwareModel\HardwareProvidersUwp\I2cProviderUwp.cs" />
+    <Compile Include="HardwareModel\HardwareProvidersUwp\PwmProviderUwp.cs" />
     <Compile Include="HardwareModel\HardwareProvidersUwp\SpiProviderUwp.cs" />
     <Compile Include="HardwareModel\HardwareProviders\GpioProvider.cs" />
     <Compile Include="HardwareModel\HardwareProviders\I2cProvider.cs" />

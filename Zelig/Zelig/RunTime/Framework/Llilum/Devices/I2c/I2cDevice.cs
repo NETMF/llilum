@@ -37,7 +37,7 @@ namespace Microsoft.Llilum.Devices.I2c
             m_channel = TryAcquireI2cChannel(channelInfo);
             if (m_channel == null)
             {
-                throw new ArgumentException();
+                throw new InvalidOperationException();
             }
             Initialize();
         }
