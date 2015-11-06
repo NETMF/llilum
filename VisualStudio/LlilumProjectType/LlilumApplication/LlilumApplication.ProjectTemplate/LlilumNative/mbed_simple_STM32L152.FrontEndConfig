@@ -12,7 +12,7 @@
 -Reference Microsoft.CortexM3OnMBED
 -Reference Microsoft.CortexM3OnCMSISCore
 -Reference Microsoft.DeviceModels.ModelForCortexM3
--Reference LPC1768
+-Reference STM32L152
 
 
 ###
