@@ -7,7 +7,7 @@ IF /i "%GCC_BIN%"=="" (
 
 ECHO.
 ECHO Trying to start pyOCD for Windows
-
+kill pyocd_win.exe
 START /I pyocd_win.exe
 
 PAUSE
