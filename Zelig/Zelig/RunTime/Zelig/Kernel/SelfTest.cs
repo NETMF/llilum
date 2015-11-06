@@ -537,9 +537,8 @@ namespace Microsoft.Zelig.Runtime
             SelfTest__Interlocked__CompareExchange_IntPtr( );
             SelfTest__Interlocked__CompareExchange_Template( );
 
-            BugCheck.Log("!!DONE!!");
-
             // Trap end of tests
+            BugCheck.Log("!!! ALL TESTS PASSED !!!");
             BreakWithTrap();
 
         }

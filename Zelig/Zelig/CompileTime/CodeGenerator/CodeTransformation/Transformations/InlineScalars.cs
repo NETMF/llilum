@@ -45,13 +45,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
         private static bool InlineScalarConstructors(ControlFlowGraphStateForCodeTransformation cfg)
         {
             Operator[][] defChains = cfg.DataFlow_DefinitionChains;
-            Operator[][] useChains = cfg.DataFlow_UseChains;
             bool fModified = false;
 
             // Search for the following pattern:
-            //    temp = 0
-            //    ScalarType::.ctor(&temp, value)
-            //    local = temp
+            //    ScalarType::.ctor(&local, value)
             // Replace with:
             //    local = value
             foreach (var callOp in cfg.FilterOperators<InstanceCallOperator>())
@@ -74,29 +71,13 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                     // We can only replace constructors on values that exist on the stack. If thisPtr is an argument
                     // or field, we should be assigning rather than constructing the value.
                     AddressAssignmentOperator addressOp = ControlFlowGraphState.CheckSingleDefinition(defChains, thisPtr) as AddressAssignmentOperator;
-                    Debug.Assert(addressOp != null, "Couldn't find the temporary value to replace.");
+                    Debug.Assert(addressOp != null, "Couldn't find the constructing value.");
 
-                    Expression source = callOp.SecondArgument;
-                    var temp = (VariableExpression)addressOp.FirstArgument;
+                    Expression initValue = callOp.SecondArgument;
+                    var constructing = (VariableExpression)addressOp.FirstArgument;
+                    var assignOp = SingleAssignmentOperator.New(callOp.DebugInfo, constructing, initValue);
+                    callOp.SubstituteWithOperator(assignOp, Operator.SubstitutionFlags.Default);
 
-                    foreach (Operator useOp in useChains[temp.SpanningTreeIndex])
-                    {
-                        // Don't try to retarget the address assignment. The source value may not be addressable.
-                        // Additionally, skip this substitution if the use is in an operator we just removed.
-                        if ((useOp != addressOp) && (useOp.BasicBlock != null))
-                        {
-                            useOp.SubstituteUsage(temp, source);
-                        }
-                    }
-
-                    // If any other operations use the temporary's address, we must leave it in place.
-                    if (ControlFlowGraphState.CheckSingleUse(useChains, addressOp.FirstResult) == null)
-                    {
-                        Operator assignOp = SingleAssignmentOperator.New(callOp.DebugInfo, temp, source);
-                        callOp.AddOperatorBefore(assignOp);
-                    }
-
-                    callOp.SubstituteWithOperator(NopOperator.New(callOp.DebugInfo), Operator.SubstitutionFlags.Default);
                     fModified = true;
                 }
             }
