@@ -11,14 +11,14 @@ namespace Microsoft.Zelig.MetaData.UnitTest
     using Microsoft.Zelig.MetaData;
     using Microsoft.Zelig.Test;
 
-    class PELoaderTester : Test
+    class PELoaderTester : TestBase
     {
         public PELoaderTester()
         {
 
         }
 
-        override public Result Run( string[] args )
+        override public TestResult Run( string[] args )
         {
             base.Run(args);
 
@@ -27,7 +27,7 @@ namespace Microsoft.Zelig.MetaData.UnitTest
             LoadPE( Expand( @"%WINDIR%\Microsoft.NET\Framework\v2.0.50727\mscorlib.dll"  ) );
             LoadPE( Expand( currentDir + @"\Test\TestPayload__CLR1_1__VanillaSingleClass.dll" ) );
 
-            return Result.Success;
+            return TestResult.Pass;
         }
 
         static string Expand( string file )

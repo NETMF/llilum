@@ -47,9 +47,17 @@ namespace Microsoft.Zelig.LLVM
         {
             TS.WellKnownFields wkf = m_typeSystem.WellKnownFields;
             TS.WellKnownTypes wkt = m_typeSystem.WellKnownTypes;
+            
+            //
+            // Open types do not participate in layout
+            //
+            if( tr.IsOpenType )
+            {
+                return null;
+            }
 
             //
-            // delayed types do not participate in layout
+            // Delayed types do not participate in layout
             //
             if( tr is TS.DelayedMethodParameterTypeRepresentation ||
                 tr is TS.DelayedTypeParameterTypeRepresentation )

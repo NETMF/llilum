@@ -69,7 +69,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Test\LLVM\Utilities\Test_Common.csproj">
+    <ProjectReference Include="..\..\..\Test\Common\Test_Common.csproj">
       <Project>{b649b569-516b-4c88-a7b1-ebd02e12dd99}</Project>
       <Name>Test_Common</Name>
     </ProjectReference>

@@ -123,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="mbed_simple_K64F.FrontEndConfig" />
+    <None Include="mbed_simple_LPC1768_Tester.FrontEndConfig" />
     <None Include="mbed_simple_STM32L152.FrontEndConfig" />
     <None Include="mbed_simple_LPC1768.FrontEndConfig" />
     <None Include="Test\crypto_perf_test.FrontEndConfig" />

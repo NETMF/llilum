@@ -10,9 +10,9 @@ namespace Microsoft.Zelig.MetaData.UnitTest
     using Microsoft.Zelig.MetaData;
     using Microsoft.Zelig.Test;
 
-    class CompressionTester : Test
+    class CompressionTester : TestBase
     {
-        override public Result Run( string[] args )
+        override public TestResult Run( string[] args )
         {
             base.Run(args);
 
@@ -35,7 +35,7 @@ namespace Microsoft.Zelig.MetaData.UnitTest
                 }
             }
 
-            return Result.Success;
+            return TestResult.Pass;
         }
 
         static string Expand( string file )

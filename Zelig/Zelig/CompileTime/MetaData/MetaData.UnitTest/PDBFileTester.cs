@@ -12,9 +12,9 @@ namespace Microsoft.Zelig.MetaData.UnitTest
     using Microsoft.Zelig.MetaData.Importer.PdbInfo;
     using Microsoft.Zelig.Test;
 
-    class PDBFileTester : Test
+    class PDBFileTester : TestBase
     {
-        override public Result Run( string[] args )
+        override public TestResult Run( string[] args )
         {
             base.Run(args);
 
@@ -22,7 +22,7 @@ namespace Microsoft.Zelig.MetaData.UnitTest
 
             LoadSymbols( Expand( currentDir + @"\Test\TestPayload__CLR1_1__VanillaSingleClass.pdb" ) );
 
-            return Result.Success;
+            return TestResult.Pass;
         }
 
         static string Expand( string file )

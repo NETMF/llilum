@@ -12,7 +12,7 @@ namespace Microsoft.Zelig.MetaData.UnitTest
     using Microsoft.Zelig.MetaData;
     using Microsoft.Zelig.Test;
 
-    class MetaDataResolverTester :  Test, IMetaDataResolverHelper, ISymbolResolverHelper
+    class MetaDataResolverTester :  TestBase, IMetaDataResolverHelper, ISymbolResolverHelper
     {
         //
         // State
@@ -20,7 +20,7 @@ namespace Microsoft.Zelig.MetaData.UnitTest
 
         private string baseFile;
 
-        override public Result Run( string[] args )
+        override public TestResult Run( string[] args )
         {
             base.Run(args);
 
@@ -32,7 +32,7 @@ namespace Microsoft.Zelig.MetaData.UnitTest
             pThis.LoadAndResolve( Expand( currentDir + @"\Test\TestPayload__CLR1_1__VanillaSingleClass.dll"        ), fDump: true );
             pThis.LoadAndResolve( Expand(              @"%WINDIR%\Microsoft.NET\Framework\v2.0.50727\mscorlib.dll" ), fDump : true );
 
-            return Result.Success;
+            return TestResult.Pass;
         }
 
         static string Expand( string file )
