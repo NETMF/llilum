@@ -41,10 +41,6 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="STM32L152, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\ZeligBuild\Target\bin\Debug\STM32L152.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(LlilumSourceRoot)\..\BoardConfigurations\K64F\Board\K64F.csproj">
