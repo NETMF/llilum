@@ -79,11 +79,11 @@ namespace Microsoft.Zelig.Runtime
             // idle thread before letting the scheduler pick up the next target.
             // that means that the Context Switch code will find a current thread and 
             // will try to update the stack pointer of its context to the psp value on
-            // the processor. We need to initailize the PSP value to whatever
+            // the processor. We need to initialize the PSP value to whatever
             // we want the context switch to persist in the current (i.e. idle) thread
             // context. As for the general case, the Idle Thread context stack pointer 
             // is initialized to be the end of the first frame, which though really never 
-            // ran. So we will initailzed the actual psp register to the base of the 
+            // ran. So we will initialized the actual psp register to the base of the 
             // Idle Thread stack pointer at this stage.
             //
 
@@ -113,7 +113,7 @@ namespace Microsoft.Zelig.Runtime
         public override void RemoveThread( ThreadImpl thread )
         {
             //
-            // This shoudl scheduel a context switch
+            // This should schedule a context switch
             //
             base.RemoveThread( thread ); 
                 

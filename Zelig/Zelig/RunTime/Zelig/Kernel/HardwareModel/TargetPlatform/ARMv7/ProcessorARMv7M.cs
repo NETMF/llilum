@@ -841,11 +841,9 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         /// Hard Fault is caused by Bus Fault, Memory Management Fault, or Usage Fault if their handler 
         /// cannot be executed.
         /// </summary>
-        [RT.BottomOfCallStack( )]
         [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
-        [RT.NoReturn]
         [RT.ExportedMethod]
-        private static void HardFault_Handler( )
+        private static void HardFault_Handler_Zelig( uint sp )
         {
             if(DebuggerConnected( ))
             {
@@ -859,7 +857,10 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             }
             else
             {
-                while(true); 
+                while(true)
+                {
+                    Peripherals.Instance.WaitForInterrupt();
+                }
             }
         }
         

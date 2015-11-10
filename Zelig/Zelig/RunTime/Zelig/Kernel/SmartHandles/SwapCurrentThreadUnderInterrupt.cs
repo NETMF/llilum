@@ -36,12 +36,14 @@ namespace Microsoft.Zelig.Runtime.SmartHandles
 
             m_previousThread = ThreadImpl.CurrentThread;
 
+#if USE_THREAD_PERFORMANCE_COUNTER
             if(m_previousThread != null)
             {
                 m_previousThread.ReleasedProcessor();
             }
 
             newThread.AcquiredProcessor();
+#endif // USE_THREAD_PERFORMANCE_COUNTER
 
             ThreadImpl.CurrentThread = newThread;
         }
@@ -56,6 +58,7 @@ namespace Microsoft.Zelig.Runtime.SmartHandles
 
             ThreadImpl newThread = ThreadImpl.CurrentThread;
 
+#if USE_THREAD_PERFORMANCE_COUNTER
             if(newThread != null)
             {
                 newThread.ReleasedProcessor();
@@ -65,6 +68,7 @@ namespace Microsoft.Zelig.Runtime.SmartHandles
             {
                 m_previousThread.AcquiredProcessor();
             }
+#endif // USE_THREAD_PERFORMANCE_COUNTER
 
             ThreadImpl.CurrentThread = m_previousThread;
         }

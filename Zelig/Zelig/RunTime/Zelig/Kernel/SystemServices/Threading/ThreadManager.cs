@@ -114,7 +114,7 @@ namespace Microsoft.Zelig.Runtime
         {
             get
             {
-                return 512;
+                return 2048;
             }
         }
 
@@ -133,7 +133,7 @@ namespace Microsoft.Zelig.Runtime
             //
             // Create the first active thread.
             //
-            m_mainThread = new ThreadImpl( MainThread, new uint[ ThreadManager.Instance.DefaultStackSize ] );
+            m_mainThread = new ThreadImpl( MainThread );
 
             //
             // We need to have a current thread during initialization, in case some static constructors try to access it.
@@ -169,7 +169,9 @@ namespace Microsoft.Zelig.Runtime
             ThreadImpl bootstrapThread = m_idleThread;
 
             m_runningThread = bootstrapThread;
+#if USE_THREAD_PERFORMANCE_COUNTER
             bootstrapThread.AcquiredProcessor();
+#endif // USE_THREAD_PERFORMANCE_COUNTER
 
             //
             // Start the first active thread.
@@ -573,11 +575,14 @@ namespace Microsoft.Zelig.Runtime
 
                 if(oldValue != value)
                 {
+#if USE_THREAD_PERFORMANCE_COUNTER
                     oldValue.ReleasedProcessor();
-
+#endif // USE_THREAD_PERFORMANCE_COUNTER
                     m_runningThread = value;
 
+#if USE_THREAD_PERFORMANCE_COUNTER
                     value.AcquiredProcessor();
+#endif // USE_THREAD_PERFORMANCE_COUNTER
 
                     SetNextQuantumTimerIfNeeded();
                 }

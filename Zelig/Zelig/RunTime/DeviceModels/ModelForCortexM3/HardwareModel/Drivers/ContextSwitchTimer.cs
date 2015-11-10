@@ -6,127 +6,21 @@
 
 namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
 {
-    using System;
     using System.Runtime.CompilerServices;
-    using System.Threading;
 
-    using Microsoft.Zelig.Runtime.TargetPlatform.ARMv7;
-
-    using TS    = Microsoft.Zelig.Runtime.TypeSystem;
     using RT    = Microsoft.Zelig.Runtime;
     using CMSIS = Microsoft.DeviceModels.Chipset.CortexM3;
 
     public abstract class ContextSwitchTimer
-    {
-        public delegate void Callback( SysTickTimer sysTickTimer, ulong currentTime );
-        
+    {        
+        public delegate void Callback();
+   
         /// <summary>
         /// Max value that can be assigned for a one shot timer with no wrap around
         /// </summary>
         public const uint c_MaxCounterValue = 0x00FFFFFF;
-        /// <summary>
-        /// This constant is the representation of the overhead of invoking 
-        /// the timer handler. It needs to be trimmed. 
-        /// // TODO: automate and/or expose to system configuration
-        /// </summary>
-        const uint c_InvokeOverhead = 10; 
-        /// <summary>
-        /// This constant is the representation of the overhead of querying 
-        /// the current time. It needs to be trimmed.
-        /// // TODO: automate and/or expose to system configuration
-        /// </summary>
-        const uint c_QueryOverhead  = 10; 
 
         //--//
-
-        //
-        // The SysTick timer could be used as a general timer, although that is not an appropriate usage
-        //
-        public class SysTickTimer
-        {
-
-            //
-            // State
-            //
-
-            private ContextSwitchTimer m_owner;
-            private uint               m_timeout;
-            private Callback           m_callback;
-
-            //
-            // Constructor Methods
-            //
-
-            internal SysTickTimer( ContextSwitchTimer owner ) : this( owner, null )
-            {
-            }
-
-            internal SysTickTimer( ContextSwitchTimer owner,  Callback    callback )
-            {
-                m_owner    = owner;
-                m_callback = callback;
-            }
-
-            //
-            // Helper Methods
-            //
-
-            public Callback Expired
-            {
-                get
-                {
-                    return m_callback;
-                }
-                set
-                {
-                    m_callback = value;
-                }
-            }
-
-            public void Cancel()
-            {
-                m_owner.Disable( this );
-            }
-        
-            public bool Muted
-            {
-                set
-                {
-                    m_owner.Muted = value;
-                }
-            }
-
-            //--//
-            
-            internal void Invoke( ulong currentTime )
-            {
-                m_callback( this, currentTime );
-            }
-
-            //
-            // Access Methods
-            //
-            
-            public uint RelativeTimeout
-            {
-                get
-                {
-                    return m_timeout;
-                }
-
-                set
-                {
-                    m_timeout = value;
-
-                    m_owner.Enable( this );
-                }
-            }
-
-            public void Schedule()
-            {
-                this.RelativeTimeout = m_owner.m_reload20ms;
-            }
-        }
 
         //
         // State
@@ -135,27 +29,44 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
         //--//
         
         private SysTick      m_sysTick;
-        private SysTickTimer m_SysTickTimer;
-        private ulong        m_accumulator;
-        private uint         m_latestMatch;
         private uint         m_reload20ms;
+        private uint         m_timeout;
         private bool         m_enabled; 
 
         //
         // Helper Methods
         //
 
+        //
+        // Access Methods
+        //
+
+        public static extern ContextSwitchTimer Instance
+        {
+            [RT.SingletonFactory()]
+            [MethodImpl( MethodImplOptions.InternalCall )]
+            get;
+        }
+        
+
+        public uint CurrentTimeRaw
+        {
+            get
+            {
+                return m_sysTick.SystemCoreClock;
+            }
+        }
+
+        //--//
+
         public void Initialize()
         {
-            m_sysTick      = CMSIS.SysTick.Instance;
-            m_SysTickTimer = new SysTickTimer( this );
-            m_accumulator  = 0;
-            m_latestMatch  = 0;
+            m_sysTick = CMSIS.SysTick.Instance;
 
             //--//
 
             // Reset HW, stop all SysTick interrupts 
-            Disable( m_SysTickTimer );
+            Cancel();
 
             //--//
 
@@ -164,11 +75,11 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
             // clock, so we have to adjust it accordingly to the system frequency
             //
             // The SysTick raises an interrupt on the tick following the reload value 
-            // count and we need twice the factory match value. or simpy, we can just 
+            // count and we need twice the factory match value. or simply, we can just 
             // count the ticks in a 20 ms interval given the processor core frequency 
 
-            m_reload20ms = GetTicksForQuantumValue( RT.ARMv7ThreadManager.c_TimeQuantumMsec ); 
-            
+            m_reload20ms = GetTicksForQuantumValue( RT.ARMv7ThreadManager.c_TimeQuantumMsec );
+
 #if TIMERS_SELF_TEST
             ulong now = this.CurrentTime;
             ulong last = now;
@@ -198,15 +109,40 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
                 //
             }
 #endif
-
-            m_enabled = true;
         }
+
+        public void Schedule( uint timeout_ms )
+        {
+            SetMatchAndStart( GetTicksForQuantumValue( timeout_ms ) );
+        }
+
+        public void Cancel( )
+        {
+            m_sysTick.Enabled = false;
+            m_enabled = false;
+        }
+
+        public void Reset( )
+        {
+            if(m_enabled)
+            {
+                // If the timer is already enabled, then only the counter needs to be
+                // reset.
+                m_sysTick.ResetAndClear();
+            }
+            else
+            {
+                SetMatchAndStart( m_reload20ms );
+            }
+        }
+
+        //--//
 
         protected virtual uint GetTicksForQuantumValue( uint ms )
         {
             //
             // We use SysTick and handle wrap around for values larger than 24 bit precision
-            // We will assume the device can be programmed with teh calibration value from factory settings
+            // We will assume the device can be programmed with the calibration value from factory settings
             // TODO: need to add logic to handle the case where we cannot count in the calibration value
             //
             RT.BugCheck.Assert( HasRef() && IsPrecise(), RT.BugCheck.StopCode.FailedBootstrap );
@@ -216,77 +152,6 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
             //
             return ( ( ( ( GetCoreClockMhz( ) * GetFactoryCalibrationValue( ) ) / 100 ) - 1 ) * ms) / 10; 
         }
-
-        public SysTickTimer CreateTimer( Callback callback )
-        {
-            m_SysTickTimer.Expired = callback;
-
-            return m_SysTickTimer;
-        }
-        
-        //
-        // Access Methods
-        //
-
-        public static extern ContextSwitchTimer Instance
-        {
-            [RT.SingletonFactory()]
-            [MethodImpl( MethodImplOptions.InternalCall )]
-            get;
-        }
-
-        public uint CurrentTimeRaw
-        {
-            get
-            {
-                return this.CounterValue;
-            }
-        }
-
-        public ulong CurrentTime
-        {
-            get
-            {
-                return m_accumulator + m_latestMatch - this.CounterValue + c_QueryOverhead;
-            }
-        }
-        
-        public bool Muted
-        {
-            set
-            {
-                m_enabled = !value;
-            }
-        }
-
-        //--//
-
-        private void ProcessTimeout( )
-        {
-            m_accumulator += m_latestMatch;
-
-            m_SysTickTimer.Invoke( m_accumulator + c_InvokeOverhead );
-        }
-
-        //--//
-
-        //
-        // Timer behavior
-        //
-
-        private void Enable( SysTickTimer sysTickTimer )
-        {
-            // Clear previous interrupts 
-            ResetAndClear();
-
-            // set match
-            SetMatchAndStart( sysTickTimer.RelativeTimeout );
-        }
-
-        private void Disable( SysTickTimer sysTickTimer )
-        {
-            m_sysTick.Enabled = false;
-        }
         
         //--//
 
@@ -294,34 +159,16 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
         // SysTick helpers
         //
         
-        private uint CounterValue
-        {
-            [RT.Inline]
-            get
-            {
-                return m_sysTick.Counter;
-            }
-        }
-
         [RT.Inline]
         private void SetMatchAndStart( uint match )
         {
-            // sync state
-            m_latestMatch = match;
-
             // 
             // Restarting causes the match value to be picked up
             // 
             m_sysTick.Match   = match;
             m_sysTick.Counter = 0;
             m_sysTick.Enabled = true; 
-
-        }
-
-        [RT.Inline]
-        private void ResetAndClear( )
-        {
-            m_sysTick.ResetAndClear();
+            m_enabled = true;
         }
 
         [RT.Inline]
@@ -336,11 +183,6 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
             return m_sysTick.TenMillisecondsCalibrationValue;
         }
         
-        private bool RanToZero( )
-        {
-            return m_sysTick.HasMatched;
-        }
-
         [RT.Inline]
         private bool IsPrecise( )
         {
@@ -357,11 +199,11 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
         
         [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
         [RT.ExportedMethod]
-        private void SysTick_Handler_Zelig( )
+        private static void ContextSwitchTimer_Handler_Zelig( )
         {
             using(RT.SmartHandles.InterruptState.Disable())
             {
-                ContextSwitchTimer.Instance.ProcessTimeout( );
+                RT.ThreadManager.Instance.TimeQuantumExpired( );
             }
         }
     }

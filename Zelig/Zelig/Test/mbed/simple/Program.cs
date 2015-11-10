@@ -20,7 +20,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 {
     using System;
 
-#if (USE_THREADING)
+#if (USE_THREADING) || (TEST_GPIO_INTERRUPTS)
     using System.Threading;
 #endif
     using Windows.Devices.Gpio;

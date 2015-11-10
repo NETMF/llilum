@@ -20,7 +20,7 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Runtime
         // State
         //
 
-        protected Drivers.ContextSwitchTimer.SysTickTimer m_SysTickTimer;        
+        protected Drivers.ContextSwitchTimer m_ContextSwitchTimer;        
 
         //
         // Helper Methods
@@ -45,35 +45,37 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Runtime
         public override void Activate()
         {
             //
-            // Activate the quantum timer, when the Idle Thread will run will enable execptions, 
+            // Activate the quantum timer, when the Idle Thread will run will enable exceptions, 
             // thus letting the context switching to start 
             //
             RT.BugCheck.AssertInterruptsOff( );
 
-            m_SysTickTimer = Drivers.ContextSwitchTimer.Instance.CreateTimer( TimeQuantumExpired );
-            m_SysTickTimer.Schedule();
+            m_ContextSwitchTimer = Drivers.ContextSwitchTimer.Instance;
+            m_ContextSwitchTimer.Reset();
         }
 
         public override void CancelQuantumTimer()
         {
-            m_SysTickTimer.Cancel();
+            m_ContextSwitchTimer.Cancel();
         }
 
         public override void SetNextQuantumTimer()
         {
-            m_SysTickTimer.Schedule( ); 
+            m_ContextSwitchTimer.Reset( );
         }
 
         public override void SetNextQuantumTimer( RT.SchedulerTime nextTimeout )
         {
-            ulong timeout = nextTimeout.Units;
-            
-            if(timeout > Drivers.ContextSwitchTimer.c_MaxCounterValue)
+            DateTime   dt                  = ( DateTime )nextTimeout;
+            const long TicksPerMillisecond = 10000; // Number of 100ns ticks per time unit
+            long       ms                  = dt.Ticks / TicksPerMillisecond;
+
+            if(ms > Drivers.ContextSwitchTimer.c_MaxCounterValue)
             {
                 RT.BugCheck.Assert( false, RT.BugCheck.StopCode.IllegalSchedule );
             }
 
-            m_SysTickTimer.RelativeTimeout = (uint)timeout;
+            m_ContextSwitchTimer.Schedule( (uint)ms );
         }
         
         public override void TimeQuantumExpired()
@@ -87,13 +89,6 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Runtime
             // stage a PendSV request to complete the ContextSwitch
             //
             ProcessorARMv7M.CompleteContextSwitch( );
-        }
-        
-        //--//
-
-        private void TimeQuantumExpired( Drivers.ContextSwitchTimer.SysTickTimer sysTickTimer, ulong currentTime )
-        {
-            TimeQuantumExpired();
         }
     } 
 }

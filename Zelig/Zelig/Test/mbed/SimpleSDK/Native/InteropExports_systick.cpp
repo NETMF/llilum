@@ -72,13 +72,13 @@ extern "C"
     //
     //
 
-    extern void SysTick_Handler_Zelig();
+    extern void ContextSwitchTimer_Handler_Zelig();
 
     __attribute__((naked)) void SysTick_Handler(void)
     {
         __ASM volatile ("STR       LR, [SP, #-4]!");                // Save LR to stack
 
-        SysTick_Handler_Zelig();
+        ContextSwitchTimer_Handler_Zelig();
 
         __ASM volatile ("LDR       LR, [SP], #4");                  // Restore LR from stack
         __ASM volatile ("BX        LR");

@@ -24,11 +24,35 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
         public abstract new class Context : Processor.Context
         {
-            //
-            // WARNING: Don't assume the actual layout of the structure is sequential!!!
-            // WARNING: The code generator rearranges the fields to minimize the cost of a context switch!!!
-            //
-            //[TS.WellKnownType( "Microsoft_Zelig_ProcessorARMv4_RegistersOnStack" )]
+            [StructLayout( LayoutKind.Sequential, Pack = 4 )]
+            public struct SoftwareFrame
+            {
+                [TS.AssumeReferenced] public uint    EXC_RETURN;
+                [TS.AssumeReferenced] public uint    CONTROL;
+                [TS.AssumeReferenced] public UIntPtr R4;
+                [TS.AssumeReferenced] public UIntPtr R5;
+                [TS.AssumeReferenced] public UIntPtr R6;
+                [TS.AssumeReferenced] public UIntPtr R7;
+                [TS.AssumeReferenced] public UIntPtr R8;
+                [TS.AssumeReferenced] public UIntPtr R9;
+                [TS.AssumeReferenced] public UIntPtr R10;
+                [TS.AssumeReferenced] public UIntPtr R11;
+            };
+
+            [StructLayout( LayoutKind.Sequential, Pack = 4 )]
+            public struct HardwareFrame
+            {
+                [TS.AssumeReferenced] public UIntPtr R0;
+                [TS.AssumeReferenced] public UIntPtr R1;
+                [TS.AssumeReferenced] public UIntPtr R2;
+                [TS.AssumeReferenced] public UIntPtr R3;
+                [TS.AssumeReferenced] public UIntPtr R12;
+                [TS.AssumeReferenced] public UIntPtr LR;
+                [TS.AssumeReferenced] public UIntPtr PC;
+                [TS.AssumeReferenced] public UIntPtr PSR;
+            };
+
+            //[TS.WellKnownType( "Microsoft_Zelig_ProcessorARMv7_RegistersOnStack" )]
             [StructLayout( LayoutKind.Sequential, Pack = 4 )]
             public struct RegistersOnStack
             {
@@ -41,56 +65,13 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 //
 
                 // SW stack frame: pushed by PendSV_Handler
-                [TS.AssumeReferenced] public uint    EXC_RETURN;
-                [TS.AssumeReferenced] public uint    CONTROL;
-                [TS.AssumeReferenced] public UIntPtr R4;
-                [TS.AssumeReferenced] public UIntPtr R5;
-                [TS.AssumeReferenced] public UIntPtr R6;
-                [TS.AssumeReferenced] public UIntPtr R7;
-                [TS.AssumeReferenced] public UIntPtr R8;
-                [TS.AssumeReferenced] public UIntPtr R9;
-                [TS.AssumeReferenced] public UIntPtr R10;
-                [TS.AssumeReferenced] public UIntPtr R11;
+                public SoftwareFrame SoftwareStack;
                 // HW stack frame: pushed upon entering PendSV_Handler
-                [TS.AssumeReferenced] public UIntPtr R0;
-                [TS.AssumeReferenced] public UIntPtr R1;
-                [TS.AssumeReferenced] public UIntPtr R2;
-                [TS.AssumeReferenced] public UIntPtr R3;
-                [TS.AssumeReferenced] public UIntPtr R12;
-                [TS.AssumeReferenced] public UIntPtr LR;
-                [TS.AssumeReferenced] public UIntPtr PC;
-                [TS.AssumeReferenced] public UIntPtr PSR;
+                public HardwareFrame HardwareStack;
 
                 //
                 // Helper Methods
                 //
-
-                internal unsafe UIntPtr* GetRegisterPointer( uint idx )
-                {
-                    switch(idx)
-                    {
-                        // SW stack frame
-                        case 4: fixed (UIntPtr* ptr = &this.R4) { return ptr; };
-                        case 5: fixed (UIntPtr* ptr = &this.R5) { return ptr; };
-                        case 6: fixed (UIntPtr* ptr = &this.R6) { return ptr; };
-                        case 7: fixed (UIntPtr* ptr = &this.R7) { return ptr; };
-                        case 8: fixed (UIntPtr* ptr = &this.R8) { return ptr; };
-                        case 9: fixed (UIntPtr* ptr = &this.R9) { return ptr; };
-                        case 10: fixed (UIntPtr* ptr = &this.R10) { return ptr; };
-                        case 11: fixed (UIntPtr* ptr = &this.R11) { return ptr; };
-                        // HW stack frame
-                        case 0: fixed (UIntPtr* ptr = &this.R0) { return ptr; };
-                        case 1: fixed (UIntPtr* ptr = &this.R1) { return ptr; };
-                        case 2: fixed (UIntPtr* ptr = &this.R2) { return ptr; };
-                        case 3: fixed (UIntPtr* ptr = &this.R3) { return ptr; };
-                        case 12: fixed (UIntPtr* ptr = &this.R12) { return ptr; };
-                        case 13: fixed (UIntPtr* ptr = &this.LR) { return ptr; };
-                        case 15: fixed (UIntPtr* ptr = &this.PC) { return ptr; };
-                        case 16: fixed (UIntPtr* ptr = &this.PSR) { return ptr; };
-                    }
-
-                    return null;
-                }
 
                 public static unsafe uint TotalFrameSize
                 {
@@ -106,7 +87,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                     [RT.Inline]
                     get
                     {
-                        return (uint)sizeof( UIntPtr ) * 8;
+                        return (uint)sizeof( HardwareFrame );
                     }
                 }
 
@@ -115,7 +96,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                     [RT.Inline]
                     get
                     {
-                        return (uint)sizeof( UIntPtr ) * 10;
+                        return (uint)sizeof( SoftwareFrame );
                     }
                 }
             }
@@ -187,11 +168,11 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 //
                 // build the first stack frame
                 //
-                firstFrame->PC         = new UIntPtr( dlgImpl.InnerGetCodePointer( ).Target.ToPointer( ) );
-                firstFrame->PSR        = new UIntPtr( c_psr_InitialValue );
-                firstFrame->EXC_RETURN = c_MODE_RETURN__THREAD_PSP;
-                firstFrame->CONTROL    = c_CONTROL__MODE__THRD_PRIV;
-                firstFrame->R0         = objImpl.ToPointer( );
+                firstFrame->HardwareStack.PC         = new UIntPtr( dlgImpl.InnerGetCodePointer( ).Target.ToPointer( ) );
+                firstFrame->HardwareStack.PSR        = new UIntPtr( c_psr_InitialValue );
+                firstFrame->SoftwareStack.EXC_RETURN = c_MODE_RETURN__THREAD_PSP;
+                firstFrame->SoftwareStack.CONTROL    = c_CONTROL__MODE__THRD_PRIV;
+                firstFrame->HardwareStack.R0         = objImpl.ToPointer( );
 
 #if DEBUG_CTX_SWITCH
                 RT.BugCheck.Log( "[PFD-ctx] EXC=0x%08x, PSR=0x%08x, PC=0x%08x, R0=0x%08x, SP(aligned)=0x%08x",
@@ -276,7 +257,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                     //
                     unsafe
                     {
-                        ctx.EXC_RETURN = PointerToFrame(stackPointer)->EXC_RETURN;
+                        ctx.EXC_RETURN = PointerToFrame(stackPointer)->SoftwareStack.EXC_RETURN;
                     }
 
                     ctx.StackPointer = stackPointer;

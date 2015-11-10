@@ -61,7 +61,7 @@ namespace Microsoft.Zelig.Runtime
         //
 
         [DiscardTargetImplementation]
-        public ThreadImpl( System.Threading.ThreadStart start ) : this( start, new uint[ ThreadManager.Instance.DefaultStackSize ] ) // move to configuration??
+        public ThreadImpl( System.Threading.ThreadStart start ) : this( start, new uint[ ThreadManager.Instance.DefaultStackSize / sizeof( uint ) ] ) // move to configuration??
         {
         }
 
@@ -208,7 +208,9 @@ namespace Microsoft.Zelig.Runtime
             m_swappedOutContext.SetupForExceptionHandling( mode );
         }
 
-        [BottomOfCallStack()]
+        // TODO: Find out a better implementation of this attribute.  It seems to corrupt the registers for class member functions
+        // (in debug builds especially).
+        // [BottomOfCallStack()]
         private void Entrypoint()
         {
             try
@@ -228,13 +230,7 @@ namespace Microsoft.Zelig.Runtime
 
         public void ReleasedProcessor()
         {
-            
-#if !ARMv7
-                //
-                // For ARMv7 we are using the async PendSV exception, which is delivered with ISRs enabled
-                //
-                BugCheck.AssertInterruptsOff();
-#endif
+            BugCheck.AssertInterruptsOff();
 
             m_activeTime.Stop();
 
@@ -246,9 +242,7 @@ namespace Microsoft.Zelig.Runtime
 
         public void AcquiredProcessor()
         {
-#if !ARMv7
             BugCheck.AssertInterruptsOff();
-#endif
 
             m_activeTime.Start();
         }

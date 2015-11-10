@@ -18,7 +18,7 @@ namespace Microsoft.Llilum.K64F
             public override unsafe void SwitchTo( )
             {
                 //
-                // BUGBUG: return to thread usign VFP state as well 
+                // BUGBUG: return to thread using VFP state as well 
                 //
                 base.SwitchTo( ); 
             }

@@ -14,10 +14,10 @@ namespace Microsoft.Zelig.Runtime
     {
         protected static BugCheck.StopCode m_bugCheckCode;
 
-        const int DefaultStackSize = 512 / sizeof(uint);
+        const int DefaultStackSize = 512;
 
         [MemoryUsage(MemoryUsage.Stack, ContentsUninitialized=true, AllocateFromHighAddress=true)]
-        static readonly uint[] s_bootstrapStack = new uint[DefaultStackSize];
+        static readonly uint[] s_bootstrapStack = new uint[DefaultStackSize / sizeof(uint)];
         
         //
         // Helper Methods
@@ -31,7 +31,10 @@ namespace Microsoft.Zelig.Runtime
         {
             Device.m_bugCheckCode = code;
 
-            while(true);
+            while(true)
+            {
+                Peripherals.Instance.WaitForInterrupt();
+            }
         }
 
         public virtual void ProcessLog(string format) { }

@@ -42,15 +42,15 @@
 
    This is just a check for the bare minimum for the Heap+Stack area before
    aborting compilation, it is not the run time limit:
-   Heap_Size + Stack_Size = 0x80 + 0x80 = 0x100
+   Heap_Size + Stack_Size = 0x800 + 0x2000 = 0x2800
  */
     .section .stack
     .align 3
-#ifdef __STACK_SIZE
+.ifdef __STACK_SIZE
     .equ    Stack_Size, __STACK_SIZE
-#else
+.else
     .equ    Stack_Size, 0x2000
-#endif
+.endif
     .globl    __StackTop
     .globl    __StackLimit
 __StackLimit:
@@ -61,15 +61,11 @@ __StackTop:
 
     .section .heap
     .align 3
-/*
-#ifdef __HEAP_SIZE
+.ifdef __HEAP_SIZE
     .equ    Heap_Size, __HEAP_SIZE
-#else
+.else
     .equ    Heap_Size, 0x800
-#endif
-*/
-    .equ    Heap_Size, __HEAP_SIZE
-
+.endif
     .globl    __HeapBase
     .globl    __HeapLimit
 __HeapBase:
@@ -78,7 +74,14 @@ __HeapBase:
 __HeapLimit:
     .size __HeapLimit, . - __HeapLimit
 
-    .section .vector_table,"a",%progbits
+    .section .heap_end
+    .align 2
+    .globl    __HeapEnd
+__HeapEnd:
+    .space   4
+    .size __HeapEnd, . - __HeapEnd
+       
+   .section .vector_table,"a",%progbits
     .align 2
     .globl __isr_vector
 __isr_vector:

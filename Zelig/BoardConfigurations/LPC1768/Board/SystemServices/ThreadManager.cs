@@ -5,13 +5,12 @@
 
 namespace Microsoft.Llilum.LPC1768
 {
-    using RT      = Microsoft.Zelig.Runtime;
     using Chipset = Microsoft.CortexM3OnMBED;
-
+    using System.Runtime.InteropServices;
 
     public sealed class ThreadManager : Chipset.ThreadManager
     {
-        private const int DefaultStackSizeLPC1768 = (4 * 512) / sizeof( uint );
+        private const int DefaultStackSizeLPC1768 = 2 * 1024;
 
         //--//
 
@@ -23,9 +22,18 @@ namespace Microsoft.Llilum.LPC1768
         {
             get
             {
-                return DefaultStackSizeLPC1768;
-;
+                uint stackSize = CUSTOM_STUB_GetDefaultStackSize();
+
+                if(stackSize >= int.MaxValue)
+                {
+                    return DefaultStackSizeLPC1768;
+                }
+
+                return (int)stackSize;
             }
         }
+
+        [DllImport("C")]
+        private static unsafe extern uint CUSTOM_STUB_GetDefaultStackSize();
     }
 }

@@ -400,4 +400,29 @@ extern "C"
 
         *((uint32_t volatile *)0x4000D000) = CESR;
     }
+
+    //
+    // The following external variables are placed at the beginning and just after the end of the heap allocation
+    // in the memory map in startup_[TARGET].S
+    //
+    extern uint32_t __HeapEnd;
+    extern uint32_t __HeapBase;
+
+    uint32_t CUSTOM_STUB_GetHeapSize()
+    {
+        return (uint32_t)&__HeapEnd - (uint32_t)&__HeapBase;
+    }
+
+
+    uint32_t CUSTOM_STUB_GetDefaultStackSize()
+    {
+#ifdef __DEFAULT_STACK_SIZE
+        // _DEFAULT_STACK_SIZE is defined in the project makefile for LPC1768 debug builds so that the stack size is increased
+        // to prevent stack overruns.
+        return __DEFAULT_STACK_SIZE;
+#else
+        // The following return value UINT32_MAX will result in the default stack size defined in managed code being used
+        return 0xFFFFFFFFul;
+#endif
+    }
 }

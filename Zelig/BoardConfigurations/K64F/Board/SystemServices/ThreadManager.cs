@@ -5,13 +5,12 @@
 
 namespace Microsoft.Llilum.K64F
 {
-    using RT      = Microsoft.Zelig.Runtime;
     using Chipset = Microsoft.CortexM4OnMBED;
-
+    using System.Runtime.InteropServices;
 
     public sealed class ThreadManager : Chipset.ThreadManager
     {
-        private const int DefaultStackSizeK64F = (4 * 1024) / sizeof( uint );
+        private const int DefaultStackSizeK64F = 4 * 1024;
 
         //--//
 
@@ -23,9 +22,19 @@ namespace Microsoft.Llilum.K64F
         {
             get
             {
-                return DefaultStackSizeK64F;
+                uint stackSize = CUSTOM_STUB_GetDefaultStackSize();
+
+                if(stackSize >= int.MaxValue)
+                {
+                    return DefaultStackSizeK64F;
+                }
+
+                return (int)stackSize;
             }
         }
+
+        [DllImport("C")]
+        private static unsafe extern uint CUSTOM_STUB_GetDefaultStackSize();
     }
 }
 

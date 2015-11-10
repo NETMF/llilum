@@ -7,6 +7,8 @@ zelig/LLVM2IR_results/mbed/simple/STM32L152/
 zelig/LLVM2IR_results/mbed/simple/*.xml
 Zelig/LLVM2IR_results/mbed/test/LPC1768/
 Zelig/LLVM2IR_results/mbed/test/K64F/
+Zelig/LLVM2IR_results/mbed/mbed_rtos/GpioInterrupts/LPC1768/
+Zelig/LLVM2IR_results/mbed/mbed_rtos/GpioInterrupts/K64F/
 Zelig/mbed-rtos/
 Zelig/mbed-rtos.lib
 *.IrTxtpost

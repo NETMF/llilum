@@ -4,18 +4,33 @@
 
 namespace Microsoft.Llilum.LPC1768
 {
-    using RT            = Microsoft.Zelig.Runtime;
-    using ChipsetModel  = Microsoft.CortexM3OnMBED;
+    using RT = Microsoft.Zelig.Runtime;
+    using System.Runtime.InteropServices;
 
-    
     public sealed class Device : Microsoft.CortexM3OnMBED.Device
     {
+        // TODO: When the compiler optimizations are complete, revisit this stack size since it is likely
+        // it could be reduced.
+        [RT.MemoryUsage(RT.MemoryUsage.Stack, ContentsUninitialized = true, AllocateFromHighAddress = true)]
+        static readonly uint[] s_bootstrapStackLPC1768 = new uint[ 512 / sizeof( uint ) ];
+
+        public override uint[] BootstrapStack
+        {
+            get
+            {
+                return s_bootstrapStackLPC1768;
+            }
+        }
+
         public override uint ManagedHeapSize
         {
             get
             { 
-                return 0x5800u;
+                return CUSTOM_STUB_GetHeapSize();
             }
         }
+
+        [DllImport("C")]
+        private static unsafe extern uint CUSTOM_STUB_GetHeapSize();
     }
 }
