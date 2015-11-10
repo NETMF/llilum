@@ -2,13 +2,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 
-namespace System.Runtime
+namespace Windows.Internal
 {
-    internal class AsyncActionFromTask : IAsyncAction
+    public sealed class AsyncActionFromTask : IAsyncAction
     {
         private readonly Task m_task;
         private AsyncActionCompletedHandler m_completedHandler;
@@ -81,7 +82,7 @@ namespace System.Runtime
         {
         }
 
-        internal Task Task
+        public Task Task
         {
             get
             {

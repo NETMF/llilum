@@ -4,6 +4,7 @@
 
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Internal;
 
 namespace System.Runtime
 {
@@ -20,17 +21,7 @@ namespace System.Runtime
         /// <returns>A Windows.Foundation.IAsyncAction instance that represents the started task.</returns>
         public static IAsyncAction AsAsyncAction(this Task source)
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
-            if (source.Status == TaskStatus.Created)
-            {
-                throw new InvalidOperationException("Task has not been started.");
-            }
-
-            return new AsyncActionFromTask(source);
+            return Windows.Internal.WindowsRuntimeSystemExtensions.AsAsyncAction(source);
         }
 
         /// <summary>
@@ -40,20 +31,47 @@ namespace System.Runtime
         /// <returns>A task that represents the asynchronous action.</returns>
         public static Task AsTask(this IAsyncAction source)
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
+            return Windows.Internal.WindowsRuntimeSystemExtensions.AsTask(source);
+        }
 
-            // Short-circuit round-tripped tasks and just return the original.
-            var asyncActionFromTask = source as AsyncActionFromTask;
-            if (asyncActionFromTask != null)
-            {
-                return asyncActionFromTask.Task;
-            }
+        /// <summary>
+        /// Returns a Windows Runtime asynchronous operation that represents a started task.
+        /// </summary>
+        /// <param name="source">The started task.</param>
+        /// <returns>A Windows.Foundation.IAsyncOperation instance that represents the started task.</returns>
+        public static IAsyncOperation<T> AsAsyncOperation<T>(this Task<T> source)
+        {
+            return Windows.Internal.WindowsRuntimeSystemExtensions.AsAsyncOperation(source);
+        }
 
-            // BUGBUG: We need to implement TaskCompletionSource before we can implement this properly.
-            throw new NotImplementedException();
+        /// <summary>
+        /// Returns a task that represents a Windows Runtime asynchronous operation.
+        /// </summary>
+        /// <param name="source">The asynchronous operation.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        public static Task<T> AsTask<T>(this IAsyncOperation<T> source)
+        {
+            return Windows.Internal.WindowsRuntimeSystemExtensions.AsTask(source);
+        }
+
+        /// <summary>
+        /// Returns a Windows Runtime asynchronous operation that represents a started task.
+        /// </summary>
+        /// <param name="source">The started task.</param>
+        /// <returns>A Windows.Foundation.IAsyncOperation instance that represents the started task.</returns>
+        public static IAsyncOperationWithProgress<T, P> AsAsyncOperationWithProgress<T, P>(this Task<T> source)
+        {
+            return Windows.Internal.WindowsRuntimeSystemExtensions.AsAsyncOperationWithProgress<T, P>(source);
+        }
+
+        /// <summary>
+        /// Returns a task that represents a Windows Runtime asynchronous operation.
+        /// </summary>
+        /// <param name="source">The asynchronous operation.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        public static Task<T> AsTask<T, P>(this IAsyncOperationWithProgress<T, P> source)
+        {
+            return Windows.Internal.WindowsRuntimeSystemExtensions.AsTask(source);
         }
     }
 }

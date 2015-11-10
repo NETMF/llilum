@@ -187,8 +187,8 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                 pins[i] = pin;
             }
 
-            var solitary = controller.OpenPin( threadPin );
-            solitary.SetDriveMode( GpioPinDriveMode.Output );
+            var solitary = controller.OpenPin(threadPin);
+            solitary.SetDriveMode(GpioPinDriveMode.Output);
 
             LedToggler[] blinkingModes = new LedToggler[3];
             blinkingModes[0] = new LedTogglerSimultaneous(pins);
@@ -324,7 +324,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                     currentMode = (currentMode + 1) % blinkingModes.Length;
                     blinkingModeSwitchTimer.reset();
 
-#region I2C_Impl
+                    #region I2C_Impl
 #if USE_I2C
                     try
                     {
@@ -348,9 +348,9 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                         // Continue as normal in this case
                     }
 #endif
-#endregion
+                    #endregion
 
-#region SPI_Impl
+                    #region SPI_Impl
 #if USE_SPI
                     writeBuffer[0] = (byte)currentMode;
                     spiDevice.TransferFullDuplex(writeBuffer, readBuffer);
@@ -361,7 +361,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                     }
                     spiDevice.Write(writeBuffer2);
 #endif
-#endregion
+                    #endregion
 
                     count++;
 

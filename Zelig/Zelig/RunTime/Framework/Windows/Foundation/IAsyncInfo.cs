@@ -3,6 +3,7 @@
 //
 
 using System;
+using System.Threading;
 
 namespace Windows.Foundation
 {
@@ -57,5 +58,15 @@ namespace Windows.Foundation
         /// Closes the asynchronous operation.
         /// </summary>
         void Close();
+    }
+
+    internal static class AsyncInfoHelper
+    {
+        private static int m_actionId = 0;
+
+        public static uint GetNextActionId()
+        {
+            return (uint)Interlocked.Increment(ref m_actionId);
+        }
     }
 }
