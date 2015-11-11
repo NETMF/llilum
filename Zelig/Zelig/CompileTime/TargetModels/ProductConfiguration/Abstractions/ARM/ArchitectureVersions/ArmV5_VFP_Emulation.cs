@@ -119,7 +119,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
             //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
-            [ZeligIR.CompilationSteps.PhaseFilter( typeof(ZeligIR.CompilationSteps.Phases.FromImplicitToExplictExceptions) )]
+            [ZeligIR.CompilationSteps.PhaseFilter( typeof(ZeligIR.CompilationSteps.Phases.FromImplicitToExplicitExceptions) )]
             [ZeligIR.CompilationSteps.OperatorHandler( typeof(ZeligIR.ConvertOperator) )]
             private static void Handle_ConvertOperator_Exceptions( ZeligIR.CompilationSteps.PhaseExecution.NotificationContext nc )
             {

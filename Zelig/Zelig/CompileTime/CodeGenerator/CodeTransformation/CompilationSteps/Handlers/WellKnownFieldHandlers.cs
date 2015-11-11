@@ -151,7 +151,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         }
 
         [CompilationSteps.PhaseFilter( typeof(Phases.HighLevelTransformations       ) )]
-        [CompilationSteps.PhaseFilter( typeof(Phases.FromImplicitToExplictExceptions) )]
+        [CompilationSteps.PhaseFilter( typeof(Phases.FromImplicitToExplicitExceptions) )]
         [CompilationSteps.WellKnownFieldHandler( "ArrayImpl_m_numElements" )]
         private static void Handle_ArrayImpl_m_numElements( PhaseExecution.NotificationContext nc )
         {

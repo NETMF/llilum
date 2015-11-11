@@ -211,6 +211,7 @@ namespace Microsoft.Zelig.Runtime
         //--//
 
         [NoInline]
+        [NoReturn]
         internal static void Throw_FixedSizeCollection()
         {
 #if EXCEPTION_STRINGS
@@ -221,6 +222,7 @@ namespace Microsoft.Zelig.Runtime
         }
 
         [NoInline]
+        [NoReturn]
         internal static void Throw_ReadOnlyCollection()
         {
 #if EXCEPTION_STRINGS

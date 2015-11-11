@@ -12,13 +12,13 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
 
     //[PhaseDisabled()]
     [PhaseOrdering( ExecuteAfter = typeof( HighLevelToMidLevelConversion ) )]
-    public sealed class FromImplicitToExplictExceptions : PhaseDriver
+    public sealed class FromImplicitToExplicitExceptions : PhaseDriver
     {
         //
         // Constructor Methods
         //
 
-        public FromImplicitToExplictExceptions( Controller context ) : base ( context )
+        public FromImplicitToExplicitExceptions( Controller context ) : base ( context )
         {
         }
 

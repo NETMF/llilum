@@ -478,6 +478,11 @@ namespace Microsoft.Zelig.LLVM
             return new _Value( Module, intType, result );
         }
 
+        public void InsertUnreachable()
+        {
+            IrBuilder.Unreachable( ).SetDebugLocation( CurDILocation );
+        }
+
         public void InsertUnconditionalBranch( _BasicBlock bb )
         {
             IrBuilder.Branch( bb.LlvmBasicBlock )

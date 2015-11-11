@@ -11,9 +11,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
     using Microsoft.Zelig.Runtime.TypeSystem;
 
 
-    public class OperatorHandlers_FromImplicitToExplictExceptions
+    public class OperatorHandlers_FromImplicitToExplicitExceptions
     {
-        [CompilationSteps.PhaseFilter( typeof(Phases.FromImplicitToExplictExceptions) )]
+        [CompilationSteps.PhaseFilter( typeof(Phases.FromImplicitToExplicitExceptions) )]
         [CompilationSteps.OperatorHandler( typeof(BinaryOperator) )]
         private static void Handle_BinaryOperator( PhaseExecution.NotificationContext nc )
         {
@@ -33,7 +33,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
-        [CompilationSteps.PhaseFilter( typeof(Phases.FromImplicitToExplictExceptions) )]
+        [CompilationSteps.PhaseFilter( typeof(Phases.FromImplicitToExplicitExceptions) )]
         [CompilationSteps.OperatorHandler( typeof(UnaryOperator) )]
         private static void Handle_UnaryOperator( PhaseExecution.NotificationContext nc )
         {
@@ -53,7 +53,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
-        [CompilationSteps.PhaseFilter( typeof(Phases.FromImplicitToExplictExceptions) )]
+        [CompilationSteps.PhaseFilter( typeof(Phases.FromImplicitToExplicitExceptions) )]
         [CompilationSteps.OperatorHandler( typeof(SignExtendOperator) )]
         private static void Handle_SignExtendOperator( PhaseExecution.NotificationContext nc )
         {
@@ -84,7 +84,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
-        [CompilationSteps.PhaseFilter( typeof(Phases.FromImplicitToExplictExceptions) )]
+        [CompilationSteps.PhaseFilter( typeof(Phases.FromImplicitToExplicitExceptions) )]
         [CompilationSteps.OperatorHandler( typeof(ZeroExtendOperator) )]
         private static void Handle_ZeroExtendOperator( PhaseExecution.NotificationContext nc )
         {
@@ -114,7 +114,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
-        [CompilationSteps.PhaseFilter( typeof(Phases.FromImplicitToExplictExceptions) )]
+        [CompilationSteps.PhaseFilter( typeof(Phases.FromImplicitToExplicitExceptions) )]
         [CompilationSteps.OperatorHandler( typeof(TruncateOperator) )]
         private static void Handle_TruncateOperator( PhaseExecution.NotificationContext nc )
         {
@@ -144,7 +144,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
-        [CompilationSteps.PhaseFilter( typeof(Phases.FromImplicitToExplictExceptions) )]
+        [CompilationSteps.PhaseFilter( typeof(Phases.FromImplicitToExplicitExceptions) )]
         [CompilationSteps.OperatorHandler( typeof(NullCheckOperator) )]
         private static void Handle_NullCheckOperator( PhaseExecution.NotificationContext nc )
         {
@@ -192,7 +192,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
-        [CompilationSteps.PhaseFilter( typeof(Phases.FromImplicitToExplictExceptions) )]
+        [CompilationSteps.PhaseFilter( typeof(Phases.FromImplicitToExplicitExceptions) )]
         [CompilationSteps.OperatorHandler( typeof(OutOfBoundCheckOperator) )]
         private static void Handle_OutOfBoundCheckOperator( PhaseExecution.NotificationContext nc )
         {
@@ -236,7 +236,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
-        [CompilationSteps.PhaseFilter( typeof(Phases.FromImplicitToExplictExceptions) )]
+        [CompilationSteps.PhaseFilter( typeof(Phases.FromImplicitToExplicitExceptions) )]
         [CompilationSteps.OperatorHandler( typeof(OverflowCheckOperator) )]
         private static void Handle_OverflowCheckOperator( PhaseExecution.NotificationContext nc )
         {
@@ -282,17 +282,32 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             Debugging.DebugInfo debugInfo = op.DebugInfo;
             BasicBlock          current   = op.BasicBlock;
 
+            BasicBlock[] basicBlocks = nc.CurrentCFG.DataFlow_SpanningTree_BasicBlocks;
+
+            throwBB = null;
+
+            // Try to find an existing throw block for the same exception.
+            foreach(BasicBlock block in basicBlocks)
+            {
+                var callOp = block.FirstOperator as StaticCallOperator;
+                if((callOp != null) && (callOp.TargetMethod == md))
+                {
+                    throwBB = block;
+                    break;
+                }
+            }
+
             continueBB = current.SplitAtOperator( op, fRemoveOperator, false );
-            throwBB    = NormalBasicBlock.CreateWithSameProtection( current );
 
-            //--//
-                   
-            Expression[] rhs = nc.TypeSystem.AddTypePointerToArgumentsOfStaticMethod( md );
+            // We didn't find an existing throw block, so create a new one.
+            if(throwBB == null)
+            {
+               Expression[] rhs = nc.TypeSystem.AddTypePointerToArgumentsOfStaticMethod( md );
 
-            throwBB.AddOperator( StaticCallOperator .New( debugInfo, CallOperator.CallKind.Direct, md, rhs ) );
-            throwBB.AddOperator( DeadControlOperator.New( debugInfo                                        ) );
-
-            //--//
+                throwBB = NormalBasicBlock.CreateWithSameProtection( current );
+                throwBB.AddOperator( StaticCallOperator .New( debugInfo, CallOperator.CallKind.Direct, md, rhs ) );
+                throwBB.AddOperator( DeadControlOperator.New( debugInfo ) );
+            }
 
             nc.MarkAsModified();
         }

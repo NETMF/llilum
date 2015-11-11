@@ -5,7 +5,7 @@
 
 namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
 {
-    [PhaseOrdering( ExecuteAfter = typeof( FromImplicitToExplictExceptions ) )]
+    [PhaseOrdering( ExecuteAfter = typeof( FromImplicitToExplicitExceptions ) )]
     public sealed class ReferenceCountingGarbageCollection : PhaseDriver
     {
         private GrowOnlySet<Operator> m_modifiedOperators;

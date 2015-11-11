@@ -386,6 +386,8 @@ namespace Llvm.NET
             return Value.FromHandle<Branch>( handle );
         }
 
+        public Unreachable Unreachable( ) => Value.FromHandle<Unreachable>( NativeMethods.BuildUnreachable( BuilderHandle ) );
+
         /// <summary>Builds an Integer compare instruction</summary>
         /// <param name="predicate">Integer predicate for the comparison</param>
         /// <param name="lhs">Left hand side of the comparison</param>

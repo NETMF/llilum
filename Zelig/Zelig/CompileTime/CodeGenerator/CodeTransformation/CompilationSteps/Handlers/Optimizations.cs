@@ -4,6 +4,13 @@
 
 //#define DUMP_CONSTRAINTSYSTEM
 
+// LLVM translation doesn't yet recognize SSA format, and will not produce correct code.
+// TODO: Remove this tag when that issue has been resolved.
+//#define ALLOW_SSA_FORM
+
+// Enable optimizations that only work for direct ARM translation (non-LLVM legacy path).
+// TODO: Remove this tag when comparison is no longer needed.
+//#define ENABLE_LOW_LEVEL_OPTIMIZATIONS
 
 namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 {
@@ -19,7 +26,11 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
-        [CompilationSteps.OptimizationHandler(RunOnce=true, RunInExtendedSSAForm=true)]
+#if ALLOW_SSA_FORM
+        [CompilationSteps.OptimizationHandler(RunOnce = true, RunInExtendedSSAForm = true)]
+#else // ALLOW_SSA_FORM
+        [CompilationSteps.OptimizationHandler(RunOnce = true)]
+#endif // ALLOW_SSA_FORM
         private static void RemoveRedundantChecks( PhaseExecution.NotificationContext nc )
         {
             ControlFlowGraphStateForCodeTransformation cfg = nc.CurrentCFG;
@@ -35,7 +46,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
                 if(PropagateFixedArrayLength ( cfg, defLookup ) ||
                    RemoveRedundantNullChecks ( cfg, defLookup ) ||
-                   RemoveRedundantBoundChecks( cfg, defLookup )  )
+                   RemoveRedundantBoundChecks( cfg, defLookup ) )
                 {
                     Transformations.RemoveDeadCode.Execute( cfg, false );
                     continue;
@@ -52,7 +63,11 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         {
             bool fRunSimplify = false;
 
+#if ENABLE_LOW_LEVEL_OPTIMIZATIONS
             foreach(var op in cfg.FilterOperators< LoadIndirectOperator >())
+#else // ENABLE_LOW_LEVEL_OPTIMIZATIONS
+            foreach(var op in cfg.FilterOperators< LoadInstanceFieldOperator >())
+#endif // ENABLE_LOW_LEVEL_OPTIMIZATIONS
             {
                 if(op.HasAnnotation< ArrayLengthAnnotation >())
                 {
@@ -85,7 +100,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         {
             var array = ex as VariableExpression;
 
-            if(array == null || history.Insert( array ) == true)
+            if(array == null || history.Insert( array ))
             {
                 //
                 // Detected loop, bail out.
@@ -146,6 +161,85 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         {
             bool fRunSimplify = false;
 
+            // Search for branch-if-non-zero.
+            foreach(var opCtrl in cfg.FilterOperators< BinaryConditionalControlOperator >())
+            {
+                BasicBlock takenBranch;
+                switch(ProveIsNull( defLookup, opCtrl.FirstArgument ))
+                {
+                case ProveNullResult.NeverNull:
+                    takenBranch = opCtrl.TargetBranchTaken;
+                    break;
+
+                case ProveNullResult.AlwaysNull:
+                    takenBranch = opCtrl.TargetBranchNotTaken;
+                    break;
+
+                default:
+                    continue;
+                }
+
+                UnconditionalControlOperator opNewCtrl = UnconditionalControlOperator.New( opCtrl.DebugInfo, takenBranch );
+                opCtrl.SubstituteWithOperator( opNewCtrl, Operator.SubstitutionFlags.Default );
+
+                fRunSimplify = true;
+            }
+
+            // Search for branch if (a == null) and branch if (a != null).
+            foreach(var opCtrl in cfg.FilterOperators< CompareConditionalControlOperator >())
+            {
+                bool trueIfNull = false;
+                Expression expr;
+
+                switch(opCtrl.Condition)
+                {
+                case CompareAndSetOperator.ActionCondition.EQ:
+                    trueIfNull = true;
+                    break;
+
+                case CompareAndSetOperator.ActionCondition.NE:
+                    trueIfNull = false;
+                    break;
+
+                default:
+                    continue;
+                }
+
+                bool fNullOnRight;
+                expr = opCtrl.IsBinaryOperationAgainstZeroValue( out fNullOnRight );
+                if(expr == null)
+                {
+                    continue;
+                }
+
+                ProveNullResult result = ProveIsNull( defLookup, expr );
+                if(result == ProveNullResult.Unknown)
+                {
+                    continue;
+                }
+
+                BasicBlock takenBranch;
+                switch(result)
+                {
+                case ProveNullResult.NeverNull:
+                    takenBranch = trueIfNull ? opCtrl.TargetBranchNotTaken : opCtrl.TargetBranchTaken;
+                    break;
+
+                case ProveNullResult.AlwaysNull:
+                    takenBranch = trueIfNull ? opCtrl.TargetBranchTaken : opCtrl.TargetBranchNotTaken;
+                    break;
+
+                default:
+                    continue;
+                }
+
+                UnconditionalControlOperator opNewCtrl = UnconditionalControlOperator.New( opCtrl.DebugInfo, takenBranch );
+                opCtrl.SubstituteWithOperator( opNewCtrl, Operator.SubstitutionFlags.Default );
+
+                fRunSimplify = true;
+            }
+
+#if ENABLE_LOW_LEVEL_OPTIMIZATIONS
             foreach(var opCtrl in cfg.FilterOperators< ConditionCodeConditionalControlOperator >())
             {
                 bool fNotEqual;
@@ -167,7 +261,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                 var opCmp = ControlFlowGraphState.CheckSingleDefinition( defLookup, opCtrl.FirstArgument ) as CompareOperator;
                 if(opCmp != null)
                 {
-                    bool       fNullOnRight;
+                    bool fNullOnRight;
                     Expression ex = opCmp.IsBinaryOperationAgainstZeroValue( out fNullOnRight );
 
                     if(ex != null)
@@ -182,24 +276,25 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                     }
                 }
             }
+#endif // ENABLE_LOW_LEVEL_OPTIMIZATIONS
 
             return fRunSimplify;
         }
 
-        private enum ProveNotNullResult
+        private enum ProveNullResult
         {
-            Maybe,
-            True ,
-            False,
+            Unknown = 0,
+            NeverNull,
+            AlwaysNull,
         }
 
-        private static ProveNotNullResult ProveNotNull( GrowOnlyHashTable< VariableExpression, Operator > defLookup ,
+        private static ProveNullResult ProveIsNull( GrowOnlyHashTable< VariableExpression, Operator > defLookup ,
                                                         Expression                                        ex        )
         {
-            return ProveNotNull( defLookup, SetFactory.NewWithReferenceEquality< VariableExpression >(), ex );
+            return ProveIsNull( defLookup, SetFactory.NewWithReferenceEquality< VariableExpression >(), ex );
         }
 
-        private static ProveNotNullResult ProveNotNull( GrowOnlyHashTable< VariableExpression, Operator > defLookup ,
+        private static ProveNullResult ProveIsNull( GrowOnlyHashTable< VariableExpression, Operator > defLookup ,
                                                         GrowOnlySet< VariableExpression >                 history   ,
                                                         Expression                                        ex        )
         {
@@ -209,25 +304,24 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
                 if(exConst.IsEqualToZero())
                 {
-                    return ProveNotNullResult.False;
+                    return ProveNullResult.AlwaysNull;
                 }
 
+                // Data descriptors will always resolve to pointers to a global object, and therefore can't be null.
                 if(exConst.Value is DataManager.DataDescriptor)
                 {
-                    return ProveNotNullResult.True;
+                    return ProveNullResult.NeverNull;
                 }
 
-                return ProveNotNullResult.False;
+                return ProveNullResult.NeverNull;
             }
 
             var exVar = ex as VariableExpression;
 
+            // If we detected a loop, the value may change between iterations.
             if(exVar == null || history.Insert( exVar ) == true)
             {
-                //
-                // Detected loop.
-                //
-                return ProveNotNullResult.Maybe;
+                return ProveNullResult.Unknown;
             }
 
             //--//
@@ -238,34 +332,40 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             {
                 if(def.HasAnnotation< NotNullAnnotation >())
                 {
-                    return ProveNotNullResult.True;
+                    return ProveNullResult.NeverNull;
                 }
 
+                // Phi: If all predecessors are provably the same result, then so is the operator's result.
                 if(def is PhiOperator)
                 {
-                    ProveNotNullResult res = ProveNotNullResult.False;
+                    bool isFirstResult = true;
+                    ProveNullResult result = ProveNullResult.Unknown;
 
                     foreach(Expression rhs in def.Arguments)
                     {
-                        switch(ProveNotNull( defLookup, history, rhs ))
+                        ProveNullResult curResult = ProveIsNull( defLookup, history, rhs );
+                        if(isFirstResult)
                         {
-                            case ProveNotNullResult.True:
-                                res = ProveNotNullResult.True;
-                                break;
-
-                            case ProveNotNullResult.False:
-                                return ProveNotNullResult.False;
+                            isFirstResult = false;
+                            result = curResult;
+                        }
+                        else if(curResult != result)
+                        {
+                            // We got two different results from different blocks.
+                            return ProveNullResult.Unknown;
                         }
                     }
 
-                    return res;
+                    return result;
                 }
 
+                // Assignment is transitive, so look up the source value.
                 if(def is SingleAssignmentOperator)
                 {
-                    return ProveNotNull( defLookup, history, def.FirstArgument );
+                    return ProveIsNull( defLookup, history, def.FirstArgument );
                 }
 
+#if FUTURE // This block isn't strictly correct and assumes low-level knowledge. We should revisit it.
                 if(def is BinaryOperator)
                 {
                     var binOp = (BinaryOperator)def;
@@ -288,23 +388,24 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                                     //
                                     // Adding/removing a constant from a non-null value doesn't change its nullness.
                                     //
-                                    return ProveNotNull( defLookup, history, varSrc );
+                                    return ProveIsNull( defLookup, history, varSrc );
 
                                 case BinaryOperator.ALU.OR:
                                     //
                                     // OR'ing with a non-zero constant ensures the results are not null.
                                     //
-                                    if(exConst.IsEqualToZero() == false)
+                                    if(!exConst.IsEqualToZero())
                                     {
-                                        return ProveNotNullResult.True;
+                                        return ProveNullResult.NeverNull;
                                     }
                                     break;
                             }
                         }
                     }
 
-                    return ProveNotNullResult.False;
+                    return ProveNullResult.Unknown;
                 }
+#endif // FUTURE
 
                 if(def is PiOperator)
                 {
@@ -318,18 +419,18 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                         switch(piOp.RelationOperator)
                         {
                             case PiOperator.Relation.Equal:
-                                return ProveNotNullResult.False;
+                                return ProveNullResult.AlwaysNull;
 
                             case PiOperator.Relation.NotEqual:
-                                return ProveNotNullResult.True;
+                                return ProveNullResult.NeverNull;
                         }
                     }
 
-                    return ProveNotNull( defLookup, history, ex );
+                    return ProveIsNull( defLookup, history, ex );
                 }
             }
 
-            return ProveNotNullResult.False;
+            return ProveNullResult.Unknown;
         }
 
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
@@ -468,7 +569,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
+#if ENABLE_LOW_LEVEL_OPTIMIZATIONS
         [CompilationSteps.OptimizationHandler(RunOnce=true, RunInSSAForm=true)]
+#endif // ENABLE_LOW_LEVEL_OPTIMIZATIONS
         private static void ConvertLongCompareToNormalCompare( PhaseExecution.NotificationContext nc )
         {
             ControlFlowGraphStateForCodeTransformation cfg       = nc.CurrentCFG;
@@ -758,7 +861,11 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
-        [CompilationSteps.OptimizationHandler(RunOnce=true, RunInSSAForm=true)]
+#if ENABLE_SSA_FORM
+        [CompilationSteps.OptimizationHandler(RunOnce = true, RunInSSAForm = true)]
+#else // ENABLE_SSA_FORM
+        [CompilationSteps.OptimizationHandler(RunOnce = true)]
+#endif // ENABLE_SSA_FORM
         private static void RemoveRedundantConversions( PhaseExecution.NotificationContext nc )
         {
             ControlFlowGraphStateForCodeTransformation cfg       = nc.CurrentCFG;
@@ -842,11 +949,12 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             }
         }
 
+#if ENABLE_LOW_LEVEL_OPTIMIZATIONS
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
-        [CompilationSteps.OptimizationHandler(RunOnce=false, RunInSSAForm=true)]
+        [CompilationSteps.OptimizationHandler(RunOnce = false, RunInSSAForm = true)]
         private static void ConstantMemoryDereference( PhaseExecution.NotificationContext nc )
         {
             ControlFlowGraphStateForCodeTransformation cfg = nc.CurrentCFG;
@@ -876,5 +984,6 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                 }
             }
         }
+#endif // ENABLE_LOW_LEVEL_OPTIMIZATIONS
     }
 }

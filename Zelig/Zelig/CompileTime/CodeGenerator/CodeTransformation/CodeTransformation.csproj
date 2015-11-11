@@ -88,7 +88,7 @@
     <Compile Include="CompilationSteps\Handlers\OperatorHandlers_ConvertUnsupportedOperatorsToMethodCalls.cs" />
     <Compile Include="CompilationSteps\Handlers\MethodTransformations.cs" />
     <Compile Include="CompilationSteps\Handlers\OperatorHandlers_ExpandAggregateTypes.cs" />
-    <Compile Include="CompilationSteps\Handlers\OperatorHandlers_FromImplicitToExplictExceptions.cs" />
+    <Compile Include="CompilationSteps\Handlers\OperatorHandlers_FromImplicitToExplicitExceptions.cs" />
     <Compile Include="CompilationSteps\Handlers\OperatorHandlers_HighLevel.cs" />
     <Compile Include="CompilationSteps\Handlers\OperatorHandlers_HighLevelToMidLevel.cs" />
     <Compile Include="CompilationSteps\Handlers\OperatorHandlers_MidLevelToLowLevel.cs" />
@@ -131,7 +131,7 @@
     <Compile Include="CompilationSteps\Phases\Done.cs" />
     <Compile Include="CompilationSteps\Phases\EstimateTypeSystemReduction.cs" />
     <Compile Include="CompilationSteps\Phases\ExpandAggregateTypes.cs" />
-    <Compile Include="CompilationSteps\Phases\FromImplicitToExplictExceptions.cs" />
+    <Compile Include="CompilationSteps\Phases\FromImplicitToExplicitExceptions.cs" />
     <Compile Include="CompilationSteps\Phases\GenerateImage.cs" />
     <Compile Include="CompilationSteps\Phases\HighLevelToMidLevelConversion.cs" />
     <Compile Include="CompilationSteps\Phases\HighLevelTransformations.cs" />

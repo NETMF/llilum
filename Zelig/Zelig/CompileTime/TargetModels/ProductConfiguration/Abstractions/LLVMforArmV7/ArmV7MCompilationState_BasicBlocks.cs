@@ -48,7 +48,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         {
             if( exp is IR.VariableExpression )
             {
-                _Value value = m_localValues[ exp ];
+                _Value value = m_localValues[ ((IR.VariableExpression)exp).AliasedVariable ];
                 if( wantImmediate )
                 {
                     value = m_basicBlock.LoadToImmediate( value );
@@ -144,8 +144,11 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             {
                 foreach( IR.VariableExpression exp in m_variables )
                 {
-                    Debug.Assert( !m_localValues.ContainsKey( exp ), "Tried to create duplicate storage for variable." );
-                    m_localValues[ exp ] = m_function.GetLocalStackValue( m_method, m_basicBlock, exp, m_manager );
+                    var aliased = exp.AliasedVariable;
+                    if( !m_localValues.ContainsKey( aliased ) )
+                    {
+                        m_localValues[ aliased ] = m_function.GetLocalStackValue( m_method, m_basicBlock, exp, m_manager );
+                    }
                 }
             }
 
@@ -254,6 +257,10 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             {
                 Translate_InitialValueOperator( ( IR.InitialValueOperator )op );
             }
+            else if( op is IR.PhiOperator )
+            {
+                Translate_PhiOperator( ( IR.PhiOperator )op );
+            }
             else if( op is IR.CompareAndSetOperator )
             {
                 Translate_CompareAndSetOperator( ( IR.CompareAndSetOperator )op );
@@ -332,22 +339,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             {
                 Translate_IndirectCallOperator( ( IR.IndirectCallOperator )op );
             }
-            else if( op is IR.CompareOperator )
-            {
-                Translate_CompareOperator( ( IR.CompareOperator )op );
-            }
-            else if( op is IR.ConditionCodeConditionalControlOperator )
-            {
-                Translate_ConditionCodeConditionalControlOperator( ( IR.ConditionCodeConditionalControlOperator )op );
-            }
-            else if( op is IR.DirectSubroutineOperator )
-            {
-                Translate_DirectSubroutineOperator( ( IR.DirectSubroutineOperator )op );
-            }
-            else if( op is IR.SetIfConditionIsTrueOperator )
-            {
-                Translate_SetIfConditionIsTrueOperator( ( IR.SetIfConditionIsTrueOperator )op );
-            }
+            //Other
             else
             {
                 WarnUnimplemented( op.ToString( ) );
@@ -593,6 +585,12 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             m_basicBlock.InsertStoreArgument( m_results[0], index );
         }
 
+        private void Translate_PhiOperator( IR.PhiOperator op )
+        {
+            // FUTURE: Nothing to do here since all variables are stored on the stack. In the future, this operator may
+            // reference immediate values, at which time we'll need to build a proper phi node.
+        }
+
         _Value DoCmpOp( _Value valA, _Value valB, int cond, bool signed )
         {
             valA = ConvertValueToALUOperableType( valA );
@@ -724,8 +722,8 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
         private void Translate_DeadControlOperator( IR.DeadControlOperator op )
         {
-            // Basic Block marked as dead code by Zelig. To keep LLVM able to compile, insert a branch to itself.
-            m_basicBlock.InsertUnconditionalBranch( m_basicBlock );
+            // Basic Block marked as dead code by Zelig.
+            m_basicBlock.InsertUnreachable();
         }
 
         private bool ReplaceMethodCallWithIntrinsic( TS.MethodRepresentation method, List<_Value> convertedArgs )
@@ -937,30 +935,6 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         private void Translate_IndirectCallOperator( IR.IndirectCallOperator op )
         {
             BuildMethodCallInstructions( op.TargetMethod, callIndirect: true );
-        }
-
-        private void Translate_CompareOperator( IR.CompareOperator op )
-        {
-            WarnUnimplemented( op.ToString( ) ); 
-            throw new NotImplementedException( );
-        }
-
-        private void Translate_SetIfConditionIsTrueOperator( IR.SetIfConditionIsTrueOperator op )
-        {
-            WarnUnimplemented( op.ToString( ) ); 
-            throw new NotImplementedException( );
-        }
-
-        private void Translate_DirectSubroutineOperator( IR.DirectSubroutineOperator op )
-        {
-            WarnUnimplemented( op.ToString( ) ); 
-            throw new NotImplementedException( );
-        }
-
-        private void Translate_ConditionCodeConditionalControlOperator( IR.ConditionCodeConditionalControlOperator op )
-        {
-            WarnUnimplemented( op.ToString( ) ); 
-            throw new NotImplementedException( );
         }
     }
 }

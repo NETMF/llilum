@@ -495,6 +495,7 @@ namespace Microsoft.Zelig.Runtime
         //--//
 
         [NoInline]
+        [NoReturn]
         [TS.WellKnownMethod( "ThreadImpl_ThrowNullException" )]
         internal static void ThrowNullException()
         {
@@ -502,6 +503,7 @@ namespace Microsoft.Zelig.Runtime
         }
 
         [NoInline]
+        [NoReturn]
         [TS.WellKnownMethod( "ThreadImpl_ThrowIndexOutOfRangeException" )]
         internal static void ThrowIndexOutOfRangeException()
         {
@@ -509,6 +511,7 @@ namespace Microsoft.Zelig.Runtime
         }
 
         [NoInline]
+        [NoReturn]
         [TS.WellKnownMethod( "ThreadImpl_ThrowOverflowException" )]
         internal static void ThrowOverflowException()
         {
@@ -516,6 +519,7 @@ namespace Microsoft.Zelig.Runtime
         }
 
         [NoInline]
+        [NoReturn]
         [TS.WellKnownMethod( "ThreadImpl_ThrowNotImplementedException" )]
         internal static void ThrowNotImplementedException()
         {

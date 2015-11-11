@@ -104,6 +104,17 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
                 if(!td.CanBeAssignedFrom( ex.Type, null ))
                 {
+                    // Allow passing null object pointers as any type. REVIEW: This should be unnecessary, but there
+                    // still exist places in the system that fail to coerce null pointers to the correct type. This test
+                    // should be considered a short term patch while we sort out those few remaining cases.
+                    var constEx = ex as ConstantExpression;
+                    if( (constEx != null) &&
+                        (constEx.Value == null) &&
+                        !(td is ValueTypeRepresentation) )
+                    {
+                        continue;
+                    }
+
                     // Ignore scalar type incompatibilities. The eval stack extends scalars to 32 bits, and we'll
                     // convert these to the correct type during a later phase anyway.
                     if((td is ScalarTypeRepresentation) && (ex.Type is ScalarTypeRepresentation))

@@ -311,20 +311,20 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
         {
             var cache = m_typeSystem.GetEnvironmentService< IR.CompilationSteps.DelegationCache >();
 
-            cache.Register( new Handlers.MethodTransformations                                    () );
-            cache.Register( new Handlers.ProtectRequiredEntities                                  () );
-            cache.Register( new Handlers.WellKnownFieldHandlers                                   () );
-            cache.Register( new Handlers.WellKnownMethodHandlers                                  () );
+            cache.Register( new Handlers.MethodTransformations() );
+            cache.Register( new Handlers.ProtectRequiredEntities() );
+            cache.Register( new Handlers.WellKnownFieldHandlers() );
+            cache.Register( new Handlers.WellKnownMethodHandlers() );
 
-            cache.Register( new Handlers.OperatorHandlers_HighLevel                               () );
-            cache.Register( new Handlers.OperatorHandlers_HighLevelToMidLevel                     () );
-            cache.Register( new Handlers.OperatorHandlers_ReferenceCountingGarbageCollection      () );
-            cache.Register( new Handlers.OperatorHandlers_FromImplicitToExplictExceptions         () );
+            cache.Register( new Handlers.OperatorHandlers_HighLevel() );
+            cache.Register( new Handlers.OperatorHandlers_HighLevelToMidLevel() );
+            cache.Register( new Handlers.OperatorHandlers_FromImplicitToExplicitExceptions() );
+            cache.Register( new Handlers.OperatorHandlers_ReferenceCountingGarbageCollection() );
             cache.Register( new Handlers.OperatorHandlers_ConvertUnsupportedOperatorsToMethodCalls() );
-            cache.Register( new Handlers.OperatorHandlers_ExpandAggregateTypes                    () );
-            cache.Register( new Handlers.OperatorHandlers_MidLevelToLowLevel                      () );
+            cache.Register( new Handlers.OperatorHandlers_ExpandAggregateTypes() );
+            cache.Register( new Handlers.OperatorHandlers_MidLevelToLowLevel() );
 
-            cache.Register( new Handlers.Optimizations                                            () );
+            cache.Register( new Handlers.Optimizations() );
 
             m_typeSystem.PlatformAbstraction.RegisterForNotifications( m_typeSystem, cache );
             m_typeSystem.CallingConvention  .RegisterForNotifications( m_typeSystem, cache );

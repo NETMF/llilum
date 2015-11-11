@@ -2,11 +2,14 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-//#define SELF_TEST
-//#define SELF_TEST_MEMORY
-//#define SELF_TEST_DEBUGINFO
+// Enables basic low-level self-tests for arithmetic and method calls.
+//#define SELF_TEST_BASIC
 
-//--//
+// Enables memory self-tests to validate garbage collection techniques.
+//#define SELF_TEST_MEMORY
+
+// Enables self-tests covering null/bounds/overflow checks.
+//#define SELF_TEST_CHECKS
 
 using Microsoft.Zelig.Runtime.TargetPlatform.ARMv7;
 
@@ -54,16 +57,10 @@ namespace Microsoft.Zelig.Runtime
         [TS.WellKnownMethod( "Bootstrap_Initialization" )]
         private static unsafe void Initialization()
         {
-#if SELF_TEST
+#if SELF_TEST_BASIC
             SelfTest.SelfTest__Bootstrap( );
-#elif SELF_TEST_MEMORY
-            HardwareInitialization();
-            HeapInitialization();
-            SoftwareInitialization(Device.Instance.BootstrapStack);
-            SelfTest.SelfTest__Memory();
-#elif SELF_TEST_DEBUGINFO
-            Configuration.ExecuteApplication( );
-#else
+#endif // SELF_TEST_BASIC
+
             //
             // This should only minimally setup hardware so that the system is functional.
             // For example, all the peripherals have been added to the address space,
@@ -82,6 +79,13 @@ namespace Microsoft.Zelig.Runtime
             //
             SoftwareInitialization( Device.Instance.BootstrapStack );
 
+#if SELF_TEST_CHECKS
+            SelfTest.SelfTest__Checks();
+#endif // SELF_TEST_CHECKS
+#if SELF_TEST_MEMORY
+            SelfTest.SelfTest__Memory();
+#endif // SELF_TEST_MEMORY
+
             //
             // Once all the software services have been initialized, we can activate the hardware.
             // Activating the hardware might require starting threads, associated delegate with callbacks, etc.
@@ -96,8 +100,6 @@ namespace Microsoft.Zelig.Runtime
             // 
             // Time to start execution of user app by delegating to the thread manager
             ThreadManager.Instance.StartThreads();
-
-#endif // SELF_TEST
         }
 
         //--//
@@ -107,9 +109,7 @@ namespace Microsoft.Zelig.Runtime
         private static void PreInitialization()
         {
             Device dev = Device.Instance;
-
             dev.PreInitializeProcessorAndMemory();
-
             dev.MoveCodeToProperLocation();
         }
 
@@ -129,13 +129,10 @@ namespace Microsoft.Zelig.Runtime
         private static void HeapInitialization()
         {
             MemoryManager mm = MemoryManager.Instance;
-            
             mm.InitializeMemoryManager();
-
             mm.InitializationComplete();
-
-            
         }
+
         [TS.WellKnownMethod( "Bootstrap_ReferenceCountingInitialization" )]
         private static void ReferenceCountingInitialization()
         {

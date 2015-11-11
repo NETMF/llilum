@@ -548,7 +548,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
-        [CompilationSteps.PhaseFilter( typeof(Phases.FromImplicitToExplictExceptions) )]
+        [CompilationSteps.PhaseFilter( typeof(Phases.FromImplicitToExplicitExceptions) )]
         [CompilationSteps.OperatorHandler( typeof(ConvertOperator) )]
         private static void Handle_ConvertOperator_Exceptions( PhaseExecution.NotificationContext nc )
         {

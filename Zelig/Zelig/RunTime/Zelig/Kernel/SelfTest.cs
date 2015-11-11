@@ -489,7 +489,19 @@ namespace Microsoft.Zelig.Runtime
             SelfTest__Test__Integers_PassByValue( );
             SelfTest__Test__Integers_PassByRef( );
 
-            //Trap end of tests
+            // Trap end of tests.
+            BugCheck.Log("!!! ALL TESTS PASSED !!!");
+            BreakWithTrap();
+        }
+
+        internal static void SelfTest__Checks()
+        {
+            SelfTest__Checks__Null_StaticReadonly();
+            SelfTest__Checks__Null_LocalScope();
+            SelfTest__Checks__Null_Complex();
+            SelfTest__Checks__Bounds();
+
+            // Trap end of tests.
             BugCheck.Log("!!! ALL TESTS PASSED !!!");
             BreakWithTrap();
         }
@@ -548,11 +560,75 @@ namespace Microsoft.Zelig.Runtime
             SelfTest__Interlocked__CompareExchange_IntPtr( );
             SelfTest__Interlocked__CompareExchange_Template( );
 
-            // Trap end of tests
+            // Trap end of tests.
             BugCheck.Log("!!! ALL TESTS PASSED !!!");
             BreakWithTrap();
 
         }
+
+        #region Checks tests
+
+        static readonly string AlwaysNull = null;
+        static readonly string NeverNull = "Never null";
+
+        private static void SelfTest__Checks__Null_StaticReadonly()
+        {
+            SELFTEST_ASSERT(NeverNull.Length == 10);
+
+            if (AlwaysFalseNonOptimizableCondition())
+            {
+                SELFTEST_ASSERT(AlwaysNull.Length != 10); // This should always throw a null reference exception.
+            }
+        }
+
+        private static void SelfTest__Checks__Null_LocalScope()
+        {
+            object alwaysNull = null;
+            object neverNull = new object();
+            object sometimesNull = new object();
+
+            SELFTEST_ASSERT(!neverNull.Equals(null));
+            SELFTEST_ASSERT(!sometimesNull.Equals(null));
+
+            if (AlwaysFalseNonOptimizableCondition())
+            {
+                SELFTEST_ASSERT(alwaysNull.Equals(null)); // This should always throw a null reference exception.
+
+                sometimesNull = null;
+                SELFTEST_ASSERT(sometimesNull.Equals(null)); // This should always throw a null reference exception.
+            }
+        }
+
+        private static void SelfTest__Checks__Null_Complex()
+        {
+            // Test multiple levels of indirection (array access to provable null/not-null).
+            var array = new object[] { new object(), null };
+            SELFTEST_ASSERT(!array[0].Equals(null));
+
+            if (AlwaysFalseNonOptimizableCondition())
+            {
+                SELFTEST_ASSERT(array[1].Equals(null)); // This should always throw a null reference exception.
+            }
+        }
+
+        private static void SelfTest__Checks__Bounds()
+        {
+            var array = new int[] { 0, 1, 2 };
+
+            SELFTEST_ASSERT(array[1] == 1);
+
+            if (AlwaysFalseNonOptimizableCondition())
+            {
+                // Obscure the value (-1) from the compiler.
+                int number = GetANumber();
+                int negative = number - number - 1;
+
+                SELFTEST_ASSERT(array[negative] != 0); // This should always throw a bounds exception.
+                SELFTEST_ASSERT(array[3] != 0); // This should always throw a bounds exception.
+            }
+        }
+
+        #endregion Checks tests
 
         #region Memory Tests
 
