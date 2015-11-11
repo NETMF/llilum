@@ -80,6 +80,7 @@ extern "C"
             end
 
         */
+        asm("nop");
     }
 
     void DebugLog0(uint16_t* message, uint32_t length)
