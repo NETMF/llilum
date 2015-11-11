@@ -3,6 +3,9 @@
 //
 
 
+using Microsoft.Zelig.Runtime.TypeSystem;
+using System;
+
 namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
 {
     [PhaseOrdering( ExecuteAfter = typeof( FromImplicitToExplicitExceptions ) )]
@@ -43,11 +46,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
         {
             if(this.TypeSystem.EnableReferenceCountingGarbageCollection)
             {
-                // 1. Inject AllocateReleaseReferenceHelper() call to Thread::.ctor so each thread has its own 
-                //    ReleaseReferenceHelper.
-                //    Inject ReferenceCountingInitialization() call to Bootstrap::HeapInitialization
-                InjectAllocateReleaseReferenceHelper( );
-                InjectReferenceCountingInitialization( );
+                // 1. Inject reference counting specific setup / helpers 
+                InjectReferenceCountingHelpers( );
 
                 // 2. Inject calls to AddReference and ReleaseReference for operators that copy references
                 // 3. Inject calls to ReleaseReference at the end of each function to for each local / temp variables.
@@ -63,38 +63,63 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
             return this.NextPhase;
         }
 
-        private void InjectAllocateReleaseReferenceHelper( )
+        private struct Injection
         {
-            var ts = this.TypeSystem;
-            var wkm = ts.WellKnownMethods;
-
-            var mdThreadCtor = wkm.ThreadImpl_ctor;
-            var mdAllocateRRH = wkm.ThreadImpl_AllocateReleaseReferenceHelper;
-
-            var cfg = TypeSystemForCodeTransformation.GetCodeForMethod( mdThreadCtor );
-            var injectionPoint = cfg.GetInjectionPoint( BasicBlock.Qualifier.EntryInjectionStart );
-
-            var rhs = new Expression[] { cfg.Arguments[ 0 ] }; // Arguments[0] is this variable
-            var call = InstanceCallOperator.New( null, CallOperator.CallKind.Direct, mdAllocateRRH, rhs, false );
-
-            injectionPoint.AddOperator( call );
+            public String                                                         method;
+            public Func<ControlFlowGraphStateForCodeTransformation, Expression[]> arguments;
+            public String                                                         target;
+            public BasicBlock.Qualifier                                           injectionPoint;
         }
 
-        private void InjectReferenceCountingInitialization( )
+        private void InjectReferenceCountingHelpers( )
         {
+            Injection[] injections = new Injection[] {
+                new Injection {
+                    method         = "ThreadImpl_AllocateReleaseReferenceHelper",
+                    arguments      = cfg => new Expression[] { cfg.Arguments[ 0 ] },
+                    target         = "ThreadImpl_ctor",
+                    injectionPoint = BasicBlock.Qualifier.EntryInjectionStart
+                },
+
+                new Injection {
+                    method         = "Bootstrap_ReferenceCountingInitialization",
+                    arguments      = cfg => Expression.SharedEmptyArray,
+                    target         = "Bootstrap_HeapInitialization",
+                    injectionPoint = BasicBlock.Qualifier.ExitInjectionStart
+                },
+
+                new Injection {
+                    method         = "ThreadManager_CleanupBootstrapThread",
+                    arguments      = cfg => Expression.SharedEmptyArray,
+                    target         = "ThreadManager_CleanupBootstrapThreadIfNeeded",
+                    injectionPoint = BasicBlock.Qualifier.EntryInjectionStart
+                },
+            };
+
             var ts = this.TypeSystem;
-            var wkm = ts.WellKnownMethods;
 
-            var mdRCInit = wkm.Bootstrap_ReferenceCountingInitialization;
-            var mdHeapInit = wkm.Bootstrap_HeapInitialization;
+            foreach (var injection in injections)
+            {
+                var target = ts.GetWellKnownMethod( injection.target );
+                var cfg = TypeSystemForCodeTransformation.GetCodeForMethod( target );
+                var injectionPoint = cfg.GetInjectionPoint( injection.injectionPoint );
 
-            var cfg = TypeSystemForCodeTransformation.GetCodeForMethod( mdHeapInit );
-            var injectionPoint = cfg.GetInjectionPoint( BasicBlock.Qualifier.ExitInjectionStart );
+                var method = ts.GetWellKnownMethod( injection.method );
+                var arguments = injection.arguments( cfg );
 
-            var rhs = ts.AddTypePointerToArgumentsOfStaticMethod( mdRCInit, Expression.SharedEmptyArray );
-            var call = StaticCallOperator.New( null, CallOperator.CallKind.Direct, mdRCInit, rhs );
+                Operator call;
+                if (method is StaticMethodRepresentation)
+                {
+                    var rhs = ts.AddTypePointerToArgumentsOfStaticMethod( method, arguments );
+                    call = StaticCallOperator.New( null, CallOperator.CallKind.Direct, method, rhs );
+                }
+                else
+                {
+                    call = InstanceCallOperator.New( null, CallOperator.CallKind.Direct, method, arguments, false );
+                }
 
-            injectionPoint.AddOperator( call );
+                injectionPoint.AddOperator( call );
+            }
         }
     }
 }

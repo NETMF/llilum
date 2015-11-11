@@ -54,7 +54,7 @@ namespace Microsoft.Zelig.Runtime
         //
         // HACK: We have a bug in the liveness of multi-pointer structure. We have to use a class instead.
         //
-        internal Synchronization.WaitingRecord.Holder m_holder = new Synchronization.WaitingRecord.Holder();
+        internal Synchronization.WaitingRecord.Holder m_holder;
 
         //
         // Constructor Methods
@@ -70,6 +70,8 @@ namespace Microsoft.Zelig.Runtime
         public ThreadImpl( System.Threading.ThreadStart start ,
                            uint[]                       stack )
         {
+            m_holder = new Synchronization.WaitingRecord.Holder();
+
             m_managedThreadId   = (int)0x12340000 | s_managedThreadId++;
 
             m_start             = start;

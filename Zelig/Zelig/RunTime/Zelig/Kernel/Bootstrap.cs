@@ -136,7 +136,7 @@ namespace Microsoft.Zelig.Runtime
         [TS.WellKnownMethod( "Bootstrap_ReferenceCountingInitialization" )]
         private static void ReferenceCountingInitialization()
         {
-            ThreadManager.Instance.InitializeForReferenceCounting( );
+            ThreadManager.InitializeForReferenceCounting( );
         }
 
         [NoInline]

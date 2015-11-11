@@ -86,6 +86,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
                 m_state.Execute( wkm.Bootstrap_ReferenceCountingInitialization );
                 m_state.Execute( wkm.InterlockedImpl_ReferenceCountingExchange );
                 m_state.Execute( wkm.InterlockedImpl_ReferenceCountingCompareExchange );
+                m_state.Execute( wkm.ThreadManager_CleanupBootstrapThread );
             }
 
             this.TypeSystem.ExpandCallsClosure( m_state );

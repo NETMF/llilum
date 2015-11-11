@@ -119,7 +119,7 @@ namespace Microsoft.Zelig.Runtime
         }
 
         [TS.DisableAutomaticReferenceCounting]
-        public void InitializeForReferenceCounting()
+        public static void InitializeForReferenceCounting()
         {
             // Set up a dummy bootstrap thread with a fake release reference helper as part of the
             // heap initialization when the reference counting garbage collection is turned on.
@@ -128,12 +128,35 @@ namespace Microsoft.Zelig.Runtime
             ThreadImpl.CurrentThread = new ThreadImpl( ThreadImpl.BootstrapThread.BootstrapThread );
         }
 
+        [TS.DisableAutomaticReferenceCounting]
+        [TS.WellKnownMethod( "ThreadManager_CleanupBootstrapThread" )]
+        private static void CleanupBootstrapThread( )
+        {
+            var dummyThread = ThreadImpl.CurrentThread;
+            var releaseRefHelper = dummyThread.ReleaseReference;
+            // Take a reference to ensure the below null assignment to CurrentThread does not trigger
+            // ReleaseReferenceHelper
+            ObjectHeader.AddReference( dummyThread );
+            ThreadImpl.CurrentThread = null;
+            MemoryManager.Instance.Release( ( (ObjectImpl)(object)dummyThread ).ToPointer( ) );
+            MemoryManager.Instance.Release( ( (ObjectImpl)(object)releaseRefHelper ).ToPointer( ) );
+        }
+
+        [NoInline]
+        [TS.WellKnownMethod( "ThreadManager_CleanupBootstrapThreadIfNeeded" )]
+        private static void CleanupBootstrapThreadIfNeeded()
+        {
+            // Injection site for reference counting GC to call CleanupBootstrapThread()
+        }
+
         public virtual void InitializeBeforeStaticConstructors()
         {
             //
             // Create the first active thread.
             //
             m_mainThread = new ThreadImpl( MainThread );
+
+            CleanupBootstrapThreadIfNeeded( );
 
             //
             // We need to have a current thread during initialization, in case some static constructors try to access it.

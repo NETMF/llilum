@@ -80,6 +80,9 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         public readonly MethodRepresentation Bootstrap_HeapInitialization;
         public readonly MethodRepresentation Bootstrap_ReferenceCountingInitialization;
 
+        public readonly MethodRepresentation ThreadManager_CleanupBootstrapThread;
+        public readonly MethodRepresentation ThreadManager_CleanupBootstrapThreadIfNeeded;
+
         //--//
 
         public readonly MethodRepresentation Object_Equals;
