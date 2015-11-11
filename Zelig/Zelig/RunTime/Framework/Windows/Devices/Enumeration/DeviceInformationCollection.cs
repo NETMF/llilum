@@ -3,16 +3,19 @@
 //
 
 #define INCOMPLETE
+
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+#if (!INCOMPLETE)
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+using Windows.Foundation.Metadata;
+#endif
+
 namespace Windows.Devices.Enumeration
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Runtime.InteropServices;
 #if (!INCOMPLETE)
-    //using Windows.Foundation;
-    //using Windows.Foundation.Collections;
-    //using Windows.Foundation.Metadata;
-
     //[ContractVersion(typeof(UniversalApiContract), 65536u), DualApiPartition(version = 100794368u), MarshalingBehavior(MarshalingType.Agile)]
     //public sealed class DeviceInformationCollection : IReadOnlyList<DeviceInformation>, IIterable<DeviceInformation>
 #endif

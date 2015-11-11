@@ -2,14 +2,10 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+using System;
+
 namespace Windows.Devices.Adc
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-
     public sealed class AdcChannel : IDisposable
     {
         private readonly int    m_channelNumber;

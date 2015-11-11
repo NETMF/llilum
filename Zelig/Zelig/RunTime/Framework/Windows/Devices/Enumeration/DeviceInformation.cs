@@ -3,15 +3,18 @@
 //
 
 #define INCOMPLETE
+
+using System;
+using System.Runtime.InteropServices;
+#if (!INCOMPLETE)
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+using Windows.Foundation.Metadata;
+#endif
+
 namespace Windows.Devices.Enumeration
 {
-    using System;
-    using System.Runtime.InteropServices;
 #if (!INCOMPLETE)
-    //using Windows.Foundation;
-    //using Windows.Foundation.Collections;
-    //using Windows.Foundation.Metadata;
-
     /// <summary>Represents a device.</summary>
     //[ContractVersion(typeof(UniversalApiContract), 65536u), DualApiPartition(version = 100794368u), MarshalingBehavior(MarshalingType.Agile), Static(typeof(IDeviceInformationStatics2), 65536u, typeof(UniversalApiContract)), Static(typeof(IDeviceInformationStatics), 65536u, typeof(UniversalApiContract)), Threading(ThreadingModel.Both)]
 #endif

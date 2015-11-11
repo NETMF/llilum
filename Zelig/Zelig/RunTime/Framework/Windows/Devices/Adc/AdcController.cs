@@ -2,17 +2,14 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using Windows.Devices.Adc.Provider;
+using Llilum = Microsoft.Llilum.Devices.Adc;
+
 namespace Windows.Devices.Adc
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Runtime.CompilerServices;
-    using System.Text;
-    using System.Threading.Tasks;
-    using Provider;
-    using Llilum = Microsoft.Llilum.Devices.Adc;
-
     public sealed class AdcController
     {
         internal IAdcControllerProvider m_adcControllerProvider;

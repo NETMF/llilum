@@ -2,15 +2,15 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using Windows.Devices.Pwm.Provider;
+
+using Llilum = Microsoft.Llilum.Devices.Pwm;
+
 namespace Windows.Devices.Pwm
 {
-    using System;
-    using Windows.Devices.Pwm.Provider;
-    using Windows.Foundation;
-    using Llilum = Microsoft.Llilum.Devices.Pwm;
-    using System.Runtime.CompilerServices;
-    using System.Collections.Generic;
-
     public sealed class PwmController
     {
         internal IPwmControllerProvider m_pwmControllerProvider;

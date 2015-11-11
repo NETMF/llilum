@@ -59,17 +59,9 @@
       <Project>{186f31a3-ef89-4a25-b2d5-20070702aa01}</Project>
       <Name>system</Name>
     </ProjectReference>
-    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\Windows\Devices\Windows.Devices.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\Windows\Windows.csproj">
       <Project>{dc8c38d7-780b-4b13-8ace-9050e39cc51c}</Project>
-      <Name>Windows.Devices</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\Windows\Foundation\Windows.Foundation.csproj">
-      <Project>{8efe86d1-094f-4450-b2d3-4b6045cfec96}</Project>
-      <Name>Windows.Foundation</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\Windows\System\Windows.System.csproj">
-      <Project>{a7835e9d-6fee-4b23-8eae-090ae41ef6f0}</Project>
-      <Name>Windows.System</Name>
+      <Name>Windows</Name>
     </ProjectReference>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\Kernel\Kernel.csproj">
       <Project>{186f31a3-ef89-4a25-b2d5-20060509aa01}</Project>

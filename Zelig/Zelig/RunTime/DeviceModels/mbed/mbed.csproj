@@ -48,12 +48,6 @@
     <Compile Include="Timer.cs" />
     <Compile Include="UsTicker.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\Windows\Devices\Windows.Devices.csproj">
-      <Project>{dc8c38d7-780b-4b13-8ace-9050e39cc51c}</Project>
-      <Name>Windows.Devices</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

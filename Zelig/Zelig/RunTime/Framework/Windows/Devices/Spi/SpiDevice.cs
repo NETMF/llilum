@@ -2,17 +2,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //
 
+using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+
+using Llilum = Microsoft.Llilum.Devices.Spi;
 
 namespace Windows.Devices.Spi
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Runtime.CompilerServices;
-    using Llilum = Microsoft.Llilum.Devices.Spi;
-    using Windows.Devices.Spi.Provider;
-
-    //--//
-
     public sealed class SpiDevice : IDisposable
     {
         // Connection 

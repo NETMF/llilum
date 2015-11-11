@@ -2,10 +2,10 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+using System;
+
 namespace Windows.Devices.Spi.Provider
 {
-    using System;
-    
     public abstract class SpiChannel : IDisposable
     {
         public abstract void SetupPins(int mosiPin, int misoPin, int sclPin, int csPin, bool useAlternateCsPin, bool activeLowCS );

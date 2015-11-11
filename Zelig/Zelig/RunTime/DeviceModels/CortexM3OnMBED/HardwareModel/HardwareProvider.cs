@@ -8,7 +8,6 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
     using Chipset = Microsoft.CortexM3OnCMSISCore;
     using ChipsetAbstration = Microsoft.DeviceModels.Chipset.CortexM3;
 
-
     public class HardwareProvider : Chipset.HardwareProvider
     {
         //

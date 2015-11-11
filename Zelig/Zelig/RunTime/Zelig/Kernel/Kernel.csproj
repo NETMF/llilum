@@ -217,9 +217,9 @@
       <Project>{d68ee51b-a898-4a77-97d8-c61254cac122}</Project>
       <Name>Microsoft.Llilum.Devices</Name>
     </ProjectReference>
-    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\Windows\Devices\Windows.Devices.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\Windows\Windows.csproj">
       <Project>{dc8c38d7-780b-4b13-8ace-9050e39cc51c}</Project>
-      <Name>Windows.Devices</Name>
+      <Name>Windows</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

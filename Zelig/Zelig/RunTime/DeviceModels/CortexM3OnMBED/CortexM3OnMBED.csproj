@@ -107,9 +107,9 @@
       <Name>system</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\Windows\Devices\Windows.Devices.csproj">
-      <Project>{DC8C38D7-780B-4B13-8ACE-9050E39CC51C}</Project>
-      <Name>Windows.Devices</Name>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\Windows\Windows.csproj">
+      <Project>{dc8c38d7-780b-4b13-8ace-9050e39cc51c}</Project>
+      <Name>Windows</Name>
     </ProjectReference>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\CortexM3OnCMSIS-Core\CortexM3OnCMSIS-Core.csproj">
       <Project>{0b37e5ba-4839-4ec4-9e36-a96bcbea2400}</Project>

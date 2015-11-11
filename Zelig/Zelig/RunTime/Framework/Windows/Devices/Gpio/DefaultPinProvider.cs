@@ -5,6 +5,7 @@
 using System;
 using Windows.Devices.Gpio.Provider;
 using Windows.Foundation;
+
 using Llilum = Microsoft.Llilum.Devices.Gpio;
 
 namespace Windows.Devices.Gpio

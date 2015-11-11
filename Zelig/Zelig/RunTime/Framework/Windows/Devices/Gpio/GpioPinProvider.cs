@@ -2,11 +2,11 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+using System;
+using Windows.Foundation;
+
 namespace Windows.Devices.Gpio.Provider
 {
-    using System;
-    using Windows.Foundation;
-
     public interface IGpioPinProvider : IDisposable
     {
         event TypedEventHandler<GpioPin, GpioPinValueChangedEventArgs> ValueChanged;

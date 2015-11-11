@@ -2,10 +2,10 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+using System.Collections.Generic;
+
 namespace Windows.Devices.Spi
 {
-    using System.Collections.Generic;
-
     public sealed class SpiBusInfo
     {
         // This needs to be marked as internal so the end user cannot instantiate it

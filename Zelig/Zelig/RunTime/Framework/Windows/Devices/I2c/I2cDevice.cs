@@ -2,12 +2,14 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+using System;
+using System.Runtime.CompilerServices;
+using System.Threading;
+
+using Llilum = Microsoft.Llilum.Devices.I2c;
+
 namespace Windows.Devices.I2c
 {
-    using System;
-    using System.Runtime.CompilerServices;
-    using Llilum = Microsoft.Llilum.Devices.I2c;
-
     public sealed class I2cDevice : IDisposable
     {
         private struct I2cChannelContainer
@@ -59,7 +61,7 @@ namespace Windows.Devices.I2c
                 // Ensure that channel creation and destruction do not collide
                 lock(channelLock)
                 {
-                    if (System.Threading.Interlocked.Decrement(ref m_channelContainer.RefCount) == 0)
+                    if (Interlocked.Decrement(ref m_channelContainer.RefCount) == 0)
                     {
                         // There are no more references to the channel. Release the pins and channel
                         m_channelContainer.Channel.Dispose();
@@ -72,8 +74,8 @@ namespace Windows.Devices.I2c
 
 
         /// <summary>Gets the connection settings used for communication with the inter-integrated circuit (I2C) device.</summary>
-		/// <returns>The connection settings used for communication with the inter-integrated circuit (I2C) device.</returns>
-		public I2cConnectionSettings ConnectionSettings
+        /// <returns>The connection settings used for communication with the inter-integrated circuit (I2C) device.</returns>
+        public I2cConnectionSettings ConnectionSettings
         {
             get
             {

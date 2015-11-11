@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props" Condition="Exists('$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DC8C38D7-780B-4B13-8ACE-9050E39CC51C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Windows</RootNamespace>
+    <AssemblyName>Windows</AssemblyName>
+    <!-- ZELIG: Move intermediate data out of the source tree -->
+    <BaseIntermediateOutputPath>$(LlilumBuildRoot)\Target\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoStdLib>true</NoStdLib>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoStdLib>true</NoStdLib>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Instrumentation|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoStdLib>true</NoStdLib>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Devices\Adc\AdcChannel.cs" />
+    <Compile Include="Devices\Adc\AdcChannelMode.cs" />
+    <Compile Include="Devices\Adc\AdcController.cs" />
+    <Compile Include="Devices\Adc\IAdcControllerProvider.cs" />
+    <Compile Include="Devices\Adc\IAdcProvider.cs" />
+    <Compile Include="Devices\Adc\ProviderAdcChannelMode.cs" />
+    <Compile Include="Devices\Enumeration\DeviceInformation.cs" />
+    <Compile Include="Devices\Enumeration\DeviceInformationCollection.cs" />
+    <Compile Include="Devices\Gpio\DefaultPinProvider.cs" />
+    <Compile Include="Devices\Gpio\GpioController.cs" />
+    <Compile Include="Devices\Gpio\GpioEnums.cs" />
+    <Compile Include="Devices\Gpio\GpioPin.cs" />
+    <Compile Include="Devices\Gpio\GpioPinValueChangedEventArgs.cs" />
+    <Compile Include="Devices\Gpio\GpioPinProvider.cs" />
+    <Compile Include="Devices\I2c\I2cEnums.cs" />
+    <Compile Include="Devices\I2c\I2cConnectionSettings.cs" />
+    <Compile Include="Devices\I2c\I2cDevice.cs" />
+    <Compile Include="Devices\Pwm\DefaultPwmControllerProvider.cs" />
+    <Compile Include="Devices\Pwm\IPwmControllerProvider.cs" />
+    <Compile Include="Devices\Pwm\IPwmProvider.cs" />
+    <Compile Include="Devices\Pwm\PwmController.cs" />
+    <Compile Include="Devices\Pwm\PwmEnums.cs" />
+    <Compile Include="Devices\Pwm\PwmPin.cs" />
+    <Compile Include="Devices\Spi\SpiChannel.cs" />
+    <Compile Include="Devices\Spi\SpiBusInfo.cs" />
+    <Compile Include="Devices\Spi\SpiConnectionSettings.cs" />
+    <Compile Include="Devices\Spi\SpiDevice.cs" />
+    <Compile Include="Devices\Spi\SpiEnums.cs" />
+    <Compile Include="Foundation\Delegates.cs" />
+    <Compile Include="Foundation\Enums.cs" />
+    <Compile Include="Foundation\IAsyncAction.cs" />
+    <Compile Include="Foundation\IAsyncInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="System\Threading\ThreadingDelegates.cs" />
+    <Compile Include="System\Threading\ThreadingEnums.cs" />
+    <Compile Include="System\Threading\ThreadPool.cs" />
+    <Compile Include="System\Threading\ThreadPoolTimer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\Llilum\Devices\Microsoft.Llilum.Devices.csproj">
+      <Project>{d68ee51b-a898-4a77-97d8-c61254cac122}</Project>
+      <Name>Microsoft.Llilum.Devices</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\system\system.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20070702AA01}</Project>
+      <Name>system</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\mscorlib\mscorlib.csproj">
+      <Project>{186f31a3-ef89-4a25-b2d5-20060501aa01}</Project>
+      <Name>mscorlib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

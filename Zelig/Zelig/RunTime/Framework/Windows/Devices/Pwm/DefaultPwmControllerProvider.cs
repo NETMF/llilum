@@ -2,12 +2,13 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+using System;
+using Windows.Devices.Pwm.Provider;
+
+using Llilum = Microsoft.Llilum.Devices.Pwm;
+
 namespace Windows.Devices.Pwm
 {
-    using System;
-    using Llilum = Microsoft.Llilum.Devices.Pwm;
-    using Windows.Devices.Pwm.Provider;
-
     internal class DefaultPwmControllerProvider : IPwmControllerProvider
     {
         /// <summary>
