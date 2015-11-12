@@ -500,6 +500,7 @@ namespace Microsoft.Zelig.Runtime
             SelfTest__Checks__Null_LocalScope();
             SelfTest__Checks__Null_Complex();
             SelfTest__Checks__Bounds();
+            SelfTest__Checks__Overflow();
 
             // Trap end of tests.
             BugCheck.Log("!!! ALL TESTS PASSED !!!");
@@ -625,6 +626,18 @@ namespace Microsoft.Zelig.Runtime
 
                 SELFTEST_ASSERT(array[negative] != 0); // This should always throw a bounds exception.
                 SELFTEST_ASSERT(array[3] != 0); // This should always throw a bounds exception.
+            }
+        }
+
+        private static void SelfTest__Checks__Overflow()
+        {
+            int maxInt = int.MaxValue;
+
+            SELFTEST_ASSERT(unchecked(maxInt + 1) == int.MinValue);
+
+            if (AlwaysFalseNonOptimizableCondition())
+            {
+                SELFTEST_ASSERT(checked(maxInt + 1) == int.MinValue); // This should always throw an overflow exception.
             }
         }
 
