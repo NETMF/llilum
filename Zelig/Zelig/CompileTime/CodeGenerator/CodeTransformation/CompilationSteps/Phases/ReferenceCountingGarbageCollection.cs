@@ -12,6 +12,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
     public sealed class ReferenceCountingGarbageCollection : PhaseDriver
     {
         private GrowOnlySet<Operator> m_modifiedOperators;
+        private GrowOnlyHashTable<MethodRepresentation, int> m_stats;
 
         //
         // Constructor Methods
@@ -20,6 +21,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
         public ReferenceCountingGarbageCollection( Controller context ) : base( context )
         {
             m_modifiedOperators = SetFactory.New<Operator>( );
+            m_stats = HashTableFactory.New<MethodRepresentation, int>( );
         }
 
         public bool IsOperatorModified( Operator op )
@@ -35,6 +37,30 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
             lock (m_modifiedOperators)
             {
                 m_modifiedOperators.Insert( op );
+            }
+        }
+
+        public void IncrementInjectionCount( MethodRepresentation md )
+        {
+            lock (m_stats)
+            {
+                if(m_stats.ContainsKey( md ))
+                {
+                    m_stats.Update( md, m_stats.GetValue( md ) + 1 );
+                }
+                else
+                {
+                    m_stats.Add( md, 1 );
+                }
+            }
+        }
+
+        public void DecrementInjectionCount( MethodRepresentation md )
+        {
+            lock (m_stats)
+            {
+                CHECKS.ASSERT( m_stats.ContainsKey( md ), "DecrementInjectionCount error" );
+                m_stats.Update( md, m_stats.GetValue( md ) - 1 );
             }
         }
 
@@ -58,9 +84,31 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
                 {
                     Transformations.ReduceNumberOfTemporaries.Execute( cfg );
                 } );
+
+                // 5: Dump out the counts of each injection for informational purpose
+                DumpInjectionStats( );
             }
 
             return this.NextPhase;
+        }
+
+        private void DumpInjectionStats()
+        {
+            Console.WriteLine( );
+            Console.WriteLine( "    Reference Counting GC Code Injection Stats" );
+            Console.WriteLine( " ================================================" );
+
+            int total = 0;
+            foreach(var md in m_stats.Keys)
+            {
+                var count = m_stats.GetValue( md );
+                Console.WriteLine( "    {0,-20} :{1, 6}", md.Name, count );
+                total += count;
+            }
+            Console.WriteLine( " ------------------------------------------------" );
+            Console.WriteLine( "    {0,-20} :{1, 6}", "Total", total );
+            Console.WriteLine( " ================================================" );
+            Console.WriteLine( );
         }
 
         private struct Injection

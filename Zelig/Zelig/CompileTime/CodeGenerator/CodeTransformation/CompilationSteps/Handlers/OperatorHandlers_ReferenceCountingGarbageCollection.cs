@@ -130,7 +130,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                 op.AddOperatorAfter( call );
             }
 
-            ( (ReferenceCountingGarbageCollection)nc.Phase ).AddToModifiedOperator( call );
+            var phase = (Phases.ReferenceCountingGarbageCollection)nc.Phase;
+            phase.AddToModifiedOperator( call );
+            phase.IncrementInjectionCount( md );
 
             nc.MarkAsModified( );
         }
@@ -210,7 +212,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
                 op.SubstituteWithOperator( swapCall, Operator.SubstitutionFlags.Default );
 
-                ( (ReferenceCountingGarbageCollection)nc.Phase ).AddToModifiedOperator( swapCall );
+                var phase = (ReferenceCountingGarbageCollection)nc.Phase;
+                phase.AddToModifiedOperator( swapCall );
+                phase.IncrementInjectionCount( swap );
             }
         }
 
@@ -253,7 +257,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
                     op.SubstituteWithOperator( loadAndAddRefCall, Operator.SubstitutionFlags.Default );
 
-                    ( (ReferenceCountingGarbageCollection)nc.Phase ).AddToModifiedOperator( loadAndAddRefCall );
+                    var phase = (ReferenceCountingGarbageCollection)nc.Phase;
+                    phase.AddToModifiedOperator( loadAndAddRefCall );
+                    phase.IncrementInjectionCount( loadAndAddRef );
                 }
             }
         }
@@ -289,7 +295,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
                 op.SubstituteWithOperator( swapCall, Operator.SubstitutionFlags.Default );
 
-                ( (ReferenceCountingGarbageCollection)nc.Phase ).AddToModifiedOperator( swapCall );
+                var phase = (ReferenceCountingGarbageCollection)nc.Phase;
+                phase.AddToModifiedOperator( swapCall );
+                phase.IncrementInjectionCount( swap );
             }
         }
 
@@ -333,7 +341,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
                     op.SubstituteWithOperator( loadAndAddRefCall, Operator.SubstitutionFlags.Default );
 
-                    ( (ReferenceCountingGarbageCollection)nc.Phase ).AddToModifiedOperator( loadAndAddRefCall );
+                    var phase = (ReferenceCountingGarbageCollection)nc.Phase;
+                    phase.AddToModifiedOperator( loadAndAddRefCall );
+                    phase.IncrementInjectionCount( loadAndAddRef );
                 }
             }
         }
@@ -369,7 +379,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
                 op.SubstituteWithOperator( swapCall, Operator.SubstitutionFlags.Default );
 
-                ( (ReferenceCountingGarbageCollection)nc.Phase ).AddToModifiedOperator( swapCall );
+                var phase = (ReferenceCountingGarbageCollection)nc.Phase;
+                phase.AddToModifiedOperator( swapCall );
+                phase.IncrementInjectionCount( swap );
             }
         }
 
@@ -415,7 +427,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
                     op.SubstituteWithOperator( loadAndAddRefCall, Operator.SubstitutionFlags.Default );
 
-                    ( (ReferenceCountingGarbageCollection)nc.Phase ).AddToModifiedOperator( loadAndAddRefCall );
+                    var phase = (ReferenceCountingGarbageCollection)nc.Phase;
+                    phase.AddToModifiedOperator( loadAndAddRefCall );
+                    phase.IncrementInjectionCount( loadAndAddRef );
                 }
             }
         }
@@ -427,14 +441,16 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             var op = (StaticCallOperator)nc.CurrentOperator;
             var ts = nc.TypeSystem;
             var wkm = ts.WellKnownMethods;
+            var md = op.TargetMethod;
 
             // Remove redundant AddReference(null) and ReleaseReference(null)
-            if(op.TargetMethod == wkm.ObjectHeader_AddReference || op.TargetMethod == wkm.ObjectHeader_ReleaseReference)
+            if(md == wkm.ObjectHeader_AddReference || md == wkm.ObjectHeader_ReleaseReference)
             {
                 var arg = op.SecondArgument as ConstantExpression;
                 if(arg != null && arg.Value == null)
                 {
                     op.Delete( );
+                    ( (ReferenceCountingGarbageCollection)nc.Phase ).DecrementInjectionCount( md );
                     nc.MarkAsModified( );
                 }
             }

@@ -304,6 +304,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                 {
                     bool modified = false;
 
+                    var phase = (Phases.ReferenceCountingGarbageCollection)nc.Phase;
                     var wkm = ts.WellKnownMethods;
 
                     GrowOnlySet<VariableExpression> addRefVariables = SetFactory.New<VariableExpression>( );
@@ -333,6 +334,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
                                 prologueStart.AddOperator( callAddref );
 
+                                phase.IncrementInjectionCount( mdAddRef );
+
                                 modified = true;
 
                                 addRefVariables.Insert( arg );
@@ -345,7 +348,6 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                     var returnVariable = returnOperator?.Arguments.Length > 0 ? returnOperator.FirstArgument : null;
 
                     // Initialize all reference counting variables to null
-                    var phase = (Phases.ReferenceCountingGarbageCollection)nc.Phase;
                     foreach(var variable in cfg.DataFlow_SpanningTree_Variables)
                     {
                         if(( variable is TemporaryVariableExpression || variable is LocalVariableExpression ) &&
@@ -377,6 +379,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                             var callRelease = StaticCallOperator.New( null, CallOperator.CallKind.Direct, mdRelease, rhsRelease );
 
                             epilogueStart.AddOperator( callRelease );
+
+                            phase.IncrementInjectionCount( mdRelease );
 
                             modified = true;
                         }
