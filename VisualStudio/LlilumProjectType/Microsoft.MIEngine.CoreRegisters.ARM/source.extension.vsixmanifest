@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+    <Metadata>
+        <Identity Id="Microsoft.MIEngine.CoreRegisters.ARM.Steve Maillet.5b6bbd91-f54a-43b0-a051-6776440bf40a" Version="1.0" Language="en-US" Publisher="Steve Maillet" />
+        <DisplayName>Microsoft.MIEngine.CoreRegisters.ARM</DisplayName>
+        <Description>Empty VSIX Project.</Description>
+    </Metadata>
+    <Installation>
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[14.0]" />
+    </Installation>
+    <Dependencies>
+        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
+        <Dependency Id="Microsoft.VisualStudio.MPF.14.0" DisplayName="Visual Studio MPF 14.0" d:Source="Installed" Version="[14.0]" />
+        <Dependency d:Source="Installed" Id="Microsoft.VisualStudio.Android.VC.B2656F14-3E31-4BE8-9C4A-3B61A5BD7F7A" DisplayName="Microsoft.VisualStudio.Android.VC" Version="[1.0,2.0)" d:InstallSource="Download" />
+    </Dependencies>
+    <Assets>
+        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+    </Assets>
+</PackageManifest>

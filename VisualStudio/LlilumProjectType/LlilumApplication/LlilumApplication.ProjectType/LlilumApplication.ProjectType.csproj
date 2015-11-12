@@ -138,6 +138,13 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Microsoft.MIEngine.CoreRegisters.ARM\Microsoft.MIEngine.CoreRegisters.ARM.csproj">
+      <Project>{80F61FFD-C936-4528-BBC3-5DEE0782EBE5}</Project>
+      <Name>Microsoft.MIEngine.CoreRegisters.ARM</Name>
+      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3bPkgdefProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
     <ProjectReference Include="..\LlilumApplication.ProjectTemplate\LlilumApplication.ProjectTemplate.csproj">
       <Project>{5747d247-5fcc-4151-942c-811603768abe}</Project>
       <Name>LlilumApplication.ProjectTemplate</Name>

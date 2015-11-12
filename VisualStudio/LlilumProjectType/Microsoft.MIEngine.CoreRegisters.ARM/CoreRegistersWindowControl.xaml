@@ -1,0 +1,132 @@
+﻿<UserControl x:Class="Microsoft.MIEngine.CoreRegisters.ARM.CoreRegistersWindowControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vsui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
+             xmlns:local="clr-namespace:Microsoft.MIEngine.CoreRegisters.ARM"
+             Foreground="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowTextBrushKey}}"
+             Background="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundBrushKey}}"
+             mc:Ignorable="d"
+             d:DesignHeight="300"
+             d:DesignWidth="300"
+             d:DataContext="{x:Type local:CoreRegistersViewModel }"
+             Name="MyToolWindow" >
+    <UserControl.Resources>
+        <!-- Value converter to convert a register value into a string of grouped binary digits -->
+        <local:IntAsBinaryStringConverter x:Key="BinaryValueConverter"/>
+        <!-- value converter to test for non-null-->
+        <local:IsNullConverter x:Key="IsNullConverter" />
+        
+        <!-- Value converter to provide string name for exception numbers -->
+        <local:ExceptionNumberConverter x:Key="ExceptionNumberConverter" />
+        
+        <!-- Common style base for controls to leverage VS Theme -->
+        <Style x:Key="VsControlTheme" TargetType="Control">
+            <Setter Property="Background" Value="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundBrushKey}}"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowTextBrushKey}}"/>
+        </Style>
+
+        <!-- Common style base for Panels to leverage VS Theme -->
+        <Style x:Key="VsPanelTheme" TargetType="Panel">
+            <Setter Property="Background" Value="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundBrushKey}}"/>
+        </Style>
+
+        <!-- Set syles for UI element types to match VS theme -->
+        <Style TargetType="StackPanel" BasedOn="{StaticResource VsPanelTheme}"/>
+        <Style TargetType="Grid" BasedOn="{StaticResource VsPanelTheme}" />
+        <Style TargetType="DataGridRowHeader" BasedOn="{StaticResource VsControlTheme}"/>
+        <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource VsControlTheme}"/>
+        <Style TargetType="TextBlock">
+            <Setter Property="Background" Value="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundBrushKey}}"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowTextBrushKey}}"/>
+        </Style>
+        
+        <Style TargetType="DataGrid" BasedOn="{StaticResource VsControlTheme}">
+            <Setter Property="IsEnabled" Value="False"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource {x:Static vsui:EnvironmentColors.GridLineBrushKey}}"/>
+            <Setter Property="VerticalGridLinesBrush" Value="{DynamicResource {x:Static vsui:EnvironmentColors.GridLineBrushKey}}"/>
+            <Style.Triggers>
+                <!-- Disable the entire data grid if not in debug break mode -->
+                <DataTrigger Binding="{Binding DebugMode}" Value="DBGMODE_Break">
+                    <Setter Property="IsEnabled" Value="True"/>
+                </DataTrigger> 
+            </Style.Triggers>
+        </Style>
+
+        <!-- header data template for the Groups in the register view -->
+        <DataTemplate x:Key="RegisterGroupHeaderTemplate">
+            <StackPanel>
+                <TextBlock Text="{Binding Path=Name}"
+                           Foreground="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowTextBrushKey}}"
+                           Background="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundBrushKey}}"
+                           />
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- Style for the groups in Register grid -->
+        <Style TargetType="{x:Type GroupItem}" BasedOn="{StaticResource VsControlTheme}" x:Key="RegisterGroupContainerStyle">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type GroupItem}">
+                        <Expander IsExpanded="True">
+                            <Expander.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Path=Name}"
+                                               Foreground="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowTextBrushKey}}"
+                                               Background="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundBrushKey}}"
+                                               />
+                                </StackPanel>
+                            </Expander.Header>
+                            <ItemsPresenter />
+                        </Expander>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style for rows in the register grid to change color if the register value is new/updated since last stopping event-->
+        <Style TargetType="DataGridRow" >
+            <Setter Property="Background" Value="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundBrushKey}}"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowTextBrushKey}}"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsChanged}" Value="true">
+                    <!-- TODO: Find a proper VS theme color for the changed value state... -->
+                    <Setter Property="Foreground" Value="Salmon" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <DataTemplate x:Key="XpsrRegisterDetailsViewModelTemplate">
+            <StackPanel Orientation="Vertical">
+                <TextBlock Text="{Binding Details.N,Mode=OneWay,StringFormat='N = {0}' }"/>
+                <TextBlock Text="{Binding Details.Z,Mode=OneWay,StringFormat='Z = {0}' }"/>
+                <TextBlock Text="{Binding Details.C,Mode=OneWay,StringFormat='C = {0}' }"/>
+                <TextBlock Text="{Binding Details.V,Mode=OneWay,StringFormat='V = {0}' }"/>
+                <TextBlock Text="{Binding Details.Q,Mode=OneWay,StringFormat='Q = {0}' }"/>
+                <TextBlock Text="{Binding Details.ExceptionNum,Mode=OneWay,StringFormat='Exception: {0}',Converter={StaticResource ExceptionNumberConverter}}" />
+            </StackPanel>
+        </DataTemplate>
+        
+        <DataTemplate x:Key="DefaultRegisterDetailsTemplate">
+            <TextBlock x:Name="DefaultDetails" Text="{Binding Value, Converter={StaticResource BinaryValueConverter}}"/>
+        </DataTemplate>
+        
+        <local:RegisterDetailsTemplateSelector x:Key="RegisterDetailsTemplateSelector"/>
+    </UserControl.Resources>
+    
+    <DataGrid x:Name="RegistersView"
+                ItemsSource="{Binding Registers}"
+                AutoGenerateColumns="False"
+                RowDetailsTemplateSelector="{StaticResource RegisterDetailsTemplateSelector}"
+                RowDetailsVisibilityMode="VisibleWhenSelected"
+                >
+        <DataGrid.Columns>
+            <DataGridTextColumn Binding="{Binding Name}" Header="Name"  IsReadOnly="True"/>
+            <DataGridTextColumn Binding="{Binding Value, StringFormat='0x{0:X8}'}" Header="Value (Hex)"  IsReadOnly="True"/>
+        </DataGrid.Columns>
+        <DataGrid.GroupStyle>
+            <GroupStyle HeaderTemplate="{StaticResource RegisterGroupHeaderTemplate}" ContainerStyle="{StaticResource RegisterGroupContainerStyle}"/>
+        </DataGrid.GroupStyle>
+    </DataGrid>
+</UserControl>
