@@ -23,6 +23,7 @@
 ###
 ### Add compilation phases, in order
 ###
+-CompilationPhaseDisabled InitializeReferenceCountingGarbageCollection
 #-CompilationPhaseDisabled ReduceNumberOfTemporaries
 #-CompilationPhaseDisabled TransformFinallyBlocksIntoTryBlocks
 #-CompilationPhaseDisabled ApplyClassExtensions
@@ -41,13 +42,14 @@
 #-CompilationPhaseDisabled OrderStaticConstructors
 #-CompilationPhaseDisabled LayoutTypes
 #-CompilationPhaseDisabled HighLevelToMidLevelConversion
--CompilationPhaseDisabled FromImplicitToExplictExceptions
+#-CompilationPhaseDisabled FromImplicitToExplicitExceptions
+#-CompilationPhaseDisabled ReferenceCountingGarbageCollection
 -CompilationPhaseDisabled MidLevelToLowLevelConversion
 -CompilationPhaseDisabled ConvertUnsupportedOperatorsToMethodCalls
 -CompilationPhaseDisabled ExpandAggregateTypes
 -CompilationPhaseDisabled SplitComplexOperators
 -CompilationPhaseDisabled FuseOperators
--CompilationPhaseDisabled Optimizations
+#-CompilationPhaseDisabled Optimizations
 -CompilationPhaseDisabled ConvertToSSA
 -CompilationPhaseDisabled PrepareForRegisterAllocation
 -CompilationPhaseDisabled CollectRegisterAllocationConstraints

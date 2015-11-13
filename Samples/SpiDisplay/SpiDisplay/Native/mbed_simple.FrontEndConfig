@@ -14,6 +14,7 @@
 ###
 ### Add compilation phases, in order
 ###
+-CompilationPhaseDisabled InitializeReferenceCountingGarbageCollection
 #-CompilationPhaseDisabled ReduceNumberOfTemporaries
 #-CompilationPhaseDisabled TransformFinallyBlocksIntoTryBlocks
 #-CompilationPhaseDisabled ApplyClassExtensions
@@ -33,6 +34,7 @@
 #-CompilationPhaseDisabled LayoutTypes
 #-CompilationPhaseDisabled HighLevelToMidLevelConversion
 #-CompilationPhaseDisabled FromImplicitToExplicitExceptions
+#-CompilationPhaseDisabled ReferenceCountingGarbageCollection
 -CompilationPhaseDisabled MidLevelToLowLevelConversion
 -CompilationPhaseDisabled ConvertUnsupportedOperatorsToMethodCalls
 -CompilationPhaseDisabled ExpandAggregateTypes
@@ -43,7 +45,6 @@
 -CompilationPhaseDisabled PrepareForRegisterAllocation
 -CompilationPhaseDisabled CollectRegisterAllocationConstraints
 -CompilationPhaseDisabled AllocateRegisters
--CompilationPhaseDisabled ConvertToLLVMIntermediateRepresentation
 #-CompilationPhaseDisabled GenerateImage
 #-CompilationPhaseDisabled Done
 
