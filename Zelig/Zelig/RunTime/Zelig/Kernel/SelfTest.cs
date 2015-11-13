@@ -2055,7 +2055,8 @@ namespace Microsoft.Zelig.Runtime
             var node1 = new GCNode( null, null );
             BugCheck.Log( "Node created: id= %d", node1._id );
 
-            Interlocked.Exchange( ref node._node1, node1 );
+            var oldNode1 = Interlocked.Exchange( ref node._node1, node1 );
+            BugCheck.Assert( MemoryManager.Instance.IsObjectAlive( ( (ObjectImpl)(object)oldNode1 ).ToPointer( ) ), BugCheck.StopCode.HeapCorruptionDetected );
         }
 
         private static void RefCountGC11_CompareExchangeHelper( GCNode node )
@@ -2065,7 +2066,11 @@ namespace Microsoft.Zelig.Runtime
             var newNode1 = new GCNode( null, null );
             BugCheck.Log( "Node created: id= %d", newNode1._id );
 
-            Interlocked.CompareExchange( ref node._node1, newNode1, node1 );
+            var oldNode1 = Interlocked.CompareExchange( ref node._node1, newNode1, null );
+            BugCheck.Assert( MemoryManager.Instance.IsObjectAlive( ( (ObjectImpl)(object)oldNode1 ).ToPointer( ) ), BugCheck.StopCode.HeapCorruptionDetected );
+
+            oldNode1 = Interlocked.CompareExchange( ref node._node1, newNode1, node1 );
+            BugCheck.Assert( MemoryManager.Instance.IsObjectAlive( ( (ObjectImpl)(object)oldNode1 ).ToPointer( ) ), BugCheck.StopCode.HeapCorruptionDetected );
         }
 
         private static void RefCountGC11_Helper( )

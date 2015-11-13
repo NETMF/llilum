@@ -200,9 +200,12 @@ namespace Microsoft.Zelig.Runtime
         private static Object ReferenceCountingExchange( ref Object location1,
                                                              Object value )
         {
+            // Need to AddRef before the exchange to prevent ref count from
+            // potentially bouncing zero
             ObjectHeader.AddReference( value );
             var oldValue = InternalExchange( ref location1, value );
-            ObjectHeader.ReleaseReference( oldValue );
+            // Note that we're intentionally not releasing oldValue here so that
+            // its ref count can be transfered to the caller on return
             return oldValue;
         }
 
@@ -213,15 +216,21 @@ namespace Microsoft.Zelig.Runtime
                                                                     Object value,
                                                                     Object comparand )
         {
+            // Need to AddRef before the compare exchange to prevent ref count from
+            // potentially bouncing zero in the event that it succeeds
             ObjectHeader.AddReference( value );
             var oldValue = InternalCompareExchange( ref location1, value, comparand );
-            if (oldValue == comparand)
+            if(oldValue == comparand)
             {
-                ObjectHeader.ReleaseReference( oldValue );
+                // If it succeeds, the return value will inherit the reference from location1.
+                // So no need for additional ref count adjustment.
             }
             else
             {
+                // If the compare exchange fails, we need to revert the add ref we did
+                // earlier, and also take a reference on the return value
                 ObjectHeader.ReleaseReference( value );
+                ObjectHeader.AddReference( oldValue );
             }
             return oldValue;
         }
