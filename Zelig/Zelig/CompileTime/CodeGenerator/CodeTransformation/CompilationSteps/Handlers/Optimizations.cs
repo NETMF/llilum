@@ -159,13 +159,14 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         private static bool RemoveRedundantNullChecks( ControlFlowGraphStateForCodeTransformation        cfg       ,
                                                        GrowOnlyHashTable< VariableExpression, Operator > defLookup )
         {
+            var useChains = cfg.DataFlow_UseChains;
             bool fRunSimplify = false;
 
             // Search for branch-if-non-zero.
             foreach(var opCtrl in cfg.FilterOperators< BinaryConditionalControlOperator >())
             {
                 BasicBlock takenBranch;
-                switch(ProveIsNull( defLookup, opCtrl.FirstArgument ))
+                switch(ProveIsNull( opCtrl.FirstArgument, defLookup, useChains ))
                 {
                 case ProveNullResult.NeverNull:
                     takenBranch = opCtrl.TargetBranchTaken;
@@ -212,7 +213,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                     continue;
                 }
 
-                ProveNullResult result = ProveIsNull( defLookup, expr );
+                ProveNullResult result = ProveIsNull( expr, defLookup, useChains );
                 if(result == ProveNullResult.Unknown)
                 {
                     continue;
@@ -288,15 +289,19 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             AlwaysNull,
         }
 
-        private static ProveNullResult ProveIsNull( GrowOnlyHashTable< VariableExpression, Operator > defLookup ,
-                                                        Expression                                        ex        )
+        private static ProveNullResult ProveIsNull(
+            Expression ex,
+            GrowOnlyHashTable< VariableExpression, Operator > defLookup,
+            Operator[][] useChains )
         {
-            return ProveIsNull( defLookup, SetFactory.NewWithReferenceEquality< VariableExpression >(), ex );
+            return ProveIsNull( ex, defLookup, useChains, SetFactory.NewWithReferenceEquality< VariableExpression >() );
         }
 
-        private static ProveNullResult ProveIsNull( GrowOnlyHashTable< VariableExpression, Operator > defLookup ,
-                                                        GrowOnlySet< VariableExpression >                 history   ,
-                                                        Expression                                        ex        )
+        private static ProveNullResult ProveIsNull(
+            Expression ex,
+            GrowOnlyHashTable< VariableExpression, Operator > defLookup,
+            Operator[][] useChains,
+            GrowOnlySet< VariableExpression > history )
         {
             if(ex is ConstantExpression)
             {
@@ -330,7 +335,16 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
             if(defLookup.TryGetValue( exVar, out def ))
             {
-                if(def.HasAnnotation< NotNullAnnotation >())
+                // If we ever take the address of the expression, assume it can be modified.
+                foreach (Operator op in useChains[exVar.SpanningTreeIndex])
+                {
+                    if (op is AddressAssignmentOperator)
+                    {
+                        return ProveNullResult.Unknown;
+                    }
+                }
+
+                if (def.HasAnnotation< NotNullAnnotation >())
                 {
                     return ProveNullResult.NeverNull;
                 }
@@ -343,7 +357,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
                     foreach(Expression rhs in def.Arguments)
                     {
-                        ProveNullResult curResult = ProveIsNull( defLookup, history, rhs );
+                        ProveNullResult curResult = ProveIsNull( rhs, defLookup, useChains, history );
                         if(isFirstResult)
                         {
                             isFirstResult = false;
@@ -362,7 +376,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                 // Assignment is transitive, so look up the source value.
                 if(def is SingleAssignmentOperator)
                 {
-                    return ProveIsNull( defLookup, history, def.FirstArgument );
+                    return ProveIsNull( def.FirstArgument, defLookup, useChains, history );
                 }
 
 #if FUTURE // This block isn't strictly correct and assumes low-level knowledge. We should revisit it.
@@ -426,7 +440,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                         }
                     }
 
-                    return ProveIsNull( defLookup, history, ex );
+                    return ProveIsNull( ex, defLookup, useChains, history );
                 }
             }
 
