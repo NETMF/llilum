@@ -82,10 +82,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
                 m_state.Execute( wkm.ThreadImpl_AllocateReleaseReferenceHelper );
                 m_state.Execute( wkm.ReferenceCountingCollector_Swap );
                 m_state.Execute( wkm.ReferenceCountingCollector_LoadAndAddReference );
+                m_state.Execute( wkm.ReferenceCountingCollector_ReferenceCountingExchange );
+                m_state.Execute( wkm.ReferenceCountingCollector_ReferenceCountingCompareExchange );
                 m_state.Execute( wkm.StringImpl_FastAllocateReferenceCountingString );
                 m_state.Execute( wkm.Bootstrap_ReferenceCountingInitialization );
-                m_state.Execute( wkm.InterlockedImpl_ReferenceCountingExchange );
-                m_state.Execute( wkm.InterlockedImpl_ReferenceCountingCompareExchange );
                 m_state.Execute( wkm.ThreadManager_CleanupBootstrapThread );
             }
 

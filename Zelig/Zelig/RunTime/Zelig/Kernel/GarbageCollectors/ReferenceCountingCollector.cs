@@ -5,37 +5,55 @@
 namespace Microsoft.Zelig.Runtime
 {
     using System;
+    using System.Runtime.InteropServices;
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
     public class ReferenceCountingCollector
     {
+#if REFCOUNT_STAT
         [TS.WellKnownMethod( "ReferenceCountingCollector_LoadAndAddReference" )]
         [TS.DisableAutomaticReferenceCounting]
-        [NoInline]
-        internal static object LoadAndAddReference( ref IntPtr target )
+        internal static Object LoadAndAddReference( ref Object target )
         {
-            IntPtr valuePtr = InterlockedImpl.InternalCompareExchange( ref target, (IntPtr)0, (IntPtr)0 );
-            Object value = IntPtrToObject( valuePtr );
-            ObjectHeader.AddReference( value );
-            return value;
+            Object obj = LoadAndAddReferenceNative( ref target );
+
+            ObjectHeader.RecordAddReference( obj );
+            ObjectHeader.s_LoadAndAddRefCalled++;
+
+            return obj;
         }
+
+        [DllImport( "C" )]
+        internal static extern Object LoadAndAddReferenceNative( ref Object target );
+#else //REFCOUNT_STAT
+        [TS.WellKnownMethod( "ReferenceCountingCollector_LoadAndAddReference" )]
+        [DllImport( "C" )]
+        internal static extern Object LoadAndAddReferenceNative( ref Object target );
+#endif //REFCOUNT_STAT
 
         [TS.WellKnownMethod( "ReferenceCountingCollector_Swap" )]
         [TS.DisableAutomaticReferenceCounting]
         [NoInline]
-        internal static void Swap( ref IntPtr target, object value )
+        internal static void Swap( ref Object target, Object value )
         {
-            ObjectHeader.AddReference( value );
+#if REFCOUNT_STAT
+            ObjectHeader.RecordAddReference( value );
+            ObjectHeader.s_SwapCalled++;
+#endif //REFCOUNT_STAT
 
-            IntPtr oldValuePtr = InterlockedImpl.InternalExchange( ref target, ObjectToIntPtr( value ) );
-
-            ObjectHeader.ReleaseReference( IntPtrToObject( oldValuePtr ) );
+            Object oldValue = ReferenceCountingExchange( ref target, value );
+            ObjectHeader.ReleaseReference( oldValue );
         }
 
-        [TS.GenerateUnsafeCast]
-        internal extern static IntPtr ObjectToIntPtr( object o );
+        [TS.WellKnownMethod( "ReferenceCountingCollector_ReferenceCountingExchange" )]
+        [DllImport( "C" )]
+        private static extern Object ReferenceCountingExchange( ref Object location1,
+                                                                    Object value );
 
-        [TS.GenerateUnsafeCast]
-        internal extern static Object IntPtrToObject( IntPtr ptr ) ;
+        [TS.WellKnownMethod( "ReferenceCountingCollector_ReferenceCountingCompareExchange" )]
+        [DllImport( "C" )]
+        private static extern Object ReferenceCountingCompareExchange( ref Object location1,
+                                                                           Object value,
+                                                                           Object comparand );
     }
 }

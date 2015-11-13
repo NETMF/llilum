@@ -71,11 +71,11 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         public readonly MethodRepresentation InterlockedImpl_InternalCompareExchange_IntPtr;
         public readonly MethodRepresentation InterlockedImpl_InternalCompareExchange_Template;
         public readonly MethodRepresentation InterlockedImpl_InternalAdd_int;
-        public readonly MethodRepresentation InterlockedImpl_ReferenceCountingExchange;
-        public readonly MethodRepresentation InterlockedImpl_ReferenceCountingCompareExchange;
 
         public readonly MethodRepresentation ReferenceCountingCollector_LoadAndAddReference;
         public readonly MethodRepresentation ReferenceCountingCollector_Swap;
+        public readonly MethodRepresentation ReferenceCountingCollector_ReferenceCountingExchange;
+        public readonly MethodRepresentation ReferenceCountingCollector_ReferenceCountingCompareExchange;
 
         public readonly MethodRepresentation Bootstrap_HeapInitialization;
         public readonly MethodRepresentation Bootstrap_ReferenceCountingInitialization;

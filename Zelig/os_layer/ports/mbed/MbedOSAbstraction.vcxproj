@@ -19,6 +19,7 @@
     <ApplicationType>Llilum</ApplicationType>
     <ApplicationTypeRevision>1.0</ApplicationTypeRevision>
     <ProjectName>MbedOSAbstraction</ProjectName>
+    <ToolchainPrebuiltPath>$(LLILUM_GCC)</ToolchainPrebuiltPath>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <!-- Use the enlistment version of the target props files (rather than the SDK) for Zelig.sln projects -->

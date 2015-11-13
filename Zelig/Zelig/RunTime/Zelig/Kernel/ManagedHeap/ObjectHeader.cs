@@ -9,7 +9,7 @@
 namespace Microsoft.Zelig.Runtime
 {
     using System;
-
+    using System.Runtime.InteropServices;
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
 
@@ -185,12 +185,15 @@ namespace Microsoft.Zelig.Runtime
         internal static int s_NoOpReleaseCalled = 0;
         internal static int s_NonRCAddRefCalled = 0;
         internal static int s_NonRCReleaseCalled = 0;
-#endif
+        internal static int s_LoadAndAddRefCalled = 0;
+        internal static int s_SwapCalled = 0;
 
+        // Special Non-native version of AddReference for REFCOUNT_STAT
         [TS.WellKnownMethod( "ObjectHeader_AddReference" )]
-        [TS.DisableAutomaticReferenceCounting]
         static public void AddReference( Object obj )
         {
+            RecordAddReference( obj );
+
             if(obj != null)
             {
                 ObjectHeader oh = ObjectHeader.Unpack( obj );
@@ -199,61 +202,65 @@ namespace Microsoft.Zelig.Runtime
                 {
                     oh.ModifyReferenceCount( /*delta*/1 );
                 }
-#if REFCOUNT_STAT
-                else
-                {
-                    s_NonRCAddRefCalled++;
-                }
-#endif
-
             }
-
-#if REFCOUNT_STAT
-            if(obj == null)
-            {
-                s_NoOpAddRefCalled++;
-            }
-            else
-            {
-                s_AddRefCalled++;
-            }
-#endif
         }
+#else //REFCOUNT_STAT
+        [TS.WellKnownMethod( "ObjectHeader_AddReference" )]
+        [DllImport( "C" )]
+        static public extern void AddReference( Object obj );
+#endif //REFCOUNT_STAT
+
+        [DllImport( "C" )]
+        static public extern int ReleaseReferenceNative( Object obj );
 
         [TS.WellKnownMethod( "ObjectHeader_ReleaseReference" )]
         [TS.DisableAutomaticReferenceCounting]
         static public void ReleaseReference( Object obj )
         {
+#if REFCOUNT_STAT
+            RecordReleaseReference( obj );
+#endif //REFCOUNT_STAT
+            if(ReleaseReferenceNative( obj ) == 0)
+            {
+                ThreadImpl.CurrentThread.ReleaseReference.DeleteObject( ObjectHeader.Unpack( obj ) );
+            }
+        }
+
+#if REFCOUNT_STAT
+        public static void RecordAddReference( Object obj )
+        {
             if(obj != null)
             {
-                ObjectHeader oh = ObjectHeader.Unpack( obj );
-
-                if(oh.HasReferenceCount)
+                if(!ObjectHeader.Unpack( obj ).HasReferenceCount)
                 {
-                    if(oh.DecrementReferenceCount( ))
-                    {
-                        ThreadImpl.CurrentThread.ReleaseReference.DeleteObject( oh );
-                    }
+                    s_NonRCAddRefCalled++;
                 }
-#if REFCOUNT_STAT
-                else
-                {
-                    s_NonRCReleaseCalled++;
-                }
-#endif
-            }
 
-#if REFCOUNT_STAT
-            if(obj == null)
-            {
-                s_NoOpReleaseCalled++;
+                s_AddRefCalled++;
             }
             else
             {
-                s_ReleaseCalled++;
+                s_NoOpAddRefCalled++;
             }
-#endif
         }
+
+        public static void RecordReleaseReference( Object obj )
+        {
+            if(obj != null)
+            {
+                s_ReleaseCalled++;
+
+                if(!ObjectHeader.Unpack( obj ).HasReferenceCount)
+                {
+                    s_NonRCReleaseCalled++;
+                }
+            }
+            else
+            {
+                s_NoOpReleaseCalled++;
+            }
+        }
+#endif //REFCOUNT_STAT
 
         public static void DumpRefCountStat( bool reset )
         {
@@ -266,10 +273,13 @@ namespace Microsoft.Zelig.Runtime
             var NoOpReleaseCalled = s_NoOpReleaseCalled;
             var NonRCAddRefCalled = s_NonRCAddRefCalled;
             var NonRCReleaseCalled = s_NonRCReleaseCalled;
+            var LoadAndAddRefCalled = s_LoadAndAddRefCalled;
+            var SwapCalled = s_SwapCalled;
 
             BugCheck.Log( "RC objects alloced:%d freed:%d", RefCountedObjectsAllocated, RefCountedObjectsFreed );
             BugCheck.Log( "AddRefs:  %d (%d nop / %d nonRC)", AddRefCalled + NoOpAddRefCalled, NoOpAddRefCalled, NonRCAddRefCalled );
             BugCheck.Log( "Releases: %d (%d nop / %d nonRC)", ReleaseCalled + NoOpReleaseCalled, NoOpReleaseCalled, NonRCReleaseCalled );
+            BugCheck.Log( "LoadAndAddReference: %d, Swap: %d", LoadAndAddRefCalled, SwapCalled );
 
             if (reset)
             {
@@ -281,8 +291,10 @@ namespace Microsoft.Zelig.Runtime
                 s_NoOpReleaseCalled = 0;
                 s_NonRCAddRefCalled = 0;
                 s_NonRCReleaseCalled = 0;
+                s_LoadAndAddRefCalled = 0;
+                s_SwapCalled = 0;
             }
-#endif
+#endif //REFCOUNT_STAT
         }
 
         [Inline]
@@ -293,11 +305,13 @@ namespace Microsoft.Zelig.Runtime
             bool delete = ( newMultiUseWord & ReferenceCountMask ) == 0;
 
 #if REFCOUNT_STAT
+            s_ReleaseCalled++;
+
             if (delete)
             {
                 s_RefCountedObjectsFreed++;
             }
-#endif
+#endif //REFCOUNT_STAT
             return delete;
         }
 
@@ -330,7 +344,7 @@ namespace Microsoft.Zelig.Runtime
             }
 
             BugCheck.Assert( isAlive, BugCheck.StopCode.HeapCorruptionDetected );
-#endif
+#endif //DEBUG_REFCOUNT
             return result;
         }
 

@@ -293,7 +293,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             var lhsRefCountType = GetRefCountType( nc, lhsType );
             if(lhsRefCountType == RefCountType.RefCounted)
             {
-                var tempAddr = nc.CurrentCFG.AllocateTemporary( nc.TypeSystem.WellKnownTypes.System_IntPtr, null );
+                var tempAddr = nc.CurrentCFG.AllocateTemporary(
+                    nc.TypeSystem.GetManagedPointerToType( nc.TypeSystem.WellKnownTypes.System_Object ),
+                    null );
                 Operator loadAddrOp = loadLhsAddr( op, tempAddr );
                 op.AddOperatorBefore( loadAddrOp );
 
@@ -341,7 +343,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                 if(rhsRefCountType == RefCountType.RefCounted)
                 {
                     // Create a temporary variable to store the address of the field object
-                    var tempAddr = nc.CurrentCFG.AllocateTemporary( nc.TypeSystem.WellKnownTypes.System_IntPtr, null );
+                    var tempAddr = nc.CurrentCFG.AllocateTemporary( 
+                        nc.TypeSystem.GetManagedPointerToType( nc.TypeSystem.WellKnownTypes.System_Object ),
+                        null );
                     var loadAddrOp = loadRhsAddr(op, tempAddr);
                     op.AddOperatorBefore( loadAddrOp );
 
@@ -427,8 +431,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
             var internalExchange        = wkm.InterlockedImpl_InternalExchange_Template;
             var internalCompareExchange = wkm.InterlockedImpl_InternalCompareExchange_Template;
-            var refCountExchange        = wkm.InterlockedImpl_ReferenceCountingExchange;
-            var refCountCompareExchange = wkm.InterlockedImpl_ReferenceCountingCompareExchange;
+            var refCountExchange        = wkm.ReferenceCountingCollector_ReferenceCountingExchange;
+            var refCountCompareExchange = wkm.ReferenceCountingCollector_ReferenceCountingCompareExchange;
 
             var md = op.TargetMethod;
             var owner = op.BasicBlock.Owner.Method;
