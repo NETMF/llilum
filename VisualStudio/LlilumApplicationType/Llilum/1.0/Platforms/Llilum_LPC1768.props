@@ -13,12 +13,17 @@
     <LlilumClAdditionalOptionsLPC1768>-mcpu=$(LlilumTargetBoardArchitectureLPC1768)</LlilumClAdditionalOptionsLPC1768>
     <LlilumClAdditionalIncludesLPC1768>$(LlilumTargetDirLPC1768);$(LlilumTargetDirLPC1768)$(LlilumTargetBoardLPC1768);$(LlilumTargetDirLPC1768)$(LlilumTargetBoardLPC1768)/$(LlilumTargetToolchainLPC1768);$(LlilumTargetDirLPC1768)$(LlilumTargetBoardLPC1768)/$(LlilumTargetBrandLPC1768);$(LlilumTargetDirLPC1768)$(LlilumTargetBoardLPC1768)/$(LlilumTargetBrandLPC1768)/$(LlilumTargetClassLPC1768);$(LlilumTargetDirLPC1768)$(LlilumTargetBoardLPC1768)/$(LlilumTargetBrandLPC1768)/$(LlilumTargetClassLPC1768)/$(LlilumTargetBoardMbedLPC1768);$(LlilumSDK)ARM_GCC\arm-none-eabi\include</LlilumClAdditionalIncludesLPC1768>
     <LlilumClPreprocessorDefsLPC1768>TARGET_LPC1768;TARGET_M3;TARGET_CORTEX_M;TARGET_NXP;TARGET_LPC176X;TARGET_MBED_LPC1768;TOOLCHAIN_GCC_ARM;TOOLCHAIN_GCC;__CORTEX_M3;ARM_MATH_CM3;MBED_BUILD_TIMESTAMP=1435688844.64;__MBED__=1</LlilumClPreprocessorDefsLPC1768>
-    <LlilumLinkAdditionalDepsLPC1768>$(LlilumTargetDirLPC1768)$(LlilumTargetBoardLPC1768)/$(LlilumTargetToolchainLPC1768)/board.o;$(LlilumTargetDirLPC1768)$(LlilumTargetBoardLPC1768)/$(LlilumTargetToolchainLPC1768)/startup_LPC17xx.o;$(LlilumTargetDirLPC1768)$(LlilumTargetBoardLPC1768)/$(LlilumTargetToolchainLPC1768)/cmsis_nvic.o;$(LlilumTargetDirLPC1768)$(LlilumTargetBoardLPC1768)/$(LlilumTargetToolchainLPC1768)/retarget.o;$(LlilumTargetDirLPC1768)$(LlilumTargetBoardLPC1768)/$(LlilumTargetToolchainLPC1768)/system_LPC17xx.o</LlilumLinkAdditionalDepsLPC1768>
+    <LlilumLinkAdditionalDepsLPC1768>$(LlilumTargetDirLPC1768)$(LlilumTargetBoardLPC1768)/$(LlilumTargetToolchainLPC1768)/board.o;$(LlilumTargetDirLPC1768)$(LlilumTargetBoardLPC1768)/$(LlilumTargetToolchainLPC1768)/cmsis_nvic.o;$(LlilumTargetDirLPC1768)$(LlilumTargetBoardLPC1768)/$(LlilumTargetToolchainLPC1768)/retarget.o;$(LlilumTargetDirLPC1768)$(LlilumTargetBoardLPC1768)/$(LlilumTargetToolchainLPC1768)/system_LPC17xx.o</LlilumLinkAdditionalDepsLPC1768>
     <LlilumLinkAdditionalLibDirsLPC1768>$(LlilumTargetDirLPC1768)$(LlilumTargetBoardLPC1768)/$(LlilumTargetToolchainLPC1768)</LlilumLinkAdditionalLibDirsLPC1768>
     <LlilumLinkAdditionalOptionsLPC1768>-T$(LlilumTargetDirLPC1768)$(LlilumTargetBoardLPC1768)/$(LlilumTargetToolchainLPC1768)/LPC1768.ld -Wl,--gc-sections --specs=nano.specs -u _printf_float -u _scanf_float -Wl,--wrap,main</LlilumLinkAdditionalOptionsLPC1768>
     <LlilumLinkLibDepsLPC1768>mbed;stdc++;supc++;m;c;gcc;nosys</LlilumLinkLibDepsLPC1768>
+    <LlilumStackSizeLPC1768>0x800</LlilumStackSizeLPC1768>
+    <LlilumHeapSizeLPC1768>0x6800</LlilumHeapSizeLPC1768>
+    <LlilumAsmAdditionalOptionsLPC1768></LlilumAsmAdditionalOptionsLPC1768>
   </PropertyGroup>
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'" >
+	<LlilumStackSizeLPC1768>0xC00</LlilumStackSizeLPC1768>
+  </PropertyGroup>
   <ItemDefinitionGroup />
   <ItemGroup>
     <BuildMacro Include="LlilumTargetDirLPC1768">
@@ -62,6 +67,15 @@
     </BuildMacro>
     <BuildMacro Include="LlilumLinkLibDepsLPC1768">
       <Value>$(LlilumLinkLibDepsLPC1768)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumAsmAdditionalOptionsLPC1768">
+      <Value>$(LlilumAsmAdditionalOptionsLPC1768)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumStacSizeLPC1768">
+      <Value>$(LlilumStackSizeLPC1768)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumHeapSizeLPC1768">
+      <Value>$(LlilumHeapSizeLPC1768)</Value>
     </BuildMacro>
   </ItemGroup>
 </Project>

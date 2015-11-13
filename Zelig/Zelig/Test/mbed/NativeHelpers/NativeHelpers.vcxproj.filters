@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\startup_LPC17xx.S" />
+    <None Include="$(LlilumSourceRoot)\..\os_layer\ARMv7M\Vectors\startup_LPC17xx.S" />
     <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\.gdbinit">
       <Filter>build&amp;debug</Filter>
     </None>
@@ -23,7 +23,31 @@
     <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\makefile">
       <Filter>build&amp;debug</Filter>
     </None>
-    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\startup_MK64F12.S" />
+    <None Include="$(LlilumSourceRoot)\..\os_layer\ARMv7M\Vectors\startup_MK64F12.S" />
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\buildK64F.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\buildLPC1768.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\buildSTM32L152.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\debugK64F.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\debugSTM32.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\deployK64F.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\deployLPC1768.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\deploySTM32L152.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="build&amp;debug">

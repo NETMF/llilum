@@ -15,5 +15,5 @@ Below are the steps for how we accomplished that goal:
 4. Resolve any reference issues, and ensure that all DLLs are in SDKDrop\ZeligBuild\Target\bin\Debug\
 5. Change the LPC1768 reference in the Managed project to LPC1768ApplicationBoard
 6. Ensure that the managed projects build correctly
-7. In mbed_simple.FrontEndConfig, change "-Reference LPC1768" to "-Reference LPC1768ApplicationBoard"
+7. In mbed_simple_LPC1768.FrontEndConfig, change "-Reference LPC1768" to "-Reference LPC1768ApplicationBoard"
 8. Rebuild the entire solution

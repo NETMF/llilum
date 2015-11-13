@@ -1644,15 +1644,16 @@ namespace Microsoft.Zelig.FrontEnd
         internal static bool RunBench(string[] args)
         {
             bool fNoSDK = false;
+
             Bench bench = new Bench();
             Bench.s_pThis = bench;
 
             // path with space need to be re-assembled
             string[] recombinedArgs = RecombineArgs(args);
 
-            if (recombinedArgs != null && bench.Parse(recombinedArgs, ref fNoSDK))
+            if(recombinedArgs != null && bench.Parse( recombinedArgs, ref fNoSDK ))
             {
-                if (bench.ValidateOptions())
+                if(bench.ValidateOptions( ))
                 {
                     bench.Compile();
                 }

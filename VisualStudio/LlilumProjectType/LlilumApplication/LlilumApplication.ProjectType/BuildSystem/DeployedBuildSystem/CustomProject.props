@@ -5,9 +5,8 @@
   <PropertyGroup Label="UserMacros">
     <LlilumSDK>$(LLILUM_SDK)</LlilumSDK>
     <LlilumLLVM>$(LlilumSDK)LLVM\Debug\bin\</LlilumLLVM>
-    <LlilumCompiler>$(LlilumSDK)ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Compiler.exe</LlilumCompiler>
-    <LlilumConfig>$(MSBuildProjectDirectory)\mbed_simple.FrontEndConfig2</LlilumConfig>
     <LlilumTargetDir>$(LlilumSDK)mbed\</LlilumTargetDir>
+    <LlilumBoardName>LPC1768</LlilumBoardName>
     <LlilumTargetBoard>TARGET_LPC1768</LlilumTargetBoard>
     <LlilumTargetBrand>TARGET_NXP</LlilumTargetBrand>
     <LlilumTargetToolchain>TOOLCHAIN_GCC_ARM</LlilumTargetToolchain>
@@ -16,6 +15,8 @@
     <LlilumOutputName>$(SolutionName)</LlilumOutputName>
     <LlilumGccBin>$(LlilumSDK)ARM_GCC\4.9\bin</LlilumGccBin>
     <LlilumOutputBin>$(OutDir)\$(LlilumOutputName).bin</LlilumOutputBin>
+    <LlilumCompiler>$(LlilumSDK)ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Compiler.exe</LlilumCompiler>
+    <LlilumConfig>$(MSBuildProjectDirectory)\mbed_simple_$(LlilumBoardName).FrontEndConfig</LlilumConfig>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup />

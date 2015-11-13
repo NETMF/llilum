@@ -14,13 +14,22 @@
   <ItemGroup>
     <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\.gdbinit" />
     <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\build.bat" />
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\buildK64F.bat" />
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\buildLPC1768.bat" />
     <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\buildmake.bat" />
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\buildSTM32L152.bat" />
     <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\debug.bat" />
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\debugK64F.bat" />
     <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\debugLPC1768.bat" />
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\debugSTM32.bat" />
     <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\deploy.bat" />
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\deployK64F.bat" />
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\deployLPC1768.bat" />
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\deploySTM32L152.bat" />
     <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\makefile" />
-    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\startup_LPC17xx.S" />
-    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\startup_MK64F12.S" />
+    <None Include="$(LlilumSourceRoot)\..\os_layer\ARMv7M\Vectors\startup_LPC17xx.S" />
+    <None Include="$(LlilumSourceRoot)\..\os_layer\ARMv7M\Vectors\startup_MK64F12.S" />
+    <None Include="$(LlilumSourceRoot)\..\os_layer\ARMv7M\Vectors\startup_stm32l152xe.S" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\..\..\LLVM2IR_results\mbed\simple\DebugOptions.xml" />

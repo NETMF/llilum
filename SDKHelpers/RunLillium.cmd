@@ -1,1 +1,1 @@
-%LLILUM_ROOT%ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Compiler.exe -cfg %LLILUM_ROOT%mbed_simple.FrontEndConfig .\ZeligBuild\Target\bin\Debug\Microsoft.Zelig.Test.mbed.Simple.exe -OutputName Microsoft.Zelig.Test.mbed.Simple -OutputDir output
+%LLILUM_ROOT%ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Compiler.exe -cfg %LLILUM_ROOT%mbed_simple_LPC1768.FrontEndConfig .\ZeligBuild\Target\bin\Debug\Microsoft.Zelig.Test.mbed.Simple.exe -OutputName Microsoft.Zelig.Test.mbed.Simple -OutputDir output

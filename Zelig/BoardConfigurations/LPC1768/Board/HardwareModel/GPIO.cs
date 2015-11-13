@@ -6,22 +6,6 @@ namespace Microsoft.Llilum.LPC1768
 {
     //--//
 
-    public enum PinDirection
-    {
-        PIN_INPUT,
-        PIN_OUTPUT
-    }
-
-    public enum PinMode
-    {
-        PullUp = 0,
-        PullDown = 3,
-        PullNone = 2,
-        Repeater = 1,
-        OpenDrain = 4,
-        PullDefault = PullDown
-    }
-
     public enum PinName : uint
     {
         P0_0 = 0x2009C000, //LPC_GPIO_BASE

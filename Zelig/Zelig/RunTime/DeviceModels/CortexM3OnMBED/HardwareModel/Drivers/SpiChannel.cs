@@ -230,7 +230,7 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
                 }
 
                 m_altCsPin.Direction = LlilumGpio.PinDirection.Output;
-                m_altCsPin.Mode = LlilumGpio.PinMode.PullDefault;
+                m_altCsPin.Mode = LlilumGpio.PinMode.Default;
 
                 // Set to high for the lifetime of the SpiChannel (except on transfers)
                 m_altCsPin.Write(m_activeLow ? 1 : 0);

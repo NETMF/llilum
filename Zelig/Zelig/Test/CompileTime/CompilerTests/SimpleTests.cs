@@ -8,7 +8,7 @@ namespace CompilerTests
     [TestClass]
     public class SimpleTests
     {
-        private const string configPath = @"..\..\..\..\Zelig\CompileTime\CodeGenerator\FrontEnd\mbed_simple.FrontEndConfig";
+        private const string configPath = @"..\..\..\..\Zelig\CompileTime\CodeGenerator\FrontEnd\mbed_simple_LPC1768.FrontEndConfig";
         private const string irPath = @"..\..\..\..\LLVM2IR_results\mbed\simple\Microsoft.Zelig.Test.mbed.Simple.ZeligIR";
 
         private static bool compiled = false;

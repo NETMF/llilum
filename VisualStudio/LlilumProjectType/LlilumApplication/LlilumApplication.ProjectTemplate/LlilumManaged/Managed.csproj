@@ -64,8 +64,8 @@
     <Reference Include="System">
       <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\System.dll</HintPath>
     </Reference>
-    <Reference Include="Windows.Devices">
-      <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\Windows.Devices.dll</HintPath>
+    <Reference Include="Window">
+      <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\Windows.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

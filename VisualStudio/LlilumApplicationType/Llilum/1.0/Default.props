@@ -36,9 +36,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <LlilumApplicationTypeDir>$(MSBuildExtensionsPath)\Microsoft.Cpp\v4.0\V140\Application Type\Llilum\1.0\</LlilumApplicationTypeDir>
     <LlilumSDK>$(LLILUM_SDK)</LlilumSDK>
     <LlilumLLVM>$(LLILUM_LLVM)build\x64\Debug\bin\</LlilumLLVM>
-    <LlilumCompiler>$(LlilumSDK)ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Compiler.exe</LlilumCompiler>
-    <LlilumConfig>$(MSBuildProjectDirectory)\mbed_simple.FrontEndConfig</LlilumConfig>
     <LlilumTargetDir>$(LlilumSDK)mbed\</LlilumTargetDir>
+    <LlilumBoardName>LPC1768</LlilumBoardName>
     <LlilumTargetBoard>TARGET_LPC1768</LlilumTargetBoard>
     <LlilumTargetBrand>TARGET_NXP</LlilumTargetBrand>
     <LlilumTargetToolchain>TOOLCHAIN_GCC_ARM</LlilumTargetToolchain>
@@ -47,7 +46,9 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <LlilumOutputName>$(SolutionName)</LlilumOutputName>
     <LlilumGccBin>$(LLILUM_GCC)\bin\</LlilumGccBin>
     <LlilumOutputBin>$(OutDir)\$(LlilumOutputName).bin</LlilumOutputBin>
-    <LlilumInteropFilePath>$(LlilumSDK)output\</LlilumInteropFilePath>
+    <LlilumInteropFilePath>$(LlilumSDK)source\</LlilumInteropFilePath>
+    <LlilumCompiler>$(LlilumSDK)ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Compiler.exe</LlilumCompiler>
+    <LlilumConfig>$(MSBuildProjectDirectory)\mbed_simple_$(LlilumBoardName).FrontEndConfig</LlilumConfig>
   </PropertyGroup>
 
   <!-- Import After -->

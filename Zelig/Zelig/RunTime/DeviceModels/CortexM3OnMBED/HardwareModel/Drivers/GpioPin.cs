@@ -5,19 +5,21 @@
 namespace Microsoft.CortexM3OnMBED.HardwareModel
 {
     using System;
-    using System.Runtime.InteropServices;
-
     using Llilum  = Llilum.Devices.Gpio;
     using Runtime = Zelig.Runtime;
     using M3      = DeviceModels.Chipset.CortexM3;
     using MBED    = CortexM3OnMBED.Drivers;
+    using LLOS    = Zelig.LlilumOSAbstraction.API.IO;
+    using LLGPIO  = Zelig.LlilumOSAbstraction.API.IO.Gpio;
 
     public class GpioPin : Llilum.GpioPin
     {
         private readonly int                           m_pinNumber;
-        private unsafe GpioImpl*                       m_gpio;
-        private unsafe GpioIrqImpl*                    m_gpioIrq;
+        private unsafe LLOS.GpioContext*               m_gpio;
         private M3.Drivers.InterruptController.Handler m_handler;
+        private LLOS.GpioPinEdge                       m_activeEdge;
+        private LLOS.GpioPinResistor                   m_pinMode;
+        private bool                                   m_irqEnabled;
 
         internal GpioPin(int pinNumber)
         {
@@ -25,14 +27,9 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
 
             unsafe
             {
-                fixed (GpioImpl** gpio_ptr = &m_gpio)
+                fixed (LLOS.GpioContext** gpio_ptr = &m_gpio)
                 {
-                    tmp_gpio_alloc_init(gpio_ptr, m_pinNumber);
-                }
-
-                fixed (GpioIrqImpl** ppIrq = &m_gpioIrq)
-                {
-                    tmp_gpio_irq_alloc(ppIrq);
+                    LLGPIO.LLOS_GPIO_AllocatePin(m_pinNumber, gpio_ptr);
                 }
 
                 // Default to Rising edge
@@ -43,7 +40,7 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
                 (Runtime.TargetPlatform.ARMv7.ProcessorARMv7M.IRQn_Type)Runtime.GpioProvider.Instance.GetGpioPinIRQNumber(m_pinNumber),
                 M3.Drivers.InterruptPriority.Normal,
                 M3.Drivers.InterruptSettings.RisingEdge,
-                HandleGpioInterrupt);
+                ProcessGpioInterrupt);
         }
 
         ~GpioPin()
@@ -63,7 +60,7 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         {
             unsafe
             {
-                return tmp_gpio_read(m_gpio);
+                return LLGPIO.LLOS_GPIO_Read(m_gpio);
             }
         }
 
@@ -71,7 +68,7 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         {
             unsafe
             {
-                tmp_gpio_write(m_gpio, value);
+                LLGPIO.LLOS_GPIO_Write(m_gpio, value);
             }
         }
 
@@ -79,7 +76,8 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         {
             unsafe
             {
-                tmp_gpio_mode(m_gpio, pinMode);
+                m_pinMode = (LLOS.GpioPinResistor)pinMode;
+                LLGPIO.LLOS_GPIO_SetMode( m_gpio, m_pinMode );
             }
         }
 
@@ -87,31 +85,18 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         {
             unsafe
             {
-                tmp_gpio_dir(m_gpio, pinDirection);
+                LLGPIO.LLOS_GPIO_SetDirection( m_gpio, pinDirection == Llilum.PinDirection.Input ? LLOS.GpioPinDirection.Input : LLOS.GpioPinDirection.Output );
             }
         }
 
         protected override void SetActivePinEdge(Llilum.PinEdge pinEdge)
         {
-            unsafe
+            m_activeEdge = (LLOS.GpioPinEdge)pinEdge;
+
+            if( m_irqEnabled )
             {
-                switch ( pinEdge )
-                {
-                    case Llilum.PinEdge.BothEdges:
-                        tmp_gpio_irq_set(m_gpioIrq, (int)MbedGpioIrq.IRQ_RISE, 1);
-                        tmp_gpio_irq_set(m_gpioIrq, (int)MbedGpioIrq.IRQ_FALL, 1);
-                        break;
-                    case Llilum.PinEdge.FallingEdge:
-                        tmp_gpio_irq_set(m_gpioIrq, (int)MbedGpioIrq.IRQ_RISE, 0);
-                        tmp_gpio_irq_set(m_gpioIrq, (int)MbedGpioIrq.IRQ_FALL, 1);
-                        break;
-                    case Llilum.PinEdge.RisingEdge:
-                        tmp_gpio_irq_set(m_gpioIrq, (int)MbedGpioIrq.IRQ_RISE, 1);
-                        tmp_gpio_irq_set(m_gpioIrq, (int)MbedGpioIrq.IRQ_FALL, 0);
-                        break;
-                    default:
-                        throw new NotSupportedException();
-                }
+                DisableInterrupt( );
+                EnableInterrupt( );
             }
         }
 
@@ -120,19 +105,20 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
             unsafe
             {
                 UIntPtr hndPtr = MBED.InterruptController.CastInterruptHandlerAsPtr(m_handler);
-
-                tmp_gpio_irq_init(m_gpioIrq, m_pinNumber, (uint)hndPtr);
-                SetActivePinEdge(ActivePinEdge);
-                tmp_gpio_irq_enable(m_gpioIrq);
+                LLGPIO.LLOS_GPIO_EnablePin( m_gpio, m_activeEdge, HandleGpioInterrupt, hndPtr );
             }
+
+            m_irqEnabled = true;
         }
 
         protected override void DisableInterrupt()
         {
             unsafe
             {
-                tmp_gpio_irq_disable(m_gpioIrq);
+                LLGPIO.LLOS_GPIO_DisablePin( m_gpio );
             }
+
+            m_irqEnabled = false;
         }
 
         public override void Dispose()
@@ -152,9 +138,7 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         {
             unsafe
             {
-                tmp_gpio_irq_uninit(m_gpioIrq);
-                tmp_gpio_free(m_gpio);
-                tmp_gpio_irq_free(m_gpioIrq);
+                LLGPIO.LLOS_GPIO_FreePin( m_gpio );
             }
 
             using (Runtime.SmartHandles.InterruptState.Disable())
@@ -168,25 +152,17 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
             }
         }
 
-        private void HandleGpioInterrupt(M3.Drivers.InterruptController.InterruptData data)
+        private void ProcessGpioInterrupt(M3.Drivers.InterruptController.InterruptData data)
         {
             SendEventInternal((Llilum.PinEdge)data.Context);
         }
 
-        private enum MbedGpioIrq
-        {
-            IRQ_NONE = 0,
-            IRQ_RISE = 1,
-            IRQ_FALL = 2,
-        }
-
-        [Runtime.ExportedMethod]
-        private static void HandleGpioInterrupt(uint id, MbedGpioIrq evt)
+        private static unsafe void HandleGpioInterrupt(LLOS.GpioContext *pin, UIntPtr context, LLOS.GpioPinEdge evt)
         {
             M3.Drivers.InterruptController.InterruptData data;
 
-            data.Handler = MBED.InterruptController.CastAsInterruptHandler((UIntPtr)id);
-            data.Context = evt == MbedGpioIrq.IRQ_RISE ? (uint)Llilum.PinEdge.RisingEdge : (uint)Llilum.PinEdge.FallingEdge;
+            data.Handler = MBED.InterruptController.CastAsInterruptHandler(context);
+            data.Context = (uint)evt;
             data.Subcontext = 0;
 
             using (Runtime.SmartHandles.InterruptState.Disable())
@@ -194,40 +170,5 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
                 M3.Drivers.InterruptController.Instance.PostInterrupt(data);
             }
         }
-
-        [DllImport("C")]
-        private static unsafe extern int tmp_gpio_alloc_init(GpioImpl** obj, int pinNumber);
-        [DllImport("C")]
-        private static unsafe extern int tmp_gpio_free(GpioImpl* obj);
-        [DllImport("C")]
-        private static unsafe extern void tmp_gpio_write(GpioImpl* obj, int value);
-        [DllImport("C")]
-        private static unsafe extern int tmp_gpio_read(GpioImpl* obj);
-        [DllImport("C")]
-        private static unsafe extern void tmp_gpio_mode(GpioImpl* obj, Llilum.PinMode mode);
-        [DllImport("C")]
-        private static unsafe extern void tmp_gpio_dir(GpioImpl* obj, Llilum.PinDirection direction);
-
-        [DllImport("C")]
-        private static unsafe extern void tmp_gpio_irq_alloc(GpioIrqImpl** obj);
-        [DllImport("C")]
-        private static unsafe extern void tmp_gpio_irq_free(GpioIrqImpl* obj);
-        [DllImport("C")]
-        private static unsafe extern int tmp_gpio_irq_init(GpioIrqImpl* obj, int pinNumber, uint id);
-        [DllImport("C")]
-        private static unsafe extern void tmp_gpio_irq_uninit(GpioIrqImpl* obj);
-        [DllImport("C")]
-        private static unsafe extern void tmp_gpio_irq_set(GpioIrqImpl* obj, int edge, uint enable);
-        [DllImport("C")]
-        private static unsafe extern void tmp_gpio_irq_enable(GpioIrqImpl* obj);
-        [DllImport("C")]
-        private static unsafe extern void tmp_gpio_irq_disable(GpioIrqImpl* obj);
     }
-
-    internal unsafe struct GpioImpl
-    {
-    };
-    internal unsafe struct GpioIrqImpl
-    {
-    };
 }

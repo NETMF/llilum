@@ -136,6 +136,31 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <Message Condition="'$(_DebugMessages)' == 'true'" Importance="high" Text="ClCompile.PrecompiledHeaderOutputFileName = '%(ClCompile.PrecompiledHeaderOutputFileName)'"/>
     <Message Condition="'$(_DebugMessages)' == 'true'" Importance="high" Text="ClCompile.PrecompiledHeaderOutputFile = '%(ClCompile.PrecompiledHeaderOutputFile)'"/>
 
+    <ClangCompile Condition="'%(ArmAssemble.ExcludedFromBuild)' != 'true'"
+                  BuildingInIDE = "$(BuildingInsideVisualStudio)"
+                  GNUMode="$(GNUMode)"
+                  MSVCErrorReport="$(MSVCErrorReport)"
+
+                  Sources="@(ArmAssemble)"
+                  AdditionalOptions="-x assembler-with-cpp %(ArmAssemble.AdditionalOptions) -o $(IntermediateOutputPath)%(Filename).o"
+
+                  GccToolChain="$(GccToolchainPrebuiltPath)"
+                  Sysroot="$(Sysroot)"
+                  Target="$(ClangTarget)"
+                  TrackFileAccess="$(TrackFileAccess)"
+                  TrackerLogDirectory="$(TLogLocation)"
+                  TLogReadFiles="@(CLTLogReadFiles)"
+                  TLogWriteFiles="@(CLTLogWriteFiles)"
+                  ToolExe="$(ClangToolExe)"
+                  ToolPath="$(ClangToolPath)"
+                  ToolArchitecture="$(CLToolArchitecture)"
+                  TrackerFrameworkPath="$(CLTrackerFrameworkPath)"
+                  TrackerSdkPath="$(CLTrackerSdkPath)"
+                  EnableExecuteTool="$(ClangEnableExecuteTool)"
+                  CompileAs="CompileAsC"
+	>	
+    </ClangCompile>
+
     <!-- Precompiled headers - need to build them first -->
 
     <ClangCompile Condition="'%(ClCompile.PrecompiledHeaderFile)' != '' and '%(ClCompile.ExcludedFromBuild)' != 'true'"
@@ -357,7 +382,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     </ItemGroup>
   </Target>
 
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(TargetExt)'!='.a'">
     <AfterBuildLinkTargets>$(AfterBuildLinkTargets);dotbin;dothex;dotlst;size</AfterBuildLinkTargets>
     <BuildCompileTargets>$(BuildCompileTargets);ConvertManagedCode;CreateManagedObject</BuildCompileTargets>
     <ComputeLinkInputsTargets>ComputeCLOutputFromManagedCode;$(ComputeLinkInputsTargets)</ComputeLinkInputsTargets>

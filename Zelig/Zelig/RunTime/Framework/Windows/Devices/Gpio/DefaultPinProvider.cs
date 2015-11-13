@@ -91,7 +91,7 @@ namespace Windows.Devices.Gpio
         {
             switch (m_gpioPin.Mode)
             {
-                case Llilum.PinMode.PullNone:
+                case Llilum.PinMode.Default:
                     return (m_gpioPin.Direction == Llilum.PinDirection.Input) ? 
                         GpioPinDriveMode.Input : GpioPinDriveMode.Output;
                 case Llilum.PinMode.PullDown:
@@ -126,12 +126,12 @@ namespace Windows.Devices.Gpio
             switch (driveMode)
             {
                 case GpioDriveMode.Input:
-                    m_gpioPin.Mode = Llilum.PinMode.PullNone;
+                    m_gpioPin.Mode = Llilum.PinMode.Default;
                     m_gpioPin.Direction = Llilum.PinDirection.Input;
                     break;
 
                 case GpioDriveMode.Output:
-                    m_gpioPin.Mode = Llilum.PinMode.PullDefault;
+                    m_gpioPin.Mode = Llilum.PinMode.Default;
                     m_gpioPin.Direction = Llilum.PinDirection.Output;
                     break;
 

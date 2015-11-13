@@ -7,22 +7,6 @@ namespace Microsoft.Llilum.K64F
 
     //--//
 
-    public enum PinDirection
-    {
-        PIN_INPUT,
-        PIN_OUTPUT
-    }
-
-    public enum PinMode
-    {
-        PullUp      = 0,
-        PullDown    = 3,
-        PullNone    = 2,
-        Repeater    = 1,
-        OpenDrain   = 4,
-        PullDefault = PullDown
-    }
-    
     public enum PinName : uint
     {
         // Commented out pins do not appear to be used on the board

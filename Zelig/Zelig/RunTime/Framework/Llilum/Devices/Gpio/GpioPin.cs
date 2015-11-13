@@ -110,7 +110,7 @@ namespace Microsoft.Llilum.Devices.Gpio
 
             // Set default values
             newPin.Direction = PinDirection.Input;
-            newPin.Mode = PinMode.PullNone;
+            newPin.Mode = PinMode.Default;
 
             return newPin;
         }
@@ -135,26 +135,25 @@ namespace Microsoft.Llilum.Devices.Gpio
     public enum PinDirection
     {
         Input = 0,
-        Output = 1,
+        Output,
     }
 
     public enum PinMode
     {
-        PullUp = 0,
-        Repeater = 1,
-        PullNone = 2,
-        PullDown = 3,
-        OpenDrain = 4,
-        PullDefault = PullDown,
+        Default = 0,
+        PullUp,
+        PullDown,
+        OpenDrain,
+        Repeater,
     }
 
     public enum PinEdge
     {
-        None        = 0,
-        RisingEdge  = 1,
-        FallingEdge = 2,
-        BothEdges   = 3,
-        LevelLow    = 4,
-        LevelHigh   = 5,
+        None = 0,
+        RisingEdge,
+        FallingEdge,
+        BothEdges,
+        LevelLow,
+        LevelHigh,
     }
 }

@@ -40,7 +40,7 @@ namespace Windows.Devices.Gpio.Provider
 
     public enum ProviderGpioPinEdge
     {
-        FallingEdge,
+        FallingEdge = 0,
         RisingEdge,
     }
 

@@ -37,8 +37,10 @@
   <StringListProperty Name="LlilumClPreprocessorDefs" DisplayName="LlilumClPreprocessorDefs" Category="Board" Description="" />
   <StringListProperty Name="LlilumLinkAdditionalDeps" Subtype="folder" DisplayName="LlilumLinkAdditionalDeps" Category="Board" Description="" />
   <StringListProperty Name="LlilumLinkAdditionalLibDirs" Subtype="folder" DisplayName="LlilumLinkAdditionalLibDirs" Category="Board" Description="" />
-  <StringProperty Name="LlilumLinkAdditionalOptions" DisplayName="LlilumLinkAdditionalOptions" Category="Board" Description="" />
   <StringListProperty Name="LlilumLinkLibDeps" Subtype="folder" DisplayName="LlilumLinkLibDeps" Category="Board" Description="" />
-  
+  <StringProperty Name="LlilumLinkAdditionalOptions" DisplayName="LlilumLinkAdditionalOptions" Category="Board" Description="" />
+  <StringProperty Name="LlilumAsmAdditionalOptions" DisplayName="LlilumAsmAdditionalOptions" Category="Board" Description="" />
+  <StringProperty Name="LlilumStackSize" DisplayName="LlilumStackSize" Category="Board" Description="" />
+  <StringProperty Name="LlilumHeapSize"  DisplayName="LlilumHeapSize" Category="Board" Description="" />
   
 </Rule>
