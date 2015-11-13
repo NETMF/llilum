@@ -134,9 +134,6 @@ namespace Microsoft.Zelig.Runtime
         {
             var dummyThread = ThreadImpl.CurrentThread;
             var releaseRefHelper = dummyThread.ReleaseReference;
-            // Take a reference to ensure the below null assignment to CurrentThread does not trigger
-            // ReleaseReferenceHelper
-            ObjectHeader.AddReference( dummyThread );
             ThreadImpl.CurrentThread = null;
             MemoryManager.Instance.Release( ( (ObjectImpl)(object)dummyThread ).ToPointer( ) );
             MemoryManager.Instance.Release( ( (ObjectImpl)(object)releaseRefHelper ).ToPointer( ) );

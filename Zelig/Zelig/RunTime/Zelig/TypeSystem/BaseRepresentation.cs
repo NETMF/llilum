@@ -13,7 +13,7 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
     using System;
     using System.Collections.Generic;
 
-
+    [DisableReferenceCounting]
     public abstract class BaseRepresentation
     {
         //

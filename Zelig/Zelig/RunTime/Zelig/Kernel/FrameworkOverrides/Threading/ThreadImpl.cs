@@ -658,7 +658,6 @@ namespace Microsoft.Zelig.Runtime
         public ReleaseReferenceHelper ReleaseReference
         {
             [Inline]
-            [TS.DisableAutomaticReferenceCounting]
             get
             {
                 return m_releaseReferenceHelper;

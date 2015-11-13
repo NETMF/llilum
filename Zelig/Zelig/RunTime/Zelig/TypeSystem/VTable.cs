@@ -121,9 +121,11 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
 
         [WellKnownMethod( "VTable_Get" )]
         [MethodImpl( MethodImplOptions.InternalCall )]
+        [DisableAutomaticReferenceCounting]
         public extern static VTable Get( object a );
 
         [WellKnownMethod( "VTable_GetInterface" )]
+        [DisableAutomaticReferenceCounting]
         public static CodePointer[] GetInterface( object a             ,
                                                   VTable vtblInterface )
         {

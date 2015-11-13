@@ -12,11 +12,9 @@ namespace Microsoft.Zelig.Runtime
 
     [ImplicitInstance]
     [ForceDevirtualization]
-    [TS.DisableAutomaticReferenceCounting]
     public abstract class Processor
     {
         [ForceDevirtualization]
-        [TS.DisableAutomaticReferenceCounting]
         public abstract class Context
         {
             //

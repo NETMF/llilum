@@ -9,7 +9,6 @@ namespace Microsoft.Zelig.Runtime
 
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
-    [TS.DisableAutomaticReferenceCounting]
     public abstract class LinearMemoryManager : MemoryManager
     {
         //

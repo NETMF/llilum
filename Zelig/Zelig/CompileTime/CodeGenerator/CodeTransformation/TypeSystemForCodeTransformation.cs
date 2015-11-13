@@ -1556,7 +1556,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             // If type T is excluded, then all its derived classes would be as well.
             while(td != null)
             {
-                if(m_referenceCountingExcludedTypes.Contains( td ))
+                if(m_referenceCountingExcludedTypes.Contains( td ) || m_implicitInstances.Contains( td ))
                 {
                     return false;
                 }

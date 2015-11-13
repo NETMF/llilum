@@ -12,7 +12,6 @@ namespace Microsoft.Zelig.Runtime
 
     [ImplicitInstance]
     [ForceDevirtualization]
-    [TS.DisableAutomaticReferenceCounting]
     public abstract class TypeSystemManager
     {
         class EmptyManager : TypeSystemManager
@@ -81,6 +80,8 @@ namespace Microsoft.Zelig.Runtime
         }
 
         [Inline]
+        [TS.DisableAutomaticReferenceCounting]
+
         public object InitializeObject(UIntPtr memory,
                                         TS.VTable vTable,
                                         bool referenceCounting)
@@ -108,6 +109,8 @@ namespace Microsoft.Zelig.Runtime
         }
 
         [Inline]
+        [TS.DisableAutomaticReferenceCounting]
+
         public object InitializeObjectWithExtensions(UIntPtr memory,
                                                       TS.VTable vTable)
         {
@@ -121,6 +124,8 @@ namespace Microsoft.Zelig.Runtime
 
 
         [Inline]
+        [TS.DisableAutomaticReferenceCounting]
+
         public Array InitializeArray(UIntPtr memory,
                                       TS.VTable vTable,
                                       uint length,
@@ -136,6 +141,8 @@ namespace Microsoft.Zelig.Runtime
         }
 
         [Inline]
+        [TS.DisableAutomaticReferenceCounting]
+
         public String InitializeString(UIntPtr memory,
                                         TS.VTable vTable,
                                         int length,
@@ -151,30 +158,38 @@ namespace Microsoft.Zelig.Runtime
         }
 
         [TS.WellKnownMethod("TypeSystemManager_AllocateObject")]
+        [TS.DisableAutomaticReferenceCounting]
         public abstract Object AllocateObject(TS.VTable vTable);
 
         [TS.WellKnownMethod("TypeSystemManager_AllocateReferenceCountingObject")]
+        [TS.DisableAutomaticReferenceCounting]
         public abstract Object AllocateReferenceCountingObject(TS.VTable vTable);
 
         [TS.WellKnownMethod("TypeSystemManager_AllocateObjectWithExtensions")]
+        [TS.DisableAutomaticReferenceCounting]
         public abstract Object AllocateObjectWithExtensions(TS.VTable vTable);
 
         [TS.WellKnownMethod("TypeSystemManager_AllocateArray")]
+        [TS.DisableAutomaticReferenceCounting]
         public abstract Array AllocateArray(TS.VTable vTable,
                                              uint length);
 
         [TS.WellKnownMethod("TypeSystemManager_AllocateReferenceCountingArray")]
+        [TS.DisableAutomaticReferenceCounting]
         public abstract Array AllocateReferenceCountingArray(TS.VTable vTable,
                                                               uint length);
 
         [TS.WellKnownMethod("TypeSystemManager_AllocateArrayNoClear")]
+        [TS.DisableAutomaticReferenceCounting]
         public abstract Array AllocateArrayNoClear(TS.VTable vTable,
                                                     uint length);
 
         [TS.WellKnownMethod("TypeSystemManager_AllocateString")]
+        [TS.DisableAutomaticReferenceCounting]
         public abstract String AllocateString(TS.VTable vTable,
                                                int length);
 
+        [TS.DisableAutomaticReferenceCounting]
         public abstract String AllocateReferenceCountingString(TS.VTable vTable,
                                                                 int length);
 
