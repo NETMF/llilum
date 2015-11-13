@@ -27,6 +27,13 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
 
         public override PhaseDriver Run()
         {
+            ParallelTransformationsHandler.EnumerateFlowGraphs(
+                this.TypeSystem,
+                delegate( ControlFlowGraphStateForCodeTransformation cfg )
+                {
+                    Transformations.MergeExtendedBasicBlocks.Execute( cfg, preserveInjectionSites: false );
+                } );
+
             this.TypeSystem.GenerateImage( this );
 
             return this.NextPhase;

@@ -32,7 +32,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
             {
                 Transformations.TransformFinallyBlocksIntoTryBlocks.Execute( cfg );
 
-                Transformations.MergeExtendedBasicBlocks.Execute( cfg );
+                Transformations.MergeExtendedBasicBlocks.Execute( cfg, preserveInjectionSites: true );
             } );
 
             return this.NextPhase;

@@ -20,7 +20,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
         {
             bool fModified = false;
             
-            if(Transformations.MergeExtendedBasicBlocks.Execute( cfg ))
+            if(Transformations.MergeExtendedBasicBlocks.Execute( cfg, preserveInjectionSites: true ))
             {
                 fModified = true;
             }
