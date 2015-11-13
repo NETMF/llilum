@@ -6,6 +6,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 {
     using Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases;
     using Runtime.TypeSystem;
+    using System;
 
     public class OperatorHandlers_ReferenceCountingGarbageCollection
     {
@@ -185,30 +186,118 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         private static void Handle_StoreInstanceFieldOperator( PhaseExecution.NotificationContext nc )
         {
             // Syntax: FirstArgument.Field = SecondArgument
-            var op = (StoreFieldOperator)nc.CurrentOperator;
-            var fieldType = op.Field.FieldType;
-            var lhsRefCountType = GetRefCountType( nc, op.Field.FieldType );
+            Handle_StoreOperators(
+                nc         : nc,
+                lhsType    : ( (StoreFieldOperator)nc.CurrentOperator ).Field.FieldType,
+                loadLhsAddr: ( op, tempVar ) => LoadInstanceFieldAddressOperator.New( 
+                                                    op.DebugInfo,
+                                                    ( (FieldOperator)op ).Field,
+                                                    tempVar,
+                                                    op.FirstArgument,
+                                                    fNullCheck: false ),
+                rhs        : nc.CurrentOperator.SecondArgument );
+        }
 
+        private static void Handle_LoadInstanceFieldOperator( PhaseExecution.NotificationContext nc )
+        {
+            // Syntax: FirstResult = FirstArgument.Field
+            Handle_LoadOperators(
+                nc         : nc,
+                lhs        : nc.CurrentOperator.FirstResult,
+                rhsType    : ( (LoadFieldOperator)nc.CurrentOperator ).Field.FieldType,
+                loadRhsAddr: ( op, tempVar ) => LoadInstanceFieldAddressOperator.New(
+                                                    op.DebugInfo,
+                                                    ( (FieldOperator)op ).Field,
+                                                    tempVar,
+                                                    op.FirstArgument,
+                                                    fNullCheck: false ) );
+        }
+
+        private static void Handle_StoreElementOperator( PhaseExecution.NotificationContext nc )
+        {
+            // Syntax: FirstArgument[SecondArgument] = ThirdArgument
+            Handle_StoreOperators(
+                nc         : nc,
+                lhsType    : nc.CurrentOperator.FirstArgument.Type.ContainedType,
+                loadLhsAddr: ( op, tempVar ) => LoadElementAddressOperator.New(
+                                                    op.DebugInfo,
+                                                    tempVar,
+                                                    op.FirstArgument,
+                                                    op.SecondArgument,
+                                                    ( (ElementOperator)op ).AccessPath,
+                                                    fNullCheck: false ),
+                rhs        : nc.CurrentOperator.ThirdArgument );
+        }
+
+        private static void Handle_LoadElementOperator( PhaseExecution.NotificationContext nc )
+        {
+            // Syntax: FirstResult = FirstArgument[SecondArgument]
+            Handle_LoadOperators(
+                nc         : nc,
+                lhs        : nc.CurrentOperator.FirstResult,
+                rhsType    : nc.CurrentOperator.FirstArgument.Type.ContainedType,
+                loadRhsAddr: ( op, tempVar ) => LoadElementAddressOperator.New(
+                                                    op.DebugInfo,
+                                                    tempVar,
+                                                    op.FirstArgument,
+                                                    op.SecondArgument,
+                                                    ( (ElementOperator)op ).AccessPath,
+                                                    fNullCheck: false ) );
+        }
+
+        private static void Handle_StoreIndirectOperator( PhaseExecution.NotificationContext nc )
+        {
+            // Syntax: FirstArgument[Offset] = SecondArgument
+            Handle_StoreOperators(
+                nc         : nc,
+                lhsType    : nc.CurrentOperator.FirstArgument.Type.ContainedType,
+                loadLhsAddr: delegate( Operator op, TemporaryVariableExpression tempVar )
+                             {
+                                 CHECKS.ASSERT( ( (IndirectOperator)op ).Offset == 0, "No support for non-zero offset" );
+                                 return SingleAssignmentOperator.New( op.DebugInfo, tempVar, op.FirstArgument );
+                             },
+                rhs        : nc.CurrentOperator.SecondArgument );
+        }
+
+        private static void Handle_LoadIndirectOperator( PhaseExecution.NotificationContext nc )
+        {
+            // Syntax: FirstResult = FirstArgument[Offset]
+            Handle_LoadOperators(
+                nc         : nc,
+                lhs        : nc.CurrentOperator.FirstResult,
+                rhsType    : nc.CurrentOperator.FirstArgument.Type.ContainedType,
+                loadRhsAddr: delegate ( Operator op, TemporaryVariableExpression tempVar )
+                             {
+                                 CHECKS.ASSERT( ( (IndirectOperator)op ).Offset == 0, "No support for non-zero offset" );
+                                 return SingleAssignmentOperator.New( op.DebugInfo, tempVar, op.FirstArgument );
+                             } );
+        }
+
+        private static void Handle_StoreOperators(
+            PhaseExecution.NotificationContext                    nc,
+            TypeRepresentation                                    lhsType,
+            Func<Operator, TemporaryVariableExpression, Operator> loadLhsAddr,
+            Expression                                            rhs )
+        {
+            var op = nc.CurrentOperator;
+            var lhsRefCountType = GetRefCountType( nc, lhsType );
             if(lhsRefCountType == RefCountType.RefCounted)
             {
-                // Create a temporary variable to store the address of the field object
                 var tempAddr = nc.CurrentCFG.AllocateTemporary( nc.TypeSystem.WellKnownTypes.System_IntPtr, null );
-                var loadAddrOp = LoadInstanceFieldAddressOperator.New( op.DebugInfo,
-                                                                       op.Field,
-                                                                       tempAddr,
-                                                                       op.FirstArgument,
-                                                                       fNullCheck: false );
+                Operator loadAddrOp = loadLhsAddr( op, tempAddr );
                 op.AddOperatorBefore( loadAddrOp );
 
                 var swap = nc.TypeSystem.WellKnownMethods.ReferenceCountingCollector_Swap;
-                var swapRHS = nc.TypeSystem.AddTypePointerToArgumentsOfStaticMethod( swap,
-                                                                                     tempAddr,
-                                                                                     op.SecondArgument );
-                var swapCall = StaticCallOperator.New( op.DebugInfo,
-                                                       CallOperator.CallKind.Direct,
-                                                       swap,
-                                                       VariableExpression.SharedEmptyArray,
-                                                       swapRHS );
+                var swapRHS = nc.TypeSystem.AddTypePointerToArgumentsOfStaticMethod(
+                    swap,
+                    tempAddr,
+                    rhs );
+                var swapCall = StaticCallOperator.New(
+                    op.DebugInfo,
+                    CallOperator.CallKind.Direct,
+                    swap,
+                    VariableExpression.SharedEmptyArray,
+                    swapRHS );
 
                 op.SubstituteWithOperator( swapCall, Operator.SubstitutionFlags.Default );
 
@@ -218,12 +307,15 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             }
         }
 
-        private static void Handle_LoadInstanceFieldOperator( PhaseExecution.NotificationContext nc )
+        private static void Handle_LoadOperators(
+            PhaseExecution.NotificationContext nc,
+            VariableExpression lhs,
+            TypeRepresentation rhsType,
+            Func<Operator, TemporaryVariableExpression, Operator> loadRhsAddr )
         {
-            // Syntax: FirstResult = FirstArgument.Field
-            var op = (LoadFieldOperator)nc.CurrentOperator;
-            var lhsRefCountType = GetRefCountType( nc, op.FirstResult.Type );
-            var rhsRefCountType = GetRefCountType( nc, op.Field.FieldType );
+            var op = nc.CurrentOperator;
+            var lhsRefCountType = GetRefCountType( nc, lhs.Type );
+            var rhsRefCountType = GetRefCountType( nc, rhsType );
 
             // Note that we are calling Release() first then AddRef() here. This is OK because the field
             // will always hold a valid reference, so the first Release() can never cause the ref count to
@@ -233,18 +325,14 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             // actual object is not)
             if(lhsRefCountType == RefCountType.RefCounted)
             {
-                InsertReleaseBefore( nc, op.FirstResult );
+                InsertReleaseBefore( nc, lhs );
 
                 // Need to Addref the RHS if it's a ref-counted type.
                 if(rhsRefCountType == RefCountType.RefCounted)
                 {
                     // Create a temporary variable to store the address of the field object
                     var tempAddr = nc.CurrentCFG.AllocateTemporary( nc.TypeSystem.WellKnownTypes.System_IntPtr, null );
-                    var loadAddrOp = LoadInstanceFieldAddressOperator.New( op.DebugInfo,
-                                                                           op.Field,
-                                                                           tempAddr,
-                                                                           op.FirstArgument,
-                                                                           fNullCheck: false );
+                    var loadAddrOp = loadRhsAddr(op, tempAddr);
                     op.AddOperatorBefore( loadAddrOp );
 
                     var loadAndAddRef = nc.TypeSystem.WellKnownMethods.ReferenceCountingCollector_LoadAndAddReference;
@@ -252,177 +340,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                     var loadAndAddRefCall = StaticCallOperator.New( op.DebugInfo,
                                                                     CallOperator.CallKind.Direct,
                                                                     loadAndAddRef,
-                                                                    new VariableExpression[] { op.FirstResult },
-                                                                    loadAndAddRefRHS );
-
-                    op.SubstituteWithOperator( loadAndAddRefCall, Operator.SubstitutionFlags.Default );
-
-                    var phase = (ReferenceCountingGarbageCollection)nc.Phase;
-                    phase.AddToModifiedOperator( loadAndAddRefCall );
-                    phase.IncrementInjectionCount( loadAndAddRef );
-                }
-            }
-        }
-
-        private static void Handle_StoreElementOperator( PhaseExecution.NotificationContext nc )
-        {
-            // Syntax: FirstArgument[SecondArgument] = ThirdArgument
-            var op = (StoreElementOperator)nc.CurrentOperator;
-            var elementType = op.FirstArgument.Type.ContainedType;
-            var lhsRefCountType = GetRefCountType( nc, elementType );
-
-            if(lhsRefCountType == RefCountType.RefCounted)
-            {
-                // Create a temporary variable to store the address of the element object
-                var tempAddr = nc.CurrentCFG.AllocateTemporary( nc.TypeSystem.WellKnownTypes.System_IntPtr, null );
-                var loadAddrOp = LoadElementAddressOperator.New( op.DebugInfo,
-                                                                 tempAddr,
-                                                                 op.FirstArgument,
-                                                                 op.SecondArgument,
-                                                                 op.AccessPath,
-                                                                 fNullCheck: false );
-                op.AddOperatorBefore( loadAddrOp );
-
-                var swap = nc.TypeSystem.WellKnownMethods.ReferenceCountingCollector_Swap;
-                var swapRHS = nc.TypeSystem.AddTypePointerToArgumentsOfStaticMethod( swap,
-                                                                                     tempAddr,
-                                                                                     op.ThirdArgument );
-                var swapCall = StaticCallOperator.New( op.DebugInfo,
-                                                       CallOperator.CallKind.Direct,
-                                                       swap,
-                                                       VariableExpression.SharedEmptyArray,
-                                                       swapRHS );
-
-                op.SubstituteWithOperator( swapCall, Operator.SubstitutionFlags.Default );
-
-                var phase = (ReferenceCountingGarbageCollection)nc.Phase;
-                phase.AddToModifiedOperator( swapCall );
-                phase.IncrementInjectionCount( swap );
-            }
-        }
-
-        private static void Handle_LoadElementOperator( PhaseExecution.NotificationContext nc )
-        {
-            // Syntax: FirstResult = FirstArgument[SecondArgument]
-            var op = (LoadElementOperator)nc.CurrentOperator;
-            var lhsRefCountType = GetRefCountType( nc, op.FirstResult.Type );
-            var rhsRefCountType = GetRefCountType( nc, op.FirstArgument.Type.ContainedType );
-
-            // Note that we are calling Release() first then AddRef() here. This is OK because the element
-            // will always hold a valid reference, so the first Release() can never cause the ref count to
-            // bounce zero.
-
-            // If LHS has a ref-counted type, we should always call Release (it'll just be no-op if the
-            // actual object is not)
-            if(lhsRefCountType == RefCountType.RefCounted)
-            {
-                InsertReleaseBefore( nc, op.FirstResult );
-
-                // Need to Addref the RHS if it's a ref-counted type.
-                if(rhsRefCountType == RefCountType.RefCounted)
-                {
-                    // Create a temporary variable to store the address of the field object
-                    var tempAddr = nc.CurrentCFG.AllocateTemporary( nc.TypeSystem.WellKnownTypes.System_IntPtr, null );
-                    var loadAddrOp = LoadElementAddressOperator.New( op.DebugInfo,
-                                                                     tempAddr,
-                                                                     op.FirstArgument,
-                                                                     op.SecondArgument,
-                                                                     op.AccessPath,
-                                                                     fNullCheck: false );
-                    op.AddOperatorBefore( loadAddrOp );
-
-                    var loadAndAddRef = nc.TypeSystem.WellKnownMethods.ReferenceCountingCollector_LoadAndAddReference;
-                    var loadAndAddRefRHS = nc.TypeSystem.AddTypePointerToArgumentsOfStaticMethod( loadAndAddRef, tempAddr );
-                    var loadAndAddRefCall = StaticCallOperator.New( op.DebugInfo,
-                                                                    CallOperator.CallKind.Direct,
-                                                                    loadAndAddRef,
-                                                                    new VariableExpression[] { op.FirstResult },
-                                                                    loadAndAddRefRHS );
-
-                    op.SubstituteWithOperator( loadAndAddRefCall, Operator.SubstitutionFlags.Default );
-
-                    var phase = (ReferenceCountingGarbageCollection)nc.Phase;
-                    phase.AddToModifiedOperator( loadAndAddRefCall );
-                    phase.IncrementInjectionCount( loadAndAddRef );
-                }
-            }
-        }
-
-        private static void Handle_StoreIndirectOperator( PhaseExecution.NotificationContext nc )
-        {
-            // Syntax: FirstArgument[Offset] = SecondArgument
-            var op = (StoreIndirectOperator)nc.CurrentOperator;
-            var targetType = op.FirstArgument.Type.ContainedType;
-            var lhsRefCountType = GetRefCountType( nc, targetType );
-
-            if(lhsRefCountType == RefCountType.RefCounted)
-            {
-                if(op.Offset != 0)
-                {
-                    throw FeatureNotSupportedException.Create(
-                        "No support for modifying StoreIndirectOperator on an object with offset for ref counting." );
-                }
-
-                // Create a temporary variable to store the address of the indirect object
-                var tempAddr = nc.CurrentCFG.AllocateTemporary( nc.TypeSystem.WellKnownTypes.System_IntPtr, null );
-                var loadAddrOp = SingleAssignmentOperator.New( op.DebugInfo, tempAddr, op.FirstArgument );
-
-                op.AddOperatorBefore( loadAddrOp );
-
-                var swap = nc.TypeSystem.WellKnownMethods.ReferenceCountingCollector_Swap;
-                var swapRHS = nc.TypeSystem.AddTypePointerToArgumentsOfStaticMethod( swap, tempAddr, op.SecondArgument );
-                var swapCall = StaticCallOperator.New( op.DebugInfo,
-                                                       CallOperator.CallKind.Direct,
-                                                       swap,
-                                                       VariableExpression.SharedEmptyArray,
-                                                       swapRHS );
-
-                op.SubstituteWithOperator( swapCall, Operator.SubstitutionFlags.Default );
-
-                var phase = (ReferenceCountingGarbageCollection)nc.Phase;
-                phase.AddToModifiedOperator( swapCall );
-                phase.IncrementInjectionCount( swap );
-            }
-        }
-
-        private static void Handle_LoadIndirectOperator( PhaseExecution.NotificationContext nc )
-        {
-            // Syntax: FirstResult = FirstArgument[Offset]
-            var op = (LoadIndirectOperator)nc.CurrentOperator;
-            var lhsRefCountType = GetRefCountType( nc, op.FirstResult.Type );
-            var rhsRefCountType = GetRefCountType( nc, op.FirstArgument.Type.ContainedType );
-
-            // Note that we are calling Release() first then AddRef() here. This is OK because the element
-            // will always hold a valid reference, so the first Release() can never cause the ref count to
-            // bounce zero.
-
-            // If LHS has a ref-counted type, we should always call Release (it'll just be no-op if the
-            // actual object is not)
-            if(lhsRefCountType == RefCountType.RefCounted)
-            {
-                InsertReleaseBefore( nc, op.FirstResult );
-
-                // Need to Addref the RHS if it's a ref-counted type.
-                if(rhsRefCountType == RefCountType.RefCounted)
-                {
-                    if(op.Offset != 0)
-                    {
-                        throw FeatureNotSupportedException.Create(
-                            "No support for modifying LoadIndirectOperator on an object with offset for ref counting." );
-                    }
-
-                    // Create a temporary variable to store the address of the indirect object
-                    var tempAddr = nc.CurrentCFG.AllocateTemporary( nc.TypeSystem.WellKnownTypes.System_IntPtr, null );
-                    var loadAddrOp = SingleAssignmentOperator.New( op.DebugInfo, tempAddr, op.FirstArgument );
-
-                    op.AddOperatorBefore( loadAddrOp );
-
-                    var loadAndAddRef = nc.TypeSystem.WellKnownMethods.ReferenceCountingCollector_LoadAndAddReference;
-                    var loadAndAddRefRHS = nc.TypeSystem.AddTypePointerToArgumentsOfStaticMethod( loadAndAddRef, tempAddr );
-                    var loadAndAddRefCall = StaticCallOperator.New( op.DebugInfo,
-                                                                    CallOperator.CallKind.Direct,
-                                                                    loadAndAddRef,
-                                                                    new VariableExpression[] { op.FirstResult },
+                                                                    new VariableExpression[] { lhs },
                                                                     loadAndAddRefRHS );
 
                     op.SubstituteWithOperator( loadAndAddRefCall, Operator.SubstitutionFlags.Default );
