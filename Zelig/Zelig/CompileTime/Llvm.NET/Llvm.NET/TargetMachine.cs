@@ -23,13 +23,20 @@ namespace Llvm.NET
         /// Though it is unclear what the replacement will be as there is no other way to get
         /// the layout information if it isn't already known.</note>
         /// </remarks>
-        public TargetData TargetData => TargetData.FromHandle( NativeMethods.GetTargetMachineData( TargetMachineHandle), isDisposable: false );
+        public TargetData TargetData
+        {
+            get
+            {
+                var handle = NativeMethods.GetTargetMachineData( TargetMachineHandle );
+                return TargetData.FromHandle( Context, handle, isDisposable: false );
+            }
+        }
 
         /// <summary>Generate code for the target machine from a module</summary>
-        /// <param name="module"><see cref="Module"/> to generate the code from</param>
+        /// <param name="module"><see cref="NativeModule"/> to generate the code from</param>
         /// <param name="path">Path to the output file</param>
         /// <param name="fileType">Type of file to emit</param>
-        public void EmitToFile( Module module, string path, CodeGenFileType fileType )
+        public void EmitToFile( NativeModule module, string path, CodeGenFileType fileType )
         {
             if( module == null )
                 throw new ArgumentNullException( nameof( module ) );
@@ -48,9 +55,12 @@ namespace Llvm.NET
             }
         }
 
-        internal TargetMachine( LLVMTargetMachineRef targetMachineHandle )
+        public Context Context { get; }
+
+        internal TargetMachine( Context context, LLVMTargetMachineRef targetMachineHandle )
         {
             TargetMachineHandle = targetMachineHandle;
+            Context = context;
         }
        
         #region IDisposable Support

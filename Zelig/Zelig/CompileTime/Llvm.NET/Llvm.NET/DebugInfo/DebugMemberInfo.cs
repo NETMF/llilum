@@ -5,11 +5,11 @@ namespace Llvm.NET.DebugInfo
     /// <summary>DebugMemberLayout is used to define custom layout information for structure members</summary>
     /// <remarks>
     /// Ordinarily layout information is handle automatically in
-    /// <see cref="DebugStructType.SetBody(bool, Module, DIScope, DIFile, uint, DebugInfoFlags, System.Collections.Generic.IEnumerable{DebugMemberInfo})"/>
+    /// <see cref="DebugStructType.SetBody(bool, NativeModule, DIScope, DIFile, uint, DebugInfoFlags, System.Collections.Generic.IEnumerable{DebugMemberInfo})"/>
     /// however in cases where explicitily controlled (or "packed") layout is required, instances of DebugMemberLayout are
     /// used to provide the information necessary to generate a proper type and debug information.
     /// </remarks>
-    public struct DebugMemberLayout
+    public class DebugMemberLayout
     {
         /// <summary>Constructs a new <see cref="DebugMemberLayout"/></summary>
         /// <param name="bitSize">Size of the member in bits</param>
@@ -34,10 +34,10 @@ namespace Llvm.NET.DebugInfo
 
     /// <summary>Describes a member/field of a type for creating debug information</summary>
     /// <remarks>
-    /// <para>This class is used with <see cref="DebugStructType.SetBody(bool, Module, DIScope, DIFile, uint, DebugInfoFlags, System.Collections.Generic.IEnumerable{DebugMemberInfo})"/>
+    /// <para>This class is used with <see cref="DebugStructType.SetBody(bool, NativeModule, DIScope, DIFile, uint, DebugInfoFlags, System.Collections.Generic.IEnumerable{DebugMemberInfo})"/>
     /// to provide debug information for a type.</para>
     /// <para>In order to support explicit layout structures the members relating to layout are all <see cref="System.Nullable{T}"/>.
-    /// When they are null then modules <see cref="Module.Layout"/> target specific layout information is used to determine 
+    /// When they are null then modules <see cref="NativeModule.Layout"/> target specific layout information is used to determine 
     /// layout details. Setting the layout members of this class to non-null will override that behavior to define explicit
     /// layout details.</para>
     /// </remarks>
@@ -56,14 +56,14 @@ namespace Llvm.NET.DebugInfo
         public uint Line { get; set; }
 
         /// <summary>flags for the field declaration</summary>
-        public DebugInfoFlags Flags { get; set; }
+        public DebugInfoFlags DebugInfoFlags { get; set; }
 
         /// <summary>Debug type information for this field</summary>
-        public IDebugType<ITypeRef, DIType> Type { get; set; }
+        public IDebugType<ITypeRef, DIType> DebugType { get; set; }
 
         /// <summary>Provides explicit layout information for this member</summary>
-        /// <remarks>If this is null then <see cref="DebugStructType.SetBody(bool, Module, DIScope, DIFile, uint, DebugInfoFlags, System.Collections.Generic.IEnumerable{DebugMemberInfo})"/>
-        /// will default to using <see cref="Module.Layout"/> to determine the size using the module's target specific layout.
+        /// <remarks>If this is null then <see cref="DebugStructType.SetBody(bool, NativeModule, DIScope, DIFile, uint, DebugInfoFlags, System.Collections.Generic.IEnumerable{DebugMemberInfo})"/>
+        /// will default to using <see cref="NativeModule.Layout"/> to determine the size using the module's target specific layout.
         /// <note type="note">
         /// If this property is provided (e.g. is not <see langword="null"/>) for any meber of a type, then
         /// it must be set for all members. In other words explicit layout must be defined for all members
@@ -71,6 +71,6 @@ namespace Llvm.NET.DebugInfo
         /// include the "packed" modifier. 
         /// </note>
         /// </remarks>
-        public DebugMemberLayout? ExplicitLayout { get; set; }
+        public DebugMemberLayout ExplicitLayout { get; set; }
     }
 }

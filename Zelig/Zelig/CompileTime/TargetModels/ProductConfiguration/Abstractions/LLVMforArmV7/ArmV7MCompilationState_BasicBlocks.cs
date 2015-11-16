@@ -418,7 +418,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         {
             // Trivial case: Value is already the desired type. We compare the inner types directly because the outer
             // types will be the same between pointer types for arrays and strings, while the inner types won't.
-            if ( val.LlvmValue.Type == targetType.DebugType.NativeType )
+            if ( val.LlvmValue.NativeType == targetType.DebugType.NativeType )
             {
                 return val;
             }

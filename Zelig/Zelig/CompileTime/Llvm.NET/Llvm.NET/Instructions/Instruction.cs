@@ -10,15 +10,15 @@ namespace Llvm.NET.Instructions
         /// <summary>Block that contains this instruction</summary>
         public BasicBlock ContainingBlock => BasicBlock.FromHandle( NativeMethods.GetInstructionParent( ValueHandle ) );
 
-        public Opcode Opcode => (Opcode)NativeMethods.GetInstructionOpcode( ValueHandle );
+        public OpCode Opcode => (OpCode)NativeMethods.GetInstructionOpcode( ValueHandle );
         public bool IsMemoryAccess
         {
             get
             {
                 var opCode = Opcode;
-                return opCode == Opcode.Alloca
-                    || opCode == Opcode.Load
-                    || opCode == Opcode.Store;
+                return opCode == OpCode.Alloca
+                    || opCode == OpCode.Load
+                    || opCode == OpCode.Store;
             }
         }
 
@@ -28,6 +28,7 @@ namespace Llvm.NET.Instructions
         /// that deal with memory accesses. Setting the alignment for other instructions
         /// results in an InvalidOperationException()
         /// </remarks>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "alloca" )]
         public uint Alignment
         {
             get
@@ -57,22 +58,22 @@ namespace Llvm.NET.Instructions
     /// </remarks>
     public static class InstructionExtensions
     {
-        public static T Alignment<T>( this T inst, uint alignment )
+        public static T Alignment<T>( this T self, uint value )
             where T : Instruction
         {
-            if( inst.IsMemoryAccess )
-                inst.Alignment = alignment;
+            if( self.IsMemoryAccess )
+                self.Alignment = value;
 
-            return inst;
+            return self;
         }
 
-        public static T IsVolatile<T>( this T inst, uint alignment )
+        public static T IsVolatile<T>( this T self, uint value )
             where T : Instruction
         {
-            if( inst.IsMemoryAccess )
-                inst.Alignment = alignment;
+            if( self.IsMemoryAccess )
+                self.Alignment = value;
 
-            return inst;
+            return self;
         }
     }
 }

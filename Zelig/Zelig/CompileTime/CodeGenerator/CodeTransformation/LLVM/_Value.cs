@@ -24,11 +24,11 @@ namespace Microsoft.Zelig.LLVM
         // a module and DiBuilder with assorted other state info.
         public _Module Module { get; }
 
-        public bool IsInteger => LlvmValue.Type.IsInteger;
+        public bool IsInteger => LlvmValue.NativeType.IsInteger;
 
-        public bool IsFloatingPoint => LlvmValue.Type.IsFloatingPoint;
+        public bool IsFloatingPoint => LlvmValue.NativeType.IsFloatingPoint;
 
-        public bool IsPointer => LlvmValue.Type.IsPointer;
+        public bool IsPointer => LlvmValue.NativeType.IsPointer;
 
         public bool IsAnUninitializedGlobal( )
         {

@@ -1,14 +1,14 @@
 ﻿namespace Llvm.NET.Instructions
 {
-    public class Return
+    public class ReturnInstruction
         : Terminator
     {
-        internal Return( LLVMValueRef valueRef )
+        internal ReturnInstruction( LLVMValueRef valueRef )
             : this( valueRef, false )
         {
         }
 
-        internal Return( LLVMValueRef valueRef, bool preValidated )
+        internal ReturnInstruction( LLVMValueRef valueRef, bool preValidated )
             : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAReturnInst ) )
         {
         }

@@ -127,7 +127,13 @@ namespace Llvm.NET.Types
         /// <summary>Get a <see cref="IPointerType"/> for a type that points to elements of this type in the specified address space</summary>
         /// <param name="addressSpace">Address space for the pointer</param>
         /// <returns><see cref="IPointerType"/>corresponding to the type of a pointer that referns to elements of this type</returns>
-        public IPointerType CreatePointerType( uint addressSpace ) => FromHandle<IPointerType>( NativeMethods.PointerType( TypeHandle_, addressSpace ) );
+        public IPointerType CreatePointerType( uint addressSpace )
+        {
+            if( IsVoid )
+                throw new InvalidOperationException( "Cannot create pointer to void in LLVM, use i8* instead" );
+
+            return FromHandle<IPointerType>( NativeMethods.PointerType( TypeHandle_, addressSpace ) );
+        }
 
         public bool TryGetExtendedPropertyValue<T>( string id, out T value ) => ExtensibleProperties.TryGetExtendedPropertyValue<T>( id, out value );
         public void AddExtendedPropertyValue( string id, object value ) => ExtensibleProperties.AddExtendedPropertyValue( id, value );

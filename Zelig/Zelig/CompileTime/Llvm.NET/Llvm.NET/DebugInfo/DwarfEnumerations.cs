@@ -5,6 +5,7 @@ namespace Llvm.NET.DebugInfo
 {
     public enum SourceLanguage
     {
+        Invalid = 0,
         // Language names
         C89 = 0x0001,
         C = 0x0002,
@@ -32,8 +33,8 @@ namespace Llvm.NET.DebugInfo
         Go = 0x0016,
         Modula3 = 0x0017,
         Haskell = 0x0018,
-        CPlusPlus_03 = 0x0019,
-        CPlusPlus_11 = 0x001a,
+        CPlusPlus03 = 0x0019,
+        CPlusPlus11 = 0x001a,
         OCaml = 0x001b,
 
         UserMin = 0x8000,
@@ -45,7 +46,8 @@ namespace Llvm.NET.DebugInfo
 
     public enum Tag : ushort
     {
-        ArrayType= LLVMDwarfTag.LLVMDwarfTagArrayType,
+        Invalid = 0,
+        ArrayType = LLVMDwarfTag.LLVMDwarfTagArrayType,
         ClassType= LLVMDwarfTag.LLVMDwarfTagClassType,
         EntryPoint= LLVMDwarfTag.LLVMDwarfTagEntryPoint,
         EnumerationType= LLVMDwarfTag.LLVMDwarfTagEnumerationType,
@@ -84,7 +86,7 @@ namespace Llvm.NET.DebugInfo
         NameList= LLVMDwarfTag.LLVMDwarfTagNameList,
         NameListItem= LLVMDwarfTag.LLVMDwarfTagNameListItem,
         PackedType= LLVMDwarfTag.LLVMDwarfTagPackedType,
-        SubProgram= LLVMDwarfTag.LLVMDwarfTagSubProgram,
+        SubProgram = LLVMDwarfTag.LLVMDwarfTagSubProgram,
         TemplateTypeParameter= LLVMDwarfTag.LLVMDwarfTagTemplateTypeParameter,
         TemplateValueParameter= LLVMDwarfTag.LLVMDwarfTagTemplateValueParameter,
         ThrownType= LLVMDwarfTag.LLVMDwarfTagThrownType,
@@ -99,7 +101,7 @@ namespace Llvm.NET.DebugInfo
         ImportedModule= LLVMDwarfTag.LLVMDwarfTagImportedModule,
         UnspecifiedType= LLVMDwarfTag.LLVMDwarfTagUnspecifiedType,
         PartialUnit= LLVMDwarfTag.LLVMDwarfTagPartialUnit,
-        InportedUnit= LLVMDwarfTag.LLVMDwarfTagInportedUnit,
+        ImportedUnit= LLVMDwarfTag.LLVMDwarfTagImportedUnit,
         Condition= LLVMDwarfTag.LLVMDwarfTagCondition,
         SharedType= LLVMDwarfTag.LLVMDwarfTagSharedType,
         TypeUnit= LLVMDwarfTag.LLVMDwarfTagTypeUnit,
@@ -132,16 +134,18 @@ namespace Llvm.NET.DebugInfo
 
     public enum QualifiedTypeTag
     {
+        None = 0,
         Const = Tag.ConstType,
         Volatile = Tag.VolatileType,
     }
 
     public enum DiTypeKind : uint
     {
+        Invalid = 0,
         // Encoding attribute values
         Address = 0x01,
         Boolean = 0x02,
-        Complex_float = 0x03,
+        ComplexFloat = 0x03,
         Float = 0x04,
         Signed = 0x05,
         SignedChar = 0x06,
@@ -164,6 +168,7 @@ namespace Llvm.NET.DebugInfo
     /// The three accessibility flags are mutually exclusive and rolled together
     /// in the first two bits.
     /// </remarks>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags" )]
     [Flags]
     public enum DebugInfoFlags
     {
@@ -191,6 +196,7 @@ namespace Llvm.NET.DebugInfo
 
     public enum ExpressionOp : long
     {
+        Invalid = 0,
         addr = 0x03,
         deref = 0x06,
         const1u = 0x08,

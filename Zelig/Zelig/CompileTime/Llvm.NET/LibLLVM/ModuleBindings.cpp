@@ -32,5 +32,4 @@ extern "C"
         auto pModule = unwrap( module );
         return wrap( pModule->getNamedAlias( name ) );
     }
-
 }

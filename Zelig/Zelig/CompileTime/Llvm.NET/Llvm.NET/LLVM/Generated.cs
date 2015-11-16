@@ -1789,17 +1789,17 @@ namespace Llvm.NET
         [DllImport(libraryPath, EntryPoint = "LLVMSetGC", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern void SetGC(LLVMValueRef @Fn, [MarshalAs(UnmanagedType.LPStr)] string @Name);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMAddFunctionAttr", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern void AddFunctionAttr(LLVMValueRef @Fn, LLVMAttribute @PA);
+        //[DllImport(libraryPath, EntryPoint = "LLVMAddFunctionAttr", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        //internal static extern void AddFunctionAttr(LLVMValueRef @Fn, LLVMAttribute @PA);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMAddTargetDependentFunctionAttr", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern void AddTargetDependentFunctionAttr(LLVMValueRef @Fn, [MarshalAs(UnmanagedType.LPStr)] string @A, [MarshalAs(UnmanagedType.LPStr)] string @V);
+        //[DllImport(libraryPath, EntryPoint = "LLVMAddTargetDependentFunctionAttr", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        //internal static extern void AddTargetDependentFunctionAttr(LLVMValueRef @Fn, [MarshalAs(UnmanagedType.LPStr)] string @A, [MarshalAs(UnmanagedType.LPStr)] string @V);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMGetFunctionAttr", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern LLVMAttribute GetFunctionAttr(LLVMValueRef @Fn);
+        //[DllImport(libraryPath, EntryPoint = "LLVMGetFunctionAttr", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        //internal static extern LLVMAttribute GetFunctionAttr(LLVMValueRef @Fn);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMRemoveFunctionAttr", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern void RemoveFunctionAttr(LLVMValueRef @Fn, LLVMAttribute @PA);
+        //[DllImport(libraryPath, EntryPoint = "LLVMRemoveFunctionAttr", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        //internal static extern void RemoveFunctionAttr(LLVMValueRef @Fn, LLVMAttribute @PA);
 
         [DllImport(libraryPath, EntryPoint = "LLVMCountParams", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern uint CountParams(LLVMValueRef @Fn);
@@ -1825,14 +1825,14 @@ namespace Llvm.NET
         [DllImport(libraryPath, EntryPoint = "LLVMGetPreviousParam", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMValueRef GetPreviousParam(LLVMValueRef @Arg);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMAddAttribute", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern void AddAttribute(LLVMValueRef @Arg, LLVMAttribute @PA);
+        //[DllImport(libraryPath, EntryPoint = "LLVMAddAttribute", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        //internal static extern void AddAttribute(LLVMValueRef @Arg, LLVMAttribute @PA);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMRemoveAttribute", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern void RemoveAttribute(LLVMValueRef @Arg, LLVMAttribute @PA);
+        //[DllImport(libraryPath, EntryPoint = "LLVMRemoveAttribute", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        //internal static extern void RemoveAttribute(LLVMValueRef @Arg, LLVMAttribute @PA);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMGetAttribute", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern LLVMAttribute GetAttribute(LLVMValueRef @Arg);
+        //[DllImport(libraryPath, EntryPoint = "LLVMGetAttribute", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        //internal static extern LLVMAttribute GetAttribute(LLVMValueRef @Arg);
 
         [DllImport(libraryPath, EntryPoint = "LLVMSetParamAlignment", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern void SetParamAlignment(LLVMValueRef @Arg, uint @align);
@@ -1963,11 +1963,11 @@ namespace Llvm.NET
         [DllImport(libraryPath, EntryPoint = "LLVMGetInstructionCallConv", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern uint GetInstructionCallConv(LLVMValueRef @Instr);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMAddInstrAttribute", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern void AddInstrAttribute(LLVMValueRef @Instr, uint @index, LLVMAttribute @param2);
+        //[DllImport(libraryPath, EntryPoint = "LLVMAddInstrAttribute", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        //internal static extern void AddInstrAttribute(LLVMValueRef @Instr, uint @index, LLVMAttribute @param2);
 
-        [DllImport(libraryPath, EntryPoint = "LLVMRemoveInstrAttribute", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern void RemoveInstrAttribute(LLVMValueRef @Instr, uint @index, LLVMAttribute @param2);
+        //[DllImport(libraryPath, EntryPoint = "LLVMRemoveInstrAttribute", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        //internal static extern void RemoveInstrAttribute(LLVMValueRef @Instr, uint @index, LLVMAttribute @param2);
 
         [DllImport(libraryPath, EntryPoint = "LLVMSetInstrParamAlignment", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern void SetInstrParamAlignment(LLVMValueRef @Instr, uint @index, uint @align);

@@ -46,7 +46,7 @@
         public bool IsDeclaration => NativeMethods.IsDeclaration( ValueHandle );
 
         /// <summary>Module containing this global value</summary>
-        public Module ParentModule => Type.Context.GetModuleFor( NativeMethods.GetGlobalParent( ValueHandle ) );
+        public NativeModule ParentModule => NativeType.Context.GetModuleFor( NativeMethods.GetGlobalParent( ValueHandle ) );
 
         internal GlobalValue( LLVMValueRef valueRef )
             : base( ValidateConversion( valueRef, NativeMethods.IsAGlobalValue ) )
@@ -57,19 +57,19 @@
     public static class GlobalValueExtensions
     {
         /// <summary>Visibility of this global value</summary>
-        public static T Visibility<T>( this T value, Visibility visibility )
+        public static T Visibility<T>( this T self, Visibility value )
             where T : GlobalValue
         {
-            value.Visibility = visibility;
-            return value;
+            self.Visibility = value;
+            return self;
         }
 
         /// <summary>Linkage specification for this symbol</summary>
-        public static T Linkage<T>( this T value, Linkage linkage )
+        public static T Linkage<T>( this T self, Linkage value )
             where T : GlobalValue
         {
-            value.Linkage = linkage;
-            return value;
+            self.Linkage = value;
+            return self;
         }
     }
 }

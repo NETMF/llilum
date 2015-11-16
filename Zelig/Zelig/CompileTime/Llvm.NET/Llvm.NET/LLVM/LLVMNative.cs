@@ -63,6 +63,7 @@ namespace Llvm.NET
             return retVal;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline" )]
         static NativeMethods()
         {
             // force loading the appropriate architecture specific 
@@ -71,7 +72,7 @@ namespace Llvm.NET
             var path = Path.GetDirectoryName( Assembly.GetExecutingAssembly( ).Location );
             if( Directory.Exists( Path.Combine( path, "LibLLVM") ) )
             {
-                NativeMethods.LoadWin32Library( libraryPath, "LibLLVM" );
+                LoadWin32Library( libraryPath, "LibLLVM" );
             }
             else
             {
@@ -79,8 +80,10 @@ namespace Llvm.NET
                 // CPU specific variants with only one DLL without needing
                 // conditional compilation on this library, which is useful for
                 // unit testing or whenever the Nuget packaging isn't desired.
-                NativeMethods.LoadWin32Library( libraryPath, null );
+                LoadWin32Library( libraryPath, null );
             }
+
+            LineEndingNormalizingRegEx = new Regex( "(\r\n|\n\r|\r|\n)" );
         }
 
         // LLVM doesn't honor environment/OS specific default line endings, so this will
@@ -113,6 +116,6 @@ namespace Llvm.NET
             return LineEndingNormalizingRegEx.Replace( txt, Environment.NewLine );
         }
 
-        private static readonly Regex LineEndingNormalizingRegEx = new Regex( "(\r\n|\n\r|\r|\n)" );
+        private static readonly Regex LineEndingNormalizingRegEx;
     }
 }

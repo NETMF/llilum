@@ -20,6 +20,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>Llvm.NET.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>$(LlilumBuildRoot)\Host\bin\$(Configuration)\</OutputPath>
@@ -28,6 +29,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>Llvm.NET.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'">
     <DebugSymbols>true</DebugSymbols>
@@ -37,6 +39,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">
     <OutputPath>$(LlilumBuildRoot)\Host\bin\$(Configuration)\</OutputPath>
@@ -45,6 +48,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -54,6 +58,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>Llvm.NET.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>$(LlilumBuildRoot)\Host\bin\$(Configuration)\</OutputPath>
@@ -62,6 +67,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>Llvm.NET.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -82,6 +88,7 @@
     <Compile Include="DebugInfo\DIExpression.cs" />
     <Compile Include="DebugInfo\DIFile.cs" />
     <Compile Include="DebugInfo\DIGlobalVariable.cs" />
+    <Compile Include="DebugInfo\DIImportedEntity.cs" />
     <Compile Include="DebugInfo\DILexicalBlock.cs" />
     <Compile Include="DebugInfo\DILexicalBlockBase.cs" />
     <Compile Include="DebugInfo\DILexicalBlockFile.cs" />
@@ -104,6 +111,7 @@
     <Compile Include="DebugInfo\DIVariable.cs" />
     <Compile Include="DebugInfo\GenericDINode.cs" />
     <Compile Include="DebugInfo\DebugType.cs" />
+    <Compile Include="DebugInfo\MDNodeOperandList.cs" />
     <Compile Include="Instructions\AddressSpaceCast.cs" />
     <Compile Include="Instructions\AtomicCmpXchg.cs" />
     <Compile Include="Instructions\AtomicRMW.cs" />
@@ -210,7 +218,8 @@
     <Compile Include="TargetMachine.cs" />
     <Compile Include="TargetData.cs" />
     <Compile Include="Types\TypeRef.cs" />
-    <Compile Include="Values\IAttributeSet.cs" />
+    <Compile Include="Values\AttributeSet.cs" />
+    <Compile Include="Values\IAttributeSetContainer.cs" />
     <Compile Include="Values\InlineAsm.cs" />
     <Compile Include="Values\UndefValue.cs" />
     <Compile Include="Values\User.cs" />

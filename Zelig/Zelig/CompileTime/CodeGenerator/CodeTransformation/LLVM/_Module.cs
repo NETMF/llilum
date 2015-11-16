@@ -30,10 +30,13 @@ namespace Microsoft.Zelig.LLVM
             // REVIEW: Need to deal with how LLVM thinks about threads and context
             // and figure out how to map it to how Zelig system uses threads...
             // for now assuming the LLVM code gen is done on a single thread
-            // and ignoring the issue of disposing the Module.
+            // and ignoring the issue of disposing the Context.
+            var context = new Context( );
+
             // TODO: Get target triple from command line instead of hard coding it here.
             var target = Target.FromTriple( "thumbv7m-none-eabi" );
-            TargetMachine = target.CreateTargetMachine( "thumbv7m-none-eabi"
+            TargetMachine = target.CreateTargetMachine( context
+                                                      , "thumbv7m-none-eabi"
                                                       , string.Empty   // CPU
                                                       , string.Empty   // features
                                                       , CodeGenOpt.None // hard code no optimizations for easier debugging for now...
@@ -43,13 +46,13 @@ namespace Microsoft.Zelig.LLVM
 
             // REVIEW: What happens when we start interacting with assemblies written in other languages?
             //         At the moment this is setting the entire module to CSharp.
-            LlvmModule = new Module( assemblyName, SourceLanguage.CSharp, "out.bc", "ZeligIR2LLVMIR", false, "", 0 )
+            LlvmModule = new NativeModule( assemblyName, context, SourceLanguage.CSharp, "out.bc", "ZeligIR2LLVMIR", false, "", 0 )
                         {
                             TargetTriple = TargetMachine.Triple,
                             Layout = TargetMachine.TargetData
                         };
 
-            LlvmModule.AddModuleFlag( ModuleFlagBehavior.Override, Module.DebugVersionValue, Module.DebugMetadataVersion );
+            LlvmModule.AddModuleFlag( ModuleFlagBehavior.Override, NativeModule.DebugVersionValue, NativeModule.DebugMetadataVersion );
 
             TypeSystem = typeSystem;
         }
@@ -214,7 +217,7 @@ namespace Microsoft.Zelig.LLVM
 
                     // Special case: Constant objects containing arrays may not strictly match the target pointer type,
                     // as the variable type always has zero elements. In these cases, we need to bitcast the pointer.
-                    if( curType.IsPointer && ( curVal.Type != curType ) )
+                    if( curType.IsPointer && ( curVal.NativeType != curType ) )
                     {
                         curVal = ConstantExpression.BitCast( curVal, curType );
                     }
@@ -247,7 +250,7 @@ namespace Microsoft.Zelig.LLVM
                 {
                     Constant curVal = ucv;
 
-                    if( curType.IsPointer && curVal.Type != curType )
+                    if( curType.IsPointer && curVal.NativeType != curType )
                     {
                         curVal = ConstantExpression.BitCast( curVal, curType );
                     }
@@ -299,7 +302,7 @@ namespace Microsoft.Zelig.LLVM
         public _Value GetGlobalFromUCV( _Type type, Constant ucv, bool isConstant )
         {
             string name = $"{type.Name}_{GetMonotonicUniqueId( )}";
-            var gv = LlvmModule.AddGlobal( ucv.Type, name );
+            var gv = LlvmModule.AddGlobal( ucv.NativeType, name );
             gv.IsConstant = isConstant;
             gv.Linkage = Linkage.Internal;
             gv.Initializer = ucv;
@@ -411,7 +414,7 @@ namespace Microsoft.Zelig.LLVM
 
         internal DICompileUnit DICompileUnit => LlvmModule.DICompileUnit;
 
-        internal Module LlvmModule { get; }
+        internal NativeModule LlvmModule { get; }
         
         internal TargetMachine TargetMachine { get; }
 

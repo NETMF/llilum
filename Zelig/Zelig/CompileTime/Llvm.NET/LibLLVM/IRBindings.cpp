@@ -19,49 +19,60 @@
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
+#include "llvm/IR/CallSite.h"
 
 using namespace llvm;
 
 extern "C"
 {
-    LLVMBool LLVMFunctionHasAttributes( LLVMValueRef Fn, int index )
+    unsigned LLVMGetAttributeSetSize( )
     {
-        Function *Func = unwrap<Function>( Fn );
-        AttributeSet attributes = Func->getAttributes( );
-        return attributes.hasAttributes( index );
+        return sizeof( AttributeSet );
     }
 
-    char const* LLVMGetFunctionAttributesAsString( LLVMValueRef Fn, int index )
+    void LLVMCopyConstructAttributeSet( uintptr_t pDst, uintptr_t pSrc )
     {
-        Function *Func = unwrap<Function>( Fn );
-        AttributeSet attributes = Func->getAttributes( );
-        return LLVMCreateMessage( attributes.getAsString( index ).c_str( ) );
+        AttributeSet const& srcAttributes = *reinterpret_cast< AttributeSet const* >( pSrc );
+        AttributeSet&  dstAttributes = *reinterpret_cast< AttributeSet* >( pDst );
+        dstAttributes = srcAttributes;
     }
 
-    void LLVMAddTargetDependentFunctionAttr2( LLVMValueRef Fn, int index, char const* name, char const* value )
+    void LLVMAttributeSetAddAttribute( LLVMContextRef context, uintptr_t pAttributeSet, int index, LLVMAttrKind kind )
     {
-        Function *Func = unwrap<Function>( Fn );
-        auto Idx =  static_cast<AttributeSet::AttrIndex>( index );
-        AttrBuilder B;
-
-        B.addAttribute( name, value );
-        AttributeSet Set = AttributeSet::get( Func->getContext( ), Idx, B );
-        Func->addAttributes( Idx, Set );
+        AttributeSet& attributes = *reinterpret_cast< AttributeSet* >( pAttributeSet );
+        attributes = attributes.addAttribute( *unwrap( context ), index, ( Attribute::AttrKind )kind );
     }
 
-    void LLVMRemoveTargetDependentFunctionAttr2( LLVMValueRef Fn, int index, char const* name )
+    void LLVMAttributeSetAddTargetDependentAttribute( LLVMContextRef context, uintptr_t pAttributeSet, int index, char const* name, char const* value )
     {
-        Function *Func = unwrap<Function>( Fn );
-        auto Idx = static_cast<AttributeSet::AttrIndex>( index );
-        AttrBuilder B( Func->getAttributes(), index );
-        B.removeAttribute( name );
-        Func->setAttributes( AttributeSet::get( Func->getContext( ), Idx, B ) );
+        AttributeSet& attributes = *reinterpret_cast< AttributeSet* >( pAttributeSet );
+        attributes = attributes.addAttribute( *unwrap( context ), index, name, value );
     }
 
-    void LLVMSetFunctionAttributeValue( LLVMValueRef Fn, int index, LLVMAttrKind kind, uint64_t value )
+    void LLVMAttributeSetRemoveTargetDependentAttribute( LLVMContextRef context, uintptr_t pAttributeSet, int index, char const* name )
     {
-        Function *Func = unwrap<Function>( Fn );
-        AttrBuilder builder( Func->getAttributes( ), index );
+        AttributeSet& attributes = *reinterpret_cast< AttributeSet* >( pAttributeSet );
+        AttrBuilder bldr;
+        bldr.addAttribute( name );
+        attributes = attributes.removeAttributes( *unwrap( context ), index, bldr );
+    }
+
+    LLVMBool LLVMAttributeSetHasAttribute( uintptr_t pAttributeSet, int index, LLVMAttrKind kind )
+    {
+        AttributeSet& attributes = *reinterpret_cast< AttributeSet* >( pAttributeSet );
+        return attributes.hasAttribute( index, ( Attribute::AttrKind )kind );
+    }
+
+    void LLVMAttributeSetRemoveAttribute( LLVMContextRef context, uintptr_t pAttributeSet, int index, LLVMAttrKind kind )
+    {
+        AttributeSet& attributes = *reinterpret_cast< AttributeSet* >( pAttributeSet );
+        attributes = attributes.removeAttribute( *unwrap( context ), index, (Attribute::AttrKind)kind );
+    }
+
+    void LLVMAttributeSetSetAttributeValue( LLVMContextRef context, uintptr_t pAttributeSet, int index, LLVMAttrKind kind, uint64_t value )
+    {
+        AttributeSet& attributes = *reinterpret_cast< AttributeSet* >( pAttributeSet );
+        AttrBuilder builder( attributes, index );
         switch( kind )
         {
         case LLVMAttrKind::LLVMAttrKindAlignment:
@@ -90,48 +101,98 @@ extern "C"
             assert( false && "Attribute kind doesn't have a value to set" );
             break;
         }
-        auto newAttributeSet = AttributeSet::get( Func->getContext( ), AttributeSet::AttrIndex::FunctionIndex, builder );
-        Func->setAttributes( newAttributeSet );
+
+        LLVMContext& ctx = *unwrap( context );
+        attributes = attributes.addAttributes( ctx, index, AttributeSet::get( ctx, index, builder ) );
     }
 
-    uint64_t LLVMGetFunctionAttributeValue( LLVMValueRef Fn, int index, LLVMAttrKind kind )
+    uint64_t LLVMAttributeSetGetAttributeValue( uintptr_t pAttributeSet, int index, LLVMAttrKind kind )
     {
-        Function *Func = unwrap<Function>( Fn );
-        AttributeSet const attributes = Func->getAttributes( );
-        Attribute attr = attributes.getAttribute( index, (Attribute::AttrKind)kind );
-        return attr.getValueAsInt();
+        AttributeSet* pAttributes = reinterpret_cast< AttributeSet* >( pAttributeSet );
+        Attribute attr = pAttributes->getAttribute( index, ( Attribute::AttrKind )kind );
+        return attr.getValueAsInt( );
     }
 
-    void LLVMAddFunctionAttr2( LLVMValueRef Fn, int index, LLVMAttrKind kind )
+    LLVMBool LLVMAttributeSetHasAttributes( uintptr_t pAttributeSet, int index )
     {
-        Function *Func = unwrap<Function>( Fn );
-        AttrBuilder builder( Func->getAttributes( ), index );
-        builder.addAttribute( ( Attribute::AttrKind )kind );
-        auto newAttributeSet = AttributeSet::get( Func->getContext( ), index, builder );
-        Func->setAttributes( newAttributeSet );
+        AttributeSet* pAttributes = reinterpret_cast< AttributeSet* >( pAttributeSet );
+        return pAttributes->hasAttributes( index );
     }
 
-    LLVMBool LLVMHasFunctionAttr2( LLVMValueRef Fn, int index, LLVMAttrKind kind )
+    char const* LLVMAttributeSetGetAttributesAsString( uintptr_t pAttributeSet, int index )
     {
-        Function *Func = unwrap<Function>( Fn );
-        AttributeSet const attributes = Func->getAttributes( );
-        return attributes.hasAttribute( index, ( Attribute::AttrKind )kind );
+        AttributeSet* pAttributes = reinterpret_cast< AttributeSet* >( pAttributeSet );
+        return LLVMCreateMessage( pAttributes->getAsString( index ).c_str( ) );
     }
 
-    LLVMBool LLVMHasTargetDependentAttribute( LLVMValueRef Fn, int index, char const* name )
+    LLVMBool LLVMAttributeSetHasTargetDependentAttribute( uintptr_t pAttributeSet, int index, char const* name )
     {
-        Function *Func = unwrap<Function>( Fn );
-        AttributeSet const attributes = Func->getAttributes( );
-        return attributes.hasAttribute( index, name );
+        AttributeSet* pAttributes = reinterpret_cast< AttributeSet* >( pAttributeSet );
+        return pAttributes->hasAttribute( index, name );
     }
 
-    void LLVMRemoveFunctionAttr2( LLVMValueRef Fn, int index, LLVMAttrKind kind )
+    LLVMBool LLVMAttributeSetHasAny( uintptr_t pAttributeSet, int index )
     {
-        Function *Func = unwrap<Function>( Fn );
-        AttrBuilder builder( Func->getAttributes( ), index );
-        builder.removeAttribute( ( Attribute::AttrKind )kind );
-        auto newAttributeSet = AttributeSet::get( Func->getContext( ), index, builder );
-        Func->setAttributes( newAttributeSet );
+        AttributeSet* pAttributes = reinterpret_cast< AttributeSet* >( pAttributeSet );
+        return pAttributes->hasAttributes( index );
+    }
+
+    void LLVMGetFunctionAttributeSet( LLVMValueRef /*Function*/ function, uintptr_t pAttributeSet )
+    {
+        Function* pFunc = unwrap<Function>( function );
+        AttributeSet& attributes = *reinterpret_cast< AttributeSet* >( pAttributeSet );
+        attributes = pFunc->getAttributes( );
+    }
+
+    void LLVMSetFunctionAttributeSet( LLVMValueRef /*Function*/ function, uintptr_t pAttributeSet )
+    {
+        Function* pFunc = unwrap<Function>( function );
+        AttributeSet& attributes = *reinterpret_cast< AttributeSet* >( pAttributeSet );
+        pFunc->setAttributes( attributes );
+    }
+
+    void LLVMAttributeSetGetParamAttributes( uintptr_t pAttributeSet, int index, uintptr_t pResult )
+    {
+        AttributeSet const& src = *reinterpret_cast< AttributeSet* >( pAttributeSet );
+        AttributeSet& resultSet = *reinterpret_cast< AttributeSet* >( pResult );
+        resultSet = src.getParamAttributes( index );
+    }
+
+    void LLVMAttributeSetGetReturnAttributes( uintptr_t pAttributeSet, uintptr_t pResult )
+    {
+        AttributeSet const& src = *reinterpret_cast< AttributeSet* >( pAttributeSet );
+        AttributeSet& resultSet = *reinterpret_cast< AttributeSet* >( pResult );
+        resultSet = src.getRetAttributes( );
+    }
+
+    void LLVMAttributeSetGetFunctionAttributes( int index, uintptr_t pAttributeSet, uintptr_t pResult )
+    {
+        AttributeSet const& src = *reinterpret_cast< AttributeSet* >( pAttributeSet );
+        AttributeSet& resultSet = *reinterpret_cast< AttributeSet* >( pResult );
+        resultSet = src.getFnAttributes( );
+    }
+
+    void LLVMAttributeSetAddAttributes2( LLVMContextRef context, uintptr_t pSrcAttributeSet, int index, uintptr_t pAttributes, uintptr_t pResult )
+    {
+        AttributeSet const& src = *reinterpret_cast< AttributeSet* >( pSrcAttributeSet );
+        AttributeSet const& attributes = *reinterpret_cast< AttributeSet* >( pAttributes );
+        AttributeSet& resultSet = *reinterpret_cast< AttributeSet* >( pResult );
+        resultSet = src.addAttributes( *unwrap( context ), index, attributes );
+    }
+
+    void LLVMGetCallSiteAttributeSet( LLVMValueRef /*Instruction*/ instruction, uintptr_t pAttributeSet )
+    {
+        CallSite call = CallSite( unwrap<Instruction>( instruction ) );
+
+        AttributeSet& attributes = *reinterpret_cast< AttributeSet* >( pAttributeSet );
+        attributes = call.getAttributes( );
+    }
+
+    void LLVMSetCallSiteAttributeSet( LLVMValueRef /*Instruction*/ instruction, uintptr_t pAttributeSet )
+    {
+        CallSite call = CallSite( unwrap<Instruction>( instruction ) );
+        AttributeSet& attributes = *reinterpret_cast< AttributeSet* >( pAttributeSet );
+        call.setAttributes( attributes );
     }
 
     LLVMMetadataRef LLVMConstantAsMetadata( LLVMValueRef C )
@@ -219,6 +280,18 @@ extern "C"
     {
         auto pMetadata = unwrap<MDNode>( M );
         return pMetadata->isResolved( );
+    }
+
+    LLVMBool LLVMIsUniqued( LLVMMetadataRef M )
+    {
+        auto pMetadata = unwrap<MDNode>( M );
+        return pMetadata->isUniqued( );
+    }
+
+    LLVMBool LLVMIsDistinct( LLVMMetadataRef M )
+    {
+        auto pMetadata = unwrap<MDNode>( M );
+        return pMetadata->isDistinct( );
     }
 
     char const* LLVMGetMDStringText( LLVMMetadataRef mdstring, unsigned* len )

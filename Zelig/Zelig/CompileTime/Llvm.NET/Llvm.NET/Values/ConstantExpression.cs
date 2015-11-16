@@ -7,11 +7,12 @@ namespace Llvm.NET.Values
     public class ConstantExpression
         : Constant
     {
-        public Opcode Opcode => (Opcode)NativeMethods.GetConstOpcode( ValueHandle );
+        public OpCode Opcode => (OpCode)NativeMethods.GetConstOpcode( ValueHandle );
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "Specific type required by interop call" )]
         public static Constant IntToPtrExpression( Constant value, ITypeRef type )
         {
-            if( value.Type.Kind != TypeKind.Integer )
+            if( value.NativeType.Kind != TypeKind.Integer )
                 throw new ArgumentException( "Integer Type expected", nameof( value ) );
 
             if( !( type is IPointerType ) )
@@ -20,6 +21,7 @@ namespace Llvm.NET.Values
             return FromHandle<Constant>( NativeMethods.ConstIntToPtr( value.ValueHandle, type.GetTypeRef() ) );
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "Specific type required by interop call" )]
         public static Constant BitCast( Constant value, ITypeRef toType )
         {
             var handle = NativeMethods.ConstBitCast( value.ValueHandle, toType.GetTypeRef( ) );

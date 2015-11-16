@@ -93,7 +93,7 @@ namespace Microsoft.Zelig.LLVM
         public void RemoveAttribute( FunctionAttribute kind )
         {
             var func = ( Function )LlvmValue;
-            func.Attributes.Remove( ( AttributeKind )kind );
+            func.RemoveAttribute( ( AttributeKind )kind );
         }
 
         public _BasicBlock GetOrInsertBasicBlock( string blockName )

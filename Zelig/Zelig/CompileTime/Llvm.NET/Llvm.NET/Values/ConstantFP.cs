@@ -8,11 +8,11 @@
             get
             {
                 bool loosesInfo;
-                return GetValue( out loosesInfo );
+                return GetValueWithLossFlag( out loosesInfo );
             }
         }
 
-        public double GetValue( out bool loosesInfo )
+        public double GetValueWithLossFlag( out bool loosesInfo )
         {
             loosesInfo = false;
             LLVMBool nativeLoosesInfo;

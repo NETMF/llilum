@@ -85,12 +85,12 @@ namespace Microsoft.Zelig.LLVM
 
         private void InsertStore(Value src, Value dst)
         {
-            var ptrType = dst.Type as IPointerType;
-            if (src.Type != ptrType.ElementType)
+            var ptrType = dst.NativeType as IPointerType;
+            if (src.NativeType != ptrType.ElementType)
             {
                 Console.WriteLine("For \"Ptr must be a pointer to Val type!\" Assert.");
                 Console.WriteLine("getOperand(0).getType()");
-                Console.WriteLine(src.Type);
+                Console.WriteLine(src.NativeType );
                 Console.WriteLine("");
                 Console.WriteLine("cast<IPointerType>(getOperand(1).getType()).getElementType()");
                 Console.WriteLine(ptrType.ElementType);
@@ -524,7 +524,7 @@ namespace Microsoft.Zelig.LLVM
         {
             for( int i = 0; i < args.Count; ++i )
             {
-                ITypeRef pty = ( ( Function )func.LlvmValue ).Parameters[ i ].Type;
+                ITypeRef pty = ( ( Function )func.LlvmValue ).Parameters[ i ].NativeType;
                 _Type paramType = _Type.GetTypeImpl( pty );
 
                 _Value argument = args[ i ];

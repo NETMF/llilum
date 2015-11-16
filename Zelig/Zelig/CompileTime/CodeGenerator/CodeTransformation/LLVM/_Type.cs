@@ -15,7 +15,7 @@ namespace Microsoft.Zelig.LLVM
         private static readonly Dictionary< IntPtr, _Type > TypeImplsReverseLookupForLlvmTypes =
             new Dictionary< IntPtr, _Type >( );
 
-        private Module LlvmModule => Module.LlvmModule;
+        private NativeModule LlvmModule => Module.LlvmModule;
 
         internal List< DebugMemberInfo > DiFields = new List< DebugMemberInfo >( );
 
@@ -291,9 +291,9 @@ namespace Microsoft.Zelig.LLVM
 
             // TODO: since Zelig takes explicit control of layout the alignment needs to come from Zelig somewhere...
             var debugMemberInfo = new DebugMemberInfo { Name = field.Name
-                                                      , Type = memberDiType
+                                                      , DebugType = memberDiType
                                                       , Index = (uint)index
-                                                      , Flags = flags
+                                                      , DebugInfoFlags = flags
                                                       , ExplicitLayout = new DebugMemberLayout( ( uint )field.MemberType.SizeInBits, 0  /* ???? */, offset * 8UL)
                                                       /* todo: file, line... (Zelig IL parsing doesn't seem to capture source locations for fields)*/
                                                       };

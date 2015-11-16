@@ -8,8 +8,10 @@
 namespace Llvm.NET
 {
     /// See Module::ModFlagBehavior
+    [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flag" )]
     public enum ModuleFlagBehavior : uint
     {
+        Invalid = 0,
         Error = LLVMModFlagBehavior.Error,
         Warning = LLVMModFlagBehavior.Warning,
         Require = LLVMModFlagBehavior.Require,
@@ -19,8 +21,10 @@ namespace Llvm.NET
     };
 
     /// <summary>LLVM Instruction opcodes</summary>
-    public enum Opcode : uint
+    [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1027:MarkEnumsWithFlags", Justification = "Not actually flags" )]
+    public enum OpCode : uint
     {
+        Invalid = 0,
         /* Terminator Instructions */
         Return = LLVMOpcode.LLVMRet,
         Branch = LLVMOpcode.LLVMBr,
@@ -159,12 +163,13 @@ namespace Llvm.NET
         Hidden = LLVMVisibility.LLVMHiddenVisibility,   /*< The GV is hidden */
         Protected = LLVMVisibility.LLVMProtectedVisibility /*< The GV is protected */
     }
-    
+
     /// <summary>Unified predicate enumeration</summary>
     /// <remarks>
     /// Underneath the C API this is what LLVM uses. For some reason the C API
     /// split it into the integer and float predicate enumerations.
     /// </remarks>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1027:MarkEnumsWithFlags" )]
     public enum Predicate : uint
     {
         False = LLVMRealPredicate.LLVMRealPredicateFalse,
@@ -207,6 +212,7 @@ namespace Llvm.NET
     ///<summary>Predicate enumeration for integer comparison</summary>
     public enum IntPredicate : uint
     {
+        False = LLVMRealPredicate.LLVMRealPredicateFalse,
         Equal = LLVMIntPredicate.LLVMIntEQ,
         NotEqual = LLVMIntPredicate.LLVMIntNE,
         UnsignedGreater = LLVMIntPredicate.LLVMIntUGT,

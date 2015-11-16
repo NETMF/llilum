@@ -1,15 +1,16 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Llvm.NET.Values
 {
     /// <summary>Single attribute for functions, function returns and function parameters</summary>
-    public struct AttributeValue
+    public class AttributeValue
     {
         /// <summary>Creates a simple boolean attribute</summary>
         /// <param name="kind">Kind of attribute</param>
         public AttributeValue( AttributeKind kind )
         {
-            if( Function.AttributeHasValue( kind ) )
+            if( AttributeHasValue( kind ) )
                 throw new ArgumentException( $"Attribute {kind} requires a value", nameof( kind ) );
 
             Kind = kind;
@@ -35,7 +36,7 @@ namespace Llvm.NET.Values
         /// </remarks>
         public AttributeValue( AttributeKind kind, UInt64 value )
         {
-            Function.RangeCheckIntAttributeValue( kind, value );
+            AttributeSet.RangeCheckIntAttributeValue( kind, value );
 
             Kind = kind;
             Name = null;
@@ -46,7 +47,7 @@ namespace Llvm.NET.Values
         /// <summary>Adds a valueless named attribute</summary>
         /// <param name="name">Attribute name</param>
         public AttributeValue( string name )
-            : this( name, null )
+            : this( name, string.Empty )
         {
         }
 
@@ -80,17 +81,44 @@ namespace Llvm.NET.Values
         public bool IsString => Name != null;
 
         /// <summary>Flag to indicate if this attribute has an integer attibrute</summary>
-        public bool IsInt => Kind.HasValue && Function.AttributeHasValue( Kind.Value );
+        public bool IsInt => Kind.HasValue && AttributeHasValue( Kind.Value );
 
         /// <summary>Flag to indicate if this attribute is a simple enumeration value</summary>
-        public bool IsEnum => Kind.HasValue && !Function.AttributeHasValue( Kind.Value );
+        public bool IsEnum => Kind.HasValue && !AttributeHasValue( Kind.Value );
+
+        /// <summary>Determines if a given AttributeValue uses a parameter value</summary>
+        /// <param name="kind">AttributeValue kind to test</param>
+        /// <returns>true if the AttributeValue has a parameter</returns>
+        /// <remarks>
+        /// Most of the attributes are simple boolean flags, however some, in particular
+        /// those dealing with sizes or alignment require a parameter value. This method
+        /// is used to determine which category the AttributeValue falls into. Any AttributeValue 
+        /// returning true requires an integer parameter and has special handling so 
+        /// cannot be used in the AddAttributes() methods.
+        /// </remarks>
+        public static bool AttributeHasValue( AttributeKind kind )
+        {
+            switch( kind )
+            {
+            case AttributeKind.Alignment:
+            case AttributeKind.Dereferenceable:
+            case AttributeKind.DereferenceableOrNull:
+            case AttributeKind.StackAlignment:
+                return true;
+
+            default:
+                return false;
+            }
+        }
 
         /// <summary>Implicitly cast an <see cref="AttributeKind"/> to an <see cref="AttributeValue"/></summary>
         /// <param name="kind">Kind of attrinute to create</param>
+        [SuppressMessage( "Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "Available via constructor, this is for convenience" )]
         public static implicit operator AttributeValue( AttributeKind kind ) => new AttributeValue( kind );
 
         /// <summary>Implicitly cast a string to an named <see cref="AttributeValue"/></summary>
         /// <param name="kind">Attribute name</param>
+        [SuppressMessage( "Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "Available via constructor, this is for convenience" )]
         public static implicit operator AttributeValue( string kind ) => new AttributeValue( kind );
     }
 }

@@ -34,11 +34,12 @@ namespace Llvm.NET.Values
                 var ptr = NativeMethods.GetValueName( ValueHandle );
                 return Marshal.PtrToStringAnsi( ptr );
             }
+
             set
             {
                 NativeMethods.SetValueName( ValueHandle, value );
                 // LLVM auto adds a numeric suffix if a register with the same name already exists
-                Debug.Assert( Name.StartsWith( value ) );
+                Debug.Assert( Name.StartsWith( value, StringComparison.Ordinal ) );
             }
         }
 
@@ -49,9 +50,9 @@ namespace Llvm.NET.Values
         public bool IsNull => NativeMethods.IsNull( ValueHandle );
 
         /// <summary>Type of the value</summary>
-        public ITypeRef Type => TypeRef.FromHandle( NativeMethods.TypeOf( ValueHandle ) );
+        public ITypeRef NativeType => TypeRef.FromHandle( NativeMethods.TypeOf( ValueHandle ) );
 
-        public Context Context => Type.Context;
+        public Context Context => NativeType.Context;
 
         /// <summary>Generates a string representing the LLVM syntax of the value</summary>
         /// <returns>string version of the value formatted by LLVM</returns>
@@ -92,6 +93,8 @@ namespace Llvm.NET.Values
             return (T)context.GetValueFor( valueRef, StaticFactory );
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling" )]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity" )]
         private static Value StaticFactory( LLVMValueRef h )
         {
             var kind = NativeMethods.GetValueKind( h );
@@ -158,7 +161,7 @@ namespace Llvm.NET.Values
                 throw new ArgumentException( "Value with kind==Instruction is not valid" );
 
             case ValueKind.Return:
-                return new Instructions.Return( h, true );
+                return new Instructions.ReturnInstruction( h, true );
 
             case ValueKind.Branch:
                 return new Instructions.Branch( h, true );
@@ -256,7 +259,7 @@ namespace Llvm.NET.Values
                 return new Instructions.PhiNode( h, true );
 
             case ValueKind.Call:
-                return new Instructions.Call( h, true );
+                return new Instructions.CallInstruction( h, true );
 
             case ValueKind.Select:
                 return new Instructions.Select( h, true );
@@ -295,7 +298,7 @@ namespace Llvm.NET.Values
                 return new Instructions.AtomicRMW( h, true );
 
             case ValueKind.Resume:
-                return new Instructions.Resume( h, true );
+                return new Instructions.ResumeInstruction( h, true );
 
             case ValueKind.LandingPad:
                 return new Instructions.LandingPad( h, true );
@@ -368,6 +371,7 @@ namespace Llvm.NET.Values
         /// information isn't actually available. This helps to avoid cluttering calling code with test for debug info
         /// before trying to add it.</para>
         /// </remarks>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "Specific type required by interop call" )]
         public static T SetDebugLocation<T>( this T value, DILocation location )
             where T : Value
         {
@@ -400,6 +404,7 @@ namespace Llvm.NET.Values
         /// information isn't actually available. This helps to avoid cluttering calling code with test for debug info
         /// before trying to add it.</para>
         /// </remarks>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "Specific type required by interop call" )]
         public static T SetDebugLocation<T>( this T value, uint line, uint column, DebugInfo.DIScope scope )
             where T : Value
         {

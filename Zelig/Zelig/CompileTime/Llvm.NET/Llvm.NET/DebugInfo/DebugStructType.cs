@@ -10,12 +10,12 @@ namespace Llvm.NET.DebugInfo
         , IStructType
     {
         public DebugStructType( IStructType llvmType
-                              , Module module
+                              , NativeModule module
                               , DIScope scope
                               , string name
                               , DIFile file
                               , uint line
-                              , DebugInfoFlags flags
+                              , DebugInfoFlags debugFlags
                               , DIType derivedFrom
                               , IEnumerable<DIType> elements
                               )
@@ -26,7 +26,7 @@ namespace Llvm.NET.DebugInfo
                                                      , line
                                                      , module.Layout.BitSizeOf( llvmType )
                                                      , module.Layout.AbiBitAlignmentOf( llvmType )
-                                                     , ( uint )flags
+                                                     , debugFlags
                                                      , derivedFrom
                                                      , elements
                                                      )
@@ -35,7 +35,7 @@ namespace Llvm.NET.DebugInfo
         }
 
         public DebugStructType( IStructType llvmType
-                              , Module module
+                              , NativeModule module
                               , DIScope scope
                               , string name
                               , DIFile file
@@ -52,7 +52,7 @@ namespace Llvm.NET.DebugInfo
         {
         }
 
-        public DebugStructType( Module module
+        public DebugStructType( NativeModule module
                               , string nativeName
                               , DIScope scope
                               , string name
@@ -77,25 +77,25 @@ namespace Llvm.NET.DebugInfo
         }
 
         public void SetBody( bool packed
-                           , Module module
+                           , NativeModule module
                            , DIScope scope
                            , DIFile diFile
                            , uint line
-                           , DebugInfoFlags flags
+                           , DebugInfoFlags debugFlags
                            , IEnumerable<DebugMemberInfo> debugElements
                            )
         {
             var debugMembersArray = debugElements as IList<DebugMemberInfo> ?? debugElements.ToList();
-            var nativeElements = debugMembersArray.Select( e => e.Type.NativeType );
-            SetBody( packed, module, scope, diFile, line, flags, nativeElements, debugMembersArray );
+            var nativeElements = debugMembersArray.Select( e => e.DebugType.NativeType );
+            SetBody( packed, module, scope, diFile, line, debugFlags, nativeElements, debugMembersArray );
         }
 
         public void SetBody( bool packed
-                           , Module module
+                           , NativeModule module
                            , DIScope scope
                            , DIFile diFile
                            , uint line
-                           , DebugInfoFlags flags
+                           , DebugInfoFlags debugFlags
                            , IEnumerable<ITypeRef> nativeElements
                            , IEnumerable<DebugMemberInfo> debugelements
                            , uint? bitSize = null
@@ -113,14 +113,14 @@ namespace Llvm.NET.DebugInfo
                                                                 , line: line
                                                                 , bitSize: bitSize ?? module.Layout.BitSizeOf( NativeType )
                                                                 , bitAlign: bitAlignment ?? module.Layout.AbiBitAlignmentOf( NativeType )
-                                                                , flags: (uint)flags
+                                                                , debugFlags: debugFlags
                                                                 , derivedFrom: null
                                                                 , elements: memberTypes
                                                                 );
             DIType = concreteType;
         }
 
-        private DIDerivedType CreateMemberType( Module module, DebugMemberInfo memberInfo )
+        private DIDerivedType CreateMemberType( NativeModule module, DebugMemberInfo memberInfo )
         {
             ulong bitSize;
             ulong bitAlign;
@@ -128,16 +128,16 @@ namespace Llvm.NET.DebugInfo
 
             // if explicit layout info provided, use it;
             // otherwise use module.Layout as the default
-            if( memberInfo.ExplicitLayout.HasValue )
+            if( memberInfo.ExplicitLayout != null )
             {
-                bitSize = memberInfo.ExplicitLayout.Value.BitSize;
-                bitAlign = memberInfo.ExplicitLayout.Value.BitAlignment;
-                bitOffset = memberInfo.ExplicitLayout.Value.BitOffset;
+                bitSize = memberInfo.ExplicitLayout.BitSize;
+                bitAlign = memberInfo.ExplicitLayout.BitAlignment;
+                bitOffset = memberInfo.ExplicitLayout.BitOffset;
             }
             else
             {
-                bitSize = module.Layout.BitSizeOf( memberInfo.Type.NativeType );
-                bitAlign = module.Layout.AbiBitAlignmentOf( memberInfo.Type.NativeType );
+                bitSize = module.Layout.BitSizeOf( memberInfo.DebugType.NativeType );
+                bitAlign = module.Layout.AbiBitAlignmentOf( memberInfo.DebugType.NativeType );
                 bitOffset = module.Layout.BitOffsetOfElement( NativeType, memberInfo.Index );
             }
 
@@ -148,8 +148,8 @@ namespace Llvm.NET.DebugInfo
                                                     , bitSize: bitSize
                                                     , bitAlign: bitAlign
                                                     , bitOffset: bitOffset
-                                                    , flags: (uint)memberInfo.Flags
-                                                    , type: memberInfo.Type.DIType
+                                                    , debugFlags: memberInfo.DebugInfoFlags
+                                                    , type: memberInfo.DebugType.DIType
                                                     );
         }
 

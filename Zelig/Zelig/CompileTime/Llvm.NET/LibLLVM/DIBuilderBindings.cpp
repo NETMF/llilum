@@ -23,9 +23,16 @@
 using namespace llvm;
 
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS( DIBuilder, LLVMDIBuilderRef )
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS( MDOperand, LLVMMDOperandRef )
 
 extern "C"
 {
+    LLVMContextRef LLVMGetNodeContext( LLVMMetadataRef /*MDNode*/ node )
+    {
+        MDNode* pNode = unwrap<MDNode>( node );
+        return wrap( &pNode->getContext( ) );
+    }
+
     LLVMMetadataRef /*DILocalScope*/ LLVMGetDILocationScope( LLVMMetadataRef /*DILocation*/ location )
     {
         DILocation* loc = unwrap<DILocation>( location );
@@ -343,7 +350,7 @@ extern "C"
         DIBuilder *D = unwrap(Dref);
         DICompositeType* type = D->createReplaceableCompositeType( Tag
                                                                    , Name
-                                                                   , unwrap<DIScope>( Scope )
+                                                                   , Scope ? unwrap<DIScope>( Scope ) : nullptr
                                                                    , File ? unwrap<DIFile>( File ) : nullptr
                                                                    , Line
                                                                    , RuntimeLang
@@ -597,11 +604,11 @@ extern "C"
         return wrap( pInstruction );
     }
 
-    char const* LLVMDIDescriptorAsString( LLVMMetadataRef descriptor )
+    char const* LLVMMetadataAsString( LLVMMetadataRef descriptor )
     {
         std::string Messages;
         raw_string_ostream Msg( Messages );
-        DINode* d = unwrap<DINode>( descriptor );
+        Metadata* d = unwrap<Metadata>( descriptor );
         d->print( Msg );
         return LLVMCreateMessage( Msg.str( ).c_str( ) );
     }
@@ -639,5 +646,29 @@ extern "C"
                                                     , line
                                                     );
         return wrap( pNamespace );
+    }
+
+    LLVMMetadataKind LLVMGetMetadataID( LLVMMetadataRef /*Metadata*/ md )
+    {
+        Metadata* pMetadata = unwrap( md );
+        return (LLVMMetadataKind)pMetadata->getMetadataID( );
+    }
+
+    uint32_t LLVMMDNodeGetNumOperands( LLVMMetadataRef /*MDNode*/ node )
+    {
+        MDNode* pNode = unwrap<MDNode>( node );
+        return pNode->getNumOperands( );
+    }
+
+    LLVMMDOperandRef LLVMMDNodeGetOperand( LLVMMetadataRef /*MDNode*/ node, uint32_t index )
+    {
+        MDNode* pNode = unwrap<MDNode>( node );
+        return wrap( &pNode->getOperand( index ) );
+    }
+
+    LLVMMetadataRef LLVMGetOperandNode( LLVMMDOperandRef operand )
+    {
+        MDOperand const* pOperand = unwrap( operand );
+        return wrap( pOperand->get( ) );
     }
 }

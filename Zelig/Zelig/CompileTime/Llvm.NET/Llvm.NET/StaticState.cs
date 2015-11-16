@@ -4,7 +4,7 @@ namespace Llvm.NET
 {
     /// <summary>Target tools to register/enable</summary>
     [Flags]
-    public enum TargetRegistration
+    public enum TargetRegistrations
     {
         /// <summary>Register nothing</summary>
         None = 0x00,
@@ -35,346 +35,346 @@ namespace Llvm.NET
         }
 
         // basic pattern to follow for any new targets in the future
-        //public static void RegisterXXX( TargetRegistration regFlags = TargetRegistration.All )
+        //public static void RegisterXXX( TargetRegistrations registrations = TargetRegistration.All )
         //{
-        //    if( regFlags.HasFlag( TargetRegistration.Target ) )
+        //    if( registrations.HasFlag( TargetRegistrations.Target ) )
         //        LLVMNative.InitializeXXXTarget( );
 
-        //    if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
+        //    if( registrations.HasFlag( TargetRegistrations.TargetInfo ) )
         //        LLVMNative.InitializeXXXTargetInfo( );
 
-        //    if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
+        //    if( registrations.HasFlag( TargetRegistrations.TargetMachine ) )
         //        LLVMNative.InitializeXXXTargetMC( );
 
-        //    if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
+        //    if( registrations.HasFlag( TargetRegistrations.AsmPrinter ) )
         //        LLVMNative.InitializeXXXAsmPrinter( );
 
-        //    if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
+        //    if( registrations.HasFlag( TargetRegistrations.Disassembler ) )
         //        LLVMNative.InitializeXXXDisassembler( );
 
-        //    if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
+        //    if( registrations.HasFlag( TargetRegistrations.AsmParser ) )
         //        LLVMNative.InitializeXXXAsmParser( );
         //}
 
         /// <summary>Registers components for all available targets</summary>
-        /// <param name="regFlags">Flags indicating which components to register/enable</param>
-        public static void RegisterAll( TargetRegistration regFlags = TargetRegistration.All )
+        /// <param name="registrations">Flags indicating which components to register/enable</param>
+        public static void RegisterAll( TargetRegistrations registrations = TargetRegistrations.All )
         {
-            if( regFlags.HasFlag( TargetRegistration.Target ) )
+            if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializeAllTargets( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetInfo ) )
                 NativeMethods.InitializeAllTargetInfos( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetMachine ) )
                 NativeMethods.InitializeAllTargetMCs( );
 
-            if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
+            if( registrations.HasFlag( TargetRegistrations.AsmPrinter ) )
                 NativeMethods.InitializeAllAsmPrinters( );
 
-            if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
+            if( registrations.HasFlag( TargetRegistrations.Disassembler ) )
                 NativeMethods.InitializeAllDisassemblers( );
 
-            if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
+            if( registrations.HasFlag( TargetRegistrations.AsmParser ) )
                 NativeMethods.InitializeAllAsmParsers( );
         }
 
         /// <summary>Registers components for the target representing the system the calling process is running on</summary>
-        /// <param name="regFlags">Flags indicating which components to register/enable</param>
-        public static void RegisterNative( TargetRegistration regFlags = TargetRegistration.All )
+        /// <param name="registrations">Flags indicating which components to register/enable</param>
+        public static void RegisterNative( TargetRegistrations registrations = TargetRegistrations.All )
         {
-            if( regFlags.HasFlag( TargetRegistration.Target ) )
+            if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializeNativeTarget( );
 
-            //if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
+            //if( registrations.HasFlag( TargetRegistration.TargetInfo ) )
             //    LLVMNative.InitializeNativeTargetInfo( );
 
-            //if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
+            //if( registrations.HasFlag( TargetRegistration.TargetMachine ) )
             //    LLVMNative.InitializeNativeTargetMC( );
 
-            if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
+            if( registrations.HasFlag( TargetRegistrations.AsmPrinter ) )
                 NativeMethods.InitializeNativeAsmPrinter( );
 
-            if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
+            if( registrations.HasFlag( TargetRegistrations.Disassembler ) )
                 NativeMethods.InitializeNativeDisassembler( );
 
-            if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
+            if( registrations.HasFlag( TargetRegistrations.AsmParser ) )
                 NativeMethods.InitializeNativeAsmParser( );
         }
 
         /// <summary>Registers components for ARM AArch64 target(s)</summary>
-        /// <param name="regFlags">Flags indicating which components to register/enable</param>
-        public static void RegisterAArch64( TargetRegistration regFlags = TargetRegistration.All  )
+        /// <param name="registrations">Flags indicating which components to register/enable</param>
+        public static void RegisterAArch64( TargetRegistrations registrations = TargetRegistrations.All  )
         {
-            if( regFlags.HasFlag( TargetRegistration.Target ) )
+            if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializeAArch64Target( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetInfo ) )
                 NativeMethods.InitializeAArch64TargetInfo( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetMachine ) )
                 NativeMethods.InitializeAArch64TargetMC( );
 
-            if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
+            if( registrations.HasFlag( TargetRegistrations.AsmPrinter ) )
                 NativeMethods.InitializeAArch64AsmPrinter( );
 
-            if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
+            if( registrations.HasFlag( TargetRegistrations.Disassembler ) )
                 NativeMethods.InitializeAArch64Disassembler( );
 
-            if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
+            if( registrations.HasFlag( TargetRegistrations.AsmParser ) )
                 NativeMethods.InitializeAArch64AsmParser( );
         }
 
         /// <summary>Registers components for ARM 32bit and 16bit thumb targets</summary>
-        /// <param name="regFlags">Flags indicating which components to register/enable</param>
-        public static void RegisterARM( TargetRegistration regFlags = TargetRegistration.All  )
+        /// <param name="registrations">Flags indicating which components to register/enable</param>
+        public static void RegisterARM( TargetRegistrations registrations = TargetRegistrations.All  )
         {
-            if( regFlags.HasFlag( TargetRegistration.Target ) )
+            if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializeARMTarget( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetInfo ) )
                 NativeMethods.InitializeARMTargetInfo( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetMachine ) )
                 NativeMethods.InitializeARMTargetMC( );
 
-            if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
+            if( registrations.HasFlag( TargetRegistrations.AsmPrinter ) )
                 NativeMethods.InitializeARMAsmPrinter( );
 
-            if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
+            if( registrations.HasFlag( TargetRegistrations.Disassembler ) )
                 NativeMethods.InitializeARMDisassembler( );
 
-            if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
+            if( registrations.HasFlag( TargetRegistrations.AsmParser ) )
                 NativeMethods.InitializeARMAsmParser( );
         }
 
         /// <summary>Registers components for the Hexagon CPU</summary>
-        /// <param name="regFlags">Flags indicating which components to register/enable</param>
-        public static void RegisterHexagon( TargetRegistration regFlags = TargetRegistration.All  )
+        /// <param name="registrations">Flags indicating which components to register/enable</param>
+        public static void RegisterHexagon( TargetRegistrations registrations = TargetRegistrations.All  )
         {
-            if( regFlags.HasFlag( TargetRegistration.Target ) )
+            if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializeHexagonTarget( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetInfo ) )
                 NativeMethods.InitializeHexagonTargetInfo( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetMachine ) )
                 NativeMethods.InitializeHexagonTargetMC( );
 
-            if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
+            if( registrations.HasFlag( TargetRegistrations.AsmPrinter ) )
                 NativeMethods.InitializeHexagonAsmPrinter( );
 
-            if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
+            if( registrations.HasFlag( TargetRegistrations.Disassembler ) )
                 NativeMethods.InitializeHexagonDisassembler( );
 
-            //if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
+            //if( registrations.HasFlag( TargetRegistration.AsmParser ) )
             //    LLVMNative.InitializeHexagonAsmParser( );
         }
 
         /// <summary>Registers components for MIPS targets</summary>
-        /// <param name="regFlags">Flags indicating which components to register/enable</param>
-        public static void RegisterMips( TargetRegistration regFlags = TargetRegistration.All  )
+        /// <param name="registrations">Flags indicating which components to register/enable</param>
+        public static void RegisterMips( TargetRegistrations registrations = TargetRegistrations.All  )
         {
-            if( regFlags.HasFlag( TargetRegistration.Target ) )
+            if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializeMipsTarget( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetInfo ) )
                 NativeMethods.InitializeMipsTargetInfo( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetMachine ) )
                 NativeMethods.InitializeMipsTargetMC( );
 
-            if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
+            if( registrations.HasFlag( TargetRegistrations.AsmPrinter ) )
                 NativeMethods.InitializeMipsAsmPrinter( );
 
-            if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
+            if( registrations.HasFlag( TargetRegistrations.Disassembler ) )
                 NativeMethods.InitializeMipsDisassembler( );
 
-            if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
+            if( registrations.HasFlag( TargetRegistrations.AsmParser ) )
                 NativeMethods.InitializeMipsAsmParser( );
         }
 
         /// <summary>Registers components for MSP430 targets</summary>
-        /// <param name="regFlags">Flags indicating which components to register/enable</param>
-        public static void RegisterMSP430( TargetRegistration regFlags = TargetRegistration.All  )
+        /// <param name="registrations">Flags indicating which components to register/enable</param>
+        public static void RegisterMSP430( TargetRegistrations registrations = TargetRegistrations.All  )
         {
-            if( regFlags.HasFlag( TargetRegistration.Target ) )
+            if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializeMSP430Target( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetInfo ) )
                 NativeMethods.InitializeMSP430TargetInfo( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetMachine ) )
                 NativeMethods.InitializeMSP430TargetMC( );
 
-            if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
+            if( registrations.HasFlag( TargetRegistrations.AsmPrinter ) )
                 NativeMethods.InitializeMSP430AsmPrinter( );
 
-            //if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
+            //if( registrations.HasFlag( TargetRegistration.Disassembler ) )
             //    LLVMNative.InitializeMSP430Disassembler( );
 
-            //if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
+            //if( registrations.HasFlag( TargetRegistration.AsmParser ) )
             //    LLVMNative.InitializeMSP430AsmParser( );
         }
 
         /// <summary>Registers components for the NVPTX targets</summary>
-        /// <param name="regFlags">Flags indicating which components to register/enable</param>
-        public static void RegisterNVPTX( TargetRegistration regFlags = TargetRegistration.All  )
+        /// <param name="registrations">Flags indicating which components to register/enable</param>
+        public static void RegisterNVPTX( TargetRegistrations registrations = TargetRegistrations.All  )
         {
-            if( regFlags.HasFlag( TargetRegistration.Target ) )
+            if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializeNVPTXTarget( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetInfo ) )
                 NativeMethods.InitializeNVPTXTargetInfo( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetMachine ) )
                 NativeMethods.InitializeNVPTXTargetMC( );
 
-            if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
+            if( registrations.HasFlag( TargetRegistrations.AsmPrinter ) )
                 NativeMethods.InitializeNVPTXAsmPrinter( );
 
-            //if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
+            //if( registrations.HasFlag( TargetRegistration.Disassembler ) )
             //    LLVMNative.InitializeNVPTXDisassembler( );
 
-            //if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
+            //if( registrations.HasFlag( TargetRegistration.AsmParser ) )
             //    LLVMNative.InitializeNVPTXAsmParser( );
         }
 
         /// <summary>Registers components for the PowerPC targets</summary>
-        /// <param name="regFlags">Flags indicating which components to register/enable</param>
-        public static void RegisterPowerPC( TargetRegistration regFlags = TargetRegistration.All  )
+        /// <param name="registrations">Flags indicating which components to register/enable</param>
+        public static void RegisterPowerPC( TargetRegistrations registrations = TargetRegistrations.All  )
         {
-            if( regFlags.HasFlag( TargetRegistration.Target ) )
+            if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializePowerPCTarget( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetInfo ) )
                 NativeMethods.InitializePowerPCTargetInfo( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetMachine ) )
                 NativeMethods.InitializePowerPCTargetMC( );
 
-            if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
+            if( registrations.HasFlag( TargetRegistrations.AsmPrinter ) )
                 NativeMethods.InitializePowerPCAsmPrinter( );
 
-            if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
+            if( registrations.HasFlag( TargetRegistrations.Disassembler ) )
                 NativeMethods.InitializePowerPCDisassembler( );
 
-            if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
+            if( registrations.HasFlag( TargetRegistrations.AsmParser ) )
                 NativeMethods.InitializePowerPCAsmParser( );
         }
 
         /// <summary>Registers components for AMDGPU targets</summary>
-        /// <param name="regFlags">Flags indicating which components to register/enable</param>
-        public static void RegisterAMDGPU( TargetRegistration regFlags = TargetRegistration.All  )
+        /// <param name="registrations">Flags indicating which components to register/enable</param>
+        public static void RegisterAMDGPU( TargetRegistrations registrations = TargetRegistrations.All  )
         {
-            if( regFlags.HasFlag( TargetRegistration.Target ) )
+            if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializeAMDGPUTarget( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetInfo ) )
                 NativeMethods.InitializeAMDGPUTargetInfo( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetMachine ) )
                 NativeMethods.InitializeAMDGPUTargetMC( );
 
-            if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
+            if( registrations.HasFlag( TargetRegistrations.AsmPrinter ) )
                 NativeMethods.InitializeAMDGPUAsmPrinter( );
 
-            //if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
+            //if( registrations.HasFlag( TargetRegistration.Disassembler ) )
             //    LLVMNative.InitializeAMDGPUDisassembler( );
 
-            if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
+            if( registrations.HasFlag( TargetRegistrations.AsmParser ) )
                 NativeMethods.InitializeAMDGPUAsmParser( );
         }
 
         /// <summary>Registers components for SPARC targets</summary>
-        /// <param name="regFlags">Flags indicating which components to register/enable</param>
-        public static void RegisterSparc( TargetRegistration regFlags = TargetRegistration.All  )
+        /// <param name="registrations">Flags indicating which components to register/enable</param>
+        public static void RegisterSparc( TargetRegistrations registrations = TargetRegistrations.All  )
         {
-            if( regFlags.HasFlag( TargetRegistration.Target ) )
+            if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializeSparcTarget( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetInfo ) )
                 NativeMethods.InitializeSparcTargetInfo( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetMachine ) )
                 NativeMethods.InitializeSparcTargetMC( );
 
-            if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
+            if( registrations.HasFlag( TargetRegistrations.AsmPrinter ) )
                 NativeMethods.InitializeSparcAsmPrinter( );
 
-            if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
+            if( registrations.HasFlag( TargetRegistrations.Disassembler ) )
                 NativeMethods.InitializeSparcDisassembler( );
 
-            if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
+            if( registrations.HasFlag( TargetRegistrations.AsmParser ) )
                 NativeMethods.InitializeSparcAsmParser( );
         }
 
         /// <summary>Registers components for SystemZ targets</summary>
-        /// <param name="regFlags">Flags indicating which components to register/enable</param>
-        public static void RegisterSystemZ( TargetRegistration regFlags = TargetRegistration.All  )
+        /// <param name="registrations">Flags indicating which components to register/enable</param>
+        public static void RegisterSystemZ( TargetRegistrations registrations = TargetRegistrations.All  )
         {
-            if( regFlags.HasFlag( TargetRegistration.Target ) )
+            if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializeSystemZTarget( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetInfo ) )
                 NativeMethods.InitializeSystemZTargetInfo( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetMachine ) )
                 NativeMethods.InitializeSystemZTargetMC( );
 
-            if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
+            if( registrations.HasFlag( TargetRegistrations.AsmPrinter ) )
                 NativeMethods.InitializeSystemZAsmPrinter( );
 
-            if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
+            if( registrations.HasFlag( TargetRegistrations.Disassembler ) )
                 NativeMethods.InitializeSystemZDisassembler( );
 
-            if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
+            if( registrations.HasFlag( TargetRegistrations.AsmParser ) )
                 NativeMethods.InitializeSystemZAsmParser( );
         }
 
         /// <summary>Registers components for X86 targets</summary>
-        /// <param name="regFlags">Flags indicating which components to register/enable</param>
-        public static void RegisterX86( TargetRegistration regFlags = TargetRegistration.All  )
+        /// <param name="registrations">Flags indicating which components to register/enable</param>
+        public static void RegisterX86( TargetRegistrations registrations = TargetRegistrations.All  )
         {
-            if( regFlags.HasFlag( TargetRegistration.Target ) )
+            if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializeX86Target( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetInfo ) )
                 NativeMethods.InitializeX86TargetInfo( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetMachine ) )
                 NativeMethods.InitializeX86TargetMC( );
 
-            if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
+            if( registrations.HasFlag( TargetRegistrations.AsmPrinter ) )
                 NativeMethods.InitializeX86AsmPrinter( );
 
-            if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
+            if( registrations.HasFlag( TargetRegistrations.Disassembler ) )
                 NativeMethods.InitializeX86Disassembler( );
 
-            if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
+            if( registrations.HasFlag( TargetRegistrations.AsmParser ) )
                 NativeMethods.InitializeX86AsmParser( );
         }
 
         /// <summary>Registers components for XCore targets</summary>
-        /// <param name="regFlags">Flags indicating which components to register/enable</param>
-        public static void RegisterXCore( TargetRegistration regFlags = TargetRegistration.All  )
+        /// <param name="registrations">Flags indicating which components to register/enable</param>
+        public static void RegisterXCore( TargetRegistrations registrations = TargetRegistrations.All  )
         {
-            if( regFlags.HasFlag( TargetRegistration.Target ) )
+            if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializeXCoreTarget( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetInfo ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetInfo ) )
                 NativeMethods.InitializeXCoreTargetInfo( );
 
-            if( regFlags.HasFlag( TargetRegistration.TargetMachine ) )
+            if( registrations.HasFlag( TargetRegistrations.TargetMachine ) )
                 NativeMethods.InitializeXCoreTargetMC( );
 
-            if( regFlags.HasFlag( TargetRegistration.AsmPrinter ) )
+            if( registrations.HasFlag( TargetRegistrations.AsmPrinter ) )
                 NativeMethods.InitializeXCoreAsmPrinter( );
 
-            if( regFlags.HasFlag( TargetRegistration.Disassembler ) )
+            if( registrations.HasFlag( TargetRegistrations.Disassembler ) )
                 NativeMethods.InitializeXCoreDisassembler( );
 
-            //if( regFlags.HasFlag( TargetRegistration.AsmParser ) )
+            //if( registrations.HasFlag( TargetRegistration.AsmParser ) )
             //    LLVMNative.InitializeXCoreAsmParser( );
         }
     }

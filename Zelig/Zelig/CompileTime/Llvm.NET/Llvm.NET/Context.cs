@@ -20,8 +20,8 @@ namespace Llvm.NET
     /// so does module two but they are completely distinct from each other)
     ///</para>
     /// <para>LLVM Debug information is ultimately all parented to a top level
-    /// <see cref="DebugInfo.DICompileUnit"/> as the scope, and a compilation
-    /// unit is bound to a <see cref="Module"/>, even though, technically the
+    /// <see cref="DICompileUnit"/> as the scope, and a compilation
+    /// unit is bound to a <see cref="NativeModule"/>, even though, technically the
     /// types are owned by a Context. Thus to keep things simpler and help make
     /// working with debug infomration easier. Lllvm.NET encapsulates the native
     /// type and the debug type in seperate classes that are instances of the
@@ -70,10 +70,18 @@ namespace Llvm.NET
         /// <summary>Get's the LLVM double precision floating point type for this context</summary>
         public ITypeRef DoubleType => TypeRef.FromHandle( NativeMethods.DoubleTypeInContext( ContextHandle ) );
 
+        public IEnumerable<LlvmMetadata> Metadata => MetadataCache.Values;
+
         /// <summary>Get a type that is a pointer to a value of a given type</summary>
         /// <param name="elementType">Type of value the pointer points to</param>
         /// <returns><see cref="IPointerType"/> for a pointer that references a value of type <paramref name="elementType"/></returns>
-        public IPointerType GetPointerTypeFor( ITypeRef elementType ) => TypeRef.FromHandle<IPointerType>( NativeMethods.PointerType( elementType.GetTypeRef(), 0 ) );
+        public IPointerType GetPointerTypeFor( ITypeRef elementType )
+        {
+            if( elementType.Context != this )
+                throw new ArgumentException( "Cannot mix types from different contexts", nameof( elementType ) );
+
+            return TypeRef.FromHandle<IPointerType>( NativeMethods.PointerType( elementType.GetTypeRef(), 0 ) );
+        }
 
         /// <summary>Get's an LLVM integer type of arbitrary bit width</summary>
         /// <remarks>
@@ -204,7 +212,7 @@ namespace Llvm.NET
                                                    , IEnumerable<IDebugType<ITypeRef, DIType>> argTypes
                                                    )
         {
-            if( !retType.HasDebugInfo )
+            if( !retType.HasDebugInfo() )
                 throw new ArgumentNullException( nameof( retType ), "Return type does not have debug information" );
 
             var nativeArgTypes = new List<ITypeRef>();
@@ -216,7 +224,7 @@ namespace Llvm.NET
             {
                 nativeArgTypes.Add( indexedPair.Type.NativeType );
                 debugArgTypes.Add( indexedPair.Type.DIType );
-                if( indexedPair.Type.HasDebugInfo )
+                if( indexedPair.Type.HasDebugInfo() )
                     continue;
 
                 msg.AppendFormat( "\tArgument {0} does not contain debug type information", indexedPair.Index );
@@ -323,9 +331,29 @@ namespace Llvm.NET
             if( type.Context != this )
                 throw new ArgumentException( "Cannot create named constant struct with type from another context", nameof( type ) );
 
-            var valueHandles = values.Select( v => v.ValueHandle ).ToArray( );
+            var valueList = values as IList<Constant> ?? values.ToList( );
+            var valueHandles = valueList.Select( v => v.ValueHandle ).ToArray( );
             if( type.Members.Count != valueHandles.Length )
                 throw new ArgumentException( "Number of values provided must match the number of elements in the specified type" );
+
+            var mismatchedTypes = from indexedVal in valueList.Select( ( v, i ) => new { Value = v, Index = i } )
+                                  where indexedVal.Value.NativeType != type.Members[ indexedVal.Index ]
+                                  select indexedVal;
+
+            if( mismatchedTypes.Any())
+            {
+                var msg = new StringBuilder( "One or more values provided do not match the correspoinding member type:" );
+                msg.AppendLine( );
+                foreach( var mismatch in mismatchedTypes )
+                {
+                    msg.AppendFormat( "\t[{0}]: member type={1}; value type={2}"
+                                    , mismatch.Index
+                                    , type.Members[ mismatch.Index ]
+                                    , valueList[ mismatch.Index ].NativeType
+                                    );
+                }
+                throw new ArgumentException( msg.ToString( ) );
+            }
 
             var handle = NativeMethods.ConstNamedStruct(type.GetTypeRef(), out valueHandles[ 0 ], ( uint )valueHandles.Length );
             return Value.FromHandle<Constant>( handle );
@@ -525,6 +553,9 @@ namespace Llvm.NET
         /// <returns>Constant for the specifiec value</returns>
         public Constant CreateConstant( ITypeRef intType, UInt64 constValue, bool signExtend )
         {
+            if( intType.Context != this )
+                throw new ArgumentException( "Cannot mix types from different contexts", nameof( intType ) );
+
             if( intType.Kind != TypeKind.Integer )
                 throw new ArgumentException( "Integer type required", nameof( intType ) );
 
@@ -547,25 +578,24 @@ namespace Llvm.NET
             return Value.FromHandle<ConstantFP>( NativeMethods.ConstReal( DoubleType.GetTypeRef(), constValue ) );
         }
 
-        internal void Close()
-        {
-            Dispose( );
-        }
-
         #region Interning Factories
-        internal void AddModule( Module module )
+        internal void AddModule( NativeModule module )
         {
             ModuleCache.Add( module.ModuleHandle.Pointer, module );
         }
 
-        internal Module GetModuleFor( LLVMModuleRef moduleRef )
+        internal NativeModule GetModuleFor( LLVMModuleRef moduleRef )
         {
             if( moduleRef.Pointer == IntPtr.Zero )
                 throw new ArgumentNullException( nameof( moduleRef ) );
 
-            Module retVal;
+            var hModuleContext = NativeMethods.GetModuleContext( moduleRef );
+            if( hModuleContext.Pointer != ContextHandle.Pointer )
+                throw new ArgumentException( "Incorrect context for module" );
+
+            NativeModule retVal;
             if( !ModuleCache.TryGetValue( moduleRef.Pointer, out retVal ) )
-                return null;
+                retVal = new NativeModule( moduleRef );
 
             return retVal;
         }
@@ -615,6 +645,21 @@ namespace Llvm.NET
             }
         }
 
+        internal static Context GetContextFor( LLVMMetadataRef handle )
+        {
+            if( handle == LLVMMetadataRef.Zero )
+                return null;
+
+            var hContext = NativeMethods.GetNodeContext( handle );
+            Debug.Assert( hContext.Pointer != IntPtr.Zero );
+            return GetContextFor( hContext );
+        }
+
+        internal void RemoveDeletedNode( MDNode node )
+        {
+            MetadataCache.Remove( node.MetadataHandle );
+        }
+
         internal LLVMContextRef ContextHandle { get; private set; }
 
         [Conditional("DEBUG")]
@@ -637,12 +682,35 @@ namespace Llvm.NET
             return retVal;
         }
 
-        internal void InternValue( Value value )
+        internal LlvmMetadata GetNodeFor( LLVMMetadataRef handle, Func<LLVMMetadataRef, LlvmMetadata> staticFactory )
         {
-            if( ValueCache.ContainsKey( value.ValueHandle.Pointer ) )
-                throw new ArgumentException( "Value already interned", nameof( value ) );
+            if( handle == LLVMMetadataRef.Zero )
+                throw new ArgumentNullException( nameof( handle ) );
 
-            ValueCache.Add( value.ValueHandle.Pointer, value );
+            LlvmMetadata retVal = null;
+            if( MetadataCache.TryGetValue( handle, out retVal ) )
+                return retVal;
+
+            retVal = staticFactory( handle );
+            MetadataCache.Add( handle, retVal );
+            return retVal;
+        }
+
+        internal MDOperand GetOperandFor( MDNode owningNode, LLVMMDOperandRef handle )
+        {
+            if( owningNode.Context != this )
+                throw new ArgumentException( "Cannot get operandd for a node from a different context", nameof( owningNode ) );
+
+            if( handle.Pointer == IntPtr.Zero )
+                throw new ArgumentNullException( nameof( handle ) );
+
+            MDOperand retVal = null;
+            if( MDOperandCache.TryGetValue( handle, out retVal ) )
+                return retVal;
+
+            retVal = new MDOperand( owningNode, handle );
+            MDOperandCache.Add( handle, retVal );
+            return retVal;
         }
 
         [Conditional("DEBUG")]
@@ -666,38 +734,8 @@ namespace Llvm.NET
         }
         #endregion
 
-        private Context( LLVMContextRef contextRef )
-        {
-            ContextHandle = contextRef;
-            lock ( ContextCache )
-            {
-                ContextCache.Add( contextRef, this );
-            }
-            NativeMethods.ContextSetDiagnosticHandler( ContextHandle, DiagnosticHandler, IntPtr.Zero );
-        }
-
-        private void DiagnosticHandler(out LLVMOpaqueDiagnosticInfo param0, IntPtr param1)
-        {
-            Debug.Assert( false );
-        }
-
-        private Dictionary<IntPtr, Value> ValueCache = new Dictionary<IntPtr, Value>( );
-        private Dictionary<IntPtr, ITypeRef> TypeCache = new Dictionary<IntPtr, ITypeRef>( );
-        private Dictionary<IntPtr, Module> ModuleCache = new Dictionary<IntPtr, Module>( );
-
-        static void FatalErrorHandler(string Reason)
-        {
-            Trace.TraceError( Reason );
-            throw new InternalCodeGeneratorException( Reason );
-        }
-
-        private static Dictionary<LLVMContextRef, Context> ContextCache = new Dictionary<LLVMContextRef, Context>( );
-
-        // lazy init a singleton unmanaged delegate and hold on to it so it is never collected
-        private static Lazy<LLVMFatalErrorHandler> FatalErrorHandlerDelegate 
-            = new Lazy<LLVMFatalErrorHandler>( ( ) => FatalErrorHandler, LazyThreadSafetyMode.PublicationOnly );
-
         #region IDisposable Support
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "disposing" )]
         void Dispose( bool disposing )
         {
             if( ContextHandle.Pointer != IntPtr.Zero )
@@ -723,5 +761,38 @@ namespace Llvm.NET
             GC.SuppressFinalize(this);
         }
         #endregion
+
+        private Context( LLVMContextRef contextRef )
+        {
+            ContextHandle = contextRef;
+            lock ( ContextCache )
+            {
+                ContextCache.Add( contextRef, this );
+            }
+            NativeMethods.ContextSetDiagnosticHandler( ContextHandle, DiagnosticHandler, IntPtr.Zero );
+        }
+
+        private void DiagnosticHandler(out LLVMOpaqueDiagnosticInfo param0, IntPtr param1)
+        {
+            Debug.Assert( false );
+        }
+
+        private readonly Dictionary< IntPtr, Value > ValueCache = new Dictionary< IntPtr, Value >( );
+        private readonly Dictionary< IntPtr, ITypeRef > TypeCache = new Dictionary< IntPtr, ITypeRef >( );
+        private readonly Dictionary< IntPtr, NativeModule > ModuleCache = new Dictionary< IntPtr, NativeModule >( );
+        private readonly Dictionary< LLVMMetadataRef, LlvmMetadata > MetadataCache = new Dictionary< LLVMMetadataRef, LlvmMetadata >( );
+        private readonly Dictionary< LLVMMDOperandRef, MDOperand > MDOperandCache = new Dictionary< LLVMMDOperandRef, MDOperand >( );
+
+        static void FatalErrorHandler(string Reason)
+        {
+            Trace.TraceError( Reason );
+            throw new InternalCodeGeneratorException( Reason );
+        }
+
+        private static Dictionary<LLVMContextRef, Context> ContextCache = new Dictionary<LLVMContextRef, Context>( );
+
+        // lazy init a singleton unmanaged delegate and hold on to it so it is never collected
+        private static Lazy<LLVMFatalErrorHandler> FatalErrorHandlerDelegate 
+            = new Lazy<LLVMFatalErrorHandler>( ( ) => FatalErrorHandler, LazyThreadSafetyMode.PublicationOnly );
     }
 }

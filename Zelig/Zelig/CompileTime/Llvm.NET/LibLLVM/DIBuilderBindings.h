@@ -16,6 +16,7 @@
 #ifndef LLVM_BINDINGS_LLVM_DIBUILDERBINDINGS_H
 #define LLVM_BINDINGS_LLVM_DIBUILDERBINDINGS_H
 
+#include <stdint.h>
 #include "IRBindings.h"
 #include "llvm-c/Core.h"
 
@@ -79,7 +80,7 @@ extern "C" {
         LLVMDwarfTagImportedModule = 0x3a,
         LLVMDwarfTagUnspecifiedType = 0x3b,
         LLVMDwarfTagPartialUnit = 0x3c,
-        LLVMDwarfTagInportedUnit = 0x3d,
+        LLVMDwarfTagImportedUnit = 0x3d,
         LLVMDwarfTagCondition = 0x3f,
         LLVMDwarfTagSharedType = 0x40,
         LLVMDwarfTagTypeUnit = 0x41,
@@ -101,6 +102,43 @@ extern "C" {
         LLVMDwarfTagLoUser = 0x4080,
         LLVMDwarfTagAppleProperty = 0x4200,
         LLVMDwarfTagHiUser = 0xffff
+    };
+
+    // This should match the MetaDataKind enum in the C++ headers
+    enum LLVMMetadataKind
+    {
+        LLVMMetadaKindMDTuple,
+        LLVMMetadaKindDILocation,
+        LLVMMetadaKindGenericDINode,
+        LLVMMetadaKindDISubrange,
+        LLVMMetadaKindDIEnumerator,
+        LLVMMetadaKindDIBasicType,
+        LLVMMetadaKindDIDerivedType,
+        LLVMMetadaKindDICompositeType,
+        LLVMMetadaKindDISubroutineType,
+        LLVMMetadaKindDIFile,
+        LLVMMetadaKindDICompileUnit,
+        LLVMMetadaKindDISubprogram,
+        LLVMMetadaKindDILexicalBlock,
+        LLVMMetadaKindDILexicalBlockFile,
+        LLVMMetadaKindDINamespace,
+        LLVMMetadaKindDIModule,
+        LLVMMetadaKindDITemplateTypeParameter,
+        LLVMMetadaKindDITemplateValueParameter,
+        LLVMMetadaKindDIGlobalVariable,
+        LLVMMetadaKindDILocalVariable,
+        LLVMMetadaKindDIExpression,
+        LLVMMetadaKindDIObjCProperty,
+        LLVMMetadaKindDIImportedEntity,
+        LLVMMetadaKindConstantAsMetadata,
+        LLVMMetadaKindLocalAsMetadata,
+        LLVMMetadaKindMDString
+    };
+
+    enum LLVMMetadataFormat
+    {
+        LLVMMetadataFormatDefault,
+        LLVMMetadataFormatAsOperand,
     };
 
     #define DECLARE_LLVMC_REF( n ) typedef struct LLVMOpaque##n##* LLVM##n##Ref
@@ -231,17 +269,17 @@ extern "C" {
                                                  , LLVMMetadataRef ElementTypes
                                                  );
                                                  
-LLVMMetadataRef LLVMDIBuilderCreateReplaceableCompositeType( LLVMDIBuilderRef D
-                                                           , unsigned Tag
-                                                           , const char *Name
-                                                           , LLVMMetadataRef Scope
-                                                           , LLVMMetadataRef File
-                                                           , unsigned Line
-                                                           , unsigned RuntimeLang
-                                                           , uint64_t SizeInBits
-                                                           , uint64_t AlignInBits
-                                                           , unsigned Flags
-                                                           );
+    LLVMMetadataRef LLVMDIBuilderCreateReplaceableCompositeType( LLVMDIBuilderRef D
+                                                               , unsigned Tag
+                                                               , const char *Name
+                                                               , LLVMMetadataRef Scope
+                                                               , LLVMMetadataRef File
+                                                               , unsigned Line
+                                                               , unsigned RuntimeLang
+                                                               , uint64_t SizeInBits
+                                                               , uint64_t AlignInBits
+                                                               , unsigned Flags
+                                                               );
                                                            
     LLVMMetadataRef LLVMDIBuilderCreateMemberType( LLVMDIBuilderRef D
                                                  , LLVMMetadataRef Scope
@@ -383,13 +421,19 @@ LLVMMetadataRef LLVMDIBuilderCreateReplaceableCompositeType( LLVMDIBuilderRef D
                                                    );
     
     // caller must call LLVMDisposeMessage() on the returned string
-    char const* LLVMDIDescriptorAsString( LLVMMetadataRef descriptor );
+    char const* LLVMMetadataAsString( LLVMMetadataRef descriptor );
 
     void LLVMMDNodeReplaceAllUsesWith( LLVMMetadataRef oldDescriptor, LLVMMetadataRef newDescriptor );
 
     LLVMMetadataRef LLVMDILocation( LLVMContextRef context, unsigned Line, unsigned Column, LLVMMetadataRef scope, LLVMMetadataRef InlinedAt );
     LLVMBool LLVMSubProgramDescribes( LLVMMetadataRef subProgram, LLVMValueRef /*const Function **/F );
     LLVMMetadataRef LLVMDIBuilderCreateNamespace( LLVMDIBuilderRef Dref, LLVMMetadataRef scope, char const* name, LLVMMetadataRef file, unsigned line );
+    LLVMContextRef LLVMGetNodeContext( LLVMMetadataRef /*MDNode*/ node );
+    LLVMMetadataKind LLVMGetMetadataID( LLVMMetadataRef /*Metadata*/ md );
+
+    uint32_t LLVMMDNodeGetNumOperands( LLVMMetadataRef /*MDNode*/ node );
+    LLVMMDOperandRef LLVMMDNodeGetOperand( LLVMMetadataRef /*MDNode*/ node, uint32_t index );
+    LLVMMetadataRef LLVMGetOperandNode( LLVMMDOperandRef operand );
 
 #ifdef __cplusplus
 } // extern "C"

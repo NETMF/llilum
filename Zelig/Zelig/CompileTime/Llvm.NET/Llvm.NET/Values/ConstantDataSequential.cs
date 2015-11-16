@@ -17,7 +17,8 @@ namespace Llvm.NET.Values
     {
         public bool IsString => NativeMethods.IsConstantString( ValueHandle );
 
-        public string GetAsString()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ConstantDataSequential" )]
+        public string ExtractAsString()
         {
             if( !IsString )
                 throw new InvalidOperationException( "ConstantDataSequential is not a string" );

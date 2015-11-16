@@ -14,10 +14,10 @@
             {
                 switch( Opcode )
                 {
-                case Opcode.ICmp:
+                case OpCode.ICmp:
                     return ( Predicate )NativeMethods.GetICmpPredicate( ValueHandle );
 
-                case Opcode.FCmp:
+                case OpCode.FCmp:
                     return ( Predicate )NativeMethods.GetFCmpPredicate( ValueHandle );
 
                 default:

@@ -46,7 +46,8 @@ namespace Llvm.NET.Types
         /// <summary>Context that owns this type</summary>
         Context Context { get; }
 
-        /// <summary>Integer bid width of this type or 0 for non integer types</summary>
+        /// <summary>Integer bit width of this type or 0 for non integer types</summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "integer" )]
         uint IntegerBitWidth { get; }
 
         /// <summary>Gets a null value (e.g. all bits == 0 ) for the type</summary>
@@ -54,6 +55,7 @@ namespace Llvm.NET.Types
         /// This is a getter function instead of a property as it can throw exceptions
         /// for types that don't support such a thing (i.e. void )
         /// </remarks>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate" )]
         Constant GetNullValue( );
 
         /// <summary>Array type factory for an array with elements of this type</summary>

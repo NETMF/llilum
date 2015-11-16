@@ -17,7 +17,7 @@ namespace Llvm.NET.Values
             get
             {
                 if( index >= Count || index < 0 )
-                    throw new IndexOutOfRangeException( );
+                    throw new ArgumentOutOfRangeException( nameof( index ) );
 
                 return Value.FromHandle<Argument>( NativeMethods.GetParam( OwningFunction.ValueHandle, ( uint )index ) );
             }

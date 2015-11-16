@@ -23,6 +23,7 @@ namespace Llvm.NET
         public bool HasAsmBackEnd => 0 != NativeMethods.TargetHasAsmBackend( TargetHandle ).Value;
 
         /// <summary>Creates a <see cref="TargetMachine"/> for the target and specified parameters</summary>
+        /// <param name="context">Context to use for LLVM objects created by this machine</param>
         /// <param name="triple">Target triple for this machine (e.g. -mtriple)</param>
         /// <param name="cpu">CPU for this machine (e.g. -mcpu)</param>
         /// <param name="features">Features for this machine (e.g. -mattr...)</param>
@@ -30,7 +31,8 @@ namespace Llvm.NET
         /// <param name="relocationMode">Relocation mode for generated code</param>
         /// <param name="codeModel"><see cref="CodeModel"/> to use for generated code</param>
         /// <returns><see cref="TargetMachine"/> based on the specified parameters</returns>
-        public TargetMachine CreateTargetMachine( string triple
+        public TargetMachine CreateTargetMachine( Context context
+                                                , string triple
                                                 , string cpu
                                                 , string features
                                                 , CodeGenOpt optLevel
@@ -39,14 +41,14 @@ namespace Llvm.NET
                                                 )
         {
             var targetMachineHandle = NativeMethods.CreateTargetMachine( TargetHandle
-                                                                    , triple
-                                                                    , cpu
-                                                                    , features
-                                                                    , ( LLVMCodeGenOptLevel )optLevel
-                                                                    , ( LLVMRelocMode )relocationMode
-                                                                    , ( LLVMCodeModel )codeModel
-                                                                    );
-            return new TargetMachine( targetMachineHandle );
+                                                                       , triple
+                                                                       , cpu
+                                                                       , features
+                                                                       , ( LLVMCodeGenOptLevel )optLevel
+                                                                       , ( LLVMRelocMode )relocationMode
+                                                                       , ( LLVMCodeModel )codeModel
+                                                                       );
+            return new TargetMachine( context, targetMachineHandle );
         }
 
         internal Target( LLVMTargetRef targetHandle )

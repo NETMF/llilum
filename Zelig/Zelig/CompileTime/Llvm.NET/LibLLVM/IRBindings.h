@@ -26,7 +26,8 @@
 extern "C" {
 #endif
 
-typedef struct LLVMOpaqueMetadata *LLVMMetadataRef;
+typedef struct LLVMOpaqueMetadata* LLVMMetadataRef;
+typedef struct LLVMOpaqueMDOperand* LLVMMDOperandRef;
 
 enum LLVMAttrKind
 {
@@ -100,7 +101,7 @@ enum LLVMAttrKind
 * Attributes are available for functions, function return types and parameters.
 * In previous releases of LLVM attributes were essentially a bit field. However,
 * as more attributes were added the number of bits had to grow. Furthermore, some
-* of the attributes suxh as stack alignment require a parameter value. Thus, the
+* of the attributes such as stack alignment require a parameter value. Thus, the
 * attribute system evolved. Unfortunately the C API did not. Moving towards version
 * 4.0 of LLVM the entire bitfield approach is being deprecated. Thus these APIs
 * make the functionality of Attribute, AttributeSet and, AttrBuilder available
@@ -117,53 +118,67 @@ enum LLVMAttrKind
 * again without actually exposing the problematic classes. 
 * @{
 */
+unsigned LLVMGetAttributeSetSize( );
+void LLVMCopyConstructAttributeSet( uintptr_t pDst, uintptr_t pSrc );
 
 /**
-* Adds a boolean attribute to a function for the specified index (function, return or param)
+* Adds a boolean attribute to an AttributeSet for the specified index (function, return or param)
 *
 */
-void LLVMAddFunctionAttr2( LLVMValueRef Fn, int index, LLVMAttrKind kind );
+void LLVMAttributeSetAddAttribute( LLVMContextRef context, uintptr_t pAttributeSet, int index, LLVMAttrKind kind );
 
 /**
-* Adds a target dependent attribute to a function for the specified index (function, return or param)
+* Adds a target dependent attribute to an AttributeSet for the specified index (function, return or param)
 *
 */
-void LLVMAddTargetDependentFunctionAttr2( LLVMValueRef fn, int index, char const* name, char const* value );
+void LLVMAttributeSetAddTargetDependentAttribute( LLVMContextRef context, uintptr_t pAttributeSet, int index, char const* name, char const* value );
 
 /**
-* Removes a target dependent attribute from a function for the specified index (function, return or param)
+* Removes a target dependent attribute from an AttributeSet for the specified index (function, return or param)
 *
 */
-void LLVMRemoveTargetDependentFunctionAttr2( LLVMValueRef fn, int index, char const* name );
+void LLVMAttributeSetRemoveTargetDependentAttribute( LLVMContextRef context, uintptr_t pAttributeSet, int index, char const* name );
 
 /**
-* Tests if a Function has an attribute of the specified kind and index (function, return or param)
+* Tests if an AttributeSet has an attribute of the specified kind and index (function, return or param)
 *
 */
-LLVMBool LLVMHasFunctionAttr2( LLVMValueRef Fn, int index, LLVMAttrKind kind );
+LLVMBool LLVMAttributeSetHasAttribute( uintptr_t pAttributeSet, int index, LLVMAttrKind kind );
 
 /**
 * Removes an attribute off the specified kind and index (function, return or param) from the function
 *
 */
-void LLVMRemoveFunctionAttr2( LLVMValueRef Fn, int index, LLVMAttrKind kind );
+void LLVMAttributeSetRemoveAttribute( LLVMContextRef context, uintptr_t pAttributeSet, int index, LLVMAttrKind kind );
 
 
 /**
 * Sets the attribute value for the function
 *
 */
-void LLVMSetFunctionAttributeValue( LLVMValueRef Fn, int index, LLVMAttrKind kind, uint64_t value );
+void LLVMAttributeSetSetAttributeValue( LLVMContextRef context, uintptr_t pAttributeSet, int index, LLVMAttrKind kind, uint64_t value );
 /**
 * Gets the attribute value for the function
 *
 */
-uint64_t LLVMGetFunctionAttributeValue( LLVMValueRef Fn, int index, LLVMAttrKind kind );
+uint64_t LLVMAttributeSetGetAttributeValue( uintptr_t pAttributeSet, int index, LLVMAttrKind kind );
 
-LLVMBool LLVMFunctionHasAttributes( LLVMValueRef Fn, int index );
-char const* LLVMGetFunctionAttributesAsString( LLVMValueRef Fn, int index );
+LLVMBool LLVMAttributeSetHasAttributes( uintptr_t pAttributeSet, int index );
+char const* LLVMAttributeSetGetAttributesAsString( uintptr_t pAttributeSet, int index );
 
-LLVMBool LLVMHasTargetDependentAttribute( LLVMValueRef Fn, int index, char const* name );
+LLVMBool LLVMAttributeSetHasTargetDependentAttribute( uintptr_t pAttributeSet, int index, char const* name );
+
+LLVMBool LLVMAttributeSetHasAny( uintptr_t pAttributeSet, int index );
+
+void LLVMAttributeSetGetParamAttributes( uintptr_t pAttributeSet, int index, uintptr_t pResult );
+void LLVMAttributeSetGetReturnAttributes( uintptr_t pAttributeSet, uintptr_t pResult );
+void LLVMAttributeSetGetFunctionAttributes( int index, uintptr_t pAttributeSet, uintptr_t pResult );
+
+void LLVMAttributeSetAddAttributes2( LLVMContextRef context, uintptr_t pSrcAttributeSet, int index, uintptr_t pAttributes, uintptr_t pResult );
+void LLVMGetFunctionAttributeSet( LLVMValueRef /*Function*/ function, uintptr_t pAttributeSet );
+void LLVMSetFunctionAttributeSet( LLVMValueRef /*Function*/ function, uintptr_t pAttributeSet );
+void LLVMGetCallSiteAttributeSet( LLVMValueRef /*Instruction*/ instruction, uintptr_t pAttributeSet );
+void LLVMSetCallSiteAttributeSet( LLVMValueRef /*Instruction*/ instruction, uintptr_t pAttributeSet );
 
 /**
 * @}
@@ -183,6 +198,9 @@ void LLVMSetCurrentDebugLocation2(LLVMBuilderRef Bref, unsigned Line, unsigned C
 
 LLVMBool LLVMIsTemporary( LLVMMetadataRef M );
 LLVMBool LLVMIsResolved( LLVMMetadataRef M );
+LLVMBool LLVMIsUniqued( LLVMMetadataRef M );
+LLVMBool LLVMIsDistinct( LLVMMetadataRef M );
+
 void LLVMMDNodeResolveCycles( LLVMMetadataRef M );
 char const* LLVMGetDIFileName( LLVMMetadataRef /*DIFile*/ file );
 char const* LLVMGetDIFileDirectory( LLVMMetadataRef /*DIFile*/ file );

@@ -1,14 +1,14 @@
 ﻿namespace Llvm.NET.Instructions
 {
-    public class Resume
+    public class ResumeInstruction
         : Terminator
     {
-        internal Resume( LLVMValueRef valueRef )
+        internal ResumeInstruction( LLVMValueRef valueRef )
             : this( valueRef, false )
         {
         }
 
-        internal Resume( LLVMValueRef valueRef, bool preValidated )
+        internal ResumeInstruction( LLVMValueRef valueRef, bool preValidated )
             : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAExtractElementInst ) )
         {
         }
