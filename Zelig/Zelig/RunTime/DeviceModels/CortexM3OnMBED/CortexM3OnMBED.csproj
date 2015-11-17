@@ -111,13 +111,13 @@
       <Project>{dc8c38d7-780b-4b13-8ace-9050e39cc51c}</Project>
       <Name>Windows</Name>
     </ProjectReference>
-    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\LlilumOSAbstraction\LlilumOSAbstraction.csproj">
-      <Project>{20DC2CF5-8EED-4231-9743-6BAB96BE465C}</Project>
-      <Name>Windows</Name>
-    </ProjectReference>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\CortexM3OnCMSIS-Core\CortexM3OnCMSIS-Core.csproj">
       <Project>{0b37e5ba-4839-4ec4-9e36-a96bcbea2400}</Project>
       <Name>CortexM3OnCMSIS-Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\LlilumOSAbstraction\LlilumOSAbstraction.csproj">
+      <Project>{20DC2CF5-8EED-4231-9743-6BAB96BE465C}</Project>
+      <Name>Microsoft.Zelig.LlilumOSAbstraction</Name>
     </ProjectReference>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\mbed\mbed.csproj">
       <Project>{d7f2bc4e-1406-47aa-90e1-07bc4ce9410f}</Project>
@@ -126,11 +126,6 @@
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\ModelForCortexM3\ModelForCortexM3.csproj">
       <Project>{A30EB003-94F8-4A85-8DA1-006F6810A7A4}</Project>
       <Name>ModelForCortexM3</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\LlilumOSAbstraction\LlilumOSAbstraction.csproj">
-      <Project>{20DC2CF5-8EED-4231-9743-6BAB96BE465C}</Project>
-      <Name>LlilumOSAbstraction</Name>
-      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

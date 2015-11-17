@@ -3,7 +3,7 @@
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <LLILUM_ROOT Condition="'$(LLILUM_ROOT)'==''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))</LLILUM_ROOT>
-    <!-- For builds from the local tree, always setup the SDK to use the local headers etc...  -->
+    <!-- For builds from the local tree, always use the local headers etc instead of the SDK...  -->
     <LLILUM_SDK>$(LLILUM_ROOT)Zelig\</LLILUM_SDK>
     <!-- LLILUM_LLVM contains the full source of LLVM -->
     <LLVM_VERSION     Condition="'$(LLVM_VERSION)'    ==''">3.7.0</LLVM_VERSION>
