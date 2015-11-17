@@ -99,7 +99,11 @@
         </Reference>
         <Reference Include="Microsoft.DeviceModels.ModelForCortexM3, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(LlilumBuildRoot)d\Target\bin\$(Configuration)\Microsoft.DeviceModels.ModelForCortexM3.dll</HintPath>
+          <HintPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\Microsoft.DeviceModels.ModelForCortexM3.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Zelig.LlilumOSAbstraction, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\Microsoft.Zelig.LlilumOSAbstraction.dll</HintPath>
         </Reference>
         <Reference Include="Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
@@ -140,6 +144,10 @@
         <Reference Include="Microsoft.DeviceModels.ModelForCortexM3, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
           <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\$(Configuration)\Microsoft.DeviceModels.ModelForCortexM3.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Zelig.LlilumOSAbstraction, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\$(Configuration)\Microsoft.Zelig.LlilumOSAbstraction.dll</HintPath>
         </Reference>
         <Reference Include="Microsoft.Zelig.ProductConfiguration, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
