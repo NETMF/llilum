@@ -345,15 +345,14 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                         }
                     }
 
-                    // Find the return variable, if any.
-                    var returnOperator = (ReturnControlOperator)cfg.ExitBasicBlock?.FlowControl;
-                    var returnVariable = returnOperator?.Arguments.Length > 0 ? returnOperator.FirstArgument : null;
+                    var returnVariable = FindReturnVariable( cfg );
 
                     // Initialize all reference counting variables to null
                     foreach(var variable in cfg.DataFlow_SpanningTree_Variables)
                     {
                         if(( variable is TemporaryVariableExpression || variable is LocalVariableExpression ) &&
-                            ts.IsReferenceCountingType( variable.Type ))
+                            ts.IsReferenceCountingType( variable.Type ) &&
+                            !variable.SkipReferenceCounting)
                         {
                             var nullExpression = new ConstantExpression( variable.Type, null );
                             var op = SingleAssignmentOperator.New( null, variable, nullExpression );
@@ -362,6 +361,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                             modified = true;
                             phase.AddToModifiedOperator( op );
 
+                            // Do not release the return variable because we need to pass the 
+                            // ref count back to the caller on return.
                             if(variable != returnVariable)
                             {
                                 addRefVariables.Insert( variable );
@@ -394,6 +395,128 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                     }
                 }
             }
+        }
+
+        private static VariableExpression FindReturnVariable( ControlFlowGraphStateForCodeTransformation cfg )
+        {
+            var ts = cfg.TypeSystem;
+
+            // Find the return variable, if any.
+            var returnOperator = (ReturnControlOperator)cfg.ExitBasicBlock?.FlowControl;
+            var returnVariable = returnOperator?.Arguments.Length > 0 ? returnOperator.FirstArgument as VariableExpression : null;
+
+            if(returnVariable != null && ts.IsReferenceCountingType( returnVariable.Type ))
+            {
+                var returnVarSubstitute = FindReturnVariableSubstitute( cfg, returnVariable );
+
+                if(returnVarSubstitute != null)
+                {
+                    returnVariable.SkipReferenceCounting = true;
+                    returnVariable = returnVarSubstitute;
+                }
+            }
+
+            return returnVariable;
+        }
+
+        // If we can find the following pattern:
+        //     tmp = local;
+        //      ... <== additional code OK, as long as local is not changed
+        //     return tmp;
+        // then we can avoid calling AddReference on tmp and ReleaseReference on local.
+        // Instead, just hand off the existing ref count on local on return.
+        private static VariableExpression FindReturnVariableSubstitute(
+            ControlFlowGraphStateForCodeTransformation cfg,
+            VariableExpression returnVariable )
+        {
+            var defChains = cfg.DataFlow_DefinitionChains;
+            var useChains = cfg.DataFlow_UseChains;
+
+            // Find the pattern
+            var assignOp = ControlFlowGraphState.CheckSingleDefinition( defChains, returnVariable ) as SingleAssignmentOperator;
+            var returnOp = ControlFlowGraphState.CheckSingleUse       ( useChains, returnVariable ) as ReturnControlOperator;
+
+            if(assignOp == null || returnOp == null)
+            {
+                return null;
+            }
+            
+            var returnVarCandidate = assignOp.FirstArgument as VariableExpression;
+
+            if(returnVarCandidate == null)
+            {
+                return null;
+            }
+            
+            // If we ever take the address of the expression, assume it can be modified.
+            foreach(Operator op in useChains[ returnVarCandidate.SpanningTreeIndex ])
+            {
+                if(op is AddressAssignmentOperator)
+                {
+                    return null;
+                }
+            }
+
+            // Gather information about where the substitute is being defined / written
+            var substituteDefChain = defChains[ returnVarCandidate.SpanningTreeIndex ];
+            var substituteDefBasicBlocks = SetFactory.New<BasicBlock>( );
+            foreach(Operator defOp in substituteDefChain)
+            {
+                substituteDefBasicBlocks.Insert( defOp.BasicBlock );
+            }
+
+            // Starting with the basic block that the "tmp = local" assignment took place,
+            // find out if local is being redefined in this basic block.
+            var currentBasicBlock = assignOp.BasicBlock;
+            if(substituteDefBasicBlocks.Contains( currentBasicBlock ))
+            {
+                // If true, we're OK as long as those definitions happen after the assign operator.
+                var currentBlockDefs = new List<Operator>( substituteDefChain ).FindAll(
+                    defOp => defOp.BasicBlock == currentBasicBlock );
+                if(currentBlockDefs.TrueForAll(
+                    defOp => defOp.GetBasicBlockIndex( ) < assignOp.GetBasicBlockIndex( ) ))
+                {
+                    // Move on to the next basic block, as long as there's no branches
+                    var flowCtrl = currentBasicBlock.FlowControl as UnconditionalControlOperator;
+                    if(flowCtrl != null)
+                    {
+                        currentBasicBlock = flowCtrl.TargetBranch;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            // Go through the rest of the basic blocks to make sure local is not redefined,
+            // and the control flow is linear.
+            while(currentBasicBlock != returnOp.BasicBlock)
+            {
+                if(!substituteDefBasicBlocks.Contains( currentBasicBlock ))
+                {
+                    // Move on to the next basic block, as long as there's no branches
+                    var flowCtrl = currentBasicBlock.FlowControl as UnconditionalControlOperator;
+                    if(flowCtrl != null)
+                    {
+                        currentBasicBlock = flowCtrl.TargetBranch;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            return returnVarCandidate;
         }
     }
 }

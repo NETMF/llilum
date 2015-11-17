@@ -232,6 +232,11 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             }
         }
  
+        public bool SkipReferenceCounting
+        {
+            get; set;
+        }
+
         //--//
 
         //

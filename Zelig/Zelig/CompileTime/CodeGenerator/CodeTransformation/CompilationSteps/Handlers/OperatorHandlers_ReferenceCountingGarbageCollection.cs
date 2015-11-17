@@ -73,6 +73,18 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         }
 
         private static RefCountType GetRefCountType( PhaseExecution.NotificationContext nc,
+                                                     Expression                         exp )
+        {
+            var rctype = RefCountType.None;
+            var variable = exp as VariableExpression;
+            if(variable != null && !variable.SkipReferenceCounting)
+            {
+                rctype = GetRefCountType( nc, variable.Type );
+            }
+            return rctype;
+        }
+
+        private static RefCountType GetRefCountType( PhaseExecution.NotificationContext nc,
                                                      TypeRepresentation                 type )
         {
             var rctype = RefCountType.None;
@@ -142,10 +154,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         {
             // Syntax: FirstResult = FirstArgument
             var op = (SingleAssignmentOperator)nc.CurrentOperator;
-            var lhsRefCountType = GetRefCountType( nc, op.FirstResult.Type );
-            var rhsRefCountType = 
-                ( op.FirstArgument is VariableExpression ) ? GetRefCountType( nc, op.FirstArgument.Type ) :
-                                                             RefCountType.None;
+            var lhsRefCountType = GetRefCountType( nc, op.FirstResult );
+            var rhsRefCountType = GetRefCountType( nc, op.FirstArgument );
 
             if(lhsRefCountType == RefCountType.RefCounted)
             {
@@ -314,7 +324,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             Func<Operator, TemporaryVariableExpression, Operator> loadRhsAddr )
         {
             var op = nc.CurrentOperator;
-            var lhsRefCountType = GetRefCountType( nc, lhs.Type );
+            var lhsRefCountType = GetRefCountType( nc, lhs );
             var rhsRefCountType = GetRefCountType( nc, rhsType );
 
             // Note that we are calling Release() first then AddRef() here. This is OK because the field
