@@ -1,8 +1,6 @@
 //
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
-
-
 namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
 {
     using System;
@@ -11,6 +9,12 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
 
     using Microsoft.Zelig.Runtime.TypeSystem;
 
+    public interface IInlineOptions
+    {
+        bool HonorInlineAttribute { get; }
+        bool EnableAutoInlining { get; }
+        bool InjectPrologAndEpilog { get; }
+    }
 
     public sealed class CallsDataBase
     {
@@ -25,6 +29,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
             ControlFlowGraphStateForCodeTransformation m_clonedCFG;
             List< CallOperator >                       m_callsFromThisMethod;
             List< CallOperator >                       m_callsToThisMethod;
+            IInlineOptions                             m_InlineOptions;
 
             //
             // Constructor Methods
@@ -36,6 +41,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
                 m_version             = -1;
                 m_callsFromThisMethod = new List< CallOperator >();
                 m_callsToThisMethod   = new List< CallOperator >();
+                m_InlineOptions       = cfg.TypeSystem.GetEnvironmentService<IInlineOptions>( );
             }
 
             //
@@ -70,7 +76,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
                 {
                     m_version = m_cfg.Version;
 
-                    bool fInline;
+                    bool fInline = false;
 
                     MethodRepresentation md = m_cfg.Method;
 
@@ -80,9 +86,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
                     }
                     else if(md.HasBuildTimeFlag( MethodRepresentation.BuildTimeAttributes.Inline ))
                     {
-                        fInline = true;
+                        if( m_InlineOptions == null || m_InlineOptions.HonorInlineAttribute )
+                            fInline = true;
                     }
-                    else
+                    else if( m_InlineOptions == null || m_InlineOptions.EnableAutoInlining )
                     {
                         bool fCallToConstructor = false;
                         int  iCall              = 0;
@@ -176,7 +183,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
                         }
                     }
 
-                    if(fInline)
+                    if( fInline)
                     {
                         m_clonedCFG = m_cfg.Clone( null );
                     }

@@ -66,7 +66,19 @@ namespace Microsoft.Zelig.FrontEnd
 
         }
 
-        //--//
+        internal class InlineOptions : IR.CompilationSteps.IInlineOptions
+        {
+            internal InlineOptions( )
+            {
+                EnableAutoInlining = true;
+                HonorInlineAttribute = true;
+                InjectPrologAndEpilog = true;
+            }
+
+            public bool EnableAutoInlining { get; internal set; }
+            public bool HonorInlineAttribute { get; internal set; }
+            public bool InjectPrologAndEpilog { get; internal set; }
+        }
 
         //
         // State
@@ -114,6 +126,7 @@ namespace Microsoft.Zelig.FrontEnd
         private List< string >                      m_importDirectories;
         private List< string >                      m_importLibraries;
 
+        private InlineOptions                       m_InlineOptions;
         private IR.CompilationSteps.DelegationCache m_delegationCache;
         private MetaData.MetaDataResolver           m_resolver;
         private TypeSystemForFrontEnd               m_typeSystem;
@@ -171,6 +184,7 @@ namespace Microsoft.Zelig.FrontEnd
             m_disabledPhases = new List<String>( );
 
             m_sourceCodeTracker = new IR.SourceCodeTracker( );
+            m_InlineOptions = new InlineOptions( );
         }
 
         //--//
@@ -265,6 +279,11 @@ namespace Microsoft.Zelig.FrontEnd
             if( t == typeof( IR.CompilationSteps.DelegationCache ) )
             {
                 return m_delegationCache;
+            }
+
+            if( t == typeof( IR.CompilationSteps.IInlineOptions ) )
+            {
+                return m_InlineOptions;
             }
 
             return null;
@@ -724,17 +743,17 @@ namespace Microsoft.Zelig.FrontEnd
                                         continue;
                                     }
 
-                                    var arguments = line.Split( new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries );
+                                    var arguments = line.Split( new char[ ] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries );
 
-                                    string[] recombinedArgs = RecombineArgs( arguments );
+                                    string[ ] recombinedArgs = RecombineArgs( arguments );
 
-                                    if(recombinedArgs == null )
+                                    if( recombinedArgs == null )
                                     {
                                         Console.WriteLine( String.Format( "Arguments at line '{0}' could not be recombined", line ) );
 
                                         return false;
                                     }
-                                    
+
                                     if( Parse( recombinedArgs, ref fNoSDK ) == false )
                                     {
                                         return false;
@@ -766,15 +785,15 @@ namespace Microsoft.Zelig.FrontEnd
                         {
                             m_fDumpIR = true;
                         }
-                        else if (IsMatch(option, "DumpIRXMLpre"))
+                        else if( IsMatch( option, "DumpIRXMLpre" ) )
                         {
                             m_fDumpIRXMLpre = true;
                         }
-                        else if (IsMatch(option, "DumpIRXMLpost"))
+                        else if( IsMatch( option, "DumpIRXMLpost" ) )
                         {
                             m_fDumpIRXMLpost = true;
                         }
-                        else if (IsMatch(option, "DumpIRXML"))
+                        else if( IsMatch( option, "DumpIRXML" ) )
                         {
                             m_fDumpIRXML = true;
                         }
@@ -908,7 +927,8 @@ namespace Microsoft.Zelig.FrontEnd
                                 return false;
                             }
 
-                            if( !UInt32.TryParse( name, out m_nativeIntSize ) ) return false;
+                            if( !UInt32.TryParse( name, out m_nativeIntSize ) )
+                                return false;
                         }
                         else if( IsMatch( option, "OutputDir" ) )
                         {
@@ -932,11 +952,11 @@ namespace Microsoft.Zelig.FrontEnd
 
                             m_references.Add( reference );
                         }
-                        else if (IsMatch(option, "CompilationSetupPath"))
+                        else if( IsMatch( option, "CompilationSetupPath" ) )
                         {
                             string compilationBinary;
 
-                            if (!GetArgument(arg, args, ref i, out compilationBinary, true))
+                            if( !GetArgument( arg, args, ref i, out compilationBinary, true ) )
                             {
                                 return false;
                             }
@@ -1013,7 +1033,7 @@ namespace Microsoft.Zelig.FrontEnd
                             {
                                 object res = t.InvokeMember( "Parse",
                                     System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Static |
-                                    System.Reflection.BindingFlags.Public, null, null, new object[] { value } );
+                                    System.Reflection.BindingFlags.Public, null, null, new object[ ] { value } );
 
                                 m_configurationOptions[ name ] = res;
                             }
@@ -1083,6 +1103,24 @@ namespace Microsoft.Zelig.FrontEnd
                             }
 
                             m_entryPointName = sEP;
+                        }
+                        else if( IsMatch( option, "Debug" ) )
+                        {
+                            m_InlineOptions.EnableAutoInlining = false;
+                            m_InlineOptions.HonorInlineAttribute = false;
+                            m_InlineOptions.InjectPrologAndEpilog = false;
+                        }
+                        else if( IsMatch( option, "DisableAutoInlining" ) )
+                        {
+                            m_InlineOptions.EnableAutoInlining = false;
+                        }
+                        else if( IsMatch( option, "IgnoreInlineAttributes" ) )
+                        {
+                            m_InlineOptions.HonorInlineAttribute = false;
+                        }
+                        else if( IsMatch( option, "DIsablePrologEpilogInjection" ) )
+                        {
+                            m_InlineOptions.InjectPrologAndEpilog = false;
                         }
                         else
                         {

@@ -1,8 +1,6 @@
 //
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
-
-
 namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 {
     using System;
@@ -46,6 +44,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         [CompilationSteps.PreFlowGraphHandler()]
         private void InjectPrologueAndEpilogue( PhaseExecution.NotificationContext nc )
         {
+            var inlineOptions = nc.TypeSystem.GetEnvironmentService<IInlineOptions>( );
+            if( inlineOptions != null && !inlineOptions.InjectPrologAndEpilog )
+                return;
+
             if(nc.Phase.ComparePositionTo< Phases.HighLevelTransformations >() >= 0 &&
                nc.Phase.ComparePositionTo< Phases.ReduceTypeSystem         >() <  0  )
             {
