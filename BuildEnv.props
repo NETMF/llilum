@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" InitialTargets="VerifyLlilumPaths" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <LLILUM_ROOT Condition="'$(LLILUM_ROOT)'==''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))</LLILUM_ROOT>
     <!-- For builds from the local tree, always use the local headers etc instead of the SDK...  -->
@@ -17,8 +16,8 @@
   <Target Name="VerifyLlilumPaths">
     <Error Condition="!EXISTS('$(LLILUM_ROOT)')" Text="Invalid LLILUM_ROOT: '$(LLILUM_ROOT)'" />
     <Error Condition="!EXISTS('$(LLILUM_SDK)')"  Text="Invalid LLILUM_SDK: '$(LLILUM_SDK)'" />
-    <Message Importance="high" Text="LLILUM_LLVM=$(LLILUM_LLVM)"/>
-    <Message Importance="high" Text="LLILUM_ROOT=$(LLILUM_ROOT)"/>
-    <Message Importance="high" Text="LLILUM_SDK=$(LLILUM_SDK)"/>
+    <Message Condition="'$(LlilumBuildShowVars)'!='' AND '$(LlilumBuildShowVars)'!='false'" Importance="high" Text="LLILUM_LLVM=$(LLILUM_LLVM)"/>
+    <Message Condition="'$(LlilumBuildShowVars)'!='' AND '$(LlilumBuildShowVars)'!='false'" Importance="high" Text="LLILUM_ROOT=$(LLILUM_ROOT)"/>
+    <Message Condition="'$(LlilumBuildShowVars)'!='' AND '$(LlilumBuildShowVars)'!='false'" Importance="high" Text="LLILUM_SDK=$(LLILUM_SDK)"/>
   </Target>
 </Project>
