@@ -38,8 +38,7 @@ namespace Microsoft.Zelig.LLVM
 
         public void SetDebugInfo( LLVMModuleManager manager, MethodRepresentation method, Operator op )
         {
-            // ensure the function has debug information
-            var func = Module.GetFunctionWithDebugInfoFor( manager, method );
+            var func = Module.GetOrInsertFunction( manager, method );
             Debug.Assert( Owner == func );
 
             if( op != null )
@@ -62,7 +61,7 @@ namespace Microsoft.Zelig.LLVM
             // macro expansion) or it requires the location to include the InlinedAt
             // location scoping. In order to build the InlinedAt we'd need the
             // DISubProgram corresponding to the method the operator is inlined
-            // from, which the Zelig inlining doesn't currently provide all we get
+            // from, which the Zelig inlining doesn't currently provide - all we get
             // is the source and line data.
             string curPath = Owner.LlvmFunction.DISubProgram.File?.Path ?? string.Empty;
             if( 0 != string.Compare( debugInfo.SrcFileName, curPath, StringComparison.OrdinalIgnoreCase ) )

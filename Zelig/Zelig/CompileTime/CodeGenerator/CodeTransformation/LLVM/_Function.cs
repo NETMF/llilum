@@ -54,21 +54,7 @@ namespace Microsoft.Zelig.LLVM
         internal _Function( _Module module, LLVMModuleManager manager, TS.MethodRepresentation method )
             : base( module
                   , manager.GetOrInsertType( method )
-#if CREATE_FUNCTION_DEBUGINFO
-                  // Ideally it would be cleaner to create the debug information at the same time as the function itself
-                  // (Llvm.NET Debug info was designed to support that). Unfortunately, given how the Zelig engine
-                  // processes the transformations in phases and handlers,etc.. not enough of the required debug
-                  // information is available at the time this is called to pull that off. [ In fact, If this code and
-                  // the related method below are enabled, then LLVM will crash deep in the call to DiBuilder.Finalize() ]
-                  // So, for now, the information is created on-the-fly in _BasicBlock. This mixes the roles and
-                  // responsibilites a bit, but gets the job done until we can fully unwind the final code gen from the
-                  // transform engine. 
                   , CreateLLvmFunctionWithDebugInfo( module, manager, method )
-#else
-                  , module.LlvmModule.AddFunction( LLVMModuleManager.GetFullMethodName( method )
-                                                 , ( IFunctionType )manager.GetOrInsertType( method ).DebugType
-                                                 )
-#endif
                   )
         {
             var function = ( Function )LlvmValue;
@@ -120,12 +106,13 @@ namespace Microsoft.Zelig.LLVM
             var argExpression = val as IR.ArgumentVariableExpression;
             if( argExpression != null )
             {
-                var fn = ( Function )LlvmValue;
                 index = argExpression.Number;
+                // adjust index since IR form keeps slot = 0 as the "this" param
+                // for static methods it just sets that to null. LLVM doesn't
+                // have any notion of that and only has a slot for an actual arg
                 if( method is TS.StaticMethodRepresentation )
                     index--;
 
-                fn.Parameters[ index ].Name = argExpression?.DebugName?.Name ?? $"$ARG{argExpression.Number}";
                 tag = Tag.ArgVariable;
             }
 
@@ -204,16 +191,17 @@ namespace Microsoft.Zelig.LLVM
             ( ( Function )LlvmValue ).Linkage = Linkage.Internal;
         }
 
-#if CREATE_FUNCTION_DEBUGINFO
         private static Function CreateLLvmFunctionWithDebugInfo( _Module module, LLVMModuleManager manager, TS.MethodRepresentation method )
         {
-            string mangledName = manager.GetFullMethodName( method );
+            string mangledName = LLVMModuleManager.GetFullMethodName( method );
             _Type functionType = manager.GetOrInsertType( method );
-            DebugInfo loc = manager.GetDebugInfoFor( method );
+            Debugging.DebugInfo loc = manager.GetDebugInfoFor( method );
             Debug.Assert( loc != null );
 
+            var containingType = module.GetOrInsertType( method.OwnerType );
+
             // Create the DISupprogram info
-            var retVal = module.LlvmModule.CreateFunction( module.DICompileUnit
+            var retVal = module.LlvmModule.CreateFunction( containingType?.DIType ?? ( DIScope )module.DICompileUnit
                                                          , method.Name
                                                          , mangledName
                                                          , module.GetOrCreateDIFile( loc.SrcFileName )
@@ -225,8 +213,20 @@ namespace Microsoft.Zelig.LLVM
                                                          , DebugInfoFlags.None // TODO: Map Zelig accesibility info etc... to flags
                                                          , false
                                                          );
+            bool isStatic = method is TS.StaticMethodRepresentation;
+            // "this" is always at index 0, for static functions the name for "this" is null
+            int paramBase = isStatic ? 1 : 0;
+            Debug.Assert( retVal != null && method.ArgumentNames.Length - paramBase == retVal.Parameters.Count );
+            for( int i = paramBase; i < method.ArgumentNames.Length; ++i )
+            {
+                string name = method.ArgumentNames[ i ];
+                if( string.IsNullOrWhiteSpace( name ) )
+                    name = $"$ARG{i}";
+
+                // adjust the index for the native type since there's not assumption that [0]=="this"
+                retVal.Parameters[ i - paramBase ].Name = name;
+            }
             return retVal;
         }
-#endif
     }
 }

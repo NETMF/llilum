@@ -339,19 +339,6 @@ namespace Microsoft.Zelig.LLVM
             }
         }
 
-        public _Function GetFunctionWithDebugInfoFor( LLVMModuleManager manager, MethodRepresentation method )
-        {
-            // get the function for this method, if it doesn't have debug info yet - generate it. 
-            _Function func = GetOrInsertFunction( manager, method );
-            if( func.LlvmFunction.DISubProgram == null )
-            {
-                var func2 = CreateLLvmFunctionWithDebugInfo( manager, method );
-                Debug.Assert( func2 == func.LlvmFunction );
-                Debug.Assert( func.LlvmFunction.DISubProgram != null );
-            }
-            return func;
-        }
-
         public bool Compile( )
         {
             DIBuilder.Finish( );
