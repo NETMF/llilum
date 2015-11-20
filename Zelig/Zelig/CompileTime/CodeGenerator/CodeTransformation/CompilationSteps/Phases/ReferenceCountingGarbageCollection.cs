@@ -70,7 +70,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
 
         public override PhaseDriver Run( )
         {
-            if(this.TypeSystem.EnableReferenceCountingGarbageCollection)
+            if(this.TypeSystem.IsReferenceCountingGarbageCollectionEnabled)
             {
                 // 1. Inject reference counting specific setup / helpers 
                 InjectReferenceCountingHelpers( );

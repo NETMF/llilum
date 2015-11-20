@@ -1537,14 +1537,33 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             }
         }
 
-        public bool EnableReferenceCountingGarbageCollection
+        [Flags]
+        public enum ReferenceCountingStatus
+        {
+            Disabled = 0,
+            Enabled  = 0x1,
+            Strict   = 0x2,
+
+            EnabledStrict = Enabled | Strict,
+        }
+
+        public ReferenceCountingStatus ReferenceCountingGarbageCollectionStatus
         {
             get; set;
         }
 
+        public bool IsReferenceCountingGarbageCollectionEnabled
+        {
+            get
+            {
+                var status = this.ReferenceCountingGarbageCollectionStatus;
+                return (status & ReferenceCountingStatus.Enabled) == ReferenceCountingStatus.Enabled;
+            }
+        }
+
         public bool IsReferenceCountingType( TypeRepresentation td )
         {
-            if(!this.EnableReferenceCountingGarbageCollection ||
+            if(!this.IsReferenceCountingGarbageCollectionEnabled ||
                 td == null ||
                 !( td is ReferenceTypeRepresentation ) ||
                 td.IsOpenType ||

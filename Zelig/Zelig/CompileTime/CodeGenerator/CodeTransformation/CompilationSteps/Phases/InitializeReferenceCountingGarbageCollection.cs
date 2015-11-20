@@ -20,7 +20,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
 
         public override PhaseDriver Run( )
         {
-            TypeSystem.EnableReferenceCountingGarbageCollection = true;
+            TypeSystem.ReferenceCountingGarbageCollectionStatus =
+                TypeSystemForCodeTransformation.ReferenceCountingStatus.Enabled;
 
             return this.NextPhase;
         }

@@ -72,7 +72,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
 
             }
 
-            if (this.TypeSystem.EnableReferenceCountingGarbageCollection)
+            if (this.TypeSystem.IsReferenceCountingGarbageCollectionEnabled)
             {
                 // Keep the reference counting methods around so they stay alive when we inject 
                 // auto reference counting code in the ReferenceCountingGarbageCollection phase

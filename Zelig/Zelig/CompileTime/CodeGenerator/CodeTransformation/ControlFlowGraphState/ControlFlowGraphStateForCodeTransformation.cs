@@ -159,6 +159,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                     throw TypeConsistencyErrorException.Create( "Unexpected expression '{0}' during cloning of '{1}'", var, source );
                 }
 
+                newVar.SkipReferenceCounting = var.SkipReferenceCounting;
+
                 context.Register( var, newVar );
             }
 

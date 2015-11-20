@@ -67,21 +67,27 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
         private enum RefCountType
         {
-            None,
+            None = 0,
             RefCounted,
-            Pointer
+            Pointer,
+            Skipped,
         }
 
         private static RefCountType GetRefCountType( PhaseExecution.NotificationContext nc,
                                                      Expression                         exp )
         {
-            var rctype = RefCountType.None;
             var variable = exp as VariableExpression;
-            if(variable != null && !variable.SkipReferenceCounting)
+            if(variable != null)
             {
-                rctype = GetRefCountType( nc, variable.Type );
+                var refCountType = GetRefCountType( nc, variable.Type );
+                if (refCountType == RefCountType.RefCounted && variable.SkipReferenceCounting)
+                {
+                    return RefCountType.Skipped;
+                }
+
+                return refCountType;
             }
-            return rctype;
+            return RefCountType.None;
         }
 
         private static RefCountType GetRefCountType( PhaseExecution.NotificationContext nc,
@@ -159,10 +165,13 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
             if(lhsRefCountType == RefCountType.RefCounted)
             {
-                // Need to Addref the RHS if both LHS and RHS are ref-counted. This means that we won't addref when
-                // we assign ref-counted object to non-refcounted objects or IntPtr / UIntptr (effectively treating
-                // them as weak reference)
-                if(rhsRefCountType == RefCountType.RefCounted)
+                // Need to addref the RHS if both LHS and RHS are ref-counted.
+                // Note, we also need to do this if LHS is refcounted and RHS is refcounted but skipped
+                // so we don't mess up the ref count of the LHS.
+                // Also note, this means that we won't addref when we assign ref-counted object to
+                // non-refcounted objects or IntPtr / UIntptr (effectively treating them as weak reference)
+                if( rhsRefCountType == RefCountType.RefCounted ||
+                    rhsRefCountType == RefCountType.Skipped)
                 {
                     InsertAddRefBefore( nc, op.FirstArgument );
                 }

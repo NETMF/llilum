@@ -447,6 +447,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                 }
             }
 
+            newVar.SkipReferenceCounting = var.SkipReferenceCounting;
+
             context.Register( var, newVar );
 
             return newVar;

@@ -121,6 +121,7 @@
     <Compile Include="CompilationSteps\Phases\ComputeCallsClosure.cs" />
     <Compile Include="CompilationSteps\Phases\ConvertToSSA.cs" />
     <Compile Include="CompilationSteps\Phases\ConvertUnsupportedOperatorsToMethodCalls.cs" />
+    <Compile Include="CompilationSteps\Phases\EnableStrictReferenceCountingGarbageCollection.cs" />
     <Compile Include="CompilationSteps\Phases\FuseOperators.cs" />
     <Compile Include="CompilationSteps\Phases\InitializeReferenceCountingGarbageCollection.cs" />
     <Compile Include="CompilationSteps\Phases\PrepareExternalMethods.cs" />

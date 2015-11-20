@@ -5,8 +5,6 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
-
     using Microsoft.Zelig.Runtime.TypeSystem;
 
 
@@ -309,21 +307,32 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                     var phase = (Phases.ReferenceCountingGarbageCollection)nc.Phase;
                     var wkm = ts.WellKnownMethods;
 
-                    GrowOnlySet<VariableExpression> addRefVariables = SetFactory.New<VariableExpression>( );
+                    var defChains = cfg.DataFlow_DefinitionChains;
+                    var useChains = cfg.DataFlow_UseChains;
+                    var variables = cfg.DataFlow_SpanningTree_Variables;
+                    var arguments = cfg.Arguments;
+
+                    GrowOnlySet<VariableExpression> needRelease = SetFactory.New<VariableExpression>( );
 
                     var prologueStart = cfg.GetInjectionPoint( BasicBlock.Qualifier.PrologueStart );
-                    var mdAddRef = wkm.ObjectHeader_AddReference;
+                    var epilogueStart = cfg.GetInjectionPoint( BasicBlock.Qualifier.EpilogueStart );
 
-                    foreach(var arg in cfg.Arguments)
+                    var mdAddRef  = wkm.ObjectHeader_AddReference;
+                    var mdRelease = wkm.ObjectHeader_ReleaseReference;
+
+                    foreach(var arg in arguments)
                     {
+                        var skipReferenceCounting = true;
+
                         // Skip over the first argument (this pointer) 
                         // and arguments that aren't being used (as indicated by an invalid spanning tree index)
                         // and arguments that are not the right types
                         if(arg.Number != 0 && arg.SpanningTreeIndex >= 0 && ts.IsReferenceCountingType( arg.Type ))
                         {
-                            var defChain = cfg.DataFlow_DefinitionChains[ arg.SpanningTreeIndex ];
+                            var defChain = defChains[ arg.SpanningTreeIndex ];
 
-                            Debug.Assert( defChain.Length > 0 && defChain[ 0 ] is InitialValueOperator );
+                            CHECKS.ASSERT( defChain.Length > 0 && defChain[ 0 ] is InitialValueOperator,
+                                "Argument {0} does not have an InitialValueOperator", arg);
 
                             // Looking at the definition chain, we only want to AddRef/Release arguments that are modified
                             // within the method, so we can manage the lifetime of the new value accordingly. If the argument is
@@ -340,19 +349,29 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
                                 modified = true;
 
-                                addRefVariables.Insert( arg );
+                                needRelease.Insert( arg );
+
+                                skipReferenceCounting = false;
                             }
+                        }
+
+                        if(skipReferenceCounting)
+                        {
+                            arg.SkipReferenceCounting = true;
                         }
                     }
 
-                    var returnVariable = FindReturnVariable( cfg );
+                    var returnVariable = FindReturnVariable( cfg, defChains, useChains );
 
-                    // Initialize all reference counting variables to null
-                    foreach(var variable in cfg.DataFlow_SpanningTree_Variables)
+                    var skippables = FindSkippableVariables( cfg, variables, defChains, useChains );
+
+                    foreach(var variable in variables)
                     {
-                        if(!( variable is ArgumentVariableExpression ) &&
-                            ts.IsReferenceCountingType( variable.Type ) &&
-                            !variable.SkipReferenceCounting)
+                        if(skippables[ variable.SpanningTreeIndex ])
+                        {
+                            variable.SkipReferenceCounting = true;
+                        }
+                        else if (!(variable is ArgumentVariableExpression))
                         {
                             var nullExpression = new ConstantExpression( variable.Type, null );
                             var op = SingleAssignmentOperator.New( null, variable, nullExpression );
@@ -365,18 +384,14 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                             // ref count back to the caller on return.
                             if(variable != returnVariable)
                             {
-                                addRefVariables.Insert( variable );
+                                needRelease.Insert( variable );
                             }
-
                         }
                     }
 
-                    var epilogueStart = cfg.GetInjectionPoint( BasicBlock.Qualifier.EpilogueStart );
-                    var mdRelease = wkm.ObjectHeader_ReleaseReference;
-
                     if(epilogueStart != null)
                     {
-                        foreach(var variable in addRefVariables)
+                        foreach(var variable in needRelease)
                         {
                             var rhsRelease = ts.AddTypePointerToArgumentsOfStaticMethod( mdRelease, variable );
                             var callRelease = StaticCallOperator.New( null, CallOperator.CallKind.Direct, mdRelease, rhsRelease );
@@ -384,6 +399,22 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                             epilogueStart.AddOperator( callRelease );
 
                             phase.IncrementInjectionCount( mdRelease );
+
+                            modified = true;
+                        }
+
+                        // A ref counting return variable should carry a ref count to pass on to the caller,
+                        // so if we skip reference counting on the variable, we'd need to take a ref count
+                        // prior to returning.
+                        if( returnVariable != null &&
+                            returnVariable.SkipReferenceCounting &&
+                            ts.IsReferenceCountingType( returnVariable.Type ))
+                        {
+                            var rhsAddRef = ts.AddTypePointerToArgumentsOfStaticMethod( mdAddRef, returnVariable );
+                            var callAddRef = StaticCallOperator.New( null, CallOperator.CallKind.Direct, mdAddRef, rhsAddRef );
+
+                            epilogueStart.AddOperator( callAddRef );
+                            phase.IncrementInjectionCount( mdAddRef );
 
                             modified = true;
                         }
@@ -397,7 +428,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             }
         }
 
-        private static VariableExpression FindReturnVariable( ControlFlowGraphStateForCodeTransformation cfg )
+        private static VariableExpression FindReturnVariable(
+            ControlFlowGraphStateForCodeTransformation cfg,
+            Operator[][] defChains,
+            Operator[][] useChains )
         {
             var ts = cfg.TypeSystem;
 
@@ -407,7 +441,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
             if(returnVariable != null && ts.IsReferenceCountingType( returnVariable.Type ))
             {
-                var returnVarSubstitute = FindReturnVariableSubstitute( cfg, returnVariable );
+                var returnVarSubstitute = FindReturnVariableSubstitute( defChains, useChains, returnVariable );
 
                 if(returnVarSubstitute != null)
                 {
@@ -426,12 +460,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         // then we can avoid calling AddReference on tmp and ReleaseReference on local.
         // Instead, just hand off the existing ref count on local on return.
         private static VariableExpression FindReturnVariableSubstitute(
-            ControlFlowGraphStateForCodeTransformation cfg,
+            Operator[][] defChains,
+            Operator[][] useChains,
             VariableExpression returnVariable )
         {
-            var defChains = cfg.DataFlow_DefinitionChains;
-            var useChains = cfg.DataFlow_UseChains;
-
             // Find the pattern
             var assignOp = ControlFlowGraphState.CheckSingleDefinition( defChains, returnVariable ) as SingleAssignmentOperator;
             var returnOp = ControlFlowGraphState.CheckSingleUse       ( useChains, returnVariable ) as ReturnControlOperator;
@@ -517,6 +549,132 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             }
 
             return returnVarCandidate;
+        }
+
+        private static BitVector FindSkippableVariables(
+            ControlFlowGraphStateForCodeTransformation cfg,
+            VariableExpression[] variables,
+            Operator[][] defChains,
+            Operator[][] useChains )
+        {
+            var skippables = new BitVector( variables.Length );
+
+            // In strict mode, we assume any object can be accessed by multiple threads at the same time
+            // so we need to take a local reference to all field / element / indirect load.
+            var allowLoads = 
+                cfg.TypeSystem.ReferenceCountingGarbageCollectionStatus != 
+                TypeSystemForCodeTransformation.ReferenceCountingStatus.EnabledStrict;
+
+            // In this initial pass, we go through each of the variable and mark off the variables that
+            // are already marked skippable and of the wrong types, as well as calling the IsVariableSkippable
+            // helper with the incomplete skippables information.
+            foreach(var variable in variables)
+            {
+                int i = variable.SpanningTreeIndex;
+                if( !cfg.TypeSystem.IsReferenceCountingType( variable.Type ) ||
+                    variable.SkipReferenceCounting ||
+                    IsVariableSkippable( defChains[ i ], useChains[ i ], skippables, allowLoads ))
+                {
+                    skippables[ i ] = true;
+                }
+            }
+
+            // We will repeatedly call IsVariableSkippable helper on all variables with the most up-to-date
+            // skippables information until it stops changing. This will help us get the case where a variable
+            // is assigned from a previously marked skippable variable.
+            bool done;
+            do
+            {
+                done = true;
+                foreach(var variable in variables)
+                {
+                    int i = variable.SpanningTreeIndex;
+                    if(!skippables[ i ])
+                    {
+                        if (IsVariableSkippable( defChains[ i ], useChains[ i ], skippables, allowLoads ))
+                        {
+                            skippables[ i ] = true;
+                            done = false;
+                        }
+                    }
+                }
+            }
+            while(!done);
+
+            return skippables;
+        }
+
+        private static bool IsVariableSkippable( Operator[] defChain, Operator[] useChain, BitVector skippables, bool allowLoads )
+        {
+            // A variable is skippable only if all its definitions match the criteria. 
+            foreach(var defOp in defChain)
+            {
+                if(defOp is CallOperator)
+                {
+                    // A ref count is always passed by return, so can't skip.
+                    return false;
+                }
+                else if (defOp is SingleAssignmentOperator)
+                {
+                    var assignOp = (SingleAssignmentOperator)defOp;
+                    var source = assignOp.FirstArgument;
+
+                    // Single assignment is OK if we're assigning from a constant or another skippable 
+                    // variable.
+                    if(   source is ConstantExpression ||
+                        ( source is VariableExpression && skippables[ source.SpanningTreeIndex ] ))
+                    {
+                        continue;
+                    }
+                    
+                    return false;
+                }
+                else if(defOp is LoadInstanceFieldOperator ||
+                        defOp is LoadElementOperator ||
+                        defOp is LoadIndirectOperator)
+                {
+                    if(allowLoads)
+                    {
+                        // Special case for volatile fields -- we need to properly ref count them to ensure
+                        // correctness.
+                        if(defOp is LoadInstanceFieldOperator)
+                        {
+                            var fieldOp = (LoadInstanceFieldOperator)defOp;
+                            if(( fieldOp.Field.Flags & FieldRepresentation.Attributes.IsVolatile ) != 0)
+                            {
+                                return false;
+                            }
+                        }
+
+                        continue;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else if (defOp is InitialValueOperator)
+                {
+                    // First assignment of an argument -- we're OK since the caller will always have a ref count
+                    continue;
+                }
+                else
+                {
+                    CHECKS.ASSERT( false, "Unexpected definition operators: %s", defOp );
+                }
+            }
+
+            // In addition, if the variable's address is taken, we have to assume that it can be use 
+            // elsewhere where it might be addref / released, so we cannot skip it.
+            foreach(var useOp in useChain)
+            {
+                if(useOp is AddressAssignmentOperator)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
