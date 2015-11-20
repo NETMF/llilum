@@ -161,7 +161,26 @@ namespace Microsoft.Zelig.LLVM
 
         public _Value InsertPhiNode( _Type type )
         {
-            var phiNode = IrBuilder.PhiNode( type.DebugType );
+            var builder = IrBuilder;
+
+            // Ensure phi nodes are grouped at the top of the block.
+            var lastInstruction = LlvmBasicBlock.LastInstruction;
+            if( ( lastInstruction != null ) && !( lastInstruction is PhiNode ) )
+            {
+                // We have an instruction that isn't a phi node, so move the insertion point to just
+                // after any existing phi nodes.
+                foreach( Instruction instruction in LlvmBasicBlock.Instructions )
+                {
+                    if( !( instruction is PhiNode ) )
+                    {
+                        builder = new InstructionBuilder( LlvmBasicBlock );
+                        builder.PositionBefore( instruction );
+                        break;
+                    }
+                }
+            }
+
+            var phiNode = builder.PhiNode( type.DebugType );
             return new _Value( Module, type, phiNode );
         }
 
