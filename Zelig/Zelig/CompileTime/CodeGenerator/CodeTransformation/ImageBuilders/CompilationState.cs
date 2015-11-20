@@ -376,11 +376,6 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ImageBuilders
             OrderBasicBlocks( );
 
             AssignSchedulingIndex( );
-            
-            //if(m_owner.TypeSystem.PlatformAbstraction.PlatformName == "LLVM")
-            //{
-            //    IR.Transformations.StaticSingleAssignmentForm.ConvertOut( m_cfg, true );
-            //}
 
             EmitCodeForBasicBlocks();
         }

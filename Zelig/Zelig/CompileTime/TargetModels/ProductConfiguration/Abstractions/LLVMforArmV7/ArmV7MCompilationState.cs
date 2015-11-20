@@ -2,9 +2,6 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-
-
-
 namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 {
     using System;
@@ -21,9 +18,9 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         private TS.MethodRepresentation m_method;
         private TS.WellKnownFields m_wkf;
         private TS.WellKnownTypes m_wkt;
-
-        // Cache of stack addresses for all locals in the function being processed.
-        private GrowOnlyHashTable<IR.Expression, _Value> m_localValues;
+        private GrowOnlyHashTable<IR.Expression, ValueCache> m_localValues;
+        private GrowOnlyHashTable<IR.BasicBlock, _BasicBlock> m_blocks;
+        private IDictionary<IR.PhiOperator, _Value> m_pendingPhiNodes;
 
         protected ArmV7MCompilationState( ) // Default constructor required by TypeSystemSerializer.
         {
@@ -34,9 +31,11 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             : base( owner, cfg )
         {
             m_method = cfg.Method;
-            m_localValues = HashTableFactory.New<IR.Expression, _Value>( );
             m_wkf = cfg.TypeSystem.WellKnownFields;
             m_wkt = cfg.TypeSystem.WellKnownTypes;
+            m_localValues = HashTableFactory.New<IR.Expression, ValueCache>( );
+            m_blocks = HashTableFactory.New<IR.BasicBlock, _BasicBlock>( );
+            m_pendingPhiNodes = new Dictionary<IR.PhiOperator, _Value>( );
         }
 
         //
@@ -65,7 +64,6 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
             ReleaseAllLocks( );
         }
-
 
         protected IR.Abstractions.RegisterDescriptor GetNextRegister( IR.Abstractions.RegisterDescriptor reg )
         {

@@ -27,13 +27,39 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ImageBuilders
 
         private void EmitCodeForBasicBlocks()
         {
-            foreach(BasicBlock bb in m_basicBlocks)
+            var isProcessed = new BitVector( m_basicBlocks.Length );
+            var pending = new Stack<BasicBlock>( m_basicBlocks.Length );
+
+            foreach(BasicBlock block in m_basicBlocks)
             {
-                if(bb.SpanningTreeIndex != -1)
-                {
-                    EmitCodeForBasicBlock( bb );
-                }
+                pending.Push( block );
             }
+
+            // Emit blocks in dominance order.
+            while(pending.Count > 0)
+            {
+                BasicBlock block = pending.Pop();
+
+                // Skip dead and already-processed blocks.
+                if((block.SpanningTreeIndex == -1) || isProcessed[block.SpanningTreeIndex])
+                {
+                    continue;
+                }
+
+                // If the block's immediate dominator hasn't been processed, process it first.
+                BasicBlock idom = m_immediateDominators[block.SpanningTreeIndex];
+                if((idom != block) && !isProcessed[idom.SpanningTreeIndex])
+                {
+                    pending.Push( block );
+                    pending.Push( idom );
+                    continue;
+                }
+
+                EmitCodeForBasicBlock(block);
+                isProcessed[block.SpanningTreeIndex] = true;
+            }
+
+            FlushUnfinishedBlocks();
         }
 
         public virtual void EmitCodeForBasicBlock( BasicBlock bb )
@@ -95,6 +121,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ImageBuilders
 
             m_activeCodeRegion  = null;
             m_activeCodeSection = null;
+        }
+
+        public virtual void FlushUnfinishedBlocks( )
+        {
         }
 
         protected virtual bool EmitCodeForBasicBlock_ShouldSkip( Operator op )

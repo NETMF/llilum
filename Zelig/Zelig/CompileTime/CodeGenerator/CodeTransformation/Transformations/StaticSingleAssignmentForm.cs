@@ -158,7 +158,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                 //
                 // We need to convert into SSA form only if:
                 //  1) A variable is defined twice or more.
-                //  2) A varialbe is defined once and it's an argument.
+                //  2) A variable is defined once and it's an argument.
                 //
                 bool[] candidate      = new bool[varNum];
                 bool   fShouldProcess = false;

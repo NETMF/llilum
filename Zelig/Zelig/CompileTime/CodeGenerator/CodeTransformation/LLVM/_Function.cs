@@ -85,7 +85,6 @@ namespace Microsoft.Zelig.LLVM
         public _BasicBlock GetOrInsertBasicBlock( string blockName )
         {
             var func = ( Function )LlvmValue;
-
             return new _BasicBlock( this, func.FindOrCreateNamedBlock( blockName ) );
         }
 
@@ -94,29 +93,9 @@ namespace Microsoft.Zelig.LLVM
                                         , IR.VariableExpression val
                                         , LLVMModuleManager manager )
         {
-            if( block.CurDILocation == null )
-            {
-                block.SetDebugInfo( manager, method, null );
-            }
-            Debug.Assert( block.CurDILocation != null );
-            Debug.Assert( block.CurDISubProgram != null );
+            block.EnsureDebugInfo( manager, method );
 
-            int index = 0;
-            var tag = Tag.AutoVariable;
-            var argExpression = val as IR.ArgumentVariableExpression;
-            if( argExpression != null )
-            {
-                index = argExpression.Number;
-                // adjust index since IR form keeps slot = 0 as the "this" param
-                // for static methods it just sets that to null. LLVM doesn't
-                // have any notion of that and only has a slot for an actual arg
-                if( method is TS.StaticMethodRepresentation )
-                    index--;
-
-                tag = Tag.ArgVariable;
-            }
-
-            var retVal = GetLocalStackValue( val.ToString( ), manager.GetOrInsertType( val.Type ) );
+            var retVal = block.InsertAlloca( val.ToString( ), manager.GetOrInsertType( val.Type ) );
 
             // If the local had a valid symbolic name in the source code, generate debug info for it.
             if( string.IsNullOrWhiteSpace( val.DebugName?.Name ) )
@@ -124,30 +103,40 @@ namespace Microsoft.Zelig.LLVM
                 return retVal;
             }
 
-            _Type valType = manager.GetOrInsertType( val.Type );
             DILocalVariable localSym;
-            if( tag == Tag.ArgVariable )
+
+            _Type valType = manager.GetOrInsertType( val.Type );
+            var argExpression = val as IR.ArgumentVariableExpression;
+            if( argExpression != null )
             {
+                // Adjust index since IR form keeps slot = 0 as the "this" param for static methods it just sets that to
+                // null. LLVM doesn't have any notion of that and only has a slot for an actual arg.
+                uint index = ( uint )argExpression.Number;
+                if( method is TS.StaticMethodRepresentation )
+                {
+                    index--;
+                }
+
                 localSym = Module.DIBuilder.CreateArgument( block.CurDISubProgram
                                                           , val.DebugName.Name
-                                                          , block.CurDILocation?.Scope.File
-                                                          , block.CurDILocation?.Line ?? 0U
+                                                          , block.CurDILocation.Scope.File
+                                                          , block.CurDILocation.Line
                                                           , valType.DIType
                                                           , true
                                                           , 0
-                                                          , ( uint )index
+                                                          , index
                                                           );
             }
             else
             {
                 localSym = Module.DIBuilder.CreateLocalVariable( block.CurDISubProgram
                                                                , val.DebugName.Name
-                                                               , block.CurDILocation?.Scope.File
-                                                               , block.CurDILocation?.Line ?? 0U
+                                                               , block.CurDILocation.Scope.File
+                                                               , block.CurDILocation.Line 
                                                                , valType.DIType
                                                                , true
                                                                , 0
-                                                               , ( uint )index
+                                                               , 0
                                                                );
             }
 
@@ -160,25 +149,6 @@ namespace Microsoft.Zelig.LLVM
 
             Module.DIBuilder.InsertDeclare( retVal.LlvmValue, localSym, expr, block.CurDILocation, block.LlvmBasicBlock );
             return retVal;
-        }
-
-        public _Value GetLocalStackValue( string name, _Type type )
-        {
-            var fn = (Function)LlvmValue;
-
-            if( fn.BasicBlocks.Count == 0 )
-            {
-                throw new Exception( "Trying to add local value to empty function." );
-            }
-
-            var bldr = new InstructionBuilder( type.DebugType.Context );
-            bldr.PositionAtEnd( fn.EntryBlock );
-
-            Value retVal = bldr.Alloca( type.DebugType )
-                               .RegisterName( name );
-
-            _Type pointerType = Module.GetOrInsertPointerType( type );
-            return new _Value( Module, pointerType, retVal );
         }
 
         public void SetExternalLinkage( )

@@ -2,6 +2,8 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+// Enable this macro to run LLVM-specific transforms prior to generating the image.
+#define LLVM
 
 namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
 {
@@ -27,12 +29,15 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
 
         public override PhaseDriver Run()
         {
+#if LLVM
             ParallelTransformationsHandler.EnumerateFlowGraphs(
                 this.TypeSystem,
                 delegate( ControlFlowGraphStateForCodeTransformation cfg )
                 {
                     Transformations.MergeExtendedBasicBlocks.Execute( cfg, preserveInjectionSites: false );
+                    Transformations.StaticSingleAssignmentForm.ConvertInto( cfg );
                 } );
+#endif // LLVM
 
             this.TypeSystem.GenerateImage( this );
 

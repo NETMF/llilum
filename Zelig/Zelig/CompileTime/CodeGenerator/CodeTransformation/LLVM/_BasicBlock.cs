@@ -1,5 +1,6 @@
 ﻿using Llvm.NET;
 using Llvm.NET.DebugInfo;
+using Llvm.NET.Instructions;
 using Llvm.NET.Types;
 using Llvm.NET.Values;
 using Microsoft.Zelig.CodeGeneration.IR;
@@ -74,10 +75,40 @@ namespace Microsoft.Zelig.LLVM
                                           );
         }
 
-        public _Value LoadToImmediate( _Value value )
+        /// <summary>
+        /// Ensure that at least default debug info has been set for this block. If debug info has already been created,
+        /// this is a no-op.
+        /// </summary>
+        /// <param name="manager">Owner of the LLVM module.</param>
+        /// <param name="method">Representation of the method in which this block is defined.</param>
+        public void EnsureDebugInfo( LLVMModuleManager manager, MethodRepresentation method )
+        {
+            if( CurDILocation == null )
+            {
+                SetDebugInfo( manager, method, null );
+            }
+
+            Debug.Assert( CurDILocation != null );
+            Debug.Assert( CurDISubProgram != null );
+        }
+
+        public _Value GetMethodArgument( int index, _Type type )
+        {
+            var llvmFunc = (Function)Owner.LlvmValue;
+            Value value = llvmFunc.Parameters[ index ];
+            return new _Value( Module, type, value );
+        }
+
+        public _Value InsertAlloca( string name, _Type type )
+        {
+            Value value = IrBuilder.Alloca( type.DebugType ).RegisterName( name );
+            _Type pointerType = Module.GetOrInsertPointerType( type );
+            return new _Value( Module, pointerType, value );
+        }
+
+        public _Value InsertLoad( _Value value )
         {
             var resultValue = IrBuilder.Load( value.LlvmValue )
-                                       .RegisterName( "LoadToImmediate" )
                                        .SetDebugLocation( CurDILocation );
             return new _Value( Module, value.Type.UnderlyingType, resultValue );
         }
@@ -108,14 +139,6 @@ namespace Microsoft.Zelig.LLVM
             InsertStore(llvmSrc, llvmDst);
         }
 
-        public void InsertStoreArgument(_Value dst, int index)
-        {
-            var llvmFunc = (Function)Owner.LlvmValue;
-            Value llvmSrc = llvmFunc.Parameters[index];
-            Value llvmDst = dst.LlvmValue;
-            InsertStore(llvmSrc, llvmDst);
-        }
-
         public _Value LoadIndirect( _Value val, _Type loadedType )
         {
             _Type pointerType = val.Type;
@@ -134,6 +157,18 @@ namespace Microsoft.Zelig.LLVM
             }
 
             return new _Value( Module, pointerType, resultVal );
+        }
+
+        public _Value InsertPhiNode( _Type type )
+        {
+            var phiNode = IrBuilder.PhiNode( type.DebugType );
+            return new _Value( Module, type, phiNode );
+        }
+
+        public void AddPhiIncomingValue( _Value phiNode, _Value value, _BasicBlock origin )
+        {
+            PhiNode node = (PhiNode)phiNode.LlvmValue;
+            node.AddIncoming( value.LlvmValue, origin.LlvmBasicBlock );
         }
 
         public void InsertMemCpy( _Value dst, _Value src, _Value size, bool overlapping )
@@ -326,8 +361,7 @@ namespace Microsoft.Zelig.LLVM
             if( valA.IsInteger && valB.IsInteger )
             {
                 Predicate p = PredicateMap[ predicate + ( isSigned ? SignedBase : 0 ) ];
-                var icmp = IrBuilder.Compare( ( IntPredicate )p, llvmValA, llvmValB )
-                                    .RegisterName("icmp" );
+                var icmp = IrBuilder.Compare( ( IntPredicate )p, llvmValA, llvmValB );
 
                 var inst = IrBuilder.ZeroExtendOrBitCast( icmp, booleanImpl.DebugType )
                                     .SetDebugLocation( CurDILocation );
@@ -339,8 +373,7 @@ namespace Microsoft.Zelig.LLVM
             {
                 Predicate p = PredicateMap[ predicate + FloatBase ];
 
-                var cmp = IrBuilder.Compare( ( RealPredicate )p, llvmValA, llvmValB )
-                                   .RegisterName("fcmp" );
+                var cmp = IrBuilder.Compare( ( RealPredicate )p, llvmValA, llvmValB );
 
                 var value = IrBuilder.ZeroExtendOrBitCast( cmp, booleanImpl.DebugType )
                                      .SetDebugLocation( CurDILocation );
@@ -366,7 +399,6 @@ namespace Microsoft.Zelig.LLVM
             }
 
             retVal = IrBuilder.ZeroExtendOrBitCast( retVal, ty.DebugType )
-                              .RegisterName( "zext" )
                               .SetDebugLocation( CurDILocation );
 
             return new _Value( Module, ty, retVal );
@@ -383,7 +415,6 @@ namespace Microsoft.Zelig.LLVM
             }
 
             retVal = IrBuilder.SignExtendOrBitCast( retVal, ty.DebugType )
-                              .RegisterName( "sext" )
                               .SetDebugLocation( CurDILocation );
 
             return new _Value( Module, ty, retVal );
@@ -393,7 +424,6 @@ namespace Microsoft.Zelig.LLVM
         {
             // REVIEW: If (significantBits < ty.SizeInBits), this may not result in the correct value.
             Value retVal = IrBuilder.TruncOrBitCast( val.LlvmValue, ty.DebugType )
-                                    .RegisterName( "trunc" )
                                     .SetDebugLocation( CurDILocation );
 
             return new _Value( Module, ty, retVal );
@@ -427,13 +457,11 @@ namespace Microsoft.Zelig.LLVM
             if( val.Type.IsSigned )
             {
                 result = IrBuilder.SIToFPCast( val.LlvmValue, type.DebugType )
-                                  .RegisterName( "sitofp" )
                                   .SetDebugLocation( CurDILocation );
             }
             else
             {
                 result = IrBuilder.UIToFPCast( val.LlvmValue, type.DebugType )
-                                  .RegisterName( "uitofp" )
                                   .SetDebugLocation( CurDILocation );
             }
 
@@ -443,7 +471,6 @@ namespace Microsoft.Zelig.LLVM
         public _Value InsertFPExt( _Value val, _Type type )
         {
             var value = IrBuilder.FPExt( val.LlvmValue, type.DebugType )
-                                 .RegisterName( "fpext" )
                                  .SetDebugLocation( CurDILocation );
 
             return new _Value( Module, type, value );
@@ -452,7 +479,6 @@ namespace Microsoft.Zelig.LLVM
         public _Value InsertFPTrunc( _Value val, _Type type )
         {
             var value = IrBuilder.FPTrunc( val.LlvmValue, type.DebugType )
-                                 .RegisterName( "fpext" )
                                  .SetDebugLocation( CurDILocation );
 
             return new _Value( Module, type, value );
@@ -464,13 +490,11 @@ namespace Microsoft.Zelig.LLVM
             if( val.Type.IsSigned )
             {
                 result = IrBuilder.FPToSICast( val.LlvmValue, intType.DebugType )
-                                  .RegisterName( "fptosi" )
                                   .SetDebugLocation( CurDILocation );
             }
             else
             {
                 result = IrBuilder.FPToUICast( val.LlvmValue, intType.DebugType )
-                                  .RegisterName( "fptoui" )
                                   .SetDebugLocation( CurDILocation );
             }
 
@@ -499,7 +523,6 @@ namespace Microsoft.Zelig.LLVM
             Value vB = Module.LlvmModule.Context.CreateConstant( cond.Type.DebugType, 0, false );
 
             Value condVal = IrBuilder.Compare(IntPredicate.NotEqual, vA, vB)
-                                     .RegisterName( "icmpe" )
                                      .SetDebugLocation( CurDILocation );
 
             IrBuilder.Branch( condVal, trueBB.LlvmBasicBlock, falseBB.LlvmBasicBlock )
@@ -623,7 +646,6 @@ namespace Microsoft.Zelig.LLVM
             Debug.Assert( objAddress.Type.IsPointer, "Cannot get field address from a loaded value type." );
 
             _Type underlyingType = objAddress.Type.UnderlyingType;
-            string resultName = string.Empty;
             List<Value> valuesForGep = new List<Value>();
 
             // Add an initial 0 value to index into the address.
@@ -633,9 +655,10 @@ namespace Microsoft.Zelig.LLVM
             if( ( underlyingType != null ) && underlyingType.IsBoxed )
             {
                 underlyingType = underlyingType.UnderlyingType;
-                resultName = "UnboxedValue";
                 valuesForGep.Add(ctx.CreateConstant(1));
             }
+
+            string fieldName = string.Empty;
 
             // Special case: Primitive types aren't structures, so don't try to index into their value field.
             if ( underlyingType.IsPrimitiveType )
@@ -645,10 +668,8 @@ namespace Microsoft.Zelig.LLVM
             else
             {
                 List<uint> values = new List<uint>();
-                string fieldName;
                 underlyingType = SetValuesForByteOffsetAccess( underlyingType, values, offset, out fieldName );
 
-                resultName = $"{underlyingType.Name}.{fieldName}";
                 for( int i = 0; i < values.Count; ++i )
                 {
                     valuesForGep.Add( ctx.CreateConstant( values[ i ] ) );
@@ -662,7 +683,7 @@ namespace Microsoft.Zelig.LLVM
             }
 
             var gep = IrBuilder.GetElementPtr( objAddress.LlvmValue, valuesForGep )
-                               .RegisterName( resultName )
+                               .RegisterName( $"{objAddress.LlvmValue.Name}.{fieldName}" )
                                .SetDebugLocation( CurDILocation );
 
             _Type pointerType = Module.GetOrInsertPointerType( underlyingType );
@@ -727,15 +748,24 @@ namespace Microsoft.Zelig.LLVM
             return new _Value( Module, val.Type, oldVal );
         }
 
+        public void SetVariableName( _Value value, VariableExpression expression )
+        {
+            string name = expression.DebugName?.Name;
+            if( !string.IsNullOrWhiteSpace( name ) )
+            {
+                value.LlvmValue.RegisterName( name );
+            }
+        }
+
         internal InstructionBuilder IrBuilder { get; }
 
         internal BasicBlock LlvmBasicBlock { get; }
 
-        public DISubProgram CurDISubProgram => CurDILocation?.Scope as DISubProgram;
+        internal DISubProgram CurDISubProgram => CurDILocation?.Scope as DISubProgram;
 
         internal DILocation CurDILocation;
 
-        readonly _Module Module;
-        readonly _Function Owner;
+        private readonly _Module Module;
+        private readonly _Function Owner;
     }
 }

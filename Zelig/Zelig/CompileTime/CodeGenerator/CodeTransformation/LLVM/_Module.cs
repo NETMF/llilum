@@ -180,10 +180,8 @@ namespace Microsoft.Zelig.LLVM
             return new _Value( this, type, ucv );
         }
 
-        public _Value GetNullPointer( _Type type )
+        public _Value GetNullValue( _Type type )
         {
-            // In addition to the usual pointer types (Object*, IntPtr, byte*, etc.), the runtime also treats some
-            // structs as pointers, such as RuntimeTypeHandle and CodePointer. In those cases, we'll return a struct.
             return new _Value( this, type, type.DebugType.GetNullValue( ) );
         }
 
