@@ -16,6 +16,7 @@
 #endif
 
 #include "analogin_api.h"
+#include "analogout_api.h"
 #include "gpio_api.h"
 #include "gpio_irq_api.h"
 #include "spi_api.h"

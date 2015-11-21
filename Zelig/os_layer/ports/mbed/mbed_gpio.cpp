@@ -121,8 +121,11 @@ extern "C"
 
         switch (resistor)
         {
-        case LLOS_GPIO_ResistorDefault:
+        case LLOS_GPIO_ResistorNone:
             mode = PullNone;
+            break;
+        case LLOS_GPIO_ResistorDefault:
+            mode = PullDefault;
             break;
         case LLOS_GPIO_ResistorPullup:
             mode = PullUp;
@@ -160,7 +163,7 @@ extern "C"
         return S_OK;
     }
 
-    HRESULT LLOS_GPIO_SetDebounce(LLOS_Context pin, LLOS_Timespan debounce_time)
+    HRESULT LLOS_GPIO_SetDebounce(LLOS_Context pin, LLOS_TimeSpan debounce_time)
     {
         return LLOS_E_NOT_SUPPORTED;
     }

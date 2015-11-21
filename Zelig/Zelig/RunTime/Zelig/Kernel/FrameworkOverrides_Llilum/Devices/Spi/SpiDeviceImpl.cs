@@ -11,21 +11,21 @@ namespace Microsoft.Zelig.Runtime
     [ExtendClass(typeof(SpiDevice), NoConstructors = true)]
     public class SpiDeviceImpl
     {
-        public static SpiChannel TryAcquireSpiChannel(int port)
+        public static SpiChannel TryAcquireSpiChannel(int port, bool writeOnly)
         {
             SpiChannelInfo channelInfo = SpiProvider.Instance.GetSpiChannelInfo(port);
 
-            return TryAcquireSpiChannel(channelInfo, channelInfo.DefaultChipSelect);
+            return TryAcquireSpiChannel(channelInfo, channelInfo.DefaultChipSelect, writeOnly);
         }
 
-        public static SpiChannel TryAcquireSpiChannel(ISpiChannelInfo channelInfo, int chipSelectPin)
+        public static SpiChannel TryAcquireSpiChannel(ISpiChannelInfo channelInfo, int chipSelectPin, bool writeOnly)
         {
             SpiProvider spiProvider = SpiProvider.Instance;
 
             if (channelInfo != null)
             {
                 // Ensure all pins are available
-                if (!HardwareProvider.Instance.TryReservePins(channelInfo.Mosi, channelInfo.Miso, channelInfo.Sclk, chipSelectPin))
+                if (!HardwareProvider.Instance.TryReservePins(channelInfo.Mosi, writeOnly ? HardwareProvider.Instance.InvalidPin : channelInfo.Miso, channelInfo.Sclk, chipSelectPin))
                 {
                     return null;
                 }
@@ -52,9 +52,9 @@ namespace Microsoft.Zelig.Runtime
             }
         }
 
-        public static void ReleaseSpiPins(int mosiPin, int misoPin, int sclPin, int csPin)
+        public static void ReleaseSpiPins(ISpiChannelInfo channelInfo, int csPin)
         {
-            HardwareProvider.Instance.ReleasePins(mosiPin, misoPin, sclPin, csPin);
+            HardwareProvider.Instance.ReleasePins(channelInfo.Mosi, channelInfo.Miso, channelInfo.Sclk, csPin);
         }
     }
 }

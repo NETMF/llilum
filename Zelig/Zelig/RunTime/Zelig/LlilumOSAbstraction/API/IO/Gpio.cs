@@ -10,7 +10,8 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.API.IO
 
     public enum GpioPinResistor
     {
-        Default = 0, 
+        None = 0,
+        Default, 
         Pullup,
         Pulldown,
         OpenDrain,

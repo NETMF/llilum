@@ -10,15 +10,19 @@ namespace Microsoft.Llilum.Devices.Spi
     {
         public abstract ISpiChannelInfo GetChannelInfo();
 
-        public abstract void SetupPins(ISpiChannelInfo channelInfo);
+        public abstract void SetupPins(ISpiChannelInfo channelInfo, bool writeOnly);
 
-        public abstract void SetupPins(ISpiChannelInfo channelInfo, int alternateCsPin);
+        public abstract void SetupPins(ISpiChannelInfo channelInfo, int alternateCsPin, bool writeOnly);
 
         public abstract void SetupChannel(int bits, SpiMode mode, bool isSlave);
 
         public abstract void SetupTiming(int frequencyInHz, int setupTime, int holdTime);
 
-        public abstract void WriteRead(byte[] writeBuffer, byte[] readBuffer, int startReadOffset);
+        public abstract void WriteRead(byte[] writeBuffer, int writeOffset, int writeLength, byte[] readBuffer, int readOffset, int readLength, int startReadOffset);
+
+        public abstract void Write( byte[] writeBuffer, int writeOffset, int writeLength );
+
+        public abstract void Read( byte[] readBuffer, int readOffset, int readLength );
 
         public abstract void Dispose();
     }

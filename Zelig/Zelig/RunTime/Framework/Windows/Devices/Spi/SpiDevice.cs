@@ -80,7 +80,7 @@ namespace Windows.Devices.Spi
             }
 
             // This will throw if it fails
-            Llilum.SpiDevice spiChannel = new Llilum.SpiDevice(channelInfo, settings.ChipSelectLine);
+            Llilum.SpiDevice spiChannel = new Llilum.SpiDevice(channelInfo, settings.ChipSelectLine, false);
 
             spiChannel.ClockFrequency = settings.ClockFrequency;
             spiChannel.DataBitLength = settings.DataBitLength;
@@ -197,7 +197,7 @@ namespace Windows.Devices.Spi
             // Read sends buffer.Length 0s, and places read values into buffer
             if (buffer != null && buffer.Length > 0)
             {
-                m_channel.WriteRead(null, buffer, 0);
+                m_channel.Read(buffer, 0, buffer.Length);
             }
         }
 
@@ -221,7 +221,8 @@ namespace Windows.Devices.Spi
                         readOffset = 0;
                     }
                 }
-                m_channel.WriteRead(writeBuffer, readBuffer, readOffset);
+
+                m_channel.WriteRead(writeBuffer, 0, writeBuffer.Length, readBuffer, 0, readBuffer.Length, readOffset);
             }
         }
 
@@ -244,7 +245,7 @@ namespace Windows.Devices.Spi
         {
             if (buffer != null && buffer.Length > 0)
             {
-                m_channel.WriteRead(buffer, null, 0);
+                m_channel.Write(buffer, 0, buffer.Length);
             }
         }
 

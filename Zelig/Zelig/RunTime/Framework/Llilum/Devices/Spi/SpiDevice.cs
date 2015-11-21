@@ -12,6 +12,7 @@ namespace Microsoft.Llilum.Devices.Spi
         private SpiChannel m_spiChannel;
         private int m_chipSelectPin;
         private bool m_disposed = false;
+        private bool m_writeOnly = false;
 
         const int defaultFrequency = 100000;
         const SpiMode defaultMode = SpiMode.Cpol0Cpha0;
@@ -22,13 +23,15 @@ namespace Microsoft.Llilum.Devices.Spi
         /// SpiDevice constructor
         /// </summary>
         /// <param name="portIndex">Index of the port that maps to the board assembly</param>
-        public SpiDevice(int portIndex)
+        public SpiDevice(int portIndex, bool writeOnly)
         {
-            m_spiChannel = TryAcquireSpiChannel(portIndex);
+            m_spiChannel = TryAcquireSpiChannel(portIndex, writeOnly);
             if (m_spiChannel == null)
             {
                 throw new ArgumentException();
             }
+
+            m_writeOnly = writeOnly;
 
             // Set default values
             Initialize(m_spiChannel.GetChannelInfo().DefaultChipSelect);
@@ -37,18 +40,20 @@ namespace Microsoft.Llilum.Devices.Spi
         /// <summary>
         /// SpiDevice constructor
         /// </summary>
-        /// <param name="channelInfo">Channel information necesssary to create a SPI channel</param>
-        public SpiDevice(ISpiChannelInfo channelInfo) : this(channelInfo, channelInfo.DefaultChipSelect)
+        /// <param name="channelInfo">Channel information necessary to create a SPI channel</param>
+        public SpiDevice(ISpiChannelInfo channelInfo, bool writeOnly) : this(channelInfo, channelInfo.DefaultChipSelect, writeOnly)
         {
         }
 
-        public SpiDevice(ISpiChannelInfo channelInfo, int chipSelectPin)
+        public SpiDevice(ISpiChannelInfo channelInfo, int chipSelectPin, bool writeOnly)
         {
-            m_spiChannel = TryAcquireSpiChannel(channelInfo, chipSelectPin);
+            m_spiChannel = TryAcquireSpiChannel(channelInfo, chipSelectPin, writeOnly);
             if (m_spiChannel == null)
             {
                 throw new InvalidOperationException();
             }
+
+            m_writeOnly = writeOnly;
 
             // Set default values
             Initialize(chipSelectPin);
@@ -90,11 +95,11 @@ namespace Microsoft.Llilum.Devices.Spi
 
             if (ChipSelectPin != channelInfo.DefaultChipSelect)
             {
-                m_spiChannel.SetupPins(channelInfo, ChipSelectPin);
+                m_spiChannel.SetupPins(channelInfo, ChipSelectPin, m_writeOnly);
             }
             else
             {
-                m_spiChannel.SetupPins(channelInfo);
+                m_spiChannel.SetupPins(channelInfo, m_writeOnly);
             }
                 
             m_spiChannel.SetupChannel(DataBitLength, Mode, IsSlave);
@@ -145,14 +150,33 @@ namespace Microsoft.Llilum.Devices.Spi
         /// Performs a SPI transaction. Either writeBuffer, readBuffer, or both must be non-empty
         /// </summary>
         /// <param name="writeBuffer">Bytes to write. If null, writes 0x0 for read</param>
+        /// <param name="writeOffset">Offset into the writeBuffer</param>
+        /// <param name="writeLength">Length of the data in bytes to write</param>
         /// <param name="readBuffer">Bytes to read. If null, only does write</param>
-        /// <param name="startReadOffset">Index in the writeBuffer at which to start filling the readBuffer</param>
-        public void WriteRead(byte[] writeBuffer, byte[] readBuffer, int startReadOffset)
+        /// <param name="readOffset">Offset into the readBuffer</param>
+        /// <param name="readLength">Length in bytes to read</param>
+        /// <param name="startReadOffset">Index of the SPI response at which to start reading bytes into readBuffer at readOffset.  This is used if the SPI response requires multiple writes before the response data is ready.</param>
+        public void WriteRead(byte[] writeBuffer, int writeOffset, int writeLength, byte[] readBuffer, int readOffset, int readLength, int startReadOffset)
         {
             ThrowIfDisposed();
 
-            m_spiChannel.WriteRead(writeBuffer, readBuffer, startReadOffset);
+            m_spiChannel.WriteRead(writeBuffer, writeOffset, writeLength, readBuffer, readOffset, readLength, startReadOffset);
         }
+
+        public void Write( byte[] writeBuffer, int writeOffset, int writeLength )
+        {
+            ThrowIfDisposed();
+
+            m_spiChannel.Write( writeBuffer, writeOffset, writeLength );
+        }
+
+        public void Read( byte[] readBuffer, int readOffset, int readLength )
+        {
+            ThrowIfDisposed();
+
+            m_spiChannel.Read( readBuffer, readOffset, readLength );
+        }
+
 
         /// <summary>
         /// Acquires the chip select pin if a new one is entered and releases the old one.
@@ -190,7 +214,7 @@ namespace Microsoft.Llilum.Devices.Spi
             if (!m_disposed)
             {
                 ISpiChannelInfo channelInfo = m_spiChannel.GetChannelInfo();
-                ReleaseSpiPins(channelInfo.Mosi, channelInfo.Miso, channelInfo.Sclk, ChipSelectPin);
+                ReleaseSpiPins(channelInfo, ChipSelectPin);
 
                 if (disposing)
                 {
@@ -207,15 +231,15 @@ namespace Microsoft.Llilum.Devices.Spi
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern SpiChannel TryAcquireSpiChannel(int port);
+        private static extern SpiChannel TryAcquireSpiChannel(int port, bool writeOnly);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern SpiChannel TryAcquireSpiChannel(ISpiChannelInfo channelInfo, int alternateCsPin);
+        private static extern SpiChannel TryAcquireSpiChannel(ISpiChannelInfo channelInfo, int alternateCsPin, bool writeOnly);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool TryChangeCsPin(int oldPin, int newPin);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void ReleaseSpiPins(int mosiPin, int misoPin, int sclPin, int csPin);
+        private static extern void ReleaseSpiPins(ISpiChannelInfo channelInfo, int csPin);
     }
 }

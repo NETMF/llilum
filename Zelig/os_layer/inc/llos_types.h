@@ -20,7 +20,7 @@ typedef uint32_t      LLOS_Address;
 typedef void*         LLOS_Opaque;
 typedef uint64_t      LLOS_Ticks;
 typedef uint64_t      LLOS_Time;
-typedef uint64_t      LLOS_Timespan;
+typedef uint64_t      LLOS_TimeSpan;
 typedef LLOS_Time     LLOS_Timeout;
 typedef LLOS_Opaque   LLOS_Context;
 typedef int8_t        LLOS_AesKey[ LLOS_PLATFORM_AES_KEY_LENGTH_BYTES ];
@@ -38,14 +38,14 @@ typedef uint32_t LLOS_Com;
 //
 typedef enum LLOS_AsyncStatus
 {
-    LLOS_created = 0,
-    LLOS_scheduled,
-    LLOS_running,
-    LLOS_cancelling,
-    LLOS_completed,
-    LLOS_completedWithTimeout,
-    LLOS_completedWithError,
-    LLOS_completedWithCancellation,
+    LLOS_Created = 0,
+    LLOS_Scheduled,
+    LLOS_Running,
+    LLOS_Cancelling,
+    LLOS_Completed,
+    LLOS_CompletedWithTimeout,
+    LLOS_CompletedWithError,
+    LLOS_CompletedWithCancellation,
 } LLOS_AsyncStatus;
 
 typedef VOID( *LLOS_Callback )( LLOS_Context );

@@ -5,19 +5,16 @@
 namespace Microsoft.CortexM3OnMBED.HardwareModel
 {
     using System;
-    using System.Runtime.InteropServices;
     using Microsoft.Zelig.Runtime;
     using Microsoft.Llilum.Devices.Spi;
     using LlilumGpio = Microsoft.Llilum.Devices.Gpio;
+    using LLIO       = Zelig.LlilumOSAbstraction.API.IO;
 
     public class SpiChannel : Microsoft.Llilum.Devices.Spi.SpiChannel
     {
-        private unsafe SpiImpl* m_spi;
+        private unsafe LLIO.SpiContext* m_spi;
+        private unsafe LLIO.SpiConfig* m_spiCfg;
         private unsafe LlilumGpio.GpioPin m_altCsPin;
-        private UInt16 m_dataWidth;
-        private int m_setupTimeInCycles;
-        private int m_holdTimeInCycles;
-        private bool m_activeLow;
         private ISpiChannelInfo m_channelInfo;
 
         //--//
@@ -49,7 +46,7 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
             // Native resources need to be freed unconditionally
             if(m_spi != null)
             {
-                tmp_spi_free(m_spi);
+                LLIO.Spi.LLOS_SPI_Uninitialize(m_spi);
                 m_spi = null;
             }
             if(disposing)
@@ -71,136 +68,107 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         /// Performs a synchronous transfer over the SpiChannel
         /// </summary>
         /// <param name="writeBuffer">Bytes to write. Leave null for read-only</param>
+        /// <param name="writeOffset">Offset into the writeBuffer</param>
+        /// <param name="writeLength">Length of the data in bytes to write</param>
         /// <param name="readBuffer">Bytes to read. Leave null for write-only</param>
-        /// <param name="startReadOffset">Index at which to start reading bytes</param>
-        public unsafe override void WriteRead(byte[] writeBuffer, byte[] readBuffer, int startReadOffset)
+        /// <param name="readOffset">Offset into the readBuffer</param>
+        /// <param name="readLength">Length in bytes to read</param>
+        /// <param name="startReadOffset">Index of the SPI response at which to start reading bytes into readBuffer at readOffset.  This is used if the SPI response requires multiple writes before the response data is ready.</param>
+        public unsafe override void WriteRead( byte[] writeBuffer, int writeOffset, int writeLength, byte[] readBuffer, int readOffset, int readLength, int startReadOffset )
         {
-
-            // Enable the chip select
-            if (m_altCsPin != null)
-            {
-                m_altCsPin.Write(m_activeLow ? 0 : 1);
-
-                // Setup time in cycles
-                Processor.Delay(m_setupTimeInCycles);
-            }
+            EnableChipSelect( );
 
             // Are we reading, writing, or both?
-            bool isRead = (readBuffer != null) && readBuffer.Length > 0;
-            bool isWrite = (writeBuffer != null) && writeBuffer.Length > 0;
-
             // We need to be at least one of these
-            if (!isRead && !isWrite)
+            if(readBuffer == null && writeBuffer == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentException( );
             }
 
-            // The number of times we will be transferring for 8bit transactions
-            int transferCount = isWrite ? writeBuffer.Length : readBuffer.Length;
+            ArrayImpl writeImpl = (ArrayImpl)(object)writeBuffer;
+            ArrayImpl readImpl = (ArrayImpl)(object)readBuffer;
 
-            if (m_dataWidth == 8)
-            {
-                // 8 bit transactions
-                int i = 0;
-                while (i < transferCount)
-                {
-                    int writeVal = isWrite ? writeBuffer[i] : 0;
+            LLIO.Spi.LLOS_SPI_Transfer(
+                m_spi,
+                (byte*)writeImpl.GetDataPointer( ),
+                writeOffset,
+                writeLength,
+                (byte*)readImpl.GetDataPointer( ),
+                readOffset,
+                readLength,
+                startReadOffset );
 
-                    int result = tmp_spi_master_write(m_spi, writeVal);
+            DisableChipselect( );
+        }
 
-                    if (isRead && i >= startReadOffset)
-                    {
-                        readBuffer[i] = (byte)result;
-                    }
+        public unsafe override void Write( byte[] writeBuffer, int writeOffset, int writeLength )
+        {
+            ArrayImpl writeImpl = (ArrayImpl)(object)writeBuffer;
 
-                    i++;
-                }
-            }
-            else
-            {
-                // 16 bit transactions
-                int i = 0;
-                while (i < transferCount)
-                {
-                    int writeVal = isWrite ? writeBuffer[i] | (writeBuffer[i + 1] << 8) : 0;
+            EnableChipSelect( );
+            LLIO.Spi.LLOS_SPI_Write( m_spi, (byte*)writeImpl.GetDataPointer(), writeOffset, writeLength );
+            DisableChipselect( );
+        }
 
-                    int result = tmp_spi_master_write(m_spi, writeVal);
+        public unsafe override void Read( byte[] readBuffer, int readOffset, int readLength )
+        {
+            ArrayImpl readImpl = (ArrayImpl)(object)readBuffer;
 
-                    if (isRead && i >= startReadOffset)
-                    {
-                        readBuffer[i] = (byte)(result & 0x000000FF);
-                        readBuffer[i + 1] = (byte)((result & 0x0000FF00) >> 8);
-                    }
-
-                    i += 2;
-                }
-
-            }
-
-            // Disable the chip select
-            if (m_altCsPin != null)
-            {
-                // Some boards (K64F) do not support checking if SPI is busy through mbed
-                if (SpiProvider.Instance.SpiBusySupported)
-                {
-                    while (tmp_spi_busy(m_spi) != 0)
-                    {
-                        // Spin until transaction is complete
-                    }
-                }
-
-                // Hold time in cycles
-                Processor.Delay(m_holdTimeInCycles);
-
-                m_altCsPin.Write(m_activeLow ? 1 : 0);
-            }
+            EnableChipSelect( );
+            LLIO.Spi.LLOS_SPI_Read( m_spi, (byte*)readImpl.GetDataPointer(), readOffset, readLength, 0 );            
+            DisableChipselect( );
         }
 
         public unsafe override void SetupChannel(int bits, SpiMode mode, bool isSlave)
         {
-            int slave = isSlave ? 1 : 0;
+            m_spiCfg->master          = isSlave ? 0u : 1u;
+            m_spiCfg->dataWidth       = (uint)bits;
+            m_spiCfg->phaseMode       = ( mode == SpiMode.Cpol0Cpha1 || mode == SpiMode.Cpol1Cpha1 ) ? 1u : 0u;
+            m_spiCfg->inversePolarity = ( mode == SpiMode.Cpol1Cpha0 || mode == SpiMode.Cpol1Cpha1 ) ? 1u : 0u;
 
-            // We will only support 8 and 16 bit transmissions
-            if (bits > 8)
-            {
-                m_dataWidth = 16;
-            }
-            else
-            {
-                m_dataWidth = 8;
-            }
-
-            tmp_spi_format(m_spi, m_dataWidth, (int)mode, slave);
+            LLIO.Spi.LLOS_SPI_Configure( m_spi, m_spiCfg );
         }
 
         public unsafe override void SetupTiming(int frequencyInHz, int setupTime, int holdTime)
         {
-            m_setupTimeInCycles = setupTime;
-            m_holdTimeInCycles = holdTime;
+            const int defaultDelayCycles = 100;
 
-            if (m_setupTimeInCycles < 0)
+            if (setupTime < 0)
             {
-                m_setupTimeInCycles = 100;
+                m_spiCfg->chipSelectSetupCycles = defaultDelayCycles;
+            }
+            else
+            {
+                m_spiCfg->chipSelectSetupCycles = (uint)setupTime;
             }
 
-            if (m_holdTimeInCycles < 0)
+            if (holdTime < 0)
             {
-                m_holdTimeInCycles = 100;
+                m_spiCfg->chipSelectHoldCycles = defaultDelayCycles;
+            }
+            else
+            {
+                m_spiCfg->chipSelectHoldCycles = (uint)holdTime;
             }
 
-            tmp_spi_frequency(m_spi, frequencyInHz);
+            m_spiCfg->clockRateHz = (uint)frequencyInHz;
+            LLIO.Spi.LLOS_SPI_SetFrequency(m_spi, (uint)frequencyInHz);
         }
 
         /// <summary>
         /// Initializes the mbed SpiChannel with the appropriate pins
         /// </summary>
         /// <param name="channelInfo">SPI channel pin info</param>
-        public unsafe override void SetupPins(ISpiChannelInfo channelInfo)
+        /// <param name="writeOnly">Determines whether this is a write-only SPI channel, in which case the MISO pin is not used.</param>
+        public unsafe override void SetupPins(ISpiChannelInfo channelInfo, bool writeOnly)
         {
-            fixed (SpiImpl** spi_ptr = &m_spi)
+            fixed (LLIO.SpiContext** spi_ptr = &m_spi)
+            fixed (LLIO.SpiConfig** spicfg_ptr = &m_spiCfg)
             {
-                tmp_spi_alloc_init(spi_ptr, channelInfo.Mosi, channelInfo.Miso, channelInfo.Sclk, channelInfo.DefaultChipSelect);
+                LLIO.Spi.LLOS_SPI_Initialize((uint)channelInfo.Mosi, writeOnly ? (uint)HardwareProvider.Instance.InvalidPin : (uint)channelInfo.Miso, (uint)channelInfo.Sclk, (uint)channelInfo.DefaultChipSelect, spi_ptr, spicfg_ptr );
             }
+
+            Initialize( channelInfo );
         }
 
         /// <summary>
@@ -208,16 +176,17 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         /// </summary>
         /// <param name="channelInfo">SPI channel pin info</param>
         /// <param name="alternateCsPin">Manually toggled CS pin</param>
-        public unsafe override void SetupPins(ISpiChannelInfo channelInfo, int alternateCsPin)
+        /// <param name="writeOnly">Determines whether this is a write-only SPI channel, in which case the MISO pin is not used.</param>
+        public unsafe override void SetupPins(ISpiChannelInfo channelInfo, int alternateCsPin, bool writeOnly)
         {
-            fixed (SpiImpl** spi_ptr = &m_spi)
+            fixed(LLIO.SpiContext** ppSpi = &m_spi)
+            fixed (LLIO.SpiConfig** spicfg_ptr = &m_spiCfg)
             {
                 // Since we are using an alternate CS pin, initialize CS with the Invalid Pin
-                tmp_spi_alloc_init(spi_ptr, channelInfo.Mosi, channelInfo.Miso, channelInfo.Sclk, HardwareProvider.Instance.InvalidPin);
+                LLIO.Spi.LLOS_SPI_Initialize( (uint)channelInfo.Mosi, writeOnly ? (uint)HardwareProvider.Instance.InvalidPin : (uint)channelInfo.Miso, (uint)channelInfo.Sclk, (uint)HardwareProvider.Instance.InvalidPin, ppSpi, spicfg_ptr );
             }
 
-            // Mbed assumes active low, so we only set up active low/high when using the alternate CS pin
-            m_activeLow = channelInfo.ActiveLow;
+            Initialize( channelInfo );
 
             // Set up the pin, unless it's the invalid pin. It has already been reserved
             if (alternateCsPin != HardwareProvider.Instance.InvalidPin)
@@ -233,31 +202,65 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
                 m_altCsPin.Mode = LlilumGpio.PinMode.Default;
 
                 // Set to high for the lifetime of the SpiChannel (except on transfers)
-                m_altCsPin.Write(m_activeLow ? 1 : 0);
+                m_altCsPin.Write(m_spiCfg->activeLow == 1 ? 1 : 0);
             }
         }
 
-        [DllImport("C")]
-        private static unsafe extern void tmp_spi_alloc_init(SpiImpl** obj, int mosi, int miso, int scl, int cs);
+        private unsafe void Initialize(ISpiChannelInfo channelInfo)
+        {
+            // Mbed assumes active low, so we only set up active low/high when using the alternate CS pin
+            m_spiCfg->activeLow = channelInfo.ActiveLow ? 1u : 0u;
+            m_spiCfg->busyPin = (uint)HardwareProvider.Instance.InvalidPin;
+            m_spiCfg->clockIdleLevel = 0;
+            m_spiCfg->clockSamplingEdge = 0;
+            m_spiCfg->loopbackMode = 0;
+            m_spiCfg->MSBTransferMode = 0;
+            m_spiCfg->chipSelect = (uint)channelInfo.DefaultChipSelect;
+        }
 
-        [DllImport("C")]
-        private static unsafe extern void tmp_spi_free(SpiImpl* obj);
-        
-        [DllImport("C")]
-        private static unsafe extern void tmp_spi_format(SpiImpl* obj, int bits, int mode, int slave);
+        private unsafe void EnableChipSelect()
+        {
+            // Enable the chip select
+            if (m_altCsPin != null)
+            {
+                m_altCsPin.Write(m_spiCfg->activeLow == 1 ? 0 : 1);
 
-        [DllImport("C")]
-        private static unsafe extern void tmp_spi_frequency(SpiImpl* obj, int hz);
+                if(m_spiCfg->chipSelectSetupCycles > 0)
+                {
+                    // Setup time in cycles
+                    Processor.Delay( (int)m_spiCfg->chipSelectSetupCycles );
+                }
+            }
+        }
 
-        [DllImport("C")]
-        private static unsafe extern int tmp_spi_master_write(SpiImpl* obj, int value);
+        private unsafe void DisableChipselect()
+        {
+            // Disable the chip select
+            if (m_altCsPin != null)
+            {
+                // Some boards (K64F) do not support checking if SPI is busy through mbed
+                if (SpiProvider.Instance.SpiBusySupported)
+                {
+                    uint isBusy = 0;
 
-        [DllImport("C")]
-        private static unsafe extern int tmp_spi_busy(SpiImpl* obj);
+                    while( 0 <= LLIO.Spi.LLOS_SPI_IsBusy( m_spi, &isBusy ) )
+                    {
+                        // Spin until transaction is complete
+                        if( isBusy == 0 )
+                        {
+                            break;
+                        }
+                    }
+                }
 
+                // Hold time in cycles
+                if(m_spiCfg->chipSelectHoldCycles > 0)
+                {
+                    Processor.Delay( (int)m_spiCfg->chipSelectHoldCycles );
+                }
+
+                m_altCsPin.Write(m_spiCfg->activeLow == 1 ? 1 : 0);
+            }
+        }
     }
-
-    internal unsafe struct SpiImpl
-    {
-    };
 }

@@ -17,7 +17,8 @@ extern "C" {
 
 typedef enum LLOS_GPIO_Resistor
 {
-    LLOS_GPIO_ResistorDefault = 0,
+    LLOS_GPIO_ResistorNone = 0,
+    LLOS_GPIO_ResistorDefault,
     LLOS_GPIO_ResistorPullup, 
     LLOS_GPIO_ResistorPulldown, 
     LLOS_GPIO_ResistorOpenDrain,
@@ -55,7 +56,7 @@ HRESULT LLOS_GPIO_DisablePin  ( LLOS_Context pin                                
 HRESULT LLOS_GPIO_SetPolarity ( LLOS_Context pin, LLOS_GPIO_Polarity polarity                                                              );
 HRESULT LLOS_GPIO_SetMode     ( LLOS_Context pin, LLOS_GPIO_Resistor resistor                                                              );
 HRESULT LLOS_GPIO_SetDirection( LLOS_Context pin, LLOS_GPIO_Direction direction                                                            );
-HRESULT LLOS_GPIO_SetDebounce ( LLOS_Context pin, LLOS_Timespan debounce_time                                                              );
+HRESULT LLOS_GPIO_SetDebounce ( LLOS_Context pin, LLOS_TimeSpan debounce_time                                                              );
 // TOOD: Documentation: Make sure to note that the managed code layer does not restrict input pins from being written to.
 HRESULT LLOS_GPIO_Write       ( LLOS_Context pin, int32_t value                                                                            );
 int32_t LLOS_GPIO_Read        ( LLOS_Context pin                                                                                           );

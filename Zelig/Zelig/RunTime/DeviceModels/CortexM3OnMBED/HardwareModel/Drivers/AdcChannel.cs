@@ -7,11 +7,12 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
     using System;
     using System.Runtime.InteropServices;
     using Runtime = Microsoft.Zelig.Runtime;
+    using LLIO = Zelig.LlilumOSAbstraction.API.IO;
 
     public class AdcChannel : Llilum.Devices.Adc.AdcChannel
     {
-        private unsafe AdcImpl* m_adc;
-        private int             m_pinNumber;
+        private unsafe LLIO.AdcContext* m_adc;
+        private int                     m_pinNumber;
 
         internal AdcChannel(int pinNumber)
         {
@@ -32,7 +33,7 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         {
             if (m_adc != null)
             {
-                tmp_adc_free(m_adc);
+                LLIO.Adc.LLOS_ADC_Uninitialize(m_adc);
                 m_adc = null;
 
                 if (disposing)
@@ -47,40 +48,37 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         {
             unsafe
             {
-                fixed (AdcImpl** adc_ptr = &m_adc)
+                uint precisionBits = 0;
+
+                fixed (LLIO.AdcContext** adc_ptr = &m_adc)
                 {
-                    tmp_adc_alloc_init(adc_ptr, m_pinNumber);
+                    LLIO.Adc.LLOS_ADC_Initialize((uint)m_pinNumber, LLIO.AdcDirection.Input, &precisionBits, adc_ptr);
                 }
             }
         }
 
         public override uint ReadUnsigned()
         {
+            int value = 0;
+
             unsafe
             {
-                return tmp_adc_read_u16(m_adc);
+                LLIO.Adc.LLOS_ADC_ReadRaw(m_adc, &value);
             }
+
+            return (uint)value;
         }
 
         public override float Read()
         {
+            float result = 0f;
+
             unsafe
             {
-                return tmp_adc_read_float(m_adc);
+                LLIO.Adc.LLOS_ADC_Read(m_adc, &result);
             }
+
+            return result;
         }
-
-        [DllImport("C")]
-        private static unsafe extern void tmp_adc_alloc_init(AdcImpl** obj, int pinNumber);
-        [DllImport("C")]
-        private static unsafe extern UInt16 tmp_adc_read_u16(AdcImpl* obj);
-        [DllImport("C")]
-        private static unsafe extern float tmp_adc_read_float(AdcImpl* obj);
-        [DllImport("C")]
-        private static unsafe extern void tmp_adc_free(AdcImpl* obj);
     }
-
-    internal unsafe struct AdcImpl
-    {
-    };
 }

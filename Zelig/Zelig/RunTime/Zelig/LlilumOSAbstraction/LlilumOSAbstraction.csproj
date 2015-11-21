@@ -60,7 +60,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="API\IO\Adc.cs" />
     <Compile Include="API\IO\Gpio.cs" />
+    <Compile Include="API\IO\Spi.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\mscorlib\mscorlib.csproj">
@@ -93,8 +95,14 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="..\..\..\..\os_layer\inc\api\io\llos_analog.h">
+      <Link>Native\IO\llos_analog.h</Link>
+    </Content>
     <Content Include="..\..\..\..\os_layer\inc\api\io\llos_gpio.h">
       <Link>Native\IO\llos_gpio.h</Link>
+    </Content>
+    <Content Include="..\..\..\..\os_layer\inc\api\io\llos_spi.h">
+      <Link>Native\IO\llos_spi.h</Link>
     </Content>
     <Content Include="..\..\..\..\os_layer\inc\llos_error.h">
       <Link>Native\llos_error.h</Link>
