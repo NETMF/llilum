@@ -350,7 +350,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                     // Initialize all reference counting variables to null
                     foreach(var variable in cfg.DataFlow_SpanningTree_Variables)
                     {
-                        if(( variable is TemporaryVariableExpression || variable is LocalVariableExpression ) &&
+                        if(!( variable is ArgumentVariableExpression ) &&
                             ts.IsReferenceCountingType( variable.Type ) &&
                             !variable.SkipReferenceCounting)
                         {
