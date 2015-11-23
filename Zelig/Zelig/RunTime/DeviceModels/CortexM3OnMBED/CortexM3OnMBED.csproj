@@ -63,7 +63,9 @@
     <Compile Include="HardwareModel\HardwareProviders\AdcProvider.cs" />
     <Compile Include="HardwareModel\HardwareProviders\GpioProvider.cs" />
     <Compile Include="HardwareModel\HardwareProviders\I2cProvider.cs" />
+    <Compile Include="HardwareModel\HardwareProviders\NetworkInterfaceProvider.cs" />
     <Compile Include="HardwareModel\HardwareProviders\PwmProvider.cs" />
+    <Compile Include="HardwareModel\HardwareProviders\SocketProvider.cs" />
     <Compile Include="HardwareModel\HardwareProviders\SpiProvider.cs" />
     <Compile Include="HardwareModel\Memory.cs" />
     <Compile Include="HardwareModel\Peripherals.cs" />
@@ -126,6 +128,10 @@
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\ModelForCortexM3\ModelForCortexM3.csproj">
       <Project>{A30EB003-94F8-4A85-8DA1-006F6810A7A4}</Project>
       <Name>ModelForCortexM3</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\lwIP\Microsoft.Llilum.Lwip.csproj">
+      <Project>{e77ac86e-58ab-47b6-bc6d-3c1b4545cdfd}</Project>
+      <Name>Microsoft.Llilum.Lwip</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

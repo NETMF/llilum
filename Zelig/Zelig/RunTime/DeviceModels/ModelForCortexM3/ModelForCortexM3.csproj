@@ -99,7 +99,7 @@
     </ProjectReference>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\LlilumOSAbstraction\LlilumOSAbstraction.csproj">
       <Project>{20DC2CF5-8EED-4231-9743-6BAB96BE465C}</Project>
-      <Name>Microsoft.Zelig.LlilumOSAbstraction</Name>
+      <Name>LlilumOSAbstraction</Name>
     </ProjectReference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>

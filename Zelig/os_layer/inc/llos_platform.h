@@ -34,7 +34,9 @@
 #endif // LLOS_FREE
 
 #ifndef LLOS_MEMSET
+#ifndef _STRING_H_
 extern void memset(void* addr, uint8_t fill, size_t size);
+#endif
 #define LLOS_MEMSET memset
 #endif // LLOS_MEMSET
 

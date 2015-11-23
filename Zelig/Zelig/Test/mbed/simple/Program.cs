@@ -60,12 +60,12 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 
     internal abstract class LedToggler
     {
-        public LedToggler( GpioPin[] pins )
+        public LedToggler(GpioPin[] pins)
         {
             _pins = pins;
         }
 
-        public abstract void run( float t );
+        public abstract void run(float t);
 
         public int PinCount
         {
@@ -75,15 +75,15 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             }
         }
 
-        public GpioPinValue this[ int key ]
+        public GpioPinValue this[int key]
         {
             get
             {
-                return _pins[ key ].Read( );
+                return _pins[key].Read();
             }
             set
             {
-                _pins[ key ].Write( value );
+                _pins[key].Write(value);
             }
         }
 
@@ -92,48 +92,48 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 
     internal class LedTogglerSimultaneous : LedToggler
     {
-        public LedTogglerSimultaneous( GpioPin[] pins )
-            : base( pins )
+        public LedTogglerSimultaneous(GpioPin[] pins)
+            : base(pins)
         {
         }
 
-        public override void run( float t )
+        public override void run(float t)
         {
-            for(int i = 0; i < PinCount; ++i)
+            for (int i = 0; i < PinCount; ++i)
             {
-                this[ i ] = ( t < 0.5 ) ? GpioPinValue.High : GpioPinValue.Low;
+                this[i] = (t < 0.5) ? GpioPinValue.High : GpioPinValue.Low;
             }
         }
     }
 
     internal class LedTogglerSequential : LedToggler
     {
-        public LedTogglerSequential( GpioPin[] pins )
-            : base( pins )
+        public LedTogglerSequential(GpioPin[] pins)
+            : base(pins)
         {
         }
 
-        public override void run( float t )
+        public override void run(float t)
         {
-            for(int i = 0; i < PinCount; ++i)
+            for (int i = 0; i < PinCount; ++i)
             {
-                this[ i ] = ( (int)( t * 4 ) == i ) ? GpioPinValue.High : GpioPinValue.Low;
+                this[i] = ((int)(t * 4) == i) ? GpioPinValue.High : GpioPinValue.Low;
             }
         }
     }
 
     internal class LedTogglerAlternate : LedToggler
     {
-        public LedTogglerAlternate( GpioPin[] pins )
-            : base( pins )
+        public LedTogglerAlternate(GpioPin[] pins)
+            : base(pins)
         {
         }
 
-        public override void run( float t )
+        public override void run(float t)
         {
-            for(int i = 0; i < PinCount; ++i)
+            for (int i = 0; i < PinCount; ++i)
             {
-                this[ i ] = ( ( i % 2 ) == (int)( t * 2 ) ) ? GpioPinValue.High : GpioPinValue.Low;
+                this[i] = ((i % 2) == (int)(t * 2)) ? GpioPinValue.High : GpioPinValue.Low;
             }
         }
     }
@@ -143,10 +143,10 @@ namespace Microsoft.Zelig.Test.mbed.Simple
         public static byte[] i2cReadWrite1 = new byte[1];
         public static byte[] i2cReadWrite2 = new byte[2];
 
-        public static double ReadTemp( I2cDevice device )
+        public static double ReadTemp(I2cDevice device)
         {
-            i2cReadWrite1[ 0 ] = 0x0;
-            device.WriteRead( i2cReadWrite1, i2cReadWrite2 );
+            i2cReadWrite1[0] = 0x0;
+            device.WriteRead(i2cReadWrite1, i2cReadWrite2);
             double temp = ((i2cReadWrite2[0] << 8) | i2cReadWrite2[1]) / 256.0;
             return temp;
         }
@@ -179,7 +179,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 #endif
         };
 
-        static void Main( )
+        static void Main()
         {
             int currentMode = 0;
             int count = 0;
@@ -189,7 +189,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             TestGpioPerf();
 #endif // TEST_GPIO_PERF && LPC1768
 
-#if( TEST_GPIO_INTERRUPTS )
+#if (TEST_GPIO_INTERRUPTS)
             TestGpioInterrupt(5);
 #endif // TEST_GPIO_INTERRUPTS
 
@@ -197,36 +197,36 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             TestSpiLcd( );
 #endif // TEST_SPI_LCD && LPC1768
 
-            
+
             var controller = GpioController.GetDefault();
             var pins = new GpioPin[pinNumbers.Length];
 
-            for(int i = 0; i < pinNumbers.Length; ++i)
+            for (int i = 0; i < pinNumbers.Length; ++i)
             {
                 GpioPin pin = controller.OpenPin(pinNumbers[i]);
 
                 // Start with all LEDs on.
-                pin.Write( GpioPinValue.High );
-                pin.SetDriveMode( GpioPinDriveMode.Output );
+                pin.Write(GpioPinValue.High);
+                pin.SetDriveMode(GpioPinDriveMode.Output);
 
-                pins[ i ] = pin;
+                pins[i] = pin;
             }
 
             var solitary = controller.OpenPin(threadPin);
-            solitary.SetDriveMode( GpioPinDriveMode.Output );
+            solitary.SetDriveMode(GpioPinDriveMode.Output);
 
             LedToggler[] blinkingModes = new LedToggler[3];
-            blinkingModes[ 0 ] = new LedTogglerSimultaneous( pins );
-            blinkingModes[ 1 ] = new LedTogglerSequential( pins );
-            blinkingModes[ 2 ] = new LedTogglerAlternate( pins );
+            blinkingModes[0] = new LedTogglerSimultaneous(pins);
+            blinkingModes[1] = new LedTogglerSequential(pins);
+            blinkingModes[2] = new LedTogglerAlternate(pins);
 
             var blinkingTimer = new ZeligSupport.Timer();
             var blinkingModeSwitchTimer = new ZeligSupport.Timer();
 
-            blinkingTimer.start( );
-            blinkingModeSwitchTimer.start( );
+            blinkingTimer.start();
+            blinkingModeSwitchTimer.start();
 
-#region SPI
+            #region SPI
 #if USE_GPIO
             // Get the device selector by friendly name
             string deviceSelector = SpiDevice.GetDeviceSelector("SPI0");
@@ -252,9 +252,9 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             byte[] writeBuffer2 = new byte[] { 0x1, 0x2, 0x3 };
             byte[] readBuffer = new byte[1];
 #endif
-#endregion
+            #endregion
 
-#region I2C
+            #region I2C
 #if USE_I2C
             //
             // I2C Init
@@ -275,14 +275,14 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             i2cReadWrite2[1] = 0x0;
             i2cDevice.Write(i2cReadWrite2);
 #endif
-#endregion
+            #endregion
 
             int pinState = 1;
-            solitary.Write( (GpioPinValue)pinState );
-            ZeligSupport.Timer.wait_ms( 300 );
-            solitary.Write( (GpioPinValue)0 );
-            ZeligSupport.Timer.wait_ms( 300 );
-            solitary.Write( (GpioPinValue)pinState );
+            solitary.Write((GpioPinValue)pinState);
+            ZeligSupport.Timer.wait_ms(300);
+            solitary.Write((GpioPinValue)0);
+            ZeligSupport.Timer.wait_ms(300);
+            solitary.Write((GpioPinValue)pinState);
             pinState = 0;
 
 #if( USE_THREADING )
@@ -298,7 +298,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                     pinState = ++pinState % 2;
                 }
             });
-            solitaryBlinker.Start( );
+            solitaryBlinker.Start();
 
             var solitaryAlerter = new System.Threading.Timer((obj) =>
             {
@@ -323,34 +323,34 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 
 #if( USE_PWM )
             var pwmController = PwmController.GetDefaultAsync();
-            pwmController.SetDesiredFrequency( 1000000 );
+            pwmController.SetDesiredFrequency(1000000);
 
             var pwmPin = pwmController.OpenPin(pwmPinNumber);
-            pwmPin.SetActiveDutyCyclePercentage( 0.7F );
+            pwmPin.SetActiveDutyCyclePercentage(0.7F);
             pwmPin.Polarity = PwmPulsePolarity.ActiveLow;
-            pwmPin.Start( );
+            pwmPin.Start();
 
 #endif
             float readVal = 0;
-            while(true)
+            while (true)
             {
 #if( USE_ADC )
-                readVal = ( (float)adcChannel.ReadValue( ) ) / adcController.MaxValue * 2;
+                readVal = ((float)adcChannel.ReadValue()) / adcController.MaxValue * 2;
 #endif
                 // If ADC isn't in use, this will always be 1
                 periodDivider = 1 + readVal;
 
-                if(blinkingTimer.read( ) >= ( period / periodDivider ))
+                if (blinkingTimer.read() >= (period / periodDivider))
                 {
-                    blinkingTimer.reset( );
+                    blinkingTimer.reset();
                 }
 
-                if(blinkingModeSwitchTimer.read( ) >= timePerMode)
+                if (blinkingModeSwitchTimer.read() >= timePerMode)
                 {
-                    currentMode = ( currentMode + 1 ) % blinkingModes.Length;
-                    blinkingModeSwitchTimer.reset( );
+                    currentMode = (currentMode + 1) % blinkingModes.Length;
+                    blinkingModeSwitchTimer.reset();
 
-#region I2C_Impl
+                    #region I2C_Impl
 #if USE_I2C
                     try
                     {
@@ -374,9 +374,9 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                         // Continue as normal in this case
                     }
 #endif
-#endregion
+                    #endregion
 
-#region SPI_Impl
+                    #region SPI_Impl
 #if USE_SPI
                     writeBuffer[0] = (byte)currentMode;
                     spiDevice.TransferFullDuplex(writeBuffer, readBuffer);
@@ -387,14 +387,14 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                     }
                     spiDevice.Write(writeBuffer2);
 #endif
-#endregion
+                    #endregion
 
                     count++;
 
                 }
 
 
-                blinkingModes[ currentMode ].run( blinkingTimer.read( ) / ( period / periodDivider ) );
+                blinkingModes[currentMode].run(blinkingTimer.read() / (period / periodDivider));
 
             }
         }

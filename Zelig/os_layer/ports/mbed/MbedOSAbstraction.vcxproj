@@ -137,7 +137,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalOptions>$(LlilumClAdditionalOptions) %(AdditionalOptions) -mfloat-abi=softfp</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(LlilumClAdditionalIncludes);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(LlilumSourceRoot)\..\lwip\lwip;$(LlilumSourceRoot)\..\lwip\lwip\include;$(LlilumSourceRoot)\..\mbed-rtos\rtx\TARGET_CORTEX_M;$(LlilumSourceRoot)\..\mbed-rtos\rtos;$(LlilumSourceRoot)\..\lwip\lwip\include\netif;$(LlilumSourceRoot)\..\lwip\lwip\include\ipv4\lwip;$(LlilumSourceRoot)\..\lwip\lwip\include\lwip;$(LlilumSourceRoot)\..\lwip\lwip-eth\arch\TARGET_Freescale;$(LlilumSourceRoot)\..\lwip\lwip-eth\arch\TARGET_NXP;$(LlilumSourceRoot)\..\lwip\lwip-sys\arch;$(LlilumClAdditionalIncludes);$(AdditionalIncludeDirectories);</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>$(LlilumClPreprocessorDefs);DEBUG;%(PreprocessorDefinitions);__DEFAULT_STACK_SIZE=$(LlilumStackSize);__HEAP_SIZE=$(LlilumHeapSize)</PreprocessorDefinitions>
     </ClCompile>
     <ArmAssemble>
@@ -159,7 +159,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalOptions>$(LlilumClAdditionalOptions) %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(LlilumClAdditionalIncludes);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(LlilumSourceRoot)\..\lwip\lwip;$(LlilumSourceRoot)\..\lwip\lwip\include;$(LlilumSourceRoot)\..\mbed-rtos\rtx\TARGET_CORTEX_M;$(LlilumSourceRoot)\..\mbed-rtos\rtos;$(LlilumSourceRoot)\..\lwip\lwip\include\netif;$(LlilumSourceRoot)\..\lwip\lwip\include\ipv4\lwip;$(LlilumSourceRoot)\..\lwip\lwip\include\lwip;$(LlilumSourceRoot)\..\lwip\lwip-eth\arch\TARGET_Freescale;$(LlilumSourceRoot)\..\lwip\lwip-eth\arch\TARGET_NXP;$(LlilumSourceRoot)\..\lwip\lwip-sys\arch;$(LlilumClAdditionalIncludes);$(AdditionalIncludeDirectories);</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>$(LlilumClPreprocessorDefs);%(PreprocessorDefinitions);__DEFAULT_STACK_SIZE=$(LlilumStackSize);__HEAP_SIZE=$(LlilumHeapSize)</PreprocessorDefinitions>
     </ClCompile>
     <ArmAssemble>
@@ -177,7 +177,10 @@
     <ClCompile Include="mbed_gpio.cpp" />
     <ClCompile Include="mbed_memory.cpp" />
     <ClCompile Include="mbed_i2c.cpp" />
+    <ClCompile Include="mbed_overrides.cpp" />
     <ClCompile Include="mbed_serial.cpp" />
+    <ClCompile Include="mbed_ethernet.cpp" />
+    <ClCompile Include="mbed_socket.cpp" />
     <ClCompile Include="mbed_spi.cpp" />
     <ClCompile Include="mbed_clock.cpp" />
     <ClCompile Include="mbed_core.cpp" />

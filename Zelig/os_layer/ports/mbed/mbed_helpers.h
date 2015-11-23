@@ -28,4 +28,4 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-
+int32_t WStringToCharBuffer(char* output, uint32_t outputBufferLength, const uint16_t* input, const uint32_t length);

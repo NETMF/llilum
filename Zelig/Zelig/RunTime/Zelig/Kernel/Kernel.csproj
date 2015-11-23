@@ -108,6 +108,10 @@
     <Compile Include="FrameworkOverrides_System\IO\Ports\BaseSerialStream.cs" />
     <Compile Include="FrameworkOverrides_System\IO\Ports\SerialStreamImpl.cs" />
     <Compile Include="FrameworkOverrides_System\IO\Ports\SerialPortImpl.cs" />
+    <Compile Include="FrameworkOverrides_System\Net\IPAddressImpl.cs" />
+    <Compile Include="FrameworkOverrides_System\Net\NetworkInterfaceProvider.cs" />
+    <Compile Include="FrameworkOverrides_System\Net\SocketNativeImpl.cs" />
+    <Compile Include="FrameworkOverrides_System\Net\SocketProvider.cs" />
     <Compile Include="FrameworkOverrides_Windows\Devices\Adc\AdcControllerImpl.cs" />
     <Compile Include="FrameworkOverrides_Windows\Devices\Adc\AdcProviderUwp.cs" />
     <Compile Include="FrameworkOverrides_Windows\Devices\I2c\I2cDeviceImplUwp.cs" />

@@ -235,6 +235,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LlilumOSAbstraction", "RunT
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MbedOSAbstraction", "..\os_layer\ports\mbed\MbedOSAbstraction.vcxproj", "{2832CE7B-8065-4473-A3C7-B8B069920A9C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lwIP", "lwIP", "{89BAA5C6-B788-4B69-AD54-E78A52E1AF33}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Llilum.Lwip", "RunTime\DeviceModels\lwIP\Microsoft.Llilum.Lwip.csproj", "{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2294,6 +2298,36 @@ Global
 		{2832CE7B-8065-4473-A3C7-B8B069920A9C}.Release|Mixed Platforms.ActiveCfg = Release|ARM
 		{2832CE7B-8065-4473-A3C7-B8B069920A9C}.Release|Win32.ActiveCfg = Release|ARM
 		{2832CE7B-8065-4473-A3C7-B8B069920A9C}.Release|x64.ActiveCfg = Release|ARM
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Debug|ARM.Build.0 = Debug|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Debug|Win32.Build.0 = Debug|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Debug|x64.Build.0 = Debug|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Instrumentation|Any CPU.ActiveCfg = Instrumentation|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Instrumentation|Any CPU.Build.0 = Instrumentation|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Instrumentation|ARM.ActiveCfg = Instrumentation|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Instrumentation|ARM.Build.0 = Instrumentation|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Instrumentation|Mixed Platforms.ActiveCfg = Instrumentation|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Instrumentation|Mixed Platforms.Build.0 = Instrumentation|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Instrumentation|Win32.ActiveCfg = Instrumentation|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Instrumentation|Win32.Build.0 = Instrumentation|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Instrumentation|x64.ActiveCfg = Instrumentation|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Instrumentation|x64.Build.0 = Instrumentation|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Release|ARM.ActiveCfg = Release|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Release|ARM.Build.0 = Release|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Release|Win32.ActiveCfg = Release|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Release|Win32.Build.0 = Release|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Release|x64.ActiveCfg = Release|Any CPU
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2391,5 +2425,7 @@ Global
 		{3ECE9965-D0E8-493E-848C-A43D96E26F16} = {110E8B86-4F26-458A-97C3-55F2BA1E60DE}
 		{20DC2CF5-8EED-4231-9743-6BAB96BE465C} = {110E8B86-4F26-458A-97C3-55F2BA1E60DE}
 		{2832CE7B-8065-4473-A3C7-B8B069920A9C} = {3ECE9965-D0E8-493E-848C-A43D96E26F16}
+		{89BAA5C6-B788-4B69-AD54-E78A52E1AF33} = {7FC1F0E6-A46C-4A0C-AA6F-233EEFEB33D3}
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD} = {89BAA5C6-B788-4B69-AD54-E78A52E1AF33}
 	EndGlobalSection
 EndGlobal

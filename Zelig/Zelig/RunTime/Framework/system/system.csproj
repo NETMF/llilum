@@ -82,6 +82,25 @@
     <Compile Include="System\IO\Ports\SerialReceived.cs" />
     <Compile Include="System\IO\Ports\SerialStream.cs" />
     <Compile Include="System\IO\Ports\StopBits.cs" />
+    <Compile Include="System\Net\DNS.cs" />
+    <Compile Include="System\Net\EndPoint.cs" />
+    <Compile Include="System\Net\IPAddress.cs" />
+    <Compile Include="System\Net\IPEndPoint.cs" />
+    <Compile Include="System\Net\IPHostEntry.cs" />
+    <Compile Include="System\Net\Internal\SocketNative.cs" />
+    <Compile Include="System\Net\SocketAddress.cs" />
+    <Compile Include="System\Net\SocketException.cs" />
+    <Compile Include="System\Net\Sockets\AddressFamily.cs" />
+    <Compile Include="System\Net\Sockets\NetworkStream.cs" />
+    <Compile Include="System\Net\Sockets\ProtocolFamily.cs" />
+    <Compile Include="System\Net\Sockets\ProtocolType.cs" />
+    <Compile Include="System\Net\Sockets\SelectMode.cs" />
+    <Compile Include="System\Net\Sockets\Socket.cs" />
+    <Compile Include="System\Net\Sockets\SocketErrors.cs" />
+    <Compile Include="System\Net\Sockets\SocketFlags.cs" />
+    <Compile Include="System\Net\Sockets\SocketOptionLevel.cs" />
+    <Compile Include="System\Net\Sockets\SocketOptionName.cs" />
+    <Compile Include="System\Net\Sockets\SocketType.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\mscorlib\mscorlib.csproj">
@@ -90,6 +109,7 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

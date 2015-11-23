@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props" Condition="Exists('$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Llilum.Lwip</RootNamespace>
+    <AssemblyName>Microsoft.Llilum.Lwip</AssemblyName>
+    <!-- ZELIG: Move intermediate data out of the source tree -->
+    <BaseIntermediateOutputPath>$(LlilumBuildRoot)\Target\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoStdLib>true</NoStdLib>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <!-- ZELIG: Move output directory out of the source tree -->
+    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoStdLib>true</NoStdLib>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Instrumentation|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="NetworkInterface.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\mscorlib\mscorlib.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060501AA01}</Project>
+      <Name>mscorlib</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\system\system.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20070702AA01}</Project>
+      <Name>system</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\Common\Common.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20061218AA01}</Project>
+      <Name>Common</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\Kernel\Kernel.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060509AA01}</Project>
+      <Name>Kernel</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\TypeSystem\TypeSystem.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060720AA01}</Project>
+      <Name>TypeSystem</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\LlilumOSAbstraction\LlilumOSAbstraction.csproj">
+      <Project>{20DC2CF5-8EED-4231-9743-6BAB96BE465C}</Project>
+      <Name>Microsoft.Zelig.LlilumOSAbstraction</Name>
+    </ProjectReference>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

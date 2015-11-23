@@ -14,8 +14,11 @@
 #include <llos_platform.h>
 #include <llos_error.h>
 
-typedef void          VOID;
+#ifndef OS_TCB_H
 typedef uint32_t      BOOL;
+#endif
+
+typedef void          VOID;
 typedef uint32_t      LLOS_Address;
 typedef void*         LLOS_Opaque;
 typedef uint64_t      LLOS_Ticks;

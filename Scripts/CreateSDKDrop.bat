@@ -84,6 +84,14 @@ echo Copying target libraries...
 xcopy /i /e /q /y "%LLILUM_ROOT_DIR%\Zelig\mbed\*"      "%SDK_DIR%\SDKDrop\mbed\*"
 
 echo.
+echo Copying rtos headers...
+xcopy /i /e /q /y "%LLILUM_ROOT_DIR%\Zelig\mbed-rtos\*"      "%SDK_DIR%\SDKDrop\mbed-rtos\*"
+
+echo.
+echo Copying lwip libraries...
+xcopy /i /e /q /y "%LLILUM_ROOT_DIR%\Zelig\lwip\*"      "%SDK_DIR%\SDKDrop\lwip\*"
+
+echo.
 echo Copying installation instructions for pyOCD and make for Windows...
 xcopy /i /e /q /y "%LLILUM_ROOT_DIR%\Zelig\tools\*" "%SDK_DIR%\SDKDrop\tools\*"
 
@@ -125,6 +133,14 @@ if not exist %SDK_DIR%\SDKDrop\ZeligBuild (
 )
 if not exist %SDK_DIR%\SDKDrop\mbed (
     @echo Error: Mbed libs missing
+    goto Error
+)
+if not exist %SDK_DIR%\SDKDrop\mbed-rtos (
+    @echo Error: Mbed rtos headers missing
+    goto Error
+)
+if not exist %SDK_DIR%\SDKDrop\lwip (
+    @echo Error: Lwip libs and includes missing
     goto Error
 )
 if not exist %SDK_DIR%\SDKDrop\Test (
