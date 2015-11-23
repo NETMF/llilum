@@ -57,7 +57,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                         continue;
                     }
 
-                    Debug.Assert( !m_localValues.ContainsKey( exp ), "Found multiple definitions for variable: " + exp );
+                    Debug.Assert( !m_localValues.ContainsKey( exp ), "Found multiple definitions for expression: " + exp );
 
                     bool addressable = false;
                     foreach( IR.Operator useOp in useChains[exp.SpanningTreeIndex] )
@@ -236,9 +236,14 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                     {
                         // This value isn't addressable, so it must have been set in a previous block.
                         IR.BasicBlock idom = m_immediateDominators[ block.SpanningTreeIndex ];
+                        if( idom == block )
+                        {
+                            // This is the entry block, so there's no predecessor to search.
+                            throw new InvalidOperationException( $"Encountered use of expression with no definition. Expression {exp} in {block.Owner.Method}" );
+                        }
+
                         value = GetValue( idom, exp, wantImmediate, allowLoad );
                     }
-
 
                     valueCache.SetValueForBlock( llvmBlock, value );
                     return value;
