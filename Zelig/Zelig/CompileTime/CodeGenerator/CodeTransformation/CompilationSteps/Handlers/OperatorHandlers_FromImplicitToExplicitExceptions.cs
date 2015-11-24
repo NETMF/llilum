@@ -290,7 +290,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             foreach(BasicBlock block in basicBlocks)
             {
                 var callOp = block.FirstOperator as StaticCallOperator;
-                if((callOp != null) && (callOp.TargetMethod == md))
+                if( (callOp != null) &&
+                    (callOp.TargetMethod == md) &&
+                    ArrayUtility.ArrayEqualsNotNull( block.ProtectedBy, current.ProtectedBy, 0 ))
                 {
                     throwBB = block;
                     break;
