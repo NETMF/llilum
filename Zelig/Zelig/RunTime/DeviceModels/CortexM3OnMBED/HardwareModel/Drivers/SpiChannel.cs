@@ -8,6 +8,7 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
     using Microsoft.Zelig.Runtime;
     using Microsoft.Llilum.Devices.Spi;
     using LlilumGpio = Microsoft.Llilum.Devices.Gpio;
+    using LLOS       = Zelig.LlilumOSAbstraction;
     using LLIO       = Zelig.LlilumOSAbstraction.API.IO;
 
     public class SpiChannel : Microsoft.Llilum.Devices.Spi.SpiChannel
@@ -121,10 +122,10 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
 
         public unsafe override void SetupChannel(int bits, SpiMode mode, bool isSlave)
         {
-            m_spiCfg->master          = isSlave ? 0u : 1u;
-            m_spiCfg->dataWidth       = (uint)bits;
-            m_spiCfg->phaseMode       = ( mode == SpiMode.Cpol0Cpha1 || mode == SpiMode.Cpol1Cpha1 ) ? 1u : 0u;
-            m_spiCfg->inversePolarity = ( mode == SpiMode.Cpol1Cpha0 || mode == SpiMode.Cpol1Cpha1 ) ? 1u : 0u;
+            m_spiCfg->Master          = isSlave ? 0u : 1u;
+            m_spiCfg->DataWidth       = (uint)bits;
+            m_spiCfg->PhaseMode       = ( mode == SpiMode.Cpol0Cpha1 || mode == SpiMode.Cpol1Cpha1 ) ? 1u : 0u;
+            m_spiCfg->InversePolarity = ( mode == SpiMode.Cpol1Cpha0 || mode == SpiMode.Cpol1Cpha1 ) ? 1u : 0u;
 
             LLIO.Spi.LLOS_SPI_Configure( m_spi, m_spiCfg );
         }
@@ -135,23 +136,23 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
 
             if (setupTime < 0)
             {
-                m_spiCfg->chipSelectSetupCycles = defaultDelayCycles;
+                m_spiCfg->ChipSelectSetupCycles = defaultDelayCycles;
             }
             else
             {
-                m_spiCfg->chipSelectSetupCycles = (uint)setupTime;
+                m_spiCfg->ChipSelectSetupCycles = (uint)setupTime;
             }
 
             if (holdTime < 0)
             {
-                m_spiCfg->chipSelectHoldCycles = defaultDelayCycles;
+                m_spiCfg->ChipSelectHoldCycles = defaultDelayCycles;
             }
             else
             {
-                m_spiCfg->chipSelectHoldCycles = (uint)holdTime;
+                m_spiCfg->ChipSelectHoldCycles = (uint)holdTime;
             }
 
-            m_spiCfg->clockRateHz = (uint)frequencyInHz;
+            m_spiCfg->ClockRateHz = (uint)frequencyInHz;
             LLIO.Spi.LLOS_SPI_SetFrequency(m_spi, (uint)frequencyInHz);
         }
 
@@ -202,20 +203,20 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
                 m_altCsPin.Mode = LlilumGpio.PinMode.Default;
 
                 // Set to high for the lifetime of the SpiChannel (except on transfers)
-                m_altCsPin.Write(m_spiCfg->activeLow == 1 ? 1 : 0);
+                m_altCsPin.Write(m_spiCfg->ActiveLow == 1 ? 1 : 0);
             }
         }
 
         private unsafe void Initialize(ISpiChannelInfo channelInfo)
         {
             // Mbed assumes active low, so we only set up active low/high when using the alternate CS pin
-            m_spiCfg->activeLow = channelInfo.ActiveLow ? 1u : 0u;
-            m_spiCfg->busyPin = (uint)HardwareProvider.Instance.InvalidPin;
-            m_spiCfg->clockIdleLevel = 0;
-            m_spiCfg->clockSamplingEdge = 0;
-            m_spiCfg->loopbackMode = 0;
+            m_spiCfg->ActiveLow = channelInfo.ActiveLow ? 1u : 0u;
+            m_spiCfg->BusyPin = (uint)HardwareProvider.Instance.InvalidPin;
+            m_spiCfg->ClockIdleLevel = 0;
+            m_spiCfg->ClockSamplingEdge = 0;
+            m_spiCfg->LoopbackMode = 0;
             m_spiCfg->MSBTransferMode = 0;
-            m_spiCfg->chipSelect = (uint)channelInfo.DefaultChipSelect;
+            m_spiCfg->ChipSelect = (uint)channelInfo.DefaultChipSelect;
         }
 
         private unsafe void EnableChipSelect()
@@ -223,12 +224,12 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
             // Enable the chip select
             if (m_altCsPin != null)
             {
-                m_altCsPin.Write(m_spiCfg->activeLow == 1 ? 0 : 1);
+                m_altCsPin.Write(m_spiCfg->ActiveLow == 1 ? 0 : 1);
 
-                if(m_spiCfg->chipSelectSetupCycles > 0)
+                if(m_spiCfg->ChipSelectSetupCycles > 0)
                 {
                     // Setup time in cycles
-                    Processor.Delay( (int)m_spiCfg->chipSelectSetupCycles );
+                    Processor.Delay( (int)m_spiCfg->ChipSelectSetupCycles );
                 }
             }
         }
@@ -243,7 +244,7 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
                 {
                     uint isBusy = 0;
 
-                    while( 0 <= LLIO.Spi.LLOS_SPI_IsBusy( m_spi, &isBusy ) )
+                    while( LLOS.LlilumErrors.Succeeded( LLIO.Spi.LLOS_SPI_IsBusy( m_spi, &isBusy ) ) )
                     {
                         // Spin until transaction is complete
                         if( isBusy == 0 )
@@ -254,12 +255,12 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
                 }
 
                 // Hold time in cycles
-                if(m_spiCfg->chipSelectHoldCycles > 0)
+                if(m_spiCfg->ChipSelectHoldCycles > 0)
                 {
-                    Processor.Delay( (int)m_spiCfg->chipSelectHoldCycles );
+                    Processor.Delay( (int)m_spiCfg->ChipSelectHoldCycles );
                 }
 
-                m_altCsPin.Write(m_spiCfg->activeLow == 1 ? 1 : 0);
+                m_altCsPin.Write(m_spiCfg->ActiveLow == 1 ? 1 : 0);
             }
         }
     }

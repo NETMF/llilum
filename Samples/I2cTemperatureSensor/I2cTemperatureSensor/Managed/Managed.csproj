@@ -49,20 +49,26 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Llilum.BoardConfigurations.K64F">
+      <HintPath>$(LLILUM_SDK)\ZeligBuild\Host\bin\$(Configuration)\Microsoft.Llilum.BoardConfigurations.K64F.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Llilum.BoardConfigurations.LPC1768">
+      <HintPath>$(LLILUM_SDK)\ZeligBuild\Host\bin\$(Configuration)\Microsoft.Llilum.BoardConfigurations.LPC1768.dll</HintPath>
+    </Reference>
     <Reference Include="K64F">
-      <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\K64F.dll</HintPath>
+      <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\$(Configuration)\K64F.dll</HintPath>
     </Reference>
     <Reference Include="LPC1768">
-      <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\LPC1768.dll</HintPath>
+      <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\$(Configuration)\LPC1768.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Zelig.Support.mbed">
-      <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\Microsoft.Zelig.Support.mbed.dll</HintPath>
+      <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\$(Configuration)\Microsoft.Zelig.Support.mbed.dll</HintPath>
     </Reference>
     <Reference Include="System">
-      <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\System.dll</HintPath>
+      <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\$(Configuration)\System.dll</HintPath>
     </Reference>
-    <Reference Include="Windows.Devices">
-      <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\Windows.Devices.dll</HintPath>
+    <Reference Include="Windows">
+      <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\$(Configuration)\Windows.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

@@ -1702,27 +1702,32 @@ namespace Microsoft.Zelig.FrontEnd
 
         public static void Main( string[] args )
         {
-            bool fNoSDK = false;
+            System.Threading.Thread th = new System.Threading.Thread( ()=>
+            {
+                bool fNoSDK = false;
 
-            try
-            {
-                fNoSDK = RunBench(args);
-            }
-            catch( Importer.SilentCompilationAbortException )
-            {
-            }
-            catch( Exception ex )
-            {
-                Console.Error.WriteLine( "Caught exception: {0}", ex );
-            }
-            finally
-            {
-                if( System.Diagnostics.Debugger.IsAttached && fNoSDK == true)
+                try
                 {
-                    Console.WriteLine( "Press <enter> to exit" );
-                    Console.ReadLine( );
+                    fNoSDK = RunBench(args);
                 }
-            }
+                catch( Importer.SilentCompilationAbortException )
+                {
+                }
+                catch( Exception ex )
+                {
+                    Console.Error.WriteLine( "Caught exception: {0}", ex );
+                }
+                finally
+                {
+                    if( System.Diagnostics.Debugger.IsAttached && fNoSDK == true)
+                    {
+                        Console.WriteLine( "Press <enter> to exit" );
+                        Console.ReadLine( );
+                    }
+                }
+            }, 1024*1024*1024 );
+            th.Start( );
+            th.Join( );
         }
     }
 }

@@ -10,8 +10,8 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.API.IO
 
     public enum GpioPinResistor
     {
-        None = 0,
-        Default, 
+        Default = 0, 
+        PullNone,
         Pullup,
         Pulldown,
         OpenDrain,
@@ -52,16 +52,16 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.API.IO
 
         public static unsafe uint LLOS_GPIO_EnablePin( GpioContext* pin, GpioPinEdge edge, LLOS_GPIO_InterruptCallback callback, UIntPtr callbackCtx )
         {
-            UIntPtr callback_ptr = UIntPtr.Zero;
+            UIntPtr callbackPtr = UIntPtr.Zero;
 
             if(callback != null)
             {
                 DelegateImpl dlg = (DelegateImpl)(object)callback;
 
-                callback_ptr = new UIntPtr( dlg.InnerGetCodePointer( ).Target.ToPointer( ) );
+                callbackPtr = new UIntPtr( dlg.InnerGetCodePointer( ).Target.ToPointer( ) );
             }
 
-            return LLOS_GPIO_EnablePin( pin, edge, callback_ptr, callbackCtx );
+            return LLOS_GPIO_EnablePin( pin, edge, callbackPtr, callbackCtx );
         }
 
         [DllImport( "C" )]

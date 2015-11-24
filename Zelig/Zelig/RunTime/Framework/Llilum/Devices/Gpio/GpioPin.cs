@@ -140,8 +140,8 @@ namespace Microsoft.Llilum.Devices.Gpio
 
     public enum PinMode
     {
-        None = 0,
-        Default,
+        Default = 0,
+        PullNone,
         PullUp,
         PullDown,
         OpenDrain,

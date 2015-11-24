@@ -50,13 +50,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Zelig.Support.mbed">
-      <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\Microsoft.Zelig.Support.mbed.dll</HintPath>
+      <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\$(Configuration)\Microsoft.Zelig.Support.mbed.dll</HintPath>
     </Reference>
     <Reference Include="System">
-      <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\System.dll</HintPath>
+      <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\$(Configuration)\System.dll</HintPath>
     </Reference>
-    <Reference Include="Windows.Devices">
-      <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\Windows.Devices.dll</HintPath>
+    <Reference Include="Windows">
+      <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\$(Configuration)\Windows.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

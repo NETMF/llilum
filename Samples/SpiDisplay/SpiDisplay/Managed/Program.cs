@@ -4,14 +4,13 @@
 
 namespace Microsoft.Zelig.Test.mbed.Simple
 {
-    using System.Collections.Generic;
-    using System.Runtime.InteropServices;
     using Windows.Devices.Adc;
     using Windows.Devices.Gpio;
     using Windows.Devices.Spi;
     using Windows.Devices.Enumeration;
 
-    using LPC1768 = Microsoft.Zelig.LPC1768;
+    // This is our board-specific assembly
+    using LPC1768;
 
     /// <summary>
     /// This is a sample program to show the functionality of the SPI controller implementation. This demonstrates the power of
@@ -40,23 +39,23 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             // Used to pass data to SPI device
             writeHelper = new byte[1];
 
-            _A0 = controller.OpenPin((int)LPC1768.PinName.p8);
+            _A0 = controller.OpenPin((int)PinName.p8);
             _A0.SetDriveMode(GpioPinDriveMode.Output);
 
-            _reset = controller.OpenPin((int)LPC1768.PinName.p6);
+            _reset = controller.OpenPin((int)PinName.p6);
 
             // Start reset high
             _reset.Write(GpioPinValue.High);
             _reset.SetDriveMode(GpioPinDriveMode.Output);
 
-            _CS = controller.OpenPin((int)LPC1768.PinName.p11);
+            _CS = controller.OpenPin((int)PinName.p11);
             _CS.Write(GpioPinValue.High);
             _CS.SetDriveMode(GpioPinDriveMode.Output);
 
             // Analog pin init. This maps to LPC1768 p19
             adcChannel = AdcController.GetDefaultAsync().OpenChannel(4);
 
-            // Note: The LCD display uses a non-stardard SPI configuration. This is why we
+            // Note: The LCD display uses a non-standard SPI configuration. This is why we
             // have added a copy of the LPC1768 project, and changed the configuration for SPI0!
 
             // Get the device selector by friendly name
@@ -65,7 +64,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             string busId = acqs[0].Id;
 
             // Set up a non-default frequency and pins
-            int chipSelect = unchecked((int)LPC1768.PinName.NC);
+            int chipSelect = unchecked((int)PinName.NC);
 
             SpiConnectionSettings settings = new SpiConnectionSettings(chipSelect)
             {
@@ -122,7 +121,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             wr_cmd(0xA2);   //  bias voltage
 
             wr_cmd(0xA0);
-            wr_cmd(0xC8);   //  colum normal
+            wr_cmd(0xC8);   //  column normal
 
             wr_cmd(0x22);   //  voltage resistor ratio
             wr_cmd(0x2F);   //  power on

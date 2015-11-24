@@ -1,37 +1,94 @@
 #include "mbed_helpers.h"
+#include "llos_i2c.h"
 
 //--//
 
 extern "C"
 {
+    HRESULT LLOS_I2C_Initialize(int32_t sdaPin, int32_t sclPin, LLOS_Context* pChannel)
+    {
+        i2c_t *pI2C = (i2c_t*)calloc(sizeof(i2c_t), 1);
 
-	void tmp_i2c_alloc(i2c_t** obj)
-	{
-		*obj = (i2c_t*)calloc(sizeof(i2c_t), 1);
-	}
+        if (pI2C == NULL)
+        {
+            return LLOS_E_OUT_OF_MEMORY;
+        }
 
-	void tmp_i2c_init(i2c_t* obj, int sdaPin, int sclPin)
-	{
-		i2c_init(obj, (PinName)sdaPin, (PinName)sclPin);
-	}
+        i2c_init(pI2C, (PinName)sdaPin, (PinName)sclPin);
 
-	void tmp_i2c_free(i2c_t* obj)
-	{
-		free(obj);
-	}
+        *pChannel = (LLOS_Context*)pI2C;
 
-	void tmp_i2c_frequency(i2c_t* obj, int hz)
-	{
-		i2c_frequency(obj, hz);
-	}
+        return S_OK;
+    }
 
-	int tmp_i2c_write(i2c_t* obj, int address, char* data, int length, int stop)
-	{
-		return i2c_write(obj, address, data, length, stop);
-	}
+    VOID LLOS_I2C_Uninitialize(LLOS_Context channel)
+    {
+        free(channel);
+    }
 
-	int tmp_i2c_read(i2c_t* obj, int address, char* data, int length, int stop)
-	{
-		return i2c_read(obj, address, data, length, stop);
-	}
+    HRESULT LLOS_I2C_SetFrequency(LLOS_Context channel, uint32_t frequencyHz)
+    {
+        i2c_t  *pI2C = (i2c_t*)channel;
+
+        if (pI2C == NULL)
+        {
+            return LLOS_E_INVALID_PARAMETER;
+        }
+
+        i2c_frequency(pI2C, frequencyHz);
+
+        return S_OK;
+    }
+
+    HRESULT LLOS_I2C_Enable(LLOS_Context channel)
+    {
+        return LLOS_E_NOT_SUPPORTED;
+    }
+
+    HRESULT LLOS_I2C_Disable(LLOS_Context channel)
+    {
+        return LLOS_E_NOT_SUPPORTED;
+    }
+
+    HRESULT LLOS_I2C_Write(LLOS_Context channel, uint32_t address, uint8_t* pBuffer, int32_t offset, int32_t *pLength, BOOL stop)
+    {
+        i2c_t  *pI2C = (i2c_t*)channel;
+
+        if (pI2C == NULL || pBuffer == NULL)
+        {
+            return LLOS_E_INVALID_PARAMETER;
+        }
+
+        *pLength = i2c_write(pI2C, address, (const char *)&pBuffer[offset], *pLength, stop);
+
+        return S_OK;
+    }
+
+    HRESULT LLOS_I2C_Read(LLOS_Context channel, uint32_t address, uint8_t* pBuffer, int32_t offset, int32_t* pLength, BOOL stop)
+    {
+        i2c_t  *pI2C = (i2c_t*)channel;
+
+        if (pI2C == NULL || pBuffer == NULL)
+        {
+            return LLOS_E_INVALID_PARAMETER;
+        }
+
+        *pLength = i2c_read(pI2C, address, (char *)&pBuffer[offset], *pLength, stop);
+
+        return S_OK;
+    }
+
+    HRESULT LLOS_I2C_Reset(LLOS_Context channel)
+    {
+        i2c_t  *pI2C = (i2c_t*)channel;
+
+        if (pI2C == NULL)
+        {
+            return LLOS_E_INVALID_PARAMETER;
+        }
+
+        i2c_reset(pI2C);
+
+        return S_OK;
+    }
 }

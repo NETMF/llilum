@@ -17,25 +17,25 @@ extern "C" {
 
 typedef struct LLOS_SPI_ControllerConfig
 {
-    uint32_t chipSelect;
-    BOOL     loopbackMode;
+    uint32_t ChipSelect;
+    BOOL     LoopbackMode;
     BOOL     MSBTransferMode;
-    BOOL     activeLow;
-    BOOL     inversePolarity;
-    BOOL     clockIdleLevel;
-    BOOL     clockSamplingEdge;
-    BOOL     master;
-    uint32_t phaseMode;
-    uint32_t wordSize;
-    uint32_t clockRateHz;
-    uint32_t chipSelectSetupCycles;
-    uint32_t chipSelectHoldCycles;
-    uint32_t busyPin;
+    BOOL     ActiveLow;
+    BOOL     InversePolarity;
+    BOOL     ClockIdleLevel;
+    BOOL     ClockSamplingEdge;
+    BOOL     Master;
+    uint32_t PhaseMode;
+    uint32_t WordSize;
+    uint32_t ClockRateHz;
+    uint32_t ChipSelectSetupCycles;
+    uint32_t ChipSelectHoldCycles;
+    uint32_t BusyPin;
 } LLOS_SPI_ControllerConfig;
 
 typedef enum LLOS_SPI_Action
 {
-    LLOS_SPI_ActionWrite = 1,
+    LLOS_SPI_ActionWrite = 0,
     LLOS_SPI_ActionRead,
     LLOS_SPI_ActionTransfer,
     LLOS_SPI_ActionError,

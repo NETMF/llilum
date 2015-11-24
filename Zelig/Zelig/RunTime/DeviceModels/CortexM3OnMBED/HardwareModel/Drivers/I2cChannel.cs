@@ -7,11 +7,13 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
     using System;
     using System.Runtime.InteropServices;
     using Llilum.Devices.I2c;
-    using RT = Microsoft.Zelig.Runtime;
+    using RT   = Microsoft.Zelig.Runtime;
+    using LLOS = Zelig.LlilumOSAbstraction;
+    using LLIO = Zelig.LlilumOSAbstraction.API.IO;
 
     public class I2cChannel : Llilum.Devices.I2c.I2cChannel
     {
-        private unsafe I2cImpl* m_i2c;
+        private unsafe LLIO.I2CContext* m_i2c;
         private II2cChannelInfo m_channelInfo;
 
         public I2cChannel(II2cChannelInfo channelInfo)
@@ -33,7 +35,7 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         {
             if (m_i2c != null)
             {
-                tmp_i2c_free(m_i2c);
+                LLIO.I2C.LLOS_I2C_Uninitialize( m_i2c );
                 m_i2c = null;
 
                 if (disposing)
@@ -51,16 +53,15 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
 
         public unsafe override void Initialize(II2cChannelInfo channelInfo)
         {
-            fixed (I2cImpl** i2c_ptr = &m_i2c)
+            fixed (LLIO.I2CContext** i2c_ptr = &m_i2c)
             {
-                tmp_i2c_alloc(i2c_ptr);
+                LLIO.I2C.LLOS_I2C_Initialize(channelInfo.SdaPin, channelInfo.SclPin, i2c_ptr);
             }
-            tmp_i2c_init(m_i2c, channelInfo.SdaPin, channelInfo.SclPin);
         }
 
         public unsafe override void SetFrequency(int hz)
         {
-            tmp_i2c_frequency(m_i2c, hz);
+            LLIO.I2C.LLOS_I2C_SetFrequency(m_i2c, (uint)hz);
         }
 
         public override int Read(byte[] buffer, int deviceAddress, int transactionStartOffset, int transactionLength, bool sendStop)
@@ -80,9 +81,12 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
 
             unsafe
             {
-                fixed (byte* start = &buffer[transactionStartOffset])
+                int bytesRead = transactionLength;
+                fixed (byte* pBuffer = &buffer[0])
                 {
-                    return tmp_i2c_read(m_i2c, deviceAddress, start, transactionLength, (sendStop ? 1 : 0));
+                    LLOS.LlilumErrors.ThrowOnError( LLIO.I2C.LLOS_I2C_Read( m_i2c, (uint)deviceAddress, pBuffer, transactionStartOffset, &bytesRead, ( sendStop ? 1u : 0u ) ), true );
+
+                    return bytesRead;
                 }
             }
         }
@@ -104,28 +108,14 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
 
             unsafe
             {
-                fixed (byte* start = &buffer[transactionStartOffset])
+                int bytesWritten = transactionLength;
+
+                fixed (byte* pBuffer = &buffer[0])
                 {
-                    return tmp_i2c_write(m_i2c, deviceAddress, start, transactionLength, (sendStop ? 1 : 0));
+                    LLOS.LlilumErrors.ThrowOnError( LLIO.I2C.LLOS_I2C_Write( m_i2c, (uint)deviceAddress, pBuffer, transactionStartOffset, &bytesWritten, ( sendStop ? 1u : 0u ) ), true );
+                    return bytesWritten;
                 }
             }
         }
-
-        [DllImport("C")]
-        private static unsafe extern void tmp_i2c_alloc(I2cImpl** obj);
-        [DllImport("C")]
-        private static unsafe extern void tmp_i2c_init(I2cImpl* obj, int sdaPin, int sclPin);
-        [DllImport("C")]
-        private static unsafe extern void tmp_i2c_free(I2cImpl* obj);
-        [DllImport("C")]
-        private static unsafe extern void tmp_i2c_frequency(I2cImpl* obj, int hz);
-        [DllImport("C")]
-        private static unsafe extern int tmp_i2c_write(I2cImpl* obj, int address, byte* data, int length, int stop);
-        [DllImport("C")]
-        private static unsafe extern int tmp_i2c_read(I2cImpl* obj, int address, byte* data, int length, int stop);
     }
-
-    internal unsafe struct I2cImpl
-    {
-    };
 }

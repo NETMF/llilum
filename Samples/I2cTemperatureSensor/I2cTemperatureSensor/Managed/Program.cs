@@ -4,26 +4,24 @@
 
 namespace Managed
 {
-    using System.Collections.Generic;
     using Windows.Devices.Gpio;
-    using Microsoft.Zelig.Support.mbed;
     using Windows.Devices.I2c;
     using Windows.Devices.Enumeration;
 
     // This is our board-specific assembly
-    using Microsoft.Zelig.LPC1768;
+    using Microsoft.Llilum.LPC1768;
 
     class Program
     {
-        // Temperature boundaries for which pin to light up
-        const double TEMP0 = 29;
-        const double TEMP1 = 29.5;
-        const double TEMP2 = 30;
-        const double TEMP3 = 30.5;
-
         // This array will only have byte 0x0 in it
         public static byte[] i2cReadWrite1 = new byte[] { 0x0 };
-        public static byte[] i2cReadWrite2 = new byte[2];
+        public static byte[] i2cReadWrite2 = new byte[2] { 0x0, 0x0 };
+
+        //
+        // Set temperature range in order to filter bad readings.
+        //
+        private const double c_MinimumTemperature = 10.0;
+        private const double c_MaximumTemperature = 50.0;
 
         // These are the pins on the LPC1768 dev board
         static int[] pinNumbers =
@@ -58,12 +56,32 @@ namespace Managed
             return temp;
         }
 
+        private static double GetAveragedTemperature(int samples, I2cDevice i2cDevice)
+        {
+            double avg = 0.0;
+
+            for(int i=0; i<samples; i++)
+            {
+                double tmp = 0.0;
+
+                while(tmp < c_MinimumTemperature || tmp > c_MaximumTemperature)
+                {
+                    tmp = ReadTemp( i2cDevice );
+                }
+
+                avg += tmp;
+            }
+
+            avg /= samples;
+
+            return avg;
+        }
+
         static void Main()
         {
-            
-
             var controller = GpioController.GetDefault();
             var pins = new GpioPin[pinNumbers.Length];
+            const int c_SampleCount = 4;
 
             for (int i = 0; i < pinNumbers.Length; ++i)
             {
@@ -89,44 +107,21 @@ namespace Managed
                 SharingMode = I2cSharingMode.Shared
             });
 
+            //
+            // Get average starting temperature
+            //
+            double firstRead = GetAveragedTemperature(c_SampleCount, i2cDevice);
+            const double scale = 0.5;
+
             while (true)
             {
-                double temp = ReadTemp(i2cDevice);
-                if (temp < TEMP0)
-                {
-                    pins[0].Write(GpioPinValue.Low);
-                    pins[1].Write(GpioPinValue.Low);
-                    pins[2].Write(GpioPinValue.Low);
-                    pins[3].Write(GpioPinValue.Low);
-                }
-                else if (temp >= TEMP0 && temp < TEMP1)
-                {
-                    pins[0].Write(GpioPinValue.High);
-                    pins[1].Write(GpioPinValue.Low);
-                    pins[2].Write(GpioPinValue.Low);
-                    pins[3].Write(GpioPinValue.Low);
-                }
-                else if (temp >= TEMP1 && temp < TEMP2)
-                {
-                    pins[0].Write(GpioPinValue.High);
-                    pins[1].Write(GpioPinValue.High);
-                    pins[2].Write(GpioPinValue.Low);
-                    pins[3].Write(GpioPinValue.Low);
-                }
-                else if (temp >= TEMP2 && temp < TEMP3)
-                {
-                    pins[0].Write(GpioPinValue.High);
-                    pins[1].Write(GpioPinValue.High);
-                    pins[2].Write(GpioPinValue.High);
-                    pins[3].Write(GpioPinValue.Low);
-                }
-                else
-                {
-                    pins[0].Write(GpioPinValue.High);
-                    pins[1].Write(GpioPinValue.High);
-                    pins[2].Write(GpioPinValue.High);
-                    pins[3].Write(GpioPinValue.High);
-                }
+                double tempDiff = GetAveragedTemperature(c_SampleCount, i2cDevice);
+                tempDiff -= firstRead;
+
+                pins[0].Write((tempDiff > 0 * scale) ? GpioPinValue.High : GpioPinValue.Low);
+                pins[1].Write((tempDiff > 1 * scale) ? GpioPinValue.High : GpioPinValue.Low);
+                pins[2].Write((tempDiff > 2 * scale) ? GpioPinValue.High : GpioPinValue.Low);
+                pins[3].Write((tempDiff > 3 * scale) ? GpioPinValue.High : GpioPinValue.Low);
             }
         }
     }

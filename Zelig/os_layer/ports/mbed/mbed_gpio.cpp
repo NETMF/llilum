@@ -11,10 +11,10 @@ extern "C"
 {
     typedef struct LLOS_MbedGpio
     {
-        gpio_t                      pin;
-        gpio_irq_t                  irq;
-        LLOS_GPIO_InterruptCallback callback;
-        LLOS_Context                context;
+        gpio_t                      Pin;
+        gpio_irq_t                  Irq;
+        LLOS_GPIO_InterruptCallback Callback;
+        LLOS_Context                Context;
     } LLOS_MbedGpio;
 
     HRESULT LLOS_GPIO_AllocatePin(uint32_t pin_number, LLOS_Context* pin)
@@ -26,9 +26,9 @@ extern "C"
             return LLOS_E_OUT_OF_MEMORY;
         }
 
-        gpio_init( &pgpio->pin, (PinName)pin_number);
-        pgpio->callback = NULL;
-        pgpio->context  = NULL;
+        gpio_init( &pgpio->Pin, (PinName)pin_number);
+        pgpio->Callback = NULL;
+        pgpio->Context  = NULL;
 
         *pin = (LLOS_Context)pgpio;
 
@@ -41,8 +41,8 @@ extern "C"
 
         if (pgpio != NULL)
         {
-            gpio_irq_disable(&pgpio->irq);
-            gpio_irq_free(&pgpio->irq);
+            gpio_irq_disable(&pgpio->Irq);
+            gpio_irq_free(&pgpio->Irq);
             free(pin);
         }
     }
@@ -52,7 +52,7 @@ extern "C"
         LLOS_MbedGpio   *pgpio = (LLOS_MbedGpio*)id;
         LLOS_GPIO_Edge edge = evt == IRQ_RISE ? LLOS_GPIO_EdgeRising : LLOS_GPIO_EdgeFalling;
 
-        pgpio->callback((LLOS_Context)&pgpio->pin, pgpio->context, edge);
+        pgpio->Callback((LLOS_Context)&pgpio->Pin, pgpio->Context, edge);
     }
 
     HRESULT LLOS_GPIO_EnablePin(LLOS_Context pin, LLOS_GPIO_Edge edge, LLOS_GPIO_InterruptCallback callback, LLOS_Context callback_context)
@@ -66,10 +66,10 @@ extern "C"
             return LLOS_E_INVALID_PARAMETER;
         }
 
-        pgpio->callback = callback;
-        pgpio->context = callback_context;
+        pgpio->Callback = callback;
+        pgpio->Context = callback_context;
 
-        if (0 != gpio_irq_init(&pgpio->irq, pgpio->pin.pin, (gpio_irq_handler)HandleGpioInterrupt, (uint32_t)pgpio))
+        if (0 != gpio_irq_init(&pgpio->Irq, pgpio->Pin.pin, (gpio_irq_handler)HandleGpioInterrupt, (uint32_t)pgpio))
         {
             return LLOS_E_PIN_UNAVAILABLE;
         }
@@ -90,9 +90,9 @@ extern "C"
             return LLOS_E_NOT_SUPPORTED;
         }
 
-        gpio_irq_set(&pgpio->irq, IRQ_RISE, edgeRiseEnable);
-        gpio_irq_set(&pgpio->irq, IRQ_FALL, edgeFallEnable);
-        gpio_irq_enable(&pgpio->irq);
+        gpio_irq_set(&pgpio->Irq, IRQ_RISE, edgeRiseEnable);
+        gpio_irq_set(&pgpio->Irq, IRQ_FALL, edgeFallEnable);
+        gpio_irq_enable(&pgpio->Irq);
 
         return S_OK;
     }
@@ -103,7 +103,7 @@ extern "C"
 
         if (pgpio != NULL)
         {
-            gpio_irq_disable( &pgpio->irq );
+            gpio_irq_disable( &pgpio->Irq );
         }
 
         return S_OK;
@@ -121,11 +121,11 @@ extern "C"
 
         switch (resistor)
         {
-        case LLOS_GPIO_ResistorNone:
-            mode = PullNone;
-            break;
         case LLOS_GPIO_ResistorDefault:
             mode = PullDefault;
+            break;
+        case LLOS_GPIO_ResistorPullNone:
+            mode = PullNone;
             break;
         case LLOS_GPIO_ResistorPullup:
             mode = PullUp;
@@ -137,7 +137,7 @@ extern "C"
             return LLOS_E_NOT_SUPPORTED;
         }
 
-        gpio_mode(&pgpio->pin, mode);
+        gpio_mode(&pgpio->Pin, mode);
 
         return S_OK;
     }
@@ -153,17 +153,17 @@ extern "C"
 
         if (direction == LLOS_GPIO_Output)
         {
-            gpio_dir(&pgpio->pin, PIN_OUTPUT);
+            gpio_dir(&pgpio->Pin, PIN_OUTPUT);
         }
         else
         {
-            gpio_dir(&pgpio->pin, PIN_INPUT);
+            gpio_dir(&pgpio->Pin, PIN_INPUT);
         }
 
         return S_OK;
     }
 
-    HRESULT LLOS_GPIO_SetDebounce(LLOS_Context pin, LLOS_TimeSpan debounce_time)
+    HRESULT LLOS_GPIO_SetDebounce(LLOS_Context pin, LLOS_TimeSpan debounceTime)
     {
         return LLOS_E_NOT_SUPPORTED;
     }
@@ -177,7 +177,7 @@ extern "C"
             return LLOS_E_INVALID_PARAMETER;
         }
 
-        gpio_write( &pgpio->pin, value );
+        gpio_write( &pgpio->Pin, value );
 
         return S_OK;
     }
@@ -191,7 +191,7 @@ extern "C"
             return -1;
         }
 
-        return gpio_read( &pgpio->pin );
+        return gpio_read( &pgpio->Pin );
     }
 
     HRESULT LLOS_GPIO_GetConfig(LLOS_Context pin, uint32_t* pin_number, LLOS_GPIO_Edge* edge, LLOS_GPIO_Resistor* resistor, LLOS_GPIO_Polarity* polarity)

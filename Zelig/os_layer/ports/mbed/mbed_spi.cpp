@@ -11,25 +11,11 @@ extern "C"
 {
     typedef struct LLOS_MbedSpi
     {
-        spi_t                     spi;
-        LLOS_SPI_Callback         callback;
-        LLOS_Context              context;
-        LLOS_SPI_ControllerConfig config;
+        spi_t                     Spi;
+        LLOS_SPI_Callback         Callback;
+        LLOS_Context              Context;
+        LLOS_SPI_ControllerConfig Config;
     } LLOS_MbedSpi;
-
-    static void InternalZeroMemory(void* ptr, int32_t size)
-    {
-        int32_t i;
-        uint8_t *pb = (uint8_t*)ptr;
-
-        if (pb != NULL)
-        {
-            for (i = 0; i < size; i++)
-            {
-                *pb++ = 0;
-            }
-        }
-    }
 
     HRESULT LLOS_SPI_Initialize(uint32_t mosi, uint32_t miso, uint32_t sclk, uint32_t chipSelect, LLOS_Context* ppChannel, LLOS_SPI_ControllerConfig** ppConfiguration )
     {
@@ -49,12 +35,12 @@ extern "C"
 
         InternalZeroMemory(pCtx, sizeof(*pCtx));
 
-        spi_init(&pCtx->spi, (PinName)mosi, (PinName)miso, (PinName)sclk, (PinName)chipSelect);
-        pCtx->callback = NULL;
-        pCtx->context = NULL;
+        spi_init(&pCtx->Spi, (PinName)mosi, (PinName)miso, (PinName)sclk, (PinName)chipSelect);
+        pCtx->Callback = NULL;
+        pCtx->Context = NULL;
 
         *ppChannel = (LLOS_Context)pCtx;
-        *ppConfiguration = &pCtx->config;
+        *ppConfiguration = &pCtx->Config;
 
         return S_OK;
     }
@@ -74,28 +60,28 @@ extern "C"
             return LLOS_E_INVALID_PARAMETER;
         }
 
-        if (pConfig->wordSize != 8 && pConfig->wordSize != 16)
+        if (pConfig->WordSize != 8 && pConfig->WordSize != 16)
         {
             return LLOS_E_INVALID_OPERATION;
         }
 
-        if (pConfig->phaseMode == 1)
+        if (pConfig->PhaseMode == 1)
         {
             mode |= 1<<0;
         }
 
-        if (pConfig->inversePolarity)
+        if (pConfig->InversePolarity)
         {
             mode |= 1<<1;
         }
 
-        pCtx->config = *pConfig;
+        pCtx->Config = *pConfig;
 
-        spi_format(&pCtx->spi, pConfig->wordSize, mode, pConfig->master ? 0 : 1);
+        spi_format(&pCtx->Spi, pConfig->WordSize, mode, pConfig->Master ? 0 : 1);
 
-        if (pConfig->clockRateHz != 0)
+        if (pConfig->ClockRateHz != 0)
         {
-            spi_frequency(&pCtx->spi, pConfig->clockRateHz);
+            spi_frequency(&pCtx->Spi, pConfig->ClockRateHz);
         }
 
         return S_OK;
@@ -115,7 +101,7 @@ extern "C"
             return LLOS_E_INVALID_PARAMETER;
         }
         
-        spi_frequency(&pCtx->spi, frequencyHz);
+        spi_frequency(&pCtx->Spi, frequencyHz);
 
         return S_OK;
     }
@@ -123,7 +109,7 @@ extern "C"
     HRESULT LLOS_SPI_Transfer(LLOS_Context channel, uint8_t* txBuffer, int32_t txOffset, int32_t txCount, uint8_t* rxBuffer, int32_t rxOffset, int32_t rxCount, int32_t rxStartOffset)
     {
         LLOS_MbedSpi *pCtx          = (LLOS_MbedSpi*)channel;
-        int32_t       wordSizeBytes = (pCtx->config.wordSize >> 3);
+        int32_t       wordSizeBytes = (pCtx->Config.WordSize >> 3);
         int32_t       ibNextWord    = 0;
         int32_t       ibRx          = 0;
 
@@ -132,7 +118,7 @@ extern "C"
             return LLOS_E_INVALID_PARAMETER;
         }
 
-        if (!pCtx->config.master)
+        if (!pCtx->Config.Master)
         {
             return LLOS_E_INVALID_OPERATION;
         }
@@ -147,7 +133,7 @@ extern "C"
                 value = (wordSizeBytes == 1) ? (int32_t)txBuffer[ibNextWord + txOffset] : (int32_t)*(uint16_t*)&txBuffer[ibNextWord + txOffset];
             }
 
-            response = spi_master_write(&pCtx->spi, value);
+            response = spi_master_write(&pCtx->Spi, value);
 
             if (ibNextWord >= rxStartOffset && ibRx < rxCount)
             {
@@ -172,7 +158,7 @@ extern "C"
     HRESULT LLOS_SPI_Write(LLOS_Context channel, uint8_t* txBuffer, int32_t txOffset, int32_t txCount)
     {
         LLOS_MbedSpi *pCtx          = (LLOS_MbedSpi*)channel;
-        int32_t       wordSizeBytes = (pCtx->config.wordSize >> 3);
+        int32_t       wordSizeBytes = (pCtx->Config.WordSize >> 3);
         int32_t       ibNextWord    = 0;
 
         if (pCtx == NULL || txBuffer == NULL)
@@ -184,13 +170,13 @@ extern "C"
         {
             int32_t value = (wordSizeBytes == 1) ? (int32_t)txBuffer[ibNextWord + txOffset] : (int32_t)*(uint16_t*)&txBuffer[ibNextWord + txOffset];
 
-            if (pCtx->config.master)
+            if (pCtx->Config.Master)
             {
-                spi_master_write(&pCtx->spi, value);
+                spi_master_write(&pCtx->Spi, value);
             }
             else
             {
-                spi_slave_write(&pCtx->spi, value);
+                spi_slave_write(&pCtx->Spi, value);
             }
 
             ibNextWord += wordSizeBytes;
@@ -202,18 +188,18 @@ extern "C"
     HRESULT LLOS_SPI_Read(LLOS_Context channel, uint8_t* rxBuffer, int32_t rxOffset, int32_t rxCount, int32_t rxStartOffset)
     {
         LLOS_MbedSpi *pCtx          = (LLOS_MbedSpi*)channel;
-        int32_t       wordSizeBytes = (pCtx->config.wordSize >> 3);
+        int32_t       wordSizeBytes = (pCtx->Config.WordSize >> 3);
         int32_t       ibNextWord    = 0;
         int32_t       ibRx          = 0;
 
-        if (pCtx == NULL || rxBuffer == NULL || pCtx->config.master)
+        if (pCtx == NULL || rxBuffer == NULL || pCtx->Config.Master)
         {
             return LLOS_E_INVALID_PARAMETER;
         }
 
         while (ibRx < rxCount)
         {
-            int32_t response = spi_slave_read(&pCtx->spi);
+            int32_t response = spi_slave_read(&pCtx->Spi);
 
             if (ibNextWord >= rxStartOffset)
             {
@@ -244,7 +230,7 @@ extern "C"
             return LLOS_E_INVALID_PARAMETER;
         }
 
-        *isBusy = spi_busy( &pCtx->spi ) != 0;
+        *isBusy = spi_busy( &pCtx->Spi ) != 0;
 
         return S_OK;
     }

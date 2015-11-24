@@ -16,7 +16,7 @@ extern "C"
         LLOS_ADC_Direction Direction;
     } LLOS_MBED_ADC_CONTEXT;
 
-    HRESULT LLOS_ADC_Initialize(uint32_t pinName, LLOS_ADC_Direction direction, uint32_t* precisionInBits, LLOS_Context* channel)
+    HRESULT LLOS_ADC_Initialize(uint32_t pinName, LLOS_ADC_Direction direction, LLOS_Context* channel)
     {
         LLOS_MBED_ADC_CONTEXT *pCtx = (LLOS_MBED_ADC_CONTEXT*)calloc(sizeof(LLOS_MBED_ADC_CONTEXT), 1);
 
@@ -42,11 +42,6 @@ extern "C"
         }
 
         *channel = pCtx;
-
-        if (precisionInBits != NULL)
-        {
-            *precisionInBits = 0xFFFFFFFF;
-        }
 
         return S_OK;
     }
@@ -123,5 +118,10 @@ extern "C"
         analogout_write(&pCtx->OutputChannel, value);
 
         return S_OK;
+    }
+
+    HRESULT LLOS_ADC_GetPrecisionBits(LLOS_Context channel, uint32_t* precisionInBits)
+    {
+        return LLOS_E_NOTIMPL;
     }
 }

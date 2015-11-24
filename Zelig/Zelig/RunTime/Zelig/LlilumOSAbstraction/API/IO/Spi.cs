@@ -17,20 +17,20 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.API.IO
     [StructLayout( LayoutKind.Sequential, Pack = 4 )]
     public struct SpiConfig
     {
-        public uint chipSelect;
-        public uint loopbackMode;
+        public uint ChipSelect;
+        public uint LoopbackMode;
         public uint MSBTransferMode;
-        public uint activeLow;
-        public uint inversePolarity;             
-        public uint clockIdleLevel;         
-        public uint clockSamplingEdge;      
-        public uint master;
-        public uint phaseMode;
-        public uint dataWidth;
-        public uint clockRateHz;
-        public uint chipSelectSetupCycles;
-        public uint chipSelectHoldCycles;
-        public uint busyPin;
+        public uint ActiveLow;
+        public uint InversePolarity;             
+        public uint ClockIdleLevel;         
+        public uint ClockSamplingEdge;      
+        public uint Master;
+        public uint PhaseMode;
+        public uint DataWidth;
+        public uint ClockRateHz;
+        public uint ChipSelectSetupCycles;
+        public uint ChipSelectHoldCycles;
+        public uint BusyPin;
     };
 
     public enum SpiAction

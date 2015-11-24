@@ -17,9 +17,9 @@ extern "C" {
 
 typedef enum LLOS_GPIO_Resistor
 {
-    LLOS_GPIO_ResistorNone = 0,
-    LLOS_GPIO_ResistorDefault,
-    LLOS_GPIO_ResistorPullup, 
+    LLOS_GPIO_ResistorDefault = 0,
+    LLOS_GPIO_ResistorPullNone,
+    LLOS_GPIO_ResistorPullup,
     LLOS_GPIO_ResistorPulldown, 
     LLOS_GPIO_ResistorOpenDrain,
     LLOS_GPIO_ResistorRepeater,

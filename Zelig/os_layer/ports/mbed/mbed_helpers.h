@@ -15,6 +15,15 @@
 #error Undefined plaform
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+    void InternalZeroMemory(void* ptr, int32_t size);
+#ifdef __cplusplus
+}
+#endif
+
+
 #include "analogin_api.h"
 #include "analogout_api.h"
 #include "gpio_api.h"

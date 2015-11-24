@@ -24,8 +24,8 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <!-- Use the enlistment version of the target props files (rather than the SDK) for Zelig.sln projects -->
   <PropertyGroup Condition="'$(LLILUM_ROOT)'!='' AND EXISTS('$(LLILUM_ROOT)')">
-      <LlilumSDK>$(LLILUM_ROOT)Zelig\</LlilumSDK>
-      <LlilumApplicationTypeDir>$(LLILUM_ROOT)VisualStudio\LlilumApplicationType\Llilum\1.0\</LlilumApplicationTypeDir>
+    <LlilumSDK>$(LLILUM_ROOT)Zelig\</LlilumSDK>
+    <LlilumApplicationTypeDir>$(LLILUM_ROOT)VisualStudio\LlilumApplicationType\Llilum\1.0\</LlilumApplicationTypeDir>
   </PropertyGroup>
   <!-- Supported platform property sheets -->
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -172,6 +172,7 @@
   <ItemGroup>
     <ClCompile Include="mbed_adc.cpp" />
     <ClCompile Include="mbed_gpio.cpp" />
+    <ClCompile Include="mbed_helpers.cpp" />
     <ClCompile Include="mbed_i2c.cpp" />
     <ClCompile Include="mbed_serial.cpp" />
     <ClCompile Include="mbed_spi.cpp" />

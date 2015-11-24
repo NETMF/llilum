@@ -22,6 +22,7 @@ OBJECTS += \
 	$(TARGET)\mbed_core.o \
 	$(TARGET)\mbed_debug.o \
 	$(TARGET)\mbed_gpio.o \
+	$(TARGET)\mbed_helpers.o \
 	$(TARGET)\mbed_i2c.o \
 	$(TARGET)\mbed_mem.o \
 	$(TARGET)\mbed_NVIC.o \

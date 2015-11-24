@@ -5,11 +5,12 @@
 namespace Microsoft.CortexM3OnMBED.HardwareModel
 {
     using System;
-    using System.Runtime.InteropServices;
     using System.Threading;
 
     using RT = Zelig.Runtime;
     using TS = Zelig.Runtime.TypeSystem;
+    using LLIO = Zelig.LlilumOSAbstraction.API.IO;
+    using LLOS = Zelig.LlilumOSAbstraction;
 
     public sealed class StandardSerialPort : RT.BaseSerialStream
     {
@@ -17,18 +18,11 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         // State
         //
 
-        //private StandardUART.Id             m_portNo;
-        //private StandardUART.Port           m_port;
-        //private InterruptController.Handler m_interrupt;
-        //private int                         m_fifoTxLevel;
-
         private int m_stat_OverrunErrors;
-        //private int                         m_stat_FramingErrors;
-        //private int                         m_stat_FIFOErrors;
-        private AutoResetEvent                 m_evtTx;
+        private AutoResetEvent m_evtTx;
 
-
-        private unsafe SerialObj* m_serial;
+        private unsafe LLIO.SerialPortContext* m_serial;
+        private unsafe LLIO.SerialPortConfiguration* m_serialCfg;
         private bool m_disposed;
         private bool m_shutdown;
 
@@ -88,65 +82,47 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
             }
         }
 
-        private unsafe void EnableInterrupt(SerialPortInterruptHandler callback)
-        {
-            using (RT.SmartHandles.InterruptState.Disable())
-            {
-                //
-                // TODO: If GC compaction is ever supported, we will need to
-                // come up with way to handle this differently.  Otherwise,
-                // the object might move while its address is referenced in 
-                // native code.
-                //
-                UIntPtr hndPtr = ((RT.ObjectImpl)(object)callback).ToPointer();
-
-                tmp_serial_set_irq_handler(m_serial, (uint)hndPtr);
-                tmp_serial_irq_set(m_serial, (uint)MbedSerialPortIrq.Rx, 1);
-                tmp_serial_irq_set(m_serial, (uint)MbedSerialPortIrq.Tx, 0);
-            }
-        }
-
-        private unsafe void DisableInterrupt()
-        {
-            using (RT.SmartHandles.InterruptState.Disable())
-            {
-                tmp_serial_irq_set(m_serial, (uint)MbedSerialPortIrq.Rx, 0);
-                tmp_serial_irq_set(m_serial, (uint)MbedSerialPortIrq.Tx, 0);
-            }
-        }
-
         //
         // Helper Methods
         //
 
         internal unsafe void Open()
         {
-            // TODO: Consider combining alloc and init methods
-            fixed (SerialObj** serialTemp = &m_serial)
+            fixed (LLIO.SerialPortContext** ppSerial = &m_serial)
+            fixed( LLIO.SerialPortConfiguration** ppCfg = &m_serialCfg)
             {
-                tmp_serial_alloc(serialTemp);
+                LLOS.LlilumErrors.ThrowOnError( LLIO.SerialPort.LLOS_SERIAL_Open(m_cfg.RxPin, m_cfg.TxPin, ppCfg, ppSerial), true );
             }
-            tmp_serial_init(m_serial, m_cfg.TxPin, m_cfg.RxPin);
-            tmp_serial_baud(m_serial, m_cfg.BaudRate);
-            tmp_serial_format(m_serial, m_cfg.DataBits, (int)m_cfg.Parity, (int)m_cfg.StopBits);
+
+            m_serialCfg->BaudRate = (uint)m_cfg.BaudRate;
+            m_serialCfg->DataBits = (uint)m_cfg.DataBits;
+            m_serialCfg->Parity   = (LLIO.SerialPortParity)m_cfg.Parity;
+            m_serialCfg->StopBits = (LLIO.SerialPortStopBits)m_cfg.StopBits;
+
+            LLIO.SerialPort.LLOS_SERIAL_Configure( m_serial, m_serialCfg );
 
             if (m_cfg.RtsEnable || m_cfg.CtsEnable)
             {
                 // Splitting Rts/Cts into separate modes is mBed specific
-                FlowControlMode mode = FlowControlMode.None;
-                if (m_cfg.RtsEnable && m_cfg.CtsEnable)
+                int pinRts = -1;
+                int pinCts = -1;
+                
+                if (m_cfg.RtsEnable)
                 {
-                    mode = FlowControlMode.RtsCts;
-                }
-                else
-                {
-                    mode = m_cfg.RtsEnable ? FlowControlMode.Rts : FlowControlMode.Cts;
+                    pinRts = m_cfg.RtsPin;
                 }
 
-                tmp_serial_set_flow_control(m_serial, (int)mode, m_cfg.RtsPin, m_cfg.CtsPin);
+                if (m_cfg.CtsEnable)
+                {
+                    pinCts = m_cfg.CtsPin;
+                }
+
+                LLIO.SerialPort.LLOS_SERIAL_SetFlowControl(m_serial, pinRts, pinCts );
             }
 
-            EnableInterrupt(HandleSerialPortInterrupt);
+            LLIO.SerialPort.LLOS_SERIAL_SetCallback( m_serial, HandleSerialPortInterrupt, ((RT.ObjectImpl)(object)this).ToPointer() );
+            LLIO.SerialPort.LLOS_SERIAL_Enable( m_serial, LLIO.SerialPortIrq.IrqRx );
+            LLIO.SerialPort.LLOS_SERIAL_Disable( m_serial, LLIO.SerialPortIrq.IrqTx );
         }
 
         public override void Close()
@@ -174,7 +150,11 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
                     m_transmitQueue.EnqueueNonblocking(0);
                 }
 
-                DisableInterrupt();
+                unsafe
+                {
+                    LLIO.SerialPort.LLOS_SERIAL_Disable( m_serial, LLIO.SerialPortIrq.IrqBoth );
+                }
+
 
                 if (disposing)
                 {
@@ -183,7 +163,7 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
                 
                 unsafe
                 {
-                    tmp_serial_free(m_serial);
+                    LLIO.SerialPort.LLOS_SERIAL_Close(m_serial);
                 }
 
                 m_disposed = true;
@@ -253,7 +233,8 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
                 m_cfg.BaudRate = value;
                 unsafe
                 {
-                    tmp_serial_baud(m_serial, value);
+                    m_serialCfg->BaudRate = (uint)value;
+                    LLIO.SerialPort.LLOS_SERIAL_Configure(m_serial, m_serialCfg);
                 }
             }
         }
@@ -273,7 +254,8 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
                 unsafe
                 {
                     m_cfg.DataBits = value;
-                    tmp_serial_format(m_serial, m_cfg.DataBits, (int)m_cfg.Parity, (int)m_cfg.StopBits);
+                    m_serialCfg->DataBits = (uint)value;
+                    LLIO.SerialPort.LLOS_SERIAL_Configure(m_serial, m_serialCfg);
                 }
             }
         }
@@ -285,7 +267,8 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
                 unsafe
                 {
                     m_cfg.Parity = value;
-                    tmp_serial_format(m_serial, m_cfg.DataBits, (int)m_cfg.Parity, (int)m_cfg.StopBits);
+                    m_serialCfg->Parity = (LLIO.SerialPortParity)value;
+                    LLIO.SerialPort.LLOS_SERIAL_Configure(m_serial, m_serialCfg);
                 }
             }
         }
@@ -297,7 +280,8 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
                 unsafe
                 {
                     m_cfg.StopBits = value;
-                    tmp_serial_format(m_serial, m_cfg.DataBits, (int)m_cfg.Parity, (int)m_cfg.StopBits);
+                    m_serialCfg->StopBits = (LLIO.SerialPortStopBits)value;
+                    LLIO.SerialPort.LLOS_SERIAL_Configure(m_serial, m_serialCfg);
                 }
             }
         }
@@ -326,13 +310,15 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         {
             while (!m_shutdown)
             {
-                bool isWritable = false;
+                uint isWritable = 1;
 
                 using (RT.SmartHandles.InterruptState.Disable())
                 {
-                    if (isWritable = tmp_serial_writable(m_serial))
+                    LLIO.SerialPort.LLOS_SERIAL_CanWrite( m_serial, &isWritable );
+
+                    if (isWritable != 0)
                     {
-                        tmp_serial_putc(m_serial, val);
+                        LLIO.SerialPort.LLOS_SERIAL_Write(m_serial, &val, 0, 1);
                         break;
                     }
                     else
@@ -340,11 +326,11 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
                         //
                         // Enable TX interrupt to wake us up from m_evtTx.WaitOne() below.
                         //
-                        tmp_serial_irq_set(m_serial, (uint)MbedSerialPortIrq.Tx, 1);
+                        LLIO.SerialPort.LLOS_SERIAL_Enable(m_serial, LLIO.SerialPortIrq.IrqTx);
                     }
                 }
 
-                if (isWritable)
+                if (isWritable != 0)
                 {
                     if (!m_evtTx.WaitOne(timeout, false))
                     {
@@ -383,31 +369,43 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         {
             RT.BugCheck.AssertInterruptsOff();
 
-            while (tmp_serial_readable(m_serial))
+            while (true)
             {
-                if (!m_receiveQueue.IsFull)
+                uint canRead = 1;
+                LLIO.SerialPort.LLOS_SERIAL_CanRead( m_serial, &canRead );
+
+                if ((canRead == 0) || m_receiveQueue.IsFull)
                 {
-                    if (!m_receiveQueue.EnqueueNonblocking((byte)tmp_serial_getc(m_serial)))
+                    break;
+                }
+                else
+                {
+                    byte c;
+                    int length = 1;
+
+                    LLOS.LlilumErrors.ThrowOnError( LLIO.SerialPort.LLOS_SERIAL_Read( m_serial, &c, 0, &length), true );
+
+                    if (!m_receiveQueue.EnqueueNonblocking(c))
                     {
                         m_stat_OverrunErrors++;
                         break;
                     }
                 }
-                else
-                {
-                    break;
-                }
             }
         }
 
+        [TS.GenerateUnsafeCast()]
+        private extern static StandardSerialPort CastAsSerialPort(UIntPtr ptr);
 
-        private void HandleSerialPortInterrupt(MbedSerialPortIrq irq)
+        private static unsafe void HandleSerialPortInterrupt(LLIO.SerialPortContext* port, UIntPtr callbackCtx, LLIO.SerialPortEvent serialEvent)
         {
+            StandardSerialPort sp = CastAsSerialPort(callbackCtx);
+
             using (RT.SmartHandles.InterruptState.Disable())
             {
-                if (irq == MbedSerialPortIrq.Rx)
+                if (serialEvent == LLIO.SerialPortEvent.Rx)
                 {
-                    ReadData();
+                    sp.ReadData();
                 }
                 else
                 {
@@ -417,73 +415,12 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
                     //
                     unsafe
                     {
-                        tmp_serial_irq_set(m_serial, (uint)irq, 0);
+                        LLIO.SerialPort.LLOS_SERIAL_Disable(sp.m_serial, LLIO.SerialPortIrq.IrqTx);
                     }
 
-                    m_evtTx.Set();
+                    sp.m_evtTx.Set();
                 }
             }
         }
-
-        //--//
-
-        private enum MbedSerialPortIrq
-        {
-            Rx = 0,
-            Tx = 1,
-        }
-
-        private delegate void SerialPortInterruptHandler(MbedSerialPortIrq irq);
-
-        [TS.GenerateUnsafeCast()]
-        private extern static SerialPortInterruptHandler CastAsSerialPortInterruptHandler(UIntPtr ptr);
-
-        [RT.ExportedMethod]
-        private static void HandleSerialPortInterrupt(uint id, MbedSerialPortIrq evt)
-        {
-            SerialPortInterruptHandler hnd = CastAsSerialPortInterruptHandler((UIntPtr)id);
-
-            if( hnd != null )
-            {
-                hnd(evt);
-            }
-        }
-
-        [DllImport("C")]
-        private static unsafe extern void tmp_serial_alloc(SerialObj** obj);
-        [DllImport("C")]
-        private static unsafe extern void tmp_serial_init(SerialObj* obj, int txPin, int rxPin);
-        [DllImport("C")]
-        private static unsafe extern void tmp_serial_free(SerialObj* obj);
-        [DllImport("C")]
-        private static unsafe extern void tmp_serial_baud(SerialObj* obj, int baudRate);
-        [DllImport("C")]
-        private static unsafe extern void tmp_serial_format(SerialObj* obj, int dataBits, int parity, int stopBits);
-        [DllImport("C")]
-        private static unsafe extern void tmp_serial_putc(SerialObj* obj, int c);
-        [DllImport("C")]
-        private static unsafe extern int tmp_serial_getc(SerialObj* obj);
-        [DllImport("C")]
-        private static unsafe extern void tmp_serial_set_flow_control(SerialObj* obj, int flowControlType, int rtsPin, int ctsPin);
-        [DllImport("C")]
-        private static unsafe extern bool tmp_serial_readable(SerialObj* obj);
-        [DllImport("C")]
-        private static unsafe extern bool tmp_serial_writable(SerialObj* obj);
-        [DllImport("C")]
-        private static unsafe extern void tmp_serial_set_irq_handler(SerialObj* obj, uint id);
-        [DllImport("C")]
-        private static unsafe extern void tmp_serial_irq_set(SerialObj* obj, uint irq, uint enable);
-    }
-
-    internal unsafe struct SerialObj
-    {
-    };
-
-    enum FlowControlMode
-    {
-        None = 0,
-        Rts,
-        Cts,
-        RtsCts,
     }
 }

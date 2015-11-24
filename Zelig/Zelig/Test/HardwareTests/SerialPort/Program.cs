@@ -15,6 +15,9 @@ namespace Microsoft.Zelig.Test.SerialPortTest
 
     class Program
     {
+        private static byte[] s_txtBuffer = new byte[32];
+        private static byte  s_curByte = 0;
+
         static void Main( )
         {
             while(true)
@@ -46,9 +49,8 @@ namespace Microsoft.Zelig.Test.SerialPortTest
             using (SerialPort port = new SerialPort(serialPortName, 115200, Parity.None, 8, StopBits.One))
             {
                 port.Open();
-                byte[] txtBuffer = new byte[32];
 
-                result = TestLoopback( port, ref txtBuffer );
+                result = TestLoopback( port, ref s_txtBuffer );
             }
 
             return result;
@@ -61,7 +63,7 @@ namespace Microsoft.Zelig.Test.SerialPortTest
         //
         private static bool TestLoopback( SerialPort port, ref byte[] txtBuffer )
         {
-            byte b = 0;
+            byte b = s_curByte;
             bool result = true;
             int len = txtBuffer.Length;
 
@@ -94,7 +96,7 @@ namespace Microsoft.Zelig.Test.SerialPortTest
             // Reset the test byte value and increment over the length
             // of the RX buffer and verify the pattern.
             //
-            b = 0;
+            b = s_curByte;
             for(int i = 0; i < len; i++)
             {
                 if(txtBuffer[ i ] != b++)
@@ -103,6 +105,8 @@ namespace Microsoft.Zelig.Test.SerialPortTest
                     break;
                 }
             }
+
+            s_curByte = (byte)(txtBuffer.Length + s_curByte);
 
             return result;
         }

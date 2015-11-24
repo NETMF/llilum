@@ -48,11 +48,9 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         {
             unsafe
             {
-                uint precisionBits = 0;
-
                 fixed (LLIO.AdcContext** adc_ptr = &m_adc)
                 {
-                    LLIO.Adc.LLOS_ADC_Initialize((uint)m_pinNumber, LLIO.AdcDirection.Input, &precisionBits, adc_ptr);
+                    LLIO.Adc.LLOS_ADC_Initialize((uint)m_pinNumber, LLIO.AdcDirection.Input, adc_ptr);
                 }
             }
         }
