@@ -186,7 +186,7 @@ namespace Microsoft.binutils.elflib
 
                         if( elf.m_header.e_ident.EI_DATA != EI_DATA.ELFDATA2LSB ) break;
                         if( elf.m_header.e_machine != e_machine.EM_ARM ) break;
-                        if( elf.m_header.e_type != e_type.ET_REL ) break;
+                        //if( elf.m_header.e_type != e_type.ET_REL ) break;
 
                         // Process Section Headers
                         var shdrs = ReadSectionHeaders( elf.m_header, fs, elfOffset );

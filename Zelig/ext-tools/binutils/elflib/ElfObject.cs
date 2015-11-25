@@ -341,56 +341,56 @@ namespace Microsoft.binutils.elflib
                 {
                     m_symbolTable = (SymbolTable) section;
                 }
-                else if( section.Name.StartsWith( ".debug_abbrev" ) )
-                {
-                    debugAbbrev.ParseDebugInfoSection( section );
-                }
-                else if( section is RelocationSection )
-                {
-                    RelocationSection reloc = (RelocationSection)section;
+                //else if( section.Name.StartsWith( ".debug_abbrev" ) )
+                //{
+                //    debugAbbrev.ParseDebugInfoSection( section );
+                //}
+                //else if( section is RelocationSection )
+                //{
+                //    RelocationSection reloc = (RelocationSection)section;
 
-                    if( reloc.m_name.Contains( ".debug_info" ))
-                    {
-                        dbgMap[reloc.m_header.sh_info].m_relocations.Add( reloc );
-                    }
-                    else if( reloc.m_name.Contains( ".debug_line" ) )
-                    {
-                        dbgLineMap[reloc.m_header.sh_info].m_relocations.Add( reloc );
-                    }
-                    else if( !section.m_name.Contains( ".debug_" ) )
-                    {
-                        ElfSection sec = secMap[reloc.m_header.sh_info];
+                //    if( reloc.m_name.Contains( ".debug_info" ))
+                //    {
+                //        dbgMap[reloc.m_header.sh_info].m_relocations.Add( reloc );
+                //    }
+                //    else if( reloc.m_name.Contains( ".debug_line" ) )
+                //    {
+                //        dbgLineMap[reloc.m_header.sh_info].m_relocations.Add( reloc );
+                //    }
+                //    else if( !section.m_name.Contains( ".debug_" ) )
+                //    {
+                //        ElfSection sec = secMap[reloc.m_header.sh_info];
 
-                        sec.m_relocations.Add( reloc );
-                    }
-                }
-                else if( section.m_name.StartsWith( ".debug_info" ) )
-                {
-                    string         name = section.Name.Replace( ".debug_info", "" );
-                    name = name.TrimStart( '$' );
-                    DebugInfoEntry die  = new DebugInfoEntry( section, debugAbbrev, globalLookup );
+                //        sec.m_relocations.Add( reloc );
+                //    }
+                //}
+                //else if( section.m_name.StartsWith( ".debug_info" ) )
+                //{
+                //    string         name = section.Name.Replace( ".debug_info", "" );
+                //    name = name.TrimStart( '$' );
+                //    DebugInfoEntry die  = new DebugInfoEntry( section, debugAbbrev, globalLookup );
 
-                    dbgMap    [section.m_index] = die;
-                    dbgNameMap[name           ] = die;
+                //    dbgMap    [section.m_index] = die;
+                //    dbgNameMap[name           ] = die;
 
-                    if( secNameMap.ContainsKey( name ) )
-                    {
-                        secNameMap[name].DebugEntries.Add( die );
-                    }
-                    else
-                    {
-                        m_globalDbgInfo.Add( die );
-                    }
-                }
-                else if( section.Name.StartsWith( ".debug_line" ) )
-                {
-                    string         name = section.Name.Replace( ".debug_line", "" );
-                    DebugLineEntry dle = new DebugLineEntry( section );
-                    name = name.TrimStart( '$' );
+                //    if( secNameMap.ContainsKey( name ) )
+                //    {
+                //        secNameMap[name].DebugEntries.Add( die );
+                //    }
+                //    else
+                //    {
+                //        m_globalDbgInfo.Add( die );
+                //    }
+                //}
+                //else if( section.Name.StartsWith( ".debug_line" ) )
+                //{
+                //    string         name = section.Name.Replace( ".debug_line", "" );
+                //    DebugLineEntry dle = new DebugLineEntry( section );
+                //    name = name.TrimStart( '$' );
 
-                    dbgNameMap[name           ].m_lines.Add( dle );
-                    dbgLineMap[section.m_index] = dle;
-                }
+                //    dbgNameMap[name           ].m_lines.Add( dle );
+                //    dbgLineMap[section.m_index] = dle;
+                //}
                 else
                 {
                     secMap[section.m_index] = section;

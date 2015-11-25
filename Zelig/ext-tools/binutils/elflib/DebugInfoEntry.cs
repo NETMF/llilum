@@ -263,6 +263,23 @@ namespace Microsoft.binutils.elflib
                         m_properties[attrib.Attrib] = LEB128.DecodeUnsigned( bs );
                         break;
 
+
+                    case Dwarf2_Form.DW_FORM_sec_offset:
+                        m_properties[attrib.Attrib] = LEB128.DecodeUnsigned( bs );
+                        break;
+
+                    case Dwarf2_Form.DW_FORM_exprloc:
+                        m_properties[attrib.Attrib] = LEB128.DecodeUnsigned( bs );
+                        break;
+
+                    case Dwarf2_Form.DW_FORM_flag_present:
+                        m_properties[attrib.Attrib] = LEB128.DecodeUnsigned( bs );
+                        break;
+
+                    case Dwarf2_Form.DW_FORM_ref_sig8:
+                        break;
+
+
                     default:
                         break;
                 }
@@ -346,9 +363,10 @@ namespace Microsoft.binutils.elflib
             m_streamOffset = (uint)bs.BaseStream.Position;
 
             m_header.uh_length       = bs.ReadUInt32();
-            m_header.uh_version      = bs.ReadUInt16();
+            m_header.uh_version      = bs.ReadUInt16(); System.Diagnostics.Debug.Assert( m_header.uh_version == 4 ); 
             m_header.uh_abbrevOffset = bs.ReadUInt32();
             m_header.uh_addressSize  = bs.ReadByte();
+            m_header.uh_segmentSize  = bs.ReadByte();
             m_owner = owner;
 
             m_sections = new Dictionary<uint, DebugInfoCompUnitSection>();
@@ -401,6 +419,7 @@ namespace Microsoft.binutils.elflib
         public string m_name;
         public long m_elfOffset;
         public List<DebugLineEntry> m_lines;
+        public int m_version;
 
 
         public DebugInfoEntry(ElfSection debugInfoSection, DebugInfoAbbrev abbrev, Dictionary<uint,DebugInfoCompUnitSection> addressMap)
@@ -421,15 +440,20 @@ namespace Microsoft.binutils.elflib
                 while( ms.Position < ms.Length )
                 {
                     DebugInfoCompUnit entry = new DebugInfoCompUnit( bs, abbrev, this, addressMap );
+                    
+                    m_version = entry.m_header.uh_version;
 
                     if( entry.m_header.uh_version != 2 && entry.m_header.uh_version != 3 )
                     {
-                        System.Diagnostics.Debugger.Break();
+                        //
+                        // Debug infos for version 4 are not supported
+                        //
+                        throw new NotSupportedException( "Parsing debug info for DWARF v4 is not supported" );
                     }
 
                     m_entries[entry.m_offset] = entry;
 
-                    if( ms.Length != ms.Position && (ms.Length - ms.Position) < Marshal.SizeOf( typeof( Dwarf2_DebugInfoUnitHeader ) ) )
+                    if( ms.Length > ms.Position && (ms.Length - ms.Position) < Marshal.SizeOf( typeof( Dwarf2_DebugInfoUnitHeader ) ) )
                     {
                         break;
                     }
@@ -485,6 +509,7 @@ namespace Microsoft.binutils.elflib
                 m_header.lh_version = br.ReadUInt16();
                 m_header.lh_headerLen = br.ReadUInt32();
                 m_header.lh_minInstructionLen = br.ReadByte();
+                m_header.lh_maxOpsPerInstruction = br.ReadByte();
                 m_header.lh_defaultStmt = br.ReadByte();
                 m_header.lh_lineBase = br.ReadSByte();
                 m_header.lh_lineRange = br.ReadByte();

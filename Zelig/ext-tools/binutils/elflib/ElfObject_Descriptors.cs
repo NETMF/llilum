@@ -167,16 +167,16 @@ namespace Microsoft.binutils.elflib
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Elf32_Shdr
     {
-	    public UInt32	sh_name;        // This member specifies the name of the section. Its value is an index into the section header string table section [see ``String Table'' below], giving the location of a null-terminated string. 
-	    public sh_type	sh_type;        // This member categorizes the section's contents and semantics.
-	    public sh_flags	sh_flags;       // Sections support 1-bit flags that describe miscellaneous attributes. 
-	    public UInt32	sh_addr;        // If the section will appear in the memory image of a process, this member gives the address at which the section's first byte should reside. Otherwise, the member contains 0. 
-	    public UInt32	sh_offset;      // This member's value gives the byte offset from the beginning of the file to the first byte in the section. One section type, SHT_NOBITS described below, occupies no space in the file, and its sh_offset member locates the conceptual placement in the file. 
-	    public UInt32	sh_size;        // This member gives the section's size in bytes. Unless the section type is SHT_NOBITS, the section occupies sh_size bytes in the file. A section of type SHT_NOBITS may have a non-zero size, but it occupies no space in the file. 
-	    public UInt32	sh_link;        // This member holds a section header table index link, whose interpretation depends on the section type. A table below describes the values.
-	    public UInt32	sh_info;        // This member holds extra information, whose interpretation depends on the section type. A table below describes the values. If the sh_flags field for this section header includes the attribute SHF_INFO_LINK, then this member represents a section header table index. 
-	    public UInt32	sh_addralign;   // Some sections have address alignment constraints. For example, if a section holds a doubleword, the system must ensure doubleword alignment for the entire section. The value of sh_addr must be congruent to 0, modulo the value of sh_addralign. Currently, only 0 and positive integral powers of two are allowed. Values 0 and 1 mean the section has no alignment constraints. 
-	    public UInt32	sh_entsize;     // Some sections hold a table of fixed-size entries, such as a symbol table. For such a section, this member gives the size in bytes of each entry. The member contains 0 if the section does not hold a table of fixed-size entries. 
+        public UInt32    sh_name;        // This member specifies the name of the section. Its value is an index into the section header string table section [see ``String Table'' below], giving the location of a null-terminated string. 
+        public sh_type    sh_type;        // This member categorizes the section's contents and semantics.
+        public sh_flags    sh_flags;       // Sections support 1-bit flags that describe miscellaneous attributes. 
+        public UInt32    sh_addr;        // If the section will appear in the memory image of a process, this member gives the address at which the section's first byte should reside. Otherwise, the member contains 0. 
+        public UInt32    sh_offset;      // This member's value gives the byte offset from the beginning of the file to the first byte in the section. One section type, SHT_NOBITS described below, occupies no space in the file, and its sh_offset member locates the conceptual placement in the file. 
+        public UInt32    sh_size;        // This member gives the section's size in bytes. Unless the section type is SHT_NOBITS, the section occupies sh_size bytes in the file. A section of type SHT_NOBITS may have a non-zero size, but it occupies no space in the file. 
+        public UInt32    sh_link;        // This member holds a section header table index link, whose interpretation depends on the section type. A table below describes the values.
+        public UInt32    sh_info;        // This member holds extra information, whose interpretation depends on the section type. A table below describes the values. If the sh_flags field for this section header includes the attribute SHF_INFO_LINK, then this member represents a section header table index. 
+        public UInt32    sh_addralign;   // Some sections have address alignment constraints. For example, if a section holds a doubleword, the system must ensure doubleword alignment for the entire section. The value of sh_addr must be congruent to 0, modulo the value of sh_addralign. Currently, only 0 and positive integral powers of two are allowed. Values 0 and 1 mean the section has no alignment constraints. 
+        public UInt32    sh_entsize;     // Some sections hold a table of fixed-size entries, such as a symbol table. For such a section, this member gives the size in bytes of each entry. The member contains 0 if the section does not hold a table of fixed-size entries. 
     }
     
     public enum sh_type : uint
@@ -239,7 +239,7 @@ namespace Microsoft.binutils.elflib
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Elf32_Sym
     {
-	    public UInt32   st_name;    // This member holds an index into the object file's symbol string table, which holds the character representations of the symbol names. If the value is non-zero, it represents a string table index that gives the symbol name. Otherwise, the symbol table entry has no name.
+        public UInt32   st_name;    // This member holds an index into the object file's symbol string table, which holds the character representations of the symbol names. If the value is non-zero, it represents a string table index that gives the symbol name. Otherwise, the symbol table entry has no name.
         public UInt32   st_value;   // This member gives the value of the associated symbol. Depending on the context, this may be an absolute value, an address, and so on; details appear below.
         public UInt32   st_size;    // Many symbols have associated sizes. For example, a data object's size is the number of bytes contained in the object. This member holds 0 if the symbol has no size or an unknown size. 
         public Byte     st_info;    // This member specifies the symbol's type and binding attributes. A list of the values and meanings appears below.
@@ -288,14 +288,14 @@ namespace Microsoft.binutils.elflib
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Elf32_Phdr 
     {
-	    public SegmentType	p_type;     // This member tells what kind of segment this array element describes or how to interpret the array element's information. Type values and their meanings appear below. 
-	    public UInt32	    p_offset;   // This member gives the offset from the beginning of the file at which the first byte of the segment resides. 
-	    public UInt32	    p_vaddr;    // This member gives the virtual address at which the first byte of the segment resides in memory. 
-	    public UInt32	    p_paddr;    // On systems for which physical addressing is relevant, this member is reserved for the segment's physical address. Because System V ignores physical addressing for application programs, this member has unspecified contents for executable files and shared objects. 
-	    public UInt32	    p_filesz;   // This member gives the number of bytes in the file image of the segment; it may be zero. 
-	    public UInt32	    p_memsz;    // This member gives the number of bytes in the memory image of the segment; it may be zero. 
-	    public SegmentFlag	p_flags;    // This member gives flags relevant to the segment. Defined flag values appear below. 
-	    public UInt32	    p_align;    // As ``Program Loading'' describes in this chapter of the processor supplement, loadable process segments must have congruent values for p_vaddr and p_offset, modulo the page size. This member gives the value to which the segments are aligned in memory and in the file. Values 0 and 1 mean no alignment is required. Otherwise, p_align should be a positive, integral power of 2, and p_vaddr should equal p_offset, modulo p_align. 
+        public SegmentType    p_type;     // This member tells what kind of segment this array element describes or how to interpret the array element's information. Type values and their meanings appear below. 
+        public UInt32        p_offset;   // This member gives the offset from the beginning of the file at which the first byte of the segment resides. 
+        public UInt32        p_vaddr;    // This member gives the virtual address at which the first byte of the segment resides in memory. 
+        public UInt32        p_paddr;    // On systems for which physical addressing is relevant, this member is reserved for the segment's physical address. Because System V ignores physical addressing for application programs, this member has unspecified contents for executable files and shared objects. 
+        public UInt32        p_filesz;   // This member gives the number of bytes in the file image of the segment; it may be zero. 
+        public UInt32        p_memsz;    // This member gives the number of bytes in the memory image of the segment; it may be zero. 
+        public SegmentFlag    p_flags;    // This member gives flags relevant to the segment. Defined flag values appear below. 
+        public UInt32        p_align;    // As ``Program Loading'' describes in this chapter of the processor supplement, loadable process segments must have congruent values for p_vaddr and p_offset, modulo the page size. This member gives the value to which the segments are aligned in memory and in the file. Values 0 and 1 mean no alignment is required. Otherwise, p_align should be a positive, integral power of 2, and p_vaddr should equal p_offset, modulo p_align. 
     }
 
     public enum SegmentType : uint
@@ -331,7 +331,7 @@ namespace Microsoft.binutils.elflib
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Elf32_Rel
     {
-	    public UInt32 r_offset;
+        public UInt32 r_offset;
         public UInt32 r_info;
     }
 
@@ -516,6 +516,7 @@ namespace Microsoft.binutils.elflib
         public UInt16 uh_version;
         public UInt32 uh_abbrevOffset;
         public byte   uh_addressSize;
+        public byte   uh_segmentSize;
     }
 
     public enum Dwarf2_TAG : uint
@@ -632,6 +633,40 @@ namespace Microsoft.binutils.elflib
         DW_AT_variable_parameter    = 0x4b, //  flag
         DW_AT_virtuality            = 0x4c, //  constant
         DW_AT_vtable_elem_location  = 0x4d, //  block, reference
+        //--// DWARF 4 //--//
+        DW_AT_allocated             = 0x4e, // constant, exprloc, reference
+        DW_AT_associated            = 0x4f, // constant, exprloc, reference
+        DW_AT_data_location         = 0x50, // exprloc
+        DW_AT_byte_stride           = 0x51, // constant, exprloc, reference
+        DW_AT_entry_pc              = 0x52, // address
+        DW_AT_use_UTF8              = 0x53, // flag
+        DW_AT_extension             = 0x54, // reference
+        DW_AT_ranges                = 0x55, // rangelistptr
+        DW_AT_trampoline            = 0x56, // address, flag, reference, string
+        DW_AT_call_column           = 0x57, // constant
+        DW_AT_call_file             = 0x58, // constant
+        DW_AT_call_line             = 0x59, // constant
+        DW_AT_description           = 0x5a, // string
+        DW_AT_binary_scale          = 0x5b, // constant
+        DW_AT_decimal_scale         = 0x5c, // constant
+        DW_AT_small                 = 0x5d, // reference
+        DW_AT_decimal_sign          = 0x5e, // constant
+        DW_AT_digit_count           = 0x5f, // constant
+        DW_AT_picture_string        = 0x60, // string
+        DW_AT_mutable               = 0x61, // flag
+        DW_AT_threads_scaled        = 0x62, // flag
+        DW_AT_explicit              = 0x63, // flag
+        DW_AT_object_pointer        = 0x64, // reference
+        DW_AT_endianity             = 0x65, // constant
+        DW_AT_elemental             = 0x66, // flag
+        DW_AT_pure                  = 0x67, // flag
+        DW_AT_recursive             = 0x68, // flag
+        DW_AT_signature             = 0x69, // reference
+        DW_AT_main_subprogram       = 0x6a, // flag
+        DW_AT_data_bit_offset       = 0x6b, // constant
+        DW_AT_const_expr            = 0x6c, // flag
+        DW_AT_enum_class            = 0x6d, // flag
+        DW_AT_linkage_name          = 0x6e, // string
         DW_AT_lo_user               = 0x2000,
         DW_AT_hi_user               = 0x3fff
     }                                     
@@ -658,7 +693,12 @@ namespace Microsoft.binutils.elflib
         DW_FORM_ref4        = 0x13, // reference
         DW_FORM_ref8        = 0x14, // reference
         DW_FORM_ref_udata   = 0x15, // reference
-        DW_FORM_indirect    = 0x16
+        DW_FORM_indirect    = 0x16, 
+        //--// DWARF 4 //--//
+        DW_FORM_sec_offset  = 0x17, // lineptr, loclistptr, macptr, rangelistptr
+        DW_FORM_exprloc     = 0x18, // exprloc
+        DW_FORM_flag_present= 0x19, // flag
+        DW_FORM_ref_sig8    = 0x20, // reference
     }
 
     [StructLayout( LayoutKind.Sequential, Pack = 1 )]
@@ -668,6 +708,7 @@ namespace Microsoft.binutils.elflib
         public UInt16 lh_version;
         public UInt32 lh_headerLen;
         public byte   lh_minInstructionLen;
+        public byte   lh_maxOpsPerInstruction;
         public byte   lh_defaultStmt;
         public sbyte  lh_lineBase;
         public byte   lh_lineRange;

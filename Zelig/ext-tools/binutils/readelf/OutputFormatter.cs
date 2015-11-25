@@ -7,6 +7,12 @@ namespace Microsoft.binutils.readelf
 {
     class OutputFormatter
     {
+        internal struct NameSizePair
+        {
+            internal string Name;
+            internal uint   Size;
+        }
+
         public static string PrintElfHeader(Elf32_Ehdr hdr)
         {
             var sb = new StringBuilder();
@@ -129,6 +135,24 @@ namespace Microsoft.binutils.readelf
             sb.AppendLine("0 (extra OS processing required), o (OS specific), p (processor specific)");
 
             return sb.ToString();
+        }
+
+        internal static string PrintAllSizes( NameSizePair[] pairs )
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine( " ====== OBJECT SIZES =======" );
+            sb.AppendLine( ); 
+
+            foreach( var pair in pairs )
+            {
+                sb.AppendLine(String.Format( "-- {0}: ==> \t\t\t\t {1} bytes", pair.Name, pair.Size ) );
+            }
+            
+            sb.AppendLine( ); 
+            sb.AppendLine( " ====== ============ =======" );
+
+            return sb.ToString( ); 
         }
 
         public static string PrintSymbolTable(SymbolTable tbl)

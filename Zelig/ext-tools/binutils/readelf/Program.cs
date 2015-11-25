@@ -9,6 +9,7 @@ namespace Microsoft.binutils.readelf
     {
         static void Main( string[] args )
         {
+            bool fPrintAllSizes             = false;
             bool fDisplayFileHeader         = false;
             bool fDisplayProgramHeaders     = false;
             bool fDisplaySectionHeaders     = false;
@@ -46,11 +47,16 @@ RESTART:
                 switch (str.Substring(1))
                 {
                     case "a":
+                        fPrintAllSizes          = true;
                         fDisplayFileHeader      = true;
                         fDisplayProgramHeaders  = true;
                         fDisplaySectionHeaders  = true;
                         fDisplaySymbolTable     = true;
                         fDisplayRelocations     = true;
+                        break;
+
+                    case "z":
+                        fPrintAllSizes          = true;
                         break;
 
                     case "e":
@@ -125,6 +131,11 @@ RESTART:
                 }
                 foreach( ElfObject obj in objs )
                 {
+                    if( fPrintAllSizes )
+                    {
+                        Console.WriteLine( OutputFormatter.PrintAllSizes( ComputeAllSizes( obj.SymbolTable ) ) );
+                    }
+
                     if( fDisplayFileHeader )
                     {
                         Console.WriteLine( OutputFormatter.PrintElfHeader( obj.Header ) );
@@ -145,7 +156,7 @@ RESTART:
                         Console.WriteLine( OutputFormatter.PrintSymbolTable( obj.SymbolTable ) );
                     }
 
-                    if( fDisplayRelocations )
+                    if(fDisplayRelocations)
                     {
                         Console.WriteLine( OutputFormatter.PrintRelocationEntries( obj.RelocationSections ) );
                     }
@@ -157,6 +168,42 @@ RESTART:
                 files.Clear();
                 goto RESTART;
             }
+        }
+
+        private static OutputFormatter.NameSizePair[] ComputeAllSizes( SymbolTable symbols )
+        {
+            var nameSizePairs = new List<OutputFormatter.NameSizePair>();
+            
+            uint totalSizeFunctions      = 0;
+            uint totalSizeZeligFunctions = 0;
+            uint totalSizeObjects        = 0;
+
+            Array.ForEach(  symbols.Symbols, s => {
+                if(s.Type == SymbolType.STT_FUNC)
+                {
+                    totalSizeFunctions += s.SymbolDef.st_size;
+                }
+            });
+
+            Array.ForEach(  symbols.Symbols, s => {
+                if(s.Type == SymbolType.STT_FUNC && s.ReferencedSection.Name.Contains( ".zelig" ))
+                {
+                    totalSizeZeligFunctions += s.SymbolDef.st_size;
+                }
+            });
+
+            Array.ForEach(  symbols.Symbols, s => {
+                if(s.Type == SymbolType.STT_OBJECT)
+                {
+                    totalSizeObjects += s.SymbolDef.st_size;
+                }
+            });
+            
+            nameSizePairs.Add( new OutputFormatter.NameSizePair( ) { Name = "All Functions  ", Size = totalSizeFunctions      } );
+            nameSizePairs.Add( new OutputFormatter.NameSizePair( ) { Name = "Zelig Functions", Size = totalSizeZeligFunctions } );
+            nameSizePairs.Add( new OutputFormatter.NameSizePair( ) { Name = "Objects        ", Size = totalSizeObjects        } );
+
+            return nameSizePairs.ToArray( ); 
         }
 
         private static void DisplayUsage()
