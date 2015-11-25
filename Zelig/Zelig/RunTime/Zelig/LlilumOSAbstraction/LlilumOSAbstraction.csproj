@@ -107,6 +107,7 @@
     </Content>
     <Content Include="..\..\..\..\os_layer\inc\api\io\llos_i2c.h">
       <Link>Native\IO\llos_i2c.h</Link>
+    </Content>
     <Content Include="..\..\..\..\os_layer\inc\api\io\llos_pwm.h">
       <Link>Native\IO\llos_pwm.h</Link>
     </Content>
