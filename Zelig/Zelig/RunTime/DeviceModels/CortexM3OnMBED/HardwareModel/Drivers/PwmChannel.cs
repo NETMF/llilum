@@ -5,12 +5,13 @@
 namespace Microsoft.CortexM3OnMBED.HardwareModel
 {
     using System;
-    using System.Runtime.InteropServices;
     using Runtime = Microsoft.Zelig.Runtime;
+    using LLIO = Zelig.LlilumOSAbstraction.API.IO;
+    using Llilum.Devices.Pwm;
 
     public class PwmChannel : Llilum.Devices.Pwm.PwmChannel
     {
-        private unsafe PwmImpl* m_pwm;
+        private unsafe LLIO.PwmContext* m_pwm;
         private int m_pinNumber;
 
         internal PwmChannel(int pinNumber)
@@ -32,7 +33,7 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         {
             if (m_pwm != null)
             {
-                tmp_pwm_free(m_pwm);
+                LLIO.Pwm.LLOS_PWM_Uninitialize(m_pwm);
                 m_pwm = null;
 
                 if (disposing)
@@ -47,9 +48,9 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         {
             unsafe
             {
-                fixed (PwmImpl** adc_ptr = &m_pwm)
+                fixed (LLIO.PwmContext** ppAdc = &m_pwm)
                 {
-                    tmp_pwm_alloc_init(adc_ptr, m_pinNumber);
+                    LLIO.Pwm.LLOS_PWM_Initialize((uint)m_pinNumber, ppAdc);
                 }
             }
         }
@@ -58,21 +59,21 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         {
             ThrowIfDisposed();
 
-            tmp_pwm_dutycycle(m_pwm, ratio);
+            LLIO.Pwm.LLOS_PWM_SetDutyCycle(m_pwm, (uint)(ratio * 1024.0), 1024);
         }
 
         public unsafe override void SetPulseWidth(int microSeconds)
         {
             ThrowIfDisposed();
 
-            tmp_pwm_pulsewidth_us(m_pwm, microSeconds);
+            LLIO.Pwm.LLOS_PWM_SetPulseWidth(m_pwm, (uint)microSeconds);
         }
 
         public unsafe override void SetPeriod(int microSeconds)
         {
             ThrowIfDisposed();
 
-            tmp_pwm_period_us(m_pwm, microSeconds);
+            LLIO.Pwm.LLOS_PWM_SetPeriod(m_pwm, (uint)microSeconds);
         }
 
         private unsafe void ThrowIfDisposed()
@@ -83,19 +84,32 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
             }
         }
 
-        [DllImport("C")]
-        private static unsafe extern void tmp_pwm_alloc_init(PwmImpl** obj, int pinNumber);
-        [DllImport("C")]
-        private static unsafe extern void tmp_pwm_free(PwmImpl* obj);
-        [DllImport("C")]
-        private static unsafe extern void tmp_pwm_dutycycle(PwmImpl* obj, float ratio);
-        [DllImport("C")]
-        private static unsafe extern void tmp_pwm_period_us(PwmImpl* obj, int uSeconds);
-        [DllImport("C")]
-        private static unsafe extern void tmp_pwm_pulsewidth_us(PwmImpl* obj, int uSeconds);
-    }
+        public unsafe override void SetPolarity( PwmPolarity polarity )
+        {
+            ThrowIfDisposed();
 
-    internal unsafe struct PwmImpl
-    {
-    };
+            LLIO.Pwm.LLOS_PWM_SetPolarity(m_pwm, (LLIO.PwmPolarity)polarity);
+        }
+
+        public unsafe override void SetPrescaler( PwmPrescaler prescaler )
+        {
+            ThrowIfDisposed();
+
+            LLIO.Pwm.LLOS_PWM_SetPrescaler(m_pwm, (LLIO.PwmPrescaler) prescaler);
+        }
+
+        public unsafe override void Start( )
+        {
+            ThrowIfDisposed();
+
+            LLIO.Pwm.LLOS_PWM_Start(m_pwm);
+        }
+
+        public unsafe override void Stop( )
+        {
+            ThrowIfDisposed();
+
+            LLIO.Pwm.LLOS_PWM_Stop(m_pwm);
+        }
+    }
 }

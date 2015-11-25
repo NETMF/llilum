@@ -1,30 +1,124 @@
 #include "mbed_helpers.h"
+#include "llos_pwm.h"
 
 extern "C"
 {
-	void tmp_pwm_alloc_init(pwmout_t** obj, int pinNumber)
-	{
-		*obj = (pwmout_t*)calloc(sizeof(pwmout_t), 1);
-		pwmout_init(*obj, (PinName)pinNumber);
-	}
+    typedef struct LLOS_MbedPwm
+    {
+        uint32_t PinName;
+        uint32_t Period;
+        uint32_t PulseWidth;
+        float DutyCycle;
+        pwmout_t Pwm;
+    } LLOS_MbedPwm;
 
-	void tmp_pwm_free(pwmout_t* obj)
-	{
-		pwmout_free(obj);
-	}
+    HRESULT LLOS_PWM_Initialize(uint32_t pinName, LLOS_Context* channel)
+    {
+        LLOS_MbedPwm *pPwm = (LLOS_MbedPwm*)calloc(sizeof(LLOS_MbedPwm), 1);
 
-	void tmp_pwm_dutycycle(pwmout_t* obj, float ratio)
-	{
-		pwmout_write(obj, ratio);
-	}
+        if (pPwm == NULL)
+        {
+            return LLOS_E_OUT_OF_MEMORY;
+        }
 
-	void tmp_pwm_period_us(pwmout_t* obj, int32_t uSeconds)
-	{
-		pwmout_period_us(obj, uSeconds);
-	}
+        pPwm->PinName = pinName;
+        pPwm->Period = 20000; // 20ms
+        pPwm->DutyCycle = 0.5;
+        pPwm->PulseWidth = 0;
+        pwmout_init(&pPwm->Pwm, (PinName)pinName);
 
-	void tmp_pwm_pulsewidth_us(pwmout_t* obj, int32_t uSeconds)
-	{
-		pwmout_pulsewidth_us(obj, uSeconds);
-	}
+        *channel = pPwm;
+
+        return S_OK;
+    }
+
+    VOID LLOS_PWM_Uninitialize(LLOS_Context channel)
+    {
+        LLOS_MbedPwm *pPwm = (LLOS_MbedPwm*)channel;
+        pwmout_free(&pPwm->Pwm);
+        free(channel);
+    }
+
+    HRESULT LLOS_PWM_SetDutyCycle(LLOS_Context channel, uint32_t dutyCycleNumerator, uint32_t dutyCycleDenominator)
+    {
+        LLOS_MbedPwm *pPwm = (LLOS_MbedPwm*)channel;
+
+        if (pPwm == NULL || dutyCycleDenominator == 0)
+        {
+            return LLOS_E_INVALID_PARAMETER;
+        }
+
+        pPwm->DutyCycle = (float)dutyCycleNumerator/(float)dutyCycleDenominator;
+        pwmout_write(&pPwm->Pwm, pPwm->DutyCycle);
+
+        return S_OK;
+    }
+
+    HRESULT LLOS_PWM_SetPeriod(LLOS_Context channel, uint32_t periodMicroSeconds)
+    {
+        LLOS_MbedPwm *pPwm = (LLOS_MbedPwm*)channel;
+
+        if (pPwm == NULL)
+        {
+            return LLOS_E_INVALID_PARAMETER;
+        }
+
+        pPwm->Period = periodMicroSeconds;
+        pwmout_period_us(&pPwm->Pwm, periodMicroSeconds);
+
+        return S_OK;
+    }
+
+    HRESULT LLOS_PWM_SetPulseWidth(LLOS_Context channel, uint32_t widthMicroSeconds)
+    {
+        LLOS_MbedPwm *pPwm = (LLOS_MbedPwm*)channel;
+
+        if (pPwm == NULL)
+        {
+            return LLOS_E_INVALID_PARAMETER;
+        }
+
+        pPwm->PulseWidth = widthMicroSeconds;
+        pwmout_pulsewidth_us(&pPwm->Pwm, widthMicroSeconds);
+
+        return S_OK;
+    }
+
+    HRESULT LLOS_PWM_SetPolarity(LLOS_Context channel, LLOS_PWM_Polarity polarity)
+    {
+        return LLOS_E_NOT_SUPPORTED;
+    }
+
+    HRESULT LLOS_PWM_SetPrescaler(LLOS_Context channel, LLOS_PWM_Prescaler prescaler)
+    {
+        return LLOS_E_NOT_SUPPORTED;
+    }
+
+    HRESULT LLOS_PWM_Start(LLOS_Context channel)
+    {
+        LLOS_MbedPwm *pPwm = (LLOS_MbedPwm*)channel;
+
+        if (pPwm == NULL)
+        {
+            return LLOS_E_INVALID_PARAMETER;
+        }
+
+        pwmout_write(&pPwm->Pwm, pPwm->DutyCycle);
+
+        return S_OK;
+    }
+
+    HRESULT LLOS_PWM_Stop(LLOS_Context channel)
+    {
+        LLOS_MbedPwm *pPwm = (LLOS_MbedPwm*)channel;
+
+        if (pPwm == NULL)
+        {
+            return LLOS_E_INVALID_PARAMETER;
+        }
+
+        pwmout_write(&pPwm->Pwm, 0.0);
+
+        return S_OK;
+    }
 }

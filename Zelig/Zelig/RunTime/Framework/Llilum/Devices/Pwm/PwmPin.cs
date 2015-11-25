@@ -50,6 +50,20 @@ namespace Microsoft.Llilum.Devices.Pwm
             m_pwmPin.SetPulseWidth(microSeconds);
         }
 
+        public void Start()
+        {
+            ThrowIfDisposed();
+
+            m_pwmPin.Start();
+        }
+
+        public void Stop()
+        {
+            ThrowIfDisposed();
+
+            m_pwmPin.Stop();
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (m_pwmPin != null)

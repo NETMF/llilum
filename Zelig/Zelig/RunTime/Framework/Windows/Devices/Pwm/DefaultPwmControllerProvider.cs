@@ -16,9 +16,8 @@ namespace Windows.Devices.Pwm
         /// </summary>
         private class ControllerPin
         {
-            public Llilum.PwmPin    Pin;
-            public double           PreviousDutyCycle;
-            public bool             Enabled;
+            public Llilum.PwmPin Pin;
+            public bool          Enabled;
         }
 
         private readonly    Llilum.IPwmChannelInfoUwp   m_providerInfo;
@@ -87,7 +86,7 @@ namespace Windows.Devices.Pwm
                     newPin.SetPeriod(usPeriod);
 
                     // Initialize the pin to disabled by default
-                    newPin.SetDutyCycle(0);
+                    newPin.Stop();
 
                     controlPin.Pin = newPin;
                     m_pwmPins[pinIndex] = controlPin;
@@ -111,9 +110,7 @@ namespace Windows.Devices.Pwm
                     throw new InvalidOperationException();
                 }
 
-                // mBed does not have a notion of disabling a pin, so we just
-                // set the duty cycle to 0
-                m_pwmPins[pinIndex].Pin.SetDutyCycle(0);
+                m_pwmPins[pinIndex].Pin.Stop();
                 m_pwmPins[pinIndex].Enabled = false;
             }
         }
@@ -134,9 +131,7 @@ namespace Windows.Devices.Pwm
                     throw new InvalidOperationException();
                 }
 
-                // mBed does not have a notion of enabling a pin, so we just
-                // set the duty cycle to its previous value
-                m_pwmPins[pinIndex].Pin.SetDutyCycle((float)m_pwmPins[pinIndex].PreviousDutyCycle);
+                m_pwmPins[ pinIndex ].Pin.Start();
                 m_pwmPins[pinIndex].Enabled = true;
             }
         }
@@ -198,13 +193,7 @@ namespace Windows.Devices.Pwm
                     dutyCycle = 1.0 - dutyCycle;
                 }
 
-                if(m_pwmPins[pinIndex].Enabled)
-                {
-                    m_pwmPins[pinIndex].Pin.SetDutyCycle((float)dutyCycle);
-                }
-                
-                // We always want to set this, so it gets picked up when the pin gets enabled
-                m_pwmPins[pinIndex].PreviousDutyCycle = dutyCycle;
+                m_pwmPins[pinIndex].Pin.SetDutyCycle((float)dutyCycle);
             }
         }
 

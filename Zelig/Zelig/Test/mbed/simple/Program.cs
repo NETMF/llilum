@@ -326,7 +326,8 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             pwmController.SetDesiredFrequency( 1000000 );
 
             var pwmPin = pwmController.OpenPin(pwmPinNumber);
-            pwmPin.SetActiveDutyCyclePercentage( 0.4F );
+            pwmPin.SetActiveDutyCyclePercentage( 0.7F );
+            pwmPin.Polarity = PwmPulsePolarity.ActiveLow;
             pwmPin.Start( );
 
 #endif
