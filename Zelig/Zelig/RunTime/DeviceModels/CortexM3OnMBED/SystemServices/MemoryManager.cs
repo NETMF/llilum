@@ -6,9 +6,10 @@ namespace Microsoft.CortexM3OnMBED
 {
 using System;
 
-    using RT        = Microsoft.Zelig.Runtime;
-    using Chipset   = Microsoft.CortexM3OnCMSISCore;
-    using MBED      = Microsoft.Zelig.Support.mbed;
+    using RT      = Microsoft.Zelig.Runtime;
+    using Chipset = Microsoft.CortexM3OnCMSISCore;
+    using MBED    = Microsoft.Zelig.Support.mbed;
+    using LLOS    = Zelig.LlilumOSAbstraction;
 
     public class MemoryManager : Chipset.MemoryManager
     {
@@ -21,19 +22,14 @@ using System;
         {
             base.InitializeMemoryManager( );
 
-            uint stackSize = Device.Instance.ManagedHeapSize;
+            uint heapSize;
+            void *pLlilumHeap;
 
-            byte *zeligHeap = MBED.Memory.RequestMemoryPool( &stackSize );
+            LLOS.LlilumErrors.ThrowOnError( LLOS.API.RuntimeMemory.LLOS_MEMORY_GetMaxHeapSize( out heapSize ), false );
+            LLOS.LlilumErrors.ThrowOnError( LLOS.API.RuntimeMemory.LLOS_MEMORY_Allocate( heapSize, 0, out pLlilumHeap ), false );
 
-            if( zeligHeap == null || stackSize < Device.Instance.ManagedHeapSize / 2 )
-            {
-                MBED.Memory.FreeMemoryPool( zeligHeap );
-
-                RT.BugCheck.Raise( RT.BugCheck.StopCode.FailedBootstrap );
-            }
-
-            ManagedHeap    = (UIntPtr)         zeligHeap              ;
-            ManagedHeapEnd = (UIntPtr) ( (uint)zeligHeap + stackSize );
+            ManagedHeap    = (UIntPtr)(pLlilumHeap);
+            ManagedHeapEnd = (UIntPtr)( (uint)pLlilumHeap + heapSize );
 
             var attrs = RT.MemoryAttributes.InternalMemory          |
                         RT.MemoryAttributes.RandomAccessMemory      |

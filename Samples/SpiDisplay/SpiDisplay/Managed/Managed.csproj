@@ -52,11 +52,17 @@
     <Reference Include="Microsoft.Zelig.Support.mbed">
       <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\$(Configuration)\Microsoft.Zelig.Support.mbed.dll</HintPath>
     </Reference>
+    <Reference Include="LPC1768">
+      <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\$(Configuration)\LPC1768.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\$(Configuration)\System.dll</HintPath>
     </Reference>
     <Reference Include="Windows">
       <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\$(Configuration)\Windows.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Llilum.BoardConfigurations.LPC1768">
+      <HintPath>$(LLILUM_SDK)\ZeligBuild\Host\bin\$(Configuration)\Microsoft.Llilum.BoardConfigurations.LPC1768.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -74,12 +80,6 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\LPC1768ApplicationBoard\LPC1768ApplicationBoard.csproj">
-      <Project>{769967b2-4d82-45fc-816a-f320c7f9a187}</Project>
-      <Name>LPC1768ApplicationBoard</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.txt" />

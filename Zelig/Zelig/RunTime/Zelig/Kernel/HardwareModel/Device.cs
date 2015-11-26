@@ -76,13 +76,5 @@ namespace Microsoft.Zelig.Runtime
                 }
             }
         }
-
-        public virtual uint ManagedHeapSize
-        {
-            get
-            {
-                return 0x4000u; 
-            }
-        }
     }
 }

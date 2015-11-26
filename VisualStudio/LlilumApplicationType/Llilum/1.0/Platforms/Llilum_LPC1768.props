@@ -18,7 +18,7 @@
     <LlilumLinkAdditionalOptionsLPC1768>-T$(LlilumTargetDirLPC1768)$(LlilumTargetBoardLPC1768)/$(LlilumTargetToolchainLPC1768)/LPC1768.ld -Wl,--gc-sections --specs=nano.specs -u _printf_float -u _scanf_float -Wl,--wrap,main</LlilumLinkAdditionalOptionsLPC1768>
     <LlilumLinkLibDepsLPC1768>mbed;stdc++;supc++;m;c;gcc;nosys</LlilumLinkLibDepsLPC1768>
     <LlilumStackSizeLPC1768>0x800</LlilumStackSizeLPC1768>
-    <LlilumHeapSizeLPC1768>0x6800</LlilumHeapSizeLPC1768>
+    <LlilumHeapSizeLPC1768>0x6B00</LlilumHeapSizeLPC1768>
     <LlilumAsmAdditionalOptionsLPC1768></LlilumAsmAdditionalOptionsLPC1768>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'" >

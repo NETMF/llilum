@@ -1,5 +1,6 @@
 #include "mbed_helpers.h"
 #include "llos_serial.h"
+#include "llos_memory.h"
 
 //--//
 
@@ -15,14 +16,19 @@ extern "C"
 
     HRESULT LLOS_SERIAL_Open(int32_t rxPin, int32_t txPin, LLOS_SERIAL_Config** ppConfig, LLOS_Context* pChannel)
     {
-        LLOS_MbedSerial *pSerial = (LLOS_MbedSerial*)calloc(sizeof(LLOS_MbedSerial), 1);
+        LLOS_MbedSerial *pSerial;
+
+        if (pChannel == NULL)
+        {
+            return LLOS_E_INVALID_PARAMETER;
+        }
+
+        pSerial = (LLOS_MbedSerial*)AllocateFromManagedHeap(sizeof(LLOS_MbedSerial));
 
         if (pSerial == NULL)
         {
             return LLOS_E_OUT_OF_MEMORY;
         }
-
-        InternalZeroMemory(pSerial, sizeof(*pSerial));
 
         serial_init(&pSerial->Port, (PinName)txPin, (PinName)rxPin);
 
@@ -41,7 +47,7 @@ extern "C"
             serial_free(&pSerial->Port);
         }
 
-        free(pSerial);
+        FreeFromManagedHeap(pSerial);
     }
 
     HRESULT InternalSerialEnable(LLOS_Context channel, LLOS_SERIAL_Irq irq, BOOL fEnable)

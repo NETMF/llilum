@@ -43,7 +43,6 @@
   <ItemGroup>
     <Compile Include="Threading.cs" />
     <Compile Include="Utilities.cs" />
-    <Compile Include="Memory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Timer.cs" />
     <Compile Include="UsTicker.cs" />

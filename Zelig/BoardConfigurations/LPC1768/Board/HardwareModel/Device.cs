@@ -5,7 +5,6 @@
 namespace Microsoft.Llilum.LPC1768
 {
     using RT = Microsoft.Zelig.Runtime;
-    using System.Runtime.InteropServices;
 
     public sealed class Device : Microsoft.CortexM3OnMBED.Device
     {
@@ -21,16 +20,5 @@ namespace Microsoft.Llilum.LPC1768
                 return s_bootstrapStackLPC1768;
             }
         }
-
-        public override uint ManagedHeapSize
-        {
-            get
-            { 
-                return CUSTOM_STUB_GetHeapSize();
-            }
-        }
-
-        [DllImport("C")]
-        private static unsafe extern uint CUSTOM_STUB_GetHeapSize();
     }
 }

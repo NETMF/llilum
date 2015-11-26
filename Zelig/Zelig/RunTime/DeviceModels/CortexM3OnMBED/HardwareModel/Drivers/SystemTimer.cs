@@ -7,11 +7,10 @@ namespace Microsoft.CortexM3OnMBED.Drivers
 {
     using System;
     using System.Runtime.CompilerServices;
-    using System.Runtime.InteropServices;
 
-    using TS        = Microsoft.Zelig.Runtime.TypeSystem;
-    using RT        = Microsoft.Zelig.Runtime;
-    using CMSIS     = Microsoft.DeviceModels.Chipset.CortexM3;
+    using RT    = Microsoft.Zelig.Runtime;
+    using CMSIS = Microsoft.DeviceModels.Chipset.CortexM3;
+    using LLOS  = Zelig.LlilumOSAbstraction;
 
     /// <summary>
     /// This class implements the internal system timer. All times are in ticks (time agnostic)
@@ -125,7 +124,7 @@ namespace Microsoft.CortexM3OnMBED.Drivers
         private uint                    m_lastAccumulatorUpdate;
 
         // This is only used as a placeholder to pass into timer_insert_event
-        private unsafe TimerEventImpl*  m_timerEvent;
+        private unsafe LLOS.HAL.TimerContext*  m_timerEvent;
         //--//
         //private static Timer            s_guard;
 
@@ -136,7 +135,7 @@ namespace Microsoft.CortexM3OnMBED.Drivers
             
 
             // This call sets up the timer handler to call SystemTimer_Handler/ProcessTimeout
-            tmp_sys_timer_init();
+            LLOS.HAL.Timer.LLOS_SYSTEM_TIMER_Enable( HandleSystemTimer );
 
             m_lastAccumulatorUpdate = this.Counter;
 
@@ -144,9 +143,9 @@ namespace Microsoft.CortexM3OnMBED.Drivers
             // Bug: https://msmcu.visualstudio.com/DefaultCollection/LLILUM/_workitems#id=287&fullScreen=false
             unsafe
             {
-                fixed (TimerEventImpl** timer_ptr = &m_timerEvent)
+                fixed (LLOS.HAL.TimerContext** timer_ptr = &m_timerEvent)
                 {
-                    tmp_timer_event_alloc(timer_ptr);
+                    LLOS.HAL.Timer.LLOS_SYSTEM_TIMER_AllocateTimer( UIntPtr.Zero, timer_ptr );
                 }
             }
             
@@ -158,7 +157,7 @@ namespace Microsoft.CortexM3OnMBED.Drivers
             //s_guard = CreateTimer( (timer, currentTime) => { timer.RelativeTimeout = QuarterCycle;  }  );
             //s_guard.RelativeTimeout = QuarterCycle; 
 
-            // no need to Refresh because guard cuases a refresh already
+            // no need to Refresh because guard causes a refresh already
             Refresh();
         }
         
@@ -195,7 +194,7 @@ namespace Microsoft.CortexM3OnMBED.Drivers
             [RT.Inline]
             get
             {
-                return tmp_sys_timer_read();
+                return (uint)LLOS.HAL.Timer.LLOS_SYSTEM_TIMER_GetTicks();
             }
         }
 
@@ -218,14 +217,14 @@ namespace Microsoft.CortexM3OnMBED.Drivers
         /// <summary>
         /// Handle the timer expiration interrupt
         /// </summary>
-        /// <param name="id">Timer ID from mbed</param>
-        private void ProcessTimeout(uint id)
+        /// <param name="ticks">Time when the timer was fired</param>
+        private void ProcessTimeout(ulong ticks)
         {
             // Ensure that lastAccumulatorUpdate is always updated with the accumulator!
             uint counter = this.Counter;
 
             //
-            // BUGBUG: this logic does not cover the case of multiple wrapaorunds
+            // BUGBUG: this logic does not cover the case of multiple wraparounds
             //
             m_accumulator           += TimeSinceAccumulatorUpdate(counter);
             m_lastAccumulatorUpdate =  counter;
@@ -285,7 +284,7 @@ namespace Microsoft.CortexM3OnMBED.Drivers
             // 
             // Timeout in the past? Trigger the match immediately by loading 1 
             // Timeout too far in the future? Generate match for 
-            // a fraction of largest counter value, so we have time to handle wrap-arounds 
+            // a fraction of largest counter value, so we have time to handle wraparounds 
             // 
             Reload((now > absTimeout) ? 1 : (absTimeout - now));
         }
@@ -296,14 +295,13 @@ namespace Microsoft.CortexM3OnMBED.Drivers
         /// <param name="remainder"></param>
         private void Reload(ulong remainder)
         {
-            // trim to quarter cycle, so we have time to handle wrap-arounds
+            // trim to quarter cycle, so we have time to handle wraparounds
             // This is guaranteed to fit in a uint
             uint trimmed = (uint)Math.Min(remainder, c_QuarterCycle);
 
             unsafe
             {
-                tmp_sys_timer_remove_event(m_timerEvent);
-                tmp_sys_timer_insert_event(m_timerEvent, trimmed);
+                LLOS.HAL.Timer.LLOS_SYSTEM_TIMER_ScheduleTimer( m_timerEvent, trimmed );
             }
         }
         
@@ -312,7 +310,7 @@ namespace Microsoft.CortexM3OnMBED.Drivers
         //
 
         /// <summary>
-        /// Add the timer to the queue in the chronologically apropriate position
+        /// Add the timer to the queue in the chronologically appropriate position
         /// </summary>
         /// <param name="timer">Timer to add</param>
         private void Register(Timer timer)
@@ -369,40 +367,13 @@ namespace Microsoft.CortexM3OnMBED.Drivers
                 current           - m_lastAccumulatorUpdate          :
                 c_MaxCounterValue - m_lastAccumulatorUpdate + current;
         }
-        
-        //
-        // Interop Methods
-        //
-        
-        [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
-        [RT.ExportedMethod]
-        private static void SystemTimer_Handler(uint id)
+
+        private static void HandleSystemTimer(UIntPtr context, ulong ticks)
         {
             using(RT.SmartHandles.InterruptState.Disable())
             {
-                SystemTimer.Instance.ProcessTimeout( id );
+                Instance.ProcessTimeout( ticks );
             }
         }
-
-        //--//
-
-        [DllImport("C")]
-        private static unsafe extern void tmp_sys_timer_init();
-
-        [DllImport("C")]
-        private static unsafe extern void tmp_timer_event_alloc(TimerEventImpl** obj);
-
-        [DllImport("C")]
-        private static unsafe extern void tmp_sys_timer_insert_event(TimerEventImpl* tick_event, uint relativeTimeout);
-
-        [DllImport("C")]
-        private static unsafe extern void tmp_sys_timer_remove_event(TimerEventImpl* tick_event);
-
-        [DllImport("C")]
-        private static unsafe extern uint tmp_sys_timer_read();
-
-        internal unsafe struct TimerEventImpl
-        {
-        };
     }
 }

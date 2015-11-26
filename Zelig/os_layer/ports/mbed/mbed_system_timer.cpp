@@ -3,50 +3,113 @@
 //
 
 #include "mbed_helpers.h" 
-
+#include "llos_system_timer.h"
+#include "llos_memory.h"
 //--//
 
 extern "C"
 {
+    typedef struct LLOS_MbedTimer
+    {
+        LLOS_Context   Context;
+        ticker_event_t TickerEvent;
+    } LLOS_MbedTimer;
 
-	extern void SystemTimer_Handler(uint32_t id);
+    static LLOS_SYSTEM_TIMER_Callback s_TimerCallback = NULL;
+    static const ticker_data_t *s_pTickerData = get_us_ticker_data();
 
-	void tmp_timer_event_alloc(ticker_event_t** obj)
-	{
-		*obj = (ticker_event_t*)calloc(sizeof(ticker_event_t), 1);
-	}
+    // This is used to call back into the Kernel using a WellKnownMethod
+    static void MbedInterruptHandler(uint32_t id)
+    {
+        if (s_TimerCallback != NULL)
+        {
+            LLOS_MbedTimer *pCtx = (LLOS_MbedTimer*)id;
 
-	uint32_t tmp_sys_timer_read()
-	{
-		return us_ticker_read();
-	}
+            if (pCtx != NULL)
+            {
+                uint64_t ticks = us_ticker_read();
 
-	// This is used to call back into the Kernel using a WellKnownMethod
-	void tmp_interrupt_handler(uint32_t id)
-	{
-		SystemTimer_Handler(id);
-	}
+                s_TimerCallback(pCtx->Context, ticks);
+            }
+        }
+    }
 
-	void tmp_sys_timer_init()
-	{
-		us_ticker_init();
+    HRESULT LLOS_SYSTEM_TIMER_Enable(LLOS_SYSTEM_TIMER_Callback callback)
+    {
+        s_TimerCallback = callback;
 
-		ticker_set_handler(get_us_ticker_data(), tmp_interrupt_handler);
-	}
+        us_ticker_init();
 
-	void tmp_sys_timer_insert_event(ticker_event_t* tick_event, uint32_t relativeTimeout)
-	{
-		// We can leave the id as 0 since it is only used for timer event identification
-		// And we keep track of that ourselves
+        ticker_set_handler(s_pTickerData, MbedInterruptHandler);
 
-		ticker_insert_event(get_us_ticker_data(), tick_event, us_ticker_read() + relativeTimeout, 0);
-	}
+        return S_OK;
+    }
 
-	void tmp_sys_timer_remove_event(ticker_event_t* tick_event)
-	{
-		// We can leave the id as 0 since it is only used for timer event identification
-		// And we keep track of that ourselves
+    VOID LLOS_SYSTEM_TIMER_Disable()
+    {
+        s_TimerCallback = NULL;
+    }
 
-		ticker_remove_event(get_us_ticker_data(), tick_event);
-	}
+    HRESULT LLOS_SYSTEM_TIMER_SetTicks(uint64_t value)
+    {
+        return LLOS_E_NOT_SUPPORTED;
+    }
+
+    uint64_t LLOS_SYSTEM_TIMER_GetTicks()
+    {
+        return us_ticker_read();
+    }
+
+    HRESULT LLOS_SYSTEM_TIMER_AllocateTimer(LLOS_Context callbackContext, LLOS_Context *pTimer)
+    {
+        LLOS_MbedTimer *pCtx;
+
+        if (pTimer == NULL)
+        {
+            return LLOS_E_INVALID_PARAMETER;
+        }
+        
+        pCtx = (LLOS_MbedTimer*)AllocateFromManagedHeap(sizeof(LLOS_MbedTimer));
+
+        if (pCtx == NULL)
+        {
+            return LLOS_E_OUT_OF_MEMORY;
+        }
+
+        pCtx->Context = callbackContext;
+
+        *pTimer = pCtx;
+
+        return S_OK;
+    }
+
+    VOID LLOS_SYSTEM_TIMER_FreeTimer(LLOS_Context pTimer)
+    {
+        LLOS_MbedTimer *pCtx = (LLOS_MbedTimer*)pTimer;
+
+        if (pCtx != NULL)
+        {
+            ticker_remove_event(s_pTickerData, &pCtx->TickerEvent);
+        }
+    }
+
+    HRESULT LLOS_SYSTEM_TIMER_ScheduleTimer(LLOS_Context pTimer, uint64_t microsecondsFromNow)
+    {
+        LLOS_MbedTimer *pCtx = (LLOS_MbedTimer*)pTimer;
+
+        if (pCtx == NULL || microsecondsFromNow > 0xFFFFFFFFuLL)
+        {
+            return LLOS_E_INVALID_PARAMETER;
+        }
+
+        if (microsecondsFromNow < 2)
+        {
+            microsecondsFromNow = 2;
+        }
+
+        ticker_remove_event(s_pTickerData, &pCtx->TickerEvent);
+        ticker_insert_event(s_pTickerData, &pCtx->TickerEvent, us_ticker_read() + (uint32_t)microsecondsFromNow, (uint32_t)pTimer);
+
+        return S_OK;
+    }
 }

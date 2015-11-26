@@ -1,5 +1,6 @@
 #include "mbed_helpers.h"
 #include "llos_i2c.h"
+#include "llos_memory.h"
 
 //--//
 
@@ -7,7 +8,14 @@ extern "C"
 {
     HRESULT LLOS_I2C_Initialize(int32_t sdaPin, int32_t sclPin, LLOS_Context* pChannel)
     {
-        i2c_t *pI2C = (i2c_t*)calloc(sizeof(i2c_t), 1);
+        i2c_t *pI2C;
+
+        if (pChannel == NULL)
+        {
+            return LLOS_E_INVALID_PARAMETER;
+        }
+
+        pI2C = (i2c_t*)AllocateFromManagedHeap(sizeof(i2c_t));
 
         if (pI2C == NULL)
         {
@@ -23,7 +31,7 @@ extern "C"
 
     VOID LLOS_I2C_Uninitialize(LLOS_Context channel)
     {
-        free(channel);
+        FreeFromManagedHeap(channel);
     }
 
     HRESULT LLOS_I2C_SetFrequency(LLOS_Context channel, uint32_t frequencyHz)

@@ -11,7 +11,8 @@ namespace Microsoft.Llilum.LPC1768
 
     public sealed class SpiProvider : Chipset.HardwareModel.SpiProvider
     {
-        public static readonly SpiChannelInfo SPI0 = new SpiChannelInfo() {
+        public static readonly SpiChannelInfo SPI0 = new SpiChannelInfo()
+        {
             Mosi = (int)PinName.p5,
             Miso = (int)PinName.p6,
             Sclk = (int)PinName.p7,

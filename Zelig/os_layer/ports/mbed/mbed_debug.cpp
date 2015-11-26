@@ -28,7 +28,17 @@ extern "C"
 
     void Break()
     {
-        asm("bkpt");
+        if ((CoreDebug->DHCSR & 0x00000001) == 1)
+        {
+            asm("bkpt");
+        }
+        else
+        {
+            while (1)
+            {
+                __WFE();
+            }
+        }
     }
 
     // placing this outside the BreakPoint() function to avoid compiler unused var warning
@@ -200,7 +210,7 @@ extern "C"
 
     uint32_t CUSTOM_STUB_DebuggerConnected()
     {
-        return (CoreDebug->DHCSR & 0x00000001); 
+        return (CoreDebug->DHCSR & 0x00000001);
     }
 
     uint32_t CUSTOM_STUB_GetProgramCounter()

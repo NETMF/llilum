@@ -35,7 +35,7 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.API.IO
 
     public enum SpiAction
     {
-        SpiWrite = 1,
+        SpiWrite = 0,
         SpiRead,
         SpiTransceive,
         SpiError,

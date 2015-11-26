@@ -10,7 +10,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
     using Windows.Devices.Enumeration;
 
     // This is our board-specific assembly
-    using LPC1768;
+    using Llilum.LPC1768;
 
     /// <summary>
     /// This is a sample program to show the functionality of the SPI controller implementation. This demonstrates the power of
@@ -59,7 +59,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             // have added a copy of the LPC1768 project, and changed the configuration for SPI0!
 
             // Get the device selector by friendly name
-            string deviceSelector = SpiDevice.GetDeviceSelector("SPI0");
+            string deviceSelector = SpiDevice.GetDeviceSelector("SPI0WriteOnly");
             var acqs = DeviceInformation.FindAllAsync(deviceSelector);
             string busId = acqs[0].Id;
 
@@ -73,7 +73,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             };
 
             // Get a reference to the SPI device
-            spiDevice = SpiDevice.FromIdAsync(busId, settings);
+            spiDevice = SpiDevice.FromIdAsync(busId, settings); 
 
             // Initialize the LCD display
             lcd_reset();

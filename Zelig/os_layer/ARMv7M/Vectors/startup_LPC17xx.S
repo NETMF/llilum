@@ -62,13 +62,6 @@ __HeapBase:
 __HeapLimit:
     .size __HeapLimit, . - __HeapLimit
 
-    .section .heap_end
-    .align 2
-    .globl    __HeapEnd
-__HeapEnd:
-    .space   4
-    .size __HeapEnd, . - __HeapEnd
-
     .section .isr_vector
     .align 2
     .globl __isr_vector

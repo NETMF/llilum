@@ -4,8 +4,8 @@
 
 namespace Microsoft.Llilum.K64F
 {
-    using System.Runtime.InteropServices;
-    using RT = Microsoft.Zelig.Runtime;
+    using RT   = Microsoft.Zelig.Runtime;
+    using LLOS = Zelig.LlilumOSAbstraction.API;
 
     public sealed class Device : Microsoft.CortexM4OnMBED.Device
     {
@@ -23,16 +23,5 @@ namespace Microsoft.Llilum.K64F
                 return s_bootstrapStackK64F;
             }
         }
-
-        public override uint ManagedHeapSize
-        {
-            get
-            { 
-                return CUSTOM_STUB_GetHeapSize();
-            }
-        }
-
-        [DllImport("C")]
-        private static unsafe extern uint CUSTOM_STUB_GetHeapSize();
     }
 }

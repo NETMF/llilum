@@ -51,11 +51,14 @@
   <PropertyGroup Label="Llilum" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <LlilumCompiler>$(LlilumBuildRoot)\Host\bin\Debug\Microsoft.Zelig.Compiler.exe</LlilumCompiler>
   </PropertyGroup>
+  <PropertyGroup>
+    <NativeIncludes>$(LlilumSourceRoot)\..\os_layer\inc\;$(LlilumSourceRoot)\..\os_layer\inc\api;$(LlilumSourceRoot)\..\os_layer\inc\api\io;$(LlilumSourceRoot)\..\os_layer\inc\hal</NativeIncludes>
+  </PropertyGroup>
   <!-- Platform specific options -->
   <!-- LPC1768 -->
   <PropertyGroup Label="Llilum" Condition="'$(LlilumBoardName)' == 'LPC1768'">
     <LlilumClAdditionalOptions>$(LlilumClAdditionalOptionsLPC1768)</LlilumClAdditionalOptions>
-    <LlilumClAdditionalIncludes>$(LlilumClAdditionalIncludesLPC1768);$(ProjectDir);$(LlilumSourceRoot)\..\os_layer\inc\;$(LlilumSourceRoot)\..\os_layer\inc\api\io</LlilumClAdditionalIncludes>
+    <LlilumClAdditionalIncludes>$(LlilumClAdditionalIncludesLPC1768);$(ProjectDir);$(NativeIncludes)</LlilumClAdditionalIncludes>
     <LlilumClPreprocessorDefs>$(LlilumClPreprocessorDefsLPC1768)</LlilumClPreprocessorDefs>
     <LlilumLinkAdditionalDeps>$(LlilumLinkAdditionalDepsLPC1768)</LlilumLinkAdditionalDeps>
     <LlilumLinkAdditionalLibDirs>$(LlilumLinkAdditionalLibDirsLPC1768)</LlilumLinkAdditionalLibDirs>
@@ -69,7 +72,7 @@
   <!-- K64F -->
   <PropertyGroup Label="Llilum" Condition="'$(LlilumBoardName)' == 'K64F'">
     <LlilumClAdditionalOptions>$(LlilumClAdditionalOptionsK64F)</LlilumClAdditionalOptions>
-    <LlilumClAdditionalIncludes>$(LlilumClAdditionalIncludesK64F);$(ProjectDir);$(LlilumSourceRoot)\..\os_layer\inc\;$(LlilumSourceRoot)\..\os_layer\inc\api\io</LlilumClAdditionalIncludes>
+    <LlilumClAdditionalIncludes>$(LlilumClAdditionalIncludesK64F);$(ProjectDir);$(NativeIncludes)</LlilumClAdditionalIncludes>
     <LlilumClPreprocessorDefs>$(LlilumClPreprocessorDefsK64F)</LlilumClPreprocessorDefs>
     <LlilumLinkAdditionalDeps>$(LlilumLinkAdditionalDepsK64F)</LlilumLinkAdditionalDeps>
     <LlilumLinkAdditionalLibDirs>$(LlilumLinkAdditionalLibDirsK64F)</LlilumLinkAdditionalLibDirs>
@@ -83,7 +86,7 @@
   <!-- STM32L152 -->
   <PropertyGroup Label="Llilum" Condition="'$(LlilumBoardName)' == 'STM32L152'">
     <LlilumClAdditionalOptions>$(LlilumClAdditionalOptionsSTM32L152)</LlilumClAdditionalOptions>
-    <LlilumClAdditionalIncludes>$(LlilumClAdditionalIncludesSTM32L152)</LlilumClAdditionalIncludes>
+    <LlilumClAdditionalIncludes>$(LlilumClAdditionalIncludesSTM32L152);$(ProjectDir);$(NativeIncludes)</LlilumClAdditionalIncludes>
     <LlilumClPreprocessorDefs>$(LlilumClPreprocessorDefsSTM32L152)</LlilumClPreprocessorDefs>
     <LlilumLinkAdditionalDeps>$(LlilumLinkAdditionalDepsSTM32L152)</LlilumLinkAdditionalDeps>
     <LlilumLinkAdditionalLibDirs>$(LlilumLinkAdditionalLibDirsSTM32L152)</LlilumLinkAdditionalLibDirs>
@@ -134,8 +137,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalOptions>$(LlilumClAdditionalOptions) %(AdditionalOptions) -mfloat-abi=softfp</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(LlilumClAdditionalIncludes);$(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>$(LlilumClPreprocessorDefs);DEBUG;$(PreprocessorDefinitions);__DEFAULT_STACK_SIZE=$(LlilumStackSize)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(LlilumClAdditionalIncludes);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>$(LlilumClPreprocessorDefs);DEBUG;%(PreprocessorDefinitions);__DEFAULT_STACK_SIZE=$(LlilumStackSize);__HEAP_SIZE=$(LlilumHeapSize)</PreprocessorDefinitions>
     </ClCompile>
     <ArmAssemble>
       <AdditionalOptions>$(LlilumAsmAdditionalOptions) %(LlilumClAdditionalOptions) -Wa,--defsym,__HEAP_SIZE=$(LlilumHeapSize)</AdditionalOptions>
@@ -156,8 +159,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalOptions>$(LlilumClAdditionalOptions) %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(LlilumClAdditionalIncludes);$(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>$(LlilumClPreprocessorDefs);$(PreprocessorDefinitions);__DEFAULT_STACK_SIZE=$(LlilumStackSize)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(LlilumClAdditionalIncludes);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>$(LlilumClPreprocessorDefs);%(PreprocessorDefinitions);__DEFAULT_STACK_SIZE=$(LlilumStackSize);__HEAP_SIZE=$(LlilumHeapSize)</PreprocessorDefinitions>
     </ClCompile>
     <ArmAssemble>
       <AdditionalOptions>$(LlilumAsmAdditionalOptions) %(LlilumClAdditionalOptions) -Wa,--defsym,__HEAP_SIZE=$(LlilumHeapSize)</AdditionalOptions>
@@ -172,7 +175,7 @@
   <ItemGroup>
     <ClCompile Include="mbed_adc.cpp" />
     <ClCompile Include="mbed_gpio.cpp" />
-    <ClCompile Include="mbed_helpers.cpp" />
+    <ClCompile Include="mbed_memory.cpp" />
     <ClCompile Include="mbed_i2c.cpp" />
     <ClCompile Include="mbed_serial.cpp" />
     <ClCompile Include="mbed_spi.cpp" />

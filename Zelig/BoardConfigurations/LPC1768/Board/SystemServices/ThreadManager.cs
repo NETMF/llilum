@@ -6,7 +6,7 @@
 namespace Microsoft.Llilum.LPC1768
 {
     using Chipset = Microsoft.CortexM3OnMBED;
-    using System.Runtime.InteropServices;
+    using LLOS    = Zelig.LlilumOSAbstraction.API;
 
     public sealed class ThreadManager : Chipset.ThreadManager
     {
@@ -22,9 +22,9 @@ namespace Microsoft.Llilum.LPC1768
         {
             get
             {
-                uint stackSize = CUSTOM_STUB_GetDefaultStackSize();
+                uint stackSize = LLOS.RuntimeMemory.LLOS_MEMORY_GetDefaultManagedStackSize();
 
-                if(stackSize >= int.MaxValue)
+                if(stackSize == 0)
                 {
                     return DefaultStackSizeLPC1768;
                 }
@@ -32,8 +32,5 @@ namespace Microsoft.Llilum.LPC1768
                 return (int)stackSize;
             }
         }
-
-        [DllImport("C")]
-        private static unsafe extern uint CUSTOM_STUB_GetDefaultStackSize();
     }
 }

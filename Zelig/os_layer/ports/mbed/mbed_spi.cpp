@@ -4,6 +4,7 @@
 
 #include "mbed_helpers.h" 
 #include "llos_spi.h"
+#include "llos_memory.h"
 
 //--//
 
@@ -21,19 +22,17 @@ extern "C"
     {
         LLOS_MbedSpi *pCtx;
 
-        if (ppChannel == NULL)
+        if (ppChannel == NULL || ppConfiguration == NULL)
         {
             return LLOS_E_INVALID_PARAMETER;
         }
 
-        pCtx = (LLOS_MbedSpi*)calloc(sizeof(LLOS_MbedSpi), 1);
+        pCtx = (LLOS_MbedSpi*)AllocateFromManagedHeap(sizeof(LLOS_MbedSpi));
 
         if (pCtx == NULL)
         {
             return LLOS_E_OUT_OF_MEMORY;
         }
-
-        InternalZeroMemory(pCtx, sizeof(*pCtx));
 
         spi_init(&pCtx->Spi, (PinName)mosi, (PinName)miso, (PinName)sclk, (PinName)chipSelect);
         pCtx->Callback = NULL;
@@ -47,7 +46,7 @@ extern "C"
 
     VOID LLOS_SPI_Uninitialize(LLOS_Context channel)
     {
-        free(channel);
+        FreeFromManagedHeap(channel);
     }
 
     HRESULT LLOS_SPI_Configure(LLOS_Context channel, LLOS_SPI_ControllerConfig* pConfig)

@@ -86,10 +86,10 @@ namespace Microsoft.Zelig.Runtime
         [TS.WellKnownMethod("DebugGC_MemoryFreeBlock_Allocate")]
         public UIntPtr Allocate( ref MemorySegment memorySegment, uint size )
         {
-            ArrayImpl array         = ArrayImpl.CastAsArray( Pack() );
-            uint      fixedSize     = FixedSize();
-            uint      numElements   = (uint)array.Length;
-            uint      availableSize = numElements + fixedSize;
+            ArrayImpl array          = ArrayImpl.CastAsArray( Pack() );
+            uint      fixedSize      = FixedSize();
+            uint      numElements    = (uint)array.Length;
+            uint      availableSize  = numElements + fixedSize;
 
             if(size <= availableSize)
             {

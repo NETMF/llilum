@@ -6,7 +6,7 @@
 namespace Microsoft.Llilum.K64F
 {
     using Chipset = Microsoft.CortexM4OnMBED;
-    using System.Runtime.InteropServices;
+    using LLOS    = Zelig.LlilumOSAbstraction.API;
 
     public sealed class ThreadManager : Chipset.ThreadManager
     {
@@ -22,9 +22,9 @@ namespace Microsoft.Llilum.K64F
         {
             get
             {
-                uint stackSize = CUSTOM_STUB_GetDefaultStackSize();
+                uint stackSize = LLOS.RuntimeMemory.LLOS_MEMORY_GetDefaultManagedStackSize();
 
-                if(stackSize >= int.MaxValue)
+                if(stackSize == 0)
                 {
                     return DefaultStackSizeK64F;
                 }
@@ -32,9 +32,6 @@ namespace Microsoft.Llilum.K64F
                 return (int)stackSize;
             }
         }
-
-        [DllImport("C")]
-        private static unsafe extern uint CUSTOM_STUB_GetDefaultStackSize();
     }
 }
 

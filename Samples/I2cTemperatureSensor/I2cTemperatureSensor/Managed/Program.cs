@@ -15,7 +15,7 @@ namespace Managed
     {
         // This array will only have byte 0x0 in it
         public static byte[] i2cReadWrite1 = new byte[] { 0x0 };
-        public static byte[] i2cReadWrite2 = new byte[2] { 0x0, 0x0 };
+        public static byte[] i2cReadWrite2 = new byte[] { 0x0, 0x0 };
 
         //
         // Set temperature range in order to filter bad readings.

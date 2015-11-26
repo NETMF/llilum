@@ -9,7 +9,6 @@ namespace Microsoft.Zelig.Runtime
 
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
-
     [ImplicitInstance]
     [ForceDevirtualization]
     [TS.DisableAutomaticReferenceCounting]
@@ -121,6 +120,55 @@ namespace Microsoft.Zelig.Runtime
         public abstract void Release(UIntPtr address);
 
         public abstract bool RefersToMemory( UIntPtr address );
+
+        [ExportedMethod]
+        public static UIntPtr AllocateFromManagedHeap( uint size )
+        {
+            size += ObjectHeader.HeaderSize;
+
+            uint unalignedBytes = size & 0x3u;
+
+            //
+            // Force all heap allocations to be multiples of 4-bytes so that we guarantee 
+            // 4-byte alignment for all allocations.
+            //
+            if(0 != unalignedBytes)
+            {
+                size += 4u - unalignedBytes;
+            }
+
+            UIntPtr ptr = Instance.Allocate( size );
+
+            if( ptr == UIntPtr.Zero )
+            {
+                GarbageCollectionManager.Instance.Collect();
+
+                ptr = Instance.Allocate( size );
+
+                if(ptr == UIntPtr.Zero)
+                {
+                    throw new OutOfMemoryException( );
+                }
+            }
+
+            ObjectHeader hdr = ObjectHeader.CastAsObjectHeader(ptr);
+
+            hdr.MultiUseWord |= (int)(ObjectHeader.GarbageCollectorFlags.UnreclaimableObject | ObjectHeader.GarbageCollectorFlags.Marked);
+
+            return AddressMath.Increment( ptr, ObjectHeader.HeaderSize );
+        }
+
+        [ExportedMethod]
+        public static void FreeFromManagedHeap( UIntPtr address )
+        {
+            UIntPtr ptr = AddressMath.Decrement( address, ObjectHeader.HeaderSize );
+
+            ObjectHeader hdr = ObjectHeader.CastAsObjectHeader(ptr);
+
+            hdr.MultiUseWord = (int)(ObjectHeader.GarbageCollectorFlags.FreeBlock | ObjectHeader.GarbageCollectorFlags.Unmarked);
+
+            Instance.Release( ptr );
+        }
 
         //--//
 

@@ -1,5 +1,6 @@
 #include "mbed_helpers.h"
 #include "llos_pwm.h"
+#include "llos_memory.h"
 
 extern "C"
 {
@@ -12,9 +13,16 @@ extern "C"
         pwmout_t Pwm;
     } LLOS_MbedPwm;
 
-    HRESULT LLOS_PWM_Initialize(uint32_t pinName, LLOS_Context* channel)
+    HRESULT LLOS_PWM_Initialize(uint32_t pinName, LLOS_Context* pChannel)
     {
-        LLOS_MbedPwm *pPwm = (LLOS_MbedPwm*)calloc(sizeof(LLOS_MbedPwm), 1);
+        LLOS_MbedPwm *pPwm;
+
+        if (pChannel == NULL)
+        {
+            return LLOS_E_INVALID_PARAMETER;
+        }
+
+        pPwm = (LLOS_MbedPwm*)AllocateFromManagedHeap(sizeof(LLOS_MbedPwm));
 
         if (pPwm == NULL)
         {
@@ -27,7 +35,7 @@ extern "C"
         pPwm->PulseWidth = 0;
         pwmout_init(&pPwm->Pwm, (PinName)pinName);
 
-        *channel = pPwm;
+        *pChannel = pPwm;
 
         return S_OK;
     }
@@ -36,7 +44,7 @@ extern "C"
     {
         LLOS_MbedPwm *pPwm = (LLOS_MbedPwm*)channel;
         pwmout_free(&pPwm->Pwm);
-        free(channel);
+        FreeFromManagedHeap(channel);
     }
 
     HRESULT LLOS_PWM_SetDutyCycle(LLOS_Context channel, uint32_t dutyCycleNumerator, uint32_t dutyCycleDenominator)

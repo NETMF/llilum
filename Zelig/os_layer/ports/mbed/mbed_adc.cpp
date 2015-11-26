@@ -1,11 +1,12 @@
 #include "mbed_helpers.h"
 #include "llos_analog.h"
+#include "llos_memory.h"
 
 //--//
 
 extern "C"
 {
-    typedef struct LLOS_MBED_ADC_CONTEXT
+    typedef struct LLOS_MbedAdc
     {
         union
         {
@@ -14,20 +15,22 @@ extern "C"
         };
 
         LLOS_ADC_Direction Direction;
-    } LLOS_MBED_ADC_CONTEXT;
+    } LLOS_MbedAdc;
 
     HRESULT LLOS_ADC_Initialize(uint32_t pinName, LLOS_ADC_Direction direction, LLOS_Context* channel)
     {
-        LLOS_MBED_ADC_CONTEXT *pCtx = (LLOS_MBED_ADC_CONTEXT*)calloc(sizeof(LLOS_MBED_ADC_CONTEXT), 1);
-
-        if (pCtx == NULL)
-        {
-            return LLOS_E_OUT_OF_MEMORY;
-        }
+        LLOS_MbedAdc *pCtx;
 
         if (channel == NULL)
         {
             return LLOS_E_INVALID_PARAMETER;
+        }
+
+        pCtx = (LLOS_MbedAdc*)AllocateFromManagedHeap(sizeof(LLOS_MbedAdc));
+
+        if (pCtx == NULL)
+        {
+            return LLOS_E_OUT_OF_MEMORY;
         }
 
         pCtx->Direction = direction;
@@ -48,12 +51,12 @@ extern "C"
 
     VOID LLOS_ADC_Uninitialize(LLOS_Context channel)
     {
-        free(channel);
+        FreeFromManagedHeap(channel);
     }
 
     HRESULT LLOS_ADC_ReadRaw(LLOS_Context channel, int32_t* value)
     {
-        LLOS_MBED_ADC_CONTEXT *pCtx = (LLOS_MBED_ADC_CONTEXT*)channel;
+        LLOS_MbedAdc *pCtx = (LLOS_MbedAdc*)channel;
 
         if (value == NULL || pCtx == NULL)
         {
@@ -73,7 +76,7 @@ extern "C"
     }
     HRESULT LLOS_ADC_WriteRaw(LLOS_Context channel, int32_t value)
     {
-        LLOS_MBED_ADC_CONTEXT *pCtx = (LLOS_MBED_ADC_CONTEXT*)channel;
+        LLOS_MbedAdc *pCtx = (LLOS_MbedAdc*)channel;
 
         if (pCtx == NULL || pCtx->Direction == LLOS_ADC_Input || value > 0xFFFF || value < 0)
         {
@@ -87,7 +90,7 @@ extern "C"
 
     HRESULT LLOS_ADC_Read(LLOS_Context channel, float* value)
     {
-        LLOS_MBED_ADC_CONTEXT *pCtx = (LLOS_MBED_ADC_CONTEXT*)channel;
+        LLOS_MbedAdc *pCtx = (LLOS_MbedAdc*)channel;
 
         if (value == NULL || pCtx == NULL)
         {
@@ -108,7 +111,7 @@ extern "C"
 
     HRESULT LLOS_ADC_Write(LLOS_Context channel, float value)
     {
-        LLOS_MBED_ADC_CONTEXT *pCtx = (LLOS_MBED_ADC_CONTEXT*)channel;
+        LLOS_MbedAdc *pCtx = (LLOS_MbedAdc*)channel;
 
         if (pCtx == NULL || pCtx->Direction == LLOS_ADC_Input)
         {

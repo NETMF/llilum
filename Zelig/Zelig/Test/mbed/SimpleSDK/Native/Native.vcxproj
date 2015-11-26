@@ -48,6 +48,9 @@
   </PropertyGroup>
   <PropertyGroup Label="Llilum" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
   </PropertyGroup>
+  <PropertyGroup>
+    <NativeIncludes>$(LlilumSDK)source\ports\mbed\inc;$(LlilumSDK)source\inc;$(LlilumSDK)source\inc\api;$(LlilumSDK)source\inc\api\io;$(LlilumSDK)source\inc\hal</NativeIncludes>
+  </PropertyGroup>
   <!-- Platform specific options -->
   <!-- LPC1768 -->
   <PropertyGroup Label="Llilum" Condition="'$(LlilumBoardName)' == 'LPC1768'">
@@ -129,8 +132,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalOptions>$(LlilumClAdditionalOptions) %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(LlilumClAdditionalIncludes);%(AdditionalIncludeDirectories);$(LlilumSDK)source\ports\mbed\inc;$(LlilumSDK)source\inc;$(LlilumSDK)source\inc\api;$(LlilumSDK)source\inc\api\io</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>$(LlilumClPreprocessorDefs);DEBUG;%(PreprocessorDefinitions);__DEFAULT_STACK_SIZE=$(LlilumStackSize)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(LlilumClAdditionalIncludes);%(AdditionalIncludeDirectories);$(NativeIncludes)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>$(LlilumClPreprocessorDefs);DEBUG;%(PreprocessorDefinitions);__DEFAULT_STACK_SIZE=$(LlilumStackSize);__HEAP_SIZE=$(LlilumHeapSize)</PreprocessorDefinitions>
     </ClCompile>
     <ArmAssemble>
       <AdditionalOptions>$(LlilumAsmAdditionalOptions) %(LlilumClAdditionalOptions) -Wa,--defsym,__HEAP_SIZE=$(LlilumHeapSize)</AdditionalOptions>
@@ -147,8 +150,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalOptions>$(LlilumClAdditionalOptions) %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(LlilumClAdditionalIncludes);%(AdditionalIncludeDirectories);$(LlilumSDK)source\ports\mbed\inc;$(LlilumSDK)source\inc;$(LlilumSDK)source\inc\api;$(LlilumSDK)source\inc\api\io</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>$(LlilumClPreprocessorDefs);%(PreprocessorDefinitions);__DEFAULT_STACK_SIZE=$(LlilumStackSize)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(LlilumClAdditionalIncludes);%(AdditionalIncludeDirectories);$(NativeIncludes)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>$(LlilumClPreprocessorDefs);%(PreprocessorDefinitions);__DEFAULT_STACK_SIZE=$(LlilumStackSize);__HEAP_SIZE=$(LlilumHeapSize)</PreprocessorDefinitions>
     </ClCompile>
     <ArmAssemble>
       <AdditionalOptions>$(LlilumAsmAdditionalOptions) %(LlilumClAdditionalOptions) -Wa,--defsym,__HEAP_SIZE=$(LlilumHeapSize)</AdditionalOptions>

@@ -9,13 +9,6 @@
 extern "C"
 {
 
-    unsigned char *callocWrapper(uint32_t num, uint32_t size)
-    {
-        return (unsigned char *)calloc(num, size);
-    }
-
-    //--//
-
     // Must match consts defined in ObjectHeader.cs
     #define REFERENCE_COUNT_MASK  0xFF000000
     #define REFERENCE_COUNT_SHIFT 24
@@ -31,6 +24,7 @@ extern "C"
     {
         __set_PRIMASK(1);
     }
+
     __attribute__((always_inline)) __STATIC_INLINE void EndAtomicOperations(void)
     {
         __set_PRIMASK(0);

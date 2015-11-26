@@ -22,9 +22,9 @@ OBJECTS += \
 	$(TARGET)\mbed_core.o \
 	$(TARGET)\mbed_debug.o \
 	$(TARGET)\mbed_gpio.o \
-	$(TARGET)\mbed_helpers.o \
 	$(TARGET)\mbed_i2c.o \
 	$(TARGET)\mbed_mem.o \
+	$(TARGET)\mbed_memory.o \
 	$(TARGET)\mbed_NVIC.o \
 	$(TARGET)\mbed_pwm.o \
 	$(TARGET)\mbed_serial.o \
@@ -59,15 +59,17 @@ MBED_ROOT = $(LLILUM_ROOT)Zelig\mbed
 SOURCE_ROOT = $(LLILUM_ROOT)Zelig\Zelig\Test\mbed\SimpleSDK\Native
 LIBRARIES = -lmbed
 LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc -lnosys
-INCLUDE_PATHS = -I. -I$(MBED_ROOT) -I$(LLILUM_ROOT)Zelig\os_layer\inc -I$(LLILUM_ROOT)Zelig\os_layer\api -I$(LLILUM_ROOT)Zelig\os_layer\inc\api\io
+INCLUDE_PATHS = -I. -I$(MBED_ROOT) -I$(LLILUM_ROOT)Zelig\os_layer\inc -I$(LLILUM_ROOT)Zelig\os_layer\inc\api -I$(LLILUM_ROOT)Zelig\os_layer\inc\api\io -I$(LLILUM_ROOT)Zelig\os_layer\inc\hal
 
 # LPC1768 settings
 ifeq ($(TARGET),LPC1768)
 
 ifeq ($(HEAP_SIZE),)
 	AS_FLAGS += --defsym __HEAP_SIZE=0x4000
+    CC_FLAGS += -D__HEAP_SIZE=0x4000
 else
 	AS_FLAGS += --defsym __HEAP_SIZE=$(HEAP_SIZE)
+    CC_FLAGS += -D__HEAP_SIZE=$(HEAP_SIZE)
 endif
 
 ifeq ($(DEBUG), 1)
@@ -91,8 +93,10 @@ else ifeq ($(TARGET),K64F)
 
 ifeq ($(HEAP_SIZE),)
 	AS_FLAGS += --defsym __HEAP_SIZE=0x10000
+    CC_FLAGS += -D__HEAP_SIZE=0x10000
 else
 	AS_FLAGS += --defsym __HEAP_SIZE=$(HEAP_SIZE)
+    CC_FLAGS += -D__HEAP_SIZE=$(HEAP_SIZE)
 endif
 
 
@@ -116,6 +120,7 @@ ifeq ($(HEAP_SIZE),)
 	AS_FLAGS += --defsym __HEAP_SIZE=0x4000
 else
 	AS_FLAGS += --defsym __HEAP_SIZE=$(HEAP_SIZE)
+    CC_FLAGS += -D__HEAP_SIZE=$(HEAP_SIZE)
 endif
 
 	OBJECTS += $(TARGET)\startup_stm32l152xe.o
