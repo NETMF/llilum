@@ -2,6 +2,9 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+// Enable more verbose diagnostic output which can overwhelm normal test results.
+//#define VERBOSE_LOGGING
+
 using System.Runtime.InteropServices;
 
 namespace Microsoft.Zelig.Runtime
@@ -663,8 +666,9 @@ namespace Microsoft.Zelig.Runtime
 
             var oh = ObjectHeader.Unpack(array);
             var ptr = oh.ToPointer();
+#if VERBOSE_LOGGING
             BugCheck.Log("Allocated oh = 0x%x of total size %d", (int)ptr.ToUInt32(), (int)oh.TotalSize);
-
+#endif // VERBOSE_LOGGING
             return ptr;
         }
 
@@ -681,7 +685,9 @@ namespace Microsoft.Zelig.Runtime
 
             var oh = ObjectHeader.Unpack(array);
             var ptr = oh.ToPointer();
+#if VERBOSE_LOGGING
             BugCheck.Log("Allocated oh = 0x%x of total size %d with fake gaps", (int)ptr.ToUInt32(), (int)oh.TotalSize);
+#endif // VERBOSE_LOGGING
 
             return ptr;
         }
@@ -934,18 +940,24 @@ namespace Microsoft.Zelig.Runtime
 
                     if (useFakeGap)
                     {
+#if VERBOSE_LOGGING
                         BugCheck.Log("%04d>>>> array[%d] = AllocHelperWithFakeGap(%d);", (int)i, target, (int)allocSize);
+#endif // VERBOSE_LOGGING
                         array[target] = AllocHelperWithFakeGap(allocSize);
                     }
                     else
                     {
+#if VERBOSE_LOGGING
                         BugCheck.Log("%04d>>>> array[%d] = AllocHelper(%d);", (int)i, target, (int)allocSize);
+#endif // VERBOSE_LOGGING
                         array[target] = AllocHelper(allocSize);
                     }
                 }
                 else
                 {
+#if VERBOSE_LOGGING
                     BugCheck.Log("%04d>>>> MemoryManager.Instance.Release(array[%d]); array[%d] = UIntPtr.Zero;", (int)i, target, target);
+#endif // VERBOSE_LOGGING
                     MemoryManager.Instance.Release(array[target]);
                     array[target] = UIntPtr.Zero;
                 }
@@ -1688,6 +1700,7 @@ namespace Microsoft.Zelig.Runtime
         #endregion // Interlocked Tests
 
         #region RefCount GC Tests
+
         private class GCNode
         {
             static int s_nextId = 1;
@@ -2106,13 +2119,13 @@ namespace Microsoft.Zelig.Runtime
             BugCheck.Log( "RefCountGC11 Succeeded." );
         }
 
-        #endregion
+        #endregion RefCount GC Tests
 
         //--//
         //--//
         //--//
 
-        #region pointers basic 
+        #region pointers basic
 
         private static unsafe void SelfTest__Test__RawPointers_Arithmetic_Pointer_1( )
         {

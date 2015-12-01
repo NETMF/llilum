@@ -58,18 +58,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                     }
 
                     Debug.Assert( !m_localValues.ContainsKey( exp ), "Found multiple definitions for expression: " + exp );
-
-                    bool addressable = false;
-                    foreach( IR.Operator useOp in useChains[exp.SpanningTreeIndex] )
-                    {
-                        if( ArgumentIsAddress( exp, useOp ) )
-                        {
-                            addressable = true;
-                            break;
-                        }
-                    }
-
-                    CreateValueCache( exp, addressable );
+                    CreateValueCache( exp, useChains );
                 }
             }
 
@@ -162,10 +151,20 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             return false;
         }
 
-        private void CreateValueCache( IR.VariableExpression expr, bool addressable )
+        private void CreateValueCache( IR.VariableExpression expr, IR.Operator[][] useChains )
         {
             // Resolve the origin of phi (and other aliased) variables. If a variable is unaliased, this is a no-op.
             IR.VariableExpression alias = expr.AliasedVariable;
+
+            bool addressable = false;
+            foreach( IR.Operator useOp in useChains[expr.SpanningTreeIndex] )
+            {
+                if( ArgumentIsAddress( expr, useOp ) )
+                {
+                    addressable = true;
+                    break;
+                }
+            }
 
             if( addressable )
             {
@@ -174,7 +173,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                 if( !m_localValues.TryGetValue( alias, out aliasSlot ) )
                 {
                     _Value address = m_function.GetLocalStackValue( m_method, m_basicBlock, alias, m_manager );
-                    aliasSlot = new ValueCache( expr, address );
+                    aliasSlot = new ValueCache( alias, address );
                     m_localValues[ alias ] = aliasSlot;
                 }
 
@@ -211,47 +210,46 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                 _BasicBlock llvmBlock = GetOrInsertBasicBlock( block );
                 ValueCache valueCache = m_localValues[ exp ];
 
-                if( wantImmediate )
+                // If we don't need to load the value, just return the address.
+                if( !wantImmediate )
                 {
-                    // If we already have a cached value for this expression, there's no need to load it again.
-                    _Value value = valueCache.GetValueFromBlock( llvmBlock );
-                    if( value != null )
+                    Debug.Assert( valueCache.IsAddressable );
+                    return valueCache.Address;
+                }
+
+                // Never cache addressable values since we don't easily know when they'll be modified.
+                // Instead, reload at each operator. Unnecessary loads will be optimized out by LLVM.
+                if( valueCache.IsAddressable )
+                {
+                    // TODO: When we have exception handling this can be removed, as can the allowLoad flag. Since
+                    // we don't yet jump to handler blocks, values coming from those blocks can't dominate a phi
+                    // operator and must therefore be replaced with a suitable null.
+                    if( !allowLoad )
                     {
-                        return value;
+                        return m_manager.Module.GetNullValue( valueCache.Type );
                     }
 
-                    if( valueCache.IsAddressable )
-                    {
-                        // TODO: When we have exception handling, this can be removed, as can the allowLoad flag. Since
-                        // we don't yet jump to handler blocks, values coming from those blocks can't dominate a phi
-                        // operator, and must therefore be replaced with a suitable null.
-                        if( !allowLoad )
-                        {
-                            return m_manager.Module.GetNullValue( valueCache.Type );
-                        }
+                    return m_basicBlock.InsertLoad( valueCache.Address );
+                }
 
-                        value = m_basicBlock.InsertLoad( valueCache.Address );
-                    }
-                    else
-                    {
-                        // This value isn't addressable, so it must have been set in a previous block.
-                        IR.BasicBlock idom = m_immediateDominators[ block.SpanningTreeIndex ];
-                        if( idom == block )
-                        {
-                            // This is the entry block, so there's no predecessor to search.
-                            throw new InvalidOperationException( $"Encountered use of expression with no definition. Expression {exp} in {block.Owner.Method}" );
-                        }
-
-                        value = GetValue( idom, exp, wantImmediate, allowLoad );
-                    }
-
-                    valueCache.SetValueForBlock( llvmBlock, value );
+                // If we already have a cached value for this expression there's no need to load it again.
+                _Value value = valueCache.GetValueFromBlock( llvmBlock );
+                if( value != null )
+                {
                     return value;
                 }
 
-                // Remove the cached value when taking an address. It's possible the value will change.
-                valueCache.SetValueForBlock( llvmBlock, null );
-                return valueCache.Address;
+                // This value isn't addressable so it must have been set in a previous block.
+                IR.BasicBlock idom = m_immediateDominators[ block.SpanningTreeIndex ];
+                if( idom == block )
+                {
+                    // This is the entry block so there's no predecessor to search.
+                    throw new InvalidOperationException( $"Encountered use of expression with no definition. Expression {exp} in {block.Owner.Method}" );
+                }
+
+                value = GetValue( idom, exp, wantImmediate, allowLoad );
+                valueCache.SetValueForBlock( llvmBlock, value );
+                return value;
             }
 
             if ( exp is IR.ConstantExpression )
@@ -605,14 +603,16 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         private void StoreValue( ValueCache dst, _Value src )
         {
             _Value convertedSrc = ConvertValueToStoreToTarget( src, dst.Type );
+            m_basicBlock.SetVariableName( convertedSrc, dst.Expression.AliasedVariable );
 
             if( dst.IsAddressable )
             {
                 StoreValue( dst.Address, convertedSrc );
             }
-
-            m_basicBlock.SetVariableName( convertedSrc, dst.Expression.AliasedVariable );
-            dst.SetValueForBlock( m_basicBlock, convertedSrc );
+            else
+            {
+                dst.SetValueForBlock( m_basicBlock, convertedSrc );
+            }
         }
 
         private void StoreValue( _Value dst, _Value src )

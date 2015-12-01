@@ -95,10 +95,14 @@ namespace Microsoft.Zelig.LLVM
         {
             block.EnsureDebugInfo( manager, method );
 
-            var retVal = block.InsertAlloca( val.ToString( ), manager.GetOrInsertType( val.Type ) );
+            bool hasDebugName = !string.IsNullOrWhiteSpace( val.DebugName?.Name );
+
+            var retVal = block.InsertAlloca(
+                hasDebugName ? val.DebugName.Name : val.ToString( ),
+                manager.GetOrInsertType( val.Type ) );
 
             // If the local had a valid symbolic name in the source code, generate debug info for it.
-            if( string.IsNullOrWhiteSpace( val.DebugName?.Name ) )
+            if( !hasDebugName )
             {
                 return retVal;
             }
