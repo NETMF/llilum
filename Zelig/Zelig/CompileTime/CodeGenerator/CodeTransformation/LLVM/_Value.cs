@@ -4,8 +4,8 @@ using Llvm.NET.Values;
 namespace Microsoft.Zelig.LLVM
 {
    // REVIEW:
-   // This class should probably become a static class with extension methods
-   // for the few properties it keeps the Llvm.NET Extensible propery mechanism
+   // This class should probably become a static class with extension methods.
+   // For the few properties it keeps the Llvm.NET Extensible propery mechanism
    // should suffice to handle them. This would eliminate the need for this
    // extra layer of abstraction (and source of confusion).
     public class _Value
@@ -55,17 +55,6 @@ namespace Microsoft.Zelig.LLVM
             {
                 gv.ReplaceAllUsesWith( targetVal.LlvmValue );
                 gv.RemoveFromParent( );
-            }
-        }
-
-        public void FlagAsConstant( )
-        {
-            var gv = LlvmValue as GlobalVariable;
-            if( gv != null )
-            {
-                gv.IsConstant = true;
-                gv.Section = ".text";
-                gv.UnnamedAddress = true;
             }
         }
 

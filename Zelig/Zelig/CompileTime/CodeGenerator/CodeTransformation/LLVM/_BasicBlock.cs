@@ -39,7 +39,7 @@ namespace Microsoft.Zelig.LLVM
 
         public void SetDebugInfo( LLVMModuleManager manager, MethodRepresentation method, Operator op )
         {
-            var func = Module.GetOrInsertFunction( manager, method );
+            var func = manager.GetOrInsertFunction( method );
             Debug.Assert( Owner == func );
 
             if( op != null )

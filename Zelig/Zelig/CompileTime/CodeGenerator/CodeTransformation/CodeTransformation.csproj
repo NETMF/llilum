@@ -166,8 +166,10 @@
     <Compile Include="ImageBuilders\CompilationState_Scheduling.cs" />
     <Compile Include="ImageBuilders\ImageAnnotations\ExternalDataRelocation.cs" />
     <Compile Include="ImageBuilders\ImageAnnotations\ExternMethodCallRelocation.cs" />
+    <Compile Include="LLVM\ArmEabiSectionNameProvider.cs" />
     <Compile Include="LLVM\LLVMModuleManager.cs" />
     <Compile Include="LLVM\LLVMModuleManager_Types.cs" />
+    <Compile Include="LLVM\ITargetSectionOptions.cs" />
     <Compile Include="LLVM\TypeField.cs" />
     <Compile Include="LLVM\_BasicBlock.cs" />
     <Compile Include="LLVM\_Function.cs" />

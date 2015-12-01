@@ -34,9 +34,9 @@ namespace Microsoft.Zelig.LLVM
             var context = new Context( );
 
             // TODO: Get target triple from command line instead of hard coding it here.
-            var target = Target.FromTriple( "thumbv7m-none-eabi" );
+            var target = Target.FromTriple( Target.ThumbV7mEabiTriple );
             TargetMachine = target.CreateTargetMachine( context
-                                                      , "thumbv7m-none-eabi"
+                                                      , Target.ThumbV7mEabiTriple
                                                       , string.Empty   // CPU
                                                       , string.Empty   // features
                                                       , CodeGenOpt.None // hard code no optimizations for easier debugging for now...

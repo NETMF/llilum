@@ -23,7 +23,7 @@ namespace Microsoft.Zelig.FrontEnd
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
     using Cfg = Microsoft.Zelig.Configuration.Environment;
     using ARM = Microsoft.Zelig.Emulation.ArmProcessor;
-
+    using LLVM;
 
     class Bench :
         TS.IEnvironmentProvider,
@@ -66,9 +66,11 @@ namespace Microsoft.Zelig.FrontEnd
 
         }
 
-        internal class InlineOptions : IR.CompilationSteps.IInlineOptions
+        internal class LlvmCodeGenOptions 
+            : IR.CompilationSteps.IInlineOptions
+            , ITargetSectionOptions
         {
-            internal InlineOptions( )
+            internal LlvmCodeGenOptions( )
             {
                 EnableAutoInlining = true;
                 HonorInlineAttribute = true;
@@ -76,8 +78,12 @@ namespace Microsoft.Zelig.FrontEnd
             }
 
             public bool EnableAutoInlining { get; internal set; }
+
             public bool HonorInlineAttribute { get; internal set; }
+
             public bool InjectPrologAndEpilog { get; internal set; }
+
+            public bool GenerateDataSectionPerType { get; internal set; }
         }
 
         //
@@ -126,7 +132,7 @@ namespace Microsoft.Zelig.FrontEnd
         private List< string >                      m_importDirectories;
         private List< string >                      m_importLibraries;
 
-        private InlineOptions                       m_InlineOptions;
+        private LlvmCodeGenOptions                       m_LlvmCodeGenOptions;
         private IR.CompilationSteps.DelegationCache m_delegationCache;
         private MetaData.MetaDataResolver           m_resolver;
         private TypeSystemForFrontEnd               m_typeSystem;
@@ -184,7 +190,7 @@ namespace Microsoft.Zelig.FrontEnd
             m_disabledPhases = new List<String>( );
 
             m_sourceCodeTracker = new IR.SourceCodeTracker( );
-            m_InlineOptions = new InlineOptions( );
+            m_LlvmCodeGenOptions = new LlvmCodeGenOptions( );
         }
 
         //--//
@@ -283,9 +289,13 @@ namespace Microsoft.Zelig.FrontEnd
 
             if( t == typeof( IR.CompilationSteps.IInlineOptions ) )
             {
-                return m_InlineOptions;
+                return m_LlvmCodeGenOptions;
             }
 
+            if( t == typeof( ITargetSectionOptions ) )
+            {
+                return m_LlvmCodeGenOptions;
+            }
             return null;
         }
 
@@ -1106,21 +1116,25 @@ namespace Microsoft.Zelig.FrontEnd
                         }
                         else if( IsMatch( option, "Debug" ) )
                         {
-                            m_InlineOptions.EnableAutoInlining = false;
-                            m_InlineOptions.HonorInlineAttribute = false;
-                            m_InlineOptions.InjectPrologAndEpilog = false;
+                            m_LlvmCodeGenOptions.EnableAutoInlining = false;
+                            m_LlvmCodeGenOptions.HonorInlineAttribute = false;
+                            m_LlvmCodeGenOptions.InjectPrologAndEpilog = false;
                         }
                         else if( IsMatch( option, "DisableAutoInlining" ) )
                         {
-                            m_InlineOptions.EnableAutoInlining = false;
+                            m_LlvmCodeGenOptions.EnableAutoInlining = false;
                         }
                         else if( IsMatch( option, "IgnoreInlineAttributes" ) )
                         {
-                            m_InlineOptions.HonorInlineAttribute = false;
+                            m_LlvmCodeGenOptions.HonorInlineAttribute = false;
                         }
-                        else if( IsMatch( option, "DIsablePrologEpilogInjection" ) )
+                        else if( IsMatch( option, "DisablePrologEpilogInjection" ) )
                         {
-                            m_InlineOptions.InjectPrologAndEpilog = false;
+                            m_LlvmCodeGenOptions.InjectPrologAndEpilog = false;
+                        }
+                        else if( IsMatch( option, "GenerateDataSectionPerType" ) )
+                        {
+                            m_LlvmCodeGenOptions.GenerateDataSectionPerType = true;
                         }
                         else
                         {
