@@ -35,17 +35,12 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         {
             ControlFlowGraphStateForCodeTransformation cfg = nc.CurrentCFG;
 
-////        if(cfg.ToString() == "FlowGraph(void Microsoft.Zelig.Runtime.Bootstrap::EntryPoint())")
-////        if(cfg.ToString() == "FlowGraph(void Microsoft.Zelig.Runtime.MarkAndSweepCollector::InitializeGarbageCollectionManager())")
-////        {
-////        }
-
             while(true)
             {
                 GrowOnlyHashTable< VariableExpression, Operator > defLookup = cfg.DataFlow_SingleDefinitionLookup;
 
-                if(PropagateFixedArrayLength ( cfg, defLookup ) ||
-                   RemoveRedundantNullChecks ( cfg, defLookup ) ||
+                if(PropagateFixedArrayLength( cfg, defLookup ) ||
+                   RemoveRedundantChecks( cfg, defLookup ) ||
                    RemoveRedundantBoundChecks( cfg, defLookup ) )
                 {
                     Transformations.RemoveDeadCode.Execute( cfg, false );
@@ -156,8 +151,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
-        private static bool RemoveRedundantNullChecks( ControlFlowGraphStateForCodeTransformation        cfg       ,
-                                                       GrowOnlyHashTable< VariableExpression, Operator > defLookup )
+        private static bool RemoveRedundantChecks(
+            ControlFlowGraphStateForCodeTransformation cfg,
+            GrowOnlyHashTable< VariableExpression, Operator > defLookup )
         {
             var useChains = cfg.DataFlow_UseChains;
             bool fRunSimplify = false;
@@ -166,18 +162,27 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             foreach(var opCtrl in cfg.FilterOperators< BinaryConditionalControlOperator >())
             {
                 BasicBlock takenBranch;
-                switch(ProveIsNull( opCtrl.FirstArgument, defLookup, useChains ))
+
+                if( opCtrl.TargetBranchTaken == opCtrl.TargetBranchNotTaken )
                 {
-                case ProveNullResult.NeverNull:
+                    // Replace binary branches with unconditional ones when both targets are the same block.
                     takenBranch = opCtrl.TargetBranchTaken;
-                    break;
+                }
+                else
+                {
+                    switch(ProveIsNull( opCtrl.FirstArgument, defLookup, useChains ))
+                    {
+                    case ProveNullResult.NeverNull:
+                        takenBranch = opCtrl.TargetBranchTaken;
+                        break;
 
-                case ProveNullResult.AlwaysNull:
-                    takenBranch = opCtrl.TargetBranchNotTaken;
-                    break;
+                    case ProveNullResult.AlwaysNull:
+                        takenBranch = opCtrl.TargetBranchNotTaken;
+                        break;
 
-                default:
-                    continue;
+                    default:
+                        continue;
+                    }
                 }
 
                 UnconditionalControlOperator opNewCtrl = UnconditionalControlOperator.New( opCtrl.DebugInfo, takenBranch );
@@ -189,49 +194,58 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             // Search for branch if (a == null) and branch if (a != null).
             foreach(var opCtrl in cfg.FilterOperators< CompareConditionalControlOperator >())
             {
-                bool trueIfNull = false;
-                Expression expr;
-
-                switch(opCtrl.Condition)
-                {
-                case CompareAndSetOperator.ActionCondition.EQ:
-                    trueIfNull = true;
-                    break;
-
-                case CompareAndSetOperator.ActionCondition.NE:
-                    trueIfNull = false;
-                    break;
-
-                default:
-                    continue;
-                }
-
-                bool fNullOnRight;
-                expr = opCtrl.IsBinaryOperationAgainstZeroValue( out fNullOnRight );
-                if(expr == null)
-                {
-                    continue;
-                }
-
-                ProveNullResult result = ProveIsNull( expr, defLookup, useChains );
-                if(result == ProveNullResult.Unknown)
-                {
-                    continue;
-                }
-
                 BasicBlock takenBranch;
-                switch(result)
+
+                if( opCtrl.TargetBranchTaken == opCtrl.TargetBranchNotTaken )
                 {
-                case ProveNullResult.NeverNull:
-                    takenBranch = trueIfNull ? opCtrl.TargetBranchNotTaken : opCtrl.TargetBranchTaken;
-                    break;
+                    // Replace binary branches with unconditional ones when both targets are the same block.
+                    takenBranch = opCtrl.TargetBranchTaken;
+                }
+                else
+                {
+                    bool trueIfNull = false;
+                    Expression expr;
 
-                case ProveNullResult.AlwaysNull:
-                    takenBranch = trueIfNull ? opCtrl.TargetBranchTaken : opCtrl.TargetBranchNotTaken;
-                    break;
+                    switch (opCtrl.Condition)
+                    {
+                    case CompareAndSetOperator.ActionCondition.EQ:
+                        trueIfNull = true;
+                        break;
 
-                default:
-                    continue;
+                    case CompareAndSetOperator.ActionCondition.NE:
+                        trueIfNull = false;
+                        break;
+
+                    default:
+                        continue;
+                    }
+
+                    bool fNullOnRight;
+                    expr = opCtrl.IsBinaryOperationAgainstZeroValue( out fNullOnRight );
+                    if(expr == null)
+                    {
+                        continue;
+                    }
+
+                    ProveNullResult result = ProveIsNull( expr, defLookup, useChains );
+                    if(result == ProveNullResult.Unknown)
+                    {
+                        continue;
+                    }
+
+                    switch(result)
+                    {
+                    case ProveNullResult.NeverNull:
+                        takenBranch = trueIfNull ? opCtrl.TargetBranchNotTaken : opCtrl.TargetBranchTaken;
+                        break;
+
+                    case ProveNullResult.AlwaysNull:
+                        takenBranch = trueIfNull ? opCtrl.TargetBranchTaken : opCtrl.TargetBranchNotTaken;
+                        break;
+
+                    default:
+                        continue;
+                    }
                 }
 
                 UnconditionalControlOperator opNewCtrl = UnconditionalControlOperator.New( opCtrl.DebugInfo, takenBranch );
@@ -487,6 +501,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             Console.WriteLine( "#############################################################################" );
 #endif
 
+            // TODO: This doesn't work on LLVM and needs to be revisited.
             foreach(var opCtrl in cfg.FilterOperators< ConditionCodeConditionalControlOperator >())
             {
                 var opCmp = ControlFlowGraphState.CheckSingleDefinition( defLookup, opCtrl.FirstArgument ) as CompareOperator;
