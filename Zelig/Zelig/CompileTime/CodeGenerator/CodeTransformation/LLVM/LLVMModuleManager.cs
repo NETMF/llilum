@@ -52,7 +52,7 @@ namespace Microsoft.Zelig.LLVM
             // hard code the section name provider for the one and only target currently supported.
             // In the future, when more targets are supported this can be injected via any normal
             // means of dependency injection without requiring any additional changes in this class.
-            m_SectionNameProvider = new Thumb2EabiSectionNameProvider( typeSystem.WellKnownTypes );
+            m_SectionNameProvider = new Thumb2EabiSectionNameProvider( m_typeSystem );
         }
 
         public void Compile( )
