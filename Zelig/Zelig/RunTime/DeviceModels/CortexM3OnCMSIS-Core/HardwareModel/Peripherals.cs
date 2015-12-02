@@ -11,7 +11,7 @@ namespace Microsoft.CortexM3OnCMSISCore
 
     using RT    = Microsoft.Zelig.Runtime;
     using CMSIS = Microsoft.DeviceModels.Chipset.CortexM3;
-
+    using LLOS  = Zelig.LlilumOSAbstraction.HAL;
 
     public abstract class Peripherals : RT.Peripherals
     {
@@ -100,15 +100,14 @@ namespace Microsoft.CortexM3OnCMSISCore
 
         public override ulong GetPerformanceCounterFrequency()
         {
-            return 1000000;
+            return LLOS.Clock.LLOS_CLOCK_GetPerformanceCounterFrequency();
         }
 
         [RT.Inline]
         [RT.DisableNullChecks()]
         public override uint ReadPerformanceCounter()
         {
-            // TODO: use a different timer
-            return Drivers.ContextSwitchTimer.Instance.CurrentTimeRaw;
+            return (uint)LLOS.Clock.LLOS_CLOCK_GetPerformanceCounter();
         }
     }
 }

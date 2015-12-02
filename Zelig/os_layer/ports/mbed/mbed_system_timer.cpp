@@ -60,6 +60,11 @@ extern "C"
         return us_ticker_read();
     }
 
+    uint64_t LLOS_SYSTEM_TIMER_GetTimerFrequency()
+    {
+        return 1000000; // 1us tick timer = 1MHz
+    }
+
     HRESULT LLOS_SYSTEM_TIMER_AllocateTimer(LLOS_Context callbackContext, LLOS_Context *pTimer)
     {
         LLOS_MbedTimer *pCtx;

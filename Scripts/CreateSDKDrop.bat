@@ -75,7 +75,7 @@ echo Copying files for GCC...
 :: !!! Relies on naming convention !!!
 ::
 xcopy /y "%LLILUM_ROOT_DIR%\Zelig\os_layer\ports\mbed\mbed_helpers.h"  "%SDK_DIR%\SDKDrop\source\ports\mbed\inc\*"
-xcopy /y "%LLILUM_ROOT_DIR%\Zelig\os_layer\ports\mbed\mbed_*.cpp"      "%SDK_DIR%\SDKDrop\source\ports\mbed\*"
+xcopy /y "%LLILUM_ROOT_DIR%\Zelig\os_layer\ports\mbed\mbed_*.*"        "%SDK_DIR%\SDKDrop\source\ports\mbed\*"
 xcopy /y "%LLILUM_ROOT_DIR%\Zelig\os_layer\ARMv7M\Vectors\startup_*.S" "%SDK_DIR%\SDKDrop\source\ARMv7M\Vectors\*"
 xcopy /s /y "%LLILUM_ROOT_DIR%\Zelig\os_layer\inc\*"                   "%SDK_DIR%\SDKDrop\source\inc\*"
 

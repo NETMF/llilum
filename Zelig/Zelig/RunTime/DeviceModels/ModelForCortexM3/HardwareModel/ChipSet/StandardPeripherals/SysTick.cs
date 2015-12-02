@@ -216,14 +216,6 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3
             }
         }
 
-        public uint SystemCoreClock
-        {
-            get
-            {
-                return CMSIS_STUB_CLOCK__GetSystemCoreClock();
-            }
-        }
-
         //
         // Access Methods
         //
@@ -257,10 +249,5 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3
 
         [DllImport( "C" )]
         private static extern void CMSIS_STUB_SysTick_SetVAL( uint value );
-
-        //--//
-        
-        [DllImport( "C" )]
-        private static extern uint CMSIS_STUB_CLOCK__GetSystemCoreClock( );
     }
 }

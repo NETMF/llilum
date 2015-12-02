@@ -60,6 +60,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="HAL\Clock.cs" />
     <Compile Include="HAL\Timer.cs" />
     <Compile Include="API\RuntimeMemory.cs" />
     <Compile Include="API\IO\Adc.cs" />
@@ -71,6 +72,11 @@
     <Compile Include="LlilumErrors.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\Kernel\Kernel.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060509AA01}</Project>
+      <Name>Kernel</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\mscorlib\mscorlib.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20060501AA01}</Project>
       <Name>mscorlib</Name>
@@ -79,11 +85,6 @@
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\system\system.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20070702AA01}</Project>
       <Name>system</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\Kernel\Kernel.csproj">
-      <Project>{186F31A3-EF89-4A25-B2D5-20060509AA01}</Project>
-      <Name>Kernel</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\TypeSystem\TypeSystem.csproj">
@@ -121,6 +122,9 @@
     </Content>
     <Content Include="..\..\..\..\os_layer\inc\api\llos_memory.h">
       <Link>Native\API\llos_memory.h</Link>
+    </Content>
+    <Content Include="..\..\..\..\os_layer\inc\hal\llos_clock.h">
+      <Link>Native\HAL\llos_clock.h</Link>
     </Content>
     <Content Include="..\..\..\..\os_layer\inc\hal\llos_system_timer.h">
       <Link>Native\HAL\llos_system_timer.h</Link>

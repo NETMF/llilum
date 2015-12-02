@@ -192,6 +192,9 @@
   <ItemGroup>
     <ClInclude Include="mbed_helpers.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ArmAssemble Include="mbed_asm.S" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
 </Project>

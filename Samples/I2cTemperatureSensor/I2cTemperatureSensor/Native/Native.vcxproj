@@ -160,6 +160,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(LlilumInteropFilePath)ports\mbed\mbed_*.cpp" />
+    <ArmAssemble Include="$(LlilumInteropFilePath)ports\mbed\mbed_*.s" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(LlilumInteropFilePath)ports\mbed\inc\mbed_helpers.h" />

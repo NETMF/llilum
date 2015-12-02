@@ -17,8 +17,8 @@ namespace Microsoft.Llilum.LPC1768
             Miso = (int)PinName.p6,
             Sclk = (int)PinName.p7,
             DefaultChipSelect = (int)PinName.p8,
-            SetupTime = 0,
-            HoldTime = 0,
+            SetupTime = 10,
+            HoldTime = 10,
             ActiveLow = true,
         };
 

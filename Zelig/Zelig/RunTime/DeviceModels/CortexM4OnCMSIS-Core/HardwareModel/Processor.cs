@@ -8,7 +8,7 @@ namespace Microsoft.CortexM4OnCMSISCore
 
     using RT           = Microsoft.Zelig.Runtime;
     using ChipsetModel = Microsoft.DeviceModels.Chipset.CortexM4;
-
+    using LLOS         = Zelig.LlilumOSAbstraction.HAL;
 
     public abstract class Processor : ChipsetModel.Processor
     {
@@ -22,7 +22,7 @@ namespace Microsoft.CortexM4OnCMSISCore
             // Helper Methods
             //
             
-            #region RTOS extensiblity
+            #region RTOS extensibility
 
             protected virtual UIntPtr CreateNativeContext( UIntPtr entryPoint, UIntPtr stack, int stackSize )
             {
@@ -52,6 +52,22 @@ namespace Microsoft.CortexM4OnCMSISCore
         //
         // Access methods
         //
+    }
 
+    [RT.ExtendClass( typeof( Microsoft.Zelig.Runtime.Processor ) )]
+    internal class ProcessorImpl
+    {
+        [RT.MergeWithTargetImplementation]
+        internal ProcessorImpl()
+        {
+        }
+
+        [RT.NoInline]
+        [RT.MemoryUsage( RT.MemoryUsage.Bootstrap )]
+        public static int Delay( int count )
+        {
+            LLOS.Clock.LLOS_CLOCK_DelayCycles( (uint)count );
+            return 0;
+        }
     }
 }

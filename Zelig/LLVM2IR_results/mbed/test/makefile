@@ -12,6 +12,7 @@ endif
 #
 OBJECTS = .\Microsoft.Zelig.Test.$(PROJECT)_opt.o \
 	$(TARGET)\mbed_adc.o \
+	$(TARGET)\mbed_asm.o \
 	$(TARGET)\mbed_clock.o \
 	$(TARGET)\mbed_core.o \
 	$(TARGET)\mbed_debug.o \
@@ -167,6 +168,9 @@ $(TARGET)\\%.o: $(LLILUM_ROOT)\Zelig\os_layer\ARMv7M\Vectors\%.S
 	$(AS) $(CPU) $(AS_FLAGS) -o $@ $<
 	
 $(TARGET)\\%.o: $(LLILUM_ROOT)\Zelig\os_layer\ARMv7M\Vectors\%.s
+	$(AS) $(CPU) $(AS_FLAGS) -o $@ $<
+
+$(TARGET)\\%.o: $(LLILUM_ROOT)\Zelig\os_layer\ports\mbed\%.S
 	$(AS) $(CPU) $(AS_FLAGS) -o $@ $<
 
 $(TARGET)\\%.o: %.c

@@ -21,6 +21,7 @@ HRESULT  LLOS_SYSTEM_TIMER_Enable  (LLOS_SYSTEM_TIMER_Callback callback);
 VOID     LLOS_SYSTEM_TIMER_Disable ();
 HRESULT  LLOS_SYSTEM_TIMER_SetTicks(uint64_t value);
 uint64_t LLOS_SYSTEM_TIMER_GetTicks();
+uint64_t LLOS_SYSTEM_TIMER_GetTimerFrequency();
 
 HRESULT  LLOS_SYSTEM_TIMER_AllocateTimer(LLOS_Context callbackContext, LLOS_Context *pTimer);
 VOID     LLOS_SYSTEM_TIMER_FreeTimer    (LLOS_Context pTimer);

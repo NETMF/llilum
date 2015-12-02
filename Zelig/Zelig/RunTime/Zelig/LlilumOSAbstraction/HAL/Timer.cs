@@ -39,6 +39,9 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.HAL
         public static unsafe extern ulong LLOS_SYSTEM_TIMER_GetTicks( );
 
         [DllImport( "C" )]
+        public static unsafe extern ulong LLOS_SYSTEM_TIMER_GetTimerFrequency( );
+
+        [DllImport( "C" )]
         public static unsafe extern uint LLOS_SYSTEM_TIMER_AllocateTimer( UIntPtr timerContext, TimerContext** pTimer );
 
         [DllImport( "C" )]

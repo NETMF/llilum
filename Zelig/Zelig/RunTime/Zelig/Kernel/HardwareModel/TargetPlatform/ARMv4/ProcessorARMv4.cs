@@ -606,4 +606,30 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv4
             return val;
         }
     }
+
+    [ExtendClass( typeof( Microsoft.Zelig.Runtime.Processor ) )]
+    internal class ProcessorImpl
+    {
+        [MergeWithTargetImplementation]
+        internal ProcessorImpl()
+        {
+        }
+
+        [NoInline]
+        [MemoryUsage( MemoryUsage.Bootstrap )]
+        public static int Delay( int count )
+        {
+            const int fixedOverhead = 16;
+            const int perRoundCost  = 6;
+
+            count -= fixedOverhead;
+
+            while(count > 0)
+            {
+                count -= perRoundCost;
+            }
+
+            return count;
+        }
+    }
 }

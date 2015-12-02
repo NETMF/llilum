@@ -10,6 +10,7 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
 
     using RT    = Microsoft.Zelig.Runtime;
     using CMSIS = Microsoft.DeviceModels.Chipset.CortexM3;
+    using LLOS  = Zelig.LlilumOSAbstraction.HAL;
 
     public abstract class ContextSwitchTimer
     {        
@@ -48,15 +49,6 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
             get;
         }
         
-
-        public uint CurrentTimeRaw
-        {
-            get
-            {
-                return m_sysTick.SystemCoreClock;
-            }
-        }
-
         //--//
 
         public void Initialize()
@@ -148,9 +140,9 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
             RT.BugCheck.Assert( HasRef() && IsPrecise(), RT.BugCheck.StopCode.FailedBootstrap );
 
             //
-            // match = (coreclock / 100) - 1 ) * 2
+            // match = ( (timerClockMhz * calibration_x10 / 100) - 1 ) * ms ) / 10
             //
-            return ( ( ( ( GetCoreClockMhz( ) * GetFactoryCalibrationValue( ) ) / 100 ) - 1 ) * ms) / 10; 
+            return ( ( ( ( GetTimerClockMhz( ) * GetFactoryCalibrationValue( ) ) / 100 ) - 1 ) * ms) / 10;
         }
         
         //--//
@@ -172,9 +164,9 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
         }
 
         [RT.Inline]
-        private uint GetCoreClockMhz( )
+        private uint GetTimerClockMhz( )
         {
-            return (uint)( m_sysTick.SystemCoreClock / 1000000 ); 
+            return (uint)(LLOS.Timer.LLOS_SYSTEM_TIMER_GetTimerFrequency( ) / 1000000); 
         }
 
         [RT.Inline]

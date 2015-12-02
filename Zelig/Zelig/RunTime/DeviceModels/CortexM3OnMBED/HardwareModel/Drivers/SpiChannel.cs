@@ -136,20 +136,20 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
 
             if (setupTime < 0)
             {
-                m_spiCfg->ChipSelectSetupCycles = defaultDelayCycles;
+                m_spiCfg->ChipSelectSetupCycles = ConvertToCoreClockTicks( defaultDelayCycles, frequencyInHz );
             }
             else
             {
-                m_spiCfg->ChipSelectSetupCycles = (uint)setupTime;
+                m_spiCfg->ChipSelectSetupCycles = ConvertToCoreClockTicks( setupTime, frequencyInHz );
             }
 
             if (holdTime < 0)
             {
-                m_spiCfg->ChipSelectHoldCycles = defaultDelayCycles;
+                m_spiCfg->ChipSelectHoldCycles = ConvertToCoreClockTicks( defaultDelayCycles, frequencyInHz );
             }
             else
             {
-                m_spiCfg->ChipSelectHoldCycles = (uint)holdTime;
+                m_spiCfg->ChipSelectHoldCycles = ConvertToCoreClockTicks( holdTime, frequencyInHz );
             }
 
             m_spiCfg->ClockRateHz = (uint)frequencyInHz;
@@ -219,6 +219,13 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
             m_spiCfg->ChipSelect = (uint)channelInfo.DefaultChipSelect;
         }
 
+        private uint ConvertToCoreClockTicks(int spiCycles, int spiFrequencyInHz)
+        {
+            ulong cpu =  LLOS.HAL.Clock.LLOS_CLOCK_GetClockFrequency( );
+
+            return (uint)( (ulong)spiCycles * cpu / (ulong)spiFrequencyInHz );
+        }
+
         private unsafe void EnableChipSelect()
         {
             // Enable the chip select
@@ -226,11 +233,8 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
             {
                 m_altCsPin.Write(m_spiCfg->ActiveLow == 1 ? 0 : 1);
 
-                if(m_spiCfg->ChipSelectSetupCycles > 0)
-                {
-                    // Setup time in cycles
-                    Processor.Delay( (int)m_spiCfg->ChipSelectSetupCycles );
-                }
+                // Setup time in cycles
+                Processor.Delay( (int)m_spiCfg->ChipSelectSetupCycles );
             }
         }
 
@@ -255,10 +259,7 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
                 }
 
                 // Hold time in cycles
-                if(m_spiCfg->ChipSelectHoldCycles > 0)
-                {
-                    Processor.Delay( (int)m_spiCfg->ChipSelectHoldCycles );
-                }
+                Processor.Delay( (int)m_spiCfg->ChipSelectHoldCycles );
 
                 m_altCsPin.Write(m_spiCfg->ActiveLow == 1 ? 1 : 0);
             }
