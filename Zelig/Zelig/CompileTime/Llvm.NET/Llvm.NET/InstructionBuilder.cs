@@ -399,11 +399,11 @@ namespace Llvm.NET
         /// <returns>Comparison instruction</returns>
         public Value Compare( IntPredicate predicate, Value lhs, Value rhs )
         {
-            if( !lhs.NativeType.IsInteger )
-                throw new ArgumentException( "Expecting an integer type", nameof( lhs ) );
+            if( !lhs.NativeType.IsInteger && !lhs.NativeType.IsPointer )
+                throw new ArgumentException( "Expecting an integer or pointer type", nameof( lhs ) );
 
-            if( !rhs.NativeType.IsInteger )
-                throw new ArgumentException( "Expecting an integer type", nameof( rhs ) );
+            if( !rhs.NativeType.IsInteger && !lhs.NativeType.IsPointer )
+                throw new ArgumentException( "Expecting an integer or pointer type", nameof( rhs ) );
 
             var handle = NativeMethods.BuildICmp( BuilderHandle, ( LLVMIntPredicate )predicate, lhs.ValueHandle, rhs.ValueHandle, string.Empty );
             return Value.FromHandle( handle );

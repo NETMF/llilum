@@ -369,35 +369,23 @@ namespace Microsoft.Zelig.LLVM
 
         public _Value InsertCmp( int predicate, bool isSigned, _Value valA, _Value valB )
         {
-            Debug.Assert( valA.IsInteger || valA.IsFloatingPoint );
-            Debug.Assert( valB.IsInteger || valB.IsFloatingPoint );
+            _Type booleanImpl = Module.GetNativeBoolType();
 
-            Value llvmValA = valA.LlvmValue;
-            Value llvmValB = valB.LlvmValue;
-
-            _Type booleanImpl = Module.GetType( Module.TypeSystem.WellKnownTypes.System_Boolean );
-
-            if( valA.IsInteger && valB.IsInteger )
+            if( (valA.IsInteger && valB.IsInteger) ||
+                (valA.IsPointer && valB.IsPointer) )
             {
                 Predicate p = PredicateMap[ predicate + ( isSigned ? SignedBase : 0 ) ];
-                var icmp = IrBuilder.Compare( ( IntPredicate )p, llvmValA, llvmValB );
-
-                var inst = IrBuilder.ZeroExtendOrBitCast( icmp, booleanImpl.DebugType )
-                                    .SetDebugLocation( CurDILocation );
-
-                return new _Value( Module, booleanImpl, inst );
+                var cmp = IrBuilder.Compare( ( IntPredicate )p, valA.LlvmValue, valB.LlvmValue )
+                                   .SetDebugLocation( CurDILocation );
+                return new _Value( Module, booleanImpl, cmp );
             }
 
             if( valA.IsFloatingPoint && valB.IsFloatingPoint )
             {
                 Predicate p = PredicateMap[ predicate + FloatBase ];
-
-                var cmp = IrBuilder.Compare( ( RealPredicate )p, llvmValA, llvmValB );
-
-                var value = IrBuilder.ZeroExtendOrBitCast( cmp, booleanImpl.DebugType )
-                                     .SetDebugLocation( CurDILocation );
-
-                return new _Value( Module, booleanImpl, value );
+                var cmp = IrBuilder.Compare( ( RealPredicate )p, valA.LlvmValue, valB.LlvmValue )
+                                   .SetDebugLocation( CurDILocation );
+                return new _Value( Module, booleanImpl, cmp );
             }
 
             Console.WriteLine( "valA:" );
@@ -533,18 +521,7 @@ namespace Microsoft.Zelig.LLVM
 
         public void InsertConditionalBranch( _Value cond, _BasicBlock trueBB, _BasicBlock falseBB )
         {
-            Debug.Assert( cond.IsInteger );
-
-            //Review: Testing all the bits for now. We need to check its always valid to trunc the condition
-            // to the first bit if we want to change it. That being said, most of the times this should be
-            // get rid on the instructions conv pass from LLVM.
-            Value vA = cond.LlvmValue;
-            Value vB = Module.LlvmModule.Context.CreateConstant( cond.Type.DebugType, 0, false );
-
-            Value condVal = IrBuilder.Compare(IntPredicate.NotEqual, vA, vB)
-                                     .SetDebugLocation( CurDILocation );
-
-            IrBuilder.Branch( condVal, trueBB.LlvmBasicBlock, falseBB.LlvmBasicBlock )
+            IrBuilder.Branch( cond.LlvmValue, trueBB.LlvmBasicBlock, falseBB.LlvmBasicBlock )
                      .SetDebugLocation( CurDILocation );
         }
 

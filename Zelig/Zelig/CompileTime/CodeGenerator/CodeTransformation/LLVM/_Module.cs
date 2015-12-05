@@ -125,6 +125,12 @@ namespace Microsoft.Zelig.LLVM
 
         public _Type GetVoidType( ) => GetType( TypeSystem.WellKnownTypes.System_Void );
 
+        public _Type GetNativeBoolType()
+        {
+            var boolType = new DebugBasicType(LlvmModule.Context.GetIntType(1), LlvmModule, "bool", DiTypeKind.Boolean);
+            return _Type.GetOrInsertTypeImpl(this, "bool", 1, true, boolType);
+        }
+
         internal DINamespace GetOrCreateDINamespace( TypeRepresentation tr )
         {
             return GetOrCreateDINamespace( tr.Namespace );

@@ -886,6 +886,46 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             }
         }
 
+#if ENABLE_SSA_FORM
+        [CompilationSteps.OptimizationHandler(RunOnce = true, RunInSSAForm = true)]
+#else // ENABLE_SSA_FORM
+        [CompilationSteps.OptimizationHandler(RunOnce = true)]
+#endif // ENABLE_SSA_FORM
+        private static void ReduceComparisons(PhaseExecution.NotificationContext nc)
+        {
+            ControlFlowGraphStateForCodeTransformation cfg = nc.CurrentCFG;
+            Operator[][] defChains = cfg.DataFlow_DefinitionChains;
+            Operator[][] useChains = cfg.DataFlow_UseChains;
+
+            // Replace split compare + branch operators with CompareConditionalControlOperator.
+            foreach (var branchOp in cfg.FilterOperators<BinaryConditionalControlOperator>())
+            {
+                var comparand = branchOp.FirstArgument as VariableExpression;
+                if (comparand == null)
+                {
+                    continue;
+                }
+
+                var compareOp = ControlFlowGraphState.CheckSingleDefinition(defChains, comparand) as CompareAndSetOperator;
+                if (compareOp == null)
+                {
+                    continue;
+                }
+
+                var conditionalOp = CompareConditionalControlOperator.New(
+                    branchOp.DebugInfo,
+                    compareOp.Condition,
+                    compareOp.Signed,
+                    compareOp.FirstArgument,
+                    compareOp.SecondArgument,
+                    branchOp.TargetBranchNotTaken,
+                    branchOp.TargetBranchTaken);
+
+                branchOp.SubstituteWithOperator(conditionalOp, Operator.SubstitutionFlags.Default);
+                nc.MarkAsModified();
+            }
+        }
+
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//

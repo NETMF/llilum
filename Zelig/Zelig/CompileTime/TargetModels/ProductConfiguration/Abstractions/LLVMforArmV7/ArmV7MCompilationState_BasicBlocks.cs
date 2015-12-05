@@ -485,10 +485,19 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             return true;
         }
 
-        private void MatchIntegerLengths( ref _Value valA, ref _Value valB )
+        private void EnsureSameType( ref _Value valA, ref _Value valB )
         {
-            valA = ConvertValueToALUOperableType( valA );
-            valB = ConvertValueToALUOperableType( valB );
+            if( valA.IsPointer != valB.IsPointer )
+            {
+                // Convert the pointer parameter to an integer to match the other.
+                valA = ConvertValueToALUOperableType( valA );
+                valB = ConvertValueToALUOperableType( valB );
+            }
+            else if( valA.IsPointer )
+            {
+                // Ensure pointer types match.
+                valB = m_basicBlock.InsertBitCast( valB, valA.Type );
+            }
 
             if ( valA.IsInteger && valB.IsInteger )
             {
@@ -629,9 +638,11 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
             _Value valA = GetImmediate( op.BasicBlock, op.FirstArgument );
             _Value valB = GetImmediate( op.BasicBlock, op.SecondArgument );
+            valA = ConvertValueToALUOperableType( valA );
+            valB = ConvertValueToALUOperableType( valB );
 
             // TODO: Add support for overflow exceptions.
-            MatchIntegerLengths( ref valA, ref valB );
+            EnsureSameType( ref valA, ref valB );
             _Value result = m_basicBlock.InsertBinaryOp( ( int )op.Alu, valA, valB, op.Signed );
             StoreValue( m_localValues[ op.FirstResult ], result );
         }
@@ -652,6 +663,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
         private void Translate_ConversionOperator( IR.ConversionOperator op )
         {
+            // TODO: Add support for overflow exceptions
             _Value argument = GetImmediate( op.BasicBlock, op.FirstArgument );
             _Value value = ConvertValueToALUOperableType( argument );
             _Type resultType = m_manager.GetOrInsertType( op.FirstResult.Type );
@@ -687,8 +699,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         {
             // TODO: Add support for overflow exceptions
             _Value argument = GetImmediate( op.BasicBlock, op.FirstArgument );
-            _Value value = ConvertValueToALUOperableType( argument );
-            StoreValue( m_localValues[ op.FirstResult ], value );
+            StoreValue( m_localValues[ op.FirstResult ], argument );
         }
 
         private void Translate_SingleAssignmentOperator( IR.SingleAssignmentOperator op )
@@ -733,19 +744,13 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             StoreValue( m_localValues[ op.FirstResult ], phiNode );
         }
 
-        _Value DoCmpOp( _Value valA, _Value valB, int cond, bool signed )
-        {
-            valA = ConvertValueToALUOperableType( valA );
-            valB = ConvertValueToALUOperableType( valB );
-            MatchIntegerLengths( ref valA, ref valB );
-            return m_basicBlock.InsertCmp( cond, signed, valA, valB );
-        }
-
         private void Translate_CompareAndSetOperator( IR.CompareAndSetOperator op )
         {
             _Value left = GetImmediate( op.BasicBlock, op.FirstArgument );
             _Value right = GetImmediate( op.BasicBlock, op.SecondArgument );
-            _Value value = DoCmpOp( left, right, ( int )op.Condition, op.Signed );
+            EnsureSameType( ref left, ref right );
+
+            _Value value = m_basicBlock.InsertCmp( ( int )op.Condition, op.Signed, left, right );
             StoreValue( m_localValues[ op.FirstResult ], value );
         }
 
@@ -840,17 +845,21 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
         private void Translate_BinaryConditionalControlOperator( IR.BinaryConditionalControlOperator op )
         {
-            _Value condition = GetImmediate( op.BasicBlock, op.FirstArgument );
+            _Value left = GetImmediate( op.BasicBlock, op.FirstArgument );
+            _Value zero = m_manager.Module.GetNullValue( left.Type );
+            _Value condition = m_basicBlock.InsertCmp( (int)IR.CompareAndSetOperator.ActionCondition.NE, false, left, zero );
             _BasicBlock taken = GetOrInsertBasicBlock( op.TargetBranchTaken );
             _BasicBlock notTaken = GetOrInsertBasicBlock( op.TargetBranchNotTaken );
-            m_basicBlock.InsertConditionalBranch( ConvertValueToALUOperableType( condition ), taken, notTaken );
+            m_basicBlock.InsertConditionalBranch( condition, taken, notTaken );
         }
 
         private void Translate_CompareConditionalControlOperator( IR.CompareConditionalControlOperator op )
         {
             _Value left = GetImmediate( op.BasicBlock, op.FirstArgument );
             _Value right = GetImmediate( op.BasicBlock, op.SecondArgument );
-            _Value condition = DoCmpOp( left, right, ( int )op.Condition, op.Signed );
+            EnsureSameType( ref left, ref right );
+
+            _Value condition = m_basicBlock.InsertCmp( ( int )op.Condition, op.Signed, left, right );
             _BasicBlock taken = GetOrInsertBasicBlock( op.TargetBranchTaken );
             _BasicBlock notTaken = GetOrInsertBasicBlock( op.TargetBranchNotTaken );
             m_basicBlock.InsertConditionalBranch( condition, taken, notTaken );
@@ -868,9 +877,8 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             }
 
             _Value argument = GetImmediate( op.BasicBlock, op.FirstArgument );
-            _Value aluArgument = ConvertValueToALUOperableType( argument );
             _BasicBlock defaultBlock = GetOrInsertBasicBlock( op.TargetBranchNotTaken );
-            m_basicBlock.InsertSwitchAndCases( aluArgument, defaultBlock, caseValues, caseBBs );
+            m_basicBlock.InsertSwitchAndCases( argument, defaultBlock, caseValues, caseBBs );
         }
 
         private void Translate_ReturnControlOperator( IR.ReturnControlOperator op )
