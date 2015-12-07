@@ -1,4 +1,4 @@
-﻿//
+//
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
@@ -7,42 +7,42 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
     using System;
     using System.Collections.Generic;
     using Microsoft.Zelig.LLVM;
+    
+    using ZeligIR = Microsoft.Zelig.CodeGeneration.IR;
+    using TS      = Microsoft.Zelig.Runtime.TypeSystem;
 
-    using IR = Microsoft.Zelig.CodeGeneration.IR;
-    using TS = Microsoft.Zelig.Runtime.TypeSystem;
-
-    public partial class ArmV7MCompilationState : IR.ImageBuilders.CompilationState
+    public partial class ArmV7MCompilationState : ArmCompilationState
     {
-        private _Function m_function;
-        private LLVMModuleManager m_manager;
-        private TS.MethodRepresentation m_method;
-        private TS.WellKnownFields m_wkf;
-        private TS.WellKnownTypes m_wkt;
-        private GrowOnlyHashTable<IR.Expression, ValueCache> m_localValues;
-        private GrowOnlyHashTable<IR.BasicBlock, _BasicBlock> m_blocks;
-        private IDictionary<IR.PhiOperator, _Value> m_pendingPhiNodes;
+        private _Function                                          m_function;
+        private LLVMModuleManager                                  m_manager;
+        private TS.MethodRepresentation                            m_method;
+        private TS.WellKnownFields                                 m_wkf;
+        private TS.WellKnownTypes                                  m_wkt;
+        private GrowOnlyHashTable<ZeligIR.Expression, ValueCache>  m_localValues;
+        private GrowOnlyHashTable<ZeligIR.BasicBlock, _BasicBlock> m_blocks;
+        private IDictionary      <ZeligIR.PhiOperator, _Value>     m_pendingPhiNodes;
 
         protected ArmV7MCompilationState( ) // Default constructor required by TypeSystemSerializer.
         {
         }
 
-        internal ArmV7MCompilationState( IR.ImageBuilders.Core owner,
-                                         IR.ControlFlowGraphStateForCodeTransformation cfg )
+        internal ArmV7MCompilationState( ZeligIR.ImageBuilders.Core owner,
+                                         ZeligIR.ControlFlowGraphStateForCodeTransformation cfg )
             : base( owner, cfg )
         {
-            m_method = cfg.Method;
-            m_wkf = cfg.TypeSystem.WellKnownFields;
-            m_wkt = cfg.TypeSystem.WellKnownTypes;
-            m_localValues = HashTableFactory.New<IR.Expression, ValueCache>( );
-            m_blocks = HashTableFactory.New<IR.BasicBlock, _BasicBlock>( );
-            m_pendingPhiNodes = new Dictionary<IR.PhiOperator, _Value>( );
+            m_method          = cfg.Method;
+            m_wkf             = cfg.TypeSystem.WellKnownFields;
+            m_wkt             = cfg.TypeSystem.WellKnownTypes;
+            m_localValues     = HashTableFactory.New<ZeligIR.Expression, ValueCache>( );
+            m_blocks          = HashTableFactory.New<ZeligIR.BasicBlock, _BasicBlock>( );
+            m_pendingPhiNodes = new Dictionary<ZeligIR.PhiOperator, _Value>( );
         }
 
         //
         // Helper Methods
         //
 
-        public override void ApplyTransformation( IR.TransformationContextForCodeTransformation context )
+        public override void ApplyTransformation( ZeligIR.TransformationContextForCodeTransformation context )
         {
             context.Push( this );
 
@@ -57,28 +57,28 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         {
             base.PrepareDataStructures( );
 
-            m_manager = Owner.TypeSystem.Module;
+            m_manager  = Owner.TypeSystem.Module;
             m_function = m_manager.GetOrInsertFunction( m_method );
             m_function.SetInternalLinkage( );
-            m_manager.ConvertTypeLayoutsToLLVM( );
+            m_manager .ConvertTypeLayoutsToLLVM( );
 
             ReleaseAllLocks( );
         }
 
-        protected IR.Abstractions.RegisterDescriptor GetNextRegister( IR.Abstractions.RegisterDescriptor reg )
-        {
-            IR.Abstractions.Platform pa = m_cfg.TypeSystem.PlatformAbstraction;
-            return pa.GetRegisterForEncoding( reg.Encoding + 1 );
-        }
+        //protected ZeligIR.Abstractions.RegisterDescriptor GetNextRegister( ZeligIR.Abstractions.RegisterDescriptor reg )
+        //{
+        //    ZeligIR.Abstractions.Platform pa = m_cfg.TypeSystem.PlatformAbstraction;
+        //    return pa.GetRegisterForEncoding( reg.Encoding + 1 );
+        //}
 
         //--//
 
-        protected override void AssignStackLocations_RecordRegister( IR.PhysicalRegisterExpression regVar )
+        protected override void AssignStackLocations_RecordRegister( ZeligIR.PhysicalRegisterExpression regVar )
         {
 
         }
 
-        protected override void AssignStackLocations_RecordStackOut( IR.StackLocationExpression stackVar )
+        protected override void AssignStackLocations_RecordStackOut( ZeligIR.StackLocationExpression stackVar )
         {
         }
 
@@ -90,17 +90,23 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         {
         }
 
-        protected override void FixupEmptyRegion( IR.ImageBuilders.SequentialRegion reg )
+        protected override void FixupEmptyRegion( ZeligIR.ImageBuilders.SequentialRegion reg )
         {
+            //
+            // TODO: lt72: enable proper encoding 
+            // 
+            var sec = reg.GetSectionOfFixedSize( sizeof(uint) );
+
+            //InstructionSet.Opcode_Breakpoint enc = this.Encoder.PrepareForBreakpoint;
+
+            //enc.Prepare( EncodingDefinition_ARM.c_cond_AL,      // uint ConditionCodes ,
+            //             0xFFFF                             );  // uint Value          );
+
+            sec.Write( 0xDEADBEEF );
         }
 
         protected override void DumpOpcodes( System.IO.TextWriter textWriter )
         {
-        }
-
-        public override bool CreateCodeMaps( )
-        {
-            return false;
         }
 
         //

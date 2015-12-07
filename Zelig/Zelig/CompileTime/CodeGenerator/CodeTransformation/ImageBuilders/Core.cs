@@ -2,6 +2,8 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+#define ARMv7M_BUILD__LLVM_IR_ONLY
+
 
 namespace Microsoft.Zelig.CodeGeneration.IR.ImageBuilders
 {
@@ -410,7 +412,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ImageBuilders
 
                     if( ( rng.Attributes & Runtime.MemoryAttributes.Allocated ) == 0 )
                     {
-                        if( pr.IsCompatible( rng.SectionName, rng.Attributes, rng.Usage ) )
+                        if(pr.IsCompatible( rng.SectionName, rng.Attributes, rng.Usage ) )
                         {
                             //
                             // Chunk is free and compatible.
@@ -847,7 +849,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ImageBuilders
                 {
                     DataManager.DataDescriptor dd = m_pendingDataDescriptors.Dequeue( );
 
+#if ARMv7M_BUILD__LLVM_IR_ONLY
                     if( TypeSystem.PlatformAbstraction.PlatformName != "LLVM" )
+#endif
                     {
                         dd.Write( m_dataDescriptors[ dd ] );
                     }
@@ -857,9 +861,11 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ImageBuilders
 
                 if( m_pendingExternalDataDescriptors.Count > 0 )
                 {
-                    ExternalDataDescriptor dd = ( ExternalDataDescriptor )m_pendingExternalDataDescriptors.Dequeue( );
-
+                    ExternalDataDescriptor dd = ( ExternalDataDescriptor )m_pendingExternalDataDescriptors.Dequeue( ); 
+                    
+#if ARMv7M_BUILD__LLVM_IR_ONLY
                     if( TypeSystem.PlatformAbstraction.PlatformName != "LLVM" )
+#endif
                     {
                         dd.Write( m_externalDataRegions[ dd.ExternContext ] );
                     }
@@ -936,7 +942,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ImageBuilders
 
                 if( dd.Context is ValueTypeRepresentation )
                 {
+                                        
+#if ARMv7M_BUILD__LLVM_IR_ONLY
                     if( TypeSystem.PlatformAbstraction.PlatformName != "LLVM" )
+#endif
                     {
                         dd.Write( reg );
                     }
@@ -1001,7 +1010,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ImageBuilders
 
 
             fDone &= AssignAbsoluteAddresses( GetHandler( Runtime.HardwareException.VectorTable ), true );
-            fDone &= AssignAbsoluteAddresses( GetHandler( Runtime.HardwareException.Bootstrap ), false );
+            fDone &= AssignAbsoluteAddresses( GetHandler( Runtime.HardwareException.Bootstrap   ), false );
 
             //--//
 
@@ -1033,11 +1042,16 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ImageBuilders
         private bool AssignAbsoluteAddresses( ControlFlowGraphStateForCodeTransformation cfg,
                                               bool fIncludeColdCode )
         {
-            CompilationState cs = GetCompilationState( cfg.EntryBasicBlock );
+            if(cfg != null)
+            {
+                CompilationState cs = GetCompilationState( cfg.EntryBasicBlock );
 
-            cs.AssignAbsoluteAddresses( fIncludeColdCode );
+                cs.AssignAbsoluteAddresses( fIncludeColdCode );
 
-            return FlushConstants( );
+                return FlushConstants( );
+            }
+
+            return true;
         }
 
         internal void RewindToDataDescriptorsPhase( )
@@ -1297,32 +1311,38 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ImageBuilders
             bool fModified = false;
 
             //
-            // Only generate the lookup index if the corresponding field is referenced by the application.
+            // BUGBUG #89: the m_forcedDevirtalizations member in TypeSystem currently does not serialization process!!!
             //
-            InstanceFieldRepresentation fd = ( InstanceFieldRepresentation )m_typeSystem.WellKnownFields.Memory_m_availableMemory;
-            if( fd != null )
+            if(m_typeSystem.ForcedDevirtualizations != null)
             {
-                TypeRepresentation td = fd.OwnerType;
-                TypeRepresentation tdNew;
-
-                if( m_typeSystem.ForcedDevirtualizations.TryGetValue( td, out tdNew ) == false )
+                //
+                // Only generate the lookup index if the corresponding field is referenced by the application.
+                //
+                InstanceFieldRepresentation fd = ( InstanceFieldRepresentation )m_typeSystem.WellKnownFields.Memory_m_availableMemory;
+                if(fd != null)
                 {
-                    throw TypeConsistencyErrorException.Create( "Cannot devirtualize type '{0}'", td );
-                }
+                    TypeRepresentation td = fd.OwnerType;
+                    TypeRepresentation tdNew;
 
-                DataManager.ObjectDescriptor od = m_typeSystem.GenerateSingleton( tdNew, DataManager.Attributes.Constant | DataManager.Attributes.SuitableForConstantPropagation );
-                DataManager.ArrayDescriptor  ad = ( DataManager.ArrayDescriptor )od.Get( fd );
+                    if(m_typeSystem.ForcedDevirtualizations.TryGetValue( td, out tdNew ) == false)
+                    {
+                        throw TypeConsistencyErrorException.Create( "Cannot devirtualize type '{0}'", td );
+                    }
 
-                Runtime.Memory.Range[] arrayOld = ad != null ? ( Runtime.Memory.Range[] )ad.Source : null;
-                Runtime.Memory.Range[] arrayNew = m_availableMemory.ToArray( );
+                    DataManager.ObjectDescriptor od = m_typeSystem.GenerateSingleton( tdNew, DataManager.Attributes.Constant | DataManager.Attributes.SuitableForConstantPropagation );
+                    DataManager.ArrayDescriptor  ad = ( DataManager.ArrayDescriptor )od.Get( fd );
 
-                Array.Sort( arrayNew, ( left, right ) => AddressMath.Compare( left.Start, right.Start ) );
+                    Runtime.Memory.Range[] arrayOld = ad != null ? ( Runtime.Memory.Range[] )ad.Source : null;
+                    Runtime.Memory.Range[] arrayNew = m_availableMemory.ToArray( );
 
-                if( Runtime.Memory.Range.ArrayEquals( arrayOld, arrayNew ) == false )
-                {
-                    od.ConvertAndSet( fd, DataManager.Attributes.Constant, null, arrayNew );
+                    Array.Sort( arrayNew, ( left, right ) => AddressMath.Compare( left.Start, right.Start ) );
 
-                    fModified = true;
+                    if(Runtime.Memory.Range.ArrayEquals( arrayOld, arrayNew ) == false)
+                    {
+                        od.ConvertAndSet( fd, DataManager.Attributes.Constant, null, arrayNew );
+
+                        fModified = true;
+                    }
                 }
             }
 

@@ -9,6 +9,7 @@
 //#define VERIFY_REDUCTION
 
 #define DEBUG_IMAGEBUILDER_PERF
+#define ARMv7M_BUILD__LLVM_IR_ONLY
 
 
 namespace Microsoft.Zelig.CodeGeneration.IR
@@ -2662,16 +2663,21 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 }
 
                 //--//
-
-                if( PlatformAbstraction.PlatformName != "LLVM" && m_imageBuilder.AssignAbsoluteAddressesToCode( ) == false )
+                                    
+#if ARMv7M_BUILD__LLVM_IR_ONLY
+                if( PlatformAbstraction.PlatformName != "LLVM" )
+#endif
                 {
+                    if(m_imageBuilder.AssignAbsoluteAddressesToCode( ) == false)
+                    {
 #if DEBUG_IMAGEBUILDER_PERF
-                    Debug_TimestampedWriteLine( "Failed AssignAbsoluteAddressesToCode" );
+                        Debug_TimestampedWriteLine( "Failed AssignAbsoluteAddressesToCode" );
 #endif
 
-                    fRecompile = true;
-                    fDone = false;
-                    continue;
+                        fRecompile = true;
+                        fDone = false;
+                        continue;
+                    }
                 }
 
                 //--//
@@ -2691,59 +2697,87 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                     continue;
                 }
 
+                                    
+#if ARMv7M_BUILD__LLVM_IR_ONLY
                 if( PlatformAbstraction.PlatformName != "LLVM" )
+#endif
                 {
                     m_imageBuilder.AssignAbsoluteAddressesToDataDescriptors( );
                 }
                 m_imageBuilder.CommitMemoryMap( );
 
                 //--//
-
-                if( PlatformAbstraction.PlatformName != "LLVM" && m_imageBuilder.ApplyRelocation( ) == false )
+                                    
+#if ARMv7M_BUILD__LLVM_IR_ONLY
+                if( PlatformAbstraction.PlatformName != "LLVM" )
+#endif
                 {
+                    if(m_imageBuilder.ApplyRelocation( ) == false)
+                    {
 #if DEBUG_IMAGEBUILDER_PERF
-                    Debug_TimestampedWriteLine( "Failed ApplyRelocation" );
+                        Debug_TimestampedWriteLine( "Failed ApplyRelocation" );
 #endif
 
-                    fRecompile = true;
-                    fDone = false;
-                    continue;
+                        fRecompile = true;
+                        fDone = false;
+                        continue;
+                    }
                 }
-
-                if( PlatformAbstraction.PlatformName != "LLVM" && m_imageBuilder.CreateCodeMaps( ) == false )
+                                                    
+#if ARMv7M_BUILD__LLVM_IR_ONLY
+                if( PlatformAbstraction.PlatformName != "LLVM" )
+#endif
                 {
+                    if(m_imageBuilder.CreateCodeMaps( ) == false)
+                    {
 #if DEBUG_IMAGEBUILDER_PERF
-                    Debug_TimestampedWriteLine( "Failed CreateCodeMaps" );
+                        Debug_TimestampedWriteLine( "Failed CreateCodeMaps" );
 #endif
 
-                    fDone = false;
+                        fDone = false;
+                    }
                 }
-
-                if( PlatformAbstraction.PlatformName != "LLVM" && m_imageBuilder.CreateExceptionHandlingTables( ) == false )
+                                                    
+#if ARMv7M_BUILD__LLVM_IR_ONLY
+                if( PlatformAbstraction.PlatformName != "LLVM" )
+#endif
                 {
+                    if(m_imageBuilder.CreateExceptionHandlingTables( ) == false)
+                    {
 #if DEBUG_IMAGEBUILDER_PERF
-                    Debug_TimestampedWriteLine( "Failed CreateExceptionHandlingTables" );
+                        Debug_TimestampedWriteLine( "Failed CreateExceptionHandlingTables" );
 #endif
 
-                    fDone = false;
+                        fDone = false;
+                    }
                 }
-
-                if( PlatformAbstraction.PlatformName != "LLVM" && m_imageBuilder.CreateAvailableMemoryTables( ) == false )
+                                                    
+#if ARMv7M_BUILD__LLVM_IR_ONLY
+                if( PlatformAbstraction.PlatformName != "LLVM" )
+#endif
                 {
+                    if(m_imageBuilder.CreateAvailableMemoryTables( ) == false)
+                    {
 #if DEBUG_IMAGEBUILDER_PERF
-                    Debug_TimestampedWriteLine( "Failed CreateAvailableMemoryTables" );
+                        Debug_TimestampedWriteLine( "Failed CreateAvailableMemoryTables" );
 #endif
 
-                    fDone = false;
+                        fDone = false;
+                    }
                 }
-
-                if( PlatformAbstraction.PlatformName != "LLVM" && m_imageBuilder.CreateImageRelocationData( ) == false )
+                                                    
+#if ARMv7M_BUILD__LLVM_IR_ONLY
+                if( PlatformAbstraction.PlatformName != "LLVM" )
+#endif
                 {
+                    if(m_imageBuilder.CreateImageRelocationData( ) == false)
+                    {
 #if DEBUG_IMAGEBUILDER_PERF
-                    Debug_TimestampedWriteLine( "Failed CreateImageRelocationData" );
+                        Debug_TimestampedWriteLine( "Failed CreateImageRelocationData" );
 #endif
 
-                    fDone = false;
+                        fDone = false;
+                    }
                 }
             }
 
@@ -2762,10 +2796,15 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         public void DropCompileTimeObjects( )
         {
             this.ReachabilitySet.ProhibitedSet.Clear( );
-
-            if( PlatformAbstraction.PlatformName != "LLVM" && m_imageBuilder != null )
+                                                
+#if ARMv7M_BUILD__LLVM_IR_ONLY
+                if( PlatformAbstraction.PlatformName != "LLVM" )
+#endif
             {
-                m_imageBuilder.DropCompileTimeObjects( );
+                if(m_imageBuilder != null)
+                {
+                    m_imageBuilder.DropCompileTimeObjects( );
+                }
             }
         }
 

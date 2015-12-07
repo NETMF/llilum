@@ -399,6 +399,7 @@ namespace Microsoft.Zelig.LLVM
         {
             TS.WellKnownFields wkf = m_typeSystem.WellKnownFields;
             TS.WellKnownTypes wkt = m_typeSystem.WellKnownTypes;
+            TS.WellKnownMethods wkm = m_typeSystem.WellKnownMethods;
 
             if( dd is IR.DataManager.ObjectDescriptor )
             {
@@ -459,7 +460,18 @@ namespace Microsoft.Zelig.LLVM
                             else if( ptr is IR.ExceptionHandlerBasicBlock )
                             {
                                 IR.ExceptionHandlerBasicBlock ehBB = ( IR.ExceptionHandlerBasicBlock )ptr;
-                                throw new Exception( "Warning ExceptionHandlerBasicBlock not handled:" + ptr );
+                                //
+                                // TODO: implement exceptions here!!!
+                                //
+                                //throw new Exception( "Warning ExceptionHandlerBasicBlock not handled:" + ptr );
+                                
+                                //
+                                // temporary place-holder
+                                //
+                                Constant ucv = m_module.GetUCVConstantPointerFromValue( GetOrInsertFunction( wkm.TypeSystemManager_Throw ) );
+                                ucv = GetUCVStruct( GetOrInsertType( fd.FieldType ), false, ucv );
+                                fields.Add( ucv );
+
                             }
                             else
                             {

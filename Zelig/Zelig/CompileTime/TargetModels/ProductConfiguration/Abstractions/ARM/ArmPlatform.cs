@@ -149,8 +149,14 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
             base.ApplyTransformation( context2 );
 
-            context2.Transform( ref m_memoryBlocks    );
-
+            context2.Transform( ref m_memoryBlocks                  );
+               
+            context2.Transform( ref m_memoryRequirement_VectorTable );
+            context2.Transform( ref m_memoryRequirement_Bootstrap   );
+            context2.Transform( ref m_memoryRequirement_Code        );
+            context2.Transform( ref m_memoryRequirement_Data_RW     );
+            context2.Transform( ref m_memoryRequirement_Data_RO     );
+            
             context2.Transform( ref m_registers       );
             context2.Transform( ref m_scratchRegister );
 

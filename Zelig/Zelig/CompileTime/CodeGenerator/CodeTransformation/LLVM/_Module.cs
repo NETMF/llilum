@@ -289,7 +289,7 @@ namespace Microsoft.Zelig.LLVM
             }
             else if( type.TypeRepresentation == TypeSystem.WellKnownTypes.System_UIntPtr )
             {
-                Constant ucv = LlvmModule.Context.CreateConstant( (uint)type.SizeInBits, (ulong)value, false );
+                Constant ucv = LlvmModule.Context.CreateConstant( (uint)type.SizeInBits, value is ulong ?  (ulong)value : ((UIntPtr)value).ToUInt64(), false );
                 return ConstantExpression.IntToPtrExpression( ucv, type.DebugType );
             }
 

@@ -44,6 +44,12 @@
   <ItemGroup>
     <None Include="LPC1768.FrontEndConfig" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Zelig\RunTime\Zelig\Common\Common.csproj">
+      <Project>{186f31a3-ef89-4a25-b2d5-20061218aa01}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -14,7 +14,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
     using IR = Microsoft.Zelig.CodeGeneration.IR;
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
-    public partial class ArmV7MCompilationState : IR.ImageBuilders.CompilationState
+    public partial class ArmV7MCompilationState
     {
         private _BasicBlock m_basicBlock;
 
