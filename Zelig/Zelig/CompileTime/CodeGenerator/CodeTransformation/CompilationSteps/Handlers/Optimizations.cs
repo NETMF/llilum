@@ -12,13 +12,17 @@
 // TODO: Remove this tag when comparison is no longer needed.
 //#define ENABLE_LOW_LEVEL_OPTIMIZATIONS
 
+// Enable more advanced optimizations which look for non-equivalent comparisons. This appears to be
+// overly aggressive when not in SSA form, resulting in incorrect code.
+// TODO: Remove this tag when this issue is resolved.
+//#define ENABLE_ADVANCED_COMPARES
+
 namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 {
     using System;
     using System.Collections.Generic;
 
     using Microsoft.Zelig.Runtime.TypeSystem;
-
 
     public class Optimizations
     {
@@ -40,8 +44,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                 GrowOnlyHashTable< VariableExpression, Operator > defLookup = cfg.DataFlow_SingleDefinitionLookup;
 
                 if(PropagateFixedArrayLength( cfg, defLookup ) ||
-                   RemoveRedundantChecks( cfg, defLookup ) ||
-                   RemoveRedundantBoundChecks( cfg, defLookup ) )
+                   RemoveRedundantChecks( cfg, defLookup ) )
                 {
                     Transformations.RemoveDeadCode.Execute( cfg, false );
                     continue;
@@ -158,108 +161,37 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             var useChains = cfg.DataFlow_UseChains;
             bool fRunSimplify = false;
 
-            // Search for branch-if-non-zero.
-            foreach(var opCtrl in cfg.FilterOperators< BinaryConditionalControlOperator >())
+            foreach(var controlOp in cfg.FilterOperators< BinaryConditionalControlOperator >())
             {
-                BasicBlock takenBranch;
-
-                if( opCtrl.TargetBranchTaken == opCtrl.TargetBranchNotTaken )
+                BasicBlock takenBranch = TryGetUnconditionalBranchTarget( controlOp, defLookup, useChains );
+                if(takenBranch != null)
                 {
-                    // Replace binary branches with unconditional ones when both targets are the same block.
-                    takenBranch = opCtrl.TargetBranchTaken;
+                    UnconditionalControlOperator opNewCtrl = UnconditionalControlOperator.New( controlOp.DebugInfo, takenBranch );
+                    controlOp.SubstituteWithOperator( opNewCtrl, Operator.SubstitutionFlags.Default );
+                    fRunSimplify = true;
                 }
-                else
-                {
-                    switch(ProveIsNull( opCtrl.FirstArgument, defLookup, useChains ))
-                    {
-                    case ProveNullResult.NeverNull:
-                        takenBranch = opCtrl.TargetBranchTaken;
-                        break;
-
-                    case ProveNullResult.AlwaysNull:
-                        takenBranch = opCtrl.TargetBranchNotTaken;
-                        break;
-
-                    default:
-                        continue;
-                    }
-                }
-
-                UnconditionalControlOperator opNewCtrl = UnconditionalControlOperator.New( opCtrl.DebugInfo, takenBranch );
-                opCtrl.SubstituteWithOperator( opNewCtrl, Operator.SubstitutionFlags.Default );
-
-                fRunSimplify = true;
             }
 
-            // Search for branch if (a == null) and branch if (a != null).
-            foreach(var opCtrl in cfg.FilterOperators< CompareConditionalControlOperator >())
+            var cscUpperBound = new Transformations.ConstraintSystemCollector( cfg, Transformations.ConstraintSystemCollector.Kind.LessThanOrEqual    );
+            var cscLowerBound = new Transformations.ConstraintSystemCollector( cfg, Transformations.ConstraintSystemCollector.Kind.GreaterThanOrEqual );
+
+            foreach(var controlOp in cfg.FilterOperators< CompareConditionalControlOperator >())
             {
-                BasicBlock takenBranch;
-
-                if( opCtrl.TargetBranchTaken == opCtrl.TargetBranchNotTaken )
+                BasicBlock takenBranch = TryGetUnconditionalBranchTarget( cscUpperBound, cscLowerBound, controlOp, defLookup, useChains );
+                if(takenBranch != null)
                 {
-                    // Replace binary branches with unconditional ones when both targets are the same block.
-                    takenBranch = opCtrl.TargetBranchTaken;
+                    UnconditionalControlOperator opNewCtrl = UnconditionalControlOperator.New( controlOp.DebugInfo, takenBranch );
+                    controlOp.SubstituteWithOperator( opNewCtrl, Operator.SubstitutionFlags.Default );
+                    fRunSimplify = true;
                 }
-                else
-                {
-                    bool trueIfNull = false;
-                    Expression expr;
-
-                    switch (opCtrl.Condition)
-                    {
-                    case CompareAndSetOperator.ActionCondition.EQ:
-                        trueIfNull = true;
-                        break;
-
-                    case CompareAndSetOperator.ActionCondition.NE:
-                        trueIfNull = false;
-                        break;
-
-                    default:
-                        continue;
-                    }
-
-                    bool fNullOnRight;
-                    expr = opCtrl.IsBinaryOperationAgainstZeroValue( out fNullOnRight );
-                    if(expr == null)
-                    {
-                        continue;
-                    }
-
-                    ProveNullResult result = ProveIsNull( expr, defLookup, useChains );
-                    if(result == ProveNullResult.Unknown)
-                    {
-                        continue;
-                    }
-
-                    switch(result)
-                    {
-                    case ProveNullResult.NeverNull:
-                        takenBranch = trueIfNull ? opCtrl.TargetBranchNotTaken : opCtrl.TargetBranchTaken;
-                        break;
-
-                    case ProveNullResult.AlwaysNull:
-                        takenBranch = trueIfNull ? opCtrl.TargetBranchTaken : opCtrl.TargetBranchNotTaken;
-                        break;
-
-                    default:
-                        continue;
-                    }
-                }
-
-                UnconditionalControlOperator opNewCtrl = UnconditionalControlOperator.New( opCtrl.DebugInfo, takenBranch );
-                opCtrl.SubstituteWithOperator( opNewCtrl, Operator.SubstitutionFlags.Default );
-
-                fRunSimplify = true;
             }
 
 #if ENABLE_LOW_LEVEL_OPTIMIZATIONS
-            foreach(var opCtrl in cfg.FilterOperators< ConditionCodeConditionalControlOperator >())
+            foreach(var controlOp in cfg.FilterOperators< ConditionCodeConditionalControlOperator >())
             {
                 bool fNotEqual;
 
-                switch(opCtrl.Condition)
+                switch(controlOp.Condition)
                 {
                     case ConditionCodeExpression.Comparison.NotEqual:
                         fNotEqual = true;
@@ -273,7 +205,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                         continue;
                 }
 
-                var opCmp = ControlFlowGraphState.CheckSingleDefinition( defLookup, opCtrl.FirstArgument ) as CompareOperator;
+                var opCmp = ControlFlowGraphState.CheckSingleDefinition( defLookup, controlOp.FirstArgument ) as CompareOperator;
                 if(opCmp != null)
                 {
                     bool fNullOnRight;
@@ -281,13 +213,30 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
                     if(ex != null)
                     {
-                        if(ProveNotNull( defLookup, ex ) == ProveNotNullResult.True)
+                        if(ProveNonZero( defLookup, ex ) == ProveResult.True)
                         {
-                            UnconditionalControlOperator opNewCtrl = UnconditionalControlOperator.New( opCtrl.DebugInfo, fNotEqual ? opCtrl.TargetBranchTaken : opCtrl.TargetBranchNotTaken );
-                            opCtrl.SubstituteWithOperator( opNewCtrl, Operator.SubstitutionFlags.Default );
+                            UnconditionalControlOperator opNewCtrl = UnconditionalControlOperator.New( controlOp.DebugInfo, fNotEqual ? controlOp.TargetBranchTaken : controlOp.TargetBranchNotTaken );
+                            controlOp.SubstituteWithOperator( opNewCtrl, Operator.SubstitutionFlags.Default );
 
                             fRunSimplify = true;
                         }
+                    }
+                }
+            }
+
+            foreach (var controlOp in cfg.FilterOperators< ConditionCodeConditionalControlOperator >())
+            {
+                var opCmp = ControlFlowGraphState.CheckSingleDefinition( defLookup, controlOp.FirstArgument ) as CompareOperator;
+
+                if(opCmp != null)
+                {
+                    ProveResult result = ProveComparison( cscUpperBound, cscLowerBound, opCmp.FirstArgument, opCmp.SecondArgument, controlOp.Condition );
+                    if(result != ProveResult.Unknown)
+                    {
+                        BasicBlock takenBranch = (result == ProveResult.AlwaysTrue) ? controlOp.TargetBranchTaken : controlOp.TargetBranchNotTaken;
+                        UnconditionalControlOperator opNewCtrl = UnconditionalControlOperator.New( controlOp.DebugInfo, takenBranch );
+                        controlOp.SubstituteWithOperator( opNewCtrl, Operator.SubstitutionFlags.Default );
+                        fRunSimplify = true;
                     }
                 }
             }
@@ -296,51 +245,150 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             return fRunSimplify;
         }
 
-        private enum ProveNullResult
+        bool SomeProperty
         {
-            Unknown = 0,
-            NeverNull,
-            AlwaysNull,
+            get; set;
         }
 
-        private static ProveNullResult ProveIsNull(
+        private static BasicBlock TryGetUnconditionalBranchTarget(
+            BinaryConditionalControlOperator controlOp,
+            GrowOnlyHashTable<VariableExpression, Operator> defLookup,
+            Operator[][] useChains)
+        {
+            // Replace binary branches with unconditional ones when both targets are the same block.
+            if (controlOp.TargetBranchTaken == controlOp.TargetBranchNotTaken)
+            {
+                return controlOp.TargetBranchTaken;
+            }
+
+            switch (ProveNonZero(controlOp.FirstArgument, defLookup, useChains))
+            {
+            case ProveResult.AlwaysTrue:
+                return controlOp.TargetBranchTaken;
+
+            case ProveResult.NeverTrue:
+                return controlOp.TargetBranchNotTaken;
+            }
+
+            return null;
+        }
+
+        private static BasicBlock TryGetUnconditionalBranchTarget(
+            Transformations.ConstraintSystemCollector cscUpperBound,
+            Transformations.ConstraintSystemCollector cscLowerBound,
+            CompareConditionalControlOperator controlOp,
+            GrowOnlyHashTable<VariableExpression, Operator> defLookup,
+            Operator[][] useChains)
+        {
+            // Replace binary branches with unconditional ones when both targets are the same block.
+            if (controlOp.TargetBranchTaken == controlOp.TargetBranchNotTaken)
+            {
+                return controlOp.TargetBranchTaken;
+            }
+
+            ProveResult result = ProveResult.Unknown;
+
+            switch (controlOp.Condition)
+            {
+            case CompareAndSetOperator.ActionCondition.EQ:
+            case CompareAndSetOperator.ActionCondition.NE:
+                bool fNullOnRight;
+                Expression expr = controlOp.IsBinaryOperationAgainstZeroValue(out fNullOnRight);
+                if (expr == null)
+                {
+                    break;
+                }
+
+                result = ProveNonZero(expr, defLookup, useChains);
+                if (result == ProveResult.Unknown)
+                {
+                    break;
+                }
+
+                // Invert the result for (expr == 0)
+                if (controlOp.Condition == CompareAndSetOperator.ActionCondition.EQ)
+                {
+                    if (result == ProveResult.AlwaysTrue)
+                    {
+                        result = ProveResult.NeverTrue;
+                    }
+                    else
+                    {
+                        result = ProveResult.AlwaysTrue;
+                    }
+                }
+                break;
+
+#if ENABLE_ADVANCED_COMPARES
+            case CompareAndSetOperator.ActionCondition.LT:
+                result = ProveLessThanOrEqual(cscUpperBound, cscLowerBound, controlOp.FirstArgument, controlOp.SecondArgument, weight: -1);
+                break;
+
+            case CompareAndSetOperator.ActionCondition.LE:
+                result = ProveLessThanOrEqual(cscUpperBound, cscLowerBound, controlOp.FirstArgument, controlOp.SecondArgument, weight: 0);
+                break;
+
+            case CompareAndSetOperator.ActionCondition.GT:
+                result = ProveLessThanOrEqual(cscUpperBound, cscLowerBound, controlOp.SecondArgument, controlOp.FirstArgument, weight: -1);
+                break;
+
+            case CompareAndSetOperator.ActionCondition.GE:
+                result = ProveLessThanOrEqual(cscUpperBound, cscLowerBound, controlOp.SecondArgument, controlOp.FirstArgument, weight: 0);
+                break;
+#endif // ENABLE_ADVANCED_COMPARES
+            }
+
+            switch (result)
+            {
+            case ProveResult.AlwaysTrue:
+                return controlOp.TargetBranchTaken;
+
+            case ProveResult.NeverTrue:
+                return controlOp.TargetBranchNotTaken;
+
+            default:
+                return null;
+            }
+        }
+
+        private enum ProveResult
+        {
+            Unknown = 0,
+            AlwaysTrue,
+            NeverTrue,
+        }
+
+        private static ProveResult ProveNonZero(
             Expression ex,
             GrowOnlyHashTable< VariableExpression, Operator > defLookup,
             Operator[][] useChains )
         {
-            return ProveIsNull( ex, defLookup, useChains, SetFactory.NewWithReferenceEquality< VariableExpression >() );
+            return ProveNonZero( ex, defLookup, useChains, SetFactory.NewWithReferenceEquality< VariableExpression >() );
         }
 
-        private static ProveNullResult ProveIsNull(
+        private static ProveResult ProveNonZero(
             Expression ex,
             GrowOnlyHashTable< VariableExpression, Operator > defLookup,
             Operator[][] useChains,
             GrowOnlySet< VariableExpression > history )
         {
-            if(ex is ConstantExpression)
+            var exConst = ex as ConstantExpression;
+            if (exConst != null)
             {
-                var exConst = (ConstantExpression)ex;
-
                 if(exConst.IsEqualToZero())
                 {
-                    return ProveNullResult.AlwaysNull;
+                    return ProveResult.NeverTrue;
                 }
 
-                // Data descriptors will always resolve to pointers to a global object, and therefore can't be null.
-                if(exConst.Value is DataManager.DataDescriptor)
-                {
-                    return ProveNullResult.NeverNull;
-                }
-
-                return ProveNullResult.NeverNull;
+                return ProveResult.AlwaysTrue;
             }
 
             var exVar = ex as VariableExpression;
 
             // If we detected a loop, the value may change between iterations.
-            if(exVar == null || history.Insert( exVar ) == true)
+            if(exVar == null || history.Insert( exVar ))
             {
-                return ProveNullResult.Unknown;
+                return ProveResult.Unknown;
             }
 
             //--//
@@ -354,24 +402,24 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                 {
                     if (op is AddressAssignmentOperator)
                     {
-                        return ProveNullResult.Unknown;
+                        return ProveResult.Unknown;
                     }
                 }
 
                 if (def.HasAnnotation< NotNullAnnotation >())
                 {
-                    return ProveNullResult.NeverNull;
+                    return ProveResult.AlwaysTrue;
                 }
 
                 // Phi: If all predecessors are provably the same result, then so is the operator's result.
                 if(def is PhiOperator)
                 {
                     bool isFirstResult = true;
-                    ProveNullResult result = ProveNullResult.Unknown;
+                    ProveResult result = ProveResult.Unknown;
 
                     foreach(Expression rhs in def.Arguments)
                     {
-                        ProveNullResult curResult = ProveIsNull( rhs, defLookup, useChains, history );
+                        ProveResult curResult = ProveNonZero( rhs, defLookup, useChains, history );
                         if(isFirstResult)
                         {
                             isFirstResult = false;
@@ -380,7 +428,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                         else if(curResult != result)
                         {
                             // We got two different results from different blocks.
-                            return ProveNullResult.Unknown;
+                            return ProveResult.Unknown;
                         }
                     }
 
@@ -390,7 +438,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                 // Assignment is transitive, so look up the source value.
                 if(def is SingleAssignmentOperator)
                 {
-                    return ProveIsNull( def.FirstArgument, defLookup, useChains, history );
+                    return ProveNonZero( def.FirstArgument, defLookup, useChains, history );
                 }
 
 #if FUTURE // This block isn't strictly correct and assumes low-level knowledge. We should revisit it.
@@ -416,7 +464,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                                     //
                                     // Adding/removing a constant from a non-null value doesn't change its nullness.
                                     //
-                                    return ProveIsNull( defLookup, history, varSrc );
+                                    return ProveNonZero( defLookup, history, varSrc );
 
                                 case BinaryOperator.ALU.OR:
                                     //
@@ -424,14 +472,14 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                                     //
                                     if(!exConst.IsEqualToZero())
                                     {
-                                        return ProveNullResult.NeverNull;
+                                        return ProveResult.AlwaysTrue;
                                     }
                                     break;
                             }
                         }
                     }
 
-                    return ProveNullResult.Unknown;
+                    return ProveResult.Unknown;
                 }
 #endif // FUTURE
 
@@ -447,137 +495,63 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                         switch(piOp.RelationOperator)
                         {
                             case PiOperator.Relation.Equal:
-                                return ProveNullResult.AlwaysNull;
+                                return ProveResult.NeverTrue;
 
                             case PiOperator.Relation.NotEqual:
-                                return ProveNullResult.NeverNull;
+                                return ProveResult.AlwaysTrue;
                         }
                     }
 
-                    return ProveIsNull( ex, defLookup, useChains, history );
+                    return ProveNonZero( ex, defLookup, useChains, history );
                 }
             }
 
-            return ProveNullResult.Unknown;
+            return ProveResult.Unknown;
         }
 
-        //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
-
-        private static bool RemoveRedundantBoundChecks( ControlFlowGraphStateForCodeTransformation        cfg       ,
-                                                        GrowOnlyHashTable< VariableExpression, Operator > defLookup )
-        {
-            bool fRunSimplify = false;
-
-#if DUMP_CONSTRAINTSYSTEM
-////        if(cfg.ToString() != "FlowGraph(int Microsoft.Zelig.Runtime.Helpers.BinaryOperations::IntDiv(int,int))")
-////        if(cfg.ToString() != "FlowGraph(uint Microsoft.Zelig.Runtime.Helpers.BinaryOperations::UintDiv(uint,uint))")
-////        if(cfg.ToString() != "FlowGraph(bool Microsoft.Zelig.Runtime.LinearMemoryManager::RefersToMemory(System.UIntPtr))")
-            if(cfg.ToString() != "FlowGraph(int[] Microsoft.NohauLPC3180Loader.Loader::TestArrayBoundChecks(int[],int,int))")
-////        if(cfg.ToString() != "FlowGraph(uint Microsoft.NohauLPC3180Loader.Loader::Sqrt(uint))")
-////        if(cfg.ToString() != "FlowGraph(void Microsoft.NohauLPC3180Loader.Loader::QuickSort(int[],object[],int,int))")
-////        if(cfg.ToString() != "FlowGraph(void System.Collections.Generic.ArraySortHelper`1<System.Int32>::QuickSort<object>(int[],object[],int,int,System.Collections.Generic.IComparer`1<int>))")
-            {
-                return false;
-            }
-#endif
-
-            var cscUpperBound = new Transformations.ConstraintSystemCollector( cfg, Transformations.ConstraintSystemCollector.Kind.LessThanOrEqual    );
-            var cscLowerBound = new Transformations.ConstraintSystemCollector( cfg, Transformations.ConstraintSystemCollector.Kind.GreaterThanOrEqual );
-
-#if DUMP_CONSTRAINTSYSTEM
-            System.IO.TextWriter orig   = Console.Out;
-            System.IO.TextWriter writer = new System.IO.StreamWriter( "constraintsystem.txt", false, System.Text.Encoding.ASCII );
-            Console.SetOut( writer );
- 
-            Console.WriteLine( "#############################################################################" );
-            Console.WriteLine( "#############################################################################" );
-
-            cfg.Dump();
-
-            Console.WriteLine( "#############################################################################" );
-            cscUpperBound.Dump();
-            Console.WriteLine( "#############################################################################" );
-            cscLowerBound.Dump();
-            Console.WriteLine( "#############################################################################" );
-#endif
-
-            // TODO: This doesn't work on LLVM and needs to be revisited.
-            foreach(var opCtrl in cfg.FilterOperators< ConditionCodeConditionalControlOperator >())
-            {
-                var opCmp = ControlFlowGraphState.CheckSingleDefinition( defLookup, opCtrl.FirstArgument ) as CompareOperator;
-
-                if(opCmp != null)
-                {
-                    bool fTaken;
-
-#if DUMP_CONSTRAINTSYSTEM
-                    Console.WriteLine( "#############################################################################" );
-                    Console.WriteLine( "#############################################################################" );
-#endif
-
-                    if(ProveComparison( cscUpperBound, cscLowerBound, opCmp.FirstArgument, opCmp.SecondArgument, opCtrl.Condition, out fTaken ))
-                    {
-                        UnconditionalControlOperator opNewCtrl = UnconditionalControlOperator.New( opCtrl.DebugInfo, fTaken ? opCtrl.TargetBranchTaken : opCtrl.TargetBranchNotTaken );
-                        opCtrl.SubstituteWithOperator( opNewCtrl, Operator.SubstitutionFlags.Default );
-
-                        fRunSimplify = true;
-                    }
-                }
-            }
-
-#if DUMP_CONSTRAINTSYSTEM
-            Console.WriteLine( "#############################################################################" );
-
-            Console.SetOut( orig );
-            writer.Close();
-#endif
-
-            return fRunSimplify;
-        }
-
-        private static bool ProveComparison(     Transformations.ConstraintSystemCollector cscUpperBound ,
-                                                 Transformations.ConstraintSystemCollector cscLowerBound ,
-                                                 Expression                                exLeft        ,
-                                                 Expression                                exRight       ,
-                                                 ConditionCodeExpression.Comparison        condition     ,
-                                             out bool                                      fTaken        )
+#if ENABLE_LOW_LEVEL_OPTIMIZATIONS
+        private static ProveResult ProveComparison(
+            Transformations.ConstraintSystemCollector cscUpperBound,
+            Transformations.ConstraintSystemCollector cscLowerBound,
+            Expression exLeft,
+            Expression exRight,
+            ConditionCodeExpression.Comparison condition)
         {
             switch(condition)
             {
                 case ConditionCodeExpression.Comparison.UnsignedLowerThan:
                 case ConditionCodeExpression.Comparison.SignedLessThan:
-                    return ProveLessThanOrEqual( cscUpperBound, cscLowerBound, exLeft, exRight, -1, out fTaken );
+                    return ProveLessThanOrEqual( cscUpperBound, cscLowerBound, exLeft, exRight, -1 );
 
                 case ConditionCodeExpression.Comparison.UnsignedLowerThanOrSame:
                 case ConditionCodeExpression.Comparison.SignedLessThanOrEqual:
-                    return ProveLessThanOrEqual( cscUpperBound, cscLowerBound, exLeft, exRight, 0, out fTaken );
+                    return ProveLessThanOrEqual( cscUpperBound, cscLowerBound, exLeft, exRight, 0 );
 
                 case ConditionCodeExpression.Comparison.UnsignedHigherThan:
                 case ConditionCodeExpression.Comparison.SignedGreaterThan:
-                    return ProveLessThanOrEqual( cscUpperBound, cscLowerBound, exRight, exLeft, -1, out fTaken );
+                    return ProveLessThanOrEqual( cscUpperBound, cscLowerBound, exRight, exLeft, -1 );
 
                 case ConditionCodeExpression.Comparison.UnsignedHigherThanOrSame:
                 case ConditionCodeExpression.Comparison.SignedGreaterThanOrEqual:
-                    return ProveLessThanOrEqual( cscUpperBound, cscLowerBound, exRight, exLeft, 0, out fTaken );
+                    return ProveLessThanOrEqual( cscUpperBound, cscLowerBound, exRight, exLeft, 0 );
             }
 
-            fTaken = false;
-            return false;
+            return ProveResult.Unknown;
         }
+#endif // ENABLE_LOW_LEVEL_OPTIMIZATIONS
 
-        private static bool ProveLessThanOrEqual(     Transformations.ConstraintSystemCollector cscUpperBound ,
-                                                      Transformations.ConstraintSystemCollector cscLowerBound ,
-                                                      Expression                                exLeft        ,
-                                                      Expression                                exRight       ,
-                                                      double                                    weight        ,
-                                                  out bool                                      fTaken        )
+        private static ProveResult ProveLessThanOrEqual(
+            Transformations.ConstraintSystemCollector cscUpperBound,
+            Transformations.ConstraintSystemCollector cscLowerBound,
+            Expression exLeft,
+            Expression exRight,
+            double weight)
         {
             if(exLeft is VariableExpression)
             {
                 if(cscUpperBound.Prove( exLeft, exRight, weight ))
                 {
-                    fTaken = true;
-                    return true;
+                    return ProveResult.AlwaysTrue;
                 }
             }
 
@@ -585,13 +559,11 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             {
                 if(cscLowerBound.Prove( exRight, exLeft, -weight ))
                 {
-                    fTaken = true;
-                    return true;
+                    return ProveResult.AlwaysTrue;
                 }
             }
 
-            fTaken = false;
-            return false;
+            return ProveResult.Unknown;
         }
 
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
@@ -600,7 +572,6 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
 #if ENABLE_LOW_LEVEL_OPTIMIZATIONS
         [CompilationSteps.OptimizationHandler(RunOnce=true, RunInSSAForm=true)]
-#endif // ENABLE_LOW_LEVEL_OPTIMIZATIONS
         private static void ConvertLongCompareToNormalCompare( PhaseExecution.NotificationContext nc )
         {
             ControlFlowGraphStateForCodeTransformation cfg       = nc.CurrentCFG;
@@ -885,12 +856,13 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                 }
             }
         }
+#endif // ENABLE_LOW_LEVEL_OPTIMIZATIONS
 
-#if ENABLE_SSA_FORM
+#if ALLOW_SSA_FORM
         [CompilationSteps.OptimizationHandler(RunOnce = true, RunInSSAForm = true)]
-#else // ENABLE_SSA_FORM
+#else // ALLOW_SSA_FORM
         [CompilationSteps.OptimizationHandler(RunOnce = true)]
-#endif // ENABLE_SSA_FORM
+#endif // ALLOW_SSA_FORM
         private static void ReduceComparisons(PhaseExecution.NotificationContext nc)
         {
             ControlFlowGraphStateForCodeTransformation cfg = nc.CurrentCFG;
@@ -930,11 +902,11 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
-#if ENABLE_SSA_FORM
+#if ALLOW_SSA_FORM
         [CompilationSteps.OptimizationHandler(RunOnce = true, RunInSSAForm = true)]
-#else // ENABLE_SSA_FORM
+#else // ALLOW_SSA_FORM
         [CompilationSteps.OptimizationHandler(RunOnce = true)]
-#endif // ENABLE_SSA_FORM
+#endif // ALLOW_SSA_FORM
         private static void RemoveRedundantConversions( PhaseExecution.NotificationContext nc )
         {
             ControlFlowGraphStateForCodeTransformation cfg       = nc.CurrentCFG;
