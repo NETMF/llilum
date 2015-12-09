@@ -851,7 +851,7 @@ namespace Llvm.NET
         }
         #endregion
 
-        static LLVMValueRef[ ] GetValidatedGEPArgs( Value pointer, IEnumerable<Value> args)
+        static internal LLVMValueRef[ ] GetValidatedGEPArgs( Value pointer, IEnumerable<Value> args)
         {
             if( pointer == null )
                 throw new ArgumentNullException( nameof( pointer ) );

@@ -4,8 +4,6 @@
 
 #define LLVM
 
-//--//
-
 namespace Microsoft.Zelig.Runtime
 {
     using System;
@@ -13,7 +11,7 @@ namespace Microsoft.Zelig.Runtime
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
 
-    [TS.WellKnownType( "Microsoft_Zelig_Runtime_ObjectHeader" )]
+    [TS.WellKnownType("Microsoft_Zelig_Runtime_ObjectHeader")]
     [TS.NoVTable]
     [TS.DisableAutomaticReferenceCounting]
     [TS.DisableReferenceCounting]
@@ -50,9 +48,9 @@ namespace Microsoft.Zelig.Runtime
 
         public enum ExtensionKinds : uint
         {
-            Empty          = 0,
-            HashCode       = 1,
-            SyncBlock      = 2,
+            Empty = 0,
+            HashCode,
+            SyncBlock,
         }
 
         //
@@ -72,7 +70,7 @@ namespace Microsoft.Zelig.Runtime
 
         //
         // Helper Methods
-        //      
+        //
 
         [TS.GenerateUnsafeCast]
         public extern ObjectImpl Pack();
@@ -91,6 +89,7 @@ namespace Microsoft.Zelig.Runtime
         {
             return AddressMath.Increment( ToPointer(), this.TotalSize );
         }
+
         public static uint HeaderSize
         {
             [Inline]
@@ -154,8 +153,7 @@ namespace Microsoft.Zelig.Runtime
 
         //--//
 
-        public void UpdateExtension( ExtensionKinds kind    ,
-                                     int            payload )
+        public void UpdateExtension( ExtensionKinds kind, int payload )
         {
             BugCheck.Assert( this.IsImmutable == false, BugCheck.StopCode.SyncBlockCorruption );
 

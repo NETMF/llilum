@@ -607,7 +607,7 @@ namespace Microsoft.Zelig.LLVM
             {
                 TypeField thisField = ty.Fields[ i ];
 
-                // The first field of a managed object is either its object header or a super-class.
+                // The first field of a reference type is always a super-class, except for the root System.Object.
                 bool fieldIsParent = ( i == 0 && !ty.IsValueType && ty != _Type.GetOrInsertTypeImpl( ty.Module, ty.Module.TypeSystem.WellKnownTypes.Microsoft_Zelig_Runtime_ObjectHeader ) );
                 int thisFieldSize = thisField.MemberType.SizeInBits / 8;
 
@@ -688,6 +688,7 @@ namespace Microsoft.Zelig.LLVM
 
         public _Value IndexLLVMArray( _Value obj, _Value idx )
         {
+            // TODO: Should this be extract element instead?
             Value[] idxs = { Module.LlvmModule.Context.CreateConstant( 0 ), idx.LlvmValue };
             Value retVal = IrBuilder.GetElementPtr( obj.LlvmValue, idxs )
                                     .SetDebugLocation( CurDILocation );

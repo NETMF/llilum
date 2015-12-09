@@ -2,9 +2,28 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-#include "mbed_helpers.h" 
+#include "mbed_helpers.h"
 
-//--//
+struct Object;
+
+struct ObjectHeader
+{
+    int32_t MultiUseWord;
+    void* VTable;
+
+    inline Object* get_Object()
+    {
+        return reinterpret_cast<Object*>(this);
+    }
+};
+
+struct Object
+{
+    inline ObjectHeader* get_Header()
+    {
+        return reinterpret_cast<ObjectHeader*>(this);
+    }
+};
 
 extern "C"
 {
@@ -12,12 +31,6 @@ extern "C"
     // Must match consts defined in ObjectHeader.cs
     #define REFERENCE_COUNT_MASK  0xFF000000
     #define REFERENCE_COUNT_SHIFT 24
-
-    struct ObjectHeader
-    {
-        int32_t MultiUseWord;
-        void* VTable;
-    };
 
     // Helpers for starting / ending section of code that needs to be atomic
     __attribute__((always_inline)) __STATIC_INLINE void StartAtomicOperations(void)
@@ -30,23 +43,29 @@ extern "C"
         __set_PRIMASK(0);
     }
 
-    __attribute__((always_inline)) __STATIC_INLINE void AddReferenceFast(ObjectHeader* target)
-    {
-        if (target != NULL && (target->MultiUseWord & REFERENCE_COUNT_MASK))
-        {
-            target->MultiUseWord += (1 << REFERENCE_COUNT_SHIFT);
-        }
-    }
-
-    void AddReference(ObjectHeader* target)
+    __attribute__((always_inline)) __STATIC_INLINE void AddReferenceFast(Object* target)
     {
         if (target != NULL)
         {
+            ObjectHeader* header = target->get_Header();
+            if (header->MultiUseWord & REFERENCE_COUNT_MASK)
+            {
+                header->MultiUseWord += (1 << REFERENCE_COUNT_SHIFT);
+            }
+        }
+    }
+
+    void AddReference(Object* target)
+    {
+        if (target != NULL)
+        {
+            ObjectHeader* header = reinterpret_cast<ObjectHeader*>(target) - 1;
+
             StartAtomicOperations();
 
-            if (target->MultiUseWord & REFERENCE_COUNT_MASK)
+            if (header->MultiUseWord & REFERENCE_COUNT_MASK)
             {
-                target->MultiUseWord += (1 << REFERENCE_COUNT_SHIFT);
+                header->MultiUseWord += (1 << REFERENCE_COUNT_SHIFT);
             }
 
             EndAtomicOperations();
@@ -54,18 +73,20 @@ extern "C"
     }
 
     // Return zero when target is dead after the call
-    int ReleaseReferenceNative(ObjectHeader* target)
+    int ReleaseReferenceNative(Object* target)
     {
         int ret = 1;
         if (target != NULL)
         {
+            ObjectHeader* header = target->get_Header();
+
             StartAtomicOperations();
 
-            int32_t value = target->MultiUseWord;
+            int32_t value = header->MultiUseWord;
             if (value & REFERENCE_COUNT_MASK)
             {
                 value -= (1 << REFERENCE_COUNT_SHIFT);
-                target->MultiUseWord = value;
+                header->MultiUseWord = value;
                 ret = value & REFERENCE_COUNT_MASK;
             }
 
@@ -75,23 +96,23 @@ extern "C"
         return ret;
     }
 
-    ObjectHeader* LoadAndAddReferenceNative(ObjectHeader** target)
+    Object* LoadAndAddReferenceNative(Object** target)
     {
         StartAtomicOperations();
 
-        ObjectHeader* value = *target;
+        Object* value = *target;
         AddReferenceFast(value);
-        
+
         EndAtomicOperations();
 
         return value;
     }
 
-    ObjectHeader* ReferenceCountingExchange(ObjectHeader** target, ObjectHeader* value)
+    Object* ReferenceCountingExchange(Object** target, Object* value)
     {
         StartAtomicOperations();
 
-        ObjectHeader* oldValue = *target;
+        Object* oldValue = *target;
         *target = value;
         AddReferenceFast(value);
 
@@ -100,12 +121,12 @@ extern "C"
         return oldValue;
     }
 
-    ObjectHeader* ReferenceCountingCompareExchange(ObjectHeader** target, ObjectHeader* value, ObjectHeader* comparand)
+    Object* ReferenceCountingCompareExchange(Object** target, Object* value, Object* comparand)
     {
         StartAtomicOperations();
 
-        ObjectHeader* oldValue = *target;
-        ObjectHeader* addRefTarget;
+        Object* oldValue = *target;
+        Object* addRefTarget;
         if (oldValue == comparand)
         {
             *target = value;
@@ -120,7 +141,7 @@ extern "C"
             // a ref count to pass back to caller on return
             addRefTarget = oldValue;
         }
-        
+
         AddReferenceFast(addRefTarget);
 
         EndAtomicOperations();

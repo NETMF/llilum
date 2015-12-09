@@ -129,12 +129,11 @@ namespace Microsoft.Zelig.LLVM
 
             string typeName = tr.FullName;
 
-            // Pointer and Boxed type representation 
             if( tr is TS.PointerTypeRepresentation )
             {
                 if( tr.UnderlyingType == wkt.System_Void )
                 {
-                    // Special case: we remap void * to an IntPtr to allow LLVM to function.
+                    // Special case: we remap void* to an IntPtr to allow LLVM to function.
                     return GetOrInsertType( wkt.System_IntPtr );
                 }
 
@@ -142,7 +141,8 @@ namespace Microsoft.Zelig.LLVM
                 m_typeRepresentationsToType[ tr ] = m_module.GetOrInsertPointerType( ( TS.PointerTypeRepresentation )tr, underlyingType );
                 return m_typeRepresentationsToType[ tr ];
             }
-            else if( tr is TS.BoxedValueTypeRepresentation )
+
+            if( tr is TS.BoxedValueTypeRepresentation )
             {
                 _Type objectType = GetOrInsertType( wkt.System_Object ).UnderlyingType;
                 _Type underlyingType = GetOrInsertType( tr.UnderlyingType );

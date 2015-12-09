@@ -27,7 +27,7 @@ namespace Microsoft.Zelig.Runtime
         {
             fixed(MemoryFreeBlock* ptr = &this)
             {
-                return CastAsArray( AddressMath.Decrement( new UIntPtr( ptr ), FixedSize() ) );
+                return CastAsArray( AddressMath.Decrement( new UIntPtr( ptr ), PointerOffset ) );
             }
         }
 
@@ -54,6 +54,7 @@ namespace Microsoft.Zelig.Runtime
             return ObjectHeader.Unpack(Pack());
 
         }
+
         public UIntPtr ToObjectHeaderPointer()
         {
             return ToObjectHeader().ToPointer();
@@ -136,6 +137,15 @@ namespace Microsoft.Zelig.Runtime
             }
 
             return UIntPtr.Zero;
+        }
+
+        private static uint PointerOffset
+        {
+            [Inline]
+            get
+            {
+                return FixedSize();
+            }
         }
 
         [Inline]

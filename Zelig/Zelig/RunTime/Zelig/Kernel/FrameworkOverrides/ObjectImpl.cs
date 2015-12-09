@@ -26,10 +26,10 @@ namespace Microsoft.Zelig.Runtime
         protected unsafe new Object MemberwiseClone()
         {
             TS.VTable vTable = TS.VTable.Get( this );
-            object obj  = TypeSystemManager.Instance.AllocateObject( vTable );
+            object obj = TypeSystemManager.Instance.AllocateObject( vTable );
 
-            byte* src = (byte*)GetFieldPointer().ToPointer();
-            byte* dst = (byte*)((ObjectImpl)obj).GetFieldPointer().ToPointer();
+            byte* src = (byte*)GetFieldPointer();
+            byte* dst = (byte*)((ObjectImpl)obj).GetFieldPointer();
             int size  = (int)vTable.BaseSize;
             Buffer.InternalMemoryCopy( src, dst, size );
 
@@ -49,13 +49,13 @@ namespace Microsoft.Zelig.Runtime
         [Inline]
         public UIntPtr GetFieldPointer()
         {
-            return AddressMath.Increment( ToPointer(), ObjectHeader.HeaderSize );
+            return AddressMath.Increment(ToPointer(), ObjectHeader.HeaderSize);
         }
 
         [Inline]
         public static ObjectImpl FromFieldPointer(UIntPtr fieldPointer)
         {
-            return FromPointer( AddressMath.Decrement( fieldPointer, ObjectHeader.HeaderSize ) );
+            return FromPointer(AddressMath.Decrement(fieldPointer, ObjectHeader.HeaderSize));
         }
 
         [TS.GenerateUnsafeCast]

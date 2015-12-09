@@ -135,8 +135,8 @@ namespace Microsoft.Zelig.Runtime
             var dummyThread = ThreadImpl.CurrentThread;
             var releaseRefHelper = dummyThread.ReleaseReference;
             ThreadImpl.CurrentThread = null;
-            MemoryManager.Instance.Release( ( (ObjectImpl)(object)dummyThread ).ToPointer( ) );
-            MemoryManager.Instance.Release( ( (ObjectImpl)(object)releaseRefHelper ).ToPointer( ) );
+            MemoryManager.Instance.Release( ObjectHeader.Unpack( dummyThread ).ToPointer( ) );
+            MemoryManager.Instance.Release( ObjectHeader.Unpack( releaseRefHelper ).ToPointer( ) );
         }
 
         [NoInline]

@@ -63,10 +63,15 @@ namespace Llvm.NET.Types
                 var members = new List<ITypeRef>( );
                 if( Kind == TypeKind.Struct && !IsOpaque )
                 {
-                    LLVMTypeRef[] structElements = new LLVMTypeRef[ NativeMethods.CountStructElementTypes( TypeHandle_ ) ];
-                    NativeMethods.GetStructElementTypes( TypeHandle_, out structElements[ 0 ] );
-                    members.AddRange( structElements.Select( h => FromHandle<ITypeRef>( h ) ) );
+                    uint count = NativeMethods.CountStructElementTypes( TypeHandle_ );
+                    if (count > 0)
+                    {
+                        LLVMTypeRef[] structElements = new LLVMTypeRef[ count ];
+                        NativeMethods.GetStructElementTypes( TypeHandle_, out structElements[ 0 ] );
+                        members.AddRange( structElements.Select( h => FromHandle<ITypeRef>( h ) ) );
+                    }
                 }
+
                 return members;
             }
         }

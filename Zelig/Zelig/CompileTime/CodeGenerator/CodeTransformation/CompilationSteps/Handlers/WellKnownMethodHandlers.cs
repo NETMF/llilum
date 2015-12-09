@@ -2,7 +2,6 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-
 namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 {
     using System;

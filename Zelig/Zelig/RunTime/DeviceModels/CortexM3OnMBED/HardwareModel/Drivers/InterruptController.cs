@@ -24,7 +24,7 @@ namespace Microsoft.CortexM3OnMBED.Drivers
         [RT.Inline]
         internal static UIntPtr CastInterruptHandlerAsPtr(Handler hnd)
         {
-            return ((RT.ObjectImpl)(object)(hnd)).ToPointer();
+            return ((RT.ObjectImpl)(object)hnd).ToPointer();
         }
     }
 }

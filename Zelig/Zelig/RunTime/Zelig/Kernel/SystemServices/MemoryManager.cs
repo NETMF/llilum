@@ -106,7 +106,8 @@ namespace Microsoft.Zelig.Runtime
         }
 
         internal virtual void ConsistencyCheck()
-        { }
+        {
+        }
 
         internal virtual bool IsObjectAlive( UIntPtr ptr )
         {
@@ -152,22 +153,18 @@ namespace Microsoft.Zelig.Runtime
             }
 
             ObjectHeader hdr = ObjectHeader.CastAsObjectHeader(ptr);
-
             hdr.MultiUseWord |= (int)(ObjectHeader.GarbageCollectorFlags.UnreclaimableObject | ObjectHeader.GarbageCollectorFlags.Marked);
 
-            return AddressMath.Increment( ptr, ObjectHeader.HeaderSize );
+            return hdr.Pack().ToPointer();
         }
 
         [ExportedMethod]
         public static void FreeFromManagedHeap( UIntPtr address )
         {
-            UIntPtr ptr = AddressMath.Decrement( address, ObjectHeader.HeaderSize );
-
-            ObjectHeader hdr = ObjectHeader.CastAsObjectHeader(ptr);
-
+            ObjectHeader hdr = ObjectHeader.Unpack(ObjectImpl.FromPointer(address));
             hdr.MultiUseWord = (int)(ObjectHeader.GarbageCollectorFlags.FreeBlock | ObjectHeader.GarbageCollectorFlags.Unmarked);
 
-            Instance.Release( ptr );
+            Instance.Release(hdr.ToPointer());
         }
 
         //--//

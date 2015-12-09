@@ -2034,9 +2034,9 @@ namespace Microsoft.Zelig.Runtime
             GCNode node1 = new GCNode( null, null );
             BugCheck.Log( "Node1 created: id= %d", node1._id );
             UIntPtr node1Ptr = ObjectHeader.Unpack( node1 ).ToPointer( );
-            BugCheck.Log( "Node1ptr = %x", (int)node1Ptr.ToUInt32( ) );
-            Object nodeObj = ObjectImpl.FromPointer( node1Ptr );
-            BugCheck.Log( "NodeObj = %x", (int)ObjectHeader.Unpack( nodeObj ).ToPointer( ).ToUInt32( ) );
+            BugCheck.Log( "Node1ptr = %x", (int)node1Ptr );
+            Object nodeObj = ObjectHeader.CastAsObjectHeader( node1Ptr ).Pack( );
+            BugCheck.Log( "NodeObj = %x", (int)ObjectHeader.Unpack( nodeObj ).ToPointer( ) );
             GCNode node2 = (GCNode)nodeObj;
             BugCheck.Log( "node2 is: id= %d", node2._id );
         }
@@ -2104,7 +2104,7 @@ namespace Microsoft.Zelig.Runtime
             BugCheck.Log( "Node created: id= %d", node1._id );
 
             var oldNode1 = Interlocked.Exchange( ref node._node1, node1 );
-            BugCheck.Assert( MemoryManager.Instance.IsObjectAlive( ( (ObjectImpl)(object)oldNode1 ).ToPointer( ) ), BugCheck.StopCode.HeapCorruptionDetected );
+            BugCheck.Assert( MemoryManager.Instance.IsObjectAlive( ObjectHeader.Unpack( oldNode1 ).ToPointer( ) ), BugCheck.StopCode.HeapCorruptionDetected );
         }
 
         private static void RefCountGC11_CompareExchangeHelper( GCNode node )
@@ -2115,10 +2115,10 @@ namespace Microsoft.Zelig.Runtime
             BugCheck.Log( "Node created: id= %d", newNode1._id );
 
             var oldNode1 = Interlocked.CompareExchange( ref node._node1, newNode1, null );
-            BugCheck.Assert( MemoryManager.Instance.IsObjectAlive( ( (ObjectImpl)(object)oldNode1 ).ToPointer( ) ), BugCheck.StopCode.HeapCorruptionDetected );
+            BugCheck.Assert( MemoryManager.Instance.IsObjectAlive( ObjectHeader.Unpack( oldNode1 ).ToPointer( ) ), BugCheck.StopCode.HeapCorruptionDetected );
 
             oldNode1 = Interlocked.CompareExchange( ref node._node1, newNode1, node1 );
-            BugCheck.Assert( MemoryManager.Instance.IsObjectAlive( ( (ObjectImpl)(object)oldNode1 ).ToPointer( ) ), BugCheck.StopCode.HeapCorruptionDetected );
+            BugCheck.Assert( MemoryManager.Instance.IsObjectAlive( ObjectHeader.Unpack( oldNode1 ).ToPointer( ) ), BugCheck.StopCode.HeapCorruptionDetected );
         }
 
         private static void RefCountGC11_Helper( )
@@ -2129,13 +2129,13 @@ namespace Microsoft.Zelig.Runtime
 
             BugCheck.Log( "Node.node1 is now: id= %d", node._node1._id );
 
-            BugCheck.Assert( MemoryManager.Instance.IsObjectAlive( ( (ObjectImpl)(object)node._node1 ).ToPointer( ) ), BugCheck.StopCode.HeapCorruptionDetected );
+            BugCheck.Assert( MemoryManager.Instance.IsObjectAlive( ObjectHeader.Unpack( node._node1 ).ToPointer( ) ), BugCheck.StopCode.HeapCorruptionDetected );
 
             RefCountGC11_CompareExchangeHelper( node );
 
             BugCheck.Log( "Node.node1 is now: id= %d", node._node1._id );
 
-            BugCheck.Assert( MemoryManager.Instance.IsObjectAlive( ( (ObjectImpl)(object)node._node1 ).ToPointer( ) ), BugCheck.StopCode.HeapCorruptionDetected );
+            BugCheck.Assert( MemoryManager.Instance.IsObjectAlive( ObjectHeader.Unpack( node._node1 ).ToPointer( ) ), BugCheck.StopCode.HeapCorruptionDetected );
         }
 
         private static void SelfTest__Memory__RefCountGC11( )

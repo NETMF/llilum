@@ -286,7 +286,7 @@ namespace Llvm.NET
                 throw new ArgumentException( "structure must have at least one element", nameof( values ) );
 
             var handle = NativeMethods.ConstStructInContext( ContextHandle, out valueHandles[ 0 ], (uint)valueHandles.Length, packed );
-            return Value.FromHandle<ConstantStruct>( handle );
+            return Value.FromHandle<Constant>( handle );
         }
 
         /// <summary>Creates a constant instance of a specified structure type from a set of values</summary>
@@ -352,10 +352,18 @@ namespace Llvm.NET
                                     , valueList[ mismatch.Index ].NativeType
                                     );
                 }
+
                 throw new ArgumentException( msg.ToString( ) );
             }
 
-            var handle = NativeMethods.ConstNamedStruct(type.GetTypeRef(), out valueHandles[ 0 ], ( uint )valueHandles.Length );
+            // To interop correctly, we need to have an array of at least size one.
+            uint valuesLength = (uint)valueHandles.Length;
+            if( valuesLength == 0 )
+            {
+                valueHandles = new LLVMValueRef[1];
+            }
+
+            var handle = NativeMethods.ConstNamedStruct(type.GetTypeRef(), out valueHandles[ 0 ], valuesLength );
             return Value.FromHandle<Constant>( handle );
         }
 
