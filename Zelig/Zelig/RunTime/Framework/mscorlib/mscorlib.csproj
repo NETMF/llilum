@@ -397,6 +397,7 @@
     <Compile Include="System\UnauthorizedAccessException.cs" />
     <Compile Include="System\UnSafeCharBuffer.cs" />
     <Compile Include="System\ValueType.cs" />
+    <Compile Include="System\Version.cs" />
     <Compile Include="System\Void.cs" />
     <Compile Include="System\WeakReference.cs" />
     <Compile Include="ZeligHooks\TypeDependencyAttribute.cs" />
