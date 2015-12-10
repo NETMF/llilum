@@ -4,16 +4,9 @@
 
 namespace Microsoft.CortexM4OnCMSISCore
 {
-    using System;
+    using Chipset = Microsoft.CortexM3OnCMSISCore;
 
-    using RT = Microsoft.Zelig.Runtime;
-    using TS = Microsoft.Zelig.Runtime.TypeSystem;
-
-    //
-    // LLVM will use Empty Manager for now, which is the default for the singleton
-    // 
-
-    //public sealed class GarbageCollectionManager : RT.MarkAndSweepCollector
-    //{
-    //}
+    public abstract class GarbageCollectionManager : Chipset.GarbageCollectionManager
+    {        
+    }
 }

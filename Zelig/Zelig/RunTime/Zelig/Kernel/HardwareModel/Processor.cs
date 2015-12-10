@@ -53,6 +53,11 @@ namespace Microsoft.Zelig.Runtime
                 set;
             }
 
+            public abstract UIntPtr BaseStackPointer
+            {
+                get;
+            }
+
             public abstract UIntPtr ProgramCounter
             {
                 get;

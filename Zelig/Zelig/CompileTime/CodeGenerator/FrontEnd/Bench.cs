@@ -132,7 +132,7 @@ namespace Microsoft.Zelig.FrontEnd
         private List< string >                      m_importDirectories;
         private List< string >                      m_importLibraries;
 
-        private LlvmCodeGenOptions                       m_LlvmCodeGenOptions;
+        private LlvmCodeGenOptions                  m_LlvmCodeGenOptions;
         private IR.CompilationSteps.DelegationCache m_delegationCache;
         private MetaData.MetaDataResolver           m_resolver;
         private TypeSystemForFrontEnd               m_typeSystem;

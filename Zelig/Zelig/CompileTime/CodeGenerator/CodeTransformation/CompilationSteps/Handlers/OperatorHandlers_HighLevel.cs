@@ -81,8 +81,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             }
             else
             {
-                if(md != wkm.TypeSystemManager_AllocateObjectWithExtensions && 
-                    ts.IsReferenceCountingType( td ) && !ts.ShouldExcludeMethodFromReferenceCounting( nc.CurrentMethod ))
+                if(  ts.IsReferenceCountingGarbageCollectionEnabled                 &&
+                     md != wkm.TypeSystemManager_AllocateObjectWithExtensions       && 
+                     ts.IsReferenceCountingType( td )                               && 
+                    !ts.ShouldExcludeMethodFromReferenceCounting( nc.CurrentMethod  ))
                 {
                     mdAllocateObject = wkm.TypeSystemManager_AllocateReferenceCountingObject;
                 }
@@ -124,7 +126,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             Expression[]                    rhs;
             Expression                      exLen = op.FirstArgument;
 
-            if(ts.IsReferenceCountingType( ts.WellKnownTypes.System_Array ) && !ts.ShouldExcludeMethodFromReferenceCounting( nc.CurrentMethod ))
+            if( ts.IsReferenceCountingGarbageCollectionEnabled                  && 
+                ts.IsReferenceCountingType( ts.WellKnownTypes.System_Array )    && 
+               !ts.ShouldExcludeMethodFromReferenceCounting( nc.CurrentMethod   ))
             {
                 mdAllocateArray = ts.WellKnownMethods.TypeSystemManager_AllocateReferenceCountingArray;
             }

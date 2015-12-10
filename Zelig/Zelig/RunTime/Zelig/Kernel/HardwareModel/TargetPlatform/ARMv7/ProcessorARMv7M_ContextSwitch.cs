@@ -65,9 +65,9 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 //
 
                 // SW stack frame: pushed by PendSV_Handler
-                public SoftwareFrame SoftwareStack;
+                public SoftwareFrame SoftwareFrameRegisters;
                 // HW stack frame: pushed upon entering PendSV_Handler
-                public HardwareFrame HardwareStack;
+                public HardwareFrame HardwareFrameRegisters;
 
                 //
                 // Helper Methods
@@ -102,13 +102,20 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             }
 
             //--//
-            
+              
+            //
+            // This is the pointer to the base of the stack. Usefull for stack walking.
+            //
+            protected UIntPtr BaseSP;
             //
             // This is the pointer to the last known position of the stack pointer
             // For a long jump this points to the end of the SW context to install
             //
             protected UIntPtr SP;
-            protected uint    EXC_RETURN;
+            //
+            // Return value for mode transitions
+            //
+            protected uint EXC_RETURN;
 
             //--//
 
@@ -153,7 +160,9 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 // In the general case the SP will be at the top of the current frame we are building
                 // When we do a LongJump though, or we start the thread first, we will have to use the base stack pointer
                 //
-                this.SP         = GetFirstStackPointerFromPhysicalStack( stackImpl );
+                
+                this.BaseSP     = AddressMath.AlignToLowerBoundary( new UIntPtr( stackImpl.GetEndDataPointer( ) ), 8 );
+                this.SP         = AddressMath.Decrement( this.BaseSP, RegistersOnStack.TotalFrameSize );
                 this.EXC_RETURN = c_MODE_RETURN__THREAD_PSP;
 
                 //
@@ -163,16 +172,16 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                     BugCheck.StopCode.StackCorruptionDetected
                     );
 
-                RegistersOnStack* firstFrame = PointerToFrame(this.SP);
+                RegistersOnStack* firstFrame = GetFrame(this.SP);
 
                 //
                 // build the first stack frame
                 //
-                firstFrame->HardwareStack.PC         = new UIntPtr( dlgImpl.InnerGetCodePointer( ).Target.ToPointer( ) );
-                firstFrame->HardwareStack.PSR        = new UIntPtr( c_psr_InitialValue );
-                firstFrame->SoftwareStack.EXC_RETURN = c_MODE_RETURN__THREAD_PSP;
-                firstFrame->SoftwareStack.CONTROL    = c_CONTROL__MODE__THRD_PRIV;
-                firstFrame->HardwareStack.R0         = objImpl.ToPointer( );
+                firstFrame->HardwareFrameRegisters.PC         = new UIntPtr( dlgImpl.InnerGetCodePointer( ).Target.ToPointer( ) );
+                firstFrame->HardwareFrameRegisters.PSR        = new UIntPtr( c_psr_InitialValue );
+                firstFrame->SoftwareFrameRegisters.EXC_RETURN = c_MODE_RETURN__THREAD_PSP;
+                firstFrame->SoftwareFrameRegisters.CONTROL    = c_CONTROL__MODE__THRD_PRIV;
+                firstFrame->HardwareFrameRegisters.R0         = objImpl.ToPointer( );
 
 #if DEBUG_CTX_SWITCH
                 RT.BugCheck.Log( "[PFD-ctx] EXC=0x%08x, PSR=0x%08x, PC=0x%08x, R0=0x%08x, SP(aligned)=0x%08x",
@@ -257,7 +266,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                     //
                     unsafe
                     {
-                        ctx.EXC_RETURN = PointerToFrame(stackPointer)->SoftwareStack.EXC_RETURN;
+                        ctx.EXC_RETURN = GetFrame(stackPointer)->SoftwareFrameRegisters.EXC_RETURN;
                     }
 
                     ctx.StackPointer = stackPointer;
@@ -319,12 +328,6 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 LongJump( ); 
             }
             
-            private unsafe UIntPtr GetFirstStackPointerFromPhysicalStack( ArrayImpl stackImpl )
-            {
-                return AddressMath.AlignToLowerBoundary(
-                    AddressMath.Decrement( new UIntPtr( stackImpl.GetEndDataPointer( ) ), RegistersOnStack.TotalFrameSize ), 8 );
-            }
-
             //
             // Access Methods
             //
@@ -333,6 +336,12 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             {
                 get { return this.SP; }
                 set { this.SP = value; }
+            }
+
+            public override UIntPtr BaseStackPointer
+            {
+                [RT.Inline]
+                get { return this.BaseSP; }
             }
 
             public override UIntPtr ProgramCounter
@@ -356,15 +365,27 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             //--//
 
             [RT.Inline]
-            internal static unsafe Context.RegistersOnStack* PointerToFrame( UIntPtr SP )
+            internal static unsafe Context.RegistersOnStack* GetFrame( UIntPtr SP )
             {
                 return (Context.RegistersOnStack*)SP.ToPointer( );
             }
-
-            [RT.Inline]
-            private static unsafe Context.RegistersOnStack* GetFrameFromPhysicalStack( )
+            
+            private static unsafe void SnapshotActiveFrame( ref Context.RegistersOnStack frame )
             {
-                return (Context.RegistersOnStack*)GetProcessStackPointer( ).ToPointer( );
+                ////
+                //// Can run in handler mode only
+                //// 
+                //BugCheck.Assert( VerifyHandlerMode( ), BugCheck.StopCode.IllegalMode );
+
+                ////
+                //// Retrieve PSP and snapshot the frame that was pushed by the SVC handler
+                ////
+                //UIntPtr psp = GetProcessStackPointer( );
+
+                //Context.RegistersOnStack* snapshot = GetFrame( psp );
+                
+                //frame.HardwareFrameRegisters = snapshot->HardwareFrameRegisters;
+                //frame.SoftwareFrameRegisters = snapshot->SoftwareFrameRegisters;
             }
             
             //
@@ -490,6 +511,9 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                     case SVC_Code.SupervisorCall__RetireThread:
                         LongJumpForRetireThread( );
                         break;
+                    case SVC_Code.SupervisorCall__SnapshotProcessModeRegisters:
+                        UpdateFrame( ref ProcessorARMv7M.Snapshot, CUSTOM_STUB_FetchSoftwareFrameSnapshot( ) ); 
+                        break;
                     default:
                         BugCheck.Assert( false, BugCheck.StopCode.Impossible );
                         break;
@@ -515,6 +539,67 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             {
 
             }        
+        }
+
+        //--//
+
+        //
+        // State
+        //
+
+        internal static Context.RegistersOnStack Snapshot;
+
+        //
+        // Helper methods
+        //
+
+        //--//
+        
+        [ExportedMethod]
+        private static unsafe void CUSTOM_STUB_NotifySoftwareFrameSnapshot( void* frame, int size )
+        {
+            BugCheck.Assert( size * sizeof( uint ) == Context.RegistersOnStack.TotalFrameSize, BugCheck.StopCode.StackCorruptionDetected ); 
+
+            uint* registers = (uint*)frame;
+
+            UpdateFrame( ref Snapshot, registers ); 
+        }
+
+        protected static unsafe void UpdateFrame( ref Context.RegistersOnStack snapshot, uint* registers )
+        {
+            BugCheck.Log( "[Last Active Frame] EXC=0x%08x, PSR=0x%08x, PC=0x%08x",
+                    (int)registers[ 0 ],
+                    (int)registers[ 17 ],
+                    (int)registers[ 16 ]
+                    );
+
+            BugCheck.Log( "[Last Active Frame] R0=0x%08x, R1=0x%08x, R2=0x%08x, R3=0x%08x, R12=0x%08x",
+                    (int)registers[ 10 ],
+                    (int)registers[ 11 ],
+                    (int)registers[ 12 ],
+                    (int)registers[ 13 ],
+                    (int)registers[ 14 ]
+                    );
+
+            //snapshot.SoftwareFrameRegisters.EXC_RETURN = registers[ 0 ];
+            //snapshot.SoftwareFrameRegisters.CONTROL = registers[ 1 ];
+            //snapshot.SoftwareFrameRegisters.R4 = new UIntPtr( registers[ 2 ] );
+            //snapshot.SoftwareFrameRegisters.R5 = new UIntPtr( registers[ 3 ] );
+            //snapshot.SoftwareFrameRegisters.R6 = new UIntPtr( registers[ 4 ] );
+            //snapshot.SoftwareFrameRegisters.R7 = new UIntPtr( registers[ 5 ] );
+            //snapshot.SoftwareFrameRegisters.R8 = new UIntPtr( registers[ 6 ] );
+            //snapshot.SoftwareFrameRegisters.R9 = new UIntPtr( registers[ 7 ] );
+            //snapshot.SoftwareFrameRegisters.R10 = new UIntPtr( registers[ 8 ] );
+            //snapshot.SoftwareFrameRegisters.R11 = new UIntPtr( registers[ 9 ] );
+            ////--//
+            //snapshot.HardwareFrameRegisters.R0 = new UIntPtr( registers[ 10 ] );
+            //snapshot.HardwareFrameRegisters.R1 = new UIntPtr( registers[ 11 ] );
+            //snapshot.HardwareFrameRegisters.R2 = new UIntPtr( registers[ 12 ] );
+            //snapshot.HardwareFrameRegisters.R3 = new UIntPtr( registers[ 13 ] );
+            //snapshot.HardwareFrameRegisters.R12 = new UIntPtr( registers[ 14 ] );
+            //snapshot.HardwareFrameRegisters.LR = new UIntPtr( registers[ 15 ] );
+            //snapshot.HardwareFrameRegisters.PC = new UIntPtr( registers[ 16 ] );
+            //snapshot.HardwareFrameRegisters.PSR = new UIntPtr( registers[ 17 ] );
         }
     }
 }

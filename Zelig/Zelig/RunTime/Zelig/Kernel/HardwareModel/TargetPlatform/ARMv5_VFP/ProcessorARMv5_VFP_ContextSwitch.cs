@@ -684,6 +684,14 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv5
                 }
             }
 
+            public override UIntPtr BaseStackPointer
+            {
+                get
+                {
+                    return (UIntPtr)0;
+                }
+            }
+
             public override UIntPtr ProgramCounter
             {
                 get

@@ -6,7 +6,7 @@ namespace Microsoft.Zelig.Runtime
 {
     using System;
     using System.Runtime.CompilerServices;
-
+    using TargetPlatform.ARMv7;
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
 

@@ -645,7 +645,42 @@ namespace Microsoft.Zelig.Runtime
         }
 
         #endregion Checks tests
+        
+        #region Boehm Collector Tests
+        
+        private static void SelfTest__Boehm__TriggerCollect()
+        {
+            //SELFTEST_LOG("TriggerCollect");
 
+            bool fSuccess = false;
+
+            int count = 1024 * 1024;
+
+            while(count-- > 0)
+            {
+                var hello = String.Concat( "Hello" + ", " + "world" );
+
+                if(hello == null)
+                {
+                    fSuccess = false;
+                    break;
+                }
+
+                SELFTEST_LOG( hello );
+            }
+
+            if(fSuccess)
+            {
+                SELFTEST_LOG( "TriggerCollect Succeeded." );
+            }
+            else
+            {
+                SELFTEST_LOG( "TriggerCollect Failed." );
+            }
+        }
+
+        #endregion
+        
         #region Memory Tests
 
         private const uint ArrayFixedSize = 3 * sizeof(uint); // 2 for ObjectHelper (MultiUseWord and VTable), 1 for length

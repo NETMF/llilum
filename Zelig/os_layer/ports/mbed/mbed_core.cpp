@@ -281,21 +281,193 @@ extern "C"
         __WFI();
     }
     
-    /*__STATIC_INLINE*/ __attribute__((naked)) __attribute__((aligned(8))) void CUSTOM_STUB_RaiseSupervisorCallForLongJump()
+    /*__STATIC_INLINE*/ 
+    __attribute__((naked)) 
+    __attribute__((aligned(8))) 
+    void CUSTOM_STUB_RaiseSupervisorCallForLongJump()
     {
         __ASM volatile ("svc #17");
     }
 
-    /*__STATIC_INLINE*/ __attribute__((naked)) __attribute__((aligned(8))) void CUSTOM_STUB_RaiseSupervisorCallForStartThreads()
+    /*__STATIC_INLINE*/
+    __attribute__((naked))
+    __attribute__((aligned(8)))
+    void CUSTOM_STUB_RaiseSupervisorCallForStartThreads()
     {
         __ASM volatile ("svc #18");
     }
 
-    /*__STATIC_INLINE*/ __attribute__((naked)) __attribute__((aligned(8))) void CUSTOM_STUB_RaiseSupervisorCallForRetireThread()
+    /*__STATIC_INLINE*/ 
+    __attribute__((naked))
+    __attribute__((aligned(8)))
+    void CUSTOM_STUB_RaiseSupervisorCallForRetireThread()
     {
         __ASM volatile ("svc #19");
     }
 
+
+    /*__STATIC_INLINE*/
+    /*__attribute__((naked))*/
+    __attribute__((aligned(8)))
+        void CUSTOM_STUB_RaiseSupervisorCallForSnapshotProcessModeRegisters()
+    {
+        __ASM volatile ("svc #20");
+    }
+
+    //--//
+
+    //
+    // The managed portion of the SVC_Handler
+    //
+    extern void SVC_Handler_Zelig_VFP_NoFPContext();
+    extern void SVC_Handler_Zelig();
+    extern void CUSTOM_STUB_NotifySoftwareFrameSnapshot( void* frame, int size ); 
+
+    //
+    // A convenience storage space to signal what mode to return too
+    // Initialized to crash, as the Thread Manager needs to set it right
+    //
+    uint32_t svc_exc_return = 0xDEADBEEF;
+
+    void CUSTOM_STUB_SetExcReturn(uint32_t ret)
+    {
+        svc_exc_return = ret; 
+    }
+
+    //--//
+    //--//
+    //--//
+
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // !!! KEEP IN SYNC WITH ProcessorARMv7M.Context.SoftwareFrame & HardwareFrame !!!
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    #define SW_FRAME_SIZE   10
+    #define HW_FRAME_SIZE   8     
+    #define FRAME_SIZE      SW_FRAME_SIZE + HW_FRAME_SIZE
+
+    //
+    // A convenience storage space to snapshot all registers for Mark & Sweep GC
+    //
+    uint32_t sw_hw__frame[FRAME_SIZE];
+
+    //
+    // Pull
+    //
+    /*__STATIC_INLINE*/
+    __attribute__((aligned(8)))
+    uint32_t* CUSTOM_STUB_FetchSoftwareFrameSnapshot()
+    {
+        //
+        // Return the snapshot from the storage area at sw_hw__frame
+        //
+        return &sw_hw__frame[0];
+    }
+
+
+    //
+    // Push
+    // 
+    extern void CUSTOM_STUB_NotifySoftwareFrameSnapshot(void* frame, int size);
+
+
+    /*__STATIC_INLINE*/
+    __attribute__((aligned(8)))
+        void NotifySoftwareFrameSnapshot()
+    {
+        //
+        // Grab the snapshot from the storage area at sw_hw__frame
+        //
+        CUSTOM_STUB_NotifySoftwareFrameSnapshot(sw_hw__frame, FRAME_SIZE);
+    }
+
+    
+    __attribute__((naked)) 
+    void SVC_Handler(void)
+    {    
+        __ASM volatile ("TST    LR, #0x4");                 // Test bit 3 to use decide which stack pointer we are coming from 
+        __ASM volatile ("ITE    EQ");        
+        __ASM volatile ("MRSEQ  R0, msp");
+        __ASM volatile ("MRSNE  R0, psp");
+
+        //
+        // Test for SupervisorCall__SnapshotProcessModeRegisters (0x14) and snapshot 
+        // all remaining registers onto the stack first and into the convenience space
+        // right after
+        // TODO: move to managed layer
+        //
+        {
+            __ASM volatile ("LDR    R12, [R0 , #24]");          // load the SVC number
+            __ASM volatile ("LDRH   R12, [R12, #-2]");
+            __ASM volatile ("BICS   R12, R12, #0xFF00");
+            __ASM volatile ("CMP    R12, #20");                 // check if we are serving a frame snapshot (SVC_Code.SupervisorCall__SnapshotProcessModeRegisters) ...
+            __ASM volatile ("BNE    __SVCCALL");                // ... skip if not
+
+            {
+                //
+                // Snapshot
+                //
+                __ASM volatile ("MOV    R2 , LR");              // Save LR and CONTROL, to save the status and privilege/stack mode
+                __ASM volatile ("MRS    R3 , CONTROL");
+
+                __ASM volatile ("STMDB  R0!, {R2-R11}");        // Push the SW stack frame, a total of 10 registers, including R2/3
+
+                //
+                // Now the stack has the full frame of 18 registers (RegistersOnStack)
+                // We need to move the frame to the convenience space and then pop the 
+                // Software frame before return
+                //
+                __ASM volatile ("MOV    R1 , %0" : /*output*/ : "r"(&sw_hw__frame[0]));
+                __ASM volatile ("MOV    R2 , R0");              // R0 contains the beginning of the frame
+                __ASM volatile ("MOV    R12, #18");
+
+                __ASM volatile ("__COPY_TO_FRAME:");
+
+                __ASM volatile ("LDR    R3, [R2]");
+                __ASM volatile ("STR    R3, [R1]");
+
+                __ASM volatile ("ADD    R2 , #4");
+                __ASM volatile ("ADD    R1 , #4");
+                __ASM volatile ("SUBS   R12, #1");
+                __ASM volatile ("CMP    R12, #0"); 
+                __ASM volatile ("BNE   __COPY_TO_FRAME");
+
+                __ASM volatile ("LDMIA    R0!, {R2-R11}");      // Unstack the SW frame (10 registers) before proceeding as usual
+            }
+        }
+        //
+        // End of snapshot
+        //
+
+
+        //
+        // Normal service call
+        //
+        __ASM volatile ("__SVCCALL:");
+
+        __ASM volatile ("MOV    R1, %0" : /*output*/ : "r"(&svc_exc_return) );
+        __ASM volatile ("STR    LR, [R1]");
+
+
+#if __FPU_USED != 0
+        SVC_Handler_Zelig_VFP_NoFPContext();
+#else
+        SVC_Handler_Zelig();
+#endif
+
+        //
+        // Push
+        //
+        //NotifySoftwareFrameSnapshot(); 
+
+        __ASM volatile ("MOV    R1, %0" : /*output*/ : "r"(&svc_exc_return));
+        __ASM volatile ("LDR    LR, [R1]");
+
+        __ASM volatile ("BX     LR");
+    }
+
+    //--//
+    //--//
     //--//
 
     //
@@ -352,45 +524,6 @@ extern "C"
     //--//
     //--//
     //--//
-
-    //
-    // The managed portion of the SVC_Handler
-    //
-    extern void SVC_Handler_Zelig_VFP_NoFPContext();
-    extern void SVC_Handler_Zelig();
-
-    //
-    // A convenience storage space to signal what mode to return too
-    // Initialized to crash, as the Thread Manager needs to set it right
-    //
-    uint32_t svc_exc_return = 0xDEADBEEF; 
-
-    void CUSTOM_STUB_SetExcReturn(uint32_t ret)
-    {
-        svc_exc_return = ret; 
-    }
-
-    __attribute__((naked)) void SVC_Handler(void)
-    {    
-        __ASM volatile ("TST    LR, #0x4");                 // Test bit 3 to use decide which stack pointer we are coming from 
-        __ASM volatile ("ITE    EQ");        
-        __ASM volatile ("MRSEQ  R0, msp");
-        __ASM volatile ("MRSNE  R0, psp");
-
-        __ASM volatile ("MOV    R1, %0" : /*output*/ : "r"(&svc_exc_return) );
-        __ASM volatile ("STR    LR, [R1]");
-
-#if __FPU_USED != 0
-        SVC_Handler_Zelig_VFP_NoFPContext();
-#else
-        SVC_Handler_Zelig();
-#endif
-
-        __ASM volatile ("MOV    R1, %0" : /*output*/ : "r"(&svc_exc_return));
-        __ASM volatile ("LDR    LR, [R1]");
-
-        __ASM volatile ("BX     LR");
-    }
 
     void CUSTOM_STUB_K64F_DisableMPU()
     {

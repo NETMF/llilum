@@ -107,7 +107,7 @@ namespace Microsoft.Zelig.Runtime
             //BugCheck.Log( "!!! Back in Thread Manager, Ctx Switch Failed !!!");
             //BugCheck.Log( "!!!!!!!!!!!!!!!!!!!  ERROR  !!!!!!!!!!!!!!!!!!!!!");
                 
-            BugCheck.Assert( false, BugCheck.StopCode.CtxSwtchFailed );
+            BugCheck.Assert( false, BugCheck.StopCode.CtxSwitchFailed );
         }
         
         public override void RemoveThread( ThreadImpl thread )
@@ -125,7 +125,7 @@ namespace Microsoft.Zelig.Runtime
             //
             // We should never get here
             //
-            BugCheck.Assert( false, BugCheck.StopCode.CtxSwtchFailed ); 
+            BugCheck.Assert( false, BugCheck.StopCode.CtxSwitchFailed ); 
         }
 
         //

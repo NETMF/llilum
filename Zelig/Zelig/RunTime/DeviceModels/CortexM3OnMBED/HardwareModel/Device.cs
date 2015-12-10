@@ -26,7 +26,7 @@ namespace Microsoft.CortexM3OnMBED
         {
             m_bugCheckCode = code;
 
-            RTOS.Utilities.Breakpoint( (uint)code ); 
+            RT.TargetPlatform.ARMv7.ProcessorARMv7M.Breakpoint( (uint)code ); 
         }
 
         public override unsafe void ProcessLog(string format)

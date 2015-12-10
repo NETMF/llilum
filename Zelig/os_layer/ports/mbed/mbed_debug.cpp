@@ -28,6 +28,8 @@ extern "C"
 
     void Break()
     {
+        while (1);
+
         if ((CoreDebug->DHCSR & 0x00000001) == 1)
         {
             asm("bkpt");

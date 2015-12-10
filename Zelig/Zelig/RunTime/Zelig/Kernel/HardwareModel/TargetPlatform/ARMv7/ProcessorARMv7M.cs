@@ -67,9 +67,10 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         
         public enum SVC_Code : byte
         {
-            SupervisorCall__LongJump        = 0x11,
-            SupervisorCall__StartThreads    = 0x12,
-            SupervisorCall__RetireThread    = 0x13,
+            SupervisorCall__LongJump                        = 0x11,
+            SupervisorCall__StartThreads                    = 0x12,
+            SupervisorCall__RetireThread                    = 0x13,
+            SupervisorCall__SnapshotProcessModeRegisters    = 0x14,
         }
 
         public struct StandardFrame
@@ -445,7 +446,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             CUSTOM_STUB_SCB_ICSR_RaiseSystemException( mask );
         }
 
-        public static void RaiseSupervisorCall( SVC_Code code )
+        public static unsafe void RaiseSupervisorCall( SVC_Code code )
         {
             switch(code)
             {
@@ -453,14 +454,23 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                     CUSTOM_STUB_RaiseSupervisorCallForLongJump( );
                     break;
                 case SVC_Code.SupervisorCall__StartThreads:
-                    CUSTOM_STUB_RaiseSupervisorCallForStartThreads( ); 
+                    CUSTOM_STUB_RaiseSupervisorCallForStartThreads( );
                     break;
-                 case SVC_Code.SupervisorCall__RetireThread:
-                     CUSTOM_STUB_RaiseSupervisorCallForRetireThread( );
+                case SVC_Code.SupervisorCall__RetireThread:
+                    CUSTOM_STUB_RaiseSupervisorCallForRetireThread( );
+                    break;
+                case SVC_Code.SupervisorCall__SnapshotProcessModeRegisters:                   
+                    //
+                    // Cause a SVC call to transition to Handler mode and 
+                    // snapshot the Processmode registers
+                    //
+                    CUSTOM_STUB_RaiseSupervisorCallForSnapshotProcessModeRegisters( );                        
                     break;
                 default:
-                    throw new ArgumentException( "Request SVC does not exists or is not supported" ); 
+                    throw new ArgumentException( "Request SVC does not exists or is not supported" );
             }
+
+
         }
         
         public static bool IsAnyExceptionActive( )
@@ -1062,7 +1072,10 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
         [DllImport( "C" )]
         internal static extern void CUSTOM_STUB_RaiseSupervisorCallForRetireThread( );
-        
+
+        [DllImport( "C" )]
+        internal static extern void CUSTOM_STUB_RaiseSupervisorCallForSnapshotProcessModeRegisters( );
+                
         [DllImport( "C" )]
         private static extern void CUSTOM_STUB_SetExcReturn( uint ret );
         
@@ -1082,7 +1095,12 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         private static extern void CMSIS_STUB_POWER_SendEvent( ); 
 
         [DllImport( "C" )]
-        private static extern void CMSIS_STUB_POWER_WaitForInterrupt( ); 
+        private static extern void CMSIS_STUB_POWER_WaitForInterrupt( );
+
+        //--//
+
+        [DllImport( "C" )]
+        protected static extern unsafe uint* CUSTOM_STUB_FetchSoftwareFrameSnapshot( );
 
         //--//
         //--//
