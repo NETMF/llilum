@@ -240,6 +240,15 @@ namespace Microsoft.Zelig.Runtime
         [TS.GenerateUnsafeCast]
         internal extern String CastThisAsString();
 
+        [Inline]
+        internal unsafe char* GetDataPointer( )
+        {
+            fixed (char* ptr = &m_firstChar)
+            {
+                return ptr;
+            }
+        }
+
         //--//
 
         //

@@ -94,6 +94,11 @@ namespace Microsoft.Zelig.Runtime.Synchronization
             m_ownerThread = null;
         }
 
+        public bool IsHeldByCurrentThread()
+        {
+            return ThreadImpl.CurrentThread == m_ownerThread;
+        }
+
         //
         // Access Methods
         //

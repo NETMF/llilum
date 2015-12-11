@@ -21,7 +21,7 @@ namespace Microsoft.Zelig.Runtime
                 [ConfigurationOption("GarbageCollectionManager__CollectMinimalPerformanceStatistics")]
                 get
                 {
-                    return true;
+                    return false;
                 }
             }
 
@@ -64,9 +64,9 @@ namespace Microsoft.Zelig.Runtime
             {
             }
 
-            public override ObjectImpl FindObject( UIntPtr interiorPtr )
+            public override UIntPtr FindObject( UIntPtr interiorPtr )
             {
-                return null;
+                return UIntPtr.Zero;
             }
 
             public override uint Collect()
@@ -112,7 +112,7 @@ namespace Microsoft.Zelig.Runtime
         public abstract void NotifyNewObject( UIntPtr ptr  ,
                                               uint    size );
 
-        public abstract ObjectImpl FindObject( UIntPtr interiorPtr );
+        public abstract UIntPtr FindObject( UIntPtr interiorPtr );
 
         public abstract uint Collect();
 

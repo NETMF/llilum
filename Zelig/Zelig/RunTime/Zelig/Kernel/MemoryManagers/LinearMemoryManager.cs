@@ -47,37 +47,38 @@ namespace Microsoft.Zelig.Runtime
 
         public override unsafe UIntPtr Allocate( uint size )
         {
-            using(SmartHandles.YieldLockHolder hnd = new SmartHandles.YieldLockHolder( MemoryManager.Lock ))
+            BugCheck.Assert( MemoryManager.Lock.IsHeldByCurrentThread( ), BugCheck.StopCode.HeapCorruptionDetected );
+
+            MemorySegment* ptr = m_active;
+
+            if(ptr != null)
             {
-                MemorySegment* ptr = m_active;
+                UIntPtr res = ptr->Allocate( size );
 
-                if(ptr != null)
+                if(res != UIntPtr.Zero)
                 {
-                    UIntPtr res = ptr->Allocate( size );
-
-                    if(res != UIntPtr.Zero)
-                    {
-                        return res;
-                    }
+                    GarbageCollectionManager.Instance.NotifyNewObject( res, size );
+                    return res;
                 }
-
-                ptr = m_heapHead;
-                while(ptr != null)
-                {
-                    UIntPtr res = ptr->Allocate( size );
-
-                    if(res != UIntPtr.Zero)
-                    {
-                        m_active = ptr;
-
-                        return res;
-                    }
-
-                    ptr = ptr->Next;
-                }
-                
-                return UIntPtr.Zero;
             }
+
+            ptr = m_heapHead;
+            while(ptr != null)
+            {
+                UIntPtr res = ptr->Allocate( size );
+
+                if(res != UIntPtr.Zero)
+                {
+                    m_active = ptr;
+
+                    GarbageCollectionManager.Instance.NotifyNewObject( res, size );
+                    return res;
+                }
+
+                ptr = ptr->Next;
+            }
+
+            return UIntPtr.Zero;
         }
 
         public override unsafe void Release(UIntPtr address)

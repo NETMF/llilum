@@ -15,256 +15,9 @@ namespace Microsoft.Zelig.Runtime
 
     public abstract class MarkAndSweepCollector : GarbageCollectionManager
     {
-        class StackWalker : TS.CodeMapDecoderCallback
+        protected interface MarkAndSweepStackWalker
         {
-            //
-            // State
-            //
-
-            const int c_StackMarkSize = 8 * sizeof(uint);
-
-            MarkAndSweepCollector m_owner;
-            UIntPtr               m_pc;
-
-            uint                  m_registerMask_Scratched;
-            uint                  m_registerMask_Heap;
-            uint                  m_registerMask_Internal;
-            uint                  m_registerMask_Potential;
-            uint                  m_stackMask_Heap;
-            uint                  m_stackMask_Internal;
-            uint                  m_stackMask_Potential;
-            uint                  m_stackLow;
-            uint                  m_stackHigh;
-            bool                  m_done;
-
-            //
-            // Constructor Methods
-            //
-
-            internal StackWalker( MarkAndSweepCollector owner )
-            {
-                m_owner = owner;
-            }
-
-            //
-            // Helper Methods
-            //
-
-            public override bool RegisterEnter( UIntPtr     address ,
-                                                uint        num     ,
-                                                PointerKind kind    )
-            {
-                if(AddressMath.IsGreaterThan( address, m_pc ))
-                {
-                    return false;
-                }
-
-                uint mask = 1u << (int)num;
-
-                switch(kind)
-                {
-                    case PointerKind.Heap     : m_registerMask_Heap      |= mask; break;
-                    case PointerKind.Internal : m_registerMask_Internal  |= mask; break;
-                    case PointerKind.Potential: m_registerMask_Potential |= mask; break;
-                }
-
-                return true;
-            }
-
-            public override bool RegisterLeave( UIntPtr address ,
-                                                uint    num     )
-            {
-                if(AddressMath.IsGreaterThan( address, m_pc ))
-                {
-                    return false;
-                }
-
-                uint mask = ~(1u << (int)num);
-
-                m_registerMask_Heap      &= mask;
-                m_registerMask_Internal  &= mask;
-                m_registerMask_Potential &= mask;
-
-                return true;
-            }
-
-            public override bool StackEnter( UIntPtr     address ,
-                                             uint        offset  ,
-                                             PointerKind kind    )
-            {
-                if(AddressMath.IsGreaterThan( address, m_pc ))
-                {
-                    return false;
-                }
-
-                if(m_stackLow <= offset && offset < m_stackHigh)
-                {
-                    uint mask = (1u << (int)(offset - m_stackLow));
-
-                    switch(kind)
-                    {
-                        case PointerKind.Heap     : m_stackMask_Heap      |= mask; break;
-                        case PointerKind.Internal : m_stackMask_Internal  |= mask; break;
-                        case PointerKind.Potential: m_stackMask_Potential |= mask; break;
-                    }
-                }
-
-                if(offset >= m_stackHigh)
-                {
-                    m_done = false;
-                }
-
-                return true;
-            }
-
-            public override bool StackLeave( UIntPtr address ,
-                                             uint    offset  )
-            {
-                if(AddressMath.IsGreaterThan( address, m_pc ))
-                {
-                    return false;
-                }
-
-                if(m_stackLow <= offset && offset < m_stackHigh)
-                {
-                    uint mask = ~(1u << (int)(offset - m_stackLow));
-
-                    m_stackMask_Heap      &= mask;
-                    m_stackMask_Internal  &= mask;
-                    m_stackMask_Potential &= mask;
-                }
-
-                if(offset >= m_stackHigh)
-                {
-                    m_done = false;
-                }
-
-                return true;
-            }
-
-            //--//
-
-            internal unsafe void Process( Processor.Context ctx )
-            {
-                //
-                // All registers should be considered.
-                //
-                m_registerMask_Scratched = 0;
-
-                while(true)
-                {
-                    m_pc        = ctx.ProgramCounter;
-                    m_stackLow  = 0;
-                    m_stackHigh = c_StackMarkSize;
-
-                    //--//
-
-                    TS.CodeMap cm = TS.CodeMap.ResolveAddressToCodeMap( m_pc );
-
-                    BugCheck.Assert( cm != null, BugCheck.StopCode.UnwindFailure );
-
-                    int idx = cm.FindRange( m_pc );
-
-                    BugCheck.Assert( idx >= 0, BugCheck.StopCode.UnwindFailure );
-
-                    while(true)
-                    {
-                        m_registerMask_Heap      = 0;
-                        m_registerMask_Internal  = 0;
-                        m_registerMask_Potential = 0;
-                        m_stackMask_Heap         = 0;
-                        m_stackMask_Internal     = 0;
-                        m_stackMask_Potential    = 0;
-                        m_done                   = true;
-
-                        cm.Ranges[idx].Decode( this );
-
-                        //
-                        // On the first pass, mark the objects pointed to by live registers.
-                        //
-                        if(m_stackLow == 0)
-                        {
-                            uint set = m_registerMask_Heap | m_registerMask_Internal | m_registerMask_Potential;
-
-                            set &= ~m_registerMask_Scratched;
-
-                            if(set != 0)
-                            {
-                                uint mask = 1u;
-
-                                for(int regNum = 0; regNum < 16; regNum++, mask <<= 1)
-                                {
-                                    if((set & mask) != 0)
-                                    {
-                                        UIntPtr ptr = ctx.GetRegisterByIndex( (uint)regNum );
-
-                                        if(ptr != UIntPtr.Zero)
-                                        {
-                                            if((m_registerMask_Heap & mask) != 0)
-                                            {
-                                                m_owner.VisitHeapObject( ptr );
-                                            }
-                                            else
-                                            {
-                                                m_owner.VisitInternalPointer( ptr );
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        {
-                            uint set = m_stackMask_Heap | m_stackMask_Internal | m_stackMask_Potential;
-
-                            if(set != 0)
-                            {
-                                uint mask = 1u;
-
-                                for(int offset = 0; offset < c_StackMarkSize; offset++, mask <<= 1)
-                                {
-                                    if((set & mask) != 0)
-                                    {
-                                        UIntPtr* stack = (UIntPtr*)ctx.StackPointer.ToPointer();
-                                        UIntPtr  ptr   = stack[m_stackLow + offset];
-
-                                        if(ptr != UIntPtr.Zero)
-                                        {
-                                            if((m_stackMask_Heap & mask) != 0)
-                                            {
-                                                m_owner.VisitHeapObject( ptr );
-                                            }
-                                            else
-                                            {
-                                                m_owner.VisitInternalPointer( ptr );
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        if(m_done)
-                        {
-                            break;
-                        }
-
-                        m_stackLow  += c_StackMarkSize;
-                        m_stackHigh += c_StackMarkSize;
-                    }
-
-                    //
-                    // Exclude scratched registers from the set of live registers.
-                    //
-                    m_registerMask_Scratched = ctx.ScratchedIntegerRegisters;
-
-                    if(ctx.Unwind() == false)
-                    {
-                        break;
-                    }
-                }
-            }
-
+            void Process( Processor.Context ctx );
         }
 
         //--//
@@ -345,14 +98,8 @@ namespace Microsoft.Zelig.Runtime
         // State
         //
 
-        const int c_MarkStackForObjectsSize = 1024;
-        const int c_MarkStackForArraysSize  = 128;
-
-        //--//
-
-        private Synchronization.YieldLock          m_lock;
         private OutOfMemoryException               m_outOfMemoryException;
-        private StackWalker                        m_stackWalker;
+        private MarkAndSweepStackWalker            m_stackWalker;
 
         private bool                               m_fFirstLevel;
 
@@ -383,13 +130,25 @@ namespace Microsoft.Zelig.Runtime
         // Helper Methods
         //
 
+        protected virtual int MarkStackForObjectsSize
+        {
+            get { return 1024; }
+        }
+        protected virtual int MarkStackForArraysSize
+        {
+            get { return 128; }
+        }
+
+        //--//
+
+        protected abstract MarkAndSweepStackWalker CreateStackWalker( );
+
         public unsafe override void InitializeGarbageCollectionManager()
         {
-            m_lock                 = new Synchronization.YieldLock();
             m_outOfMemoryException = new OutOfMemoryException();
-            m_stackWalker          = new StackWalker( this );
-            m_maskStackForObjects  = new UIntPtr           [c_MarkStackForObjectsSize];
-            m_markStackForArrays   = new MarkStackForArrays[c_MarkStackForArraysSize ];
+            m_stackWalker          = CreateStackWalker();
+            m_maskStackForObjects  = new UIntPtr           [ MarkStackForObjectsSize ];
+            m_markStackForArrays   = new MarkStackForArrays[ MarkStackForArraysSize  ];
 
             if(Configuration.TraceFreeBlocks)
             {
@@ -440,7 +199,7 @@ namespace Microsoft.Zelig.Runtime
             BrickTable.Instance.MarkObject( ptr, size );
         }
 
-        public override ObjectImpl FindObject( UIntPtr interiorPtr )
+        public override UIntPtr FindObject( UIntPtr interiorPtr )
         {
             UIntPtr address = BrickTable.Instance.FindLowerBoundForObjectPointer( interiorPtr );
 
@@ -463,7 +222,7 @@ namespace Microsoft.Zelig.Runtime
                                     //
                                     // Don't return the address of a heap free block.
                                     //
-                                    return null;
+                                    return UIntPtr.Zero;
                                 }
 
                                 address = nextAddress;
@@ -475,31 +234,28 @@ namespace Microsoft.Zelig.Runtime
                             address = AddressMath.Increment( address, sizeof(uint) );
                             break;
 
-                        case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes | ObjectHeader.GarbageCollectorFlags.Unmarked:
-                        case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes | ObjectHeader.GarbageCollectorFlags.Marked:
-                            address = AddressMath.Increment( address, oh.AllocatedRawBytesSize );
-                            break;
-
                         case ObjectHeader.GarbageCollectorFlags.ReadOnlyObject       | ObjectHeader.GarbageCollectorFlags.Unmarked:
                         case ObjectHeader.GarbageCollectorFlags.ReadOnlyObject       | ObjectHeader.GarbageCollectorFlags.Marked  :
                             BugCheck.Raise( BugCheck.StopCode.HeapCorruptionDetected );
-                            return null;
+                            return UIntPtr.Zero;
 
                         case ObjectHeader.GarbageCollectorFlags.UnreclaimableObject  | ObjectHeader.GarbageCollectorFlags.Unmarked:
                         case ObjectHeader.GarbageCollectorFlags.UnreclaimableObject  | ObjectHeader.GarbageCollectorFlags.Marked  :
                             BugCheck.Raise( BugCheck.StopCode.HeapCorruptionDetected );
-                            return null;
+                            return UIntPtr.Zero;
 
                         case ObjectHeader.GarbageCollectorFlags.NormalObject         | ObjectHeader.GarbageCollectorFlags.Unmarked:
                         case ObjectHeader.GarbageCollectorFlags.NormalObject         | ObjectHeader.GarbageCollectorFlags.Marked  :
                         case ObjectHeader.GarbageCollectorFlags.SpecialHandlerObject | ObjectHeader.GarbageCollectorFlags.Unmarked:
-                        case ObjectHeader.GarbageCollectorFlags.SpecialHandlerObject | ObjectHeader.GarbageCollectorFlags.Marked  :
+                        case ObjectHeader.GarbageCollectorFlags.SpecialHandlerObject | ObjectHeader.GarbageCollectorFlags.Marked:
+                        case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes    | ObjectHeader.GarbageCollectorFlags.Unmarked:
+                        case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes    | ObjectHeader.GarbageCollectorFlags.Marked:
                             {
                                 UIntPtr nextAddress = oh.GetNextObjectPointer();
 
                                 if(AddressMath.IsLessThan( interiorPtr, nextAddress ))
                                 {
-                                    return oh.Pack();
+                                    return oh.ToPointer();
                                 }
 
                                 address = nextAddress;
@@ -508,12 +264,12 @@ namespace Microsoft.Zelig.Runtime
 
                         default:
                             BugCheck.Raise( BugCheck.StopCode.HeapCorruptionDetected );
-                            return null;
+                            return UIntPtr.Zero;
                     }
                 }
             }
 
-            return null;
+            return UIntPtr.Zero;
         }
 
         public override uint Collect()
@@ -527,7 +283,9 @@ namespace Microsoft.Zelig.Runtime
             uint mem;
             long gcTime;
 
-            using(SmartHandles.YieldLockHolder hnd = new SmartHandles.YieldLockHolder( m_lock ))
+            // Take the memory manager lock so we make sure there's no in-process memory allocation as we
+            // mark and sweep the memory.
+            using(SmartHandles.YieldLockHolder hnd = new SmartHandles.YieldLockHolder( MemoryManager.Lock ))
             {
                 while(true)
                 {
@@ -660,7 +418,7 @@ namespace Microsoft.Zelig.Runtime
 
         //--//
 
-        private bool IsThisAGoodPlaceToStopTheWorld()
+        protected virtual bool IsThisAGoodPlaceToStopTheWorld()
         {
             ThreadImpl        thisThread = ThreadImpl.CurrentThread;
             Processor.Context ctx        = thisThread.ThrowContext; // Reuse the throw context for the current thread to unwind the stack.
@@ -744,7 +502,7 @@ namespace Microsoft.Zelig.Runtime
             }
         }
 
-        private void WalkStackFrames()
+        protected virtual void WalkStackFrames()
         {
             ThreadImpl        thisThread = ThreadImpl.CurrentThread;
             Processor.Context ctx        = thisThread.ThrowContext; // Reuse the throw context for the current thread to unwind the stack.
@@ -834,11 +592,6 @@ namespace Microsoft.Zelig.Runtime
                             addressNext = AddressMath.Increment( address, sizeof(uint) );
                             break;
 
-                        case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes | ObjectHeader.GarbageCollectorFlags.Unmarked:
-                        case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes | ObjectHeader.GarbageCollectorFlags.Marked:
-                            addressNext = AddressMath.Increment( address, oh.AllocatedRawBytesSize );
-                            break;
-
                         case ObjectHeader.GarbageCollectorFlags.ReadOnlyObject       | ObjectHeader.GarbageCollectorFlags.Unmarked:
                         case ObjectHeader.GarbageCollectorFlags.ReadOnlyObject       | ObjectHeader.GarbageCollectorFlags.Marked  :
                             BugCheck.Raise( BugCheck.StopCode.HeapCorruptionDetected );
@@ -850,6 +603,7 @@ namespace Microsoft.Zelig.Runtime
                             return;
 
                         case ObjectHeader.GarbageCollectorFlags.NormalObject         | ObjectHeader.GarbageCollectorFlags.Unmarked:
+                        case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes    | ObjectHeader.GarbageCollectorFlags.Unmarked:
                             if(Configuration.CollectPerformanceStatistics)
                             {
                                 m_perf_deadCount++;
@@ -859,6 +613,7 @@ namespace Microsoft.Zelig.Runtime
                             break;
 
                         case ObjectHeader.GarbageCollectorFlags.NormalObject         | ObjectHeader.GarbageCollectorFlags.Marked  :
+                        case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes    | ObjectHeader.GarbageCollectorFlags.Marked  :
                             if(Configuration.CollectPerformanceStatistics)
                             {
                                 m_perf_objectCount++;
@@ -987,13 +742,13 @@ namespace Microsoft.Zelig.Runtime
         //--//
 
         [NoInline]
-        private void VisitInternalPointer( UIntPtr address )
+        protected void VisitInternalPointer( UIntPtr address )
         {
             VisitInternalPointerInline( address );
         }
 
         [NoInline]
-        private void VisitHeapObject( UIntPtr address )
+        protected void VisitHeapObject( UIntPtr address )
         {
             VisitHeapObjectInline( address );
         }
@@ -1003,10 +758,10 @@ namespace Microsoft.Zelig.Runtime
 #endif
         private void VisitInternalPointerInline( UIntPtr address )
         {
-            ObjectImpl obj = FindObject( address );
-            if(obj != null)
+            UIntPtr objAddress = FindObject( address );
+            if(objAddress != UIntPtr.Zero)
             {
-                VisitHeapObject( obj.ToPointer() );
+                VisitHeapObject( objAddress );
             }
         }
 
@@ -1038,6 +793,9 @@ namespace Microsoft.Zelig.Runtime
                     return;
 
                 case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes | ObjectHeader.GarbageCollectorFlags.Unmarked:
+                    oh.GarbageCollectorState = flags | ObjectHeader.GarbageCollectorFlags.Marked;
+                    return;
+
                 case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes | ObjectHeader.GarbageCollectorFlags.Marked:
                     return;
 
@@ -1106,35 +864,36 @@ namespace Microsoft.Zelig.Runtime
         }
 
         [NoInline]
-        private void VisitHeapObjectFields( UIntPtr   address ,
-                                            TS.VTable vTable  )
+        private void VisitHeapObjectFields( UIntPtr   fieldAddress ,
+                                            TS.VTable vTable       )
         {
-            VisitHeapObjectFieldsInline( address, vTable );
+            VisitHeapObjectFieldsInline( fieldAddress, vTable );
         }
 
 #if !GC_PRECISE_PROFILING
         [Inline]
 #endif
-        private void VisitHeapObjectFieldsInline( UIntPtr   address ,
-                                                  TS.VTable vTable  )
+        private void VisitHeapObjectFieldsInline( UIntPtr   fieldAddress ,
+                                                  TS.VTable vTable       )
         {
             TS.GCInfo.Pointer[] pointers      = vTable.GCInfo.Pointers;
             int                 numOfPointers = pointers.Length;
 
             for(int i = 0; i < numOfPointers; i++)
             {
-                VisitHeapObjectField( address, ref pointers[i] );
+                VisitHeapObjectField( fieldAddress, ref pointers[i] );
             }
         }
 
 #if !GC_PRECISE_PROFILING
         [Inline]
 #endif
-        private unsafe void VisitHeapObjectField(     UIntPtr           address ,
-                                                  ref TS.GCInfo.Pointer pointer )
+        private unsafe void VisitHeapObjectField(     UIntPtr           fieldAddress ,
+                                                  ref TS.GCInfo.Pointer pointer      )
         {
-            UIntPtr* fieldAddress     = (UIntPtr*)address.ToPointer();
-            UIntPtr  referenceAddress = fieldAddress[pointer.OffsetInWords];
+            UIntPtr* field            = (UIntPtr*)fieldAddress.ToPointer( );
+            UIntPtr  referenceAddress = field[pointer.OffsetInWords];
+
 
             if(referenceAddress != UIntPtr.Zero)
             {
@@ -1173,10 +932,11 @@ namespace Microsoft.Zelig.Runtime
                 m_fFirstLevel = false;
 
                 int numOfPointers = pointers.Length;
+                UIntPtr fieldAddress = ObjectImpl.FromPointer( address ).GetFieldPointer( );
 
                 for(int i = 0; i < numOfPointers; i++)
                 {
-                    VisitHeapObjectField( address, ref pointers[i] );
+                    VisitHeapObjectField( fieldAddress, ref pointers[i] );
                 }
 
                 ProcessMarkStack();
@@ -1185,7 +945,7 @@ namespace Microsoft.Zelig.Runtime
             }
             else
             {
-                BugCheck.Assert( m_maskStackForObjects_Pos < c_MarkStackForObjectsSize - 1, BugCheck.StopCode.NoMarkStack );
+                BugCheck.Assert( m_maskStackForObjects_Pos < MarkStackForObjectsSize - 1, BugCheck.StopCode.NoMarkStack );
 
                 m_maskStackForObjects[++m_maskStackForObjects_Pos] = address;
             }
@@ -1232,7 +992,7 @@ namespace Microsoft.Zelig.Runtime
                 vTableElement = null;
             }
 
-            BugCheck.Assert( m_markStackForArrays_Pos < c_MarkStackForArraysSize - 1, BugCheck.StopCode.NoMarkStack );
+            BugCheck.Assert( m_markStackForArrays_Pos < MarkStackForArraysSize - 1, BugCheck.StopCode.NoMarkStack );
 
             m_markStackForArrays[++m_markStackForArrays_Pos].Push( array, vTable.ElementSize, numOfElements, vTableElement );
 
@@ -1262,7 +1022,7 @@ namespace Microsoft.Zelig.Runtime
                     ObjectImpl obj    = ObjectImpl.FromPointer( address );
                     TS.VTable  vTable = TS.VTable.Get( obj );
 
-                    VisitHeapObjectFieldsInline( address, vTable );
+                    VisitHeapObjectFieldsInline( obj.GetFieldPointer(), vTable );
                     continue;
                 }
 
@@ -1330,6 +1090,8 @@ namespace Microsoft.Zelig.Runtime
                         case ObjectHeader.GarbageCollectorFlags.NormalObject         | ObjectHeader.GarbageCollectorFlags.Marked  :
                         case ObjectHeader.GarbageCollectorFlags.SpecialHandlerObject | ObjectHeader.GarbageCollectorFlags.Unmarked:
                         case ObjectHeader.GarbageCollectorFlags.SpecialHandlerObject | ObjectHeader.GarbageCollectorFlags.Marked  :
+                        case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes    | ObjectHeader.GarbageCollectorFlags.Unmarked:
+                        case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes    | ObjectHeader.GarbageCollectorFlags.Marked  :
                             {
                                 UIntPtr addressNext = oh.GetNextObjectPointer();
 
@@ -1337,11 +1099,6 @@ namespace Microsoft.Zelig.Runtime
 
                                 address = addressNext;
                             }
-                            break;
-
-                        case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes | ObjectHeader.GarbageCollectorFlags.Unmarked:
-                        case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes | ObjectHeader.GarbageCollectorFlags.Marked:
-                            address = AddressMath.Increment( address, oh.AllocatedRawBytesSize );
                             break;
 
                         default:
@@ -1364,7 +1121,7 @@ namespace Microsoft.Zelig.Runtime
 
                 while(AddressMath.IsLessThan( address, end ))
                 {
-                    object obj = FindObject( AddressMath.Increment( address, sizeof(uint) ) );
+                    FindObject( AddressMath.Increment( address, sizeof(uint) ) );
 
                     ObjectHeader                       oh    = ObjectHeader.CastAsObjectHeader( address );
                     ObjectHeader.GarbageCollectorFlags flags = oh.GarbageCollectorState;
@@ -1399,16 +1156,13 @@ namespace Microsoft.Zelig.Runtime
                         case ObjectHeader.GarbageCollectorFlags.NormalObject         | ObjectHeader.GarbageCollectorFlags.Marked  :
                         case ObjectHeader.GarbageCollectorFlags.SpecialHandlerObject | ObjectHeader.GarbageCollectorFlags.Unmarked:
                         case ObjectHeader.GarbageCollectorFlags.SpecialHandlerObject | ObjectHeader.GarbageCollectorFlags.Marked  :
+                        case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes    | ObjectHeader.GarbageCollectorFlags.Unmarked:
+                        case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes    | ObjectHeader.GarbageCollectorFlags.Marked  :
                             {
                                 UIntPtr addressNext = oh.GetNextObjectPointer();
 
                                 address = addressNext;
                             }
-                            break;
-
-                        case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes | ObjectHeader.GarbageCollectorFlags.Unmarked:
-                        case ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes | ObjectHeader.GarbageCollectorFlags.Marked:
-                            address = AddressMath.Increment( address, oh.AllocatedRawBytesSize );
                             break;
 
                         default:

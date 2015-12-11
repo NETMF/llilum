@@ -102,36 +102,36 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             
                 //--//
 
-                internal unsafe UIntPtr* GetRegisterPointer( uint idx ) 
+                internal UIntPtr GetRegisterValue( uint idx ) 
                 {
                     switch(idx)
                     {
-                        case  0: fixed(UIntPtr* ptr = &this.HardwareFrameRegisters.R0 ) { return ptr; };
-                        case  1: fixed(UIntPtr* ptr = &this.HardwareFrameRegisters.R1 ) { return ptr; };
-                        case  2: fixed(UIntPtr* ptr = &this.HardwareFrameRegisters.R2 ) { return ptr; };
-                        case  3: fixed(UIntPtr* ptr = &this.HardwareFrameRegisters.R3 ) { return ptr; };
-                        case  4: fixed(UIntPtr* ptr = &this.SoftwareFrameRegisters.R4 ) { return ptr; };
-                        case  5: fixed(UIntPtr* ptr = &this.SoftwareFrameRegisters.R5 ) { return ptr; };
-                        case  6: fixed(UIntPtr* ptr = &this.SoftwareFrameRegisters.R6 ) { return ptr; };
-                        case  7: fixed(UIntPtr* ptr = &this.SoftwareFrameRegisters.R7 ) { return ptr; };
-                        case  8: fixed(UIntPtr* ptr = &this.SoftwareFrameRegisters.R8 ) { return ptr; };
-                        case  9: fixed(UIntPtr* ptr = &this.SoftwareFrameRegisters.R9 ) { return ptr; };
-                        case 10: fixed(UIntPtr* ptr = &this.SoftwareFrameRegisters.R10) { return ptr; };
-                        case 11: fixed(UIntPtr* ptr = &this.SoftwareFrameRegisters.R11) { return ptr; };
-                        case 12: fixed(UIntPtr* ptr = &this.HardwareFrameRegisters.R12) { return ptr; };
-                        case 13: throw new ArgumentException( "" );
-                        case 14: fixed(UIntPtr* ptr = &this.HardwareFrameRegisters.LR ) { return ptr; };
-                        case 15: fixed(UIntPtr* ptr = &this.HardwareFrameRegisters.PC ) { return ptr; };
+                        case  0: return HardwareFrameRegisters.R0;
+                        case  1: return HardwareFrameRegisters.R1;
+                        case  2: return HardwareFrameRegisters.R2;
+                        case  3: return HardwareFrameRegisters.R3;
+                        case  4: return SoftwareFrameRegisters.R4;
+                        case  5: return SoftwareFrameRegisters.R5;
+                        case  6: return SoftwareFrameRegisters.R6;
+                        case  7: return SoftwareFrameRegisters.R7;
+                        case  8: return SoftwareFrameRegisters.R8;
+                        case  9: return SoftwareFrameRegisters.R9;
+                        case 10: return SoftwareFrameRegisters.R10;
+                        case 11: return SoftwareFrameRegisters.R11;
+                        case 12: return HardwareFrameRegisters.R12;
+                        
+                        case 14: return HardwareFrameRegisters.LR;
+                        case 15: return HardwareFrameRegisters.PC;
                     }
 
-                    return null;
+                    return UIntPtr.Zero;
                 }
             }
 
             //--//
               
             //
-            // This is the pointer to the base of the stack. Usefull for stack walking.
+            // This is the pointer to the base of the stack. Useful for stack walking.
             //
             protected UIntPtr BaseSP;
             //
@@ -169,7 +169,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             public override void Populate( )
             {
                 //
-                // This woudl be called on the throw context, but in ARMv7M we do not have one
+                // This would be called on the throw context, but in ARMv7M we do not have one
                 //
                 ThreadImpl        thisThread = ThreadImpl.CurrentThread;
                 Processor.Context ctx        = thisThread.SwappedOutContext; 
@@ -274,11 +274,9 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 throw new Exception( "Unwind not implemented" );
             }
 
-            public override unsafe UIntPtr GetRegisterByIndex( uint idx )
+            public override UIntPtr GetRegisterByIndex( uint idx )
             {
-                RegistersOnStack* frame = GetFrame(this.SP);
-                
-                return *( frame->GetRegisterPointer( idx ) );
+                return Snapshot.GetRegisterValue( idx );
             }
 
             public override unsafe void SetRegisterByIndex( uint idx, UIntPtr value )

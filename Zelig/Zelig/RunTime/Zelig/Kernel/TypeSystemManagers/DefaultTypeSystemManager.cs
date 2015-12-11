@@ -15,113 +15,189 @@ namespace Microsoft.Zelig.Runtime
         [NoInline]
         public override Object AllocateObject( TS.VTable vTable )
         {
-            uint   size = ComputeObjectSize( vTable       );
-            UIntPtr ptr = AllocateInner    ( vTable, size );
+            uint size = ComputeObjectSize( vTable );
+            UIntPtr ptr;
+            object obj;
+
+            using(SmartHandles.YieldLockHolder hnd = new SmartHandles.YieldLockHolder( MemoryManager.Lock ))
+            {
+                ptr = AllocateInner( vTable, size );
+                obj = InitializeObject( ptr, vTable, referenceCounting: false );
+            }
 
             if(MemoryManager.Configuration.TrashFreeMemory)
             {
-                Memory.Zero( ptr, AddressMath.Increment( ptr, size ) ); 
+                Memory.Zero( ( (ObjectImpl)obj ).GetFieldPointer( ), AddressMath.Increment( ptr, size ) );
             }
 
-            return InitializeObject( ptr, vTable, referenceCounting: false );
+            return obj;
         }
 
         [NoInline]
         public override Object AllocateReferenceCountingObject( TS.VTable vTable )
         {
-            uint   size = ComputeObjectSize( vTable       );
-            UIntPtr ptr = AllocateInner    ( vTable, size );
+            uint size = ComputeObjectSize( vTable );
+            UIntPtr ptr;
+            object obj;
+
+            using(SmartHandles.YieldLockHolder hnd = new SmartHandles.YieldLockHolder( MemoryManager.Lock ))
+            {
+                ptr = AllocateInner( vTable, size );
+                obj = InitializeObject( ptr, vTable, referenceCounting: true );
+            }
 
             if(MemoryManager.Configuration.TrashFreeMemory)
             {
-                Memory.Zero( ptr, AddressMath.Increment( ptr, size ) ); 
+                Memory.Zero( ( (ObjectImpl)obj ).GetFieldPointer( ), AddressMath.Increment( ptr, size ) );
             }
 
-            return InitializeObject( ptr, vTable, referenceCounting: true );
+            return obj;
         }
 
         [NoInline]
         public override Object AllocateObjectWithExtensions( TS.VTable vTable )
         {
-            uint   size = ComputeObjectSize( vTable       );
-            UIntPtr ptr = AllocateInner    ( vTable, size );
+            uint size = ComputeObjectSize( vTable );
+            UIntPtr ptr;
+            object obj;
+
+            using(SmartHandles.YieldLockHolder hnd = new SmartHandles.YieldLockHolder( MemoryManager.Lock ))
+            {
+                ptr = AllocateInner( vTable, size );
+                obj = InitializeObjectWithExtensions( ptr, vTable );
+            }
 
             if(MemoryManager.Configuration.TrashFreeMemory)
             {
-                Memory.Zero( ptr, AddressMath.Increment( ptr, size ) ); 
+                Memory.Zero( ( (ObjectImpl)obj ).GetFieldPointer( ), AddressMath.Increment( ptr, size ) );
             }
 
-            return InitializeObjectWithExtensions( ptr, vTable );
+            return obj;
         }
 
         [NoInline]
         public override Array AllocateArray( TS.VTable vTable ,
                                              uint      length )
         {
-            uint    size = ComputeArraySize( vTable, length );
-            UIntPtr ptr  = AllocateInner   ( vTable, size   );
+            uint size = ComputeArraySize( vTable, length );
+            UIntPtr ptr;
+            Array array;
+
+            using(SmartHandles.YieldLockHolder hnd = new SmartHandles.YieldLockHolder( MemoryManager.Lock ))
+            {
+                ptr = AllocateInner( vTable, size );
+                array = InitializeArray( ptr, vTable, length, referenceCounting: false );
+            }
 
             if(MemoryManager.Configuration.TrashFreeMemory)
             {
-                Memory.Zero( ptr, AddressMath.Increment( ptr, size ) ); 
+                unsafe
+                {
+                    Memory.Zero(
+                        (UIntPtr)ArrayImpl.CastAsArray( array ).GetDataPointer( ),
+                        AddressMath.Increment( ptr, size ) );
+                }
             }
 
-            return InitializeArray( ptr, vTable, length, referenceCounting: false );
+            return array;
         }
 
         [NoInline]
         public override Array AllocateReferenceCountingArray( TS.VTable vTable,
                                                               uint      length )
         {
-            uint    size = ComputeArraySize( vTable, length );
-            UIntPtr ptr  = AllocateInner   ( vTable, size   );
+            uint size = ComputeArraySize( vTable, length );
+            UIntPtr ptr;
+            Array array;
+
+            using(SmartHandles.YieldLockHolder hnd = new SmartHandles.YieldLockHolder( MemoryManager.Lock ))
+            {
+                ptr = AllocateInner( vTable, size );
+                array = InitializeArray( ptr, vTable, length, referenceCounting: true );
+            }
 
             if(MemoryManager.Configuration.TrashFreeMemory)
             {
-                Memory.Zero( ptr, AddressMath.Increment( ptr, size ) ); 
+                unsafe
+                {
+                    Memory.Zero(
+                        (UIntPtr)ArrayImpl.CastAsArray( array ).GetDataPointer( ),
+                        AddressMath.Increment( ptr, size ) );
+                }
             }
 
-            return InitializeArray( ptr, vTable, length, referenceCounting: true );
+            return array;
         }
 
         [NoInline]
         public override Array AllocateArrayNoClear( TS.VTable vTable ,
                                                     uint      length )
         {
-            uint    size = ComputeArraySize( vTable, length );
-            UIntPtr ptr  = AllocateInner   ( vTable, size   );
+            uint size = ComputeArraySize( vTable, length );
+            UIntPtr ptr;
+            Array array;
 
-            return InitializeArray( ptr, vTable, length, referenceCounting: false );
+            using(SmartHandles.YieldLockHolder hnd = new SmartHandles.YieldLockHolder( MemoryManager.Lock ))
+            {
+                ptr = AllocateInner( vTable, size );
+                array = InitializeArray( ptr, vTable, length, referenceCounting: false );
+            }
+
+            return array;
         }
 
         [NoInline]
         public override String AllocateString( TS.VTable vTable ,
                                                int       length )
         {
-            uint    size = ComputeArraySize( vTable, (uint)length );
-            UIntPtr ptr  = AllocateInner   ( vTable,       size   );
+            uint size = ComputeArraySize( vTable, (uint)length );
+            UIntPtr ptr;
+            String str;
+
+            using(SmartHandles.YieldLockHolder hnd = new SmartHandles.YieldLockHolder( MemoryManager.Lock ))
+            {
+                ptr = AllocateInner( vTable, size );
+                str = InitializeString( ptr, vTable, length, referenceCounting: false );
+            }
 
             if(MemoryManager.Configuration.TrashFreeMemory)
             {
-                Memory.Zero( ptr, AddressMath.Increment( ptr, size ) ); 
+                unsafe
+                {
+                    Memory.Zero(
+                        (UIntPtr)StringImpl.CastAsString( str ).GetDataPointer( ),
+                        AddressMath.Increment( ptr, size ) );
+                }
             }
 
-            return InitializeString( ptr, vTable, length, referenceCounting: false );
+            return str;
         }
 
         [NoInline]
         public override String AllocateReferenceCountingString( TS.VTable vTable ,
                                                                 int       length )
         {
-            uint    size = ComputeArraySize( vTable, (uint)length );
-            UIntPtr ptr  = AllocateInner   ( vTable,       size   );
+            uint size = ComputeArraySize( vTable, (uint)length );
+            UIntPtr ptr;
+            String str;
+
+            using(SmartHandles.YieldLockHolder hnd = new SmartHandles.YieldLockHolder( MemoryManager.Lock ))
+            {
+                ptr = AllocateInner( vTable, size );
+                str = InitializeString( ptr, vTable, length, referenceCounting: true );
+            }
 
             if(MemoryManager.Configuration.TrashFreeMemory)
             {
-                Memory.Zero( ptr, AddressMath.Increment( ptr, size ) ); 
+                unsafe
+                {
+                    Memory.Zero(
+                        (UIntPtr)StringImpl.CastAsString( str ).GetDataPointer( ),
+                        AddressMath.Increment( ptr, size ) );
+                }
             }
 
-            return InitializeString( ptr, vTable, length, referenceCounting: true );
+            return str;
         }
 
         //--//
@@ -169,8 +245,6 @@ namespace Microsoft.Zelig.Runtime
                     GarbageCollectionManager.Instance.ThrowOutOfMemory( vTable );
                 }
             }
-
-            GarbageCollectionManager.Instance.NotifyNewObject( ptr, size );
 
             return ptr;
         }

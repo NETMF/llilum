@@ -126,7 +126,8 @@
     <Compile Include="FrameworkOverrides_Windows\Devices\Pwm\PwmProviderUwp.cs" />
     <Compile Include="FrameworkOverrides_Windows\Devices\Spi\SpiDeviceImplUwp.cs" />
     <Compile Include="FrameworkOverrides_Windows\Devices\Spi\SpiProviderUwp.cs" />
-    <Compile Include="GarbageCollectors\BoehmCollector.cs" />
+    <Compile Include="GarbageCollectors\PreciseMarkAndSweepCollector.cs" />
+    <Compile Include="GarbageCollectors\ConservativeMarkAndSweepCollector.cs" />
     <Compile Include="GarbageCollectors\MarkAndSweepCollector.cs" />
     <Compile Include="GarbageCollectors\ReferenceCountingCollector.cs" />
     <Compile Include="HardwareModel\HardwareProvider.cs" />

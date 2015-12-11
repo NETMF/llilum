@@ -125,23 +125,26 @@ namespace Microsoft.Zelig.Runtime
         [ExportedMethod]
         public static UIntPtr AllocateFromManagedHeap( uint size )
         {
-            //
             // Force all heap allocations to be multiples of 4-bytes so that we guarantee 
             // 4-byte alignment for all allocations.
-            //
             size = AddressMath.AlignToWordBoundary( size + ObjectHeader.HeaderSize );
 
-            UIntPtr ptr = Instance.Allocate( size );
+            UIntPtr ptr;
 
-            if( ptr == UIntPtr.Zero )
+            using(SmartHandles.YieldLockHolder hnd = new SmartHandles.YieldLockHolder( MemoryManager.Lock ))
             {
-                GarbageCollectionManager.Instance.Collect();
-
                 ptr = Instance.Allocate( size );
 
                 if(ptr == UIntPtr.Zero)
                 {
-                    throw new OutOfMemoryException( );
+                    GarbageCollectionManager.Instance.Collect( );
+
+                    ptr = Instance.Allocate( size );
+
+                    if(ptr == UIntPtr.Zero)
+                    {
+                        throw new OutOfMemoryException( );
+                    }
                 }
             }
 

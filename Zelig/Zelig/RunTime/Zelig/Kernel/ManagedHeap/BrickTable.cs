@@ -10,6 +10,21 @@ namespace Microsoft.Zelig.Runtime
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
 
+    // BrickTable is a helper used by the mark and sweep GC to map an internal pointer to a known 
+    // heap object pointer. It works by dividing all the heaps into multiple pages of size c_PageSize, and
+    // mapping each page to a short in m_bricks. The short value indicates the offset from the beginning
+    // of the page to the first valid heap object in that page, or, in the case where the beginning of 
+    // the page is at the middle of a valid heap object, the offset (which will be negative) to that heap
+    // object.
+    //
+    // For example: 
+    //   (Assume the page size is 10 for the purpose of this example and easy math)
+    //
+    //        0                   1                   2                   3
+    // Addr:  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 
+    // Heap:  [Free][HeapObj1][HeapObj2                    ][Free                            ]
+    // Pages: [        3         ][        -2        ][       -12        ][     uninit       ]
+    //
     public class BrickTable
     {
         private const uint c_PageSize                             = 2048;
@@ -77,7 +92,7 @@ namespace Microsoft.Zelig.Runtime
 
                 //
                 // Only update if the new pointer is lower than the previous one.
-                // This automatically covers the case of an unintialized brick.
+                // This automatically covers the case of an uninitialized brick.
                 //
                 {
                     int value = *ptr;
@@ -88,7 +103,7 @@ namespace Microsoft.Zelig.Runtime
                 }
 
                 //
-                // If an object struddles more than one page, mark all the covered pages with a backtrack marker.
+                // If an object straddles more than one page, mark all the covered pages with a backtrack marker.
                 //
                 while(++ptr <= endPagePtr)
                 {

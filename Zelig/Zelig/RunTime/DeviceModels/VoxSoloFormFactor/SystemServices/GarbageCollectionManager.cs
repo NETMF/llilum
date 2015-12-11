@@ -10,7 +10,7 @@ namespace Microsoft.VoxSoloFormFactor
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
 
-    public sealed class GarbageCollectionManager : RT.MarkAndSweepCollector
+    public sealed class GarbageCollectionManager : RT.PreciseMarkAndSweepCollector
     {
     }
 }

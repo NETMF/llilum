@@ -8,8 +8,8 @@ namespace Microsoft.Llilum.STM32F411
     using Chipset = Microsoft.CortexM4OnMBED;
 
 
-    //public sealed class GarbageCollectionManager : Chipset.GarbageCollectionManager
-    //{        
-    //}
+    public sealed class GarbageCollectionManager : Chipset.GarbageCollectionManager
+    {
+    }
 }
 

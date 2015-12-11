@@ -7,7 +7,7 @@ namespace Microsoft.CortexM3OnCMSISCore
     using RT = Microsoft.Zelig.Runtime;
 
 
-    public abstract class GarbageCollectionManager : RT.BoehmCollector
+    public abstract class GarbageCollectionManager : RT.ConservativeMarkAndSweepCollector
     {
     }
 }
