@@ -191,6 +191,33 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                         return (uint)sizeof(SoftwareFrame);
                     }
                 }
+            
+                //--//
+
+                internal unsafe UIntPtr* GetRegisterPointer( uint idx ) 
+                {
+                    switch(idx)
+                    {
+                        case  0: fixed(UIntPtr* ptr = &this.HardwareFrameRegisters.R0 ) { return ptr; };
+                        case  1: fixed(UIntPtr* ptr = &this.HardwareFrameRegisters.R1 ) { return ptr; };
+                        case  2: fixed(UIntPtr* ptr = &this.HardwareFrameRegisters.R2 ) { return ptr; };
+                        case  3: fixed(UIntPtr* ptr = &this.HardwareFrameRegisters.R3 ) { return ptr; };
+                        case  4: fixed(UIntPtr* ptr = &this.SoftwareFrameRegisters.R4 ) { return ptr; };
+                        case  5: fixed(UIntPtr* ptr = &this.SoftwareFrameRegisters.R5 ) { return ptr; };
+                        case  6: fixed(UIntPtr* ptr = &this.SoftwareFrameRegisters.R6 ) { return ptr; };
+                        case  7: fixed(UIntPtr* ptr = &this.SoftwareFrameRegisters.R7 ) { return ptr; };
+                        case  8: fixed(UIntPtr* ptr = &this.SoftwareFrameRegisters.R8 ) { return ptr; };
+                        case  9: fixed(UIntPtr* ptr = &this.SoftwareFrameRegisters.R9 ) { return ptr; };
+                        case 10: fixed(UIntPtr* ptr = &this.SoftwareFrameRegisters.R10) { return ptr; };
+                        case 11: fixed(UIntPtr* ptr = &this.SoftwareFrameRegisters.R11) { return ptr; };
+                        case 12: fixed(UIntPtr* ptr = &this.HardwareFrameRegisters.R12) { return ptr; };
+                        case 13: throw new ArgumentException( "" );
+                        case 14: fixed(UIntPtr* ptr = &this.HardwareFrameRegisters.LR ) { return ptr; };
+                        case 15: fixed(UIntPtr* ptr = &this.HardwareFrameRegisters.PC ) { return ptr; };
+                    }
+
+                    return null;
+                }
             }
 
             //--//
@@ -235,12 +262,22 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             
             public override void Populate( )
             {
-                BugCheck.Raise( BugCheck.StopCode.InvalidOperation );
+                //
+                // This woudl be called on the throw context, but in ARMv7M we do not have one
+                //
+                ThreadImpl        thisThread = ThreadImpl.CurrentThread;
+                Processor.Context ctx        = thisThread.SwappedOutContext; 
+                
+                this.BaseSP     = ctx.BaseStackPointer;
+                this.SP         = ctx.StackPointer;
+                this.EXC_RETURN = ctx.ExcReturn;
             }
 
             public override void Populate( Processor.Context context )
             {
-                BugCheck.Raise( BugCheck.StopCode.InvalidOperation );
+                this.BaseSP     = context.BaseStackPointer;
+                this.SP         = context.StackPointer;
+                this.EXC_RETURN = context.ExcReturn;
             }
 
             public unsafe override void PopulateFromDelegate( Delegate dlg, uint[] stack )
@@ -333,13 +370,14 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
             public override unsafe UIntPtr GetRegisterByIndex( uint idx )
             {
-                //return *( this.Registers.GetRegisterPointer( idx ) );
-                return (UIntPtr)0;
+                RegistersOnStackNoFPContext* frame = GetSimpleFrame(this.SP);
+                
+                return *( frame->GetRegisterPointer( idx ) );
             }
 
             public override unsafe void SetRegisterByIndex( uint idx, UIntPtr value )
             {
-                //*( this.Registers.GetRegisterPointer( idx ) ) = value;
+                BugCheck.Assert( false, BugCheck.StopCode.InvalidOperation ); 
             }
 
             #endregion
@@ -438,6 +476,14 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             {
                 [RT.Inline]
                 get { return this.BaseSP; }
+            }
+
+            public override uint ExcReturn
+            {
+                [RT.Inline]
+                get { return this.EXC_RETURN;  }
+                [RT.Inline]
+                set { this.EXC_RETURN = value; }
             }
 
             public bool IsFullContext

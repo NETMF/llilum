@@ -692,6 +692,12 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv5
                 }
             }
 
+            public override uint ExcReturn
+            {
+                get { return 0;  }
+                set {            }
+            }
+
             public override UIntPtr ProgramCounter
             {
                 get

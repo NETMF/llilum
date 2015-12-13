@@ -746,8 +746,8 @@ namespace Microsoft.Zelig.Runtime
 
         private void WalkStackFrames()
         {
-            ThreadImpl         thisThread = ThreadImpl.CurrentThread;
-            Processor.Context  ctx        = thisThread.ThrowContext; // Reuse the throw context for the current thread to unwind the stack.
+            ThreadImpl        thisThread = ThreadImpl.CurrentThread;
+            Processor.Context ctx        = thisThread.ThrowContext; // Reuse the throw context for the current thread to unwind the stack.
             
             //
             // TODO: LT72: Only the RT.Threadmanager can implement this method correctly at this time

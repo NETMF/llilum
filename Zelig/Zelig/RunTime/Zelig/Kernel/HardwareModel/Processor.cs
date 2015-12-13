@@ -58,6 +58,12 @@ namespace Microsoft.Zelig.Runtime
                 get;
             }
 
+            public abstract uint ExcReturn
+            {
+                get;
+                set;
+            }
+
             public abstract UIntPtr ProgramCounter
             {
                 get;

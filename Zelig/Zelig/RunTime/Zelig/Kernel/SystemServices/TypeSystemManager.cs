@@ -393,7 +393,7 @@ namespace Microsoft.Zelig.Runtime
             //
             // TODO: LT72: Only RT.ThreadManager can implement this method correctly
             //
-            ThreadImpl thread = ThreadManager.Instance.CurrentThread;
+            ThreadImpl thread     = ThreadManager.Instance.CurrentThread;
             Processor.Context ctx = thread.ThrowContext;
 
             thread.CurrentException = obj;

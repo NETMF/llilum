@@ -489,10 +489,13 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv4
 
             public override UIntPtr BaseStackPointer
             {
-                get
-                {
-                    return (UIntPtr)0;
-                }
+                get { return (UIntPtr)0; }
+            }
+
+            public override uint ExcReturn
+            {
+                get { return 0;  }
+                set {            }
             }
 
             public override UIntPtr ProgramCounter
