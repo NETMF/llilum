@@ -66,6 +66,11 @@
 -OutputName Microsoft.Zelig.Test.mbed.Simple
 -OutputDir  ..\..\..\..\LLVM2IR_results\mbed\simple
 
+
+###
+### Dumps and diagnostics
+###
+#-DumpIRBeforePhase All
 #-DumpIR
 #-DumpIRpre
 #-DumpIRpost

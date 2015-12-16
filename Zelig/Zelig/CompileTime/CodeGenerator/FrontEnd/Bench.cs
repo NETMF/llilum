@@ -113,6 +113,7 @@ namespace Microsoft.Zelig.FrontEnd
         private bool                                m_fDumpIRXMLpre;
         private bool                                m_fDumpIRXMLpost;
         private bool                                m_fDumpIRXML;
+        private bool                                m_fDumpIRBeforeEachPhase;
         private bool                                m_fDumpCFG;
         private bool                                m_fDumpLLVMIR;
         private bool                                m_fDumpLLVMIR_TextRepresentation;
@@ -123,10 +124,13 @@ namespace Microsoft.Zelig.FrontEnd
         private uint                                m_nativeIntSize;
         private List< RawImage >                    m_dumpRawImage;
 
+        private int                                 m_phaseExecutionCounter;
+
         private string                              m_libraryLocation_HostBuild;
         private string                              m_libraryLocation_TargetBuild;
         private string                              m_compilationSetupBinaryPath;
-
+        
+        private HashSet< string >                   m_phasesForDiagnosticDumps;
         private List< string >                      m_references;
         private List< string >                      m_searchOrder;
         private List< string >                      m_importDirectories;
@@ -172,25 +176,27 @@ namespace Microsoft.Zelig.FrontEnd
 
             //--//
 
-            m_outputDir = ".";
+            m_outputDir                 = ".";
 
-            m_nativeIntSize = 32;
+            m_nativeIntSize             = 32;
+            m_phaseExecutionCounter     = 0;
 
-            m_dumpRawImage = new List<RawImage>( );
+            m_dumpRawImage              = new List<RawImage>( );
+            
+            m_phasesForDiagnosticDumps  = new HashSet<string>( );
+            m_references                = new List<string>( );
+            m_searchOrder               = new List<string>( );
+            m_importDirectories         = new List<string>( );
+            m_importLibraries           = new List<string>( );
+            
+            m_resolver                  = new Zelig.MetaData.MetaDataResolver( this );
 
-            m_references = new List<string>( );
-            m_searchOrder = new List<string>( );
-            m_importDirectories = new List<string>( );
-            m_importLibraries = new List<string>( );
+            m_configurationOptions      = HashTableFactory.New<string, object>( );
 
-            m_resolver = new Zelig.MetaData.MetaDataResolver( this );
+            m_disabledPhases            = new List<String>( );
 
-            m_configurationOptions = HashTableFactory.New<string, object>( );
-
-            m_disabledPhases = new List<String>( );
-
-            m_sourceCodeTracker = new IR.SourceCodeTracker( );
-            m_LlvmCodeGenOptions = new LlvmCodeGenOptions( );
+            m_sourceCodeTracker         = new IR.SourceCodeTracker( );
+            m_LlvmCodeGenOptions        = new LlvmCodeGenOptions( );
         }
 
         //--//
@@ -219,6 +225,8 @@ namespace Microsoft.Zelig.FrontEnd
 
         void NotifyCompilationPhase( IR.CompilationSteps.PhaseDriver phase )
         {
+            m_phaseExecutionCounter++;
+
             Console.WriteLine( "{0}: Phase: {1}", GetTime( ), phase );
 
 #if DEBUG_SAVE_STATE
@@ -228,21 +236,25 @@ namespace Microsoft.Zelig.FrontEnd
             }
 #endif
 
-            ////        if(phase == IR.CompilationSteps.Phase.ReduceTypeSystem + 1)
-            ////        {
-            ////            string filePrefix = Path.Combine( m_outputDir, m_outputName );
-            ////
-            ////            DumpIRAsText( filePrefix + ".ZeligIR_post" );
-            ////        }
+            if(m_fDumpIRBeforeEachPhase)
+            {
+                var currentPhase = phase.ToString( );
 
-            ////        switch(phase)
-            ////        {
-            ////            case Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phase.Optimizations:
-            ////            case Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phase.AllocateRegisters:
-            ////                Console.WriteLine( "Press ENTER" );
-            ////                Console.ReadLine();
-            ////                break;
-            ////        }
+                if(m_phasesForDiagnosticDumps.Contains( "All" ) || m_phasesForDiagnosticDumps.Contains( currentPhase ))
+                {
+                    string path = Path.Combine( m_outputDir, "phases" );
+
+                    if(Directory.Exists( path ) == false)
+                    {
+                        Directory.CreateDirectory( path );
+                    }
+                    
+                    string filePrefix = Path.Combine( path, m_phaseExecutionCounter.ToString() + "_" + m_outputName );
+                    
+                    DumpIRAsText( filePrefix + currentPhase + ".ZeligIR"     );
+                    DumpIRAsXML ( filePrefix + currentPhase + ".ZeligIR.xml" );
+                }
+            }
         }
 
         //--//
@@ -803,6 +815,24 @@ namespace Microsoft.Zelig.FrontEnd
                         {
                             m_fDumpIRXMLpost = true;
                         }
+                        else if( IsMatch( option, "DumpIRBeforePhase" ) )
+                        {
+                            m_fDumpIRBeforeEachPhase = true;
+                            
+                            string phase;                            
+                            bool fFoundOne = false;
+                            while( GetArgument( arg, args, ref i, out phase, false, false ) )
+                            {
+                                m_phasesForDiagnosticDumps.Add( phase ); 
+
+                                fFoundOne = true;
+                            }
+
+                            if(fFoundOne == false)
+                            {
+                                return false;
+                            }
+                        }
                         else if( IsMatch( option, "DumpIRXML" ) )
                         {
                             m_fDumpIRXML = true;
@@ -1178,7 +1208,8 @@ namespace Microsoft.Zelig.FrontEnd
                                              string[] args,
                                          ref int i,
                                          out string value,
-                                             bool fExpand )
+                                             bool fExpand, 
+                                             bool fErrorOnParse = true )
         {
             if( i + 1 < args.Length )
             {
@@ -1194,7 +1225,10 @@ namespace Microsoft.Zelig.FrontEnd
                 return true;
             }
 
-            Console.WriteLine( "Option '{0}' needs an argument", arg );
+            if(fErrorOnParse)
+            {
+                Console.WriteLine( "Option '{0}' needs an argument", arg );
+            }
 
             value = null;
             return false;
