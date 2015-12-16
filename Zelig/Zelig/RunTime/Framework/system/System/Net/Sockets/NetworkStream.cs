@@ -7,7 +7,6 @@ namespace System.Net.Sockets
 
     using System.IO;
     using System.Net;
-    using System.Net.Sockets;
 
     // Summary:
     //     Provides the underlying stream of data for network access.

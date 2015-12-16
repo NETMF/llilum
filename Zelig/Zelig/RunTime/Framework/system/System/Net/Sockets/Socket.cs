@@ -2,16 +2,11 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("System.Net.Security")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo( "System.Net.Security" )]
 
 namespace System.Net.Sockets
 {
-    using System.Collections;
-    using System.Diagnostics;
-    using System.Globalization;
-    using System.IO;
     using System.Net;
-    using System.Runtime.InteropServices;
     using System.Runtime.CompilerServices;
     using System.Threading;
 

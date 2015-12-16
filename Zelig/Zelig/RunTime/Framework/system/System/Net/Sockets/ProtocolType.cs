@@ -4,8 +4,6 @@
 
 namespace System.Net.Sockets
 {
-    using System;
-
     /// <devdoc>
     ///    <para>
     ///       Specifies the protocols that the <see cref='System.Net.Sockets.Socket'/> class supports.

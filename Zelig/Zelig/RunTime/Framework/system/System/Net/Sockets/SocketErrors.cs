@@ -4,9 +4,6 @@
 
 namespace System.Net.Sockets
 {
-    using System;
-    using System.Net;
-
     /// <devdoc>
     ///    <para>
     ///       Defines socket error constants.

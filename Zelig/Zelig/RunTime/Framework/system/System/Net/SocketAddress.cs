@@ -5,10 +5,7 @@
 namespace System.Net
 {
     using System;
-    using System.Runtime.InteropServices;
     using System.Net.Sockets;
-    using System.Text;
-    using System.Globalization;
 
     public class SocketAddress
     {

@@ -5,8 +5,6 @@
 namespace System.Net
 {
     using System;
-    using System.Runtime.InteropServices;
-    using System.Net.Sockets;
 
     // Generic abstraction to identify network addresses
 

@@ -15,18 +15,11 @@
 =============================================================================*/
 namespace System
 {
-    using System;
-    using System.IO;
-    using System.Text;
-    using System.Globalization;
     using System.Security.Permissions;
-////using Microsoft.Win32;
+    ////using Microsoft.Win32;
     using System.Runtime.CompilerServices;
-    using System.Threading;
-    using System.Runtime.InteropServices;
-////using Microsoft.Win32.SafeHandles;
-    using System.Runtime.ConstrainedExecution;
-////using System.Runtime.Versioning;
+    ////using Microsoft.Win32.SafeHandles;
+    ////using System.Runtime.Versioning;
 
     // Provides static fields for console input & output.  Use 
     // Console.In for input from the standard input stream (stdin),

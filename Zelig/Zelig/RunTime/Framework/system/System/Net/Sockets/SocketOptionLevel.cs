@@ -4,8 +4,6 @@
 
 namespace System.Net.Sockets
 {
-    using System;
-
     //
     // Option flags per-socket.
     //

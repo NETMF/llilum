@@ -4,12 +4,7 @@
 
 namespace System.Net
 {
-    using System.Text;
-    using System.Collections;
     using System.Net.Sockets;
-    using System.Runtime.InteropServices;
-    using System.Threading;
-    using System.Globalization;
 
     using NativeSocket = Microsoft.Llilum.Net.SocketNative;
 

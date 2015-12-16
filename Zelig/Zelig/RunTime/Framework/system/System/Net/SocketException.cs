@@ -5,7 +5,6 @@
 namespace System.Net.Sockets
 {
     using System;
-    using System.Runtime.InteropServices;
 
     [Serializable]
     public class SocketException : Exception

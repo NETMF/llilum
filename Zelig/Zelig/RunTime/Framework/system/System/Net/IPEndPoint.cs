@@ -5,8 +5,7 @@
 namespace System.Net
 {
     using System.Net.Sockets;
-    using System.Globalization;
-    
+
     [Serializable]
     public class IPEndPoint : EndPoint
     {

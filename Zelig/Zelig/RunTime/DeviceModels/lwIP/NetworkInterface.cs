@@ -6,9 +6,6 @@ namespace Microsoft.Llilum.Lwip
 {
     using System;
     using System.Collections;
-    using System.Reflection;
-    using System.Diagnostics;
-    using System.Runtime.CompilerServices;
     using System.Threading;
     using Microsoft.Zelig.Runtime;
 

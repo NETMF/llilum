@@ -2,15 +2,11 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("System")]
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Microsoft.Zelig.Runtime")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo( "System" )]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo( "Microsoft.Zelig.Runtime" )]
 
 namespace Microsoft.Llilum.Net
 {
-    using System;
-    using System.Collections;
-    using System.Reflection;
-    using System.Diagnostics;
     using System.Runtime.CompilerServices;
 
     internal static class SocketNative

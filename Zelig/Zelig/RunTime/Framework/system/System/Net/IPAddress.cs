@@ -4,9 +4,6 @@
 
 namespace System.Net
 {
-    using System.Net.Sockets;
-    using System.Globalization;
-    using System.Text;
     using Runtime.CompilerServices;
 
     /// <devdoc>
