@@ -167,6 +167,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CortexM3OnCMSIS-Core", "RunTime\DeviceModels\CortexM3OnCMSIS-Core\CortexM3OnCMSIS-Core.csproj", "{0B37E5BA-4839-4EC4-9E36-A96BCBEA2400}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CortexM3OnMBED", "RunTime\DeviceModels\CortexM3OnMBED\CortexM3OnMBED.csproj", "{0C522C6A-0F77-4AF8-AD78-5B2415C98C51}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD} = {E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelForCortexM3", "RunTime\DeviceModels\ModelForCortexM3\ModelForCortexM3.csproj", "{A30EB003-94F8-4A85-8DA1-006F6810A7A4}"
 EndProject
