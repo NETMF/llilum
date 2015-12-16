@@ -941,12 +941,16 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                     {
                         Expression         ex    = GetArgumentFromStack( 0, 1 );
                         VariableExpression exRes = CreateNewTemporary( ex.Type );
+                        VariableExpression exRes2 = CreateNewTemporary( ex.Type );
 
+                        PopStackModel( 1 );
                         PushStackModel( exRes );
+                        PushStackModel( exRes2 );
 
                         AddOperator( SingleAssignmentOperator.New( instr.DebugInfo, exRes, ex ) );
-                    }
-                    break;
+                        AddOperator( SingleAssignmentOperator.New( instr.DebugInfo, exRes2, ex ) );
+                }
+                break;
 
                 case Instruction.OpcodeActionStack.Pop:
                     {
