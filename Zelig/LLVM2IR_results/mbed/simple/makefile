@@ -81,11 +81,11 @@ endif
 ifeq ($(TARGET),LPC1768)
 
 ifeq ($(HEAP_SIZE),)
-	AS_FLAGS += --defsym __HEAP_SIZE=0x4000
-    CC_FLAGS += -D__HEAP_SIZE=0x4000
+	AS_FLAGS += --defsym __HEAP_SIZE=0x6000
+	CC_FLAGS += -D__HEAP_SIZE=0x6000
 else
 	AS_FLAGS += --defsym __HEAP_SIZE=$(HEAP_SIZE)
-    CC_FLAGS += -D__HEAP_SIZE=$(HEAP_SIZE)
+	CC_FLAGS += -D__HEAP_SIZE=$(HEAP_SIZE)
 endif
 
 ifeq ($(DEBUG), 1)
@@ -211,7 +211,6 @@ $(TARGET)\\%.o: $(LLILUM_ROOT)\Zelig\os_layer\ports\mbed\%.S
 $(TARGET)\\%.o: $(LLILUM_ROOT)\Zelig\lwip\lwip-sys\arch\%.c
 	$(CC)  $(CC_FLAGS) $(CC_SYMBOLS) -std=gnu99   $(INCLUDE_PATHS) -o $@ $<
 
-    
 $(TARGET)\\%.o: %.c
 	$(CC)  $(CC_FLAGS) $(CC_SYMBOLS) -std=gnu99 $(INCLUDE_PATHS) -o $@ $<
 
