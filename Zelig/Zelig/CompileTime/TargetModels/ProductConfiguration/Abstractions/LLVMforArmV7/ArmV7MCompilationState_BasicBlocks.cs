@@ -151,41 +151,65 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             return false;
         }
 
-        private void CreateValueCache( IR.VariableExpression expr, IR.Operator[][] useChains )
+        private void CreateValueCache(IR.VariableExpression expr, IR.Operator[][] useChains)
         {
             // Resolve the origin of phi (and other aliased) variables. If a variable is unaliased, this is a no-op.
             IR.VariableExpression alias = expr.AliasedVariable;
 
-            bool addressable = false;
-            foreach( IR.Operator useOp in useChains[expr.SpanningTreeIndex] )
+            // Get or create a slot for the backing variable.
+            ValueCache aliasSlot;
+            if (!m_localValues.TryGetValue(alias, out aliasSlot))
             {
-                if( ArgumentIsAddress( expr, useOp ) )
+                if (IsAliasAddressed(alias, useChains))
                 {
-                    addressable = true;
-                    break;
+                    _Value address = m_function.GetLocalStackValue(m_method, m_basicBlock, alias, m_manager);
+                    aliasSlot = new ValueCache(alias, address);
+                }
+                else
+                {
+                    aliasSlot = new ValueCache(alias, m_manager.GetOrInsertType(alias.Type));
+                }
+
+                m_localValues[alias] = aliasSlot;
+            }
+
+            // If the expression aliases the slot we created above, add another entry for it.
+            if (alias != expr)
+            {
+                if (aliasSlot.IsAddressable)
+                {
+                    m_localValues[expr] = new ValueCache(expr, aliasSlot.Address);
+                }
+                else
+                {
+                    m_localValues[expr] = new ValueCache(expr, aliasSlot.Type);
+                }
+            }
+        }
+
+        private bool IsAliasAddressed(IR.VariableExpression alias, IR.Operator[][] useChains)
+        {
+            Debug.Assert(alias.AliasedVariable == alias, "Expected root aliased variable.");
+
+            // Analyze all variables which reference the given alias for whether any require an
+            // address. If so, all such variables should be given the same address.
+            foreach (IR.VariableExpression variable in m_variables)
+            {
+                if (variable.AliasedVariable != alias)
+                {
+                    continue;
+                }
+
+                foreach (IR.Operator useOp in useChains[variable.SpanningTreeIndex])
+                {
+                    if (ArgumentIsAddress(variable, useOp))
+                    {
+                        return true;
+                    }
                 }
             }
 
-            if( addressable )
-            {
-                // Ensure all variables aliasing the same value share the same address.
-                ValueCache aliasSlot;
-                if( !m_localValues.TryGetValue( alias, out aliasSlot ) )
-                {
-                    _Value address = m_function.GetLocalStackValue( m_method, m_basicBlock, alias, m_manager );
-                    aliasSlot = new ValueCache( alias, address );
-                    m_localValues[ alias ] = aliasSlot;
-                }
-
-                if( alias != expr )
-                {
-                    m_localValues[ expr ] = new ValueCache( expr, aliasSlot.Address );
-                }
-            }
-            else
-            {
-                m_localValues[ expr ] = new ValueCache( expr, m_manager.GetOrInsertType( expr.Type ) );
-            }
+            return false;
         }
 
         private _Value GetImmediate( IR.BasicBlock block, IR.Expression expression )
@@ -737,11 +761,24 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         {
             Debug.Assert( op.Origins.Length == op.Arguments.Length );
 
+            ValueCache result = m_localValues[op.FirstResult];
+
+            // If the result is addressable, then all of its arguments should be as well. Let it load on demand.
+            if (result.IsAddressable)
+            {
+                foreach (IR.Expression expr in op.Arguments)
+                {
+                    Debug.Assert(m_localValues[expr].IsAddressable, "All inputs of an addressable phi node must also be addressable.");
+                }
+
+                return;
+            }
+
             // We need to delay adding values to the node as some predecessor blocks may not have been emitted yet.
             _Value phiNode = m_basicBlock.InsertPhiNode( m_manager.GetOrInsertType( op.FirstResult.Type ) );
             m_pendingPhiNodes.Add( op, phiNode );
 
-            StoreValue( m_localValues[ op.FirstResult ], phiNode );
+            StoreValue( result, phiNode );
         }
 
         private void Translate_CompareAndSetOperator( IR.CompareAndSetOperator op )
