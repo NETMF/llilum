@@ -152,18 +152,16 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             CompilationConstraints[] ccArray = nc.CurrentCFG.CompilationConstraintsAtOperator( op );
             Expression               addr    = op.FirstArgument;
 
-            //
-            // Are we checking the "this" pointer? If so, we know it's not null, other parts of the system will ensure that.
-            //
             if(addr == nc.CurrentCFG.Arguments[0])
             {
+                // We know the 'this' pointer is non-null since the caller will check before calling.
                 op.Delete();
             }
-            //
-            // Is this a managed pointer? If so, we know it's not null by construction (and if there's a cast to one, the cast will check it).
-            //
-            else if(addr.Type is ManagedPointerTypeRepresentation)
+            else if(addr.Type is ManagedPointerTypeRepresentation ||
+                    addr.Type is UnmanagedPointerTypeRepresentation)
             {
+                // Managed pointers are guaranteed non-null by construction, while unmanaged pointers
+                // can only be used in an unsafe context and therefore should never be checked.
                 op.Delete();
             }
             else if(ControlFlowGraphState.HasCompilationConstraint( ccArray, CompilationConstraints.NullChecks_OFF      ) ||
