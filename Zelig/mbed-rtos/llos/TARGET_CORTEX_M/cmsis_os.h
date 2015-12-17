@@ -77,8 +77,7 @@
 #include <stddef.h>
  
 #ifdef  __cplusplus
-extern "C"
-{
+extern "C" {  
 #endif
  
  
@@ -347,7 +346,13 @@ osStatus osDelay (uint32_t millisec);
 /// \return event that contains signal, message, or mail information or error code.
 /// \note MUST REMAIN UNCHANGED: \b osWait shall be consistent in every CMSIS-RTOS.
 osEvent osWait (uint32_t millisec);
- 
+
+
+//
+// Thunk to enable returning osEvent
+//
+osStatus osWaitEx(uint32_t millisec, osEvent* ev);
+
 #endif  // Generic Wait available
  
  
@@ -508,6 +513,12 @@ osSemaphoreId osSemaphoreCreate (const osSemaphoreDef_t *semaphore_def, int32_t 
 /// \return number of available tokens, or -1 in case of incorrect parameters.
 /// \note MUST REMAIN UNCHANGED: \b osSemaphoreWait shall be consistent in every CMSIS-RTOS.
 int32_t osSemaphoreWait (osSemaphoreId semaphore_id, uint32_t millisec);
+
+//
+// Thunk to enable returing the correct count
+//
+
+int32_t osSemaphoreWaitEx(osSemaphoreId semaphore_id, uint32_t millisec);
  
 /// Release a Semaphore token.
 /// \param[in]     semaphore_id  semaphore object referenced with \ref osSemaphoreCreate.
@@ -625,6 +636,11 @@ osStatus osMessagePut (osMessageQId queue_id, uint32_t info, uint32_t millisec);
 /// \return event information that includes status code.
 /// \note MUST REMAIN UNCHANGED: \b osMessageGet shall be consistent in every CMSIS-RTOS.
 osEvent osMessageGet (osMessageQId queue_id, uint32_t millisec);
+
+//
+// Thunk to enable returning osEvent
+//
+osStatus osMessageGetEx(osMessageQId queue_id, uint32_t millisec, osEvent* ev);
  
 #endif     // Message Queues available
  

@@ -28,7 +28,7 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
 
         //--//
 
-        public uint Lock( int millisec )
+        public bool Lock( int millisec )
         {
             if(millisec < 0)
             {
@@ -38,20 +38,18 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
             {
                 if(Monitor.TryEnter( m_sync, millisec ))
                 {
-                    return 0;
+                    return true;
                 }
 
-                return 1;
+                return false;
             }
 
-            return 0;
+            return true;
         }
 
-        public uint Unlock( )
+        public void Unlock( )
         {
             Monitor.Exit( m_sync );
-
-            return 0;
         }
 
         //--//

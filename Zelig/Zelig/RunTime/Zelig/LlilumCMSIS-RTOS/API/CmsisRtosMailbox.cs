@@ -17,29 +17,29 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
 
         //--//
 
-        public static CmsisRtosMailbox Create(int queueSize)
+        public static CmsisRtosMailbox Create( uint queueSize )
         {
-            return new CmsisRtosMailbox(queueSize);
+            return new CmsisRtosMailbox( queueSize );
         }
         
-        private CmsisRtosMailbox(int queueSize)
+        private CmsisRtosMailbox( uint queueSize ) : base()
         {
-            m_buffer = new KernelCircularBuffer<UIntPtr>(queueSize);
+            m_buffer = new KernelCircularBuffer<UIntPtr>( (int)queueSize );
         }
 
-        public unsafe bool TryGetMessage(int msTimeout, out UIntPtr message)
+        public unsafe bool TryGetMessage( int millisec, out UIntPtr message ) 
         {
-            if(m_buffer.DequeueBlocking(msTimeout, out message))
+            if(m_buffer.DequeueBlocking( millisec, out message ))
             {
-                return true;
+                return true; 
             }
 
             return false;
         }
 
-        public unsafe bool TryPutMessage(UIntPtr message, int msTimeout)
+        public unsafe bool TryPutMessage( UIntPtr message, int millisec )
         {
-            if(m_buffer.EnqueueBlocking(msTimeout, message))
+            if(m_buffer.EnqueueBlocking( millisec, message ))
             {
                 return true;
             }

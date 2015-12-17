@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="API\CmsisObject.cs" />
     <Compile Include="API\CmsisRtos.cs" />
+    <Compile Include="API\CmsisRtosThread.cs" />
     <Compile Include="API\CmsisRtosMailbox.cs" />
     <Compile Include="API\CmsisRtosMutex.cs" />
     <Compile Include="API\CmsisRtosSemaphore.cs" />
@@ -110,6 +111,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\..\..\..\lwip\lwip-sys\arch\cc.h">
+      <Link>Native\cc.h</Link>
+    </Content>
+    <Content Include="..\..\..\..\lwip\lwip-sys\arch\checksum.c">
+      <Link>Native\checksum.c</Link>
+    </Content>
+    <Content Include="..\..\..\..\lwip\lwip-sys\arch\memcpy.c">
+      <Link>Native\memcpy.c</Link>
+    </Content>
+    <Content Include="..\..\..\..\lwip\lwip-sys\arch\perf.h">
+      <Link>Native\perf.h</Link>
+    </Content>
+    <Content Include="..\..\..\..\lwip\lwip-sys\arch\sys_arch.c">
+      <Link>Native\sys_arch.c</Link>
+    </Content>
+    <Content Include="..\..\..\..\lwip\lwip-sys\arch\sys_arch.h">
+      <Link>Native\sys_arch.h</Link>
+    </Content>
     <Content Include="..\..\..\..\mbed-rtos\llos\TARGET_CORTEX_M\cmsis_os.h">
       <Link>Native\cmsis_os.h</Link>
     </Content>

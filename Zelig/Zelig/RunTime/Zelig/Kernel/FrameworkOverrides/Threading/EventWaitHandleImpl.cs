@@ -25,7 +25,7 @@ namespace Microsoft.Zelig.Runtime
             // Constructor Methods
             //
 
-            internal EventWaitableObject( EventWaitHandleImpl owner )
+            internal EventWaitableObject(EventWaitHandleImpl owner)
             {
                 m_owner = owner;
             }
@@ -34,22 +34,22 @@ namespace Microsoft.Zelig.Runtime
             // Helper Methods
             //
 
-            public override bool Acquire( SchedulerTime timeout )
+            public override bool Acquire(SchedulerTime timeout)
             {
                 ThreadImpl thisThread = ThreadImpl.CurrentThread;
 
-                BugCheck.Assert( thisThread != null, BugCheck.StopCode.NoCurrentThread );
+                BugCheck.Assert(thisThread != null, BugCheck.StopCode.NoCurrentThread);
 
                 //
                 // Let's try to shortcut the acquisition of the event.
                 //
-                if(m_owner.m_state)
+                if (m_owner.m_state)
                 {
-                    using(SmartHandles.InterruptState.Disable())
+                    using (SmartHandles.InterruptState.Disable())
                     {
-                        if(m_owner.m_state)
+                        if (m_owner.m_state)
                         {
-                            if(m_owner.m_mode == System.Threading.EventResetMode.AutoReset)
+                            if (m_owner.m_mode == System.Threading.EventResetMode.AutoReset)
                             {
                                 m_owner.m_state = false;
                             }
@@ -59,17 +59,17 @@ namespace Microsoft.Zelig.Runtime
                     }
                 }
 
-                using(Synchronization.WaitingRecord.Holder holder = Synchronization.WaitingRecord.Holder.Get( thisThread, this, timeout ))
+                using (Synchronization.WaitingRecord.Holder holder = Synchronization.WaitingRecord.Holder.Get(thisThread, this, timeout))
                 {
-                    while(true)
+                    while (true)
                     {
-                        using(SmartHandles.InterruptState.Disable())
+                        using (SmartHandles.InterruptState.Disable())
                         {
-                            if(holder.ShouldTryToAcquire)
+                            if (holder.ShouldTryToAcquire)
                             {
-                                if(m_owner.m_state)
+                                if (m_owner.m_state)
                                 {
-                                    if(m_owner.m_mode == System.Threading.EventResetMode.AutoReset)
+                                    if (m_owner.m_mode == System.Threading.EventResetMode.AutoReset)
                                     {
                                         m_owner.m_state = false;
                                     }
@@ -79,7 +79,7 @@ namespace Microsoft.Zelig.Runtime
                             }
                         }
 
-                        if(holder.RequestProcessed)
+                        if (holder.RequestProcessed)
                         {
                             return holder.RequestFulfilled;
                         }
@@ -89,19 +89,19 @@ namespace Microsoft.Zelig.Runtime
 
             public override void Release()
             {
-                while(true)
+                while (true)
                 {
                     ThreadImpl wakeUpThread;
 
-                    using(SmartHandles.InterruptState.Disable())
+                    using (SmartHandles.InterruptState.Disable())
                     {
-                        if(m_owner.m_state == false)
+                        if (m_owner.m_state == false)
                         {
                             return;
                         }
 
                         Synchronization.WaitingRecord wr = m_listWaiting.FirstTarget();
-                        if(wr == null)
+                        if (wr == null)
                         {
                             return;
                         }
@@ -110,7 +110,7 @@ namespace Microsoft.Zelig.Runtime
 
                         wr.RequestFulfilled = true;
 
-                        if(m_owner.m_mode == System.Threading.EventResetMode.AutoReset)
+                        if (m_owner.m_mode == System.Threading.EventResetMode.AutoReset)
                         {
                             m_owner.m_state = false;
                         }
@@ -130,7 +130,7 @@ namespace Microsoft.Zelig.Runtime
         // State
         //
 
-        internal bool                            m_state;
+        internal bool m_state;
         internal System.Threading.EventResetMode m_mode;
 
         //
@@ -138,15 +138,15 @@ namespace Microsoft.Zelig.Runtime
         //
 
         [DiscardTargetImplementation]
-        public EventWaitHandleImpl( bool                            initialState ,
-                                    System.Threading.EventResetMode mode         )
+        public EventWaitHandleImpl(bool initialState,
+                                    System.Threading.EventResetMode mode)
         {
             m_state = initialState;
-            m_mode  = mode;
+            m_mode = mode;
 
             //--//
 
-            m_handle = new EventWaitableObject( this );
+            m_handle = new EventWaitableObject(this);
         }
 
         //

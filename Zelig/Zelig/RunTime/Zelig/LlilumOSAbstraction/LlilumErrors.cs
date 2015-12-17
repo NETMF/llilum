@@ -5,6 +5,9 @@
 
 namespace Microsoft.Zelig.LlilumOSAbstraction
 {
+    using RT = Microsoft.Zelig.Runtime;
+
+
     public static class LlilumErrors
     {
         public const uint S_OK                  = 0;
@@ -60,6 +63,12 @@ namespace Microsoft.Zelig.LlilumOSAbstraction
                         throw new Exception( );
                 }
             }
+        }
+
+        [RT.ExportedMethod]
+        public static void LLOS_Die()
+        {
+            RT.BugCheck.Raise( Runtime.BugCheck.StopCode.Fault_Unknown ); 
         }
     }
 }

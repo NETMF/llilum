@@ -305,9 +305,9 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 
             int pinState = 1;
             solitary.Write((GpioPinValue)pinState);
-            ZeligSupport.Timer.wait_ms(300);
+            Thread.Sleep(300);
             solitary.Write((GpioPinValue)0);
-            ZeligSupport.Timer.wait_ms(300);
+            Thread.Sleep(300);
             solitary.Write((GpioPinValue)pinState);
             pinState = 0;
 

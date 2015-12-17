@@ -174,4 +174,17 @@ typedef int HRESULT;
 
 #endif //WIN32 || _WIN32
 
+//--//
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+    void LLOS_Die();
+
+#ifdef __cplusplus
+}
+#endif
+
+//--//
 #endif // __UW_ERROR_H_

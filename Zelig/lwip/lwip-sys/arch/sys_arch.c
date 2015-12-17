@@ -29,42 +29,61 @@
 #include "lwip/sys.h"
 #include "lwip/mem.h"
 
+ #if NO_SYS==1
 #include "cmsis.h"
+
+/* Saved total time in ms since timer was enabled */
+static volatile u32_t systick_timems;
+
+/* Enable systick rate and interrupt */
+void SysTick_Init(void) {
+    if (SysTick_Config(SystemCoreClock / 1000)) {
+        while (1);     /* Capture error */
+    }
+}
+
+/** \brief  SysTick IRQ handler and timebase management
+ *
+ *  This function keeps a timebase for the sysTick that can be
+ * used for other functions. It also calls an external function
+ * (SysTick_User) that must be defined outside this handler.
+ */
+void SysTick_Handler(void) {
+    systick_timems++;
+}
+
+/* Delay for the specified number of milliSeconds */
+void osDelay(uint32_t ms) {
+    uint32_t to = ms + systick_timems;
+    while (to > systick_timems);
+}
+
+/* Returns the current time in mS. This is needed for the LWIP timers */
+u32_t sys_now(void) {
+  return (u32_t) systick_timems;
+}
+
+#else
+
+#define CMSIS_OS_LLILUM
+
+//-//
+
+#include "cmsis_os.h"
 
 /* CMSIS-RTOS implementation of the lwip operating system abstraction */
 #include "arch/sys_arch.h"
-#include "sys_arch.h"
-#include "sys.h"
+////#include "sys_arch.h"/*
+////#include "sys.h"*/
 
 #include "llos_system_timer.h"
 #include "llos_clock.h"
+#include "llos_error.h"
 
-// Llilum Definitions
-#define LLOS_osWaitForever        (0xFFFFFFFF)
-#define osOK                      (0)
 
-//--//
-
-extern void*    LLOS_osMessageCreate(void* mbox, int32_t queue_sz);
-extern void*    LLOS_osMessageGet(void* mbox, int32_t msTimeout);
-extern uint32_t LLOS_osMessagePut(void* mbox, void* msg, int32_t msTimeout);
-
-extern void*    LLOS_osSemaphoreCreate(void* semaphore_def, int32_t count);
-extern int32_t  LLOS_osSemaphoreWait(void* semaphore_id, uint32_t millisec);
-extern uint32_t LLOS_osSemaphoreRelease(void* semaphore_id);
-extern uint32_t LLOS_osSemaphoreDelete(void* semaphore_id);
-
-extern void*    LLOS_osMutexCreate();
-extern uint32_t LLOS_osMutexWait(void* mutex, int32_t msTimeout);
-extern uint32_t LLOS_osMutexRelease(void* mutex);
-extern void     LLOS_osMutexFree(void* mutex);
-
-extern void*    LLOS_osThreadCreate(sys_thread_t thread);
-
-//--//
-
-uint32_t LLOS_sys_uSeconds() {
+uint32_t sys_uSeconds() {
     uint64_t frequency = LLOS_SYSTEM_TIMER_GetTimerFrequency();
+
     uint64_t ticks = LLOS_SYSTEM_TIMER_GetTicks();
 
     return (uint32_t)((ticks * 1000000) / frequency);
@@ -85,7 +104,12 @@ err_t sys_mbox_new(sys_mbox_t *mbox, int queue_sz) {
     if (queue_sz > MB_SIZE)
         error("sys_mbox_new size error\n");
     
-    mbox->id = LLOS_osMessageCreate((void*)mbox, queue_sz);
+#ifdef CMSIS_OS_LLILUM
+    //memset(mbox->queue, 0, sizeof(mbox->queue));
+    //mbox->def.pool = mbox->queue;
+    mbox->def.queue_sz = queue_sz;
+#endif
+    mbox->id = osMessageCreate(&mbox->def, NULL);
     return (mbox->id == NULL) ? (ERR_MEM) : (ERR_OK);
 }
 
@@ -100,11 +124,9 @@ err_t sys_mbox_new(sys_mbox_t *mbox, int queue_sz) {
  *      sys_mbox_t *mbox         -- Handle of mailbox
  *---------------------------------------------------------------------------*/
 void sys_mbox_free(sys_mbox_t *mbox) {
-    void* event = LLOS_osMessageGet((void*)mbox->id, 0);
-    if (event != NULL)
-    {
+    osEvent event = osMessageGet(mbox->id, 0);
+    if (event.status == osEventMessage)
         error("sys_mbox_free error\n");
-    }
 }
 
 /*---------------------------------------------------------------------------*
@@ -117,11 +139,8 @@ void sys_mbox_free(sys_mbox_t *mbox) {
  *      void *msg              -- Pointer to data to post
  *---------------------------------------------------------------------------*/
 void sys_mbox_post(sys_mbox_t *mbox, void *msg) {
-
-    if (LLOS_osMessagePut((void*)mbox->id, (void*)msg, osWaitForever) != osOK)
-    {
+    if (osMessagePut(mbox->id, (uint32_t)msg, osWaitForever) != osOK)
         error("sys_mbox_post error\n");
-    }
 }
 
 /*---------------------------------------------------------------------------*
@@ -138,11 +157,8 @@ void sys_mbox_post(sys_mbox_t *mbox, void *msg) {
  *                                  if not.
  *---------------------------------------------------------------------------*/
 err_t sys_mbox_trypost(sys_mbox_t *mbox, void *msg) {
-    if (LLOS_osMessagePut((void*)mbox->id, (uint32_t*)msg, 0) != osOK)
-    {
-        return ERR_MEM;
-    }
-    return ERR_OK;
+    osStatus status = osMessagePut(mbox->id, (uint32_t)msg, 0);
+    return (status == osOK) ? (ERR_OK) : (ERR_MEM);
 }
 
 /*---------------------------------------------------------------------------*
@@ -171,17 +187,15 @@ err_t sys_mbox_trypost(sys_mbox_t *mbox, void *msg) {
  *                                  of milliseconds until received.
  *---------------------------------------------------------------------------*/
 u32_t sys_arch_mbox_fetch(sys_mbox_t *mbox, void **msg, u32_t timeout) {
-
-    // BUG: This will fail when timer wraps around
-    u32_t start = (u32_t)LLOS_sys_uSeconds();
-
-    void* pMsg = LLOS_osMessageGet((void*)mbox->id, (timeout != 0) ? (timeout) : (osWaitForever));
-    if (pMsg == NULL)
+    u32_t start = (u32_t)sys_uSeconds();
+    
+    osEvent event = osMessageGet(mbox->id, (timeout != 0)?(timeout):(osWaitForever));
+    if (event.status != osEventMessage)
         return SYS_ARCH_TIMEOUT;
-
-    *msg = pMsg;
-
-    return ((u32_t)LLOS_sys_uSeconds() - start) / 1000;
+    
+    *msg = (void *)event.value.v;
+    
+    return ((u32_t)sys_uSeconds() - start) / 1000;
 }
 
 /*---------------------------------------------------------------------------*
@@ -199,13 +213,12 @@ u32_t sys_arch_mbox_fetch(sys_mbox_t *mbox, void **msg, u32_t timeout) {
  *                                  return ERR_OK.
  *---------------------------------------------------------------------------*/
 u32_t sys_arch_mbox_tryfetch(sys_mbox_t *mbox, void **msg) {
-
-    void* pMsg = LLOS_osMessageGet((void*)mbox->id, 0);
-    if (pMsg == NULL)
+    osEvent event = osMessageGet(mbox->id, 0);
+    if (event.status != osEventMessage)
         return SYS_MBOX_EMPTY;
-
-    *msg = pMsg;
-
+    
+    *msg = (void *)event.value.v;
+    
     return ERR_OK;
 }
 
@@ -223,7 +236,10 @@ u32_t sys_arch_mbox_tryfetch(sys_mbox_t *mbox, void **msg) {
  *      err_t                 -- ERR_OK if semaphore created
  *---------------------------------------------------------------------------*/
 err_t sys_sem_new(sys_sem_t *sem, u8_t count) {
-
+#ifdef CMSIS_OS_LLILUM
+    //memset(sem->data, 0, sizeof(uint32_t)*2);
+    //sem->def.semaphore = sem->data;
+#endif
     sem->id = osSemaphoreCreate(&sem->def, count);
     if (sem->id == NULL)
         error("sys_sem_new create error\n");
@@ -255,12 +271,12 @@ err_t sys_sem_new(sys_sem_t *sem, u8_t count) {
  *      u32_t                   -- Time elapsed or SYS_ARCH_TIMEOUT.
  *---------------------------------------------------------------------------*/
 u32_t sys_arch_sem_wait(sys_sem_t *sem, u32_t timeout) {
-    u32_t start = (u32_t)LLOS_sys_uSeconds();
+    u32_t start = (u32_t)sys_uSeconds();
     
     if (osSemaphoreWait(sem->id, (timeout != 0)?(timeout):(osWaitForever)) < 1)
         return SYS_ARCH_TIMEOUT;
-
-    return ((u32_t)LLOS_sys_uSeconds() - start) / 1000;
+    
+    return ((u32_t)sys_uSeconds() - start) / 1000;
 }
 
 /*---------------------------------------------------------------------------*
@@ -271,9 +287,9 @@ u32_t sys_arch_sem_wait(sys_sem_t *sem, u32_t timeout) {
  * Inputs:
  *      sys_sem_t sem           -- Semaphore to signal
  *---------------------------------------------------------------------------*/
-void sys_sem_signal(sys_sem_t *sem) {
-    if (osSemaphoreRelease(sem->id) != osOK)
-        mbed_die(); /* Can be called by ISR do not use printf */
+void sys_sem_signal(sys_sem_t *data) {
+    if (osSemaphoreRelease(data->id) != osOK)
+        LLOS_Die(); /* Can be called by ISR do not use printf */
 }
 
 /*---------------------------------------------------------------------------*
@@ -284,14 +300,23 @@ void sys_sem_signal(sys_sem_t *sem) {
  * Inputs:
  *      sys_sem_t sem           -- Semaphore to free
  *---------------------------------------------------------------------------*/
-void sys_sem_free(sys_sem_t *sem) {
-    osSemaphoreDelete(sem->id);
-}
+void sys_sem_free(sys_sem_t *sem) {}
+//////{
+//////    osSemaphoreDelete(sem->id);
+//////}
 
 /** Create a new mutex
  * @param mutex pointer to the mutex to create
  * @return a new mutex */
 err_t sys_mutex_new(sys_mutex_t *mutex) {
+#ifdef CMSIS_OS_LLILUM
+#ifdef __MBED_CMSIS_RTOS_CA9
+    memset(mutex->data, 0, sizeof(int32_t)*4);
+#else
+    //memset(mutex->data, 0, sizeof(int32_t)*3);
+#endif
+//mutex->def.mutex = mutex->data;
+#endif
     mutex->id = osMutexCreate(&mutex->def);
     if (mutex->id == NULL)
         return ERR_MEM;
@@ -303,27 +328,19 @@ err_t sys_mutex_new(sys_mutex_t *mutex) {
  * @param mutex the mutex to lock */
 void sys_mutex_lock(sys_mutex_t *mutex) {
     if (osMutexWait(mutex->id, osWaitForever) != osOK)
-    {
         error("sys_mutex_lock error\n");
-    }
 }
 
 /** Unlock a mutex
  * @param mutex the mutex to unlock */
 void sys_mutex_unlock(sys_mutex_t *mutex) {
-
     if (osMutexRelease(mutex->id) != osOK)
-    {
         error("sys_mutex_unlock error\n");
-    }
 }
 
 /** Delete a mutex
  * @param mutex the mutex to delete */
-void sys_mutex_free(sys_mutex_t *mutex) 
-{
-    osMutexDelete(mutex->id);
-}
+void sys_mutex_free(sys_mutex_t *mutex) {}
 
 /*---------------------------------------------------------------------------*
  * Routine:  sys_init
@@ -331,17 +348,13 @@ void sys_mutex_free(sys_mutex_t *mutex)
  * Description:
  *      Initialize sys arch
  *---------------------------------------------------------------------------*/
-
-sys_mutex_t lwip_sys_mutex_def;
-sys_mutex_t* lwip_sys_mutex = &lwip_sys_mutex_def;
+osMutexId lwip_sys_mutex;
+osMutexDef(lwip_sys_mutex);
 
 void sys_init(void) {
-
-    lwip_sys_mutex->id = LLOS_osMutexCreate();
-    if (lwip_sys_mutex->id == NULL)
-    {
+    lwip_sys_mutex = osMutexCreate(osMutex(lwip_sys_mutex));
+    if (lwip_sys_mutex == NULL)
         error("sys_init error\n");
-    }
 }
 
 /*---------------------------------------------------------------------------*
@@ -354,7 +367,7 @@ u32_t sys_jiffies(void) {
     static u32_t jiffies = 0;
 
     // Modified to use sys_now
-    jiffies += 1 + (sys_now()/10);
+    jiffies += 1 + (sys_now() / 10);
     return jiffies;
 }
 
@@ -378,12 +391,9 @@ u32_t sys_jiffies(void) {
  *      sys_prot_t              -- Previous protection level (not used here)
  *---------------------------------------------------------------------------*/
 sys_prot_t sys_arch_protect(void) {
-
-    if (LLOS_osMutexWait(lwip_sys_mutex->id, osWaitForever) != osOK)
-    {
+    if (osMutexWait(lwip_sys_mutex, osWaitForever) != osOK)
         error("sys_arch_protect error\n");
-    }
-    return (sys_prot_t) 1;
+    return (sys_prot_t)1;
 }
 
 /*---------------------------------------------------------------------------*
@@ -398,19 +408,16 @@ sys_prot_t sys_arch_protect(void) {
  *      sys_prot_t              -- Previous protection level (not used here)
  *---------------------------------------------------------------------------*/
 void sys_arch_unprotect(sys_prot_t p) {
-
-    if (LLOS_osMutexRelease(lwip_sys_mutex->id) != osOK)
-    {
+    if (osMutexRelease(lwip_sys_mutex) != osOK)
         error("sys_arch_unprotect error\n");
-    }
 }
 
 u32_t sys_now(void) {
-    return LLOS_sys_uSeconds() / 1000;
+    return sys_uSeconds() / 1000;
 }
 
 void sys_msleep(u32_t ms) {
-    LLOS_CLOCK_Delay(ms * 1000);
+    osDelay(ms);
 }
 
 // Keep a pool of thread structures
@@ -441,77 +448,59 @@ sys_thread_t sys_thread_new(const char *pcName,
     LWIP_DEBUGF(SYS_DEBUG, ("New Thread: %s\n", pcName));
     
     if (thread_pool_index >= SYS_THREAD_POOL_N)
-    {
         error("sys_thread_new number error\n");
-    }
-        
     sys_thread_t t = (sys_thread_t)&thread_pool[thread_pool_index];
-        
-    t->thread = thread;
-    t->arg = arg;
-    t->id = LLOS_osThreadCreate(t);
-
     thread_pool_index++;
+    
+#ifdef CMSIS_OS_LLILUM
+    t->def.pthread = (os_pthread)thread;
+    t->def.tpriority = (osPriority)priority;
+    t->def.stacksize = stacksize;
+    //t->def.stack_pointer = (uint32_t*)malloc(stacksize);
+    // if (t->def.stack_pointer == NULL) {
+    //   error("Error allocating the stack memory");
+    // }
+#endif
+    t->id = osThreadCreate(&t->def, arg);
+    if (t->id == NULL)
+        error("sys_thread_new create error\n");
+    
     return t;
 }
 
-void LLOS_lwIPTaskRun(void* thread)
+#undef CMSIS_OS_LLILUM
+
+#endif
+
+void LLOS_lwIPTaskRun( void* codePtr, void* arg )
 {
-    sys_thread_t t = (sys_thread_t)thread;
-    void (*func)(void *arg) = t->thread;
+    os_pthread func = (os_pthread)codePtr;
     
-    func(t->arg);
+    func( arg );
 }
 
-osSemaphoreId osSemaphoreCreate(const osSemaphoreDef_t *semaphore_def, int32_t count)
+osEvent osWait(uint32_t millisec)
 {
-    return LLOS_osSemaphoreCreate(semaphore_def, count);
+    osEvent ev;
+
+    osWaitEx(millisec, &ev);
+
+    return ev;
+}
+
+osEvent osMessageGet(osMessageQId queue_id, uint32_t millisec)
+{
+    osEvent ev;
+
+    osMessageGetEx(queue_id, millisec, &ev);
+
+    return ev;
 }
 
 int32_t osSemaphoreWait(osSemaphoreId semaphore_id, uint32_t millisec)
 {
-    // Note: the +1 comes from svcSemaphoreWait
-    return LLOS_osSemaphoreWait((void*)semaphore_id, millisec) + 1;
+    return osSemaphoreWaitEx(semaphore_id, millisec) + 1;
 }
-
-osStatus osSemaphoreRelease(osSemaphoreId semaphore_id)
-{
-    return (osStatus)LLOS_osSemaphoreRelease((void*)semaphore_id);
-}
-
-osStatus osSemaphoreDelete(osSemaphoreId semaphore_id)
-{
-    return (osStatus)LLOS_osSemaphoreDelete((void*)semaphore_id);
-}
-
-osMutexId osMutexCreate(const osMutexDef_t *mutex_def)
-{
-    return LLOS_osMutexCreate();
-}
-
-osStatus osMutexWait(osMutexId mutex_id, uint32_t millisec)
-{
-    return LLOS_osMutexWait((void*)mutex_id, millisec);
-}
-
-osStatus osMutexRelease(osMutexId mutex_id)
-{
-    return (osStatus)LLOS_osMutexRelease((void*)mutex_id);
-}
-
-osStatus osMutexDelete(osMutexId mutex_id)
-{
-    LLOS_osMutexFree((void*)mutex_id);
-    return osOK;
-}
-
-
-osStatus osDelay(uint32_t millisec)
-{
-    sys_msleep(millisec);
-    return osOK;
-}
-
 
 #ifdef LWIP_DEBUG
 
@@ -525,10 +514,10 @@ osStatus osDelay(uint32_t millisec)
     \param[in]    file  Filename with error
  */
 void assert_printf(char *msg, int line, char *file) {
-    //if (msg)
-        //error("%s:%d in file %s\n", msg, line, file);
-    //else
-        //error("LWIP ASSERT\n");
+    //////if (msg)
+    //////    error("%s:%d in file %s\n", msg, line, file);
+    //////else
+    //////    error("LWIP ASSERT\n");
 }
 
 #endif /* LWIP_DEBUG */

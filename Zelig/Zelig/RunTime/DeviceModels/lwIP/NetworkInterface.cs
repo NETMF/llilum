@@ -19,32 +19,37 @@ namespace Microsoft.Llilum.Lwip
     public class NetworkInterface
     {
         //set update flags...
-        private const int UPDATE_FLAGS_DNS = 0x1;
-        private const int UPDATE_FLAGS_DHCP = 0x2;
-        private const int UPDATE_FLAGS_DHCP_RENEW = 0x4;
+        private const int UPDATE_FLAGS_DNS          = 0x1;
+        private const int UPDATE_FLAGS_DHCP         = 0x2;
+        private const int UPDATE_FLAGS_DHCP_RENEW   = 0x4;
         private const int UPDATE_FLAGS_DHCP_RELEASE = 0x8;
-        private const int UPDATE_FLAGS_MAC = 0x10;
+        private const int UPDATE_FLAGS_MAC          = 0x10;
+        //--//
+        private const uint FLAGS_DHCP               = 0x1;
+        private const uint FLAGS_DYNAMIC_DNS        = 0x2;
 
-        private const uint FLAGS_DHCP = 0x1;
-        private const uint FLAGS_DYNAMIC_DNS = 0x2;
-        
-        private readonly int _interfaceIndex;
-
-        private uint _flags;
-        private uint _ipAddress;
-        private uint _gatewayAddress;
-        private uint _subnetMask;
-        //private uint _dnsAddress1;
-        //private uint _dnsAddress2;
-        private NetworkInterfaceType _networkInterfaceType;
-        private byte[] _macAddress;
+        //--//
 
         private static NetworkInterface s_netInterface = new NetworkInterface(0);
 
+        //--//
+
+        private readonly int                    m_interfaceIndex;
+        private          uint                   m_flags;
+        private          uint                   m_ipAddress;
+        private          uint                   m_gatewayAddress;
+        private          uint                   m_subnetMask;
+        private          NetworkInterfaceType   m_networkInterfaceType;
+        private          byte[]                 m_macAddress;
+        //private          uint _dnsAddress1;
+        //privae           uint _dnsAddress2;
+
+        //--//
+
         internal NetworkInterface(int interfaceIndex)
         {
-            this._interfaceIndex = interfaceIndex;
-            _networkInterfaceType = NetworkInterfaceType.Unknown;
+            this.m_interfaceIndex = interfaceIndex;
+            m_networkInterfaceType = NetworkInterfaceType.Unknown;
         }
 
         public static NetworkInterface[] GetAllNetworkInterfaces()
@@ -77,9 +82,9 @@ namespace Microsoft.Llilum.Lwip
 
         public void InitializeNetworkInterfaceSettings(NetworkInterface netInterface)
         {
-            netInterface.IPAddress = NetworkInterfaceProvider.Instance.GetIPAddress();
+            netInterface.IPAddress      = NetworkInterfaceProvider.Instance.GetIPAddress();
             netInterface.GatewayAddress = NetworkInterfaceProvider.Instance.GetGatewayAddress();
-            netInterface.SubnetMask = NetworkInterfaceProvider.Instance.GetMask();
+            netInterface.SubnetMask     = NetworkInterfaceProvider.Instance.GetMask();
         }
 
         public void UpdateConfiguration(NetworkInterface netInterface, int updateType)
@@ -127,10 +132,10 @@ namespace Microsoft.Llilum.Lwip
         {
             try
             {
-                _ipAddress = IPv4AddressFromString(ipAddress);
-                _subnetMask = IPv4AddressFromString(subnetMask);
-                _gatewayAddress = IPv4AddressFromString(gatewayAddress);
-                _flags &= ~FLAGS_DHCP;
+                m_ipAddress = IPv4AddressFromString(ipAddress);
+                m_subnetMask = IPv4AddressFromString(subnetMask);
+                m_gatewayAddress = IPv4AddressFromString(gatewayAddress);
+                m_flags &= ~FLAGS_DHCP;
 
                 UpdateConfiguration(this, UPDATE_FLAGS_DHCP);
             }
@@ -144,7 +149,7 @@ namespace Microsoft.Llilum.Lwip
         {
             try
             {
-                _flags |= FLAGS_DHCP;
+                m_flags |= FLAGS_DHCP;
                 UpdateConfiguration(this, UPDATE_FLAGS_DHCP);
             }
             finally
@@ -210,32 +215,32 @@ namespace Microsoft.Llilum.Lwip
 
         public string IPAddress
         {
-            get { return IPv4AddressToString(_ipAddress); }
-            internal set { _ipAddress = IPv4AddressFromString(value); }
+            get { return IPv4AddressToString(m_ipAddress); }
+            internal set { m_ipAddress = IPv4AddressFromString(value); }
         }
 
         public string GatewayAddress
         {
-            get { return IPv4AddressToString(_gatewayAddress); }
-            internal set { _gatewayAddress = IPv4AddressFromString(value); }
+            get { return IPv4AddressToString(m_gatewayAddress); }
+            internal set { m_gatewayAddress = IPv4AddressFromString(value); }
         }
 
         public string SubnetMask
         {
-            get { return IPv4AddressToString(_subnetMask); }
-            internal set { _subnetMask = IPv4AddressFromString(value); }
+            get { return IPv4AddressToString(m_subnetMask); }
+            internal set { m_subnetMask = IPv4AddressFromString(value); }
         }
 
         public bool IsDhcpEnabled
         {
-            get { return (_flags & FLAGS_DHCP) != 0; }
+            get { return (m_flags & FLAGS_DHCP) != 0; }
         }
 
         public bool IsDynamicDnsEnabled
         {
             get
             {
-                return (_flags & FLAGS_DYNAMIC_DNS) != 0;
+                return (m_flags & FLAGS_DYNAMIC_DNS) != 0;
             }
         }
 
@@ -295,10 +300,10 @@ namespace Microsoft.Llilum.Lwip
 
         public byte[] PhysicalAddress
         {
-            get { return _macAddress; }
+            get { return m_macAddress; }
             set
             {
-                _macAddress = value;
+                m_macAddress = value;
                 throw new NotImplementedException();
 
                 //try
@@ -315,7 +320,7 @@ namespace Microsoft.Llilum.Lwip
 
         public NetworkInterfaceType NetworkInterfaceType
         {
-            get { return _networkInterfaceType; }
+            get { return m_networkInterfaceType; }
         }
     }
 }

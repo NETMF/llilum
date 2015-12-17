@@ -40,9 +40,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="$(LlilumSourceRoot)\..\BoardConfigurations\K64F\Board\K64F.csproj">
       <Project>{1705887b-e636-4fa3-ae40-2d431af1511c}</Project>
       <Name>K64F</Name>
@@ -51,17 +48,9 @@
       <Project>{d7f2bc4e-1406-47aa-90e1-07bc4ce9410f}</Project>
       <Name>mbed</Name>
     </ProjectReference>
-    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\Llilum\Devices\Microsoft.Llilum.Devices.csproj">
-      <Project>{d68ee51b-a898-4a77-97d8-c61254cac122}</Project>
-      <Name>Microsoft.Llilum.Devices</Name>
-    </ProjectReference>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\system\system.csproj">
       <Project>{186f31a3-ef89-4a25-b2d5-20070702aa01}</Project>
       <Name>system</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\Windows\Windows.csproj">
-      <Project>{dc8c38d7-780b-4b13-8ace-9050e39cc51c}</Project>
-      <Name>Windows</Name>
     </ProjectReference>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\lwIP\Microsoft.Llilum.Lwip.csproj">
       <Project>{e77ac86e-58ab-47b6-bc6d-3c1b4545cdfd}</Project>

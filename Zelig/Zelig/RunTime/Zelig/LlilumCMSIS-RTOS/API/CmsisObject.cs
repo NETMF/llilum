@@ -66,6 +66,56 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
         }
 
         //
+        // Helper methods 
+        // 
+
+        public static CmsisObject GetObject( UIntPtr ptr )
+        {
+            RT.KernelNode< CmsisObject > node = s_objects.StartOfForwardWalk;
+
+            while(node.IsValidForForwardMove)
+            {
+                var node2 = (ObjectImpl)(object)node.Target;
+
+                if(node2.ToPointer( ) == ptr)
+                {
+                    break;
+                }
+
+                node = node.Next;
+            }
+
+            if(node.IsValidForForwardMove)
+            {
+                return node.Target;
+            }
+
+            return null;
+        }
+
+        public static CmsisObject FindObject<T>( object cmp ) where T: CmsisObject
+        {
+            RT.KernelNode< CmsisObject > node = s_objects.StartOfForwardWalk;
+
+            while(node.IsValidForForwardMove)
+            {
+                CmsisObject obj = (CmsisObject)node.Target;
+
+                if(obj is T)
+                {
+                    if(((T)obj).SameObject( cmp ))
+                    {
+                        return obj;
+                    }
+                }
+
+                node = node.Next;
+            }
+
+            return null;
+        }
+
+        //
         // Access Methods
         // 
 
@@ -75,6 +125,11 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
             {
                 return m_registrationLink;
             }
+        }
+
+        protected virtual bool SameObject( object cmp )
+        {
+            return this == cmp;
         }
     }
 }
