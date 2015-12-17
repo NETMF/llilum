@@ -6,6 +6,7 @@
 
 extern "C"
 {
+#if DEVICE_ANALOGOUT
     typedef struct LLOS_MbedAdc
     {
         union
@@ -127,4 +128,5 @@ extern "C"
     {
         return LLOS_E_NOTIMPL;
     }
+#endif
 }

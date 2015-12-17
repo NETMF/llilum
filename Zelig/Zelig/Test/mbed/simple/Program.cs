@@ -4,8 +4,9 @@
 
 #define LPC1768
 //#define K64F
-//#define USE_I2C
-//#define USE_SPI
+//#define STM32F411
+#define USE_I2C
+#define USE_SPI
 #define USE_GPIO
 #define USE_THREADING
 #define USE_ADC
@@ -50,8 +51,10 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 
 #if (LPC1768)
     using LPC1768 = Llilum.LPC1768;
-#elif ( K64F )
+#elif (K64F)
     using K64F = Llilum.K64F;
+#elif (STM32F411)
+    using STM32F411 = Llilum.STM32F411;
 #else
 #error No target board defined.
 #endif
@@ -160,6 +163,8 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 #elif K64F
         static int threadPin = (int)K64F.PinName.LED4;
         static int pwmPinNumber = (int)K64F.PinName.D3;
+#elif STM32F411
+        static int pwmPinNumber = (int)STM32F411.PinName.D3;
 #else
 #error No target board defined.
 #endif
@@ -174,10 +179,15 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             (int)K64F.PinName.LED1,
             (int)K64F.PinName.LED2,
             (int)K64F.PinName.LED3,
+#elif (STM32F411)
+            (int)STM32F411.PinName.LED1,
+            (int)STM32F411.PinName.D13,
+            (int)STM32F411.PinName.D12,
+            (int)STM32F411.PinName.D11,
 #else
 #error No target board defined.
 #endif
-        };
+    };
 
         static void Main()
         {
@@ -212,9 +222,10 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                 pins[i] = pin;
             }
 
+#if !(STM32F411)
             var solitary = controller.OpenPin(threadPin);
             solitary.SetDriveMode(GpioPinDriveMode.Output);
-
+#endif
             LedToggler[] blinkingModes = new LedToggler[3];
             blinkingModes[0] = new LedTogglerSimultaneous(pins);
             blinkingModes[1] = new LedTogglerSequential(pins);
@@ -225,8 +236,8 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 
             blinkingTimer.start();
             blinkingModeSwitchTimer.start();
-
-            #region SPI
+#if !(STM32F411)
+#region SPI
 #if USE_GPIO
             // Get the device selector by friendly name
             string deviceSelector = SpiDevice.GetDeviceSelector("SPI0");
@@ -234,9 +245,9 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             string busId = acqs[0].Id;
 
             // Set up a non-default frequency
-#if( LPC1768 )
+#if (LPC1768)
             int chipSelect = (int)LPC1768.PinName.p8;
-#elif ( K64F )
+#elif (K64F)
             int chipSelect = (int)K64F.PinName.PTD0;
 #else
 #error No target board defined.
@@ -252,9 +263,9 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             byte[] writeBuffer2 = new byte[] { 0x1, 0x2, 0x3 };
             byte[] readBuffer = new byte[1];
 #endif
-            #endregion
+#endregion
 
-            #region I2C
+#region I2C
 #if USE_I2C
             //
             // I2C Init
@@ -275,7 +286,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             i2cReadWrite2[1] = 0x0;
             i2cDevice.Write(i2cReadWrite2);
 #endif
-            #endregion
+#endregion
 
             int pinState = 1;
             solitary.Write((GpioPinValue)pinState);
@@ -285,7 +296,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             solitary.Write((GpioPinValue)pinState);
             pinState = 0;
 
-#if( USE_THREADING )
+#if (USE_THREADING)
             var ev = new AutoResetEvent(false);
             var solitaryBlinker = new Thread(delegate ()
             {
@@ -313,15 +324,16 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             }, ev, 2000, 5000);
 
 #endif
+#endif // !STM32F411
 
-#if( USE_ADC )
+#if (USE_ADC)
             AdcController adcController = AdcController.GetDefaultAsync();
 
             // This is the left potentiometer on the mBed application board
             AdcChannel adcChannel = adcController.OpenChannel(4);
 #endif
 
-#if( USE_PWM )
+#if (USE_PWM)
             var pwmController = PwmController.GetDefaultAsync();
             pwmController.SetDesiredFrequency(1000000);
 
@@ -334,7 +346,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             float readVal = 0;
             while (true)
             {
-#if( USE_ADC )
+#if (USE_ADC)
                 readVal = ((float)adcChannel.ReadValue()) / adcController.MaxValue * 2;
 #endif
                 // If ADC isn't in use, this will always be 1
@@ -350,7 +362,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                     currentMode = (currentMode + 1) % blinkingModes.Length;
                     blinkingModeSwitchTimer.reset();
 
-                    #region I2C_Impl
+#region I2C_Impl
 #if USE_I2C
                     try
                     {
@@ -374,9 +386,9 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                         // Continue as normal in this case
                     }
 #endif
-                    #endregion
+#endregion
 
-                    #region SPI_Impl
+#region SPI_Impl
 #if USE_SPI
                     writeBuffer[0] = (byte)currentMode;
                     spiDevice.TransferFullDuplex(writeBuffer, readBuffer);
@@ -387,7 +399,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                     }
                     spiDevice.Write(writeBuffer2);
 #endif
-                    #endregion
+#endregion
 
                     count++;
 
@@ -473,7 +485,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 
         static int[] TEST_GPIO_PINS =
         {
-#if( LPC1768 )
+#if (LPC1768)
             //
             // LPC1768 only supports interrupts on pins P0_* and P2_* (ports 0 and 2).
             // P0_0 == p9, p2_0 == p26
@@ -486,7 +498,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             (int)LPC1768.PinName.p9,
             (int)LPC1768.PinName.p10,
             (int)LPC1768.PinName.p11,
-#elif ( K64F )
+#elif (K64F)
             //
             // On the Freescale FRDM K64F board, this test requires you to jumper pins
             // PTC5 and PTC7 together to test GPIO interrupts.  Pin PTC0 can be used as

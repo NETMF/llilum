@@ -11,6 +11,8 @@
 #include "MK64F12.h"
 #elif TARGET_STM32L152RE
 #include "stm32l1xx.h"
+#elif TARGET_STM32F411RE
+#include "stm32f4xx.h"
 #else
 #error Undefined plaform
 #endif

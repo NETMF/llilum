@@ -4,6 +4,7 @@ external/gcc4mbed/
 zelig/LLVM2IR_results/mbed/simple/LPC1768/
 zelig/LLVM2IR_results/mbed/simple/K64F/
 zelig/LLVM2IR_results/mbed/simple/STM32L152/
+zelig/LLVM2IR_results/mbed/simple/STM32F411/
 zelig/LLVM2IR_results/mbed/simple/*.xml
 Zelig/LLVM2IR_results/mbed/test/LPC1768/
 Zelig/LLVM2IR_results/mbed/test/K64F/

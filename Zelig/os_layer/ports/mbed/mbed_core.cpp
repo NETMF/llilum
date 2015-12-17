@@ -533,4 +533,16 @@ extern "C"
 
         *((uint32_t volatile *)0x4000D000) = CESR;
     }
+
+    // According to http://www.st.com/st-web-ui/static/active/en/resource/technical/document/programming_manual/DM00046982.pdf
+    // pg. 186 the MPU is off by default
+    // TODO: Someone should double-check I got the address right
+    void CUSTOM_STUB_STM32F411_DisableMPU()
+    {
+        /*uint32_t CESR = *((uint32_t volatile *)0xE000ED94);
+
+        CESR &= ~(0x00000001);
+
+        *((uint32_t volatile *)0xE000ED94) = CESR;*/
+    }
 }

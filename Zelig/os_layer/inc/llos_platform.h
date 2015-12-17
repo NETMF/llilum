@@ -35,7 +35,13 @@
 
 #ifndef LLOS_MEMSET
 #ifndef _STRING_H_
+
+#ifndef TARGET_STM32F411RE
 extern void memset(void* addr, uint8_t fill, size_t size);
+#else
+extern void* memset(void* addr, int fill, size_t size);
+#endif
+
 #endif
 #define LLOS_MEMSET memset
 #endif // LLOS_MEMSET

@@ -48,6 +48,17 @@
     <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\deploySTM32L152.bat">
       <Filter>build&amp;debug</Filter>
     </None>
+    <None Include="$(LlilumSourceRoot)\..\os_layer\ARMv7M\Vectors\startup_stm32l152xe.S" />
+    <None Include="..\..\..\..\os_layer\ARMv7M\Vectors\startup_stm32f411xe.S" />
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\buildSTM32F411.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\debugSTM32F411.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\deploySTM32F411.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="build&amp;debug">
