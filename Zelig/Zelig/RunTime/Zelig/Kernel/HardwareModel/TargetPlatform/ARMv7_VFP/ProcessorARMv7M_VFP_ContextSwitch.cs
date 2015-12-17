@@ -191,7 +191,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                         return (uint)sizeof(SoftwareFrame);
                     }
                 }
-            
+
                 //--//
 
                 internal unsafe UIntPtr* GetRegisterPointer( uint idx ) 
@@ -266,8 +266,8 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 // This woudl be called on the throw context, but in ARMv7M we do not have one
                 //
                 ThreadImpl        thisThread = ThreadImpl.CurrentThread;
-                Processor.Context ctx        = thisThread.SwappedOutContext; 
-                
+                Processor.Context ctx        = thisThread.SwappedOutContext;
+
                 this.BaseSP     = ctx.BaseStackPointer;
                 this.SP         = ctx.StackPointer;
                 this.EXC_RETURN = ctx.ExcReturn;

@@ -6,16 +6,7 @@ namespace Microsoft.Llilum.BoardConfigurations
 {
     using Microsoft.Zelig.Runtime;
     using Microsoft.Zelig.Configuration.Environment;
-    
-    /// <summary>
-    /// ///
-    /// ////
-    /// 
-    /// 
-    /// </summary>
 
-
-    
     [DisplayName("K64F")]
     public sealed class K64F : ProcessorCategory
     {
@@ -48,11 +39,11 @@ namespace Microsoft.Llilum.BoardConfigurations
         {
         }
     }
-    
+
     //--//
     //--//
     //--//
-        
+
     [DisplayName( "Memory Map for K64F" )]
     public sealed class K64FMemoryMap : MemoryMapCategory
     {
@@ -81,7 +72,7 @@ namespace Microsoft.Llilum.BoardConfigurations
         [Defaults( "BaseAddress", 0x00000000U )]
         public FlashMemoryCategory InternalFlashChip;
     }
-    
+
     //--//
     //--//
     //--//
@@ -95,7 +86,7 @@ namespace Microsoft.Llilum.BoardConfigurations
         public K64F Processor;
 
         //--//
-        
+
         [AllowedOptions( typeof( K64F.InternalRAM256KB ) )]
         [Defaults( "BaseAddress", 0x1FFF0000U )]
         public RamMemoryCategory InternalRam;
@@ -104,11 +95,11 @@ namespace Microsoft.Llilum.BoardConfigurations
         [Defaults( "BaseAddress", 0x00000000U )]
         public FlashMemoryCategory InternalFlashChip;
     }
-    
+
     //--//
     //--//
     //--//
-    
+
     [DisplayName("LLVM Hosted Compilation for K64F")]
     [Defaults("Platform", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV7M_VFP))]
     [Defaults("CallingConvention", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV7MCallingConvention))]

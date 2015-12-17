@@ -8,4 +8,3 @@ namespace Microsoft.DeviceModels.Chipset.CortexM4
     {
     }
 }
-
