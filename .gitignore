@@ -13,6 +13,7 @@ Zelig/mbed-rtos/
 Zelig/mbed-rtos.lib
 *.IrTxtpost
 *.ZeligIR
+*.ZeligIR.xml
 *.ZeligIR_Post
 *.ZeligImage
 *.bc
