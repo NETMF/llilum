@@ -230,7 +230,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LPC1768Configuration", "..\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows", "RunTime\Framework\Windows\Windows.csproj", "{DC8C38D7-780B-4B13-8ACE-9050E39CC51C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LlilumOSAbstraction", "LlilumOSAbstraction", "{110E8B86-4F26-458A-97C3-55F2BA1E60DE}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LlilumRTOSAbstractions", "LlilumRTOSAbstractions", "{110E8B86-4F26-458A-97C3-55F2BA1E60DE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ports", "Ports", "{3ECE9965-D0E8-493E-848C-A43D96E26F16}"
 EndProject
