@@ -317,6 +317,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                     var prologueStart = cfg.GetInjectionPoint( BasicBlock.Qualifier.PrologueStart );
                     var epilogueStart = cfg.GetInjectionPoint( BasicBlock.Qualifier.EpilogueStart );
 
+                    cfg.ResetCacheCheckpoint( );
+
                     var mdAddRef  = wkm.ObjectHeader_AddReference;
                     var mdRelease = wkm.ObjectHeader_ReleaseReference;
 
@@ -424,6 +426,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                     {
                         nc.StartScan( );
                     }
+
+                    cfg.AssertNoCacheRefreshSinceCheckpoint( );
                 }
             }
         }

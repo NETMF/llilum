@@ -161,6 +161,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             var useChains = cfg.DataFlow_UseChains;
             bool fRunSimplify = false;
 
+            cfg.ResetCacheCheckpoint( );
+
             foreach(var controlOp in cfg.FilterOperators< BinaryConditionalControlOperator >())
             {
                 BasicBlock takenBranch = TryGetUnconditionalBranchTarget( controlOp, defLookup, useChains );
@@ -170,6 +172,16 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                     controlOp.SubstituteWithOperator( opNewCtrl, Operator.SubstitutionFlags.Default );
                     fRunSimplify = true;
                 }
+            }
+
+            // If modified, we need to refresh useChains in case variables were changed. If we don't do this, FilterOperators
+            // below will refresh the operators, and SpanningTreeIndex and other info between variables and our stale useChains
+            // may be mismatched.
+            if(fRunSimplify)
+            {
+                cfg.AssertNoCacheRefreshSinceCheckpoint( );
+                useChains = cfg.DataFlow_UseChains;
+                cfg.ResetCacheCheckpoint( );
             }
 
             var cscUpperBound = new Transformations.ConstraintSystemCollector( cfg, Transformations.ConstraintSystemCollector.Kind.LessThanOrEqual    );
@@ -241,6 +253,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                 }
             }
 #endif // ENABLE_LOW_LEVEL_OPTIMIZATIONS
+
+            cfg.AssertNoCacheRefreshSinceCheckpoint( );
 
             return fRunSimplify;
         }
@@ -913,6 +927,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             Operator[][]                               defChains = cfg.DataFlow_DefinitionChains;
             Operator[][]                               useChains = cfg.DataFlow_UseChains;
 
+            cfg.ResetCacheCheckpoint( );
+
             foreach(var opConv in cfg.FilterOperators< ConversionOperator >())
             {
                 var lhs = opConv.FirstResult;
@@ -988,6 +1004,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                     }
                 }
             }
+
+            cfg.AssertNoCacheRefreshSinceCheckpoint( );
         }
 
 #if ENABLE_LOW_LEVEL_OPTIMIZATIONS

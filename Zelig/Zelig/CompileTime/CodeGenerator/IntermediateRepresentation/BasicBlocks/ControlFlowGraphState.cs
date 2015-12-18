@@ -110,6 +110,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                     Update();
 
                     m_version = m_owner.m_version;
+
+                    m_owner.LatestCachedVersion = m_version;
                 }
             }
 
@@ -458,7 +460,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
             return newCI;
         }
-
+        
         public void UpdateFlowInformation()
         {
             GetCachedInfo< CachedInfo_FlowInformation >();
@@ -471,6 +473,22 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             ci.Lock();
 
             return ci;
+        }
+
+        //--//
+
+        int m_checkpointCachedVersion = -1;
+
+        protected int LatestCachedVersion { get; set; }
+
+        public void ResetCacheCheckpoint( )
+        {
+            m_checkpointCachedVersion = LatestCachedVersion;
+        }
+
+        public void AssertNoCacheRefreshSinceCheckpoint( )
+        {
+            CHECKS.ASSERT( m_checkpointCachedVersion == LatestCachedVersion, "Cached info updated since checkpoint. The cache used was stale!" );
         }
 
         //--//

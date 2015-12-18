@@ -627,25 +627,25 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                     (int)registers[ 14 ]
                     );
 
-            //snapshot.SoftwareFrameRegisters.EXC_RETURN = registers[ 0 ];
-            //snapshot.SoftwareFrameRegisters.CONTROL = registers[ 1 ];
-            //snapshot.SoftwareFrameRegisters.R4 = new UIntPtr( registers[ 2 ] );
-            //snapshot.SoftwareFrameRegisters.R5 = new UIntPtr( registers[ 3 ] );
-            //snapshot.SoftwareFrameRegisters.R6 = new UIntPtr( registers[ 4 ] );
-            //snapshot.SoftwareFrameRegisters.R7 = new UIntPtr( registers[ 5 ] );
-            //snapshot.SoftwareFrameRegisters.R8 = new UIntPtr( registers[ 6 ] );
-            //snapshot.SoftwareFrameRegisters.R9 = new UIntPtr( registers[ 7 ] );
-            //snapshot.SoftwareFrameRegisters.R10 = new UIntPtr( registers[ 8 ] );
-            //snapshot.SoftwareFrameRegisters.R11 = new UIntPtr( registers[ 9 ] );
-            ////--//
-            //snapshot.HardwareFrameRegisters.R0 = new UIntPtr( registers[ 10 ] );
-            //snapshot.HardwareFrameRegisters.R1 = new UIntPtr( registers[ 11 ] );
-            //snapshot.HardwareFrameRegisters.R2 = new UIntPtr( registers[ 12 ] );
-            //snapshot.HardwareFrameRegisters.R3 = new UIntPtr( registers[ 13 ] );
-            //snapshot.HardwareFrameRegisters.R12 = new UIntPtr( registers[ 14 ] );
-            //snapshot.HardwareFrameRegisters.LR = new UIntPtr( registers[ 15 ] );
-            //snapshot.HardwareFrameRegisters.PC = new UIntPtr( registers[ 16 ] );
-            //snapshot.HardwareFrameRegisters.PSR = new UIntPtr( registers[ 17 ] );
+            snapshot.SoftwareFrameRegisters.EXC_RETURN = registers[ 0 ];
+            snapshot.SoftwareFrameRegisters.CONTROL = registers[ 1 ];
+            snapshot.SoftwareFrameRegisters.R4 = new UIntPtr( registers[ 2 ] );
+            snapshot.SoftwareFrameRegisters.R5 = new UIntPtr( registers[ 3 ] );
+            snapshot.SoftwareFrameRegisters.R6 = new UIntPtr( registers[ 4 ] );
+            snapshot.SoftwareFrameRegisters.R7 = new UIntPtr( registers[ 5 ] );
+            snapshot.SoftwareFrameRegisters.R8 = new UIntPtr( registers[ 6 ] );
+            snapshot.SoftwareFrameRegisters.R9 = new UIntPtr( registers[ 7 ] );
+            snapshot.SoftwareFrameRegisters.R10 = new UIntPtr( registers[ 8 ] );
+            snapshot.SoftwareFrameRegisters.R11 = new UIntPtr( registers[ 9 ] );
+            //--//
+            snapshot.HardwareFrameRegisters.R0 = new UIntPtr( registers[ 10 ] );
+            snapshot.HardwareFrameRegisters.R1 = new UIntPtr( registers[ 11 ] );
+            snapshot.HardwareFrameRegisters.R2 = new UIntPtr( registers[ 12 ] );
+            snapshot.HardwareFrameRegisters.R3 = new UIntPtr( registers[ 13 ] );
+            snapshot.HardwareFrameRegisters.R12 = new UIntPtr( registers[ 14 ] );
+            snapshot.HardwareFrameRegisters.LR = new UIntPtr( registers[ 15 ] );
+            snapshot.HardwareFrameRegisters.PC = new UIntPtr( registers[ 16 ] );
+            snapshot.HardwareFrameRegisters.PSR = new UIntPtr( registers[ 17 ] );
         }
     }
 }

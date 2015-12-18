@@ -47,6 +47,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
             Operator[][] defChains = cfg.DataFlow_DefinitionChains;
             bool fModified = false;
 
+            cfg.ResetCacheCheckpoint( );
+
             // Search for the following pattern:
             //    ScalarType::.ctor(&local, value)
             // Replace with:
@@ -82,12 +84,17 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                 }
             }
 
+            cfg.AssertNoCacheRefreshSinceCheckpoint( );
+
             return fModified;
         }
 
         private static bool InlineScalarEquality(ControlFlowGraphStateForCodeTransformation cfg)
         {
+            Operator[][] defChains = cfg.DataFlow_DefinitionChains;
             bool fModified = false;
+
+            cfg.ResetCacheCheckpoint( );
 
             // Patterns:
             // - Replace (scalar.Equals(scalar)) with (scalar == scalar)
@@ -139,7 +146,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                             continue;
                         }
 
-                        left = LoadScalarAddress(cfg, thisPtr, callOp, true);
+                        left = LoadScalarAddress(cfg, defChains, thisPtr, callOp, true);
                     }
 
                     var compOperator = CompareAndSetOperator.New(callOp.DebugInfo, condition, false, callOp.FirstResult, left, right);
@@ -148,13 +155,18 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                 }
             }
 
+            cfg.AssertNoCacheRefreshSinceCheckpoint( );
+
             return fModified;
         }
 
         private static bool RemoveScalarFieldLoads(ControlFlowGraphStateForCodeTransformation cfg)
         {
             Operator[][] useChains = cfg.DataFlow_UseChains;
+            Operator[][] defChains = cfg.DataFlow_DefinitionChains;
             bool fModified = false;
+
+            cfg.ResetCacheCheckpoint( );
 
             // Pattern: Replace (scalarPtr->m_value) with (*scalarPtr)
             foreach (var loadFieldOp in cfg.FilterOperators<LoadInstanceFieldOperator>())
@@ -164,7 +176,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
 
                 if ((thisPtr != null) && (thisType != null))
                 {
-                    Expression loadedValue = LoadScalarAddress(cfg, thisPtr, loadFieldOp, loadFieldOp.MayThrow);
+                    Expression loadedValue = LoadScalarAddress(cfg, defChains, thisPtr, loadFieldOp, loadFieldOp.MayThrow);
 
                     VariableExpression field = loadFieldOp.FirstResult;
                     foreach (Operator useOp in useChains[field.SpanningTreeIndex])
@@ -175,6 +187,17 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                     loadFieldOp.SubstituteWithOperator(NopOperator.New(loadFieldOp.DebugInfo), Operator.SubstitutionFlags.Default);
                     fModified = true;
                 }
+            }
+
+            // If modified, we need to refresh useChains in case variables were changed. If we don't do this, FilterOperators
+            // below will refresh the operators, and SpanningTreeIndex and other info between variables and our stale useChains
+            // may be mismatched.
+            if(fModified)
+            {
+                cfg.AssertNoCacheRefreshSinceCheckpoint( );
+
+                useChains = cfg.DataFlow_UseChains;
+                cfg.ResetCacheCheckpoint( );
             }
 
             // Pattern: Replace (&scalarPtr->m_value) with (scalarPtr)
@@ -196,20 +219,23 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                 }
             }
 
+            cfg.AssertNoCacheRefreshSinceCheckpoint( );
+
             return fModified;
         }
 
         private static Expression LoadScalarAddress(
             ControlFlowGraphStateForCodeTransformation cfg,
+            Operator[][] defChains,
             VariableExpression pointer,
             Operator usingOp,
             bool checkForNull)
         {
             // Special case: If the pointer is an address assignment operator with a single definition, we can recover
-            // the orginal expression without creating a new temporary and load operation.
+            // the original expression without creating a new temporary and load operation.
             if (!(pointer is ArgumentVariableExpression))
             {
-                var defOp = ControlFlowGraphState.CheckSingleDefinition(cfg.DataFlow_DefinitionChains, pointer);
+                var defOp = ControlFlowGraphState.CheckSingleDefinition( defChains, pointer );
                 Debug.Assert(defOp != null, "Could not find source of scalar address.");
 
                 if (defOp is AddressAssignmentOperator)
@@ -229,6 +255,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
         private static bool RemoveUnnecessaryAddressLoads(ControlFlowGraphStateForCodeTransformation cfg)
         {
             Operator[][] useChains = cfg.DataFlow_UseChains;
+            cfg.ResetCacheCheckpoint( );
             bool fModified = false;
 
             // Search for the following pattern where LoadIndirect is the only use of address:
@@ -269,6 +296,17 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                 }
             }
 
+            // If modified, we need to refresh useChains in case variables were changed. If we don't do this, FilterOperators
+            // below will refresh the operators, and SpanningTreeIndex and other info between variables and our stale useChains
+            // may be mismatched
+            if(fModified)
+            {
+                cfg.AssertNoCacheRefreshSinceCheckpoint( );
+
+                useChains = cfg.DataFlow_UseChains;
+                cfg.ResetCacheCheckpoint( );
+            }
+
             // Pattern: Replace (*&obj.Field) with (obj.Field)
             foreach (var addressOp in cfg.FilterOperators<LoadAddressOperator>())
             {
@@ -296,6 +334,17 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                 }
             }
 
+            // If modified, we need to refresh useChains in case variables were changed. If we don't do this, FilterOperators
+            // below will refresh the operators, and SpanningTreeIndex and other info between variables and our stale useChains
+            // may be mismatched
+            if(fModified)
+            {
+                cfg.AssertNoCacheRefreshSinceCheckpoint( );
+
+                useChains = cfg.DataFlow_UseChains;
+                cfg.ResetCacheCheckpoint( );
+            }
+
             // Pattern: Replace (*&array[index]) with (array[index])
             foreach (var addressOp in cfg.FilterOperators<LoadElementAddressOperator>())
             {
@@ -315,6 +364,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                     fModified = true;
                 }
             }
+
+            cfg.AssertNoCacheRefreshSinceCheckpoint( );
 
             return fModified;
         }
