@@ -251,8 +251,8 @@ namespace Microsoft.Zelig.FrontEnd
                     
                     string filePrefix = Path.Combine( path, m_phaseExecutionCounter.ToString() + "_" + m_outputName );
                     
-                    DumpIRAsText( filePrefix + currentPhase + ".ZeligIR"     );
-                    DumpIRAsXML ( filePrefix + currentPhase + ".ZeligIR.xml" );
+                    DumpIRAsText( filePrefix + "." + currentPhase + ".ZeligIR"     );
+                    DumpIRAsXML ( filePrefix + "." + currentPhase + ".ZeligIR.xml" );
                 }
             }
         }
