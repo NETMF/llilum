@@ -243,3 +243,4 @@ Zelig/Zelig/CompileTime/Llvm.NET/LibLLVM/Win32/RelWithDebInfo/LibLLVM.3.6.1.iobj
 Zelig/Zelig/CompileTime/Llvm.NET/LibLLVM/Win32/RelWithDebInfo/LibLLVM.3.6.1.ipdb
 Zelig/Zelig/CompileTime/Llvm.NET/LibLLVM/Win32/RelWithDebInfo/LibLLVM.3.6.1.lib
 Zelig/Zelig/CompileTime/Llvm.NET/Win32/RelWithDebInfo/Llvm.NET.dll
+*.opendb

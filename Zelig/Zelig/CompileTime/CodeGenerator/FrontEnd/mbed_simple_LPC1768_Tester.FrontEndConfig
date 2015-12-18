@@ -80,4 +80,5 @@
 -MaxProcs 8
 
 -NoSDK
+-GenerateObj
 

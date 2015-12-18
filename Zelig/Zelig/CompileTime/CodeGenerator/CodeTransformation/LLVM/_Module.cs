@@ -361,9 +361,6 @@ namespace Microsoft.Zelig.LLVM
             //    Console.Error.WriteLine( msg );
             //    throw new ApplicationException( $"LLVM module verification failed:\n{msg}" );
             //}
-
-            // TODO: Generate object file here...
-            // REVIEW: What file name should it use for the output?
             return true;
         }
 

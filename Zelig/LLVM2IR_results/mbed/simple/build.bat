@@ -3,7 +3,13 @@ setlocal enableDelayedExpansion
 
 @REM - set this ENVIRONMENT Variable to override default optimization level for testing
 IF NOT DEFINED LLILUM_OPT_LEVEL SET LLILUM_OPT_LEVEL=2
-IF NOT DEFINED LLILUM_SKIP_OPT  SET LLILUM_SKIP_OPT=0
+@REM with the Llilum compiler now running opt and LLC internally the default here
+@REM is not to run either one unless explicitly enabled by the user. This essentially
+@REM boils down to run the size app to show obj file size info and then running make
+@REM to build the native code components and link the final image.
+
+IF NOT DEFINED LLILUM_SKIP_OPT  SET LLILUM_SKIP_OPT=1
+IF NOT DEFINED LLILUM_SKIP_LLC  SET LLILUM_SKIP_LLC=1
 IF NOT DEFINED LLILUM_DEBUG     SET LLILUM_DEBUG=1
 
 IF /i "%LLVM_BIN%"=="" (
@@ -31,7 +37,7 @@ IF %1.==. (
 
 @REM - To skip optimizations for testing you can set this ENVIRONMENT variable, otherwise the optimization will run as normal
 IF "%LLILUM_SKIP_OPT%" == "0" (
-    ECHO Running LLVM Optimization Phases...
+    ECHO Running LLVM Optimization passes...
 
     @REM -"%LLVM_BIN%\opt" -O2 -adce -globaldce Microsoft.Zelig.Test.mbed.Simple.bc -o Microsoft.Zelig.Test.mbed.Simple_opt.bc
     @REM -"%LLVM_BIN%\opt" -O1 -globalopt -constmerge -adce -globaldce -time-passes Microsoft.Zelig.Test.mbed.Simple.bc -o Microsoft.Zelig.Test.mbed.Simple_opt.bc
@@ -44,14 +50,18 @@ IF "%LLILUM_SKIP_OPT%" == "0" (
 )
 @REM -"%LLVM_BIN%\llvm-bcanalyzer" Microsoft.Zelig.Test.mbed.Simple_opt.bc
 
-ECHO Cenerating LLVM IR source file...
-"%LLVM_BIN%\llvm-dis" Microsoft.Zelig.Test.mbed.Simple_opt.bc
+IF "%LLILUM_SKIP_LLC%" == "0" (
+    ECHO Generating LLVM IR source file...
+    "%LLVM_BIN%\llvm-dis" Microsoft.Zelig.Test.mbed.Simple_opt.bc
 
-ECHO Compiling to ARM (optimization level %LLILUM_OPT_LEVEL%)...
-"%LLVM_BIN%\llc" -O%LLILUM_OPT_LEVEL% -code-model=small -data-sections -relocation-model=pic -march=thumb -mcpu=cortex-m3 -filetype=obj -mtriple=Thumb-NoSubArch-UnknownVendor-UnknownOS-GNUEABI-ELF -o=Microsoft.Zelig.Test.mbed.Simple_opt.o Microsoft.Zelig.Test.mbed.Simple_opt.bc
-if %ERRORLEVEL% LSS 0 (
-    @echo ERRORLEVEL=%ERRORLEVEL%
-    goto :EXIT
+    ECHO Compiling to ARM ^(optimization level %LLILUM_OPT_LEVEL%^)...
+    "%LLVM_BIN%\llc" -O%LLILUM_OPT_LEVEL% -code-model=small -data-sections -relocation-model=pic -march=thumb -mcpu=cortex-m3 -filetype=obj -mtriple=Thumb-NoSubArch-UnknownVendor-UnknownOS-GNUEABI-ELF -o=Microsoft.Zelig.Test.mbed.Simple_opt.o Microsoft.Zelig.Test.mbed.Simple_opt.bc
+    if %ERRORLEVEL% LSS 0 (
+        @echo ERRORLEVEL=%ERRORLEVEL%
+        goto :EXIT
+    )
+) else (
+    echo  skipping LLC compilation...
 )
 
 ECHO Size Report...

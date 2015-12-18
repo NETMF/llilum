@@ -24,6 +24,9 @@ namespace Microsoft.Zelig.FrontEnd
     using Cfg = Microsoft.Zelig.Configuration.Environment;
     using ARM = Microsoft.Zelig.Emulation.ArmProcessor;
     using LLVM;
+    using Win32;
+    using System.Linq;
+    using System.Diagnostics;
 
     class Bench :
         TS.IEnvironmentProvider,
@@ -93,6 +96,13 @@ namespace Microsoft.Zelig.FrontEnd
         const string SymbolSuffix             = ".pdb";
         const string SourceCodeDatabaseSuffix = ".srcdb";
 
+        // Environment variables that may refer to the LLVM tools location
+        static readonly string[] LlvmBinPathEnvVarNames = { "LLILUM_LLVM", "LLVM_BIN" };
+
+        // These are the default arguments to LLC.EXE if not specified in the command line arguments
+        const string DefaultLlcArgs = "-O2 -code-model=small -data-sections -relocation-model=pic -march=thumb -mcpu=cortex-m3 -filetype=obj -mtriple=thumbv7m-none-eabi";
+        const string DefaultOptExeArgs = "-verify-debug-info -verify-dom-info -verify-each -verify-loop-info -verify-regalloc -verify-region-info -march=thumb -mcpu=cortex-m3 -aa-eval -indvars -gvn -globaldce -adce -dce -tailcallopt -scalarrepl -mem2reg -ipconstprop -deadargelim -sccp -dce -ipsccp -dce -constmerge -scev-aa -targetlibinfo -irce -dse -dce -argpromotion -mem2reg -adce -mem2reg -globaldce -die -dce -dse";
+
         //--//
 
         //
@@ -116,6 +126,8 @@ namespace Microsoft.Zelig.FrontEnd
         private bool                                m_fDumpIRBeforeEachPhase;
         private bool                                m_fDumpCFG;
         private bool                                m_fDumpLLVMIR;
+        private bool                                m_fSkipLlvmOptExe;
+        private bool                                m_fGenerateObj;
         private bool                                m_fDumpLLVMIR_TextRepresentation;
         private bool                                m_fDumpASM;
         private bool                                m_fDumpASMDIR;
@@ -129,7 +141,10 @@ namespace Microsoft.Zelig.FrontEnd
         private string                              m_libraryLocation_HostBuild;
         private string                              m_libraryLocation_TargetBuild;
         private string                              m_compilationSetupBinaryPath;
-        
+        private string                              m_LlvmBinPath;
+        private string                              m_LlvmOptArgs;
+        private string                              m_LlvmLlcArgs;
+
         private HashSet< string >                   m_phasesForDiagnosticDumps;
         private List< string >                      m_references;
         private List< string >                      m_searchOrder;
@@ -697,31 +712,39 @@ namespace Microsoft.Zelig.FrontEnd
             {
                 // An argument like "C:\my directory\with\a\space" will be split as
                 // "C:\my" and "irectory\with\a\space" acrosss two entries in args. 
-                // We need to re-combine those entries
+                // We need to re-combine those entries.
+                // It is important to note that this is a fairly simplistic approach
+                // to quoted string args. In particular there is no support for any
+                // sort of escaped quotes for quoted strings within an argument etc...
                 
                 // We must find a matching pair of double quotes. 
-                // Matching quotes must appear in the same or next argument. 
+                // if they are on the same arg, then move on.
                 if( args[ i ].StartsWith( "\"" ) && !args[ i ].EndsWith("\"") )
                 {
-                    // Look in the very next argument.
+                    //start building the complete string
+                    var quotedString = new StringBuilder( );
+                    for( ; i < args.Length; ++i )
+                    {
+                        if( quotedString.Length > 0 )
+                            quotedString.Append( ' ' );
+
+                        quotedString.Append( args[ i ] );
+                        if( args[ i ].EndsWith( "\"" ) )
+                        {
+                            arguments.Add( quotedString.ToString( ) );
+                            break;
+                        }
+                    }
                     // if we are at the last entry in args already, then 
                     // we have an unmatched quote we may be able to recover from
-                    if( i == args.Length - 1 )
+                    // so ignore it and hope for the best
+                    if( i >= args.Length )
                     {
-                        // ignore and hope for the best
-                    }
-                    else if( args[i + 1].EndsWith("\"") )
-                    {
-                        args[ i + 1 ] = args[ i ] + " " + args[ i + 1 ];
-                        ++i;
-                    }
-                    else
-                    {
-                        // no matching double-quotes
-                        return null;
+                        arguments.Add( quotedString.ToString( ) );
                     }
                 }
-                arguments.Add( args[i] );
+                else
+                    arguments.Add( args[i] );
             }
 
             return arguments.ToArray( ); 
@@ -729,473 +752,514 @@ namespace Microsoft.Zelig.FrontEnd
 
         private bool Parse( string[] args, ref bool fNoSDK)
         {
-            if( args != null )
+            if( args == null )
+                return false;
+
+            for( int i = 0; i < args.Length; i++ )
             {
-                for( int i = 0; i < args.Length; i++ )
+                string arg = args[ i ];
+
+                if( arg == string.Empty )
                 {
-                    string arg = args[ i ];
+                    continue;
+                }
 
-                    if( arg == string.Empty )
+                if( arg.StartsWith( "/" ) ||
+                    arg.StartsWith( "-" ) )
+                {
+                    string option = arg.Substring( 1 );
+
+                    if( IsMatch( option, "Cfg" ) )
                     {
-                        continue;
+                        string file;
+
+                        if( !GetArgument( arg, args, ref i, out file, true ) )
+                        {
+                            return false;
+                        }
+
+                        using( System.IO.StreamReader stream = new System.IO.StreamReader( file ) )
+                        {
+                            string line;
+
+                            while( ( line = stream.ReadLine( ) ) != null )
+                            {
+                                if( line.StartsWith( "#" ) )
+                                {
+                                    continue;
+                                }
+
+                                var arguments = line.Split( new char[ ] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries );
+
+                                string[ ] recombinedArgs = RecombineArgs( arguments );
+
+                                if( recombinedArgs == null )
+                                {
+                                    Console.WriteLine( String.Format( "Arguments at line '{0}' could not be recombined", line ) );
+
+                                    return false;
+                                }
+
+                                if( Parse( recombinedArgs, ref fNoSDK ) == false )
+                                {
+                                    return false;
+                                }
+                            }
+                        }
                     }
-
-                    if( arg.StartsWith( "/" ) ||
-                       arg.StartsWith( "-" ) )
+                    else if( IsMatch( option, "NoSDK" ) )
                     {
-                        string option = arg.Substring( 1 );
+                        fNoSDK = true;
+                    }
+                    else if( IsMatch( option, "DumpIL" ) )
+                    {
+                        m_fDumpIL = true;
+                    }
+                    else if( IsMatch( option, "ReloadState" ) )
+                    {
+                        m_fReloadState = true;
+                    }
+                    else if( IsMatch( option, "DumpIRpre" ) )
+                    {
+                        m_fDumpIRpre = true;
+                    }
+                    else if( IsMatch( option, "DumpIRpost" ) )
+                    {
+                        m_fDumpIRpost = true;
+                    }
+                    else if( IsMatch( option, "DumpIR" ) )
+                    {
+                        m_fDumpIR = true;
+                    }
+                    else if( IsMatch( option, "DumpIRXMLpre" ) )
+                    {
+                        m_fDumpIRXMLpre = true;
+                    }
+                    else if( IsMatch( option, "DumpIRXMLpost" ) )
+                    {
+                        m_fDumpIRXMLpost = true;
+                    }
+                    else if( IsMatch( option, "DumpIRBeforePhase" ) )
+                    {
+                        m_fDumpIRBeforeEachPhase = true;
 
-                        if( IsMatch( option, "Cfg" ) )
+                        string phase;
+                        bool fFoundOne = false;
+                        while( GetArgument( arg, args, ref i, out phase, false, false ) )
                         {
-                            string file;
+                            m_phasesForDiagnosticDumps.Add( phase );
 
-                            if( !GetArgument( arg, args, ref i, out file, true ) )
-                            {
-                                return false;
-                            }
-
-                            using( System.IO.StreamReader stream = new System.IO.StreamReader( file ) )
-                            {
-                                string line;
-
-                                while( ( line = stream.ReadLine( ) ) != null )
-                                {
-                                    if( line.StartsWith( "#" ) )
-                                    {
-                                        continue;
-                                    }
-
-                                    var arguments = line.Split( new char[ ] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries );
-
-                                    string[ ] recombinedArgs = RecombineArgs( arguments );
-
-                                    if( recombinedArgs == null )
-                                    {
-                                        Console.WriteLine( String.Format( "Arguments at line '{0}' could not be recombined", line ) );
-
-                                        return false;
-                                    }
-
-                                    if( Parse( recombinedArgs, ref fNoSDK ) == false )
-                                    {
-                                        return false;
-                                    }
-                                }
-                            }
+                            fFoundOne = true;
                         }
-                        else if( IsMatch( option, "NoSDK" ) )
+
+                        if( fFoundOne == false )
                         {
-                            fNoSDK = true;
-                        }
-                        else if( IsMatch( option, "DumpIL" ) )
-                        {
-                            m_fDumpIL = true;
-                        }
-                        else if( IsMatch( option, "ReloadState" ) )
-                        {
-                            m_fReloadState = true;
-                        }
-                        else if( IsMatch( option, "DumpIRpre" ) )
-                        {
-                            m_fDumpIRpre = true;
-                        }
-                        else if( IsMatch( option, "DumpIRpost" ) )
-                        {
-                            m_fDumpIRpost = true;
-                        }
-                        else if( IsMatch( option, "DumpIR" ) )
-                        {
-                            m_fDumpIR = true;
-                        }
-                        else if( IsMatch( option, "DumpIRXMLpre" ) )
-                        {
-                            m_fDumpIRXMLpre = true;
-                        }
-                        else if( IsMatch( option, "DumpIRXMLpost" ) )
-                        {
-                            m_fDumpIRXMLpost = true;
-                        }
-                        else if( IsMatch( option, "DumpIRBeforePhase" ) )
-                        {
-                            m_fDumpIRBeforeEachPhase = true;
-                            
-                            string phase;                            
-                            bool fFoundOne = false;
-                            while( GetArgument( arg, args, ref i, out phase, false, false ) )
-                            {
-                                m_phasesForDiagnosticDumps.Add( phase ); 
-
-                                fFoundOne = true;
-                            }
-
-                            if(fFoundOne == false)
-                            {
-                                return false;
-                            }
-                        }
-                        else if( IsMatch( option, "DumpIRXML" ) )
-                        {
-                            m_fDumpIRXML = true;
-                        }
-                        else if( IsMatch( option, "DumpLLVMIR" ) )
-                        {
-                            m_fDumpLLVMIR = true;
-                        }
-                        else if( IsMatch( option, "DumpLLVMIR_TextRepresentation" ) )
-                        {
-                            m_fDumpLLVMIR_TextRepresentation = true;
-                        }
-                        else if( IsMatch( option, "DumpCFG" ) )
-                        {
-                            m_fDumpCFG = true;
-                        }
-                        else if( IsMatch( option, "DumpASM" ) )
-                        {
-                            m_fDumpASM = true;
-                        }
-                        else if( IsMatch( option, "DumpASMDIR" ) )
-                        {
-                            m_fDumpASMDIR = true;
-                        }
-                        else if( IsMatch( option, "DumpHEX" ) )
-                        {
-                            m_fDumpHEX = true;
-                        }
-                        else if( IsMatch( option, "DumpRAW" ) )
-                        {
-                            string section;
-                            uint rangeStart;
-                            uint rangeEnd;
-
-                            if( !GetArgument( arg, args, ref i, out section, false ) ||
-                                !GetArgument( arg, args, ref i, out rangeStart, true ) ||
-                                !GetArgument( arg, args, ref i, out rangeEnd, true ) )
-                            {
-                                return false;
-                            }
-
-                            m_dumpRawImage.Add( new RawImage
-                            {
-                                SectionName = section,
-                                RangeStart = rangeStart,
-                                RangeEnd = rangeEnd
-                            } );
-                        }
-                        else if( IsMatch( option, "HostAssemblyDir" ) )
-                        {
-                            string dir;
-
-                            if( !GetArgument( arg, args, ref i, out dir, true ) )
-                            {
-                                return false;
-                            }
-
-                            m_libraryLocation_HostBuild = AddSearchDirectory( dir );
-                        }
-                        else if( IsMatch( option, "DeviceAssemblyDir" ) )
-                        {
-                            string dir;
-
-                            if( !GetArgument( arg, args, ref i, out dir, true ) )
-                            {
-                                return false;
-                            }
-
-                            m_libraryLocation_TargetBuild = AddSearchDirectory( dir );
-                        }
-                        else if( IsMatch( option, "ImportDirectory" ) )
-                        {
-                            string dir;
-
-                            if( !GetArgument( arg, args, ref i, out dir, true ) )
-                            {
-                                return false;
-                            }
-
-                            dir = dir.ToLower( );
-
-                            if( !m_importDirectories.Contains( dir ) )
-                            {
-                                m_importDirectories.Add( dir );
-                            }
-                        }
-                        else if( IsMatch( option, "ImportLibrary" ) )
-                        {
-                            string file;
-
-                            if( !GetArgument( arg, args, ref i, out file, true ) )
-                            {
-                                return false;
-                            }
-
-                            file = file.ToLower( );
-
-                            if( !m_importLibraries.Contains( file ) )
-                            {
-                                m_importLibraries.Add( file );
-                            }
-                        }
-                        else if( IsMatch( option, "MaxProcs" ) )
-                        {
-                            uint iMaxProcs;
-
-                            if( !GetArgument( arg, args, ref i, out iMaxProcs, false ) )
-                            {
-                                return false;
-                            }
-
-                            IR.CompilationSteps.ParallelTransformationsHandler.MaximumNumberOfProcessorsToUse =
-                                ( int )iMaxProcs;
-                        }
-                        else if( IsMatch( option, "OutputName" ) )
-                        {
-                            string name;
-
-                            if( !GetArgument( arg, args, ref i, out name, false ) )
-                            {
-                                return false;
-                            }
-
-                            m_outputName = name;
-                        }
-                        else if( IsMatch( option, "NativeIntSize" ) )
-                        {
-                            string name;
-
-                            if( !GetArgument( arg, args, ref i, out name, false ) )
-                            {
-                                return false;
-                            }
-
-                            if( !UInt32.TryParse( name, out m_nativeIntSize ) )
-                                return false;
-                        }
-                        else if( IsMatch( option, "OutputDir" ) )
-                        {
-                            string dir;
-
-                            if( !GetArgument( arg, args, ref i, out dir, true ) )
-                            {
-                                return false;
-                            }
-
-                            m_outputDir = dir;
-                        }
-                        else if( IsMatch( option, "Reference" ) )
-                        {
-                            string reference;
-
-                            if( !GetArgument( arg, args, ref i, out reference, false ) )
-                            {
-                                return false;
-                            }
-
-                            m_references.Add( reference );
-                        }
-                        else if( IsMatch( option, "CompilationSetupPath" ) )
-                        {
-                            string compilationBinary;
-
-                            if( !GetArgument( arg, args, ref i, out compilationBinary, true ) )
-                            {
-                                return false;
-                            }
-
-                            m_compilationSetupBinaryPath = compilationBinary;
-                        }
-                        else if( IsMatch( option, "CompilationSetup" ) )
-                        {
-                            string compilationSetup;
-
-                            if( !GetArgument( arg, args, ref i, out compilationSetup, false ) )
-                            {
-                                return false;
-                            }
-
-                            m_compilationSetup = null;
-
-                            foreach( var setup in GetConfigurationOptions<Cfg.CompilationSetupCategory>( ) )
-                            {
-                                if( setup.GetType( ).FullName == compilationSetup )
-                                {
-                                    m_compilationSetup = setup;
-                                    break;
-                                }
-                            }
-
-                            if( m_compilationSetup == null )
-                            {
-                                Console.WriteLine( "Cannot find definition for compilation setup '{0}'", compilationSetup );
-                                return false;
-                            }
-
-                            SearchConfigurationOptions( m_compilationSetup );
-
-                            m_product = GetConfigurationOption<Cfg.ProductCategory>( m_compilationSetup.Product );
-                            if( m_product == null )
-                            {
-                                Console.Error.WriteLine( "Cannot compile without a product definition!" );
-                                return false;
-                            }
-
-                            SearchConfigurationOptions( m_product );
-
-                            m_memoryMap = GetConfigurationOption<Cfg.MemoryMapCategory>( m_compilationSetup.MemoryMap );
-                            if( m_memoryMap == null )
-                            {
-                                Console.Error.WriteLine( "Cannot compile without a memory map!" );
-                                return false;
-                            }
-
-                            SearchConfigurationOptions( m_memoryMap );
-                        }
-                        else if( IsMatch( option, "CompilationOption" ) )
-                        {
-                            string type;
-                            string name;
-                            string value;
-
-                            if( !GetArgument( arg, args, ref i, out type, false ) ||
-                                !GetArgument( arg, args, ref i, out name, false ) ||
-                                !GetArgument( arg, args, ref i, out value, false ) )
-                            {
-                                return false;
-                            }
-
-                            Type t = Type.GetType( type );
-                            if( t == null )
-                            {
-                                Console.Error.WriteLine( "Cannot find type '{0}'", type );
-                                return false;
-                            }
-
-                            try
-                            {
-                                object res = t.InvokeMember( "Parse",
-                                    System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Static |
-                                    System.Reflection.BindingFlags.Public, null, null, new object[ ] { value } );
-
-                                m_configurationOptions[ name ] = res;
-                            }
-                            catch( Exception ex )
-                            {
-                                Console.Error.WriteLine( "Cannot parse value '{0}': {1}", value, ex );
-                                return false;
-
-                            }
-                        }
-                        else if( IsMatch( option, "CompilationPhaseDisabled" ) )
-                        {
-                            string phase;
-
-                            if( !GetArgument( arg, args, ref i, out phase, false ) )
-                            {
-                                return false;
-                            }
-                            m_disabledPhases.Add( phase.Trim( ) );
-                        }
-                        else if( IsMatch( option, "Include" ) )
-                        {
-                            string dir;
-
-                            if( !GetArgument( arg, args, ref i, out dir, true ) )
-                            {
-                                return false;
-                            }
-
-                            AddSearchDirectory( dir );
-                        }
-                        else if( IsMatch( option, "SkipReadOnly" ) )
-                        {
-                            m_fSkipReadOnly = true;
-                        }
-                        else if( IsMatch( option, "EmbedSourceCode" ) )
-                        {
-                            string sFile;
-
-                            if( !GetArgument( arg, args, ref i, out sFile, true ) )
-                            {
-                                return false;
-                            }
-
-                            EmbedSourceCode( sFile );
                             return false;
                         }
-                        else if( IsMatch( option, "EmbedSourceCodeAll" ) )
+                    }
+                    else if( IsMatch( option, "DumpIRXML" ) )
+                    {
+                        m_fDumpIRXML = true;
+                    }
+                    else if( IsMatch( option, "DumpLLVMIR" ) )
+                    {
+                        m_fDumpLLVMIR = true;
+                    }
+                    else if( IsMatch( option, "SkipLlvmOpt" ) )
+                    {
+                        m_fSkipLlvmOptExe = true;
+                    }
+                    else if( IsMatch( option, "GenerateObj" ) )
+                    {
+                        m_fDumpLLVMIR = true;
+                        m_fGenerateObj = true;
+                    }
+                    else if( IsMatch( option, "DumpLLVMIR_TextRepresentation" ) )
+                    {
+                        m_fDumpLLVMIR_TextRepresentation = true;
+                    }
+                    else if( IsMatch( option, "DumpCFG" ) )
+                    {
+                        m_fDumpCFG = true;
+                    }
+                    else if( IsMatch( option, "DumpASM" ) )
+                    {
+                        m_fDumpASM = true;
+                    }
+                    else if( IsMatch( option, "DumpASMDIR" ) )
+                    {
+                        m_fDumpASMDIR = true;
+                    }
+                    else if( IsMatch( option, "DumpHEX" ) )
+                    {
+                        m_fDumpHEX = true;
+                    }
+                    else if( IsMatch( option, "DumpRAW" ) )
+                    {
+                        string section;
+                        uint rangeStart;
+                        uint rangeEnd;
+
+                        if( !GetArgument( arg, args, ref i, out section, false ) ||
+                            !GetArgument( arg, args, ref i, out rangeStart, true ) ||
+                            !GetArgument( arg, args, ref i, out rangeEnd, true ) )
                         {
-                            string sDir;
-
-                            if( !GetArgument( arg, args, ref i, out sDir, true ) )
-                            {
-                                return false;
-                            }
-
-                            EmbedSourceCodeAll( sDir );
                             return false;
                         }
-                        else if( IsMatch( option, "EntryPoint" ) )
-                        {
-                            string sEP;
 
-                            if( !GetArgument( arg, args, ref i, out sEP, true ) )
-                            {
-                                return false;
-                            }
+                        m_dumpRawImage.Add( new RawImage
+                        {
+                            SectionName = section,
+                            RangeStart = rangeStart,
+                            RangeEnd = rangeEnd
+                        } );
+                    }
+                    else if( IsMatch( option, "HostAssemblyDir" ) )
+                    {
+                        string dir;
 
-                            m_entryPointName = sEP;
-                        }
-                        else if( IsMatch( option, "Debug" ) )
+                        if( !GetArgument( arg, args, ref i, out dir, true ) )
                         {
-                            m_LlvmCodeGenOptions.EnableAutoInlining = false;
-                            m_LlvmCodeGenOptions.HonorInlineAttribute = false;
-                            m_LlvmCodeGenOptions.InjectPrologAndEpilog = false;
-                        }
-                        else if( IsMatch( option, "DisableAutoInlining" ) )
-                        {
-                            m_LlvmCodeGenOptions.EnableAutoInlining = false;
-                        }
-                        else if( IsMatch( option, "IgnoreInlineAttributes" ) )
-                        {
-                            m_LlvmCodeGenOptions.HonorInlineAttribute = false;
-                        }
-                        else if( IsMatch( option, "DisablePrologEpilogInjection" ) )
-                        {
-                            m_LlvmCodeGenOptions.InjectPrologAndEpilog = false;
-                        }
-                        else if( IsMatch( option, "GenerateDataSectionPerType" ) )
-                        {
-                            m_LlvmCodeGenOptions.GenerateDataSectionPerType = true;
-                        }
-                        else
-                        {
-                            Console.WriteLine( "Unrecognized option: {0}", option );
                             return false;
                         }
+
+                        m_libraryLocation_HostBuild = AddSearchDirectory( dir );
+                    }
+                    else if( IsMatch( option, "DeviceAssemblyDir" ) )
+                    {
+                        string dir;
+
+                        if( !GetArgument( arg, args, ref i, out dir, true ) )
+                        {
+                            return false;
+                        }
+
+                        m_libraryLocation_TargetBuild = AddSearchDirectory( dir );
+                    }
+                    else if( IsMatch( option, "ImportDirectory" ) )
+                    {
+                        string dir;
+
+                        if( !GetArgument( arg, args, ref i, out dir, true ) )
+                        {
+                            return false;
+                        }
+
+                        dir = dir.ToLower( );
+
+                        if( !m_importDirectories.Contains( dir ) )
+                        {
+                            m_importDirectories.Add( dir );
+                        }
+                    }
+                    else if( IsMatch( option, "ImportLibrary" ) )
+                    {
+                        string file;
+
+                        if( !GetArgument( arg, args, ref i, out file, true ) )
+                        {
+                            return false;
+                        }
+
+                        file = file.ToLower( );
+
+                        if( !m_importLibraries.Contains( file ) )
+                        {
+                            m_importLibraries.Add( file );
+                        }
+                    }
+                    else if( IsMatch( option, "MaxProcs" ) )
+                    {
+                        uint iMaxProcs;
+
+                        if( !GetArgument( arg, args, ref i, out iMaxProcs, false ) )
+                        {
+                            return false;
+                        }
+
+                        IR.CompilationSteps.ParallelTransformationsHandler.MaximumNumberOfProcessorsToUse =
+                            ( int )iMaxProcs;
+                    }
+                    else if( IsMatch( option, "OutputName" ) )
+                    {
+                        string name;
+
+                        if( !GetArgument( arg, args, ref i, out name, false ) )
+                        {
+                            return false;
+                        }
+
+                        m_outputName = name;
+                    }
+                    else if( IsMatch( option, "NativeIntSize" ) )
+                    {
+                        string name;
+
+                        if( !GetArgument( arg, args, ref i, out name, false ) )
+                        {
+                            return false;
+                        }
+
+                        if( !UInt32.TryParse( name, out m_nativeIntSize ) )
+                            return false;
+                    }
+                    else if( IsMatch( option, "OutputDir" ) )
+                    {
+                        string dir;
+
+                        if( !GetArgument( arg, args, ref i, out dir, true ) )
+                        {
+                            return false;
+                        }
+
+                        m_outputDir = dir;
+                    }
+                    else if( IsMatch( option, "Reference" ) )
+                    {
+                        string reference;
+
+                        if( !GetArgument( arg, args, ref i, out reference, false ) )
+                        {
+                            return false;
+                        }
+
+                        m_references.Add( reference );
+                    }
+                    else if( IsMatch( option, "CompilationSetupPath" ) )
+                    {
+                        string compilationBinary;
+
+                        if( !GetArgument( arg, args, ref i, out compilationBinary, true ) )
+                        {
+                            return false;
+                        }
+
+                        m_compilationSetupBinaryPath = compilationBinary;
+                    }
+                    else if( IsMatch( option, "LlvmBinPath" ) )
+                    {
+                        string toolsPath;
+
+                        if( !GetArgument( arg, args, ref i, out toolsPath, true ) )
+                        {
+                            return false;
+                        }
+
+                        m_LlvmBinPath = toolsPath;
+                    }
+                    else if( IsMatch( option, "LlvmOptArgs" ) )
+                    {
+                        string optArgs;
+
+                        if( !GetArgument( arg, args, ref i, out optArgs, false ) )
+                        {
+                            return false;
+                        }
+
+                        m_LlvmOptArgs = optArgs.Trim( '"' );
+                    }
+                    else if( IsMatch( option, "LlvmLlcArgs" ) )
+                    {
+                        string llcArgs;
+
+                        if( !GetArgument( arg, args, ref i, out llcArgs, false ) )
+                        {
+                            return false;
+                        }
+
+                        m_LlvmLlcArgs = llcArgs.Trim( '"' );
+                    }
+                    else if( IsMatch( option, "CompilationSetup" ) )
+                    {
+                        string compilationSetup;
+
+                        if( !GetArgument( arg, args, ref i, out compilationSetup, false ) )
+                        {
+                            return false;
+                        }
+
+                        m_compilationSetup = null;
+
+                        foreach( var setup in GetConfigurationOptions<Cfg.CompilationSetupCategory>( ) )
+                        {
+                            if( setup.GetType( ).FullName == compilationSetup )
+                            {
+                                m_compilationSetup = setup;
+                                break;
+                            }
+                        }
+
+                        if( m_compilationSetup == null )
+                        {
+                            Console.WriteLine( "Cannot find definition for compilation setup '{0}'", compilationSetup );
+                            return false;
+                        }
+
+                        SearchConfigurationOptions( m_compilationSetup );
+
+                        m_product = GetConfigurationOption<Cfg.ProductCategory>( m_compilationSetup.Product );
+                        if( m_product == null )
+                        {
+                            Console.Error.WriteLine( "Cannot compile without a product definition!" );
+                            return false;
+                        }
+
+                        SearchConfigurationOptions( m_product );
+
+                        m_memoryMap = GetConfigurationOption<Cfg.MemoryMapCategory>( m_compilationSetup.MemoryMap );
+                        if( m_memoryMap == null )
+                        {
+                            Console.Error.WriteLine( "Cannot compile without a memory map!" );
+                            return false;
+                        }
+
+                        SearchConfigurationOptions( m_memoryMap );
+                    }
+                    else if( IsMatch( option, "CompilationOption" ) )
+                    {
+                        string type;
+                        string name;
+                        string value;
+
+                        if( !GetArgument( arg, args, ref i, out type, false ) ||
+                            !GetArgument( arg, args, ref i, out name, false ) ||
+                            !GetArgument( arg, args, ref i, out value, false ) )
+                        {
+                            return false;
+                        }
+
+                        Type t = Type.GetType( type );
+                        if( t == null )
+                        {
+                            Console.Error.WriteLine( "Cannot find type '{0}'", type );
+                            return false;
+                        }
+
+                        try
+                        {
+                            object res = t.InvokeMember( "Parse",
+                                System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Static |
+                                System.Reflection.BindingFlags.Public, null, null, new object[ ] { value } );
+
+                            m_configurationOptions[ name ] = res;
+                        }
+                        catch( Exception ex )
+                        {
+                            Console.Error.WriteLine( "Cannot parse value '{0}': {1}", value, ex );
+                            return false;
+
+                        }
+                    }
+                    else if( IsMatch( option, "CompilationPhaseDisabled" ) )
+                    {
+                        string phase;
+
+                        if( !GetArgument( arg, args, ref i, out phase, false ) )
+                        {
+                            return false;
+                        }
+                        m_disabledPhases.Add( phase.Trim( ) );
+                    }
+                    else if( IsMatch( option, "Include" ) )
+                    {
+                        string dir;
+
+                        if( !GetArgument( arg, args, ref i, out dir, true ) )
+                        {
+                            return false;
+                        }
+
+                        AddSearchDirectory( dir );
+                    }
+                    else if( IsMatch( option, "SkipReadOnly" ) )
+                    {
+                        m_fSkipReadOnly = true;
+                    }
+                    else if( IsMatch( option, "EmbedSourceCode" ) )
+                    {
+                        string sFile;
+
+                        if( !GetArgument( arg, args, ref i, out sFile, true ) )
+                        {
+                            return false;
+                        }
+
+                        EmbedSourceCode( sFile );
+                        return false;
+                    }
+                    else if( IsMatch( option, "EmbedSourceCodeAll" ) )
+                    {
+                        string sDir;
+
+                        if( !GetArgument( arg, args, ref i, out sDir, true ) )
+                        {
+                            return false;
+                        }
+
+                        EmbedSourceCodeAll( sDir );
+                        return false;
+                    }
+                    else if( IsMatch( option, "EntryPoint" ) )
+                    {
+                        string sEP;
+
+                        if( !GetArgument( arg, args, ref i, out sEP, true ) )
+                        {
+                            return false;
+                        }
+
+                        m_entryPointName = sEP;
+                    }
+                    else if( IsMatch( option, "Debug" ) )
+                    {
+                        m_fSkipLlvmOptExe = true;
+                        m_LlvmCodeGenOptions.EnableAutoInlining = false;
+                        m_LlvmCodeGenOptions.HonorInlineAttribute = false;
+                        m_LlvmCodeGenOptions.InjectPrologAndEpilog = false;
+                    }
+                    else if( IsMatch( option, "DisableAutoInlining" ) )
+                    {
+                        m_LlvmCodeGenOptions.EnableAutoInlining = false;
+                    }
+                    else if( IsMatch( option, "IgnoreInlineAttributes" ) )
+                    {
+                        m_LlvmCodeGenOptions.HonorInlineAttribute = false;
+                    }
+                    else if( IsMatch( option, "DisablePrologEpilogInjection" ) )
+                    {
+                        m_LlvmCodeGenOptions.InjectPrologAndEpilog = false;
+                    }
+                    else if( IsMatch( option, "GenerateDataSectionPerType" ) )
+                    {
+                        m_LlvmCodeGenOptions.GenerateDataSectionPerType = true;
                     }
                     else
                     {
-                        arg = Expand( arg );
-                        if( File.Exists( arg ) == false )
-                        {
-                            Console.WriteLine( "Cannot find '{0}'", arg );
-                            return false;
-                        }
-
-                        if( m_targetFile != null )
-                        {
-                            Console.WriteLine( "ERROR: Only one target file per compilation." );
-                        }
-
-                        m_targetFile = arg;
-
-                        m_searchOrder.Insert( 0, System.IO.Path.GetDirectoryName( arg ) );
+                        Console.WriteLine( "Unrecognized option: {0}", option );
+                        return false;
                     }
                 }
+                else
+                {
+                    arg = Expand( arg );
+                    if( File.Exists( arg ) == false )
+                    {
+                        Console.WriteLine( "Cannot find '{0}'", arg );
+                        return false;
+                    }
 
-                return true;
+                    if( m_targetFile != null )
+                    {
+                        Console.WriteLine( "ERROR: Only one target file per compilation." );
+                    }
+
+                    m_targetFile = arg;
+
+                    m_searchOrder.Insert( 0, System.IO.Path.GetDirectoryName( arg ) );
+                }
             }
 
-            return false;
+            return true;
         }
 
         private static bool IsMatch( string arg,
@@ -1205,11 +1269,11 @@ namespace Microsoft.Zelig.FrontEnd
         }
 
         private static bool GetArgument( string arg,
-                                             string[] args,
+                                         string[] args,
                                          ref int i,
                                          out string value,
-                                             bool fExpand, 
-                                             bool fErrorOnParse = true )
+                                         bool fExpand, 
+                                         bool fErrorOnParse = true )
         {
             if( i + 1 < args.Length )
             {
@@ -1235,10 +1299,10 @@ namespace Microsoft.Zelig.FrontEnd
         }
 
         private static bool GetArgument( string arg,
-                                             string[] args,
+                                         string[] args,
                                          ref int i,
                                          out uint value,
-                                             bool fCanBeHex )
+                                         bool fCanBeHex )
         {
             string str;
 
@@ -1268,6 +1332,9 @@ namespace Microsoft.Zelig.FrontEnd
 
         private bool ValidateOptions( )
         {
+            if( !ValidateLlvmToolsPath( ) )
+                return false;
+
             /*
             if( m_compilationSetup == null )
             {
@@ -1278,7 +1345,169 @@ namespace Microsoft.Zelig.FrontEnd
             return true;
         }
 
-        //--//
+        // Verify the LLVM tools path
+        // if the path isn't set from command line options try to figure it out
+        // using the following (in order):
+        //   1) LlvmBinPathEnvVarNames environment variables for curent process
+        //   2) LlvmBinPathEnvVarNames environment variable/registry for curent user
+        //   3) LlvmBinPathEnvVarNames environment variable/registry for curent machine
+        //   4) HKCU\SOFTWARE\LLVM\3.7.0\@ToolsBin
+        //   5) HKLM\SOFTWARE\LLVM\3.7.0\@ToolsBin
+        //   6) HKCU\SOFTWARE\LLVM\3.7.0\@SrcRoot + "build\Win32\Release\bin"
+        //   7) HKCU\SOFTWARE\LLVM\3.7.0\@SrcRoot + "build\x64\Release\bin"
+        //   8) HKLM\SOFTWARE\LLVM\3.7.0\@SrcRoot + "build\Win32\Release\bin"
+        //   9) HKLM\SOFTWARE\LLVM\3.7.0\@SrcRoot + "build\x64\Release\bin"
+        //   10) Scan all paths in the processes PATH environment variable for the
+        //       first one containing opt.exe, llc.exe and llvm-dis.exe
+        //
+        //  If none of the above yields a path that contains the required apps then fail the validation
+        //
+        // NOTE: this will update m_LlvmBinPath to the resolved path if one was found.
+        //       If the path to the LLVM tools isn't already in the PATH environment var
+        //       it is added to the PATH for this process.
+        private bool ValidateLlvmToolsPath( )
+        {
+            // if the tools aren't needed, based on options, no point verifying anything else
+            if( m_fSkipLlvmOptExe && !m_fGenerateObj )
+                return true;
+
+            if( !string.IsNullOrWhiteSpace( m_LlvmBinPath ) )
+            {
+                m_LlvmBinPath = FindLLvmToolsPathOrSubPathFromEnvVars( EnvironmentVariableTarget.Process
+                                                                     , EnvironmentVariableTarget.User
+                                                                     , EnvironmentVariableTarget.Machine
+                                                                     );
+            }
+
+            if( string.IsNullOrWhiteSpace( m_LlvmBinPath ) )
+            {
+                m_LlvmBinPath = GetRegValueString( RegistryHive.CurrentUser, @"SOFTWARE\LLVM\3.7.0", "ToolsBin" );
+            }
+
+            if( string.IsNullOrWhiteSpace( m_LlvmBinPath ) )
+            {
+                m_LlvmBinPath = GetRegValueString( RegistryHive.LocalMachine, @"SOFTWARE\LLVM\3.7.0", "ToolsBin" );
+            }
+
+            if( string.IsNullOrWhiteSpace( m_LlvmBinPath ) )
+            {
+                var srcRootDir = GetRegValueString( RegistryHive.CurrentUser, @"SOFTWARE\LLVM\3.7.0", "SrcRoot" );
+                if( !string.IsNullOrWhiteSpace( srcRootDir ) )
+                {
+                    m_LlvmBinPath = Path.Combine( srcRootDir, "build", "Win32", "Release", "bin" );
+                    if( string.IsNullOrWhiteSpace( m_LlvmBinPath ) && Environment.Is64BitOperatingSystem )
+                    {
+                        m_LlvmBinPath = m_LlvmBinPath = Path.Combine( srcRootDir, "build", "x64", "Release", "bin" );
+                    }
+                }
+            }
+
+            if( string.IsNullOrWhiteSpace( m_LlvmBinPath ) )
+            {
+                var srcRootDir = GetRegValueString( RegistryHive.LocalMachine, @"SOFTWARE\LLVM\3.7.0", "SrcRoot" );
+                if( !string.IsNullOrWhiteSpace( srcRootDir ) )
+                {
+                    m_LlvmBinPath = Path.Combine( srcRootDir, "build", "Win32", "Release", "bin" );
+                    if( string.IsNullOrWhiteSpace( m_LlvmBinPath ) && Environment.Is64BitOperatingSystem )
+                    {
+                        m_LlvmBinPath = m_LlvmBinPath = Path.Combine( srcRootDir, "build", "x64", "Release", "bin" );
+                    }
+                }
+            }
+
+            // try scanning the PATH environment var to see if the tools are already in the PATH
+            var envPathToLlvmTools = FindLlvmToolsInPath( );
+            if( string.IsNullOrWhiteSpace( m_LlvmBinPath ) && !string.IsNullOrWhiteSpace( envPathToLlvmTools ) )
+            {
+                m_LlvmBinPath = envPathToLlvmTools;
+            }
+
+            if( string.IsNullOrWhiteSpace( m_LlvmBinPath ) )
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Error.WriteLine( "ERROR: LLVM Tools location not specified and could not be determined" );
+                Console.ResetColor( );
+                return false;
+            }
+
+            if( !PathHasLlvmTools( m_LlvmBinPath ) )
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Error.WriteLine( "ERROR: LLVM Tools not found in path '{0}'", m_LlvmBinPath );
+                Console.ResetColor( );
+                return false;
+            }
+
+            // if the llvm tools path isn't already in the PATH environment variable, add it so the tools are found when launched
+            if( string.IsNullOrWhiteSpace( envPathToLlvmTools ) )
+            {
+                Environment.SetEnvironmentVariable( "PATH", $"{Environment.GetEnvironmentVariable( "PATH" )};{m_LlvmBinPath}" );
+            }
+
+            return true;
+        }
+
+        private static string FindLLvmToolsPathOrSubPathFromEnvVars( params EnvironmentVariableTarget[] targets )
+        {
+            foreach( var target in targets )
+            {
+                foreach( var envVar in LlvmBinPathEnvVarNames )
+                {
+                    var envPath = Environment.GetEnvironmentVariable( envVar, target );
+                    if( string.IsNullOrEmpty( envPath ) )
+                        continue;
+
+                    if( PathHasLlvmTools( envPath ) )
+                    {
+                        return envPath;
+                    }
+
+                    // if the path points to the LLVM build source root then the actual
+                    // binaries are in a platform sepcific sub folder, try Win32 first.
+                    var envSubPath = Path.Combine( envPath, "build", "Win32", "Release", "bin" );
+                    if( PathHasLlvmTools( envSubPath ) )
+                    {
+                        return envSubPath;
+                    }
+
+                    envSubPath = Path.Combine( envPath, "build", "x64", "Release", "bin" );
+                    if( PathHasLlvmTools( envPath ) )
+                    {
+                        return envPath;
+                    }
+                }
+            }
+            return null;
+        }
+
+        private string FindLlvmToolsInPath( )
+        {
+            var envPathVar = Environment.ExpandEnvironmentVariables( "PATH" );
+            var envPaths = envPathVar.Split( ';' );
+            return ( from path in envPaths
+                     where PathHasLlvmTools( path )
+                     select path
+                   ).FirstOrDefault( );
+        }
+
+        static bool PathHasLlvmTools( string path )
+        {
+            return File.Exists( Path.Combine( path, "opt.exe" ) )
+                 && File.Exists( Path.Combine( path, "llc.exe" ) )
+                 && File.Exists( Path.Combine( path, "llvm-dis.exe" ) );
+        }
+
+        private string GetRegValueString( RegistryHive hive, string subkey, string valueName, string defaultValue = null, RegistryView view = RegistryView.Default )
+        {
+            using( var hkRoot = RegistryKey.OpenBaseKey( hive, view ) )
+            using( var key = hkRoot.OpenSubKey( subkey ) )
+            {
+                if( key == null )
+                    return null;
+
+                return ( string )key.GetValue( valueName );
+            }
+        }
 
         private void Compile( )
         {
@@ -1679,10 +1908,30 @@ namespace Microsoft.Zelig.FrontEnd
             {
                 Console.WriteLine( "Writing LLVM Bitcode representation" );
                 m_typeSystem.Module.DumpToFile( filePrefix + ".bc", LLVM.OutputFormat.BitCodeBinary );
-                
-                // todo: add compiler flag for these?
-                //m_typeSystem.Module.DumpToFile( filePrefix + ".s", LLVM.OutputFormat.TargetAsmSource );
-                //m_typeSystem.Module.DumpToFile( filePrefix + ".o", LLVM.OutputFormat.TargetObjectFile );
+            }
+
+            if( m_fDumpLLVMIR && !m_fSkipLlvmOptExe )
+            {
+                Console.WriteLine( "Optimizing LLVM Bitcode representation" );
+                var args = string.Format( "{0} {1} -o {2}"
+                                        , m_LlvmOptArgs ?? DefaultOptExeArgs
+                                        , filePrefix + ".bc"
+                                        , filePrefix + "_opt.bc"
+                                        );
+                ShellExec( "opt.exe", args );
+                ShellExec( "llvm-dis.exe", filePrefix + "_opt.bc" );
+            }
+
+            if( m_fGenerateObj )
+            {
+                Console.WriteLine( "Compiling LLVM Bitcode" );
+                var args = string.Format( "{0} -o={1} {2}"
+                                        , m_LlvmLlcArgs ?? DefaultLlcArgs
+                                        , filePrefix + "_opt.o"
+                                        , filePrefix + "_opt.bc"
+                                        );
+
+                ShellExec( "llc.exe", args );
             }
 
             foreach( var raw in m_dumpRawImage )
@@ -1725,7 +1974,28 @@ namespace Microsoft.Zelig.FrontEnd
             Console.WriteLine( "{0}: Done", GetTime( ) );
         }
 
-        //--//
+        private int ShellExec( string exe, string args )
+        {
+            var startInfo = new ProcessStartInfo( exe, args )
+            { CreateNoWindow = true
+            , UseShellExecute = false
+            , RedirectStandardError = true
+            , RedirectStandardOutput = true
+            };
+
+            // for reasons unknown launching a process via ProcessStart doesn't actually inherit the
+            // STDOUT and STDERR so this has to capture the output from poth and then send it to the
+            // console explicitly or the output from the process will just end up in the bit pool at
+            // the bottom of the computer's chasis.
+            var proc = new Process( ) { StartInfo = startInfo };
+            proc.ErrorDataReceived += ( s, e ) => { if( e.Data != null ) Console.Error.WriteLine( e.Data ); };
+            proc.OutputDataReceived += ( s, e ) => { if( e.Data != null ) Console.WriteLine( e.Data ); };
+            proc.Start( );
+            proc.BeginOutputReadLine( );
+            proc.BeginErrorReadLine( );
+            proc.WaitForExit( );
+            return proc.ExitCode;
+        }
 
         internal static bool RunBench(string[] args)
         {
