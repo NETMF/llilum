@@ -59,7 +59,7 @@ extern "C"
     {
         if (target != NULL)
         {
-            ObjectHeader* header = reinterpret_cast<ObjectHeader*>(target) - 1;
+            ObjectHeader* header = target->get_Header();
 
             StartAtomicOperations();
 

@@ -125,18 +125,11 @@ namespace Microsoft.Zelig.Runtime
         [ExportedMethod]
         public static UIntPtr AllocateFromManagedHeap( uint size )
         {
-            size += ObjectHeader.HeaderSize;
-
-            uint unalignedBytes = size & 0x3u;
-
             //
             // Force all heap allocations to be multiples of 4-bytes so that we guarantee 
             // 4-byte alignment for all allocations.
             //
-            if(0 != unalignedBytes)
-            {
-                size += 4u - unalignedBytes;
-            }
+            size = AddressMath.AlignToWordBoundary( size + ObjectHeader.HeaderSize );
 
             UIntPtr ptr = Instance.Allocate( size );
 
@@ -152,19 +145,19 @@ namespace Microsoft.Zelig.Runtime
                 }
             }
 
-            ObjectHeader hdr = ObjectHeader.CastAsObjectHeader(ptr);
-            hdr.MultiUseWord |= (int)(ObjectHeader.GarbageCollectorFlags.UnreclaimableObject | ObjectHeader.GarbageCollectorFlags.Marked);
+            // MemoryManager.Allocate returns pointer with object header initialized as AllocatedRawBytes,
+            // which is already what we want. So just shift the pointer by the size of object header
+            // (since the callers are interop code that have no concept of object header) and we're done!
+            return AddressMath.Increment( ptr, ObjectHeader.HeaderSize );
 
-            return hdr.Pack().ToPointer();
         }
 
         [ExportedMethod]
         public static void FreeFromManagedHeap( UIntPtr address )
         {
-            ObjectHeader hdr = ObjectHeader.Unpack(ObjectImpl.FromPointer(address));
-            hdr.MultiUseWord = (int)(ObjectHeader.GarbageCollectorFlags.FreeBlock | ObjectHeader.GarbageCollectorFlags.Unmarked);
-
-            Instance.Release(hdr.ToPointer());
+            // Since AllocateFromManagedHeap returns pointer that were offset by object header size,
+            // we need to reverse it before handing it to Release()
+            Instance.Release( AddressMath.Decrement( address, ObjectHeader.HeaderSize ) );
         }
 
         //--//
