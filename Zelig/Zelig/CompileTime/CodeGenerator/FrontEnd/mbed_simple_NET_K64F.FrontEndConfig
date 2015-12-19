@@ -15,6 +15,7 @@
 -Reference Microsoft.CortexM4OnCMSISCore
 -Reference Microsoft.DeviceModels.ModelForCortexM4
 -Reference K64F
+-Reference Microsoft.Zelig.LlilumCMSIS-RTOS
 
 
 ###
@@ -83,4 +84,18 @@
 
 -NoSDK
 -GenerateObj
+
+# examples of overriding opt.exe and llc arguments
+# the examples here are the same as the defaults but can be modified to suit a variety of test
+# scenarios and experimentations
+#-LlvmOptArgs "-verify-debug-info -verify-dom-info -verify-each -verify-loop-info -verify-regalloc -verify-region-info -march=thumb -mcpu=cortex-m3 -aa-eval -indvars -gvn -globaldce -adce -dce -tailcallopt -scalarrepl -mem2reg -ipconstprop -deadargelim -sccp -dce -ipsccp -dce -constmerge -scev-aa -targetlibinfo -irce -dse -dce -argpromotion -mem2reg -adce -mem2reg -globaldce -die -dce -dse"
+#-LlvmLlcArgs "-O2 -code-model=small -data-sections -relocation-model=pic -march=thumb -mcpu=cortex-m3 -filetype=obj -mtriple=thumbv7m-none-eabi"
+
+# While the compiler is pretty good at figuring out where the LLVM tools are from
+# current Environment variables or registry entires you can manually specify the
+# path to find the LLVM binaries.
+# note: Environment variabes (i.e %MY_VAR%) are supported and expanded as with all
+# options in the FrontendConfig files so you can specify a custom variable if needed
+-LlvmBinPath c:\src\llvm\llvm-3.7.0.src\build\x64\Release\bin
+
 

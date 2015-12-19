@@ -71,11 +71,7 @@
     <Compile Include="API\IO\Pwm.cs" />
     <Compile Include="API\IO\SerialPort.cs" />
     <Compile Include="API\IO\Spi.cs" />
-    <Compile Include="API\LWIP\LwipImpl.cs" />
     <Compile Include="LlilumErrors.cs" />
-    <Compile Include="API\LWIP\LwipMailbox.cs" />
-    <Compile Include="API\LWIP\LwipMutex.cs" />
-    <Compile Include="API\LWIP\LwipSemaphore.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\Kernel\Kernel.csproj">

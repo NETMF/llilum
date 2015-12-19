@@ -1371,7 +1371,7 @@ namespace Microsoft.Zelig.FrontEnd
             if( m_fSkipLlvmOptExe && !m_fGenerateObj )
                 return true;
 
-            if( !string.IsNullOrWhiteSpace( m_LlvmBinPath ) )
+            if( string.IsNullOrWhiteSpace( m_LlvmBinPath ) )
             {
                 m_LlvmBinPath = FindLLvmToolsPathOrSubPathFromEnvVars( EnvironmentVariableTarget.Process
                                                                      , EnvironmentVariableTarget.User
@@ -1492,9 +1492,9 @@ namespace Microsoft.Zelig.FrontEnd
 
         static bool PathHasLlvmTools( string path )
         {
-            return File.Exists( Path.Combine( path, "opt.exe" ) )
-                 && File.Exists( Path.Combine( path, "llc.exe" ) )
-                 && File.Exists( Path.Combine( path, "llvm-dis.exe" ) );
+            return File.Exists( Path.Combine( path, "opt.exe" ) )   &&
+                   File.Exists( Path.Combine( path, "llc.exe" ) )   &&
+                   File.Exists( Path.Combine( path, "llvm-dis.exe" ) );
         }
 
         private string GetRegValueString( RegistryHive hive, string subkey, string valueName, string defaultValue = null, RegistryView view = RegistryView.Default )
@@ -1913,10 +1913,10 @@ namespace Microsoft.Zelig.FrontEnd
             if( m_fDumpLLVMIR && !m_fSkipLlvmOptExe )
             {
                 Console.WriteLine( "Optimizing LLVM Bitcode representation" );
-                var args = string.Format( "{0} {1} -o {2}"
-                                        , m_LlvmOptArgs ?? DefaultOptExeArgs
-                                        , filePrefix + ".bc"
-                                        , filePrefix + "_opt.bc"
+                var args = string.Format( "{0} {1} -o {2}"                ,
+                                        m_LlvmOptArgs ?? DefaultOptExeArgs,
+                                        filePrefix + ".bc"                ,
+                                        filePrefix + "_opt.bc" 
                                         );
                 ShellExec( "opt.exe", args );
                 ShellExec( "llvm-dis.exe", filePrefix + "_opt.bc" );
@@ -1925,10 +1925,10 @@ namespace Microsoft.Zelig.FrontEnd
             if( m_fGenerateObj )
             {
                 Console.WriteLine( "Compiling LLVM Bitcode" );
-                var args = string.Format( "{0} -o={1} {2}"
-                                        , m_LlvmLlcArgs ?? DefaultLlcArgs
-                                        , filePrefix + "_opt.o"
-                                        , filePrefix + "_opt.bc"
+                var args = string.Format( "{0} -o={1} {2}"             ,
+                                        m_LlvmLlcArgs ?? DefaultLlcArgs,
+                                        filePrefix + "_opt.o"          ,
+                                        filePrefix + "_opt.bc"         
                                         );
 
                 ShellExec( "llc.exe", args );

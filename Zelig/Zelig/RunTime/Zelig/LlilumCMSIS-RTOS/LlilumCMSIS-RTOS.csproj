@@ -6,13 +6,13 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{E77AC86E-58AB-47B6-BC6D-3C1B4545CDFD}</ProjectGuid>
+    <ProjectGuid>{93219A45-914C-44B7-A6CB-66849879C8B1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Llilum.Lwip</RootNamespace>
-    <AssemblyName>Microsoft.Llilum.Lwip</AssemblyName>
+    <RootNamespace>Microsoft.Zelig.Llilum.CMSIS.RTOS</RootNamespace>
+    <AssemblyName>Microsoft.Zelig.LlilumCMSIS-RTOS</AssemblyName>
     <!-- ZELIG: Move intermediate data out of the source tree -->
-    <BaseIntermediateOutputPath>$(LlilumBuildRoot)\Target\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>$(LlilumBuildRoot)\Host\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -21,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <!-- ZELIG: Move output directory out of the source tree -->
-    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Host\bin\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -36,7 +36,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <!-- ZELIG: Move output directory out of the source tree -->
-    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Host\bin\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -51,19 +51,27 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\</OutputPath>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <OutputPath>$(LlilumBuildRoot)\Host\bin\$(Configuration)\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <NoStdLib>true</NoStdLib>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoStdLib>true</NoStdLib>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="NetworkInterface.cs" />
+    <Compile Include="API\CmsisRtos.cs" />
+    <Compile Include="API\CmsisRtosMailbox.cs" />
+    <Compile Include="API\CmsisRtosMutex.cs" />
+    <Compile Include="API\CmsisRtosSemaphore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\Kernel\Kernel.csproj">
+      <Project>{186F31A3-EF89-4A25-B2D5-20060509AA01}</Project>
+      <Name>Kernel</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\mscorlib\mscorlib.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20060501AA01}</Project>
       <Name>mscorlib</Name>
@@ -72,11 +80,6 @@
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\system\system.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20070702AA01}</Project>
       <Name>system</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\Common\Common.csproj">
-      <Project>{186F31A3-EF89-4A25-B2D5-20061218AA01}</Project>
-      <Name>Common</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\Kernel\Kernel.csproj">
@@ -89,19 +92,28 @@
       <Name>TypeSystem</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\LlilumOSAbstraction\LlilumOSAbstraction.csproj">
-      <Project>{20DC2CF5-8EED-4231-9743-6BAB96BE465C}</Project>
-      <Name>Microsoft.Zelig.LlilumOSAbstraction</Name>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\Common\Common.csproj">
+      <Project>{186f31a3-ef89-4a25-b2d5-20061218aa01}</Project>
+      <Name>Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Zelig\LlilumCMSIS-RTOS\LlilumCMSIS-RTOS.csproj">
-      <Project>{93219A45-914C-44B7-A6CB-66849879C8B1}</Project>
-      <Name>Microsoft.Zelig.LlilumCMSIS-RTOS</Name>
+    <ProjectReference Include="..\LlilumOSAbstraction\LlilumOSAbstraction.csproj">
+      <Project>{20dc2cf5-8eed-4231-9743-6bab96be465c}</Project>
+      <Name>LlilumOSAbstraction</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="..\..\..\..\mbed-rtos\llos\TARGET_CORTEX_M\cmsis_os.h">
+      <Link>Native\cmsis_os.h</Link>
+    </Content>
+    <Content Include="ReadMe.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
