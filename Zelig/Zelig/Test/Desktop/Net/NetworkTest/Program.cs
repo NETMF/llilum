@@ -5,6 +5,7 @@
 namespace Microsoft.Zelig.Test
 {
     using System;
+    using System.Collections.Generic;
     using System.Net;
     using System.Net.Sockets;
     using System.Text;
@@ -12,21 +13,44 @@ namespace Microsoft.Zelig.Test
 
     public class SynchronousSocketListener
     {
-        // Incoming data from the client.
-        public static string data = null;
-
-        public static void StartListening( )
+        internal class StringsBuffer
         {
-            // Data buffer for incoming data.
-            byte[] bytes = new Byte[1024];
+            // Incoming data from the client.
+            private List<string> m_data;
 
-            // Establish the local endpoint for the socket.
-            // Dns.GetHostName returns the name of the 
-            // host running the application.
+            internal StringsBuffer( )
+            {
+                m_data = new List<string>( );
+            }
+
+            internal void Add( string s )
+            {
+                m_data.Add( s );
+            }
+
+            internal List<String> Data
+            {
+                get
+                {
+                    return m_data;
+                }
+            }
+        }
+
+        //--//
+
+        internal static int StartListening( StringsBuffer data )
+        {
+            //
+            // Establish the local endpoint for the socket. 
+            //
             IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
 
+            //
+            // Pick 1st IPv4 address in the list. 
+            //
             IPAddress ipv4Local = null;
-            foreach( var addr in ipHostInfo.AddressList)
+            foreach(var addr in ipHostInfo.AddressList)
             {
                 if(addr.AddressFamily == AddressFamily.InterNetwork)
                 {
@@ -36,77 +60,89 @@ namespace Microsoft.Zelig.Test
                 }
             }
 
-            IPHostEntry ipHostInfo2 = Dns.GetHostEntry("bing.com");
-            IPAddress ipAddress = ipHostInfo.AddressList[0];
-            IPEndPoint localEndPoint = new IPEndPoint(ipv4Local, 11000);
-
+            //
             // Create a TCP/IP socket.
-            Socket listener = new Socket(AddressFamily.InterNetwork,
-            SocketType.Stream, ProtocolType.Tcp);
+            //
+            Socket listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
             // Bind the socket to the local endpoint and 
             // listen for incoming connections.
+            int bytesReceived = 0;
             try
             {
+                var localEndPoint = new IPEndPoint(ipv4Local, 11000);
+
                 listener.Bind( localEndPoint );
                 listener.Listen( 10 );
                 Socket handler = null;
 
-
+                //
                 // Start listening for connections.
+                //
+                int connection    = 1;
                 while(true)
                 {
-                    Console.WriteLine( "Waiting for a connection..." );
+                    Console.WriteLine( String.Format( "========= Waiting on {0} for connection #{1} =========", localEndPoint.ToString( ), connection++ ) );
 
                     handler = listener.Accept( );
 
-                    Console.WriteLine( "... incoming connection for socket:" + handler.LocalEndPoint.ToString( ) );
+                    Console.WriteLine( String.Format( " => => => => => => incoming connection from {0} !", handler.LocalEndPoint.ToString( ) ) );
 
-                    Task.Run( new Action( delegate
-                    {
-                        handler.ReceiveTimeout = 10 * 1000; // ten seconds timeout
-                        
-                        int count = 0;
-
-                        while(++count <= 10)
+                    //Task.Run( new Action( delegate
+                    //{
+                        try
                         {
+                            handler.ReceiveTimeout = 10 * 1000; // ten seconds timeout
+
+                            int count = 0;
+
+                            var buffer = new byte[ 1024 ];
+
                             // An incoming connection needs to be processed.
                             while(true)
                             {
-                                Console.WriteLine( String.Format( "Performing read #{0:D2} from '{1}'", handler.LocalEndPoint.ToString( ) ) ); 
+                                ++count;
 
-                                bytes = new byte[ 1024 ];
+                                Console.WriteLine( String.Format( "Performing read #{0:D4} from '{1}'. Bytes Received so far: {2}",
+                                    count,
+                                    handler.RemoteEndPoint.ToString( ),
+                                    bytesReceived
+                                    ) );
 
-                                int bytesRec = handler.Receive(bytes);
+                                int bytesRead = handler.Receive(buffer);
 
-                                Console.WriteLine( "... read " + bytesRec + " bytes" );
+                                bytesReceived += bytesRead;
 
-                                var moreData = Encoding.ASCII.GetString( bytes, 0, bytesRec );
+                                var moreData = Encoding.ASCII.GetString( buffer, 0, bytesRead );
 
-                                Console.WriteLine( "received data: " + moreData );
+                                data.Add( moreData );
 
-                                data += moreData;
+                                //
+                                // Echo data back
+                                //
+                                handler.Send( buffer, 0, bytesReceived, SocketFlags.None );
 
-                                if(data.IndexOf( "\n" ) > -1)
+                                if(moreData.IndexOf( "TEST_COMPLETED" ) != -1)
                                 {
+                                    Console.WriteLine( "" );
+                                    Console.WriteLine( String.Format( "<= <= <= <= <= <= {0} completed", handler.RemoteEndPoint.ToString() ) );
+
                                     break;
                                 }
                             }
-
-                            // Show the data on the console.
-                            Console.WriteLine( "Text received : {0}", data );
-
-                            // Echo the data back to the client.
-                            byte[] msg = Encoding.ASCII.GetBytes(data);
-
-                            Console.WriteLine( "... sending to: " + handler.LocalEndPoint.ToString( ) );
-
-                            handler.Send( msg );
                         }
-
-                        handler.Close( );
-                    } )
-                    );
+                        catch(Exception ex)
+                        {
+                            Console.WriteLine( "" );
+                            Console.WriteLine( String.Format( "<= <= <= <= <= <= EXCEPTION CAUGHT on {0}", handler.RemoteEndPoint.ToString() ) );
+                            Console.WriteLine( ex.StackTrace );
+                        }
+                        finally
+                        {
+                            handler.Close( );
+                        }
+                    //} )
+                    //);
                 }
             }
             catch(Exception e)
@@ -117,13 +153,21 @@ namespace Microsoft.Zelig.Test
             Console.WriteLine( "\nPress ENTER to continue..." );
             Console.Read( );
 
+            return bytesReceived;
         }
+
+        void Accumulate( byte[] buffer )
+        {
+
+        }
+
+        //--//
 
         public static int Main( String[] args )
         {
-            StartListening( );
-            return 0;
-        }
+            var allData = new StringsBuffer();
 
+            return StartListening( allData );
+        }
     }
 }

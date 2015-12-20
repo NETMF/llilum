@@ -10,7 +10,7 @@ namespace Microsoft.Zelig.Test.mbed.SimpleNet
     using System.Net;
     using System.Threading;
     using Microsoft.Llilum.Lwip;
-    
+
     using System.Text;
 
     class Program
@@ -19,6 +19,7 @@ namespace Microsoft.Zelig.Test.mbed.SimpleNet
         {
             NetworkInterface netif = NetworkInterface.GetAllNetworkInterfaces()[0];
             netif.EnableDhcp( );
+
             //netif.EnableStaticIP("10.125.148.136", "255.255.254.0", "10.125.148.1");
 
             //IPHostEntry entry = Dns.GetHostEntry("bing.com");
@@ -32,51 +33,43 @@ namespace Microsoft.Zelig.Test.mbed.SimpleNet
             //    dnsCmd[ i ] = (byte)entry.HostName[ i ];
             //}
 
+            string msg = "GET /media/uploads/mbed_official/hello.txt HTTP/1.0\n\n";
+            string end = "TEST_COMPLETED";
+            var msgBytes = ASCIIEncoding.ASCII.GetBytes(msg);
+            var endBytes = ASCIIEncoding.ASCII.GetBytes(end);
+            
+            IPEndPoint endPoint = new IPEndPoint( IPAddress.Parse( "10.0.1.4" ), 11000);
+
+            var recBuffer = new byte[512];
+            
             while(true)
             {
                 Socket sock = new Socket(AddressFamily.Unspecified, SocketType.Stream, ProtocolType.Unspecified);
 
-                //byte[] address = new byte[] {(byte)217, (byte)140, (byte)101, (byte)20};
-                //IPEndPoint endPoint = new IPEndPoint(new IPAddress((long)0x14658CD9), 80);
-                IPEndPoint endPoint = new IPEndPoint( IPAddress.Parse( "10.125.148.170" ), 11000);
-
-                sock.Connect( endPoint );
-
-                string command = "GET /media/uploads/mbed_official/hello.txt HTTP/1.0\n\n";
-
-                byte[] byteCmd = new byte[] {
-                                        (byte)'G',
-                                        (byte)'E',
-                                        (byte)'T',
-                                        (byte)' ',
-                                        (byte)'/',
-                                        (byte)' ',
-                                        (byte)'H',
-                                        (byte)'T',
-                                        (byte)'T',
-                                        (byte)'P',
-                                        (byte)'/',
-                                        (byte)'1',
-                                        (byte)'.',
-                                        (byte)'0',
-                                        0xa,
-                                        0xa,
-                                    };
-
-                int count = 0;
-
-                var recBuffer = new byte[512];
-
-                while(++count <= 10)
+                try
                 {
-                    if(sock.Send( byteCmd ) > 0)
-                    //if (sock.Send(ASCIIEncoding.ASCII.GetBytes(command)) > 0)
-                    {
-                        sock.Receive( recBuffer );
-                    }
-                }
+                    sock.Connect( endPoint );
 
-                sock.Close( );
+                    int count = 0;
+
+                    while(++count <= 10)
+                    {
+                        if(sock.Send( msgBytes ) > 0)
+                        {
+                            sock.Receive( recBuffer );
+                        }
+                    }
+
+                    sock.Send( endBytes );
+                }
+                catch
+                {
+
+                }
+                finally
+                {
+                    sock.Close( );
+                }
             }
         }
     }
