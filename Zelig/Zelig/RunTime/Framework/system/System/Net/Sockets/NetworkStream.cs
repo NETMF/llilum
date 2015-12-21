@@ -16,18 +16,12 @@ namespace System.Net.Sockets
         // Summary:
         // Internal members
 
-        // Internal Socket object
-        internal Socket _socket;
-
-        // Internal property used to store the socket type
-        protected int _socketType;
-
-        // Internal endpoint ref used for dgram sockets
-        protected EndPoint _remoteEndPoint;
-
-        // Internal flags
-        private bool _ownsSocket;
-        protected bool _disposed;
+        
+        internal Socket     m_socket;           // Internal Socket object
+        protected int       m_socketType;       // Internal property used to store the socket type
+        protected EndPoint  m_remoteEndPoint;   // Internal endpoint ref used for dgram sockets
+        private bool        m_ownsSocket;       // Internal flags
+        protected bool      m_disposed;
 
         // Summary:
         //     Creates a new instance of the System.Net.Sockets.NetworkStream class for
@@ -81,7 +75,7 @@ namespace System.Net.Sockets
             // This should throw a SocketException if not connected
             try
             {
-                _remoteEndPoint = socket.RemoteEndPoint;
+                m_remoteEndPoint = socket.RemoteEndPoint;
             }
             catch (Exception e)
             {
@@ -91,11 +85,11 @@ namespace System.Net.Sockets
             }
             
             // Set the internal socket
-            _socket = socket;
+            m_socket = socket;
 
-            _socketType = (int)_socket.GetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Type);
+            m_socketType = (int)m_socket.GetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Type);
 
-            _ownsSocket = ownsSocket;
+            m_ownsSocket = ownsSocket;
         }
 
         // Summary:
@@ -137,23 +131,23 @@ namespace System.Net.Sockets
 
         public override int ReadTimeout
         {
-            get { return _socket.ReceiveTimeout; }
+            get { return m_socket.ReceiveTimeout; }
             set
             {   
                 if (value == 0 || value < System.Threading.Timeout.Infinite) throw new ArgumentOutOfRangeException();
 
-                _socket.ReceiveTimeout = value;
+                m_socket.ReceiveTimeout = value;
             }
         }
 
         public override int WriteTimeout
         {
-            get { return _socket.SendTimeout; }
+            get { return m_socket.SendTimeout; }
             set
             {
                 if (value == 0 || value < System.Threading.Timeout.Infinite) throw new ArgumentOutOfRangeException();
 
-                _socket.SendTimeout = value;
+                m_socket.SendTimeout = value;
             }
         }
 
@@ -170,10 +164,10 @@ namespace System.Net.Sockets
         {
             get
             {
-                if (_disposed == true) throw new ObjectDisposedException( "" );                
-                if (_socket.m_Handle == -1) throw new IOException();
+                if (m_disposed == true) throw new ObjectDisposedException( "" );                
+                if (m_socket.m_Handle == -1) throw new IOException();
 
-                return _socket.Available;
+                return m_socket.Available;
             }
         }
 
@@ -205,10 +199,10 @@ namespace System.Net.Sockets
         {
             get
             {
-                if (_disposed == true) throw new ObjectDisposedException( "" );     
-                if (_socket.m_Handle == -1) throw new IOException();
+                if (m_disposed == true) throw new ObjectDisposedException( "" );     
+                if (m_socket.m_Handle == -1) throw new IOException();
 
-                return (_socket.Available > 0);
+                return (m_socket.Available > 0);
             }
         }
 
@@ -246,19 +240,19 @@ namespace System.Net.Sockets
         //     unmanaged resources.
         protected override void Dispose(bool disposing)
         {
-            if (!_disposed)
+            if (!m_disposed)
             {
                 try
                 {
                     if (disposing)
                     {
-                        if (_ownsSocket == true)
-                            _socket.Close();
+                        if (m_ownsSocket == true)
+                            m_socket.Close();
                     }
                 }
                 finally
                 {
-                    _disposed = true;
+                    m_disposed = true;
                 }
             }
         }
@@ -306,13 +300,13 @@ namespace System.Net.Sockets
         //     socket. See the Remarks section for more information.
         public override int Read(byte[] buffer, int offset, int count)
         {
-            if (_disposed) throw new ObjectDisposedException( "" );            
-            if (_socket.m_Handle == -1) throw new IOException();
+            if (m_disposed) throw new ObjectDisposedException( "" );            
+            if (m_socket.m_Handle == -1) throw new IOException();
             if (buffer == null) throw new ArgumentNullException();
             if (offset < 0 || offset > buffer.Length) throw new ArgumentOutOfRangeException();
             if (count < 0 || count > buffer.Length - offset) throw new ArgumentOutOfRangeException();
 
-            int available = _socket.Available;
+            int available = m_socket.Available;
 
             // we will need to read using thr timeout specified
             // if there is data available we can return with that data only
@@ -322,13 +316,13 @@ namespace System.Net.Sockets
                 count = available;
             }
 
-            if (_socketType == (int)SocketType.Stream)
+            if (m_socketType == (int)SocketType.Stream)
             {
-                return _socket.Receive(buffer, offset, count, SocketFlags.None);
+                return m_socket.Receive(buffer, offset, count, SocketFlags.None);
             }
-            else if (_socketType == (int)SocketType.Dgram)
+            else if (m_socketType == (int)SocketType.Dgram)
             {
-                return _socket.ReceiveFrom(buffer, offset, count, SocketFlags.None, ref _remoteEndPoint);
+                return m_socket.ReceiveFrom(buffer, offset, count, SocketFlags.None, ref m_remoteEndPoint);
             }
             else
             {
@@ -407,21 +401,21 @@ namespace System.Net.Sockets
         //     buffer is null.
         public override void Write(byte[] buffer, int offset, int count)
         {
-            if (_disposed) throw new ObjectDisposedException( "" );            
-            if (_socket.m_Handle == -1) throw new IOException();
+            if (m_disposed) throw new ObjectDisposedException( "" );            
+            if (m_socket.m_Handle == -1) throw new IOException();
             if (buffer == null) throw new ArgumentNullException();
             if (offset < 0 || offset > buffer.Length) throw new ArgumentOutOfRangeException();
             if (count < 0 || count > buffer.Length - offset) throw new ArgumentOutOfRangeException();
 
             int bytesSent = 0;
 
-            if (_socketType == (int)SocketType.Stream)
+            if (m_socketType == (int)SocketType.Stream)
             {
-                bytesSent = _socket.Send(buffer, offset, count, SocketFlags.None);
+                bytesSent = m_socket.Send(buffer, offset, count, SocketFlags.None);
             }
-            else if (_socketType == (int)SocketType.Dgram)
+            else if (m_socketType == (int)SocketType.Dgram)
             {
-                bytesSent = _socket.SendTo(buffer, offset, count, SocketFlags.None, _socket.RemoteEndPoint);
+                bytesSent = m_socket.SendTo(buffer, offset, count, SocketFlags.None, m_socket.RemoteEndPoint);
             }
             else
             {

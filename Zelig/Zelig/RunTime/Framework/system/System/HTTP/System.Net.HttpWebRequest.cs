@@ -32,7 +32,6 @@ namespace System.Net
         /// <returns>The newly created HttpWebRequest.</returns>
         public WebRequest Create(Uri Url)
         {
-
             return new HttpWebRequest(Url);
         }
 
@@ -51,13 +50,18 @@ namespace System.Net
         /// Array list of connected streams.
         /// This is static list, keeps all "stay live" sockets.
         /// </summary>
-        internal static ArrayList m_connectedStreams;
+        private static ArrayList s_connectedStreams;
 
         /// <summary>
         /// Timer that checks on open connections and closes them if they are
         /// idle for a long time.
         /// </summary>
-        static Timer m_dropOldConnectionsTimer;
+        private static Timer s_dropOldConnectionsTimer;
+
+        /// <summary>
+        /// Tracks the global state of Http engine.
+        /// </summary>
+        private static bool s_initialized;
 
         /// <summary>
         /// If a response was created then Dispose on the Request will not dispose the underlying stream.
@@ -71,25 +75,25 @@ namespace System.Net
         /// <param name="unused">Unused</param>
         static private void CheckPersistentConnections(object unused)
         {
-            int count = m_connectedStreams.Count;
+            int count = s_connectedStreams.Count;
             // The fastest way to exit out - if there are no sockets in the list - exit out.
             if (count > 0)
             {
                 DateTime curTime = DateTime.Now;
-                lock (m_connectedStreams)
+                lock (s_connectedStreams)
                 {
-                    count = m_connectedStreams.Count;
+                    count = s_connectedStreams.Count;
 
                     for (int i = count-1; i >= 0; i--)
                     {
-                        InputNetworkStreamWrapper streamWrapper = (InputNetworkStreamWrapper)m_connectedStreams[i];
+                        InputNetworkStreamWrapper streamWrapper = (InputNetworkStreamWrapper)s_connectedStreams[i];
 
                         TimeSpan timePassed = streamWrapper.m_lastUsed - curTime;
 
                         // If the socket is old, then close and remove from the list.
                         if (timePassed.Milliseconds > HttpListener.DefaultKeepAliveMilliseconds)
                         {
-                            m_connectedStreams.RemoveAt(i);
+                            s_connectedStreams.RemoveAt(i);
                             
                             // Closes the socket to release resources.
                             streamWrapper.Dispose();
@@ -97,9 +101,9 @@ namespace System.Net
                     }
 
                     // turn off the timer if there are no active streams
-                    if(m_connectedStreams.Count > 0)
+                    if(s_connectedStreams.Count > 0)
                     {
-                        m_dropOldConnectionsTimer.Change( HttpListener.DefaultKeepAliveMilliseconds, System.Threading.Timeout.Infinite );
+                        s_dropOldConnectionsTimer.Change( HttpListener.DefaultKeepAliveMilliseconds, System.Threading.Timeout.Infinite );
                     }
                 }
             }
@@ -110,16 +114,29 @@ namespace System.Net
         /// </summary>
         static HttpWebRequest()
         {
-            // Creates instance of HttpRequestCreator. HttpRequestCreator creates HttpWebRequest
-            HttpRequestCreator Creator = new HttpRequestCreator();
-            // Register prefix. HttpWebRequest handles both http and https
-            RegisterPrefix("http:", Creator);
-            RegisterPrefix("https:", Creator);
-            if (m_connectedStreams == null)
+            s_initialized       = false;
+            s_connectedStreams  = new ArrayList();
+        }
+
+        internal static void Initialize( )
+        {
+            if(s_initialized == false)
             {
-                // Creates new list for connected sockets.
-                m_connectedStreams = new ArrayList();
-                m_dropOldConnectionsTimer = new Timer(CheckPersistentConnections, null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+                lock (s_connectedStreams)
+                {
+                    if(s_initialized == false)
+                    {
+                        s_dropOldConnectionsTimer = new Timer(CheckPersistentConnections, null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+
+                        // Creates instance of HttpRequestCreator. HttpRequestCreator creates HttpWebRequest
+                        // Register prefix. HttpWebRequest handles both http and https
+                        HttpRequestCreator creator = new HttpRequestCreator();
+                        RegisterPrefix( "http:", creator );
+                        RegisterPrefix( "https:", creator );
+
+                        s_initialized = true;
+                    }
+                }
             }
         }
 
@@ -985,27 +1002,20 @@ namespace System.Net
         /// <param name="Url">The Url object for which we're creating.</param>
         internal HttpWebRequest(Uri Url)
         {
-            m_requestSent = false;
-            m_originalUrl = Url;
-            SendChunked = false;
-            m_keepAlive = true;
-            m_httpRequestHeaders = new WebHeaderCollection(true);
-            m_httpWriteMode = HttpWriteMode.None;
-
-            m_contentLength = -1;
-            m_version = HttpVersion.Version11;
-
+            m_requestSent               = false;
+            m_originalUrl               = Url;
+            m_httpWriteMode             = HttpWriteMode.None; 
+            m_keepAlive                 = true;
+            m_httpRequestHeaders        = new WebHeaderCollection(true);
+            m_httpWriteMode             = HttpWriteMode.None;
+            m_contentLength             = -1;
+            m_version                   = HttpVersion.Version11;
             m_allowWriteStreamBuffering = false;
-
-            Method = "GET";
-
-            m_timeout = WebRequest.DefaultTimeout;
-            m_readWriteTimeout = DefaultReadWriteTimeout;
-
-            // set the default proxy initially (this can be overriden by the Proxy property)
-            m_proxy = WebRequest.DefaultWebProxy;
-
-            m_responseCreated = false;
+            m_method                    = "GET";
+            m_timeout                   = WebRequest.DefaultTimeout;
+            m_readWriteTimeout          = DefaultReadWriteTimeout;
+            m_proxy                     = WebRequest.DefaultWebProxy;
+            m_responseCreated           = false;
         }
 
         public void Reset()
@@ -1271,11 +1281,11 @@ namespace System.Net
         /// </summary>
         internal static void RemoveStreamFromPool(InputNetworkStreamWrapper stream)
         {
-            lock (m_connectedStreams)
+            lock (s_connectedStreams)
             {
-                if (m_connectedStreams.Contains(stream))
+                if (s_connectedStreams.Contains(stream))
                 {
-                    m_connectedStreams.Remove(stream);
+                    s_connectedStreams.Remove(stream);
                 }
             }
         }
@@ -1295,13 +1305,13 @@ namespace System.Net
             // But before creating new socket we look in the list of existing sockets. If socket for this host already
             // exist - use it. No need to create new socket.
             string remoteServer = targetServer.Host + ":" + targetServer.Port;
-            lock (m_connectedStreams)
+            lock (s_connectedStreams)
             {
                 ArrayList removeStreamList = new ArrayList();
 
-                for (int i = 0; i < m_connectedStreams.Count; i++)
+                for (int i = 0; i < s_connectedStreams.Count; i++)
                 {
-                    InputNetworkStreamWrapper inputStream = (InputNetworkStreamWrapper)m_connectedStreams[i];
+                    InputNetworkStreamWrapper inputStream = (InputNetworkStreamWrapper)s_connectedStreams[i];
 
                     if (inputStream.m_rmAddrAndPort == remoteServer && !inputStream.m_inUse)
                     {
@@ -1340,7 +1350,7 @@ namespace System.Net
                     InputNetworkStreamWrapper removeStream = (InputNetworkStreamWrapper)removeStreamList[i];
 
                     // Means socket was closed. Remove it from the list.
-                    m_connectedStreams.Remove(removeStream);
+                    s_connectedStreams.Remove(removeStream);
 
                     removeStream.Dispose();
                 }
@@ -1449,14 +1459,14 @@ namespace System.Net
                 //////    retStream.m_rmAddrAndPort = m_originalUrl.Host + ":" + m_originalUrl.Port;
                 //////}
 
-                lock (m_connectedStreams)
+                lock (s_connectedStreams)
                 {
-                    m_connectedStreams.Add(retStream);
+                    s_connectedStreams.Add(retStream);
 
                     // if the current stream list is empty then start the timer that drops unused connections.
-                    if (m_connectedStreams.Count == 1)
+                    if (s_connectedStreams.Count == 1)
                     {
-                        m_dropOldConnectionsTimer.Change(HttpListener.DefaultKeepAliveMilliseconds, System.Threading.Timeout.Infinite);
+                        s_dropOldConnectionsTimer.Change(HttpListener.DefaultKeepAliveMilliseconds, System.Threading.Timeout.Infinite);
                     }
                 }
             }

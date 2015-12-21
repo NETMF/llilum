@@ -359,6 +359,8 @@ namespace System.Net
         private static WebRequest CreateInternal(Uri requestUri)
         {
             if (requestUri == null) { throw new ArgumentNullException(); }
+            
+            HttpWebRequest.Initialize( );
 
             // Makes LookupUri lowercase since we need case-insensitive compare
             // with prefix
