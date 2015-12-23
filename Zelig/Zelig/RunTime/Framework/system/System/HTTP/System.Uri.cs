@@ -330,14 +330,14 @@ namespace System
             string uriStringLower = uriString.ToLower();
 
             // If this is a urn parse and return
-            //////if (uriStringLower.IndexOf("urn:", startIndex) == 0)
-            //////{
-            //////    ValidateUrn(uriString);
-            //////    return;
-            //////}
+            if(uriStringLower.IndexOf( "urn:", startIndex ) == 0)
+            {
+                ValidateUrn( uriString );
+                return;
+            }
 
             // If the uri is a relative path parse and return
-            if (uriString[0] == '/')
+            if(uriString[0] == '/')
             {
                 ValidateRelativePath(uriString);
                 return;

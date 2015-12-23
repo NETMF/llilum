@@ -1374,7 +1374,14 @@ namespace System.Globalization
 ////        }
 ////
 ////        return IndexOfString( m_pSortingTable, this.m_sortingLCID, source, value, startIndex, count, (int)options );
-            throw new NotSupportedException();
+
+            //
+            // Removing NotSupportedException in favor of naive implementation: see https://github.com/NETMF/llilum/issues/99
+            // 
+
+            //throw new NotSupportedException();
+
+            return IndexOfString( source, value, startIndex, count, (int)options );
         }
     
         // This native method will check the parameters and validate them accordingly.
@@ -1386,8 +1393,10 @@ namespace System.Globalization
 ////    // This native method will check the parameters and validate them accordingly.
 ////    // Native method: COMNlsInfo::IndexOfString
 ////    [ResourceExposure( ResourceScope.None )]
-////    [MethodImpl( MethodImplOptions.InternalCall )]
+        [MethodImpl( MethodImplOptions.InternalCall )]
 ////    unsafe private static extern int IndexOfString( void* pSortingTable, int sortingLCID, String source, String value, int startIndex, int count, int options );
+        unsafe private static extern int IndexOfString( String source, String value, int startIndex, int count, int options );
+
 ////
 ////
 ////    ////////////////////////////////////////////////////////////////////////

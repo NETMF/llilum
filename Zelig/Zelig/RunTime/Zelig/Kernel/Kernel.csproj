@@ -65,6 +65,7 @@
     <Compile Include="FrameworkOverrides\ConsoleImpl.cs" />
     <Compile Include="FrameworkOverrides\ActivatorImpl.cs" />
     <Compile Include="FrameworkOverrides\BufferImpl.cs" />
+    <Compile Include="FrameworkOverrides\Globalization\CompareInfoImpl.cs" />
     <Compile Include="FrameworkOverrides\NumberImpl.cs" />
     <Compile Include="FrameworkOverrides\WeakReferenceImpl.cs" />
     <Compile Include="FrameworkOverrides\Diagnostics\DebuggerImpl.cs" />
