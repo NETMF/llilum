@@ -76,6 +76,7 @@
   -->
   <ItemGroup>
     <None Include="LlilumNative\mbed_simple_K64F.FrontEndConfig" />
+    <None Include="LlilumNative\mbed_simple_STM32F411.FrontEndConfig" />
     <None Include="LlilumNative\mbed_simple_STM32L152.FrontEndConfig" />
     <None Include="LlilumNative\mbed_simple_LPC1768.FrontEndConfig" />
     <None Include="LlilumNative\Native.vcxproj" />

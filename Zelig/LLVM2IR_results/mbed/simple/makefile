@@ -68,15 +68,6 @@ LIBRARIES = -lmbed
 LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc -lnosys
 INCLUDE_PATHS = -I. -I$(MBED_ROOT) -I$(LLILUM_ROOT)Zelig\os_layer\inc -I$(LLILUM_ROOT)Zelig\os_layer\inc\api -I$(LLILUM_ROOT)Zelig\os_layer\inc\api\io -I$(LLILUM_ROOT)Zelig\os_layer\inc\hal
 
-# LWIP Compilation
-ifeq ($(COMPILE_SYS_ARCH),1)
-	# Used when compiling these objects for the lwipsysarch lib
-	OBJECTS += $(TARGET)\checksum.o $(TARGET)\memcpy.o $(TARGET)\sys_arch.o 
-else
-	# Comment out when compiling this lib
-	LIBRARIES += -llwipsysarch
-endif
-
 
 # LPC1768 settings
 ifeq ($(TARGET),LPC1768)
@@ -100,9 +91,9 @@ endif
 	LINKER_SCRIPT = $(MBED_ROOT)\TARGET_LPC1768\TOOLCHAIN_GCC_ARM\LPC1768.ld
     LIBRARY_PATHS += -L$(MBED_LIBS)/lwip/lwip/lib
 	INCLUDE_PATHS += -I$(MBED_ROOT)/EthernetInterface -I$(MBED_LIBS)\lwip\lwip -I$(MBED_LIBS)\lwip\lwip\include -I$(MBED_LIBS)\lwip\lwip\include\ipv4 -I$(MBED_LIBS)\lwip\lwip\include\ipv4\lwip -I$(MBED_LIBS)\lwip\lwip\include\lwip -I$(MBED_LIBS)\lwip\lwip\include\netif -I$(MBED_LIBS)\lwip\lwip\netif -I$(MBED_LIBS)\lwip/lwip/netif/ppp -I$(MBED_LIBS)\lwip/lwip/api -I$(MBED_LIBS)\lwip/lwip/core -I$(MBED_LIBS)\lwip/lwip/core/ipv4 -I$(MBED_LIBS)\lwip/lwip/core/snmp -I$(MBED_LIBS)\lwip/lwip-eth -I$(MBED_LIBS)\lwip/lwip-eth/arch -I$(MBED_LIBS)\lwip/lwip-sys -I$(MBED_LIBS)\lwip/lwip-sys/arch -I$(MBED_LIBS)\lwip/mbed-rtos/rtos -I$(MBED_LIBS)\lwip/mbed-rtos/llos -I$(MBED_LIBS)/lwip/lwip-eth/arch/TARGET_NXP -I$(MBED_LIBS)/mbed-rtos/llos/TARGET_CORTEX_M
-    LIBRARIES += -llwIP -lmbedeth 
+
     # This is not ready for LPC1768 yet
-    #LIBRARIES += -llwIPeth
+    #LIBRARIES += -llwIPeth -llwIP -lmbedeth -llwipsysarch
     
 	# Build flags
 	CPU = -mcpu=cortex-m3 -mthumb
@@ -119,6 +110,15 @@ ifeq ($(HEAP_SIZE),)
 else
 	AS_FLAGS += --defsym __HEAP_SIZE=$(HEAP_SIZE)
     CC_FLAGS += -D__HEAP_SIZE=$(HEAP_SIZE)
+endif
+
+# LWIP Compilation
+ifeq ($(COMPILE_SYS_ARCH),1)
+	# Used when compiling these objects for the lwipsysarch lib
+	OBJECTS += $(TARGET)\checksum.o $(TARGET)\memcpy.o $(TARGET)\sys_arch.o 
+else
+	# Comment out when compiling this lib
+	LIBRARIES += -llwipsysarch
 endif
 
 	OBJECTS += $(TARGET)\startup_MK64F12.o 
@@ -151,9 +151,7 @@ endif
 	INCLUDE_PATHS += -I$(MBED_ROOT)/TARGET_NUCLEO_L152RE -I$(MBED_ROOT)/TARGET_NUCLEO_L152RE/TARGET_STM -I$(MBED_ROOT)/TARGET_NUCLEO_L152RE/TARGET_STM/TARGET_STM32L1 -I$(MBED_ROOT)/TARGET_NUCLEO_L152RE/TARGET_STM/TARGET_STM32L1/TARGET_NUCLEO_L152RE -I$(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM 
 	LIBRARY_PATHS = -L$(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM 
 	LINKER_SCRIPT = $(MBED_ROOT)\TARGET_NUCLEO_L152RE\TOOLCHAIN_GCC_ARM\STM32L152XE.ld
-    LIBRARY_PATHS += -L$(MBED_LIBS)/lwip/lwip/lib
 	INCLUDE_PATHS += -I$(MBED_ROOT)/EthernetInterface -I$(MBED_LIBS)\lwip\lwip -I$(MBED_LIBS)\lwip\lwip\include -I$(MBED_LIBS)\lwip\lwip\include\ipv4 -I$(MBED_LIBS)\lwip\lwip\include\ipv4\lwip -I$(MBED_LIBS)\lwip\lwip\include\lwip -I$(MBED_LIBS)\lwip\lwip\include\netif -I$(MBED_LIBS)\lwip\lwip\netif -I$(MBED_LIBS)\lwip/lwip/netif/ppp -I$(MBED_LIBS)\lwip/lwip/api -I$(MBED_LIBS)\lwip/lwip/core -I$(MBED_LIBS)\lwip/lwip/core/ipv4 -I$(MBED_LIBS)\lwip/lwip/core/snmp -I$(MBED_LIBS)\lwip/lwip-eth -I$(MBED_LIBS)\lwip/lwip-eth/arch -I$(MBED_LIBS)\lwip/lwip-sys -I$(MBED_LIBS)\lwip/lwip-sys/arch -I$(MBED_LIBS)\lwip/mbed-rtos/rtos -I$(MBED_LIBS)\lwip/mbed-rtos/llos -I$(MBED_LIBS)/lwip/lwip-eth/arch/TARGET_NXP -I$(MBED_LIBS)/mbed-rtos/llos/TARGET_CORTEX_M
-    LIBRARIES += -llwIP -lmbedeth
     
 	# Build flags
 	CPU = -mcpu=cortex-m3 -mthumb 
@@ -176,8 +174,6 @@ endif
 	SYS_OBJECTS = $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_flash_ramfunc.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/board.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/cmsis_nvic.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/hal_tick.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/mbed_overrides.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/retarget.o                                                                            $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_adc.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_adc_ex.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_can.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_cec.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_cortex.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_crc.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_cryp.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_cryp_ex.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_dac.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_dac_ex.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_dcmi.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_dcmi_ex.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_dma.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_dma2d.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_dma_ex.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_dsi.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_eth.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_flash.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_flash_ex.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_fmpi2c_ex.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_fmpi2c.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_msp_template.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_gpio.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_hash.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_hash_ex.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_hcd.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_i2c.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_i2c_ex.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_i2s.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_i2s_ex.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_irda.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_iwdg.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_lptim.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_ltdc.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_ltdc_ex.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_smartcard.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_nand.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_nor.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_pccard.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_pcd.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_pcd_ex.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_pwr.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_pwr_ex.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_qspi.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_rcc.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_rcc_ex.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_rng.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_rtc.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_rtc_ex.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_sai.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_sai_ex.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_sd.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_sdram.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_spdifrx.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_spi.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_sram.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_tim.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_tim_ex.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_uart.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_usart.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_wwdg.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_ll_fmc.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_ll_fsmc.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_ll_sdmmc.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/stm32f4xx_ll_usb.o $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/system_stm32f4xx.o 
 	INCLUDE_PATHS += -I$(MBED_ROOT)/TARGET_NUCLEO_F411RE -I$(MBED_ROOT)/TARGET_NUCLEO_F411RE/TARGET_STM -I$(MBED_ROOT)/TARGET_NUCLEO_F411RE/TARGET_STM/TARGET_STM32F4 -I$(MBED_ROOT)/TARGET_NUCLEO_F411RE/TARGET_STM/TARGET_STM32F4/TARGET_NUCLEO_F411RE -I$(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM 
 	LIBRARY_PATHS += -L$(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM
-	LIBRARY_PATHS += -L$(MBED_LIBS)/lwip/lwip/lib
-	LIBRARIES += -llwIP -lmbedeth
 	LINKER_SCRIPT = $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/STM32F411XE.ld
     INCLUDE_PATHS += -I$(MBED_ROOT)/EthernetInterface -I$(MBED_LIBS)\lwip\lwip -I$(MBED_LIBS)\lwip\lwip\include -I$(MBED_LIBS)\lwip\lwip\include\ipv4 -I$(MBED_LIBS)\lwip\lwip\include\ipv4\lwip -I$(MBED_LIBS)\lwip\lwip\include\lwip -I$(MBED_LIBS)\lwip\lwip\include\netif -I$(MBED_LIBS)\lwip\lwip\netif -I$(MBED_LIBS)\lwip/lwip/netif/ppp -I$(MBED_LIBS)\lwip/lwip/api -I$(MBED_LIBS)\lwip/lwip/core -I$(MBED_LIBS)\lwip/lwip/core/ipv4 -I$(MBED_LIBS)\lwip/lwip/core/snmp -I$(MBED_LIBS)\lwip/lwip-eth -I$(MBED_LIBS)\lwip/lwip-eth/arch -I$(MBED_LIBS)\lwip/lwip-sys -I$(MBED_LIBS)\lwip/lwip-sys/arch -I$(MBED_LIBS)\lwip/mbed-rtos/rtos -I$(MBED_LIBS)\lwip/mbed-rtos/llos -I$(MBED_LIBS)/lwip/lwip-eth/arch/TARGET_NXP -I$(MBED_LIBS)/mbed-rtos/llos/TARGET_CORTEX_M
 

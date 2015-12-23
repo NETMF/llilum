@@ -30,6 +30,7 @@
     <EnumValue Name="LPC1768" DisplayName="LPC1768" Description="LPC1768 Target" />
     <EnumValue Name="K64F" DisplayName="K64F" Description="K64F Target" />
     <EnumValue Name="STM32L152" DisplayName="STM32L152" Description="STM32L152 Target" />
+    <EnumValue Name="STM32F411" DisplayName="STM32F411" Description="STM32F411 Target" />
   </EnumProperty>
   <StringProperty Name="LlilumTargetBoardArchitecture" DisplayName="LlilumTargetBoardArchitecture" Category="Board" Description="" />
   <StringProperty Name="LlilumClAdditionalOptions" DisplayName="LlilumClAdditionalOptions" Category="Board" Description="" />

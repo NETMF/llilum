@@ -26,11 +26,13 @@
     <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_LPC1768.props" />
     <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_K64F.props" />
     <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_STM32L152.props" />
+    <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_STM32F411.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_LPC1768.props" />
     <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_K64F.props" />
     <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_STM32L152.props" />
+    <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_STM32F411.props" />
   </ImportGroup>
   <!-- General Llilum Settings -->
   <PropertyGroup Label="Llilum" >
@@ -88,6 +90,21 @@
     <LlilumAsmAdditionalOptions>$(LlilumAsmAdditionalOptionsSTM32L152)</LlilumAsmAdditionalOptions>
     <LlilumStackSize>$(LlilumStackSizeSTM32L152)</LlilumStackSize>
     <LlilumHeapSize>$(LlilumHeapSizeSTM32L152)</LlilumHeapSize>
+  </PropertyGroup>
+
+  <!-- STM32F411 -->
+  <PropertyGroup Label="Llilum" Condition="'$(LlilumBoardName)' == 'STM32F411'">
+    <LlilumClAdditionalOptions>$(LlilumClAdditionalOptionsSTM32F411)</LlilumClAdditionalOptions>
+    <LlilumClAdditionalIncludes>$(LlilumClAdditionalIncludesSTM32F411)</LlilumClAdditionalIncludes>
+    <LlilumClPreprocessorDefs>$(LlilumClPreprocessorDefsSTM32F411)</LlilumClPreprocessorDefs>
+    <LlilumLinkAdditionalDeps>$(LlilumLinkAdditionalDepsSTM32F411)</LlilumLinkAdditionalDeps>
+    <LlilumLinkAdditionalLibDirs>$(LlilumLinkAdditionalLibDirsSTM32F411)</LlilumLinkAdditionalLibDirs>
+    <LlilumLinkAdditionalOptions>$(LlilumLinkAdditionalOptionsSTM32F411)</LlilumLinkAdditionalOptions>
+    <LlilumLinkLibDeps>$(LlilumLinkLibDepsSTM32F411)</LlilumLinkLibDeps>
+    <LlilumTargetBoardArchitecture>$(LlilumTargetBoardArchitectureSTM32F411)</LlilumTargetBoardArchitecture>
+    <LlilumAsmAdditionalOptions>$(LlilumAsmAdditionalOptionsSTM32F411)</LlilumAsmAdditionalOptions>
+    <LlilumStackSize>$(LlilumStackSizeSTM32F411)</LlilumStackSize>
+    <LlilumHeapSize>$(LlilumHeapSizeSTM32F411)</LlilumHeapSize>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
@@ -175,6 +192,7 @@
     <None Include="mbed_simple_LPC1768.FrontEndConfig" />
     <None Include="mbed_simple_K64F.FrontEndConfig" />
     <None Include="mbed_simple_STM32L152.FrontEndConfig" />
+    <None Include="mbed_simple_STM32F411.FrontEndConfig" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(LlilumBoardName)'!='LPC1768'">
@@ -202,6 +220,15 @@
   </ItemGroup>
   <ItemGroup Condition="'$(LlilumBoardName)'=='STM32L152'">
     <ArmAssemble Include="$(LlilumInteropFilePath)ARMv7M\Vectors\startup_stm32l152xe.S" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(LlilumBoardName)'!='STM32F411'">
+    <ArmAssemble Include="$(LlilumInteropFilePath)ARMv7M\Vectors\startup_stm32f411xe.S">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ArmAssemble>
+  </ItemGroup>
+  <ItemGroup Condition="'$(LlilumBoardName)'=='STM32F411'">
+    <ArmAssemble Include="$(LlilumInteropFilePath)ARMv7M\Vectors\startup_stm32f411xe.S" />
   </ItemGroup>
 
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

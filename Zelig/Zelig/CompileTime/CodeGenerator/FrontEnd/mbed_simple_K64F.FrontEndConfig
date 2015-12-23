@@ -15,7 +15,7 @@
 -Reference Microsoft.CortexM4OnCMSISCore
 -Reference Microsoft.DeviceModels.ModelForCortexM4
 -Reference K64F
-
+-Reference Microsoft.Zelig.LlilumCMSIS-RTOS
 
 ###
 ### Add compilation phases, in order
@@ -96,6 +96,6 @@
 # path to find the LLVM binaries.
 # note: Environment variabes (i.e %MY_VAR%) are supported and expanded as with all
 # options in the FrontendConfig files so you can specify a custom variable if needed
--LlvmBinPath c:\src\llvm\llvm-3.7.0.src\build\x64\Release\bin\
+#-LlvmBinPath c:\src\llvm\llvm-3.7.0.src\build\x64\Release\bin\
 
 

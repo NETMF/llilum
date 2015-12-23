@@ -13,7 +13,7 @@
 -Reference Microsoft.CortexM4OnCMSISCore
 -Reference Microsoft.DeviceModels.ModelForCortexM4
 -Reference K64F
-
+-Reference Microsoft.Zelig.LlilumCMSIS-RTOS
 
 ###
 ### Add compilation phases, in order

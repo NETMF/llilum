@@ -4,6 +4,7 @@
 
 #define LPC1768
 //#define K64F
+//#define STM32F411
 
 namespace Managed
 {
@@ -16,6 +17,8 @@ namespace Managed
     using Microsoft.Llilum.LPC1768;
 #elif K64F
     using Microsoft.Llilum.K64F;
+#elif STM32F411
+    using Microsoft.Llilum.STM32F411;
 #endif
 
     class Program
@@ -36,8 +39,11 @@ namespace Managed
 #elif (K64F)
             (int)PinName.LED_BLUE,
             (int)PinName.LED_RED,
+#elif (STM32F411)
+            (int)PinName.LED1,
+            (int)PinName.LED1,
 #else
-            #error No target board defined.
+#error No target board defined.
 #endif
         };
 
@@ -46,8 +52,12 @@ namespace Managed
             var controller = GpioController.GetDefault();
 
             var threadToggledPin = controller.OpenPin(pinNumbers[0]);
-            var loopToggledPin = controller.OpenPin(pinNumbers[1]);
 
+#if (STM32F411)
+            var loopToggledPin = threadToggledPin;
+#else
+            var loopToggledPin = controller.OpenPin(pinNumbers[1]);
+#endif
             threadToggledPin.SetDriveMode(GpioPinDriveMode.Output);
             loopToggledPin.SetDriveMode(GpioPinDriveMode.Output);
 
