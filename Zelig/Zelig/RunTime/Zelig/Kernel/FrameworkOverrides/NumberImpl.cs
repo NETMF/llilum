@@ -55,6 +55,27 @@ namespace Microsoft.Zelig.Runtime
                     }
                 }
             }
+            else if(style == NumberStyles.Integer)
+            {
+                char[] chars = s.ToCharArray();
+                int cnt = chars.Length;
+
+                for (int i = 0; i < cnt; i++)
+                {
+                    char c = chars[i];
+
+                    ret <<= 4;
+
+                    if (c <= '9' && c >= '0')
+                    {
+                        ret += c - '0';
+                    }
+                    else
+                    {
+                        throw new ArgumentOutOfRangeException();
+                    }
+                }
+            }
             else
             {
                 throw new NotImplementedException();

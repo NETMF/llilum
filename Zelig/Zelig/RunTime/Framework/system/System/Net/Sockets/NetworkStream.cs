@@ -165,7 +165,7 @@ namespace System.Net.Sockets
             get
             {
                 if (m_disposed == true) throw new ObjectDisposedException( "" );                
-                if (m_socket.m_Handle == -1) throw new IOException();
+                if (m_socket.m_handle == -1) throw new IOException();
 
                 return m_socket.Available;
             }
@@ -200,7 +200,7 @@ namespace System.Net.Sockets
             get
             {
                 if (m_disposed == true) throw new ObjectDisposedException( "" );     
-                if (m_socket.m_Handle == -1) throw new IOException();
+                if (m_socket.m_handle == -1) throw new IOException();
 
                 return (m_socket.Available > 0);
             }
@@ -301,7 +301,7 @@ namespace System.Net.Sockets
         public override int Read(byte[] buffer, int offset, int count)
         {
             if (m_disposed) throw new ObjectDisposedException( "" );            
-            if (m_socket.m_Handle == -1) throw new IOException();
+            if (m_socket.m_handle == -1) throw new IOException();
             if (buffer == null) throw new ArgumentNullException();
             if (offset < 0 || offset > buffer.Length) throw new ArgumentOutOfRangeException();
             if (count < 0 || count > buffer.Length - offset) throw new ArgumentOutOfRangeException();
@@ -402,7 +402,7 @@ namespace System.Net.Sockets
         public override void Write(byte[] buffer, int offset, int count)
         {
             if (m_disposed) throw new ObjectDisposedException( "" );            
-            if (m_socket.m_Handle == -1) throw new IOException();
+            if (m_socket.m_handle == -1) throw new IOException();
             if (buffer == null) throw new ArgumentNullException();
             if (offset < 0 || offset > buffer.Length) throw new ArgumentOutOfRangeException();
             if (count < 0 || count > buffer.Length - offset) throw new ArgumentOutOfRangeException();
