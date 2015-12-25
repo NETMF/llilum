@@ -1696,6 +1696,7 @@ namespace System.Text
         {
             return Replace( oldChar, newChar, 0, Length );
         }
+
         public StringBuilder Replace( char oldChar, char newChar, int startIndex, int count )
         {
             Thread th;
@@ -1724,6 +1725,11 @@ namespace System.Text
             currentString.ReplaceCharInPlace( oldChar, newChar, startIndex, count, currentLength );
             ReplaceString( th, currentString );
             return this;
+        }
+
+        public StringBuilder Clear()
+        {
+            m_StringValue.SetLength( 0 ); return this;
         }
     }
 }

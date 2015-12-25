@@ -19,6 +19,52 @@ namespace System
         private int m_build;    // = -1;
         private int m_revision; // = -1;
 
+        //--//
+
+        public static bool operator==( Version v1, Version v2 )
+        {
+            if(object.ReferenceEquals( v1, null ))
+            {
+                return object.ReferenceEquals( v2, null );
+            }
+            return v1.Equals( v2 );
+        }
+
+        public static bool operator !=( Version v1, Version v2 )
+        {
+            return !( v1 == v2 );
+        }
+
+        public static bool operator >( Version v1, Version v2 )
+        {
+            return v2 < v1;
+        }
+
+        public static bool operator >=( Version v1, Version v2 )
+        {
+            return v2 <= v1;
+        }
+
+        public static bool operator <( Version v1, Version v2 )
+        {
+            if(v1 == null)
+            {
+                throw new ArgumentNullException( "v1" );
+            }
+            return v1.CompareTo( v2 ) < 0;
+        }
+
+        public static bool operator <=( Version v1, Version v2 )
+        {
+            if(v1 == null)
+            {
+                throw new ArgumentNullException( "v1" );
+            }
+            return v1.CompareTo( v2 ) <= 0;
+        }
+
+        //--//
+
         public Version(int major, int minor, int build, int revision)
         {
             if(major < 0 || minor < 0 || revision < 0 || build < 0)
@@ -88,6 +134,50 @@ namespace System
             return true;
         }
 
+        public int CompareTo( Version value )
+        {
+            if(value == null)
+            {
+                return 1;
+            }
+            if(this.m_major != value.m_major)
+            {
+                if(this.m_major > value.m_major)
+                {
+                    return 1;
+                }
+                return -1;
+            }
+            else if(this.m_minor != value.m_minor)
+            {
+                if(this.m_minor > value.m_minor)
+                {
+                    return 1;
+                }
+                return -1;
+            }
+            else if(this.m_build != value.m_build)
+            {
+                if(this.m_build > value.m_build)
+                {
+                    return 1;
+                }
+                return -1;
+            }
+            else
+            {
+                if(this.m_revision == value.m_revision)
+                {
+                    return 0;
+                }
+                if(this.m_revision > value.m_revision)
+                {
+                    return 1;
+                }
+                return -1;
+            }
+        }
+
         public override int GetHashCode( )
         {
 	        return 0 | (this.m_major & 15) << 28 | (this.m_minor & 255) << 20 | (this.m_build & 255) << 12 | (this.m_revision & 4095);
@@ -97,7 +187,7 @@ namespace System
         {
             string retStr = m_major + "." + m_minor;
 
-            // Adds _Build and then _Revision if they are positive. They could be -1 in this case not added.
+            // Adds m_build and then m_revision if they are positive. They could be -1 in this case not added.
             if (m_build >= 0)
             {
                 retStr += "." + m_build;
