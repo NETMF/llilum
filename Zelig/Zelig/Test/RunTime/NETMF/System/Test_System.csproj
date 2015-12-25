@@ -4,12 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E149B569-516B-4C88-A7B1-EBD02E12DD1E}</ProjectGuid>
+    <ProjectGuid>{54125FC8-5C6D-4F4B-92B8-3377FE1D92E1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.Zelig.Test</RootNamespace>
     <AssemblyName>Test_mscorlib</AssemblyName>
-    <AssemblyName>Microsoft.Zelig.Test.Runtime.Test_mscorlib</AssemblyName>
+    <AssemblyName>Microsoft.Zelig.Test.Runtime.Test_System</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -35,12 +35,58 @@
     <NoWarn>CS0108; CS0162; CS0219; ; CS0164; CS0219; CS0649; CS0414; CS0169; CS0114; CS0251</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="arrays\ArraysOtherTests.cs" />
-    <Compile Include="arrays\ArraysSimpleTests.cs" />
-    <Compile Include="basicconcepts\BasicConceptTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Http\AuthenticationTests.cs" />
+    <Compile Include="Http\Base64Tests.cs" />
+    <Compile Include="Http\FunctionalTests.cs" />
+    <Compile Include="Http\HttpKnownHeaderNamesTests.cs" />
+    <Compile Include="Http\HttpRequestHeaderTests.cs" />
+    <Compile Include="Http\HttpResponseHeaderTests.cs" />
+    <Compile Include="Http\HttpServer.cs" />
+    <Compile Include="Http\HttpStatusCodeTests.cs" />
+    <Compile Include="Http\HttpVersionTests.cs" />
+    <Compile Include="Http\HttpWebRequestTests.cs" />
+    <Compile Include="Http\HttpWebResponseTests.cs" />
+    <Compile Include="Http\Master.cs" />
+    <Compile Include="Http\ProtocolViolationExceptionTests.cs" />
+    <Compile Include="Http\TestServer.cs" />
+    <Compile Include="Http\UriTests.cs" />
+    <Compile Include="Http\WebExceptionTests.cs" />
+    <Compile Include="Http\WebHeaderCollectionTests.cs" />
+    <Compile Include="Http\WebProxyTests.cs" />
+    <Compile Include="Http\WebRequestTests.cs" />
+    <Compile Include="Http\WebResponseTests.cs" />
+    <Compile Include="IO\MemoryStream\CanRead.cs" />
+    <Compile Include="IO\MemoryStream\CanSeek.cs" />
+    <Compile Include="IO\MemoryStream\CanWrite.cs" />
+    <Compile Include="IO\MemoryStream\Close.cs" />
+    <Compile Include="IO\MemoryStream\Flush.cs" />
+    <Compile Include="IO\MemoryStream\Length.cs" />
+    <Compile Include="IO\MemoryStream\MemoryStreamHelper.cs" />
+    <Compile Include="IO\MemoryStream\MemoryStream_Ctor.cs" />
+    <Compile Include="IO\MemoryStream\Position.cs" />
+    <Compile Include="IO\MemoryStream\Read.cs" />
+    <Compile Include="IO\MemoryStream\ReadByte.cs" />
+    <Compile Include="IO\MemoryStream\Seek.cs" />
+    <Compile Include="IO\MemoryStream\SetLength.cs" />
+    <Compile Include="IO\MemoryStream\ToArray.cs" />
+    <Compile Include="IO\MemoryStream\Write.cs" />
+    <Compile Include="IO\MemoryStream\WriteByte.cs" />
+    <Compile Include="IO\MemoryStream\WriteTo.cs" />
+    <Compile Include="netTests\NetTests.cs" />
+    <Compile Include="socketTests\SocketExceptionTests.cs" />
+    <Compile Include="socketTests\SocketPair.cs" />
+    <Compile Include="socketTests\SocketsEnumsTests.cs" />
+    <Compile Include="socketTests\SocketServer.cs" />
+    <Compile Include="socketTests\SocketTests.cs" />
+    <Compile Include="socketTests\SocketTools.cs" />
+    <Compile Include="socketTests\StressTests.cs" />
+    <Compile Include="Text\StringBuilder\StringBuilderTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\RunTime\DeviceModels\lwIP\Microsoft.Llilum.Lwip.csproj">
+      <Project>{e77ac86e-58ab-47b6-bc6d-3c1b4545cdfd}</Project>
+      <Name>Microsoft.Llilum.Lwip</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\RunTime\Framework\system\system.csproj">
       <Project>{186f31a3-ef89-4a25-b2d5-20070702aa01}</Project>
       <Name>system</Name>
