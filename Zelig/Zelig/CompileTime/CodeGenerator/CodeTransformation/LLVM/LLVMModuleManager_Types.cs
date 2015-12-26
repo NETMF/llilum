@@ -107,18 +107,18 @@ namespace Microsoft.Zelig.LLVM
 
             // Remap scalar basic types to native types.
             if( tr == wkt.System_Boolean ||
-                tr == wkt.System_Char ||
-                tr == wkt.System_SByte ||
-                tr == wkt.System_Byte ||
-                tr == wkt.System_Int16 ||
-                tr == wkt.System_UInt16 ||
-                tr == wkt.System_Int32 ||
-                tr == wkt.System_UInt32 ||
-                tr == wkt.System_Int64 ||
-                tr == wkt.System_UInt64 ||
-                tr == wkt.System_Single ||
-                tr == wkt.System_Double ||
-                tr == wkt.System_IntPtr ||
+                tr == wkt.System_Char    ||
+                tr == wkt.System_SByte   ||
+                tr == wkt.System_Byte    ||
+                tr == wkt.System_Int16   ||
+                tr == wkt.System_UInt16  ||
+                tr == wkt.System_Int32   ||
+                tr == wkt.System_UInt32  ||
+                tr == wkt.System_Int64   ||
+                tr == wkt.System_UInt64  ||
+                tr == wkt.System_Single  ||
+                tr == wkt.System_Double  ||
+                tr == wkt.System_IntPtr  ||
                 tr == wkt.System_UIntPtr ||
                 tr == wkt.System_Void )
             {
@@ -242,7 +242,7 @@ namespace Microsoft.Zelig.LLVM
             if( mr.Flags.HasFlag( TS.MethodRepresentation.Attributes.PinvokeImpl ) )
                 sigName = mr.Name;
             else
-                sigName = mr.ToShortString( );
+                sigName = mr.ToShortStringNoReturnValue( );
 
             return m_module.GetOrInsertFunctionType( sigName, retType, args );
         }

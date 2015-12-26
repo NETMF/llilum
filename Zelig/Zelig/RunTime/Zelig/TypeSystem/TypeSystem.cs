@@ -2924,6 +2924,55 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
             }
         }
 
+        public void GetTypeSystemStatistics(ref int types, ref int fields, ref int methods )
+        {
+            types   = 0;
+            fields  = 0;
+            methods = 0;
+
+            foreach(var tr in this.Types)
+            {
+                if(ShouldIncludeInCodeGenStats( tr ))
+                {
+                    types   += 1;
+                    fields  += tr.Fields.Length;
+                    methods += tr.Methods.Length;
+                }
+            }
+        }
+
+        public bool ShouldIncludeInCodeGenStats( TypeRepresentation tr )
+        {
+            if( tr is SzArrayReferenceTypeRepresentation        || 
+                tr is BoxedValueTypeRepresentation              || 
+                tr is ManagedPointerTypeRepresentation          ||
+                tr is UnmanagedPointerTypeRepresentation        ||
+                tr is DelayedMethodParameterTypeRepresentation  ||
+                tr is DelayedTypeParameterTypeRepresentation    ||
+                tr is PinnedPointerTypeRepresentation            )
+            {
+                return false;
+            }
+
+            if(tr.IsOpenType)
+            {
+                return false;
+            }
+
+            if( tr is ArrayReferenceTypeRepresentation )
+            {
+                TypeRepresentation contained = tr.ContainedType;
+
+                if( contained is DelayedMethodParameterTypeRepresentation ||
+                    contained is DelayedTypeParameterTypeRepresentation )
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         //--//
 
         public T GetEnvironmentService< T >()

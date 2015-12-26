@@ -1,11 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
+﻿//
+// Copyright (c) Microsoft Corporation.    All rights reserved.
+//
 
-namespace Microsoft.binutils.elflib
+
+namespace Microsoft.Zelig.Elf
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Runtime.InteropServices;
+    using System.Text.RegularExpressions;
+
+
     public partial class ElfObject
     {
         public enum LibraryProvider

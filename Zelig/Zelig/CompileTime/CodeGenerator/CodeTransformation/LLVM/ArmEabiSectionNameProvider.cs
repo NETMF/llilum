@@ -94,10 +94,10 @@ namespace Microsoft.Zelig.LLVM
 
         private readonly TypeSystem m_TypeSystem;
 
-        private const string LlilumTextSectionName = ".text.llilum";
-        private const string LlilumRWDataSectionName = ".data.llilum";
-        private const string LlilumRODataSectionName = ".rodata.llilum";
-        private const string LlilumVTableSectionNameSuffix = ".VTable";
-        private const string LlilumStringSectionNameSuffix = ".String";
+        private const string LlilumTextSectionName          = ".text.llilum";
+        private const string LlilumRWDataSectionName        = ".data.llilum";
+        private const string LlilumRODataSectionName        = ".rodata.llilum";
+        private const string LlilumVTableSectionNameSuffix  = ".llilum.VTable";
+        private const string LlilumStringSectionNameSuffix  = ".llilum.String";
     }
 }

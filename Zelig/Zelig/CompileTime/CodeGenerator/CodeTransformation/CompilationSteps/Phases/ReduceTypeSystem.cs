@@ -41,18 +41,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
             this.TypeSystem.PerformReduction();
 
             this.TypeSystem.BuildCrossReference();
-
-            int fields = 0;
-            int methods = 0;
-            foreach (var td in m_typeSystem.Types)
-            {
-                fields += td.Fields.Length;
-                methods += td.Methods.Length;
-            }
-            Console.WriteLine("Types:   {0}", m_typeSystem.Types.Count);
-            Console.WriteLine("Fields:  {0}", fields);
-            Console.WriteLine("Methods: {0}", methods);
-
+            
             return this.NextPhase;
         }
     }

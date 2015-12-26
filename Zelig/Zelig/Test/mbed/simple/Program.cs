@@ -5,12 +5,12 @@
 #define LPC1768
 //#define K64F
 //#define STM32F411
-#define USE_I2C
-#define USE_SPI
+//#define USE_I2C
+//#define USE_SPI
 #define USE_GPIO
 #define USE_THREADING
-#define USE_ADC
-#define USE_PWM
+//#define USE_ADC
+//#define USE_PWM
 
 #if LPC1768
 //

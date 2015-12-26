@@ -1,9 +1,13 @@
-﻿using System;
+﻿//
+// Copyright (c) Microsoft Corporation.    All rights reserved.
+//
+
+using System;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Text;
 
-namespace Microsoft.binutils.elflib
+namespace Microsoft.Zelig.Elf
 {
     #region Elf Header
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

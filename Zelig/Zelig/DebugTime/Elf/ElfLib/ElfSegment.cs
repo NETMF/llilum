@@ -1,8 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿//
+// Copyright (c) Microsoft Corporation.    All rights reserved.
+//
 
-namespace Microsoft.binutils.elflib
+namespace Microsoft.Zelig.Elf
 {
+    using System;
+    using System.Collections.Generic;
+
     //
     // We assume that our ELF file has section headers, even for an 'EXEC' type file.
     // We use section references to build up our view of what a segment contains.

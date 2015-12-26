@@ -201,7 +201,7 @@ namespace Microsoft.Zelig.LLVM
             {
                 return method.Name;
             }
-            return $"{method.OwnerType.Name}::{method.Name}#{method.m_identity}";
+            return $"{method.OwnerType.FullName}::{method.Name}#{method.m_identity}";
         }
 
         private void CompleteMissingDataDescriptors( )

@@ -5,17 +5,10 @@
 namespace Microsoft.Zelig.CodeGeneration.IR.Abstractions
 {
     using System;
-    using System.Collections.Generic;
-
-    using Microsoft.Zelig.MetaData;
-    using Microsoft.Zelig.MetaData.Normalized;
 
     using Microsoft.Zelig.Runtime;
-    using Microsoft.Zelig.Runtime.TypeSystem;
-
     using Microsoft.Zelig.CodeGeneration.IR.ExternalMethodImporters;
     using Microsoft.Zelig.TargetModel.ArmProcessor;
-    using Microsoft.binutils.elflib;
 
 
     public class ExternalCallContext

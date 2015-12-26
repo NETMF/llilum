@@ -1,15 +1,19 @@
-﻿using System.Reflection;
+﻿//
+// Copyright (c) Microsoft Corporation.    All rights reserved.
+//
+
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle( "elflib" )]
+[assembly: AssemblyTitle( "readelf" )]
 [assembly: AssemblyDescription( "" )]
 [assembly: AssemblyConfiguration( "" )]
 [assembly: AssemblyCompany( "MSIT" )]
-[assembly: AssemblyProduct( "elflib" )]
+[assembly: AssemblyProduct( "readelf" )]
 [assembly: AssemblyCopyright( "Copyright © MSIT 2008" )]
 [assembly: AssemblyTrademark( "" )]
 [assembly: AssemblyCulture( "" )]
@@ -20,7 +24,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible( false )]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid( "edf2f76e-7643-4139-9d17-e404c05aad26" )]
+[assembly: Guid( "c4b2dfd5-b59a-46c3-95ea-f4519840b250" )]
 
 // Version information for an assembly consists of the following four values:
 //

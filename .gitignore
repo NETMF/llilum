@@ -17,6 +17,7 @@ Zelig/mbed-rtos.lib
 *.ZeligIR.xml
 *.ZeligIR_Post
 *.ZeligImage
+*.ElfDump
 *.bc
 *.ll
 *.bc

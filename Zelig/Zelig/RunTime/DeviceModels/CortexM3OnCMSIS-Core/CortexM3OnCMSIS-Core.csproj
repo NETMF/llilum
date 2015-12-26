@@ -92,7 +92,7 @@
     </ProjectReference>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\LlilumOSAbstraction\LlilumOSAbstraction.csproj">
       <Project>{20DC2CF5-8EED-4231-9743-6BAB96BE465C}</Project>
-      <Name>Microsoft.Zelig.LlilumOSAbstraction</Name>
+      <Name>LlilumOSAbstraction</Name>
     </ProjectReference>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\ModelForCortexM3\ModelForCortexM3.csproj">
       <Project>{a30eb003-94f8-4a85-8da1-006f6810a7a4}</Project>

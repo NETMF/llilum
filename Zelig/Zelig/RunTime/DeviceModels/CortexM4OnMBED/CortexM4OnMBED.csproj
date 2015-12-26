@@ -99,7 +99,7 @@
     </ProjectReference>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\Windows\Windows.csproj">
       <Project>{dc8c38d7-780b-4b13-8ace-9050e39cc51c}</Project>
-      <Name>Windows.Devices</Name>
+      <Name>Windows</Name>
     </ProjectReference>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\CortexM3OnCMSIS-Core\CortexM3OnCMSIS-Core.csproj">
       <Project>{0b37e5ba-4839-4ec4-9e36-a96bcbea2400}</Project>
@@ -115,7 +115,7 @@
     </ProjectReference>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\LlilumOSAbstraction\LlilumOSAbstraction.csproj">
       <Project>{20DC2CF5-8EED-4231-9743-6BAB96BE465C}</Project>
-      <Name>Microsoft.Zelig.LlilumOSAbstraction</Name>
+      <Name>LlilumOSAbstraction</Name>
     </ProjectReference>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\mbed\mbed.csproj">
       <Project>{d7f2bc4e-1406-47aa-90e1-07bc4ce9410f}</Project>

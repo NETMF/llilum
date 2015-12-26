@@ -1,9 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
+﻿//
+// Copyright (c) Microsoft Corporation.    All rights reserved.
+//
 
-namespace Microsoft.binutils.elflib
+namespace Microsoft.Zelig.Elf
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Runtime.InteropServices;
+
+
     public class SymbolTable : ElfSection
     {
         internal List<Symbol>   m_symbols;

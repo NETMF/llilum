@@ -5,7 +5,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.IO;
 
-namespace Microsoft.binutils.elflib
+namespace Microsoft.Zelig.Elf
 {
     public struct DebugInfoAbbrevAttrib
     {

@@ -1,8 +1,14 @@
-﻿using System;
-using System.Text;
+﻿//
+// Copyright (c) Microsoft Corporation.    All rights reserved.
+//
 
-namespace Microsoft.binutils.elflib
-{
+
+namespace Microsoft.Zelig.Elf
+{   
+    using System;
+    using System.Text;
+
+
     public class StringTable : ElfSection
     {
         internal StringTable(ElfObject parent) : base(parent, new byte[1]{0})

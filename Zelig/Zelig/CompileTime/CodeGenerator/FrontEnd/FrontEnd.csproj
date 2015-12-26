@@ -121,6 +121,10 @@
       <Name>IntermediateRepresentation</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\DebugTime\Elf\ElfLib\Elflib.csproj">
+      <Project>{37193a86-ba04-4a3e-9df8-656df455e952}</Project>
+      <Name>Elflib</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="mbed_common.FrontEndConfig">

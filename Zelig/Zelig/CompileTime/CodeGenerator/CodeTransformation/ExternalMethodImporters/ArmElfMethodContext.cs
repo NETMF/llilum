@@ -7,7 +7,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ExternalMethodImporters
 {
     using System;
     using System.Collections.Generic;
-    using Microsoft.binutils.elflib;
+    using Microsoft.Zelig.Elf;
     using Microsoft.Zelig.CodeGeneration.IR.ImageBuilders;
     using Microsoft.Zelig.CodeGeneration.IR.Abstractions;
     using System.IO;

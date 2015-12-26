@@ -1,8 +1,12 @@
-﻿using System;
+﻿//
+// Copyright (c) Microsoft Corporation.    All rights reserved.
+//
+
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace Microsoft.binutils.elflib
+namespace Microsoft.Zelig.Elf
 {
 
     public partial class ElfObject : IElfElement

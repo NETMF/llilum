@@ -1,10 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.binutils.elflib;
-using System.IO;
+﻿//
+// Copyright (c) Microsoft Corporation.    All rights reserved.
+//
 
-namespace Microsoft.binutils.readelf
+
+namespace Microsoft.Zelig.Elf
 {
+    using System;
+    using System.IO;
+    using System.Collections.Generic;
+    
+
     class Program
     {
         static void Main( string[] args )
@@ -56,9 +61,11 @@ RESTART:
                         break;
 
                     case "z":
+                        fDisplayFileHeader      = true;
+                        fDisplayProgramHeaders  = true;
                         fPrintAllSizes          = true;
                         break;
-
+                        
                     case "e":
                         fDisplayFileHeader      = true;
                         fDisplayProgramHeaders  = true;
@@ -131,11 +138,6 @@ RESTART:
                 }
                 foreach( ElfObject obj in objs )
                 {
-                    if( fPrintAllSizes )
-                    {
-                        Console.WriteLine( OutputFormatter.PrintAllSizes( ComputeAllSizes( obj.SymbolTable ) ) );
-                    }
-
                     if( fDisplayFileHeader )
                     {
                         Console.WriteLine( OutputFormatter.PrintElfHeader( obj.Header ) );
@@ -160,6 +162,20 @@ RESTART:
                     {
                         Console.WriteLine( OutputFormatter.PrintRelocationEntries( obj.RelocationSections ) );
                     }
+
+                    if( fPrintAllSizes )
+                    {
+                        Console.WriteLine( OutputFormatter.PrintAllSizes( OutputFormatter.ComputeAllSizes( obj.SymbolTable ) ) );
+
+                        var llilumTypes    = new Dictionary<string, OutputFormatter.NameSizePair>();
+                        var lillumMethods  = new List<OutputFormatter.NameSizeQuadruple>();
+                        var otherFunctions = new List<OutputFormatter.NameSizeQuadruple>();
+                        OutputFormatter.ComputeAllSizesMethodByMethod( obj.SymbolTable, llilumTypes, lillumMethods, otherFunctions );
+                       
+                        Console.WriteLine( OutputFormatter.PrintAllTypesSizes  ( llilumTypes  , otherFunctions ) );
+                        Console.WriteLine( OutputFormatter.PrintAllMethodsSizes( lillumMethods, otherFunctions, bySizeOrder: false ) );
+                        Console.WriteLine( OutputFormatter.PrintAllMethodsSizes( lillumMethods, otherFunctions, bySizeOrder: true  ) );
+                    }
                 }
             }
             if( System.Diagnostics.Debugger.IsAttached )
@@ -170,48 +186,13 @@ RESTART:
             }
         }
 
-        private static OutputFormatter.NameSizePair[] ComputeAllSizes( SymbolTable symbols )
-        {
-            var nameSizePairs = new List<OutputFormatter.NameSizePair>();
-            
-            uint totalSizeFunctions      = 0;
-            uint totalSizeZeligFunctions = 0;
-            uint totalSizeObjects        = 0;
-
-            Array.ForEach(  symbols.Symbols, s => {
-                if(s.Type == SymbolType.STT_FUNC)
-                {
-                    totalSizeFunctions += s.SymbolDef.st_size;
-                }
-            });
-
-            Array.ForEach(  symbols.Symbols, s => {
-                if(s.Type == SymbolType.STT_FUNC && s.ReferencedSection.Name.Contains( ".zelig" ))
-                {
-                    totalSizeZeligFunctions += s.SymbolDef.st_size;
-                }
-            });
-
-            Array.ForEach(  symbols.Symbols, s => {
-                if(s.Type == SymbolType.STT_OBJECT)
-                {
-                    totalSizeObjects += s.SymbolDef.st_size;
-                }
-            });
-            
-            nameSizePairs.Add( new OutputFormatter.NameSizePair( ) { Name = "All Functions  ", Size = totalSizeFunctions      } );
-            nameSizePairs.Add( new OutputFormatter.NameSizePair( ) { Name = "Zelig Functions", Size = totalSizeZeligFunctions } );
-            nameSizePairs.Add( new OutputFormatter.NameSizePair( ) { Name = "Objects        ", Size = totalSizeObjects        } );
-
-            return nameSizePairs.ToArray( ); 
-        }
-
         private static void DisplayUsage()
         {
             Console.WriteLine("Usage: readelf <option(s)> elf-file(s)");
             Console.WriteLine(" Display information about the contents of ELF format files");
             Console.WriteLine(" Options are:");
             Console.WriteLine("  -a                     Equivalent to: -h -l -S -s -r");
+            Console.WriteLine("  -z                     Display sections *.llilum* object sizes and ELF, program and section headers");
             Console.WriteLine("  -h                     Display the ELF file header");
             Console.WriteLine("  -l                     Display the program headers");
             Console.WriteLine("  -S                     Display the section headers");

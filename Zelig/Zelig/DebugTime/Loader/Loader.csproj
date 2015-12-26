@@ -50,10 +50,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="elflib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\External\Binaries\binutils\Debug\elflib.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -115,6 +111,10 @@
     <ProjectReference Include="$(LlilumSourceRoot)\CompileTime\TargetModels\ArmProcessor\ArmProcessor.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20070519AA01}</Project>
       <Name>ArmProcessor</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\DebugTime\Elf\ElfLib\Elflib.csproj">
+      <Project>{37193a86-ba04-4a3e-9df8-656df455e952}</Project>
+      <Name>Elflib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

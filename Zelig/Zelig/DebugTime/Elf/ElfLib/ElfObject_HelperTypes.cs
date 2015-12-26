@@ -1,7 +1,13 @@
-﻿using System;
+﻿//
+// Copyright (c) Microsoft Corporation.    All rights reserved.
+//
 
-namespace Microsoft.binutils.elflib
+
+namespace Microsoft.Zelig.Elf
 {
+    using System;
+
+
     //
     // Enum Definitions
     //

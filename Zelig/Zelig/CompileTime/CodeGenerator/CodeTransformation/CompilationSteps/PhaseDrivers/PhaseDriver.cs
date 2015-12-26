@@ -123,8 +123,6 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
 
             var res = Run();
 
-            DumpTypeSystemContent();
-
             {
                 var dlg = m_delegationForPhase_After;
                 if(dlg != null)
@@ -468,20 +466,6 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
 
                 return Operator.OperatorLevel.Highest;
             }
-        }
-
-        protected void DumpTypeSystemContent()
-        {
-            int fields = 0;
-            int methods = 0;
-            foreach (var td in m_context.TypeSystem.Types)
-            {
-                fields += td.Fields.Length;
-                methods += td.Methods.Length;
-            }
-            Console.WriteLine("Types:   {0}", m_context.TypeSystem.Types.Count);
-            Console.WriteLine("Fields:  {0}", fields);
-            Console.WriteLine("Methods: {0}", methods);
         }
     }
 }

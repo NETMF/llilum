@@ -6,27 +6,25 @@
 //#define DEBUG_RELOAD_STATE
 
 
-using System.ComponentModel;
-using Microsoft.Zelig.CodeGeneration.IR.Transformations;
 
 namespace Microsoft.Zelig.FrontEnd
 {
     using System;
     using System.Collections.Generic;
-    using System.Text;
+    using System.Diagnostics;
     using System.IO;
+    using System.Linq;
+    using System.Text;
+    using Win32;
 
     using Importer = Microsoft.Zelig.MetaData.Importer;
     using Normalized = Microsoft.Zelig.MetaData.Normalized;
     using IR = Microsoft.Zelig.CodeGeneration.IR;
-    using RT = Microsoft.Zelig.Runtime;
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
     using Cfg = Microsoft.Zelig.Configuration.Environment;
     using ARM = Microsoft.Zelig.Emulation.ArmProcessor;
+    using ELF = Microsoft.Zelig.Elf;
     using LLVM;
-    using Win32;
-    using System.Linq;
-    using System.Diagnostics;
 
     class Bench :
         TS.IEnvironmentProvider,
@@ -66,7 +64,6 @@ namespace Microsoft.Zelig.FrontEnd
             {
                 return m_owner.m_sourceCodeTracker;
             }
-
         }
 
         internal class LlvmCodeGenOptions 
@@ -241,8 +238,13 @@ namespace Microsoft.Zelig.FrontEnd
         void NotifyCompilationPhase( IR.CompilationSteps.PhaseDriver phase )
         {
             m_phaseExecutionCounter++;
+            
+            int types   = 0;
+            int fields  = 0;
+            int methods = 0;
+            m_typeSystem.GetTypeSystemStatistics( ref types, ref fields, ref methods );
 
-            Console.WriteLine( "{0}: Phase: {1}", GetTime( ), phase );
+            Console.WriteLine( "{0}: Phase: {1} [types: {2}, fields: {3}, methods: {4}]", GetTime( ), phase, types, fields, methods );
 
 #if DEBUG_SAVE_STATE
             if(phase == Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phase.GenerateImage)
@@ -1924,14 +1926,18 @@ namespace Microsoft.Zelig.FrontEnd
 
             if( m_fGenerateObj )
             {
+                var objFile = filePrefix + "_opt.o";
+
                 Console.WriteLine( "Compiling LLVM Bitcode" );
                 var args = string.Format( "{0} -o={1} {2}"             ,
                                         m_LlvmLlcArgs ?? DefaultLlcArgs,
-                                        filePrefix + "_opt.o"          ,
+                                        objFile                        ,
                                         filePrefix + "_opt.bc"         
                                         );
 
                 ShellExec( "llc.exe", args );
+
+                DumpElfInformation( objFile, filePrefix );
             }
 
             foreach( var raw in m_dumpRawImage )
@@ -1988,13 +1994,91 @@ namespace Microsoft.Zelig.FrontEnd
             // console explicitly or the output from the process will just end up in the bit pool at
             // the bottom of the computer's chasis.
             var proc = new Process( ) { StartInfo = startInfo };
+
             proc.ErrorDataReceived += ( s, e ) => { if( e.Data != null ) Console.Error.WriteLine( e.Data ); };
             proc.OutputDataReceived += ( s, e ) => { if( e.Data != null ) Console.WriteLine( e.Data ); };
             proc.Start( );
             proc.BeginOutputReadLine( );
             proc.BeginErrorReadLine( );
             proc.WaitForExit( );
+
             return proc.ExitCode;
+        }
+
+        private void DumpElfInformation( string objFile, string filePrefix )
+        {
+            var objElfObjs = ELF.ElfObject.FileUtil.Parse( objFile );
+
+            using(var sr = new System.IO.StreamWriter( filePrefix + "_opt.ElfDump" ))
+            {
+                foreach(var obj in objElfObjs)
+                {
+                    sr.WriteLine( ELF.OutputFormatter.PrintElfHeader( obj.Header ) );
+                    sr.WriteLine( ELF.OutputFormatter.PrintSectionHeaders( obj.Sections ) );
+                    sr.WriteLine( ELF.OutputFormatter.PrintAllSizes( ELF.OutputFormatter.ComputeAllSizes( obj.SymbolTable ) ) );
+
+                    var llilumTypes    = new Dictionary<string, ELF.OutputFormatter.NameSizePair>();
+                    var lillumMethods  = new List<ELF.OutputFormatter.NameSizeQuadruple>();
+                    var otherFunctions = new List<ELF.OutputFormatter.NameSizeQuadruple>();
+
+                    uint totalSize = ELF.OutputFormatter.ComputeAllSizesMethodByMethod( obj.SymbolTable, llilumTypes, lillumMethods, otherFunctions ); 
+                    
+                    sr.WriteLine( ELF.OutputFormatter.PrintTotalSizeMethodByMethod( totalSize ) );
+
+                    sr.WriteLine( ); 
+                    sr.WriteLine(  );
+
+                    sr.WriteLine( ELF.OutputFormatter.PrintAllTypesSizes  ( llilumTypes  , otherFunctions ) );
+                    sr.WriteLine( ELF.OutputFormatter.PrintAllMethodsSizes( lillumMethods, otherFunctions, bySizeOrder: false ) );
+                    sr.WriteLine( ELF.OutputFormatter.PrintAllMethodsSizes( lillumMethods, otherFunctions, bySizeOrder: true ) );
+
+                    sr.WriteLine( "################################################" );
+                    sr.WriteLine( "########### CROSS CHECK INFORMATION ############" );
+                    sr.WriteLine( "################################################" );
+
+                    sr.WriteLine( );
+                    sr.WriteLine( );
+                    sr.WriteLine( "============================================================================================" );
+                    sr.WriteLine( "All types in llilum type system before LLVM code gen" );
+                    sr.WriteLine( );
+                    sr.WriteLine( "Total types: " + m_typeSystem.Types.Count );
+                    sr.WriteLine( );
+
+                    var allTypes   = new List<TS.TypeRepresentation>();
+                    var allMethods = new List<TS.MethodRepresentation>();
+
+                    foreach(var tr in m_typeSystem.Types)
+                    {
+                        if(m_typeSystem.ShouldIncludeInCodeGenStats( tr ))
+                        {
+                            allTypes.Add( tr );
+
+                            foreach(var mr in tr.Methods)
+                            {
+                                allMethods.Add( mr );
+                            }
+                        }
+                    }
+
+                    foreach(var t in allTypes)
+                    {
+                        sr.WriteLine( t.FullName );
+                    }
+
+                    sr.WriteLine( );
+                    sr.WriteLine( );
+                    sr.WriteLine( "============================================================================================" );
+                    sr.WriteLine( "All methods in llilum type system before LLVM code gen" );
+                    sr.WriteLine( );
+                    sr.WriteLine( "Total methods: " + allMethods.Count );
+                    sr.WriteLine( );
+
+                    foreach(var mr in allMethods)
+                    {
+                        sr.WriteLine( mr.ToShortStringNoReturnValue( ) );
+                    }
+                }
+            }
         }
 
         internal static bool RunBench(string[] args)

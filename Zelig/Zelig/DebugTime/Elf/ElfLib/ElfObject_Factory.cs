@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
+﻿//
+// Copyright (c) Microsoft Corporation.    All rights reserved.
+//
 
-namespace Microsoft.binutils.elflib
+
+namespace Microsoft.Zelig.Elf
 {
-    
+    using System.Runtime.InteropServices;
+
     public partial class ElfObject
     {
         public static ElfObject CreateNew(ElfType type)

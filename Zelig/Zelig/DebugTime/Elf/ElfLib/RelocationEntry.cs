@@ -1,8 +1,14 @@
-﻿using System;
-using System.Linq;
+﻿//
+// Copyright (c) Microsoft Corporation.    All rights reserved.
+//
 
-namespace Microsoft.binutils.elflib
+
+namespace Microsoft.Zelig.Elf
 {
+    using System;
+    using System.Linq;
+
+
     public class RelocationEntry : IElfElement
     {
         internal Elf32_Rela         m_entryDef;

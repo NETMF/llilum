@@ -15,7 +15,7 @@ namespace Microsoft.Zelig.Loader
     
     using Cfg = Microsoft.Zelig.Configuration.Environment;
 
-    using Microsoft.binutils.elflib;
+    using Microsoft.Zelig.Elf;
 
     public partial class Loader : Form, IMainForm
     {

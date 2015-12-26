@@ -119,7 +119,7 @@
     </ProjectReference>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\LlilumOSAbstraction\LlilumOSAbstraction.csproj">
       <Project>{20DC2CF5-8EED-4231-9743-6BAB96BE465C}</Project>
-      <Name>Microsoft.Zelig.LlilumOSAbstraction</Name>
+      <Name>LlilumOSAbstraction</Name>
     </ProjectReference>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\mbed\mbed.csproj">
       <Project>{d7f2bc4e-1406-47aa-90e1-07bc4ce9410f}</Project>

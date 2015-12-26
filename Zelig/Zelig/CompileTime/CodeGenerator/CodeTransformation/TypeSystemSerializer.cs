@@ -18,7 +18,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 #endif
 
     using Microsoft.Zelig.Runtime.TypeSystem;
-    using Microsoft.binutils.elflib;
+    using Microsoft.Zelig.Elf;
     using Microsoft.Zelig.CodeGeneration.IR.ExternalMethodImporters;
 
 
