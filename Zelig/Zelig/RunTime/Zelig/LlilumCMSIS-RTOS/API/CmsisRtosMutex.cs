@@ -10,30 +10,18 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
     using Microsoft.Zelig.Runtime.TypeSystem;
 
 
-    internal class CmsisRtosMutex : IDisposable
+    internal class CmsisRtosMutex : CmsisObject
     {
-        private static ArrayList s_mutexes = new ArrayList();
-        private static object    s_sync    = new object();
-
-        //--//
-
-        private object m_sync;
+        private readonly object m_sync;
 
         //--//
 
         public static CmsisRtosMutex Create( )
         {
-            var mutex = new CmsisRtosMutex();
-
-            lock (s_sync)
-            {
-                s_mutexes.Add( mutex );
-            }
-
-            return mutex;
+            return new CmsisRtosMutex();
         }
 
-        private CmsisRtosMutex( )
+        private CmsisRtosMutex( ) : base()
         {
             m_sync = new object( );
         }
@@ -66,19 +54,13 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
             return 0;
         }
 
-        public void Dispose( )
-        {
-            lock(s_sync)
-            {
-                s_mutexes.Remove( this );
-            }
-        }
+        //--//
 
         [GenerateUnsafeCast]
-        public extern UIntPtr ToPointer( );
+        internal extern UIntPtr ToPointer( );
 
 
         [GenerateUnsafeCast]
-        public extern static CmsisRtosMutex ToObject( UIntPtr mutex );
+        internal extern static CmsisRtosMutex ToObject( UIntPtr mutex );
     }
 }

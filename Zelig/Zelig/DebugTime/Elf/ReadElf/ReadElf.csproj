@@ -61,6 +61,7 @@
     <ProjectReference Include="$(LlilumSourceRoot)\DebugTime\Elf\ElfLib\Elflib.csproj">
       <Project>{37193A86-BA04-4A3E-9DF8-656DF455E952}</Project>
       <Name>Elflib</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

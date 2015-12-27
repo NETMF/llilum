@@ -5,44 +5,30 @@
 namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
 {
     using System;
-    using System.Collections;
-    using System.Runtime.InteropServices;
     using System.Threading;
-    using Microsoft.Zelig.Runtime.TypeSystem;
 
+    using TS   = Microsoft.Zelig.Runtime.TypeSystem;
     using LLOS = Microsoft.Zelig.LlilumOSAbstraction;
 
 
-    internal class CmsisRtosSemaphore : IDisposable
+    internal class CmsisRtosSemaphore : CmsisObject
     {
-        private static ArrayList s_semaphores = new ArrayList();
-        private static object    s_sync       = new object();
-
-        //--//
-
-        private object          m_sync;
-        private int             m_count;
-        private AutoResetEvent  m_free;
-
+        private readonly object         m_sync;
+        private readonly AutoResetEvent m_free;
+        private          int            m_count;
+        
         //--//
 
         public static CmsisRtosSemaphore Create( int count )
         {
-            var sem = new CmsisRtosSemaphore(count);
-
-            lock (s_sync)
-            {
-                s_semaphores.Add( sem );
-            }
-
-            return sem;
+            return new CmsisRtosSemaphore(count);
         }
 
-        private CmsisRtosSemaphore( int count )
+        private CmsisRtosSemaphore( int count ) : base()
         {
-            m_sync = new object( );
+            m_sync  = new object( );
             m_count = count;
-            m_free = new AutoResetEvent( false );
+            m_free  = new AutoResetEvent( false );
         }
 
         //--//
@@ -93,10 +79,7 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
 
             return m_count;
         }
-
-        //
-        // void sys_sem_signal( sys_sem_t *sem )
-        // 
+        
         public void Release( )
         {
             lock(m_sync)
@@ -107,24 +90,12 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
             }
         }
 
-        //
-        // void sys_sem_free( sys_sem_t *sem )
-        //
-        public void Dispose( )
-        {
-            lock(s_sync)
-            {
-                s_semaphores.Remove( this );
-            }
-        }
-
         //--//
 
-        [GenerateUnsafeCast]
-        public extern UIntPtr ToPointer( );
-
-
-        [GenerateUnsafeCast]
-        public extern static CmsisRtosSemaphore ToObject( UIntPtr semaphore );
+        [TS.GenerateUnsafeCast]
+        internal extern UIntPtr ToPointer( );
+        
+        [TS.GenerateUnsafeCast]
+        internal extern static CmsisRtosSemaphore ToObject( UIntPtr semaphore );
     }
 }

@@ -11,26 +11,15 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
     
     
 
-    internal class CmsisRtosMailbox : IDisposable
+    internal class CmsisRtosMailbox : CmsisObject
     {
-        private static ArrayList    s_mailboxes = new ArrayList();
-        private static object       s_sync      = new object();
-
-        //--//
-
-        private KernelCircularBuffer<UIntPtr> m_buffer;
+        private readonly KernelCircularBuffer<UIntPtr> m_buffer;
 
         //--//
 
         public static CmsisRtosMailbox Create(int queueSize)
         {
-            var mailbox = new CmsisRtosMailbox(queueSize);
-
-            lock(s_sync)
-            {
-                s_mailboxes.Add(mailbox);
-            }
-            return mailbox;
+            return new CmsisRtosMailbox(queueSize);
         }
         
         private CmsisRtosMailbox(int queueSize)
@@ -44,6 +33,7 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
             {
                 return true;
             }
+
             return false;
         }
 
@@ -53,21 +43,16 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
             {
                 return true;
             }
+
             return false;
         }
 
-        public void Dispose()
-        {
-            lock(s_sync)
-            {
-                s_mailboxes.Remove(this);
-            }
-        }
+        //--//
 
         [GenerateUnsafeCast]
-        public extern UIntPtr ToPointer();
+        internal extern UIntPtr ToPointer();
         
         [GenerateUnsafeCast]
-        public extern static CmsisRtosMailbox ToObject(UIntPtr mutex);
+        internal extern static CmsisRtosMailbox ToObject(UIntPtr mutex);
     }
 }

@@ -60,6 +60,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="API\CmsisObject.cs" />
     <Compile Include="API\CmsisRtos.cs" />
     <Compile Include="API\CmsisRtosMailbox.cs" />
     <Compile Include="API\CmsisRtosMutex.cs" />
