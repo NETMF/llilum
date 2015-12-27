@@ -18,6 +18,8 @@ Zelig/mbed-rtos.lib
 *.ZeligIR_Post
 *.ZeligImage
 *.ElfDump
+*.ZeligCallsFromGraph
+*.ZeligCallsToGraph
 *.bc
 *.ll
 *.bc

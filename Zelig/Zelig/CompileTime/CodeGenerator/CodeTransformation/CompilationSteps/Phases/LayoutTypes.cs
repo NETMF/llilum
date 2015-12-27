@@ -31,7 +31,11 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
         public override PhaseDriver Run()
         {
             this.TypeSystem.LayoutTypes( this.TypeSystem.PlatformAbstraction.MemoryAlignment );
+
             this.TypeSystem.DataManagerInstance.RefreshValues( this );
+            
+            this.TypeSystem.FlattenCallsDatabase( this.CallsDataBase.Analyze( this.TypeSystem ), fCallsTo: true  );
+            this.TypeSystem.FlattenCallsDatabase( this.CallsDataBase.Analyze( this.TypeSystem ), fCallsTo: false );
 
             return this.NextPhase;
         }

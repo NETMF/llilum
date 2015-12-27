@@ -117,6 +117,7 @@ namespace Microsoft.Zelig.FrontEnd
         private bool                                m_fDumpIRpre;
         private bool                                m_fDumpIRpost;
         private bool                                m_fDumpIR;
+        private bool                                m_fDumpFlattenedCallGraph;
         private bool                                m_fDumpIRXMLpre;
         private bool                                m_fDumpIRXMLpost;
         private bool                                m_fDumpIRXML;
@@ -244,7 +245,11 @@ namespace Microsoft.Zelig.FrontEnd
             int methods = 0;
             m_typeSystem.GetTypeSystemStatistics( ref types, ref fields, ref methods );
 
-            Console.WriteLine( "{0}: Phase: {1} [types: {2}, fields: {3}, methods: {4}]", GetTime( ), phase, types, fields, methods );
+            ConsoleColor color = Console.ForegroundColor;
+            Console.Write( "{0}: Phase: {1} ", GetTime( ), phase );
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine( "[types: {0}, fields: {1}, methods: {2}]", types, fields, methods );
+            Console.ForegroundColor = color;
 
 #if DEBUG_SAVE_STATE
             if(phase == Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phase.GenerateImage)
@@ -633,6 +638,46 @@ namespace Microsoft.Zelig.FrontEnd
                 }
             }
         }
+        
+        private void DumpCallGraph( string file, bool fCallsTo )
+        {
+            using( var sr = new StreamWriter( file ) )
+            {
+                sr.WriteLine( "Call Graph for all surviving methods" ); 
+                sr.WriteLine( "=========================================================" ); 
+                sr.WriteLine( $"Listing all calls {{0}} a method", fCallsTo ? "to" : "from" ); 
+                sr.WriteLine( "=========================================================" ); 
+                sr.WriteLine( ); 
+                sr.WriteLine( ); 
+
+                var callsDb = fCallsTo ? m_typeSystem.FlattenedCallsDataBase_CallsTo : m_typeSystem.FlattenedCallsDataBase_CallsFrom;
+
+                foreach(var method in callsDb.Keys)
+                {
+                    sr.WriteLine( $"Method: {method.ToShortString()}" ); 
+                    sr.WriteLine( ); 
+
+                    var calls = callsDb[ method ];
+
+                    if(calls != null && calls.Count > 0)
+                    {
+                        calls.Sort( (x, y) => { return x.FullyQualifiedName.CompareTo( y.FullyQualifiedName );  } );  
+
+                        foreach(var caller in calls)
+                        {
+                            sr.WriteLine( $" {{0}} {caller.ToShortString( )}", fCallsTo ? "<==" : "==>" );
+                        }
+                    }
+                    else
+                    {
+                        sr.WriteLine( " <== no callers ==>" );
+                    }
+
+                    sr.WriteLine( "=========================================================" );
+                    sr.WriteLine( ); 
+                }
+            }
+        }
 
         private void DumpIRAsXML(string file)
         {
@@ -832,6 +877,10 @@ namespace Microsoft.Zelig.FrontEnd
                     else if( IsMatch( option, "DumpIR" ) )
                     {
                         m_fDumpIR = true;
+                    }
+                    else if( IsMatch( option, "DumpFlattenedCallGraph" ) )
+                    {
+                        m_fDumpFlattenedCallGraph = true;
                     }
                     else if( IsMatch( option, "DumpIRXMLpre" ) )
                     {
@@ -1370,10 +1419,10 @@ namespace Microsoft.Zelig.FrontEnd
         private bool ValidateLlvmToolsPath( )
         {
             // if the tools aren't needed, based on options, no point verifying anything else
-            if( m_fSkipLlvmOptExe && !m_fGenerateObj )
+            if(m_fSkipLlvmOptExe && !m_fGenerateObj)
                 return true;
 
-            if( string.IsNullOrWhiteSpace( m_LlvmBinPath ) )
+            if(string.IsNullOrWhiteSpace( m_LlvmBinPath ))
             {
                 m_LlvmBinPath = FindLLvmToolsPathOrSubPathFromEnvVars( EnvironmentVariableTarget.Process
                                                                      , EnvironmentVariableTarget.User
@@ -1381,36 +1430,36 @@ namespace Microsoft.Zelig.FrontEnd
                                                                      );
             }
 
-            if( string.IsNullOrWhiteSpace( m_LlvmBinPath ) )
+            if(string.IsNullOrWhiteSpace( m_LlvmBinPath ))
             {
                 m_LlvmBinPath = GetRegValueString( RegistryHive.CurrentUser, @"SOFTWARE\LLVM\3.7.0", "ToolsBin" );
             }
 
-            if( string.IsNullOrWhiteSpace( m_LlvmBinPath ) )
+            if(string.IsNullOrWhiteSpace( m_LlvmBinPath ))
             {
                 m_LlvmBinPath = GetRegValueString( RegistryHive.LocalMachine, @"SOFTWARE\LLVM\3.7.0", "ToolsBin" );
             }
 
-            if( string.IsNullOrWhiteSpace( m_LlvmBinPath ) )
+            if(string.IsNullOrWhiteSpace( m_LlvmBinPath ))
             {
                 var srcRootDir = GetRegValueString( RegistryHive.CurrentUser, @"SOFTWARE\LLVM\3.7.0", "SrcRoot" );
-                if( !string.IsNullOrWhiteSpace( srcRootDir ) )
+                if(!string.IsNullOrWhiteSpace( srcRootDir ))
                 {
                     m_LlvmBinPath = Path.Combine( srcRootDir, "build", "Win32", "Release", "bin" );
-                    if( string.IsNullOrWhiteSpace( m_LlvmBinPath ) && Environment.Is64BitOperatingSystem )
+                    if(string.IsNullOrWhiteSpace( m_LlvmBinPath ) && Environment.Is64BitOperatingSystem)
                     {
                         m_LlvmBinPath = m_LlvmBinPath = Path.Combine( srcRootDir, "build", "x64", "Release", "bin" );
                     }
                 }
             }
 
-            if( string.IsNullOrWhiteSpace( m_LlvmBinPath ) )
+            if(string.IsNullOrWhiteSpace( m_LlvmBinPath ))
             {
                 var srcRootDir = GetRegValueString( RegistryHive.LocalMachine, @"SOFTWARE\LLVM\3.7.0", "SrcRoot" );
-                if( !string.IsNullOrWhiteSpace( srcRootDir ) )
+                if(!string.IsNullOrWhiteSpace( srcRootDir ))
                 {
                     m_LlvmBinPath = Path.Combine( srcRootDir, "build", "Win32", "Release", "bin" );
-                    if( string.IsNullOrWhiteSpace( m_LlvmBinPath ) && Environment.Is64BitOperatingSystem )
+                    if(string.IsNullOrWhiteSpace( m_LlvmBinPath ) && Environment.Is64BitOperatingSystem)
                     {
                         m_LlvmBinPath = m_LlvmBinPath = Path.Combine( srcRootDir, "build", "x64", "Release", "bin" );
                     }
@@ -1419,24 +1468,26 @@ namespace Microsoft.Zelig.FrontEnd
 
             // try scanning the PATH environment var to see if the tools are already in the PATH
             var envPathToLlvmTools = FindLlvmToolsInPath( );
-            if( string.IsNullOrWhiteSpace( m_LlvmBinPath ) && !string.IsNullOrWhiteSpace( envPathToLlvmTools ) )
+            if(string.IsNullOrWhiteSpace( m_LlvmBinPath ) && !string.IsNullOrWhiteSpace( envPathToLlvmTools ))
             {
                 m_LlvmBinPath = envPathToLlvmTools;
             }
 
-            if( string.IsNullOrWhiteSpace( m_LlvmBinPath ) )
+            if(string.IsNullOrWhiteSpace( m_LlvmBinPath ))
             {
+                var color = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.Error.WriteLine( "ERROR: LLVM Tools location not specified and could not be determined" );
-                Console.ResetColor( );
+                Console.ForegroundColor = color;
                 return false;
             }
 
-            if( !PathHasLlvmTools( m_LlvmBinPath ) )
+            if(!PathHasLlvmTools( m_LlvmBinPath ))
             {
+                var color = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.Error.WriteLine( "ERROR: LLVM Tools not found in path '{0}'", m_LlvmBinPath );
-                Console.ResetColor( );
+                Console.ForegroundColor = color;
                 return false;
             }
 
@@ -1843,6 +1894,16 @@ namespace Microsoft.Zelig.FrontEnd
 
                 Console.WriteLine( "{0}:     IR dump done", GetTime( ) );
             }
+
+            if( m_fDumpFlattenedCallGraph )
+            {
+                Console.WriteLine( "{0}:     Flattened call graph dump...", GetTime( ) );
+                
+                DumpCallGraph( filePrefix + ".ZeligCallsToGraph"  , fCallsTo: true  );
+                DumpCallGraph( filePrefix + ".ZeligCallsFromGraph", fCallsTo: false );
+
+                Console.WriteLine( "{0}:     call graph dump done", GetTime( ) );
+            }            
 
             if (m_fDumpIRXML)
             {

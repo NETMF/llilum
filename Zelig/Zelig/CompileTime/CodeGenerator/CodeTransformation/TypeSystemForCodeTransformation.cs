@@ -588,9 +588,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
         private GrowOnlyHashTable   < TypeRepresentation  , TypeRepresentation                              > m_forcedDevirtualizations;
         private GrowOnlySet         < TypeRepresentation                                                    > m_implicitInstances;
-
-
-
+        
+        private GrowOnlyHashTable   < MethodRepresentation, List< MethodRepresentation >                    > m_callersToMethod;
+        private GrowOnlyHashTable   < MethodRepresentation, List< MethodRepresentation >                    > m_callsFromMethod;
+            
         private List                < string                                                                > m_nativeImportDirectories;
         private List                < string                                                                > m_nativeImportLibraries;
 
@@ -605,35 +606,38 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         public TypeSystemForCodeTransformation( IEnvironmentProvider env )
             : base( env )
         {
-            m_dataManager = new DataManager( this );
-            m_reachability = new Reachability( );
-            m_uniqueConstants = HashTableFactory.NewWithReferenceEquality<TypeRepresentation, GrowOnlyHashTable<object, ConstantExpression>>( );
-            m_globalRootMap = HashTableFactory.NewWithReferenceEquality<BaseRepresentation, InstanceFieldRepresentation>( );
-            m_lookupType = HashTableFactory.NewWithReferenceEquality<Type, TypeRepresentation>( );
-            m_lookupTypeLinkedToRuntime = HashTableFactory.NewWithReferenceEquality<Type, string>( );
-            m_uniqueAnnotations = SetFactory.New<Annotation>( );
+            m_dataManager                           = new DataManager( this );
+            m_reachability                          = new Reachability( );
+            m_uniqueConstants                       = HashTableFactory.NewWithReferenceEquality<TypeRepresentation, GrowOnlyHashTable<object, ConstantExpression>>( );
+            m_globalRootMap                         = HashTableFactory.NewWithReferenceEquality<BaseRepresentation, InstanceFieldRepresentation>( );
+            m_lookupType                            = HashTableFactory.NewWithReferenceEquality<Type, TypeRepresentation>( );
+            m_lookupTypeLinkedToRuntime             = HashTableFactory.NewWithReferenceEquality<Type, string>( );
+            m_uniqueAnnotations                     = SetFactory.New<Annotation>( );
 
 
-            m_placementRequirements = HashTableFactory.New<BaseRepresentation, Abstractions.PlacementRequirements>( );
-            m_hardwareExceptionHandlers = HashTableFactory.New<MethodRepresentation, CustomAttributeRepresentation>( );
-            m_debuggerHookHandlers = HashTableFactory.New<MethodRepresentation, CustomAttributeRepresentation>( );
-            m_singletonFactories = HashTableFactory.New<MethodRepresentation, CustomAttributeRepresentation>( );
-            m_singletonFactoriesFallback = HashTableFactory.New<TypeRepresentation, TypeRepresentation>( );
+            m_placementRequirements                 = HashTableFactory.New<BaseRepresentation, Abstractions.PlacementRequirements>( );
+            m_hardwareExceptionHandlers             = HashTableFactory.New<MethodRepresentation, CustomAttributeRepresentation>( );
+            m_debuggerHookHandlers                  = HashTableFactory.New<MethodRepresentation, CustomAttributeRepresentation>( );
+            m_singletonFactories                    = HashTableFactory.New<MethodRepresentation, CustomAttributeRepresentation>( );
+            m_singletonFactoriesFallback            = HashTableFactory.New<TypeRepresentation, TypeRepresentation>( );
 
-            m_garbageCollectionExtensions = HashTableFactory.New<TypeRepresentation, TypeRepresentation>( );
-            m_garbageCollectionExclusions = SetFactory.New<FieldRepresentation>( );
+            m_garbageCollectionExtensions           = HashTableFactory.New<TypeRepresentation, TypeRepresentation>( );
+            m_garbageCollectionExclusions           = SetFactory.New<FieldRepresentation>( );
 
-            m_referenceCountingExcludedTypes = SetFactory.New<TypeRepresentation>( );
-            m_automaticReferenceCountingExclusions = HashTableFactory.New<string, List<MethodRepresentation>>( );
+            m_referenceCountingExcludedTypes        = SetFactory.New<TypeRepresentation>( );
+            m_automaticReferenceCountingExclusions  = HashTableFactory.New<string, List<MethodRepresentation>>( );
 
-            m_memoryMappedPeripherals = HashTableFactory.New<TypeRepresentation, CustomAttributeRepresentation>( );
-            m_registerAttributes = HashTableFactory.New<FieldRepresentation, CustomAttributeRepresentation>( );
+            m_memoryMappedPeripherals               = HashTableFactory.New<TypeRepresentation, CustomAttributeRepresentation>( );
+            m_registerAttributes                    = HashTableFactory.New<FieldRepresentation, CustomAttributeRepresentation>( );
 
-            m_memoryMappedBitFieldPeripherals = HashTableFactory.New<TypeRepresentation, CustomAttributeRepresentation>( );
-            m_bitFieldRegisterAttributes = HashTableFactory.New<FieldRepresentation, BitFieldDefinition>( );
+            m_memoryMappedBitFieldPeripherals       = HashTableFactory.New<TypeRepresentation, CustomAttributeRepresentation>( );
+            m_bitFieldRegisterAttributes            = HashTableFactory.New<FieldRepresentation, BitFieldDefinition>( );
+            
+            m_callersToMethod                       = HashTableFactory.NewWithReferenceEquality<MethodRepresentation, List<MethodRepresentation>>( );
+            m_callsFromMethod                       = HashTableFactory.NewWithReferenceEquality<MethodRepresentation, List<MethodRepresentation>>( );
 
-            m_nativeImportDirectories = new List<string>( );
-            m_nativeImportLibraries = new List<string>( );
+            m_nativeImportDirectories               = new List<string>( );
+            m_nativeImportLibraries                 = new List<string>( );
 
             m_module = new LLVMModuleManager( this, "" );
 
@@ -889,10 +893,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
         public void BuildHierarchyTables( )
         {
-            m_directDescendants = HashTableFactory.NewWithReferenceEquality<TypeRepresentation, List<TypeRepresentation>>( );
+            m_directDescendants       = HashTableFactory.NewWithReferenceEquality<TypeRepresentation, List<TypeRepresentation>>( );
             m_concreteImplementations = HashTableFactory.NewWithReferenceEquality<TypeRepresentation, List<TypeRepresentation>>( );
-            m_interfaceImplementors = HashTableFactory.NewWithReferenceEquality<TypeRepresentation, List<TypeRepresentation>>( );
-            m_nestedClasses = HashTableFactory.NewWithReferenceEquality<TypeRepresentation, List<TypeRepresentation>>( );
+            m_interfaceImplementors   = HashTableFactory.NewWithReferenceEquality<TypeRepresentation, List<TypeRepresentation>>( );
+            m_nestedClasses           = HashTableFactory.NewWithReferenceEquality<TypeRepresentation, List<TypeRepresentation>>( );
 
             m_forcedDevirtualizations = HashTableFactory.NewWithReferenceEquality<TypeRepresentation, TypeRepresentation>( );
             m_implicitInstances = SetFactory.NewWithReferenceEquality<TypeRepresentation>( );
@@ -1272,6 +1276,66 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         }
 
         //--//
+        
+        internal void FlattenCallsDatabase( CompilationSteps.CallsDataBase callsDb, bool fCallsTo )
+        {
+            CompilationSteps.ParallelTransformationsHandler.EnumerateMethods( this, target =>
+            {
+                var analysis = new Queue< MethodRepresentation>();
+                var analyzed = SetFactory.NewWithReferenceEquality<MethodRepresentation>();
+
+                analysis.Enqueue( target );
+
+                List<MethodRepresentation> lst = null;
+                
+                if(fCallsTo)
+                {
+                    lock (m_callersToMethod)
+                    {
+                        HashTableWithListFactory.Create<MethodRepresentation, MethodRepresentation>( m_callersToMethod, target );
+
+                        lst = m_callersToMethod[ target ];
+                    }
+                }
+                else
+                {
+                    lock (m_callsFromMethod)
+                    {
+                        HashTableWithListFactory.Create<MethodRepresentation, MethodRepresentation>( m_callsFromMethod, target );
+
+                        lst = m_callsFromMethod[ target ];
+                    }
+                }
+
+                while(analysis.Count > 0)
+                {
+                    var current = analysis.Dequeue();
+
+                    var calls = fCallsTo ? callsDb.CallsToMethod( current ) : callsDb.CallsFromMethod( current ) ;
+
+                    if(calls != null)
+                    {
+                        foreach(var opCall in calls)
+                        {
+                            var method = fCallsTo ? opCall.BasicBlock.Owner.Method : opCall.TargetMethod;
+
+                            if(analyzed.Contains( method ))
+                            {
+                                continue;
+                            }
+
+                            analysis.Enqueue( method );
+
+                            analyzed.Insert( method );
+
+                            lst.Add( method );
+                        }
+                    }
+                }
+            } );
+        }
+
+        //--//
 
         public override void ApplyTransformation( TransformationContext contextIn )
         {
@@ -1299,7 +1363,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
             context.Transform( ref m_garbageCollectionExtensions );
             context.Transform( ref m_garbageCollectionExclusions );
-
+            
+            context.Transform( ref m_callersToMethod ); 
+            context.Transform( ref m_callsFromMethod ); 
 
             context.Transform( ref m_memoryMappedPeripherals );
             context.Transform( ref m_registerAttributes );
@@ -1517,6 +1583,22 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             get
             {
                 return m_bitFieldRegisterAttributes;
+            }
+        }
+        
+        public GrowOnlyHashTable<MethodRepresentation, List<MethodRepresentation>> FlattenedCallsDataBase_CallsTo
+        {
+            get
+            {
+                return m_callersToMethod;
+            }
+        }
+
+        public GrowOnlyHashTable<MethodRepresentation, List<MethodRepresentation>> FlattenedCallsDataBase_CallsFrom
+        {
+            get
+            {
+                return m_callsFromMethod; ;
             }
         }
 

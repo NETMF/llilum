@@ -216,7 +216,7 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         protected string[]                          m_argumentNames;
 
         protected GenericContext                    m_genericContext;
-
+        
         //
         // This field is used during code generation to point to the CodeRepresentation for the method.
         //
@@ -224,7 +224,12 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         protected CodePointer                       m_codePointer;
         protected CodeMap                           m_codeMap;
 
-        
+        //
+        // Only used for dumps
+        //
+        protected string                            m_fullName;
+
+
         public Debugging.DebugInfo DebugInfo
         {
             get
@@ -664,6 +669,19 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
             get
             {
                 return m_name;
+            }
+        }
+
+        public string FullyQualifiedName
+        {
+            get
+            {
+                if(m_fullName == null)
+                {
+                    m_fullName = ToShortStringNoReturnValue( );
+                }
+
+                return m_fullName;
             }
         }
 

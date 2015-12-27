@@ -224,9 +224,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
             {
                 if (phase.Disabled)
                 {
+                    var color = Console.ForegroundColor;
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine("  {0}: {1} (Disabled)", phase.PhaseIndex, phase);
-                    Console.ResetColor();
+                    Console.ForegroundColor = color;
                 }
                 else
                 {
@@ -271,9 +272,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
 
                 if(m_currentPhase.Disabled)
                 {
+                    var color = Console.ForegroundColor;
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine( "Skipping phase: {0}", m_currentPhase );
-                    Console.ResetColor( );
+                    Console.ForegroundColor = color;
 
                     m_currentPhase = m_currentPhase.NextPhase; 
                     continue;

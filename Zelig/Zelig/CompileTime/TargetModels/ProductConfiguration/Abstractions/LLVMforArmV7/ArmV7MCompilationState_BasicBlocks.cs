@@ -333,9 +333,10 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         {
             msg = "Unimplemented operator: " + msg;
 
+            var color = Console.ForegroundColor; 
             Console.ForegroundColor = ConsoleColor.Magenta;
             Console.WriteLine( msg );
-            Console.ResetColor( );
+            Console.ForegroundColor = color; 
 
             //Trick to list in-code missing operators.
             //m_basicBlock.InsertASMString( "; " + msg );

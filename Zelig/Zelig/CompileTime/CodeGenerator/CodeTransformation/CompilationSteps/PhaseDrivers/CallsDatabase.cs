@@ -386,7 +386,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
 
         //--//
 
-        public void Analyze( TypeSystemForCodeTransformation typeSystem )
+        public CallsDataBase Analyze( TypeSystemForCodeTransformation typeSystem )
         {
             ResetCallSites();
 
@@ -397,6 +397,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
                     RegisterCallSite( call );
                 }
             } );
+
+            return this;
         }
 
         public void AnalyzeForInlining()

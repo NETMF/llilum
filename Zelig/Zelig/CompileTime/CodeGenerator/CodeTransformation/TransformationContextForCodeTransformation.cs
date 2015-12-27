@@ -154,6 +154,11 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             TransformValueTypeContents( ht );
         }
 
+        public void Transform( ref GrowOnlyHashTable< MethodRepresentation, List<MethodRepresentation> > ht )
+        {
+            TransformContents( ht );
+        }
+
         public void Transform( ref GrowOnlyHashTable< string, SourceCodeTracker.SourceCode > ht )
         {
             TransformContents( ht );

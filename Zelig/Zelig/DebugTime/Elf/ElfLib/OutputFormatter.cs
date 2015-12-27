@@ -393,7 +393,7 @@ namespace Microsoft.Zelig.Elf
 
             foreach(var method in methods)
             {
-                sb.AppendLine( String.Format( "{0}:{1} ({2}) ==> {3} bytes", method.OwnerType, method.MethodName, method.DecoratedMethodName, method.SizeInBytes ) );
+                sb.AppendLine( String.Format( "{0}::{1} ({2}) ==> {3} bytes", method.OwnerType, method.MethodName, method.DecoratedMethodName, method.SizeInBytes ) );
             }
 
             sb.AppendLine( );

@@ -73,6 +73,7 @@
 #-DumpIRpre
 #-DumpIRpost
 #-DumpIRXML
+#-DumpFlattenedCallGraph
 -DumpLLVMIR
 #-ReloadState
 -DumpLLVMIR_TextRepresentation
