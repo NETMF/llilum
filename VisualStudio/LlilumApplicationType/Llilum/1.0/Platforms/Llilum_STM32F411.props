@@ -12,6 +12,10 @@
     <!-- This is only used to find EthernetInterface.h right now -->
     <LlilumLwipIncludeDirs>$(LlilumTargetDirLPC1768)EthernetInterface;$(LlilumSDK)lwip\lwip;$(LlilumSDK)lwip\lwip\include;$(LlilumSDK)lwip\lwip\include\ipv4;$(LlilumSDK)lwip\lwip\include\ipv4\lwip;$(LlilumSDK)lwip\lwip\include\lwip;$(LlilumSDK)lwip\lwip\include\netif;$(LlilumSDK)lwip\lwip\netif;$(LlilumSDK)lwip/lwip/netif/ppp;$(LlilumSDK)lwip/lwip/api;$(LlilumSDK)lwip/lwip/core;$(LlilumSDK)lwip/lwip/core/ipv4;$(LlilumSDK)lwip/lwip/core/snmp;$(LlilumSDK)lwip/lwip-eth;$(LlilumSDK)lwip/lwip-eth/arch;$(LlilumSDK)lwip/lwip-sys;$(LlilumSDK)lwip/lwip-sys/arch;$(LlilumSDK)mbed-rtos/llos;$(LlilumSDK)mbed-rtos/llos/TARGET_CORTEX_M;$(LlilumSDK)lwip/lwip-eth/arch/TARGET_NXP</LlilumLwipIncludeDirs>
     
+    <!-- Open OCD config files -->
+    <LlilumOpenOcdInterfaceCfgSTM32F411>stlink-v2-1.cfg</LlilumOpenOcdInterfaceCfgSTM32F411>
+    <LlilumOpenOcdBoardCfgSTM32F411>st_nucleo_f4.cfg</LlilumOpenOcdBoardCfgSTM32F411>
+    
     <!-- MSBuild includes -->
     <LlilumClAdditionalOptionsSTM32F411>-mcpu=$(LlilumTargetBoardArchitectureSTM32F411) -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=softfp</LlilumClAdditionalOptionsSTM32F411>
     <LlilumClAdditionalIncludesSTM32F411>$(LlilumLwipIncludeDirs);$(LlilumTargetDirSTM32F411);$(LlilumTargetDirSTM32F411)$(LlilumTargetBoardSTM32F411);$(LlilumTargetDirSTM32F411)$(LlilumTargetBoardSTM32F411)/$(LlilumTargetToolchainSTM32F411);$(LlilumTargetDirSTM32F411)$(LlilumTargetBoardSTM32F411)/$(LlilumTargetBrandSTM32F411);$(LlilumTargetDirSTM32F411)$(LlilumTargetBoardSTM32F411)/$(LlilumTargetBrandSTM32F411)/$(LlilumTargetClassSTM32F411);$(LlilumTargetDirSTM32F411)$(LlilumTargetBoardSTM32F411)/$(LlilumTargetBrandSTM32F411)/$(LlilumTargetClassSTM32F411)/$(LlilumTargetBoardMbedSTM32F411);</LlilumClAdditionalIncludesSTM32F411>
@@ -80,6 +84,12 @@
     </BuildMacro>
     <BuildMacro Include="LlilumHeapSizeSTM32F411">
       <Value>$(LlilumHeapSizeSTM32F411)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumOpenOcdInterfaceCfgSTM32F411">
+      <Value>$(LlilumOpenOcdInterfaceCfgSTM32F411)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumOpenOcdBoardCfgSTM32F411">
+      <Value>$(LlilumOpenOcdBoardCfgSTM32F411)</Value>
     </BuildMacro>
   </ItemGroup>
 </Project>

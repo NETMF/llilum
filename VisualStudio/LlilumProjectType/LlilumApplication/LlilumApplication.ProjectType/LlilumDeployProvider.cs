@@ -23,32 +23,90 @@ namespace LlilumApplication
         [Import]
         private IThreadHandling ThreadHandling { get; set; }
 
+        private async Task RunDeployTool(CancellationToken cancellationToken, TextWriter outputPaneWriter, string deployToolPath, string deployToolArgs)
+        {
+            ProcessStartInfo start = new ProcessStartInfo();
+            start.FileName = deployToolPath;
+            start.Arguments = deployToolArgs;
+            start.UseShellExecute = false;
+            start.RedirectStandardOutput = true;
+            start.RedirectStandardError = true;
+            start.CreateNoWindow = true;
+
+            using (Process process = Process.Start(start))
+            using (StreamReader stdOut = process.StandardOutput)
+            using (StreamReader stdErr = process.StandardError)
+            {
+                try
+                {
+                    var stdoutTask = Task.Run(() => SendProcessOutputToPaneAsync(outputPaneWriter, stdOut, cancellationToken));
+                    var stderrTask = Task.Run(() => SendProcessOutputToPaneAsync(outputPaneWriter, stdErr, cancellationToken));
+
+                    await Task.WhenAll(stdoutTask, stderrTask);
+                    if (process.ExitCode != 0)
+                        throw new ApplicationException($"Flash tool failed with exit code {process.ExitCode}");
+                }
+                catch (OperationCanceledException)
+                {
+                    if (!process.HasExited)
+                    {
+                        process.CloseMainWindow();
+                    }
+                }
+            }
+        }
+
         public async Task DeployAsync( CancellationToken cancellationToken, TextWriter outputPaneWriter )
         {
-            // Kill all instances of PyOcd because they affect the flash-tool and debugger
+            // Kill all instances of PyOcd and OpenOcd because they affect the flash-tool and debugger
             await LlilumHelpers.TryKillPyocdAsync();
+            await LlilumHelpers.TryKillOpenOcdAsync();
 
             var properties = await Properties.GetLlilumDebuggerPropertiesAsync();
-            var deployWithFlashTool = await properties.LlilumUseFlashTool.GetEvaluatedValueAtEndAsync();
+            var deployTool = await properties.LlilumDeployTool.GetEvaluatedValueAtEndAsync();
 
-            if( string.Compare( deployWithFlashTool, "true", StringComparison.OrdinalIgnoreCase ) != 0 )
-                return;
+            string deployToolPath = string.Empty;
+            string binaryPath = string.Empty;
 
-            string flashToolPath = await properties.LlilumFlashToolPath.GetEvaluatedValueAtEndAsync( );
-            flashToolPath = Path.GetFullPath( flashToolPath.Trim( '"' ) );
-
-            string binaryPath = await properties.LlilumOutputBin.GetEvaluatedValueAtEndAsync( );
-            binaryPath = Path.GetFullPath( binaryPath.Trim( '"' ) );
-
-            string flashToolArgs = await properties.LlilumFlashToolArgs.GetEvaluatedValueAtEndAsync( );
-
-            if( !File.Exists( flashToolPath ) )
+            if (string.Compare(deployTool, "pyocdflashtool", StringComparison.OrdinalIgnoreCase) == 0)
             {
-                var msg = $"Flash programming tool not found: '{flashToolPath}'";
-                outputPaneWriter.Write( msg );
-                throw new FileNotFoundException( msg );
-            }
+                // Deploy with pyOCD Flash Tool
+                deployToolPath = await properties.LlilumFlashToolPath.GetEvaluatedValueAtEndAsync();
+                deployToolPath = Path.GetFullPath(deployToolPath.Trim('"'));
+                if (!File.Exists(deployToolPath))
+                {
+                    var msg = $"Flash programming tool not found: '{deployToolPath}'";
+                    outputPaneWriter.Write(msg);
+                    throw new FileNotFoundException(msg);
+                }
 
+            }
+            else if (string.Compare(deployTool, "stlinkutility", StringComparison.OrdinalIgnoreCase) == 0)
+            {
+                // Deploy with ST-Link Utility
+                deployToolPath = await properties.LlilumSTLinkUtilityPath.GetEvaluatedValueAtEndAsync();
+                deployToolPath = Path.GetFullPath(deployToolPath.Trim('"'));
+                if (!File.Exists(deployToolPath))
+                {
+                    var msg = $"STLink Utility not found: '{deployToolPath}'";
+                    outputPaneWriter.Write(msg);
+                    throw new FileNotFoundException(msg);
+                }
+
+            }
+            else if(string.Compare(deployTool, "copytodrive", StringComparison.OrdinalIgnoreCase) == 0)
+            {
+                // Deploy by copying to the drive. Do nothing
+            }
+            else
+            {
+                // Deploy with GDB command, or Do Not Deploy
+                return;
+            }
+            
+            binaryPath = await properties.LlilumOutputBin.GetEvaluatedValueAtEndAsync( );
+            binaryPath = Path.GetFullPath( binaryPath.Trim( '"' ) );
+            
             if( !File.Exists( binaryPath ) )
             {
                 var msg = $"Flash binary file not found: '{binaryPath}'";
@@ -56,34 +114,50 @@ namespace LlilumApplication
                 throw new FileNotFoundException( msg );
             }
 
-            ProcessStartInfo start = new ProcessStartInfo( );
-            start.FileName = flashToolPath;
-            start.Arguments = $"{EnsureQuotedPathIfNeeded( binaryPath )} {flashToolArgs}";
-            start.UseShellExecute = false;
-            start.RedirectStandardOutput = true;
-            start.RedirectStandardError = true;
-            start.CreateNoWindow = true;
-
-            using( Process process = Process.Start( start ) )
-            using( StreamReader stdOut = process.StandardOutput )
-            using( StreamReader stdErr = process.StandardError )
+            if (string.Compare(deployTool, "pyocdflashtool", StringComparison.OrdinalIgnoreCase) == 0)
             {
-                try
-                {
-                    var stdoutTask = Task.Run( ( ) => SendProcessOutputToPaneAsync( outputPaneWriter, stdOut, cancellationToken ) );
-                    var stderrTask = Task.Run( ( ) => SendProcessOutputToPaneAsync( outputPaneWriter, stdErr, cancellationToken ) );
+                // Deploy with pyOCD Flash Tool
+                string flashToolArgs = await properties.LlilumFlashToolArgs.GetEvaluatedValueAtEndAsync();
+                flashToolArgs = $"{EnsureQuotedPathIfNeeded(binaryPath)} {flashToolArgs}";
 
-                    await Task.WhenAll( stdoutTask, stderrTask );
-                    if( process.ExitCode != 0 )
-                        throw new ApplicationException( $"Flash tool failed with exit code {process.ExitCode}" );
-                }
-                catch( OperationCanceledException )
+                await RunDeployTool(cancellationToken, outputPaneWriter, deployToolPath, flashToolArgs);
+            }
+            else if (string.Compare(deployTool, "stlinkutility", StringComparison.OrdinalIgnoreCase) == 0)
+            {
+                // Deploy with ST-Link Utility
+                string stlinkConnectArgs = await properties.LlilumSTLinkUtilityConnectArgs.GetEvaluatedValueAtEndAsync();
+                string stlinkEraseArgs = await properties.LlilumSTLinkUtilityEraseArgs.GetEvaluatedValueAtEndAsync();
+                string stlinkProgramArgs = await properties.LlilumSTLinkUtilityProgramArgs.GetEvaluatedValueAtEndAsync();
+                string stlinkDeployArgs = stlinkConnectArgs + " " + stlinkEraseArgs + " " + stlinkProgramArgs;
+
+                await RunDeployTool(cancellationToken, outputPaneWriter, deployToolPath, stlinkDeployArgs);
+            }
+            else if (string.Compare(deployTool, "copytodrive", StringComparison.OrdinalIgnoreCase) == 0)
+            {
+                // Copy to the specified drive
+                string drive = await properties.LlilumDriveToCopyTo.GetEvaluatedValueAtEndAsync();
+                drive = drive.Trim();
+
+                if(string.IsNullOrWhiteSpace(drive))
                 {
-                    if( !process.HasExited )
-                    {
-                        process.CloseMainWindow( );
-                    }
+                    throw new ArgumentNullException("Drive not specified");
                 }
+
+                // Get the properly formatted string for the drive letter
+                DriveInfo driveInfo = new DriveInfo(drive);
+                drive = driveInfo.RootDirectory.FullName;
+
+                if (!Directory.Exists(drive))
+                {
+                    throw new DriveNotFoundException("The drive specified could not be located");
+                }
+
+                string[] binaryPathArr = binaryPath.Split('\\');
+                string binaryName = binaryPathArr[binaryPathArr.Length - 1];
+                string destFile = System.IO.Path.Combine(drive, binaryName);
+
+                // Allow the copy to fail, and throw an exception on its own
+                File.Copy(binaryPath, destFile, true);
             }
         }
 

@@ -17,5 +17,17 @@ namespace LlilumApplication
                 }
             } );
         }
+
+        public static Task TryKillOpenOcdAsync()
+        {
+            return Task.Run(() =>
+            {
+                foreach (var proc in Process.GetProcessesByName("openocd"))
+                {
+                    proc.Kill();
+                    proc.WaitForExit();
+                }
+            });
+        }
     }
 }

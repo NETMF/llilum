@@ -90,6 +90,8 @@
     <LlilumAsmAdditionalOptions>$(LlilumAsmAdditionalOptionsSTM32L152)</LlilumAsmAdditionalOptions>
     <LlilumStackSize>$(LlilumStackSizeSTM32L152)</LlilumStackSize>
     <LlilumHeapSize>$(LlilumHeapSizeSTM32L152)</LlilumHeapSize>
+    <LlilumOpenOcdInterfaceCfg>$(LlilumOpenOcdInterfaceCfgSTM32L152)</LlilumOpenOcdInterfaceCfg>
+    <LlilumOpenOcdBoardCfg>$(LlilumOpenOcdBoardCfgSTM32L152)</LlilumOpenOcdBoardCfg>
   </PropertyGroup>
 
   <!-- STM32F411 -->
@@ -105,6 +107,8 @@
     <LlilumAsmAdditionalOptions>$(LlilumAsmAdditionalOptionsSTM32F411)</LlilumAsmAdditionalOptions>
     <LlilumStackSize>$(LlilumStackSizeSTM32F411)</LlilumStackSize>
     <LlilumHeapSize>$(LlilumHeapSizeSTM32F411)</LlilumHeapSize>
+    <LlilumOpenOcdInterfaceCfg>$(LlilumOpenOcdInterfaceCfgSTM32F411)</LlilumOpenOcdInterfaceCfg>
+    <LlilumOpenOcdBoardCfg>$(LlilumOpenOcdBoardCfgSTM32F411)</LlilumOpenOcdBoardCfg>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">

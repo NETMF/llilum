@@ -83,6 +83,16 @@
                 Description="Llilum Py Ocd Args">
         <Argument Property="LlilumPyOcdArgs" />
     </StringProperty>
+    <StringProperty Name="LlilumOpenOcdPath" DisplayName="Llilum Open Ocd"
+                Default="$(LlilumSDK)tools\openocd\bin-x64\openocd.exe"
+                Description="Llilum Py Ocd">
+        <Argument Property="LlilumPyOcdPath" />
+    </StringProperty>
+    <StringProperty Name="LlilumOpenOcdArgs" DisplayName="Llilum Open Ocd Args"
+                Description="Llilum Py Ocd Args"
+                Default="-f $(LlilumSDK)tools\openocd\scripts\interface\$(LlilumOpenOcdInterfaceCfg) -f $(LlilumSDK)tools\openocd\scripts\board\$(LlilumOpenOcdBoardCfg)">
+        <Argument Property="LlilumPyOcdArgs" />
+    </StringProperty>
     <StringProperty Name="LlilumFlashToolPath" DisplayName="Llilum Flash Tool"
                 Default='"$(LlilumSDK)tools\flash_tool.exe"'
                 Description="Llilum Flash Tool">
@@ -91,6 +101,27 @@
     <StringProperty Name="LlilumFlashToolArgs" DisplayName="Llilum Flash Tool Args"
                 Description="Llilum Flash Tool Args">
         <Argument Property="LlilumFlashToolArgs" />
+    </StringProperty>
+    <!-- NOTE: The ST-Link Utility path is the default install path for the tool -->
+    <StringProperty Name="LlilumSTLinkUtilityPath" DisplayName="ST-Link Utility Path"
+                Default='"C:\Program Files (x86)\STMicroelectronics\STM32 ST-LINK Utility\ST-LINK Utility\ST-LINK_CLI.exe"'
+                Description="ST-Link Utility Path">
+        <Argument Property="LlilumSTLinkUtilityPath" />
+    </StringProperty>
+    <StringProperty Name="LlilumSTLinkUtilityConnectArgs" DisplayName="ST-Link Utility Connect Args"
+                Description="ST-Link Utility Args for connecting to a board"
+                Default="-c ID=0 SWD UR">
+        <Argument Property="LlilumSTLinkUtilityConnectArgs" />
+    </StringProperty>
+    <StringProperty Name="LlilumSTLinkUtilityEraseArgs" DisplayName="ST-Link Utility Erase Args"
+                Description="ST-Link Utility Args for erasing a chip"
+                Default="-ME">
+        <Argument Property="LlilumSTLinkUtilityEraseArgs" />
+    </StringProperty>
+    <StringProperty Name="LlilumSTLinkUtilityProgramArgs" DisplayName="ST-Link Utility Programming Args"
+                Description="ST-Link Utility Args for programming a chip"
+                Default="-P $(OutDir)\$(LlilumOutputName).hex -ClrBP -HardRst -Halt">
+        <Argument Property="LlilumSTLinkUtilityEraseArgs" />
     </StringProperty>
     <StringProperty Name="LlilumGdbPath" DisplayName="Llilum GDB Path"
                 Default="$(LLILUM_GCC)bin\arm-none-eabi-gdb.exe"
@@ -101,9 +132,27 @@
                 Description="Llilum GDB Args">
         <Argument Property="LlilumGdbArgs" />
     </StringProperty>
-    <BoolProperty Name="LlilumUseFlashTool" DisplayName="Use Flash Tool"
-                  Default="True"
-                  Description="Whether or not to use flash tool for deploy">
-        <Argument Property="LlilumUseFlashTool" />
-    </BoolProperty>
+    <StringProperty Name="LlilumDriveToCopyTo" DisplayName="Drive To Copy Binary To"
+                Description="Drive To Copy Binary To">
+        <Argument Property="LlilumDriveToCopyTo" />
+    </StringProperty>
+    <EnumProperty Name="LlilumGdbServerOption" DisplayName="Llilum GDB Server"
+                  Description="Which GDB server should be used for debugging"
+                  Default="pyocd">
+        <EnumValue Name="pyocd" DisplayName="pyOCD">
+            <Argument Property="LlilumGdbServerOption"></Argument>
+        </EnumValue>
+        <EnumValue Name="openocd" DisplayName="OpenOCD">
+            <Argument Property="LlilumGdbServerOption"></Argument>
+        </EnumValue>
+    </EnumProperty>
+    <EnumProperty Name="LlilumDeployTool" DisplayName="Llilum Deploy Tool"
+                  Description="Which tool should be used for deploying"
+                  Default="pyocdflashtool">
+        <EnumValue Name="pyocdflashtool" DisplayName="pyOCD Flash Tool"></EnumValue>
+        <EnumValue Name="stlinkutility" DisplayName="ST-Link v2 Utility"></EnumValue>
+        <EnumValue Name="copytodrive" DisplayName="Copy To Drive"></EnumValue>
+        <EnumValue Name="gdbloadcommand" DisplayName="GDB Load Command"></EnumValue>
+        <EnumValue Name="nodeploy" DisplayName="Do Not Deploy"></EnumValue>
+    </EnumProperty>
 </Rule>

@@ -75,13 +75,15 @@ namespace LlilumApplication
             string executable = await debuggerProperties.LlilumDebuggerCommand.GetEvaluatedValueAtEndAsync();
             string gdbPath = await debuggerProperties.LlilumGdbPath.GetEvaluatedValueAtEndAsync();
             string gdbArgs = await debuggerProperties.LlilumGdbArgs.GetEvaluatedValueAtEndAsync();
+            var gdbServer = await debuggerProperties.LlilumGdbServerOption.GetEvaluatedValueAtEndAsync();
+
             settings.CurrentDirectory = dir;
             settings.Executable = executable;
 
-            // If flash tool isn't used, create a script that will also load the elf file
+            // If we are going to deploy with GDB load command, create a script that will also load the elf file
             string debugScript = DebuggerScriptContentFormat;
-            var deployWithFlashTool = await debuggerProperties.LlilumUseFlashTool.GetEvaluatedValueAtEndAsync();
-            if (string.Compare(deployWithFlashTool, "true", true) != 0)
+            var deployTool = await debuggerProperties.LlilumDeployTool.GetEvaluatedValueAtEndAsync();
+            if (string.Compare(deployTool, "gdbloadcommand", true) == 0)
             {
                 debugScript = DebuggerLoadScriptContentFormat;
             }
@@ -94,20 +96,32 @@ namespace LlilumApplication
             settings.LaunchDebugEngineGuid = new Guid(Microsoft.MIDebugEngine.EngineConstants.EngineId);
 
             // Launch py_ocd to communicate with GDB
-            string pyOcdPath = await debuggerProperties.LlilumPyOcdPath.GetEvaluatedValueAtEndAsync();
-            string pyOcdArgs = await debuggerProperties.LlilumPyOcdArgs.GetEvaluatedValueAtEndAsync();
+            string gdbServerPath = string.Empty;
+            string gdbServerArgs = string.Empty;
 
-            if(!string.IsNullOrEmpty(pyOcdPath))
+            if(gdbServer.Equals("pyocd"))
+            {
+                gdbServerPath = await debuggerProperties.LlilumPyOcdPath.GetEvaluatedValueAtEndAsync();
+                gdbServerArgs = await debuggerProperties.LlilumPyOcdArgs.GetEvaluatedValueAtEndAsync();
+            }
+            else if (gdbServer.Equals("openocd"))
+            {
+                gdbServerPath = await debuggerProperties.LlilumOpenOcdPath.GetEvaluatedValueAtEndAsync();
+                gdbServerArgs = await debuggerProperties.LlilumOpenOcdArgs.GetEvaluatedValueAtEndAsync();
+            }
+
+            if (!string.IsNullOrWhiteSpace(gdbServerPath))
             {
                 // Even though we did it in deploy, do it here just in case we go straight to debug
                 await LlilumHelpers.TryKillPyocdAsync();
+                await LlilumHelpers.TryKillOpenOcdAsync();
 
                 ProcessStartInfo start = new ProcessStartInfo();
-                start.FileName = pyOcdPath;
-                start.Arguments = pyOcdArgs;
+                start.FileName = gdbServerPath;
+                start.Arguments = gdbServerArgs;
                 start.UseShellExecute = false;
                 start.RedirectStandardOutput = true;
-                Process pyocdProcess = Process.Start(start);
+                Process gdbServerProcess = Process.Start(start);
             }
             
             return new IDebugLaunchSettings[] { settings };
