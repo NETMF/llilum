@@ -652,6 +652,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             // All overridable exceptions for Ctx Switch
             //
             
+            [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.PlatformVFP_VFP )]
             [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
             [RT.ExportedMethod]
             private static unsafe void SVC_Handler_Zelig_VFP_NoFPContext( uint* args )
@@ -679,6 +680,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             }
             
             
+            [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.PlatformVFP_VFP )]
             [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
             [RT.ExportedMethod]
             private static UIntPtr PendSV_Handler_Zelig_VFP( UIntPtr stackPointer, uint isParitalStack )
@@ -689,6 +691,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 }
             }
             
+            [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.PlatformVFP_VFP )]
             [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
             [RT.ExportedMethod]
             private static void AnyInterrupt( )

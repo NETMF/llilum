@@ -106,6 +106,7 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_MergeWithTargetImplementationAttribute;
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_SingletonFactoryPlatformFilterAttribute;
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_ProductFilterAttribute;
+        public readonly TypeRepresentation Microsoft_Zelig_Runtime_CapabilitiesFilterAttribute;
 
         //--//                                             
                                                            

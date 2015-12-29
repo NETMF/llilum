@@ -1657,7 +1657,7 @@ namespace Microsoft.Zelig.FrontEnd
 
                 //--//
                 
-                m_typeSystem.Product = m_product.Model;
+                m_typeSystem.Product = m_product.GetType();
 
                 //--//
 

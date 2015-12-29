@@ -704,22 +704,22 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ImageBuilders
 
         public void ApplyTransformation( TransformationContextForCodeTransformation context )
         {
-            CHECKS.ASSERT( m_pendingCode.Count == 0, "Cannot apply transformation to ImageBuilder while there are pending compilations" );
+            CHECKS.ASSERT( m_pendingCode           .Count == 0, "Cannot apply transformation to ImageBuilder while there are pending compilations" );
             CHECKS.ASSERT( m_pendingDataDescriptors.Count == 0, "Cannot apply transformation to ImageBuilder while there are pending compilations" );
 
             context.Push( this );
 
-            context.Transform( ref m_typeSystem );
-            context.Transform( ref m_memoryBlocks );
-            context.Transform( ref m_availableMemory );
+            context.Transform       ( ref m_typeSystem              );
+            context.Transform       ( ref m_memoryBlocks            );
+            context.Transform       ( ref m_availableMemory         );
 
-            context.Transform( ref m_methodCompilationState );
-            context.Transform( ref m_codeConstants );
-            context.Transform( ref m_dataDescriptors );
-            context.Transform( ref m_externalDataRegions );
-            context.TransformGeneric( ref m_sourceCodeTracker );
+            context.Transform       ( ref m_methodCompilationState  );
+            context.Transform       ( ref m_codeConstants           );
+            context.Transform       ( ref m_dataDescriptors         );
+            context.Transform       ( ref m_externalDataRegions     );
+            context.TransformGeneric( ref m_sourceCodeTracker       );
 
-            context.TransformGeneric( ref m_reverseCodeMapIndex );
+            context.TransformGeneric( ref m_reverseCodeMapIndex     );
 
             context.Pop( );
         }

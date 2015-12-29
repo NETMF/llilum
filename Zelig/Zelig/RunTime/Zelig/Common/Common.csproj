@@ -78,6 +78,7 @@
     <Compile Include="Attributes\CompileTimeOptions\ImplicitInstanceAttribute.cs" />
     <Compile Include="Attributes\CompileTimeOptions\MemoryRequirementsAttribute.cs" />
     <Compile Include="Attributes\CompileTimeOptions\MemoryUsageAttribute.cs" />
+    <Compile Include="Attributes\OpenClasses\CapabilitiesFilterAttribute.cs" />
     <Compile Include="Attributes\OpenClasses\ProductFilterAttribute.cs" />
     <Compile Include="Attributes\CompileTimeOptions\SingletonFactoryAttribute.cs" />
     <Compile Include="Attributes\HardwareModeling\BitFieldPeripheralAttribute.cs" />

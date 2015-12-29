@@ -451,6 +451,27 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             // for now disable inlining of these methods
             owner.BuildTimeFlags |=  MethodRepresentation.BuildTimeAttributes.NoInline;
             owner.BuildTimeFlags &= ~MethodRepresentation.BuildTimeAttributes.Inline;
+            
+            if(this.PlatformAbstraction.PlatformVersion == TargetModel.ArmProcessor.InstructionSetVersion.PlatformVersion_7M)
+            {               
+                CustomAttributeRepresentation cf = owner.FindCustomAttribute( this.WellKnownTypes.Microsoft_Zelig_Runtime_CapabilitiesFilterAttribute );
+                if( cf != null )
+                {
+                    object obj = cf.GetNamedArg( "RequiredCapabilities" );
+                    if( obj != null )
+                    {
+                        string capabilities = (string)obj;
+
+                        if( capabilities != this.PlatformAbstraction.PlatformVFP )
+                        {
+                            // This method is not conformant to the capabilities of the platform we are compiling
+                            return;
+                        }
+                    }
+                }
+
+                ExportedMethods.Add( owner );
+            }
         }
 
         //--//

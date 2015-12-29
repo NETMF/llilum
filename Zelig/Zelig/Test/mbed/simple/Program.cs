@@ -2,8 +2,8 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-#define LPC1768
-//#define K64F
+//#define LPC1768
+#define K64F
 //#define STM32F411
 //#define USE_I2C
 //#define USE_SPI
@@ -238,7 +238,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             blinkingModeSwitchTimer.start();
 #if !(STM32F411)
 #region SPI
-#if USE_GPIO
+#if USE_SPI
             // Get the device selector by friendly name
             string deviceSelector = SpiDevice.GetDeviceSelector("SPI0");
             var acqs = DeviceInformation.FindAllAsync(deviceSelector);

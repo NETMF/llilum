@@ -16,7 +16,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
     public sealed partial class ArmV4 : ArmPlatform
     {
-        const Capabilities c_ProcessorCapabilities = Capabilities.ARMv4;
+        private const Capabilities c_ProcessorCapabilities = Capabilities.ARMv4;
 
         //
         // Constructor Methods

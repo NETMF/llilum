@@ -7,9 +7,10 @@ namespace Microsoft.Llilum.LPC1768
     using RT            = Microsoft.Zelig.Runtime;
     using ChipsetModel  = Microsoft.CortexM3OnMBED;
 
+
+    [RT.ProductFilter("Microsoft.Llilum.BoardConfigurations.LPC1768MBEDHosted")]
     public sealed class Processor : Microsoft.CortexM3OnMBED.Processor
     {
-        [RT.ProductFilter("Microsoft.Llilum.BoardConfigurations.LPC1768MBEDHosted")]
         public new class Context : ChipsetModel.Processor.Context
         {
         }

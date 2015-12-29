@@ -435,7 +435,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                         }
                     }
                     
-                    CustomAttributeRepresentation pf = tr.FindCustomAttribute( typeSystem.WellKnownTypes.Microsoft_Zelig_Runtime_SingletonFactoryPlatformFilterAttribute );
+                    CustomAttributeRepresentation pf = tr.FindCustomAttribute( typeSystem.WellKnownTypes.Microsoft_Zelig_Runtime_ProductFilterAttribute );
                     if( pf != null )
                     {
                         object obj = pf.GetNamedArg( "ProductFilter" );
@@ -1062,31 +1062,15 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
         internal void ExpandCallsClosure( CompilationSteps.ComputeCallsClosure computeCallsClosure )
         {
-            ExpandCallsClosure_GlobalRoot( computeCallsClosure );
+            ExpandCallsClosure_GlobalRoot           ( computeCallsClosure );
             ExpandCallsClosure_PlacementRequirements( computeCallsClosure );
-            ExpandCallsClosure_HardwareExceptions( computeCallsClosure );
-            ExpandCallsClosure_HardwareModel( computeCallsClosure );
-            ExpandCallsClosure_GarbageCollection( computeCallsClosure );
+            ExpandCallsClosure_HardwareExceptions   ( computeCallsClosure );
+            ExpandCallsClosure_HardwareModel        ( computeCallsClosure );
+            ExpandCallsClosure_GarbageCollection    ( computeCallsClosure );
+            ExpandCallsClosure_ExportedMethods      ( computeCallsClosure );
 
             m_activeCallingConvention.ExpandCallsClosure( computeCallsClosure );
-            m_activePlatform.ExpandCallsClosure( computeCallsClosure );
-
-            //LON: 2/18/09
-            // TODO: Where to put this
-            // HACK: Expand the call closure to include our exported methods that will likely not be called from within the application, but externally.
-            // This is a sloppy place to put this because it can probably be modelled more elegantly elsewhere. Likely, it belongs in the
-            // ScanTypeSystem\ScanCode process where it can be caught during normal call closure computation.
-            //
-            foreach( TypeRepresentation td in Types )
-            {
-                foreach( MethodRepresentation md in td.Methods )
-                {
-                    if( ( md.BuildTimeFlags & MethodRepresentation.BuildTimeAttributes.Exported ) != 0 )
-                    {
-                        computeCallsClosure.Expand( md );
-                    }
-                }
-            }
+            m_activePlatform         .ExpandCallsClosure( computeCallsClosure );
         }
 
         private void ExpandCallsClosure_GlobalRoot( CompilationSteps.ComputeCallsClosure computeCallsClosure )
@@ -1106,7 +1090,18 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         {
             computeCallsClosure.Expand( TryGetHandler( Runtime.HardwareException.Reset ) );
         }
-
+        
+        private void ExpandCallsClosure_ExportedMethods( CompilationSteps.ComputeCallsClosure computeCallsClosure )
+        {
+            this.EnumerateMethods( delegate( MethodRepresentation md )
+            {
+                if(md.HasBuildTimeFlag( MethodRepresentation.BuildTimeAttributes.Exported ))
+                {
+                    computeCallsClosure.Expand( md );
+                }
+            } );
+        }
+        
         private void ExpandCallsClosure_HardwareModel( CompilationSteps.ComputeCallsClosure computeCallsClosure )
         {
             computeCallsClosure.ExpandValueIfKeyIsReachable( m_memoryMappedPeripherals );
@@ -2714,26 +2709,36 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                         m_imageBuilder.CompileMethod( cfg );
                     }
 
-                    ExportedMethods.Clear( );
-
-                    //LON: 2/19/08
-                    //HACK: Explicitly include exported methods into the image. This presupposes that we have already kept the methods
-                    // past the call closure computation by explicitly covering them.
-                    foreach( var td in this.Types )
+                    foreach( MethodRepresentation md in this.ExportedMethods )
                     {
-                        foreach( var md in td.Methods )
+                        var cfg = TypeSystemForCodeTransformation.GetCodeForMethod( md );
+
+                        m_imageBuilder.CompileMethod( cfg );
+                    }
+
+                    // 
+                    // Include all methods for LLVM flow only
+                    //
+                    if(PlatformAbstraction.PlatformName == "LLVM")
+                    {
+                        foreach(var td in this.Types)
                         {
-                            //Miguel: Commented the if so it includes all the methods.
-                            //Find out why they are being left out
-                            //if( ( md.BuildTimeFlags & MethodRepresentation.BuildTimeAttributes.Exported ) != 0 )
+                            foreach(var md in td.Methods)
                             {
+                                //
+                                // Do not include exported methods, exceptions and debugger hooks twice
+                                //
+                                if(this.HardwareExceptionHandlers.ContainsKey( md ) ||
+                                   this.DebuggerHookHandlers     .ContainsKey( md ) ||
+                                   this.ExportedMethods          .Contains   ( md )  )
+                                {
+                                    continue;
+                                }
+
                                 var cfg = TypeSystemForCodeTransformation.GetCodeForMethod( md );
 
                                 m_imageBuilder.CompileMethod( cfg );
-
-                                this.ExportedMethods.Add( md );
                             }
-
                         }
                     }
 

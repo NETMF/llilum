@@ -120,17 +120,7 @@ namespace Microsoft.Zelig.LLVM
             // Synthetize the code for all exported methods as a simple C-style function using the name
             // of the method without full qualification
             //
-            List< TS.MethodRepresentation > exportedMethods = new List< TS.MethodRepresentation >();
-
-            m_typeSystem.EnumerateMethods( delegate( TS.MethodRepresentation md )
-            {
-                if(md.HasBuildTimeFlag( TS.MethodRepresentation.BuildTimeAttributes.Exported ))
-                {
-                    exportedMethods.Add( md );
-                }
-            } );
-
-            foreach(TS.MethodRepresentation md in exportedMethods)
+            foreach(TS.MethodRepresentation md in m_typeSystem.ExportedMethods)
             {
                 _Function handler = GetOrInsertFunction( md );
 
