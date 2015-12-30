@@ -345,8 +345,7 @@ namespace System.Net.Sockets
             NativeSocket.setsockopt(this.m_handle, (int)optionLevel, (int)optionName, optionValue);
         }
         
-        //public object GetSocketOption(SocketOptionLevel optionLevel, SocketOptionName optionName)
-        public int GetSocketOption(SocketOptionLevel optionLevel, SocketOptionName optionName)
+        public object GetSocketOption(SocketOptionLevel optionLevel, SocketOptionName optionName)
         {
             if (optionName == SocketOptionName.DontLinger ||
                 optionName == SocketOptionName.AddMembership ||
@@ -362,8 +361,7 @@ namespace System.Net.Sockets
 
             int iVal = (val[0] << 0 | val[1] << 8 | val[2] << 16 | val[3] << 24);
             
-            //return (object)iVal;
-            return iVal;
+            return (object)iVal;
         }
 
         public void GetSocketOption(SocketOptionLevel optionLevel, SocketOptionName optionName, byte[] val)

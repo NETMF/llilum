@@ -73,15 +73,15 @@ INCLUDE_PATHS = -I. -I$(MBED_ROOT) -I$(LLILUM_ROOT)Zelig\os_layer\inc -I$(LLILUM
 ifeq ($(TARGET),LPC1768)
 
 ifeq ($(HEAP_SIZE),)
-	AS_FLAGS += --defsym __HEAP_SIZE=0x6000
-	CC_FLAGS += -D__HEAP_SIZE=0x6000
+	AS_FLAGS += --defsym __HEAP_SIZE=0x6C00
+	CC_FLAGS += -D__HEAP_SIZE=0x6C00
 else
 	AS_FLAGS += --defsym __HEAP_SIZE=$(HEAP_SIZE)
 	CC_FLAGS += -D__HEAP_SIZE=$(HEAP_SIZE)
 endif
 
 ifeq ($(DEBUG), 1)
-	CC_FLAGS += -D__DEFAULT_STACK_SIZE=0xC00
+	CC_FLAGS += -D__DEFAULT_STACK_SIZE=0x800
 endif
 
 	OBJECTS += $(TARGET)\startup_LPC17xx.o
