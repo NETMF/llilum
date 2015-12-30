@@ -311,47 +311,6 @@ namespace Microsoft.Zelig.Runtime
             return new ToCopy { i = 2, c = 'b' };
         }
 
-        struct BasicStruct
-        {
-            public int Value;
-
-            public int GetValue()
-            {
-                return Value;
-            }
-
-            public override int GetHashCode()
-            {
-                // Return something easily verifiable.
-                return 17;
-            }
-        }
-
-        private static void SelfTest__Test__ValueTypes_BoxUnbox()
-        {
-            // Boxing on initialization
-            int intVal = 5;
-            object boxedInt = intVal;
-            SELFTEST_ASSERT( boxedInt is int );
-            SELFTEST_ASSERT( (int)boxedInt == intVal );
-
-            // Ensure identity.
-            object boxedInt2 = intVal;
-            SELFTEST_ASSERT( boxedInt.Equals(boxedInt2) );
-            SELFTEST_ASSERT( !ReferenceEquals(boxedInt, boxedInt2) );
-
-            // Ensure modifying boxed copy does not alter stack value.
-            boxedInt = 19;
-            SELFTEST_ASSERT( intVal == 5 );
-            SELFTEST_ASSERT( (int)boxedInt == 19 );
-
-            // Method calls on value types vs. boxed objects.
-            BasicStruct structVal = new BasicStruct { Value = 7 };
-            SELFTEST_ASSERT( structVal.GetValue() == 7 );       // Unconstrained call (no box).
-            SELFTEST_ASSERT( structVal.GetHashCode() == 17 );   // Constrained call (no box).
-            SELFTEST_ASSERT( !structVal.Equals(boxedInt) );     // Boxed call to object.
-        }
-
         private struct Mixed
         {
             public int     ii;
@@ -464,8 +423,6 @@ namespace Microsoft.Zelig.Runtime
             SelfTest__Test__ValueTypes_Copy( );
             SelfTest__Test__ValueTypes_PassByValue( );
             SelfTest__Test__ValueTypes_PassByRef( );
-            // TODO: Enable this after memory initialization.
-            //SelfTest__Test__ValueTypes_BoxUnbox( );
 
             //
             // pointers...
@@ -512,6 +469,8 @@ namespace Microsoft.Zelig.Runtime
 
         internal static void SelfTest__Memory()
         {
+            SelfTest__Memory__BoxUnbox();
+
             SelfTest__Memory__BasicAllocation1();
             SelfTest__Memory__BasicAllocation2();
             SelfTest__Memory__BasicAllocation3();
@@ -687,6 +646,56 @@ namespace Microsoft.Zelig.Runtime
         private const uint StandardAllocSize = 32;
         private const uint GapSize = (ArrayFixedSize - sizeof(uint)); // Not enough for a free block
         private const uint AllocSizeForGap = StandardAllocSize - GapSize;
+
+        struct BasicStruct
+        {
+            public int Value;
+
+            public int GetValue()
+            {
+                return Value;
+            }
+
+            public override int GetHashCode()
+            {
+                // Return something easily verifiable.
+                return 17;
+            }
+        }
+
+        private static object GetBoxedInt()
+        {
+            return 49;
+        }
+
+        private static void SelfTest__Memory__BoxUnbox()
+        {
+            // Boxing on initialization
+            int intVal = 5;
+            object boxedInt = intVal;
+            SELFTEST_ASSERT(boxedInt is int);
+            SELFTEST_ASSERT((int)boxedInt == intVal);
+
+            // Ensure identity.
+            object boxedInt2 = intVal;
+            SELFTEST_ASSERT(boxedInt.Equals(boxedInt2));
+            SELFTEST_ASSERT(!ReferenceEquals(boxedInt, boxedInt2));
+
+            // Ensure modifying boxed copy does not alter stack value.
+            boxedInt = 19;
+            SELFTEST_ASSERT(intVal == 5);
+            SELFTEST_ASSERT((int)boxedInt == 19);
+
+            // Method calls on value types vs. boxed objects.
+            BasicStruct structVal = new BasicStruct { Value = 7 };
+            SELFTEST_ASSERT(structVal.GetValue() == 7);       // Unconstrained call (no box).
+            SELFTEST_ASSERT(structVal.GetHashCode() == 17);   // Constrained call (no box).
+            SELFTEST_ASSERT(!structVal.Equals(boxedInt));     // Boxed call to object.
+
+            // Unboxing works on returned values.
+            object boxedInt3 = GetBoxedInt();
+            SELFTEST_ASSERT((int)boxedInt3 == 49);
+        }
 
         [DisableAutomaticReferenceCounting]
         private static UIntPtr AllocHelper(uint size)

@@ -2039,7 +2039,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                         //
                         if(exBoxed.Type == tdBoxed)
                         {
-                            AddOperator( UnboxOperator.New( instr.DebugInfo, exRes, exBoxed ) );
+                            AddOperator( UnboxOperator.New( instr.DebugInfo, tdBoxed, exRes, exBoxed ) );
                         }
                         else
                         {
@@ -2047,7 +2047,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
                             AddOperator( CastOperator.New( instr.DebugInfo, tdBoxed, exCasted, exBoxed ) );
 
-                            AddOperator( UnboxOperator.New( instr.DebugInfo, exRes, exBoxed ) );
+                            AddOperator( UnboxOperator.New( instr.DebugInfo, tdBoxed, exRes, exBoxed ) );
                         }
 
                         ModifyStackModel( 1, exRes );
@@ -2090,7 +2090,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                                     //
                                     if(exBoxed.Type == tdBoxed)
                                     {
-                                        AddOperator( UnboxOperator.New( instr.DebugInfo, exPtr, exBoxed ) );
+                                        AddOperator( UnboxOperator.New( instr.DebugInfo, tdBoxed, exPtr, exBoxed ) );
                                     }
                                     else
                                     {
@@ -2098,7 +2098,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
                                         AddOperator( CastOperator.New( instr.DebugInfo, tdBoxed, exCasted, exBoxed ) );
 
-                                        AddOperator( UnboxOperator.New( instr.DebugInfo, exPtr, exCasted ) );
+                                        AddOperator( UnboxOperator.New( instr.DebugInfo, tdBoxed, exPtr, exCasted ) );
                                     }
 
                                     AddOperator( LoadIndirectOperator.New( instr.DebugInfo, td, exRes, exPtr, null, 0, false, true ) );

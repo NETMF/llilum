@@ -1,4 +1,4 @@
-﻿//
+//
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
@@ -320,8 +320,23 @@ namespace Microsoft.Zelig.LLVM
             {
                 _Type type = GetOrInsertInlineType(dd.Context);
                 Constant value = UCVFromDataDescriptor(dd);
+                string name = type.Name;
                 string sectionName = m_SectionNameProvider.GetSectionNameFor(dd);
-                global = m_module.GetGlobalFromUCV(type, value, !dd.IsMutable, sectionName);
+
+                // Rename vtable constants so they can be easily read in the output.
+                // FUTURE: This should probably be set more generally at a higher level, likely in DataManager.
+                if (dd.Context == m_typeSystem.WellKnownTypes.Microsoft_Zelig_Runtime_TypeSystem_VTable)
+                {
+                    var objDescriptor = (IR.DataManager.ObjectDescriptor)dd;
+                    var vtable = objDescriptor.Source as TS.VTable;
+                    string sourceName = vtable?.TypeInfo?.FullName;
+                    if (sourceName != null)
+                    {
+                        name = sourceName + ".VTable";
+                    }
+                }
+
+                global = m_module.GetGlobalFromUCV(type, value, !dd.IsMutable, name, sectionName);
             }
             else
             {

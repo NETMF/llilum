@@ -388,7 +388,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                 }
 
                 op.AddOperatorBefore( ObjectAllocationOperator.New( op.DebugInfo,                               tdTarget,                    varTarget         ) );
-                op.AddOperatorBefore( InstanceCallOperator    .New( op.DebugInfo, CallOperator.CallKind.Direct, mdTarget, new Expression[] { varTarget }, true ) );
+                op.AddOperatorBefore( InstanceCallOperator    .New( op.DebugInfo, CallOperator.CallKind.Direct, mdTarget, new Expression[] { varTarget }, false) );
 
                 if(cfg.FindSingleUse( opDef.FirstResult ) == op)
                 {

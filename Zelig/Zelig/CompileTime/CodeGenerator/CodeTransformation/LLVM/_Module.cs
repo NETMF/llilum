@@ -99,21 +99,6 @@ namespace Microsoft.Zelig.LLVM
             return retVal;
         }
 
-        public _Type GetOrInsertBoxedType( BoxedValueTypeRepresentation tr, _Type headerType, _Type underlyingType )
-        {
-            Debug.Assert( tr.Size * 8 == headerType.SizeInBits + underlyingType.SizeInBits );
-
-            _Type retVal = _Type.GetOrInsertTypeImpl( this, tr );
-            retVal.IsBoxed = true;
-            retVal.UnderlyingType = underlyingType;
-
-            retVal.AddField( 0, headerType, "header" );
-            retVal.AddField( 0, underlyingType, "m_value" );
-            retVal.SetupFields( );
-
-            return retVal;
-        }
-
         public _Type GetOrInsertZeroSizedArray( _Type type )
         {
             var arrayType = new DebugArrayType( type.DebugType, LlvmModule, 0 );
@@ -314,11 +299,11 @@ namespace Microsoft.Zelig.LLVM
             return new _Value(this, pointerType, gv);
         }
 
-        public _Value GetGlobalFromUCV(_Type type, Constant ucv, bool isConstant, string sectionName)
+        public _Value GetGlobalFromUCV(_Type type, Constant ucv, bool isConstant, string name, string sectionName)
         {
-            string name = $"{type.Name}_{GetMonotonicUniqueId()}";
+            string uniqueName = $"{name}_{GetMonotonicUniqueId()}";
 
-            GlobalVariable global = LlvmModule.AddGlobal(ucv.NativeType, name);
+            GlobalVariable global = LlvmModule.AddGlobal(ucv.NativeType, uniqueName);
             global.IsConstant = isConstant;
             global.Linkage = Linkage.Internal;
             global.Initializer = ucv;

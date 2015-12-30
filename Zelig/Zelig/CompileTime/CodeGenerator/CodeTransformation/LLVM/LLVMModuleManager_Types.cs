@@ -142,17 +142,8 @@ namespace Microsoft.Zelig.LLVM
                 return m_typeRepresentationsToType[ tr ];
             }
 
-            if( tr is TS.BoxedValueTypeRepresentation )
-            {
-                _Type objectType = GetOrInsertType( wkt.System_Object ).UnderlyingType;
-                _Type underlyingType = GetOrInsertType( tr.UnderlyingType );
-                _Type boxedType = m_module.GetOrInsertBoxedType( ( TS.BoxedValueTypeRepresentation )tr, objectType, underlyingType );
-                m_typeRepresentationsToType[ tr ] = m_module.GetOrInsertPointerType( boxedType );
-                return m_typeRepresentationsToType[ tr ];
-            }
-
             // All other types
-            LLVM._Type llvmType = m_module.GetOrInsertType( tr );
+            _Type llvmType = m_module.GetOrInsertType( tr );
 
             // Ensure that we always return the correct type for storage. If this is a value type, then we're done.
             // Otherwise, return the type as a pointer.
@@ -165,22 +156,43 @@ namespace Microsoft.Zelig.LLVM
                 m_typeRepresentationsToType[ tr ] = m_module.GetOrInsertPointerType( llvmType );
             }
 
+            // Special case: System.Object always gets an ObjectHeader.
+            if( tr == wkt.System_Object )
+            {
+                _Type headerType = GetOrInsertType( wkt.Microsoft_Zelig_Runtime_ObjectHeader );
+                llvmType.AddField( 0, headerType.UnderlyingType, ".header" );
+            }
+
             // Inline the parent class for object types. We will represent unboxed Value types as flat, c++ style, types
             // because they are 'inlined' in the object layout and their fields offset are based on such layout. We also
-            // exempt ObjectHeader as a special case, since it can't inherit anythnig.
+            // exempt ObjectHeader as a special case, since it can't inherit anything.
             if( ( tr.Extends != null ) &&
                 ( tr.Extends != wkt.System_ValueType ) &&
+                ( tr.Extends != wkt.System_Enum ) &&
                 ( tr != wkt.Microsoft_Zelig_Runtime_ObjectHeader ) )
             {
                 _Type parentType = GetOrInsertType( tr.Extends );
                 llvmType.AddField( 0, parentType.UnderlyingType, ".extends" );
             }
 
-            // Special case: System.Object always gets an ObjectHeader.
-            if( tr == wkt.System_Object )
+            // Boxed types extend ValueType or Enum (ECMA-335 I.8.2.4), but should be treated as reference types.
+            if( tr is TS.BoxedValueTypeRepresentation )
             {
-                _Type headerType = GetOrInsertType( m_typeSystem.WellKnownTypes.Microsoft_Zelig_Runtime_ObjectHeader );
-                llvmType.AddField( 0, headerType.UnderlyingType, "object_header" );
+                _Type objectType = GetOrInsertType( wkt.System_Object );
+                _Type underlyingType = GetOrInsertType( tr.UnderlyingType );
+                llvmType.UnderlyingType = underlyingType;
+                llvmType.IsBoxed = true;
+
+                llvmType.AddField( 0, objectType.UnderlyingType, ".extends" );
+
+                // REVIEW: Instead of adding the field and returning early here, we should be able to fall through to
+                // the loop below. However, the fields are currently stripped due to Load/StoreInstanceField being
+                // replaced with Load/StoreIndirect, which results in an unreferenced field. Tracked by issue #113.
+
+                // Note: The zero offset here is intentional, as we want to be consistent with other reference types.
+                llvmType.AddField( 0, underlyingType, ".value" );
+                llvmType.SetupFields();
+                return m_typeRepresentationsToType[ tr ];
             }
 
             foreach( var field in tr.Fields )

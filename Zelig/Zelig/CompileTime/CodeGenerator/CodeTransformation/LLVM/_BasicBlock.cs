@@ -131,12 +131,9 @@ namespace Microsoft.Zelig.LLVM
             IrBuilder.Store(src, dst);
         }
 
-        // review: Is there a good reason the order of params here is reversed from classic src,dst? (same as LLVM API)
-        public void InsertStore( _Value dst, _Value src )
+        public void InsertStore(_Value src, _Value dst)
         {
-            Value llvmSrc = src.LlvmValue;
-            Value llvmDst = dst.LlvmValue;
-            InsertStore(llvmSrc, llvmDst);
+            InsertStore(src.LlvmValue, dst.LlvmValue);
         }
 
         public _Value LoadIndirect( _Value val, _Type loadedType )
@@ -635,7 +632,7 @@ namespace Microsoft.Zelig.LLVM
             throw new ApplicationException( "Invalid offset for field access." );
         }
 
-        public _Value GetFieldAddress( _Value objAddress, int offset )
+        public _Value GetFieldAddress( _Value objAddress, int offset, _Type fieldType )
         {
             Context ctx = Module.LlvmModule.Context;
 
@@ -647,19 +644,21 @@ namespace Microsoft.Zelig.LLVM
             // Add an initial 0 value to index into the address.
             valuesForGep.Add( ctx.CreateConstant( 0 ) );
 
+            string fieldName = string.Empty;
+
             // Special case: For boxed types, index into the wrapped value type.
-            if( ( underlyingType != null ) && underlyingType.IsBoxed )
+            if ( ( underlyingType != null ) && underlyingType.IsBoxed )
             {
+                fieldName = underlyingType.Fields[1].Name;
                 underlyingType = underlyingType.UnderlyingType;
                 valuesForGep.Add(ctx.CreateConstant(1));
             }
 
-            string fieldName = string.Empty;
-
-            // Special case: Primitive types aren't structures, so don't try to index into their value field.
-            if ( underlyingType.IsPrimitiveType )
+            // Don't index into the type's fields if we want the outer struct. This is always true for primitive values,
+            // and usually true for boxed values.
+            if (underlyingType.IsPrimitiveType || (underlyingType == fieldType))
             {
-                Debug.Assert( offset == 0, "Native types can only have one member, and it must be at offset zero." );
+                Debug.Assert( offset == 0, "Primitive and boxed types can only have one member, and it must be at offset zero." );
             }
             else
             {

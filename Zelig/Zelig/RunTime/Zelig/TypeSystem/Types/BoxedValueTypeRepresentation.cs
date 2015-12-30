@@ -23,6 +23,11 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         public BoxedValueTypeRepresentation( TypeRepresentation valueType ) : base( valueType.Owner, valueType.BuiltInType, valueType.Flags )
         {
             m_valueType = valueType;
+
+            var field = new InstanceFieldRepresentation(this, ".value", valueType);
+            field.Offset = 0;
+
+            AddField(field);
         }
 
         //

@@ -509,8 +509,19 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                 }
             }
 
-            op.AddOperatorBefore     ( ObjectAllocationOperator.New( op.DebugInfo, op.Type.UnderlyingType, lhs                                  )                                     );
-            op.SubstituteWithOperator( StoreIndirectOperator   .New( op.DebugInfo, lhs.Type              , lhs, op.FirstArgument, null, 0, true ), Operator.SubstitutionFlags.Default );
+            op.AddOperatorBefore(ObjectAllocationOperator.New(op.DebugInfo, op.Type.UnderlyingType, lhs));
+
+            // The result for this operation may have been collapsed with another in the ReduceTemporaries phase.
+            // However, we require the argument for StoreIndirect to be a boxed type. Recreate it if necessary.
+            VariableExpression boxedValue = lhs;
+            if (boxedValue.Type != op.Type)
+            {
+                boxedValue = nc.AllocateTemporary(op.Type);
+                op.AddOperatorBefore(SingleAssignmentOperator.New(op.DebugInfo, boxedValue, lhs));
+            }
+
+            var storeOp = StoreInstanceFieldOperator.New(op.DebugInfo, op.Type.Fields[0], boxedValue, op.FirstArgument, false);
+            op.SubstituteWithOperator(storeOp, Operator.SubstitutionFlags.Default);
 
             nc.MarkAsModified();
         }
@@ -521,8 +532,13 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         {
             UnboxOperator op = (UnboxOperator)nc.CurrentOperator;
 
-            op.AddOperatorBefore     ( NullCheckOperator       .New( op.DebugInfo,                 op.FirstArgument )                                     );
-            op.SubstituteWithOperator( SingleAssignmentOperator.New( op.DebugInfo, op.FirstResult, op.FirstArgument ), Operator.SubstitutionFlags.Default );
+            var loadOp = LoadInstanceFieldAddressOperator.New(
+                op.DebugInfo,
+                op.Type.Fields[0],
+                op.FirstResult,
+                op.FirstArgument,
+                fNullCheck: true);
+            op.SubstituteWithOperator(loadOp, Operator.SubstitutionFlags.Default);
 
             nc.MarkAsModified();
         }

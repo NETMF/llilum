@@ -279,11 +279,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                 if (loadOp != null)
                 {
                     Expression loaded = addressOp.FirstArgument;
-                    foreach (Operator useOp in useChains[loaded.SpanningTreeIndex])
+                    foreach (Operator useOp in useChains[loadOp.FirstResult.SpanningTreeIndex])
                     {
-                        // Don't try to retarget the address assignment. The source value may not be addressable.
-                        // Additionally, skip this substitution if the use is in an operator we just removed.
-                        if ((useOp != addressOp) && (useOp.BasicBlock != null))
+                        // Skip this substitution if the use is in an operator we just removed.
+                        if (useOp.BasicBlock != null)
                         {
                             useOp.SubstituteUsage(loadOp.FirstResult, loaded);
                         }

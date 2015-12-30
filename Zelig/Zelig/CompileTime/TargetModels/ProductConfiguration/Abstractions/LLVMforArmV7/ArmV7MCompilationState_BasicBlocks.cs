@@ -651,7 +651,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
         private void StoreValue( _Value dst, _Value src )
         {
-            m_basicBlock.InsertStore( dst, ConvertValueToStoreToTarget( src, dst.Type.UnderlyingType ) );
+            m_basicBlock.InsertStore( ConvertValueToStoreToTarget( src, dst.Type.UnderlyingType ), dst );
         }
 
         private void Translate_AbstractBinaryOperator( IR.AbstractBinaryOperator op )
@@ -825,14 +825,16 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         {
             _Value objAddress = GetInstanceAddress( op );
             _Value value = GetImmediate( op.BasicBlock, op.SecondArgument );
-            _Value fieldAddress = m_basicBlock.GetFieldAddress( objAddress, op.Field.Offset );
+            _Type fieldType = m_manager.GetOrInsertType( op.Field.FieldType );
+            _Value fieldAddress = m_basicBlock.GetFieldAddress( objAddress, op.Field.Offset, fieldType );
             StoreValue( fieldAddress, value );
         }
 
         private void Translate_LoadInstanceFieldOperator( IR.LoadInstanceFieldOperator op )
         {
             _Value objAddress = GetInstanceAddress( op );
-            _Value fieldAddress = m_basicBlock.GetFieldAddress( objAddress, op.Field.Offset );
+            _Type fieldType = m_manager.GetOrInsertType( op.Field.FieldType );
+            _Value fieldAddress = m_basicBlock.GetFieldAddress( objAddress, op.Field.Offset, fieldType );
             _Value value = m_basicBlock.InsertLoad( fieldAddress );
             StoreValue( m_localValues[ op.FirstResult ], value );
         }
@@ -840,13 +842,14 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         private void Translate_LoadInstanceFieldAddressOperator( IR.LoadInstanceFieldAddressOperator op )
         {
             _Value objAddress = GetInstanceAddress( op );
-            _Value fieldAddress = m_basicBlock.GetFieldAddress( objAddress, op.Field.Offset );
+            _Type fieldType = m_manager.GetOrInsertType( op.Field.FieldType );
+            _Value fieldAddress = m_basicBlock.GetFieldAddress( objAddress, op.Field.Offset, fieldType );
             StoreValue( m_localValues[ op.FirstResult ], fieldAddress );
         }
 
         private _Value ArrayAccessByIDX( _Value array, _Value idx )
         {
-            array = m_basicBlock.GetFieldAddress( array, ( int )m_wkt.System_Array.Size );
+            array = m_basicBlock.GetFieldAddress( array, ( int )m_wkt.System_Array.Size, null );
             return m_basicBlock.IndexLLVMArray( array, ConvertValueToALUOperableType( idx ) );
         }
 

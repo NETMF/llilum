@@ -2403,7 +2403,14 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         {
             TypeRepresentation tdVal = this.WellKnownTypes.Microsoft_Zelig_Runtime_TypeSystem_VTable;
 
-            return CreateConstant( tdVal, m_dataManager.ConvertToObjectDescriptor( tdVal, DataManager.Attributes.Constant | DataManager.Attributes.SuitableForConstantPropagation, null, td.VirtualTable ) );
+            // Remap boxed type virtual tables to their underlying type's.
+            if (td is BoxedValueTypeRepresentation)
+            {
+                td = td.UnderlyingType;
+            }
+
+            DataManager.Attributes attributes = DataManager.Attributes.Constant | DataManager.Attributes.SuitableForConstantPropagation;
+            return CreateConstant( tdVal, m_dataManager.ConvertToObjectDescriptor( tdVal, attributes, null, td.VirtualTable ) );
         }
 
         public Expression GetTypeRepresentation( TypeRepresentation target )

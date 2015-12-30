@@ -22,23 +22,32 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                                                            OperatorCapabilities.DoesNotCapturePointerOperands      ;
 
         //
+        // State
+        //
+
+        private TypeRepresentation m_td;
+
+        //
         // Constructor Methods
         //
 
-        private UnboxOperator( Debugging.DebugInfo debugInfo ) : base( debugInfo, cCapabilities, OperatorLevel.FullyObjectOriented )
+        private UnboxOperator( Debugging.DebugInfo debugInfo ,
+                               TypeRepresentation  td        ) : base( debugInfo, cCapabilities, OperatorLevel.FullyObjectOriented )
         {
+            m_td = td;
         }
 
         //--//
 
         public static UnboxOperator New( Debugging.DebugInfo debugInfo ,
+                                         TypeRepresentation  td        ,
                                          VariableExpression  lhs       ,
                                          Expression          rhs       )
         {
             // If we are dealing with a boxed type in the R-value, then the underlying type must match. Refernce types are just OK
             CHECKS.ASSERT( rhs.Type is BoxedValueTypeRepresentation ? lhs.Type is ManagedPointerTypeRepresentation && lhs.Type.ContainedType == rhs.Type.ContainedType : true, "Incompatible types for unbox operator: {0} <=> {1}", lhs.Type, rhs.Type );
 
-            UnboxOperator res = new UnboxOperator( debugInfo );
+            UnboxOperator res = new UnboxOperator( debugInfo, td );
 
             res.SetLhs( lhs );
             res.SetRhs( rhs );
@@ -54,14 +63,33 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
         public override Operator Clone( CloningContext context )
         {
-            return RegisterAndCloneState( context, new UnboxOperator( m_debugInfo ) );
+            return RegisterAndCloneState( context, new UnboxOperator( m_debugInfo, m_td ) );
         }
 
         //--//
 
+        public override void ApplyTransformation( TransformationContextForIR context )
+        {
+            context.Push( this );
+
+            base.ApplyTransformation( context );
+
+            context.Transform( ref m_td );
+
+            context.Pop();
+        }
+
         //
         // Access Methods
         //
+
+        public TypeRepresentation Type
+        {
+            get
+            {
+                return m_td;
+            }
+        }
 
         //--//
 
@@ -75,12 +103,13 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
             base.InnerToString( sb );
 
+            sb.AppendFormat( " Class: {0}", m_td );
             sb.Append( ")" );
         }
 
         public override string FormatOutput( IIntermediateRepresentationDumper dumper )
         {
-            return dumper.FormatOutput( "{0} = unbox {1}", this.FirstResult, this.FirstArgument );
+            return dumper.FormatOutput( "{0} = unbox {1} as {2}", this.FirstResult, this.FirstArgument, m_td );
         }
    }
 }
