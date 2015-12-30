@@ -2,6 +2,9 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+// Enable this macro to shift object pointers from the beginning of the header to the beginning of the payload.
+#define CANONICAL_OBJECT_POINTERS
+
 namespace Microsoft.Zelig.Runtime
 {
     using System;
@@ -144,7 +147,11 @@ namespace Microsoft.Zelig.Runtime
             [Inline]
             get
             {
+#if CANONICAL_OBJECT_POINTERS
+                return (uint)System.Runtime.InteropServices.Marshal.SizeOf(typeof(ArrayImpl));
+#else // CANONICAL_OBJECT_POINTERS
                 return FixedSize();
+#endif // CANONICAL_OBJECT_POINTERS
             }
         }
 

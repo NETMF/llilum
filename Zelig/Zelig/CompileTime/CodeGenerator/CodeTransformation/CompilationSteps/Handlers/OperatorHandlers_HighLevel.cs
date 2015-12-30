@@ -511,8 +511,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
             op.AddOperatorBefore(ObjectAllocationOperator.New(op.DebugInfo, op.Type.UnderlyingType, lhs));
 
-            // The result for this operation may have been collapsed with another in the ReduceTemporaries phase.
-            // However, we require the argument for StoreIndirect to be a boxed type. Recreate it if necessary.
+            // Store requires a boxed type, but this argument may have been retyped. Retype it if necessary.
             VariableExpression boxedValue = lhs;
             if (boxedValue.Type != op.Type)
             {
@@ -532,11 +531,21 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         {
             UnboxOperator op = (UnboxOperator)nc.CurrentOperator;
 
+            // Load requires a boxed type, but this argument may have been retyped. Retype it if necessary.
+            Expression boxedValue = op.FirstArgument;
+            if (boxedValue.Type != op.Type)
+            {
+                VariableExpression newValue = nc.AllocateTemporary(op.Type);
+                op.AddOperatorBefore(SingleAssignmentOperator.New(op.DebugInfo, newValue, op.FirstArgument));
+
+                boxedValue = newValue;
+            }
+
             var loadOp = LoadInstanceFieldAddressOperator.New(
                 op.DebugInfo,
                 op.Type.Fields[0],
                 op.FirstResult,
-                op.FirstArgument,
+                boxedValue,
                 fNullCheck: true);
             op.SubstituteWithOperator(loadOp, Operator.SubstitutionFlags.Default);
 

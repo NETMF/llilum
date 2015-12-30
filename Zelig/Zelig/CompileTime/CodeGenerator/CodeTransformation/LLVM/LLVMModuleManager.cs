@@ -2,6 +2,9 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+// Enable this macro to shift object pointers from the beginning of the header to the beginning of the payload.
+#define CANONICAL_OBJECT_POINTERS
+
 namespace Microsoft.Zelig.LLVM
 {
     using System;
@@ -213,6 +216,8 @@ namespace Microsoft.Zelig.LLVM
                     }
                 }
             }
+
+            m_module.FinalizeGlobals();
         }
 
         private Constant GetUCVStruct( _Type type, bool anon, params Constant[ ] vals )
@@ -318,6 +323,15 @@ namespace Microsoft.Zelig.LLVM
 
             if (setInitializer)
             {
+                // Get the object header if this type needs one.
+                Constant header = null;
+#if CANONICAL_OBJECT_POINTERS
+                if (!(dd.Context is TS.ValueTypeRepresentation))
+                {
+                    header = GetUCVObjectHeader(dd);
+                }
+#endif // CANONICAL_OBJECT_POINTERS
+
                 _Type type = GetOrInsertInlineType(dd.Context);
                 Constant value = UCVFromDataDescriptor(dd);
                 string name = type.Name;
@@ -336,7 +350,7 @@ namespace Microsoft.Zelig.LLVM
                     }
                 }
 
-                global = m_module.GetGlobalFromUCV(type, value, !dd.IsMutable, name, sectionName);
+                global = m_module.GetGlobalFromUCV(type, header, value, !dd.IsMutable, name, sectionName);
             }
             else
             {
@@ -400,6 +414,10 @@ namespace Microsoft.Zelig.LLVM
 
                 var fields = new List<Constant>( );
 
+#if CANONICAL_OBJECT_POINTERS
+                // Recursively add parent class fields for reference types.
+                if( !( currentType is TS.ValueTypeRepresentation ) && ( currentType != wkt.System_Object ) )
+#else // CANONICAL_OBJECT_POINTERS
                 // Special case: System.Object always gets an object header.
                 if( currentType == wkt.System_Object )
                 {
@@ -409,6 +427,7 @@ namespace Microsoft.Zelig.LLVM
                 }
 
                 if( !( currentType is TS.ValueTypeRepresentation ) )
+#endif // CANONICAL_OBJECT_POINTERS
                 {
                     fields.Add( UCVFromDataDescriptor( dd, currentType.Extends ) );
                 }
@@ -512,8 +531,12 @@ namespace Microsoft.Zelig.LLVM
                 IR.DataManager.ArrayDescriptor ad = ( IR.DataManager.ArrayDescriptor )dd;
                 int length = ad.Source?.Length ?? ad.Length;
 
+#if CANONICAL_OBJECT_POINTERS
+                Constant obj = GetUCVStruct( GetOrInsertInlineType( wkt.System_Object ), false );
+#else // CANONICAL_OBJECT_POINTERS
                 Constant header = GetUCVObjectHeader( dd );
                 Constant obj = GetUCVStruct( GetOrInsertInlineType( wkt.System_Object ), false, header );
+#endif // CANONICAL_OBJECT_POINTERS
                 Constant arrayLength = GetScalarTypeUCV( wkf.ArrayImpl_m_numElements.FieldType, length );
                 Constant arrayFields = GetUCVStruct( GetOrInsertInlineType( wkt.System_Array ), false, obj, arrayLength );
                 return GetUCVStruct( GetOrInsertInlineType( dd.Context ), true, arrayFields, GetUCVArray( ad ) );

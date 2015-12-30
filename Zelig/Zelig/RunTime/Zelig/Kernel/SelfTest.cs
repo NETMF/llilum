@@ -670,6 +670,8 @@ namespace Microsoft.Zelig.Runtime
 
         private static void SelfTest__Memory__BoxUnbox()
         {
+            BugCheck.Log("BoxUnbox Started...");
+
             // Boxing on initialization
             int intVal = 5;
             object boxedInt = intVal;
@@ -695,6 +697,8 @@ namespace Microsoft.Zelig.Runtime
             // Unboxing works on returned values.
             object boxedInt3 = GetBoxedInt();
             SELFTEST_ASSERT((int)boxedInt3 == 49);
+
+            BugCheck.Log("BoxUnbox Succeeded.");
         }
 
         [DisableAutomaticReferenceCounting]

@@ -2,6 +2,9 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+// Enable this macro to shift object pointers from the beginning of the header to the beginning of the payload.
+#define CANONICAL_OBJECT_POINTERS
+
 using System.Collections.ObjectModel;
 using Microsoft.Zelig.Debugging;
 
@@ -156,12 +159,14 @@ namespace Microsoft.Zelig.LLVM
                 m_typeRepresentationsToType[ tr ] = m_module.GetOrInsertPointerType( llvmType );
             }
 
+#if !CANONICAL_OBJECT_POINTERS
             // Special case: System.Object always gets an ObjectHeader.
             if( tr == wkt.System_Object )
             {
                 _Type headerType = GetOrInsertType( wkt.Microsoft_Zelig_Runtime_ObjectHeader );
                 llvmType.AddField( 0, headerType.UnderlyingType, ".header" );
             }
+#endif // !CANONICAL_OBJECT_POINTERS
 
             // Inline the parent class for object types. We will represent unboxed Value types as flat, c++ style, types
             // because they are 'inlined' in the object layout and their fields offset are based on such layout. We also

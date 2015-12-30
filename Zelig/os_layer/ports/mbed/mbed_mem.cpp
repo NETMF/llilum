@@ -4,6 +4,9 @@
 
 #include "mbed_helpers.h"
 
+// Enable this macro to shift object pointers from the beginning of the header to the beginning of the payload.
+#define CANONICAL_OBJECT_POINTERS
+
 struct Object;
 
 struct ObjectHeader
@@ -13,7 +16,11 @@ struct ObjectHeader
 
     inline Object* get_Object()
     {
+#ifdef CANONICAL_OBJECT_POINTERS
+        return reinterpret_cast<Object*>(this + 1);
+#else // CANONICAL_OBJECT_POINTERS
         return reinterpret_cast<Object*>(this);
+#endif // CANONICAL_OBJECT_POINTERS
     }
 };
 
@@ -21,7 +28,11 @@ struct Object
 {
     inline ObjectHeader* get_Header()
     {
+#ifdef CANONICAL_OBJECT_POINTERS
+        return reinterpret_cast<ObjectHeader*>(this) - 1;
+#else // CANONICAL_OBJECT_POINTERS
         return reinterpret_cast<ObjectHeader*>(this);
+#endif // CANONICAL_OBJECT_POINTERS
     }
 };
 

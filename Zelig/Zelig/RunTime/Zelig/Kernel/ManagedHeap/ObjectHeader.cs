@@ -2,6 +2,9 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+// Enable this macro to shift object pointers from the beginning of the header to the beginning of the payload.
+#define CANONICAL_OBJECT_POINTERS
+
 #define LLVM
 
 namespace Microsoft.Zelig.Runtime
@@ -72,11 +75,25 @@ namespace Microsoft.Zelig.Runtime
         // Helper Methods
         //
 
+#if CANONICAL_OBJECT_POINTERS
+        public ObjectImpl Pack()
+        {
+            UIntPtr address = AddressMath.Increment(ToPointer(), HeaderSize);
+            return ObjectImpl.FromPointer(address);
+        }
+
+        public static ObjectHeader Unpack(object obj)
+        {
+            UIntPtr address = AddressMath.Decrement(((ObjectImpl)obj).ToPointer(), HeaderSize);
+            return CastAsObjectHeader(address);
+        }
+#else // CANONICAL_OBJECT_POINTERS
         [TS.GenerateUnsafeCast]
         public extern ObjectImpl Pack();
 
         [TS.GenerateUnsafeCast]
         public extern static ObjectHeader Unpack( object obj );
+#endif // CANONICAL_OBJECT_POINTERS
 
         [TS.GenerateUnsafeCast]
         public extern UIntPtr ToPointer();

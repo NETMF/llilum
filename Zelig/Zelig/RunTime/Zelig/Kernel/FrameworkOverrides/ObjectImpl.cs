@@ -2,6 +2,9 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+// Enable this macro to shift object pointers from the beginning of the header to the beginning of the payload.
+#define CANONICAL_OBJECT_POINTERS
+
 namespace Microsoft.Zelig.Runtime
 {
     using System;
@@ -49,13 +52,21 @@ namespace Microsoft.Zelig.Runtime
         [Inline]
         public UIntPtr GetFieldPointer()
         {
+#if CANONICAL_OBJECT_POINTERS
+            return ToPointer();
+#else // CANONICAL_OBJECT_POINTERS
             return AddressMath.Increment(ToPointer(), ObjectHeader.HeaderSize);
+#endif // CANONICAL_OBJECT_POINTERS
         }
 
         [Inline]
         public static ObjectImpl FromFieldPointer(UIntPtr fieldPointer)
         {
+#if CANONICAL_OBJECT_POINTERS
+            return FromPointer(fieldPointer);
+#else // CANONICAL_OBJECT_POINTERS
             return FromPointer(AddressMath.Decrement(fieldPointer, ObjectHeader.HeaderSize));
+#endif // CANONICAL_OBJECT_POINTERS
         }
 
         [TS.GenerateUnsafeCast]

@@ -2,6 +2,9 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+// Enable this macro to shift object pointers from the beginning of the header to the beginning of the payload.
+#define CANONICAL_OBJECT_POINTERS
+
 namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 {
     using System;
@@ -142,8 +145,12 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
             // Return an adjusted offset, accounting for the header size.
             ConstantExpression offset = ts.CreateConstantForFieldOffset( ts.WellKnownFields.StringImpl_FirstChar );
+#if CANONICAL_OBJECT_POINTERS
+            var opNew = SingleAssignmentOperator.New( op.DebugInfo, op.FirstResult, offset );
+#else // CANONICAL_OBJECT_POINTERS
             ConstantExpression headerSize = ts.CreateConstantForTypeSize( ts.WellKnownTypes.Microsoft_Zelig_Runtime_ObjectHeader );
             var opNew = BinaryOperator.New( op.DebugInfo, BinaryOperator.ALU.ADD, false, false, op.FirstResult, offset, headerSize );
+#endif // CANONICAL_OBJECT_POINTERS
             op.SubstituteWithOperator( opNew, Operator.SubstitutionFlags.Default );
 
             nc.MarkAsModified();
