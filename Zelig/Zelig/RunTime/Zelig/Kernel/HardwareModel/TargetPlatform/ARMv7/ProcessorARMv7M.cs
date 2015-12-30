@@ -806,7 +806,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             return ( CUSTOM_STUB_SCB__get_HFSR( ) & c_SCB_HFSR_VECTTBL_READ ) == c_SCB_HFSR_VECTTBL_READ; 
         } 
 
-        protected static bool MemFaultAddressIsValid()
+        protected static bool IsMemFaultAddressValid()
         {
             return ( CUSTOM_STUB_SCB__get_CFSR( ) & c_SCB_CFSR_MEMFAULT_MMFARVALID) == c_SCB_CFSR_MEMFAULT_MMFARVALID; 
         }
@@ -886,17 +886,38 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         /// </summary>
         private static void MemManage_Handler( ref StandardFrame registers )
         {
-            BugCheck.Log( "CFSR =0x%08x", (int)CUSTOM_STUB_SCB__get_CFSR( ) ); 
+            uint CFSR = CUSTOM_STUB_SCB__get_CFSR( );
+
+            BugCheck.Log( "CFSR =0x%08x", (int)CFSR ); 
             BugCheck.Log( "MMFAR=0x%08x", (int)CUSTOM_STUB_SCB__get_MMFAR( ) ); 
             BugCheck.Log( "PC   =0x%08x", (int)registers.PC.ToUInt32( ) );
-
-            if(IsBusFaultAddressValid( ) && IsBusFaultAddressPrecise( ))
+            
+            if((CFSR & c_SCB_CFSR_MEMFAULT_MSTKERR) != 0)
             {
+                BugCheck.Log( "Memory access fault on exception entry" ); 
+            }
+            if((CFSR & c_SCB_CFSR_MEMFAULT_MUNSTKERR) != 0)
+            {
+                BugCheck.Log( "Memory access fault on exception exit" ); 
+            }
+            if((CFSR & c_SCB_CFSR_MEMFAULT_DACCVIOL) != 0)
+            {
+                BugCheck.Log( "Data access violation" ); 
+            }
+            if((CFSR & c_SCB_CFSR_MEMFAULT_IACCVIOL) != 0)
+            {
+                BugCheck.Log( "Instruction access violation" ); 
+            }
+
+            if(IsMemFaultAddressValid( ))
+            {
+                BugCheck.Log( "Mem Fault Address=0x%08x", (int)CUSTOM_STUB_SCB__get_MMFAR( ) ); 
                 Breakpoint( CUSTOM_STUB_SCB__get_MMFAR( ) );
             }
             else
             {
-                Breakpoint( CUSTOM_STUB_SCB__get_CFSR( ) );
+                BugCheck.Log( "Invalid Mem Fault Address" ); 
+                Breakpoint( CFSR );
             }
         }
 
@@ -906,17 +927,34 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         /// </summary>
         private static void BusFault_Handler( ref StandardFrame registers )
         {
-            BugCheck.Log( "CFSR=0x%08x", (int)CUSTOM_STUB_SCB__get_CFSR( ) ); 
+            uint CFSR = CUSTOM_STUB_SCB__get_CFSR( );
+
+            BugCheck.Log( "CFSR=0x%08x", (int)CFSR ); 
             BugCheck.Log( "BFAR=0x%08x", (int)CUSTOM_STUB_SCB__get_BFAR( ) ); 
             BugCheck.Log( "PC  =0x%08x", (int)registers.PC.ToUInt32( )     );
+            
+            if((CFSR & c_SCB_CFSR_BUSFAULT_STKERR) != 0)
+            {
+                BugCheck.Log( "Stacking error on entry" ); 
+            }
+            if((CFSR & c_SCB_CFSR_BUSFAULT_UNSTKERR) != 0)
+            {
+                BugCheck.Log( "Stacking error on exit" ); 
+            }
+            if((CFSR & c_SCB_CFSR_BUSFAULT_IBUSERR) != 0)
+            {
+                BugCheck.Log( "Prefetch abort" ); 
+            }
 
             if(IsBusFaultAddressValid( ) && IsBusFaultAddressPrecise( ))
             {
+                BugCheck.Log( "Bus Fault Address=0x%08x", (int)CUSTOM_STUB_SCB__get_BFAR( ) ); 
                 Breakpoint( CUSTOM_STUB_SCB__get_BFAR( ) );
             }
             else
             {
-                Breakpoint( CUSTOM_STUB_SCB__get_CFSR( ) );
+                BugCheck.Log( "Invalid or imprecise Bus Fault Address" ); 
+                Breakpoint( CFSR );
             }
         }
 
@@ -926,9 +964,35 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         /// </summary>
         private static void UsageFault_Handler( ref StandardFrame registers )
         {
-            BugCheck.Log( "CFSR=0x%08x", (int)CUSTOM_STUB_SCB__get_CFSR( ) ); 
+            uint CFSR = CUSTOM_STUB_SCB__get_CFSR( );
 
-            Breakpoint( CUSTOM_STUB_SCB__get_CFSR( ) );
+            BugCheck.Log( "CFSR=0x%08x", (int)CFSR ); 
+            BugCheck.Log( "PC  =0x%08x", (int)registers.PC.ToUInt32( ) );
+
+            if((CFSR & c_SCB_CFSR_USGFAULT_DIVBYZERO) != 0)
+            {
+                BugCheck.Log( "Divide by zero" ); 
+            }
+            if((CFSR & c_SCB_CFSR_USGFAULT_UNALIGNED) != 0)
+            {
+                BugCheck.Log( "Unaligned access" ); 
+            }
+            if((CFSR & c_SCB_CFSR_USGFAULT_INVPC) != 0)
+            {
+                BugCheck.Log( "Invalid PC load on EXC_RETURN" ); 
+            }
+            if((CFSR & c_SCB_CFSR_USGFAULT_NOPC) != 0)
+            {
+                BugCheck.Log( "No coprocessor" ); 
+            }
+            if((CFSR & c_SCB_CFSR_USGFAULT_INVSTATE) != 0)
+            {
+                BugCheck.Log( "Illegal use of the EPSR" ); 
+            }
+            if((CFSR & c_SCB_CFSR_USGFAULT_UNDEFINSTR) != 0)
+            {
+                BugCheck.Log( "Undefined instruction" ); 
+            }
         }
         
         [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
