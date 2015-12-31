@@ -49,13 +49,13 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             protected override object ShouldSubstitute( object target,
                                                         out SubstitutionAction result )
             {
-                if( target == m_typeSystem.ReachabilitySet.ProhibitedSet )
+                if(target == m_typeSystem.ReachabilitySet.ProhibitedSet)
                 {
                     result = SubstitutionAction.Keep;
                 }
                 else
                 {
-                    if( m_typeSystem.ReachabilitySet.IsProhibited( target ) )
+                    if(m_typeSystem.ReachabilitySet.IsProhibited( target ))
                     {
                         throw TypeConsistencyErrorException.Create( "Found unexpected reference to {0} from {1}", target, GetContextDump( ) );
                     }
@@ -97,11 +97,11 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
             public override bool Equals( object obj )
             {
-                if( obj is DelayedType )
+                if(obj is DelayedType)
                 {
                     var other = ( DelayedType )obj;
 
-                    if( m_vTable == other.m_vTable )
+                    if(m_vTable == other.m_vTable)
                     {
                         return true;
                     }
@@ -145,9 +145,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 TypeRepresentation td;
                 var                odVTable = m_owner.DataManagerInstance.ConvertToObjectDescriptor( m_vTable, out td ) as DataManager.ObjectDescriptor;
 
-                if( odVTable != null )
+                if(odVTable != null)
                 {
-                    return odVTable.Get( ( InstanceFieldRepresentation )m_owner.WellKnownFields.VTable_Type ) as DataManager.ObjectDescriptor;
+                    return odVTable.Get( (InstanceFieldRepresentation)m_owner.WellKnownFields.VTable_Type ) as DataManager.ObjectDescriptor;
                 }
 
                 return null;
@@ -220,11 +220,11 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
             public override bool Equals( object obj )
             {
-                if( obj is DelayedSize )
+                if(obj is DelayedSize)
                 {
                     var other = ( DelayedSize )obj;
 
-                    if( m_td == other.m_td )
+                    if(m_td == other.m_td)
                     {
                         return true;
                     }
@@ -327,11 +327,11 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
             public override bool Equals( object obj )
             {
-                if( obj is DelayedOffset )
+                if(obj is DelayedOffset)
                 {
                     var other = ( DelayedOffset )obj;
 
-                    if( m_fd == other.m_fd )
+                    if(m_fd == other.m_fd)
                     {
                         return true;
                     }
@@ -412,38 +412,38 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             List<TypeRepresentation>        m_lst;
             TypeSystemForCodeTransformation m_typeSystem;
 
-            public LinearHierarchyBuilder( List< TypeRepresentation > lst, TypeSystemForCodeTransformation typeSystem )
+            public LinearHierarchyBuilder( List<TypeRepresentation> lst, TypeSystemForCodeTransformation typeSystem )
             {
                 m_lst = lst;
-                m_typeSystem  = typeSystem;
+                m_typeSystem = typeSystem;
 
                 m_lst.RemoveAll( tr =>
                 {
                     CustomAttributeRepresentation sfpf = tr.FindCustomAttribute( typeSystem.WellKnownTypes.Microsoft_Zelig_Runtime_SingletonFactoryPlatformFilterAttribute );
-                    if( sfpf != null )
+                    if(sfpf != null)
                     {
                         object obj = sfpf.GetNamedArg( "PlatformFilter" );
-                        if( obj != null )
+                        if(obj != null)
                         {
                             string platform = (string)obj;
 
-                            if( platform != typeSystem.PlatformAbstraction.PlatformName )
+                            if(platform != typeSystem.PlatformAbstraction.PlatformName)
                             {
                                 // This type is not an allowed extension for the current platform
                                 return true;
                             }
                         }
                     }
-                    
+
                     CustomAttributeRepresentation pf = tr.FindCustomAttribute( typeSystem.WellKnownTypes.Microsoft_Zelig_Runtime_ProductFilterAttribute );
-                    if( pf != null )
+                    if(pf != null)
                     {
                         object obj = pf.GetNamedArg( "ProductFilter" );
-                        if( obj != null )
+                        if(obj != null)
                         {
                             string product = (string)obj;
 
-                            if( product != typeSystem.Product.FullName )
+                            if(product != typeSystem.Product.FullName)
                             {
                                 // This type is not an allowed extension for the current platform
                                 return true;
@@ -452,10 +452,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                     }
 
                     return false;
-                });
+                } );
             }
 
-            public TypeRepresentation Build()
+            public TypeRepresentation Build( )
             {
 
                 var hierarchy = new LinkedList< TypeRepresentation >();
@@ -463,17 +463,17 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 //
                 // There can be only one sealed type in a linear hierachy
                 //
-                foreach( TypeRepresentation target in m_lst )
+                foreach(TypeRepresentation target in m_lst)
                 {
                     TypeRepresentation type;
-                    if( m_typeSystem.IsSealedType( target, out type ) )
+                    if(m_typeSystem.IsSealedType( target, out type ))
                     {
                         if(hierarchy.Count > 0)
                         {
                             return null;
                         }
 
-                        hierarchy.AddFirst( new LinkedListNode< TypeRepresentation >( type ) );    
+                        hierarchy.AddFirst( new LinkedListNode<TypeRepresentation>( type ) );
                     }
                 }
 
@@ -482,12 +482,12 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 //
                 if(hierarchy.Count == 0)
                 {
-                    
-                    TypeRepresentation last = m_lst[ m_lst.Count - 1 ];
-                    
-                    hierarchy.AddFirst( last ); 
 
-                    m_lst.Remove( last );                    
+                    TypeRepresentation last = m_lst[ m_lst.Count - 1 ];
+
+                    hierarchy.AddFirst( last );
+
+                    m_lst.Remove( last );
                 }
 
                 //
@@ -497,29 +497,29 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 //
                 int previousCount;
                 do
-                {   
+                {
                     previousCount = hierarchy.Count;
 
                     TypeRepresentation first = hierarchy.First.Value;
                     TypeRepresentation last  = hierarchy.Last .Value;
 
-                    foreach( TypeRepresentation item in m_lst )
-                    { 
-                        if( last.Extends == item )
+                    foreach(TypeRepresentation item in m_lst)
+                    {
+                        if(last.Extends == item)
                         {
                             hierarchy.AddLast( item );
 
                             last = item;
                         }
-                        else if( item.Extends == first )
+                        else if(item.Extends == first)
                         {
                             hierarchy.AddFirst( item );
 
                             first = item;
                         }
-                    } 
+                    }
 
-                } while( previousCount < hierarchy.Count);
+                } while(previousCount < hierarchy.Count);
 
                 //
                 // if we used all objects in the input list, then we have a linear hierarchy
@@ -530,6 +530,41 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 }
 
                 return null;
+            }
+        }
+
+        public class MethodCall
+        {
+            private readonly MethodRepresentation m_target;
+            private readonly int                  m_level;
+
+            //--//
+
+            public MethodCall( MethodRepresentation target, int level )
+            {
+                m_target = target;
+                m_level = level;
+            }
+
+            public MethodRepresentation Target
+            {
+                get
+                {
+                    return m_target;
+                }
+            }
+
+            public int Level
+            {
+                get
+                {
+                    return m_level;
+                }
+            }
+
+            public override string ToString( )
+            {
+                return String.Format( "[{0}]:{1}", m_level, m_target.ToShortStringNoReturnValue() );
             }
         }
 
@@ -589,8 +624,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         private GrowOnlyHashTable   < TypeRepresentation  , TypeRepresentation                              > m_forcedDevirtualizations;
         private GrowOnlySet         < TypeRepresentation                                                    > m_implicitInstances;
         
-        private GrowOnlyHashTable   < MethodRepresentation, List< MethodRepresentation >                    > m_callersToMethod;
-        private GrowOnlyHashTable   < MethodRepresentation, List< MethodRepresentation >                    > m_callsFromMethod;
+        private GrowOnlyHashTable   < MethodRepresentation, List< MethodCall           >                    > m_callersToMethod;
+        private GrowOnlyHashTable   < MethodRepresentation, List< MethodCall           >                    > m_callsFromMethod;
             
         private List                < string                                                                > m_nativeImportDirectories;
         private List                < string                                                                > m_nativeImportLibraries;
@@ -633,8 +668,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             m_memoryMappedBitFieldPeripherals       = HashTableFactory.New<TypeRepresentation, CustomAttributeRepresentation>( );
             m_bitFieldRegisterAttributes            = HashTableFactory.New<FieldRepresentation, BitFieldDefinition>( );
             
-            m_callersToMethod                       = HashTableFactory.NewWithReferenceEquality<MethodRepresentation, List<MethodRepresentation>>( );
-            m_callsFromMethod                       = HashTableFactory.NewWithReferenceEquality<MethodRepresentation, List<MethodRepresentation>>( );
+            m_callersToMethod                       = HashTableFactory.NewWithReferenceEquality<MethodRepresentation, List<MethodCall>>( );
+            m_callsFromMethod                       = HashTableFactory.NewWithReferenceEquality<MethodRepresentation, List<MethodCall>>( );
 
             m_nativeImportDirectories               = new List<string>( );
             m_nativeImportLibraries                 = new List<string>( );
@@ -1276,29 +1311,31 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         {
             CompilationSteps.ParallelTransformationsHandler.EnumerateMethods( this, target =>
             {
-                var analysis = new Queue< MethodRepresentation>();
+                var analysis = new Queue<MethodCall>();
                 var analyzed = SetFactory.NewWithReferenceEquality<MethodRepresentation>();
 
-                analysis.Enqueue( target );
+                var call = new MethodCall( target, 0 );
 
-                List<MethodRepresentation> lst = null;
+                analysis.Enqueue( call );
+
+                List<MethodCall> lst = null;
                 
                 if(fCallsTo)
                 {
                     lock (m_callersToMethod)
                     {
-                        HashTableWithListFactory.Create<MethodRepresentation, MethodRepresentation>( m_callersToMethod, target );
+                        HashTableWithListFactory.Create<MethodRepresentation, MethodCall>( m_callersToMethod, call.Target );
 
-                        lst = m_callersToMethod[ target ];
+                        lst = m_callersToMethod[ call.Target ];
                     }
                 }
                 else
                 {
                     lock (m_callsFromMethod)
                     {
-                        HashTableWithListFactory.Create<MethodRepresentation, MethodRepresentation>( m_callsFromMethod, target );
+                        HashTableWithListFactory.Create<MethodRepresentation, MethodCall>( m_callsFromMethod, call.Target );
 
-                        lst = m_callsFromMethod[ target ];
+                        lst = m_callsFromMethod[ call.Target ];
                     }
                 }
 
@@ -1306,7 +1343,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 {
                     var current = analysis.Dequeue();
 
-                    var calls = fCallsTo ? callsDb.CallsToMethod( current ) : callsDb.CallsFromMethod( current ) ;
+                    var calls = fCallsTo ? callsDb.CallsToMethod( current.Target ) : callsDb.CallsFromMethod( current.Target ) ;
 
                     if(calls != null)
                     {
@@ -1319,11 +1356,13 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                                 continue;
                             }
 
-                            analysis.Enqueue( method );
+                            var call1 = new MethodCall( method, current.Level + 1 );
+
+                            analysis.Enqueue( call1 );
 
                             analyzed.Insert( method );
 
-                            lst.Add( method );
+                            lst.Add( call1 );
                         }
                     }
                 }
@@ -1358,9 +1397,6 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
             context.Transform( ref m_garbageCollectionExtensions );
             context.Transform( ref m_garbageCollectionExclusions );
-            
-            context.Transform( ref m_callersToMethod ); 
-            context.Transform( ref m_callsFromMethod ); 
 
             context.Transform( ref m_memoryMappedPeripherals );
             context.Transform( ref m_registerAttributes );
@@ -1581,7 +1617,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             }
         }
         
-        public GrowOnlyHashTable<MethodRepresentation, List<MethodRepresentation>> FlattenedCallsDataBase_CallsTo
+        public GrowOnlyHashTable<MethodRepresentation, List<MethodCall>> FlattenedCallsDataBase_CallsTo
         {
             get
             {
@@ -1589,7 +1625,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             }
         }
 
-        public GrowOnlyHashTable<MethodRepresentation, List<MethodRepresentation>> FlattenedCallsDataBase_CallsFrom
+        public GrowOnlyHashTable<MethodRepresentation, List<MethodCall>> FlattenedCallsDataBase_CallsFrom
         {
             get
             {

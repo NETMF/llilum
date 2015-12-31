@@ -661,11 +661,11 @@ namespace Microsoft.Zelig.FrontEnd
 
                     if(calls != null && calls.Count > 0)
                     {
-                        calls.Sort( (x, y) => { return x.FullyQualifiedName.CompareTo( y.FullyQualifiedName );  } );  
+                        calls.Sort( (x, y) => { return x.Target.FullyQualifiedName.CompareTo( y.Target.FullyQualifiedName );  } );  
 
-                        foreach(var caller in calls)
+                        foreach(var call in calls)
                         {
-                            sr.WriteLine( $" {{0}} {caller.ToShortString( )}", fCallsTo ? "<==" : "==>" );
+                            sr.WriteLine( $" {{0}} {call.ToString( )}", fCallsTo ? "<==" : "==>" );
                         }
                     }
                     else
