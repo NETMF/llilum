@@ -34,7 +34,7 @@ namespace Microsoft.Zelig.Test
             
             result |= Assert.CheckFailed( ExtendBuffer( ) );
             //result |= Assert.CheckFailed( InvalidRange( ) );
-            //////result |= Assert.CheckFailed( VanillaWrite( ) ); // https://github.com/NETMF/llilum/issues/107
+            result |= Assert.CheckFailed( VanillaWrite( ) );
             result |= Assert.CheckFailed( BoundaryCheck( ) );
 
             return result;
@@ -138,71 +138,72 @@ namespace Microsoft.Zelig.Test
             return result;
         }
 
-        //////[TestMethod]
-        //////public TestResult VanillaWrite()
-        //////{
-        //////    TestResult result = TestResult.Pass;
-        //////    try
-        //////    {
-        //////        Log.Comment("Static Buffer");
-        //////        byte[] buffer = new byte[100];
-        //////        using (MemoryStream ms = new MemoryStream(buffer))
-        //////        {
-        //////            Log.Comment("Write 50 bytes of data");
-        //////            if (!TestWrite(ms, 50, 100))
-        //////                result = TestResult.Fail;
+        [TestMethod]
+        public TestResult VanillaWrite()
+        {
+            TestResult result = TestResult.Pass;
+            try
+            {
+                Log.Comment("Static Buffer");
+                byte[] buffer = new byte[100];
+                using (MemoryStream ms = new MemoryStream(buffer))
+                {
+                    Log.Comment("Write 50 bytes of data");
+                    if (!TestWrite(ms, 50, 100))
+                        result = TestResult.Fail;
 
-        //////            Log.Comment("Write final 50 bytes of data");
-        //////            if (!TestWrite(ms, 50, 100))
-        //////                result = TestResult.Fail;
+                    Log.Comment("Write final 50 bytes of data");
+                    if (!TestWrite(ms, 50, 100))
+                        result = TestResult.Fail;
 
-        //////            Log.Comment("Any more bytes written should throw");
-        //////            try
-        //////            {
-        //////                ms.WriteByte(50);
-        //////                result = TestResult.Fail;
-        //////                Log.Exception("Expected NotSupportedException");
-        //////            }
-        //////            catch (NotSupportedException) { /* pass case */ }
+                    Log.Comment("Any more bytes written should throw");
+                    try
+                    {
+                        ms.WriteByte(50);
+                        result = TestResult.Fail;
+                        Log.Exception("Expected NotSupportedException");
+                    }
+                    catch (NotSupportedException) { /* pass case */ }
 
-        //////            Log.Comment("Rewind and verify all bytes written");
-        //////            ms.Seek(0, SeekOrigin.Begin);
-        //////            if (!MemoryStreamHelper.VerifyRead(ms))
-        //////                result = TestResult.Fail;      
-        //////        }
+                    Log.Comment("Rewind and verify all bytes written");
+                    ms.Seek(0, SeekOrigin.Begin);
+                    if (!MemoryStreamHelper.VerifyRead(ms))
+                        result = TestResult.Fail;
+                }
 
-        //////        Log.Comment("Dynamic Buffer");
-        //////        using (MemoryStream ms = new MemoryStream())
-        //////        {
-        //////            Log.Comment("Write 100 bytes of data");
-        //////            if (!TestWrite(ms, 100))
-        //////                result = TestResult.Fail;
+                Log.Comment("Dynamic Buffer");
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    Log.Comment("Write 100 bytes of data");
+                    if (!TestWrite(ms, 100))
+                        result = TestResult.Fail;
 
-        //////            Log.Comment("Extend internal buffer, write 160");
-        //////            if (!TestWrite(ms, 160))
-        //////                result = TestResult.Fail;
+                    Log.Comment("Extend internal buffer, write 160");
+                    if (!TestWrite(ms, 160))
+                        result = TestResult.Fail;
 
-        //////            Log.Comment("Double extend internal buffer, write 644");
-        //////            if (!TestWrite(ms, 644))
-        //////                result = TestResult.Fail;
+                    Log.Comment("Double extend internal buffer, write 644");
+                    if (!TestWrite(ms, 644))
+                        result = TestResult.Fail;
 
-        //////            Log.Comment("write another 1100");
-        //////            if (!TestWrite(ms, 1100))
-        //////                result = TestResult.Fail;
+                    Log.Comment("write another 1100");
+                    if (!TestWrite(ms, 1100))
+                        result = TestResult.Fail;
 
-        //////            Log.Comment("Rewind and verify all bytes written");
-        //////            ms.Seek(0, SeekOrigin.Begin);
-        //////            if (!MemoryStreamHelper.VerifyRead(ms))
-        //////                result = TestResult.Fail;                }
-        //////    }
-        //////    catch (Exception ex)
-        //////    {
-        //////        Log.Exception("Unexpected exception", ex);
-        //////        result = TestResult.Fail;
-        //////    }
+                    Log.Comment("Rewind and verify all bytes written");
+                    ms.Seek(0, SeekOrigin.Begin);
+                    if (!MemoryStreamHelper.VerifyRead(ms))
+                        result = TestResult.Fail;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Exception("Unexpected exception", ex);
+                result = TestResult.Fail;
+            }
 
-        //////    return result;
-        //////}
+            return result;
+        }
 
         [TestMethod]
         public TestResult BoundaryCheck()

@@ -37,7 +37,7 @@ namespace Microsoft.Zelig.Test
             
             //result |= Assert.CheckFailed( InvalidCases( ) );
             result |= Assert.CheckFailed( VanillaWrite_Dynamic_Ctor( ) );
-            //////result |= Assert.CheckFailed( VanillaWrite_Static_Ctor( ) );  // https://github.com/NETMF/llilum/issues/107
+            result |= Assert.CheckFailed( VanillaWrite_Static_Ctor( ) );
             result |= Assert.CheckFailed( ShiftBuffer( ) );
             result |= Assert.CheckFailed( BoundaryCheck( ) );
 
@@ -233,78 +233,78 @@ namespace Microsoft.Zelig.Test
             return result;
         }
 
-        //////[TestMethod]
-        //////public TestResult VanillaWrite_Static_Ctor()
-        //////{
-        //////    TestResult result = TestResult.Pass;
-        //////    try
-        //////    {
-        //////        byte[] buffer = new byte[1024];
-        //////        using (MemoryStream ms = new MemoryStream(buffer))
-        //////        {
-        //////            Log.Comment("Write 256 bytes of data");
-        //////            if (!TestWrite(ms, 256, 1024))
-        //////                result = TestResult.Fail;
+        [TestMethod]
+        public TestResult VanillaWrite_Static_Ctor()
+        {
+            TestResult result = TestResult.Pass;
+            try
+            {
+                byte[] buffer = new byte[1024];
+                using (MemoryStream ms = new MemoryStream(buffer))
+                {
+                    Log.Comment("Write 256 bytes of data");
+                    if (!TestWrite(ms, 256, 1024))
+                        result = TestResult.Fail;
 
-        //////            Log.Comment("Write middle of buffer");
-        //////            if (!TestWrite(ms, 256, 100, 100, 1024))
-        //////                result = TestResult.Fail;
+                    Log.Comment("Write middle of buffer");
+                    if (!TestWrite(ms, 256, 100, 100, 1024))
+                        result = TestResult.Fail;
 
-        //////            // 1000 - 256 - 100 = 644
-        //////            Log.Comment("Write start of buffer");
-        //////            if (!TestWrite(ms, 1000, 644, 0, 1024))
-        //////                result = TestResult.Fail;
+                    // 1000 - 256 - 100 = 644
+                    Log.Comment("Write start of buffer");
+                    if (!TestWrite(ms, 1000, 644, 0, 1024))
+                        result = TestResult.Fail;
 
-        //////            Log.Comment("Write past end of buffer");
-        //////            try
-        //////            {
-        //////                TestWrite(ms, 50, 1024);
-        //////                result = TestResult.Fail;
-        //////                Log.Exception("Expected NotSupportedException");
-        //////            }
-        //////            catch (NotSupportedException) { /* pass case */ }
+                    Log.Comment("Write past end of buffer");
+                    try
+                    {
+                        TestWrite(ms, 50, 1024);
+                        result = TestResult.Fail;
+                        Log.Exception("Expected NotSupportedException");
+                    }
+                    catch (NotSupportedException) { /* pass case */ }
 
-        //////            Log.Comment("Verify failed Write did not move position");
-        //////            if (ms.Position != 1000)
-        //////            {
-        //////                result = TestResult.Fail;
-        //////                Log.Comment("Expected position to be 1000, but it is " + ms.Position);
-        //////            }
+                    Log.Comment("Verify failed Write did not move position");
+                    if (ms.Position != 1000)
+                    {
+                        result = TestResult.Fail;
+                        Log.Comment("Expected position to be 1000, but it is " + ms.Position);
+                    }
 
-        //////            Log.Comment("Write final 24 bytes of static buffer");
-        //////            if (!TestWrite(ms, 24))
-        //////                result = TestResult.Fail;
+                    Log.Comment("Write final 24 bytes of static buffer");
+                    if (!TestWrite(ms, 24))
+                        result = TestResult.Fail;
 
-        //////            Log.Comment("Rewind and verify all bytes written");
-        //////            ms.Seek(0, SeekOrigin.Begin);
-        //////            if (!MemoryStreamHelper.VerifyRead(ms))
-        //////                result = TestResult.Fail;
+                    Log.Comment("Rewind and verify all bytes written");
+                    ms.Seek(0, SeekOrigin.Begin);
+                    if (!MemoryStreamHelper.VerifyRead(ms))
+                        result = TestResult.Fail;
 
-        //////            Log.Comment("Verify Read validation with UTF8 string");
-        //////            ms.SetLength(0);
-        //////            string test = "MFFramework Test";
-        //////            ms.Write(UTF8Encoding.UTF8.GetBytes(test), 0, test.Length);
-        //////            ms.Flush();
-        //////            ms.Seek(0, SeekOrigin.Begin);
-        //////            byte[] readbuff = new byte[20];
-        //////            ms.Read(readbuff, 0, readbuff.Length);
-        //////            string testResult = new string(Encoding.UTF8.GetChars(readbuff));
-        //////            if (test != testResult)
-        //////            {
-        //////                result = TestResult.Fail;
-        //////                Log.Comment("Exepected: " + test + ", but got: " + testResult);
-        //////            }
-        //////        }
+                    Log.Comment("Verify Read validation with UTF8 string");
+                    ms.SetLength(0);
+                    string test = "MFFramework Test";
+                    ms.Write(UTF8Encoding.UTF8.GetBytes(test), 0, test.Length);
+                    ms.Flush();
+                    ms.Seek(0, SeekOrigin.Begin);
+                    byte[] readbuff = new byte[20];
+                    ms.Read(readbuff, 0, readbuff.Length);
+                    string testResult = new string(Encoding.UTF8.GetChars(readbuff));
+                    if (test != testResult)
+                    {
+                        result = TestResult.Fail;
+                        Log.Comment("Exepected: " + test + ", but got: " + testResult);
+                    }
+                }
 
-        //////    }
-        //////    catch (Exception ex)
-        //////    {
-        //////        Log.Exception("Unexpected exception: " + ex.Message);
-        //////        result = TestResult.Fail;
-        //////    }
+            }
+            catch (Exception ex)
+            {
+                Log.Exception("Unexpected exception: " + ex.Message);
+                result = TestResult.Fail;
+            }
 
-        //////    return result;
-        //////}
+            return result;
+        }
 
         [TestMethod]
         public TestResult ShiftBuffer()

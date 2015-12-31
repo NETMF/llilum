@@ -132,20 +132,28 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
         private static bool ArgumentIsAddress( IR.Expression expr, IR.Operator op )
         {
-            if( op is IR.AddressAssignmentOperator )
+            // Address assignment operators take their argument's address by definition.
+            if (op is IR.AddressAssignmentOperator)
             {
                 return true;
             }
 
             // Field accessors need the first argument to be an address, so value types need to stay indirected.
-            if( ( op is IR.StoreInstanceFieldOperator ) ||
-                ( op is IR.LoadInstanceFieldOperator ) ||
-                ( op is IR.LoadInstanceFieldAddressOperator ) )
+            if ((op is IR.StoreInstanceFieldOperator) ||
+                (op is IR.LoadInstanceFieldOperator) ||
+                (op is IR.LoadInstanceFieldAddressOperator))
             {
-                if( ( expr == op.FirstArgument ) && ( expr.Type is TS.ValueTypeRepresentation ) )
+                if ((expr == op.FirstArgument) && (expr.Type is TS.ValueTypeRepresentation))
                 {
                     return true;
                 }
+            }
+
+            // Phi operators add complexity and make exception handling more difficult.
+            // We can let LLVM to do the heavy lifting by giving them an address.
+            if (op is IR.PhiOperator)
+            {
+                return true;
             }
 
             return false;
@@ -245,14 +253,6 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                 // Instead, reload at each operator. Unnecessary loads will be optimized out by LLVM.
                 if( valueCache.IsAddressable )
                 {
-                    // TODO: When we have exception handling this can be removed, as can the allowLoad flag. Since
-                    // we don't yet jump to handler blocks, values coming from those blocks can't dominate a phi
-                    // operator and must therefore be replaced with a suitable null.
-                    if( !allowLoad )
-                    {
-                        return m_manager.Module.GetNullValue( valueCache.Type );
-                    }
-
                     return m_basicBlock.InsertLoad( valueCache.Address );
                 }
 

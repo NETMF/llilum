@@ -65,7 +65,6 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                     }
                 }
 
-                //
                 // Another precondition for converting to SSA is that we cannot put a phi operator on an exception basic block.
                 // This means that exception basic blocks should be immediately dominated by the block they protect.
                 //
@@ -73,35 +72,39 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                 //
                 // Let's split them up!
                 //
-                while(true)
+                // Note: LLVM allows phi operators in exception handling blocks, so we exclude this step.
+                if (cfg.TypeSystem.PlatformAbstraction.PlatformName != "LLVM")
                 {
-                    bool fDone = true;
-
-                    foreach(BasicBlock bb in cfg.DataFlow_SpanningTree_BasicBlocks)
+                    while (true)
                     {
-                        ExceptionHandlerBasicBlock ehBB = bb as ExceptionHandlerBasicBlock;
+                        bool fDone = true;
 
-                        if(ehBB != null && ehBB.Predecessors.Length > 1)
+                        foreach (BasicBlock bb in cfg.DataFlow_SpanningTree_BasicBlocks)
                         {
-                            CHECKS.ASSERT( ehBB.Successors.Length - ehBB.ProtectedBy.Length == 1, "Unexpected exception basic block with more than one successor: {0}", ehBB );
+                            ExceptionHandlerBasicBlock ehBB = bb as ExceptionHandlerBasicBlock;
 
-                            BasicBlock bbNext = ehBB.FirstSuccessor;
-
-                            foreach(BasicBlockEdge edge in ehBB.Predecessors)
+                            if (ehBB != null && ehBB.Predecessors.Length > 1)
                             {
-                                ExceptionHandlerBasicBlock ehBBNew = (ExceptionHandlerBasicBlock)CloneSingleBasicBlock.Execute( ehBB  );
+                                CHECKS.ASSERT(ehBB.Successors.Length - ehBB.ProtectedBy.Length == 1, "Unexpected exception basic block with more than one successor: {0}", ehBB);
 
-                                edge.Predecessor.SubstituteProtectedBy( ehBB, ehBBNew );
+                                BasicBlock bbNext = ehBB.FirstSuccessor;
+
+                                foreach (BasicBlockEdge edge in ehBB.Predecessors)
+                                {
+                                    ExceptionHandlerBasicBlock ehBBNew = (ExceptionHandlerBasicBlock)CloneSingleBasicBlock.Execute(ehBB);
+
+                                    edge.Predecessor.SubstituteProtectedBy(ehBB, ehBBNew);
+                                }
+
+                                fDone = false;
+                                break;
                             }
+                        }
 
-                            fDone = false;
+                        if (fDone)
+                        {
                             break;
                         }
-                    }
-
-                    if(fDone)
-                    {
-                        break;
                     }
                 }
 
