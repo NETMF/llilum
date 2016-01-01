@@ -24,7 +24,6 @@ OBJECTS += \
 	$(TARGET)\mbed_clock.o \
 	$(TARGET)\mbed_core.o \
 	$(TARGET)\mbed_debug.o \
-	$(TARGET)\mbed_ethernet.o \
 	$(TARGET)\mbed_gpio.o \
 	$(TARGET)\mbed_i2c.o \
 	$(TARGET)\mbed_mem.o \
@@ -33,7 +32,6 @@ OBJECTS += \
 	$(TARGET)\mbed_overrides.o \
 	$(TARGET)\mbed_pwm.o \
 	$(TARGET)\mbed_serial.o \
-	$(TARGET)\mbed_socket.o \
 	$(TARGET)\mbed_spi.o \
 	$(TARGET)\mbed_system_timer.o \
 	$(TARGET)\mbed_SysTick.o \
@@ -60,6 +58,10 @@ else
 	FLOAT_ABI = softfp
 endif
 
+###################
+# General section #
+###################
+
 # Common settings
 MBED_LIBS = $(LLILUM_ROOT)Zelig
 MBED_ROOT = $(LLILUM_ROOT)Zelig\mbed
@@ -68,8 +70,42 @@ LIBRARIES = -lmbed
 LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc -lnosys
 INCLUDE_PATHS = -I. -I$(MBED_ROOT) -I$(LLILUM_ROOT)Zelig\os_layer\inc -I$(LLILUM_ROOT)Zelig\os_layer\inc\api -I$(LLILUM_ROOT)Zelig\os_layer\inc\api\io -I$(LLILUM_ROOT)Zelig\os_layer\inc\hal
 
+#
+# LWIP Compilation and Libraries
+#
+ifeq ($(USE_LWIP), 1)
 
+# Adaptation layer
+ifeq ($(COMPILE_SYS_ARCH),1)
+	# Used when compiling these objects for the lwipsysarch lib
+	OBJECTS += $(TARGET)\checksum.o $(TARGET)\memcpy.o $(TARGET)\sys_arch.o 
+else
+	# Comment out when compiling this lib
+	LIBRARIES += -llwipsysarch
+endif
+	
+OBJECTS += \
+	$(TARGET)\mbed_ethernet.o \
+	$(TARGET)\mbed_socket.o \
+	
+ifeq ($(TARGET),K64F)
+	# Ethernet controller
+	LIBRARIES += -llwIP -lmbedeth -llwIPeth
+endif
+
+    LIBRARY_PATHS += -L$(MBED_LIBS)/lwip/lwip/lib
+	INCLUDE_PATHS += -I$(MBED_ROOT)/EthernetInterface -I$(MBED_LIBS)\lwip\lwip -I$(MBED_LIBS)\lwip\lwip\include -I$(MBED_LIBS)\lwip\lwip\include\ipv4 -I$(MBED_LIBS)\lwip\lwip\include\ipv4\lwip -I$(MBED_LIBS)\lwip\lwip\include\lwip -I$(MBED_LIBS)\lwip\lwip\include\netif -I$(MBED_LIBS)\lwip\lwip\netif -I$(MBED_LIBS)\lwip/lwip/netif/ppp -I$(MBED_LIBS)\lwip/lwip/api -I$(MBED_LIBS)\lwip/lwip/core -I$(MBED_LIBS)\lwip/lwip/core/ipv4 -I$(MBED_LIBS)\lwip/lwip/core/snmp -I$(MBED_LIBS)\lwip/lwip-eth -I$(MBED_LIBS)\lwip/lwip-eth/arch -I$(MBED_LIBS)\lwip/lwip-sys -I$(MBED_LIBS)\lwip/lwip-sys/arch -I$(MBED_LIBS)\lwip/mbed-rtos/rtos -I$(MBED_LIBS)\lwip/mbed-rtos/llos -I$(MBED_LIBS)/mbed-rtos/llos/TARGET_CORTEX_M
+    
+endif
+
+
+##########################
+# Board specific section #
+##########################
+
+#
 # LPC1768 settings
+#
 ifeq ($(TARGET),LPC1768)
 
 ifeq ($(HEAP_SIZE),)
@@ -87,21 +123,24 @@ endif
 	OBJECTS += $(TARGET)\startup_LPC17xx.o
 	SYS_OBJECTS = $(MBED_ROOT)\TARGET_LPC1768\TOOLCHAIN_GCC_ARM\board.o $(MBED_ROOT)\TARGET_LPC1768\TOOLCHAIN_GCC_ARM\cmsis_nvic.o $(MBED_ROOT)\TARGET_LPC1768\TOOLCHAIN_GCC_ARM\retarget.o $(MBED_ROOT)\TARGET_LPC1768\TOOLCHAIN_GCC_ARM\system_LPC17xx.o
 	INCLUDE_PATHS += -I$(MBED_ROOT)\TARGET_LPC1768 -I$(MBED_ROOT)\TARGET_LPC1768\TOOLCHAIN_GCC_ARM -I$(MBED_ROOT)\TARGET_LPC1768\TARGET_NXP -I$(MBED_ROOT)\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X -I$(MBED_ROOT)\TARGET_LPC1768\TARGET_NXP\TARGET_LPC176X\TARGET_MBED_LPC1768
-	LIBRARY_PATHS = -L$(MBED_ROOT)\TARGET_LPC1768\TOOLCHAIN_GCC_ARM 
+	LIBRARY_PATHS += -L$(MBED_ROOT)\TARGET_LPC1768\TOOLCHAIN_GCC_ARM 
 	LINKER_SCRIPT = $(MBED_ROOT)\TARGET_LPC1768\TOOLCHAIN_GCC_ARM\LPC1768.ld
-    LIBRARY_PATHS += -L$(MBED_LIBS)/lwip/lwip/lib
-	INCLUDE_PATHS += -I$(MBED_ROOT)/EthernetInterface -I$(MBED_LIBS)\lwip\lwip -I$(MBED_LIBS)\lwip\lwip\include -I$(MBED_LIBS)\lwip\lwip\include\ipv4 -I$(MBED_LIBS)\lwip\lwip\include\ipv4\lwip -I$(MBED_LIBS)\lwip\lwip\include\lwip -I$(MBED_LIBS)\lwip\lwip\include\netif -I$(MBED_LIBS)\lwip\lwip\netif -I$(MBED_LIBS)\lwip/lwip/netif/ppp -I$(MBED_LIBS)\lwip/lwip/api -I$(MBED_LIBS)\lwip/lwip/core -I$(MBED_LIBS)\lwip/lwip/core/ipv4 -I$(MBED_LIBS)\lwip/lwip/core/snmp -I$(MBED_LIBS)\lwip/lwip-eth -I$(MBED_LIBS)\lwip/lwip-eth/arch -I$(MBED_LIBS)\lwip/lwip-sys -I$(MBED_LIBS)\lwip/lwip-sys/arch -I$(MBED_LIBS)\lwip/mbed-rtos/rtos -I$(MBED_LIBS)\lwip/mbed-rtos/llos -I$(MBED_LIBS)/lwip/lwip-eth/arch/TARGET_NXP -I$(MBED_LIBS)/mbed-rtos/llos/TARGET_CORTEX_M
 
     # This is not ready for LPC1768 yet
-    #LIBRARIES += -llwIPeth -llwIP -lmbedeth -llwipsysarch
-    
+	
+ifeq ($(USE_LWIP), 1)
+    INCLUDE_PATHS += -I$(MBED_LIBS)/lwip/lwip-eth/arch/TARGET_NXP
+endif
+	
 	# Build flags
 	CPU = -mcpu=cortex-m3 -mthumb
 	CC_FLAGS += $(CPU) -c -g3 -gdwarf-4 -fvar-tracking-assignments -fno-common -fmessage-length=0 -Wall -fno-exceptions -ffunction-sections -fdata-sections -fomit-frame-pointer -MMD -MP
 	CC_SYMBOLS = -DTARGET_LPC1768 -DTARGET_M3 -DTARGET_CORTEX_M -DTARGET_NXP -DTARGET_LPC176X -DTARGET_MBED_LPC1768 -DTOOLCHAIN_GCC_ARM -DTOOLCHAIN_GCC -D__CORTEX_M3 -DARM_MATH_CM3 -DMBED_BUILD_TIMESTAMP=1435185689.48 -D__MBED__=1
 	LD_FLAGS = $(CPU) -Wl,--gc-sections --specs=nano.specs -u _printf_float -u _scanf_float -Wl,--wrap,main -Wl,-Map=$(TARGET)\$(PROJECT).map,--cref
-	
+
+#
 # K64F settings
+#
 else ifeq ($(TARGET),K64F)
 
 ifeq ($(HEAP_SIZE),)
@@ -112,23 +151,15 @@ else
     CC_FLAGS += -D__HEAP_SIZE=$(HEAP_SIZE)
 endif
 
-# LWIP Compilation
-ifeq ($(COMPILE_SYS_ARCH),1)
-	# Used when compiling these objects for the lwipsysarch lib
-	OBJECTS += $(TARGET)\checksum.o $(TARGET)\memcpy.o $(TARGET)\sys_arch.o 
-else
-	# Comment out when compiling this lib
-	LIBRARIES += -llwipsysarch
-endif
-
 	OBJECTS += $(TARGET)\startup_MK64F12.o 
 	SYS_OBJECTS = $(MBED_ROOT)/TARGET_K64F/TOOLCHAIN_GCC_ARM/system_MK64F12.o $(MBED_ROOT)/TARGET_K64F/TOOLCHAIN_GCC_ARM/board.o $(MBED_ROOT)/TARGET_K64F/TOOLCHAIN_GCC_ARM/cmsis_nvic.o $(MBED_ROOT)/TARGET_K64F/TOOLCHAIN_GCC_ARM/retarget.o 
 	INCLUDE_PATHS += -I$(MBED_ROOT)/TARGET_K64F -I$(MBED_ROOT)/TARGET_K64F/TOOLCHAIN_GCC_ARM -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_MCU_K64F -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_MCU_K64F/MK64F12 -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_MCU_K64F/device -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_MCU_K64F/device/MK64F12 -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_MCU_K64F/device/device -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_MCU_K64F/device/device/MK64F12 -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_MCU_K64F/TARGET_FRDM -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/common -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/common/phyksz8081 -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/lptmr -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/dac -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/gpio -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/port -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/llwu -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/sim -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/rcm -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/sdhc -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/can -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/mpu -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/smc -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/osc -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/flextimer -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/pdb -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/enet -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/i2c -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/uart -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/dspi -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/pit -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/lpuart -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/sai -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/rtc -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/mcg -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/edma -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/pmc -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/adc -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/wdog -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/hal/dmamux -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/utilities -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/drivers -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/drivers/enet -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/drivers/pit -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/drivers/pit/common -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/drivers/interrupt -I$(MBED_ROOT)/TARGET_K64F/TARGET_Freescale/TARGET_KPSDK_MCUS/TARGET_KPSDK_CODE/drivers/clock 
-    INCLUDE_PATHS += -I$(MBED_ROOT)/EthernetInterface -I$(MBED_LIBS)\lwip\lwip -I$(MBED_LIBS)\lwip\lwip\include -I$(MBED_LIBS)\lwip\lwip\include\ipv4 -I$(MBED_LIBS)\lwip\lwip\include\ipv4\lwip -I$(MBED_LIBS)\lwip\lwip\include\lwip -I$(MBED_LIBS)\lwip\lwip\include\netif -I$(MBED_LIBS)\lwip\lwip\netif -I$(MBED_LIBS)\lwip/lwip/netif/ppp -I$(MBED_LIBS)\lwip/lwip/api -I$(MBED_LIBS)\lwip/lwip/core -I$(MBED_LIBS)\lwip/lwip/core/ipv4 -I$(MBED_LIBS)\lwip/lwip/core/snmp -I$(MBED_LIBS)\lwip/lwip-eth -I$(MBED_LIBS)\lwip/lwip-eth/arch -I$(MBED_LIBS)\lwip/lwip-sys -I$(MBED_LIBS)\lwip/lwip-sys/arch -I$(MBED_LIBS)\lwip/mbed-rtos/rtos -I$(MBED_LIBS)\lwip/mbed-rtos/llos -I$(MBED_LIBS)/lwip/lwip-eth/arch/TARGET_Freescale -I$(MBED_LIBS)/mbed-rtos/llos/TARGET_CORTEX_M
-    LIBRARIES += -llwIP -lmbedeth -llwIPeth 
-	LIBRARY_PATHS = -L$(MBED_ROOT)/TARGET_K64F/TOOLCHAIN_GCC_ARM 
-	LIBRARY_PATHS += -L$(MBED_LIBS)/lwip/lwip/lib
+    LIBRARY_PATHS += -L$(MBED_ROOT)/TARGET_K64F/TOOLCHAIN_GCC_ARM 
 	LINKER_SCRIPT = $(MBED_ROOT)/TARGET_K64F/TOOLCHAIN_GCC_ARM/K64FN1M0xxx12.ld
+
+ifeq ($(USE_LWIP), 1)
+    INCLUDE_PATHS += -I$(MBED_LIBS)/lwip/lwip-eth/arch/TARGET_Freescale
+endif
 
 	# Build flags
 	CPU = -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=$(FLOAT_ABI) 
@@ -136,7 +167,9 @@ endif
 	CC_SYMBOLS = -DTARGET_K64F -DTARGET_M4 -DTARGET_CORTEX_M -DTARGET_Freescale -DTARGET_KPSDK_MCUS -DTARGET_KPSDK_CODE -DTARGET_MCU_K64F -DTARGET_FRDM -DTOOLCHAIN_GCC_ARM -DTOOLCHAIN_GCC -D__CORTEX_M4 -DARM_MATH_CM4 -D__FPU_PRESENT=1 -DMBED_BUILD_TIMESTAMP=1435855534.71 -D__MBED__=1 -DCPU_MK64FN1M0VMD12 -DFSL_RTOS_MBED -DTARGET_FF_ARDUINO 
 	LD_FLAGS = $(CPU) -Wl,--gc-sections --specs=nano.specs -u _printf_float -u _scanf_float -Wl,--wrap,main -Wl,-Map=$(TARGET)\$(PROJECT).map,--cref
 
+#
 # STM32L152
+#
 else ifeq ($(TARGET),STM32L152)
 
 ifeq ($(HEAP_SIZE),)
@@ -149,17 +182,22 @@ endif
 	OBJECTS += $(TARGET)\startup_stm32l152xe.o
 	SYS_OBJECTS = $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_flash_ramfunc.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/board.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/cmsis_nvic.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/hal_tick.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/mbed_overrides.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/retarget.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_adc.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_adc_ex.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_comp.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_cortex.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_crc.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_cryp.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_cryp_ex.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_dac.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_dac_ex.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_dma.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_flash.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_flash_ex.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_smartcard.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_gpio.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_i2c.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_i2s.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_irda.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_iwdg.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_lcd.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_nor.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_opamp.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_opamp_ex.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_pcd.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_pcd_ex.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_pwr.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_pwr_ex.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_rcc.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_rcc_ex.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_rtc.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_rtc_ex.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_sd.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_spi.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_spi_ex.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_sram.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_tim.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_tim_ex.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_uart.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_usart.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_hal_wwdg.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_ll_fsmc.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/stm32l1xx_ll_sdmmc.o $(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM/system_stm32l1xx.o 
 	INCLUDE_PATHS += -I$(MBED_ROOT)/TARGET_NUCLEO_L152RE -I$(MBED_ROOT)/TARGET_NUCLEO_L152RE/TARGET_STM -I$(MBED_ROOT)/TARGET_NUCLEO_L152RE/TARGET_STM/TARGET_STM32L1 -I$(MBED_ROOT)/TARGET_NUCLEO_L152RE/TARGET_STM/TARGET_STM32L1/TARGET_NUCLEO_L152RE -I$(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM 
-	LIBRARY_PATHS = -L$(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM 
+	LIBRARY_PATHS += -L$(MBED_ROOT)/TARGET_NUCLEO_L152RE/TOOLCHAIN_GCC_ARM 
 	LINKER_SCRIPT = $(MBED_ROOT)\TARGET_NUCLEO_L152RE\TOOLCHAIN_GCC_ARM\STM32L152XE.ld
-	INCLUDE_PATHS += -I$(MBED_ROOT)/EthernetInterface -I$(MBED_LIBS)\lwip\lwip -I$(MBED_LIBS)\lwip\lwip\include -I$(MBED_LIBS)\lwip\lwip\include\ipv4 -I$(MBED_LIBS)\lwip\lwip\include\ipv4\lwip -I$(MBED_LIBS)\lwip\lwip\include\lwip -I$(MBED_LIBS)\lwip\lwip\include\netif -I$(MBED_LIBS)\lwip\lwip\netif -I$(MBED_LIBS)\lwip/lwip/netif/ppp -I$(MBED_LIBS)\lwip/lwip/api -I$(MBED_LIBS)\lwip/lwip/core -I$(MBED_LIBS)\lwip/lwip/core/ipv4 -I$(MBED_LIBS)\lwip/lwip/core/snmp -I$(MBED_LIBS)\lwip/lwip-eth -I$(MBED_LIBS)\lwip/lwip-eth/arch -I$(MBED_LIBS)\lwip/lwip-sys -I$(MBED_LIBS)\lwip/lwip-sys/arch -I$(MBED_LIBS)\lwip/mbed-rtos/rtos -I$(MBED_LIBS)\lwip/mbed-rtos/llos -I$(MBED_LIBS)/lwip/lwip-eth/arch/TARGET_NXP -I$(MBED_LIBS)/mbed-rtos/llos/TARGET_CORTEX_M
-    
+	 
+ifeq ($(USE_LWIP), 1)
+    INCLUDE_PATHS += -I$(MBED_LIBS)/lwip/lwip-eth/arch/TARGET_STM
+endif
+
 	# Build flags
 	CPU = -mcpu=cortex-m3 -mthumb 
 	CC_FLAGS += $(CPU) -c -g -fno-common -fmessage-length=0 -Wall -Wextra -fno-exceptions -ffunction-sections -fdata-sections -fomit-frame-pointer -MMD -MP
 	CC_SYMBOLS = -DMBED_BUILD_TIMESTAMP=1445629897.99 -DTARGET_FF_ARDUINO -DTOOLCHAIN_GCC_ARM -DTOOLCHAIN_GCC -DTARGET_FF_MORPHO -DTARGET_CORTEX_M -DARM_MATH_CM3 -DTARGET_STM32L1 -DTARGET_STM -D__CORTEX_M3 -DTARGET_NUCLEO_L152RE -DTARGET_M3 -DTARGET_STM32L152RE -D__MBED__=1 
 	LD_FLAGS = $(CPU) -Wl,--gc-sections --specs=nano.specs -u _printf_float -u _scanf_float -Wl,--wrap,main -Wl,-Map=$(TARGET)\$(PROJECT).map,--cref
 
+#
 # STM32F411
+#
 else ifeq ($(TARGET),STM32F411)
 
 ifeq ($(HEAP_SIZE),)
@@ -175,7 +213,10 @@ endif
 	INCLUDE_PATHS += -I$(MBED_ROOT)/TARGET_NUCLEO_F411RE -I$(MBED_ROOT)/TARGET_NUCLEO_F411RE/TARGET_STM -I$(MBED_ROOT)/TARGET_NUCLEO_F411RE/TARGET_STM/TARGET_STM32F4 -I$(MBED_ROOT)/TARGET_NUCLEO_F411RE/TARGET_STM/TARGET_STM32F4/TARGET_NUCLEO_F411RE -I$(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM 
 	LIBRARY_PATHS += -L$(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM
 	LINKER_SCRIPT = $(MBED_ROOT)/TARGET_NUCLEO_F411RE/TOOLCHAIN_GCC_ARM/STM32F411XE.ld
-    INCLUDE_PATHS += -I$(MBED_ROOT)/EthernetInterface -I$(MBED_LIBS)\lwip\lwip -I$(MBED_LIBS)\lwip\lwip\include -I$(MBED_LIBS)\lwip\lwip\include\ipv4 -I$(MBED_LIBS)\lwip\lwip\include\ipv4\lwip -I$(MBED_LIBS)\lwip\lwip\include\lwip -I$(MBED_LIBS)\lwip\lwip\include\netif -I$(MBED_LIBS)\lwip\lwip\netif -I$(MBED_LIBS)\lwip/lwip/netif/ppp -I$(MBED_LIBS)\lwip/lwip/api -I$(MBED_LIBS)\lwip/lwip/core -I$(MBED_LIBS)\lwip/lwip/core/ipv4 -I$(MBED_LIBS)\lwip/lwip/core/snmp -I$(MBED_LIBS)\lwip/lwip-eth -I$(MBED_LIBS)\lwip/lwip-eth/arch -I$(MBED_LIBS)\lwip/lwip-sys -I$(MBED_LIBS)\lwip/lwip-sys/arch -I$(MBED_LIBS)\lwip/mbed-rtos/rtos -I$(MBED_LIBS)\lwip/mbed-rtos/llos -I$(MBED_LIBS)/lwip/lwip-eth/arch/TARGET_NXP -I$(MBED_LIBS)/mbed-rtos/llos/TARGET_CORTEX_M
+    
+ifeq ($(USE_LWIP), 1)
+    INCLUDE_PATHS += -I$(MBED_LIBS)/lwip/lwip-eth/arch/TARGET_STM
+endif
 
 	CPU = -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=$(FLOAT_ABI) 
 	CC_FLAGS += $(CPU) -c -g -fno-common -fmessage-length=0 -Wall -Wextra -fno-exceptions -ffunction-sections -fdata-sections -fomit-frame-pointer -MMD -MP
@@ -189,9 +230,9 @@ endif
 
 DEPS = $(OBJECTS:.o=.d)
 
-#
-# Build tools
-#
+###############
+# Build tools #
+###############
 
 AS      = "$(GCC_BIN)arm-none-eabi-as"
 CC      = "$(GCC_BIN)arm-none-eabi-gcc"
@@ -207,17 +248,26 @@ else
 	CC_FLAGS += -DNDEBUG -Os
 endif
 
-#
-# Recipes
-#
+###########
+# Recipes #
+###########
 
 .PHONY: all clean lst size
 
 all: ${TARGET} $(TARGET)\$(PROJECT).bin $(TARGET)\$(PROJECT).hex $(TARGET)\$(PROJECT).lst $(TARGET)\$(PROJECT).disasm size
 
 # Conditionals (ifeq/ifneq) are bugged on Windows. Instead, we'll just ensure the directory exists and remove it unconditionally.
-clean: ${TARGET}
+cleanclean: ${TARGET}
 	@rmdir /q /s $(TARGET)
+	
+# Conditionals (ifeq/ifneq) are bugged on Windows. Instead, we'll just ensure the directory exists and remove it unconditionally.
+clean: ${TARGET}
+	@del /q /f /s $(TARGET)\$(PROJECT).elf 		
+	@del /q /f /s $(TARGET)\$(PROJECT).bin 		
+	@del /q /f /s $(TARGET)\$(PROJECT).hex 		
+	@del /q /f /s $(TARGET)\$(PROJECT).disasm	
+	@del /q /f /s $(TARGET)\$(PROJECT).lst 		
+	@del /q /f /s $(TARGET)\$(PROJECT).map 		
 
 # Ensures the target directory has been created.
 ${TARGET}:

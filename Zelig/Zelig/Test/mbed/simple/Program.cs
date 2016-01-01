@@ -9,6 +9,11 @@
 //#define USE_SPI
 #define USE_GPIO
 #define USE_THREADING
+
+#if !LPC1768
+#define USE_THREADING_TIMER
+#endif
+
 //#define USE_ADC
 //#define USE_PWM
 
@@ -302,7 +307,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             {
                 while (true)
                 {
-                    ev.WaitOne(1000, false);
+                    ev.WaitOne(500, false);
 
                     solitary.Write((GpioPinValue)pinState);
 
@@ -311,6 +316,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             });
             solitaryBlinker.Start();
 
+#if (USE_THREADING_TIMER)
             var solitaryAlerter = new System.Threading.Timer((obj) =>
             {
                 // blink 20 times very fast
@@ -322,6 +328,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                     Thread.Sleep(50);
                 }
             }, ev, 2000, 5000);
+#endif
 
 #endif
 #endif // !STM32F411

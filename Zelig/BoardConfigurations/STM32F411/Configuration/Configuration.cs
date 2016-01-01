@@ -81,8 +81,10 @@ namespace Microsoft.Llilum.BoardConfigurations
     public sealed class STM32F411MBEDHosted : ProductCategory
     {
         [AllowedOptions(typeof(STM32F411))]
-        [Defaults("CoreClockFrequency", 100000000UL)]
-        [Defaults("RealTimeClockFrequency", 1000000UL)]
+        [Defaults("CoreClockFrequency"     , 100000000UL)]
+        [Defaults("RealTimeClockFrequency" , 1000000UL)]
+        [Defaults("DefaultThreadPooThreads", 2)]
+        [Defaults("DefaultTimerPooThreads" , 2)]
         public STM32F411 Processor;
 
         //--//

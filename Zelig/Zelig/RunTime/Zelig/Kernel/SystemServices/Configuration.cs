@@ -35,5 +35,23 @@ namespace Microsoft.Zelig.Runtime
                 return 0;
             }
         }
+
+        public static int DefaultThreadPooThreads
+        {
+            [ConfigurationOption("System__Runtime_DefaultThreadPooThreads")]
+            get
+            {
+                return 2;
+            }
+        }
+
+        public static int DefaultTimerPooThreads
+        {
+            [ConfigurationOption("System__Runtime_DefaultTimerPooThreads")]
+            get
+            {
+                return 1;
+            }
+        }
     }
 }

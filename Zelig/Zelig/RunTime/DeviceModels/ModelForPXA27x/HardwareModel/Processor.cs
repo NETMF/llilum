@@ -43,6 +43,24 @@ namespace Microsoft.DeviceModels.Chipset.PXA27x
                     return 0;
                 }
             }
+            
+            public static uint DefaultThreadPooThreads
+            {
+                [RT.ConfigurationOption( "System__Runtime_DefaultThreadPooThreads" )]
+                get
+                {
+                    return Int32.MaxValue;
+                }
+            }
+
+            public static uint DefaultTimerPooThreads
+            {
+                [RT.ConfigurationOption( "System__Runtime_DefaultTimerPooThreads" )]
+                get
+                {
+                    return 2;
+                }
+            }
         }
 
         public sealed new class Context : RT.TargetPlatform.ARMv4.ProcessorARMv4.Context

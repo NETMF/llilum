@@ -82,8 +82,10 @@ namespace Microsoft.Llilum.BoardConfigurations
     public sealed class LPC1768MBEDHosted : ProductCategory
     {
         [AllowedOptions(typeof(LPC1768))]
-        [Defaults("CoreClockFrequency"    , 96000000UL)]
-        [Defaults("RealTimeClockFrequency", 1000000UL )]
+        [Defaults("CoreClockFrequency"     , 96000000UL)]
+        [Defaults("RealTimeClockFrequency" , 1000000UL )]
+        [Defaults("DefaultThreadPooThreads", 2)]
+        [Defaults("DefaultTimerPooThreads" , 1)]
         public LPC1768 Processor;
 
         //--//

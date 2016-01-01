@@ -100,6 +100,26 @@ namespace Microsoft.CortexM3OnMBED
                 return 0;
             }
         }
+            
+        public static uint DefaultThreadPooThreads
+        {
+            [RT.ConfigurationOption( "System__Runtime_DefaultThreadPooThreads" )]
+            get
+            {
+                RT.BugCheck.Assert( false, RT.BugCheck.StopCode.IllegalConfiguration );
+                return 2;
+            }
+        }
+
+        public static uint DefaultTimerPooThreads
+        {
+            [RT.ConfigurationOption( "System__Runtime_DefaultThreadPooThreads" )]
+            get
+            {
+                RT.BugCheck.Assert( false, RT.BugCheck.StopCode.IllegalConfiguration );
+                return 1;
+            }
+        }
         
         //--//
 

@@ -99,6 +99,26 @@ namespace Microsoft.CortexM4OnMBED
                 return 0;
             }
         }
+            
+        public static uint DefaultThreadPooThreads
+        {
+            [RT.ConfigurationOption( "System__Runtime_DefaultThreadPooThreads" )]
+            get
+            {
+                RT.BugCheck.Assert( false, RT.BugCheck.StopCode.IllegalConfiguration );
+                return 3;
+            }
+        }
+
+        public static uint DefaultTimerPooThreads
+        {
+            [RT.ConfigurationOption( "System__Runtime_DefaultTimerPooThreads" )]
+            get
+            {
+                RT.BugCheck.Assert( false, RT.BugCheck.StopCode.IllegalConfiguration );
+                return 2;
+            }
+        }
         
         
         //--//
