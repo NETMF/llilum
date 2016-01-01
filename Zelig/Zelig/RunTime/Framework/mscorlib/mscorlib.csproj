@@ -323,6 +323,7 @@
     <Compile Include="System\Runtime\Serialization\SerializationException.cs" />
     <Compile Include="System\SByte.cs" />
     <Compile Include="System\Security\Attributes.cs" />
+    <Compile Include="System\Security\Cryptography\X509Certificates\X509Certificate.cs" />
     <Compile Include="System\Security\Permissions\HostProtectionPermission.cs" />
     <Compile Include="System\Security\Permissions\PermissionAttributes.cs" />
     <Compile Include="System\Security\Permissions\PermissionState.cs" />
