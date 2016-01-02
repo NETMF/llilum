@@ -1,12 +1,12 @@
 using System;
-using System.Collections;
-using System.Threading;
-using System.Runtime.CompilerServices;
+
+using NETMF = Microsoft.Zelig.Runtime;
+
 
 namespace Microsoft.Zelig.Runtime
 {
-    [ExtendClass(typeof(Microsoft.SPOT.Hardware.Cpu))]
-    public static class CpuImpl
+    [ExtendClass(typeof(NETMF.Cpu), NoConstructors = true)]
+    public static class Cpu
     {
         public static uint SystemClock
         {
@@ -15,7 +15,7 @@ namespace Microsoft.Zelig.Runtime
                 return (uint)Configuration.CoreClockFrequency;
             }
         }
-
+        
         public static uint SlowClock
         {
             get
@@ -23,7 +23,7 @@ namespace Microsoft.Zelig.Runtime
                 return (uint)Configuration.RealTimeClockFrequency;
             }
         }
-
+        
         public static TimeSpan GlitchFilterTime
         {
             get

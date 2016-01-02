@@ -75,15 +75,15 @@ namespace Microsoft.Zelig.Runtime
         {
             int failIndex = -1;
 
-            lock (pinLock)
+            lock(pinLock)
             {
-                for (int i = 0; i < pins.Length; i++)
+                for(int i = 0; i < pins.Length; i++)
                 {
                     // Do not try to release NC pins
-                    if (InvalidPin != pins[i])
+                    if(InvalidPin != pins[i])
                     {
                         int index = PinToIndex(pins[i]);
-                        if (m_reservedPins[index] == true)
+                        if(m_reservedPins[index] == true)
                         {
                             failIndex = i;
                             break;
@@ -92,12 +92,12 @@ namespace Microsoft.Zelig.Runtime
                     }
                 }
 
-                if (failIndex > 0)
+                if(failIndex > 0)
                 {
-                    for (int i = 0; i < failIndex; i++)
+                    for(int i = 0; i < failIndex; i++)
                     {
                         // Do not touch NC pins
-                        if (InvalidPin != pins[i])
+                        if(InvalidPin != pins[i])
                         {
                             int index = PinToIndex(pins[i]);
                             m_reservedPins[index] = false;
@@ -111,16 +111,16 @@ namespace Microsoft.Zelig.Runtime
 
         public void ReleasePins(params int[] pins)
         {
-            lock (pinLock)
+            lock(pinLock)
             {
-                foreach (int pin in pins)
+                foreach(int pin in pins)
                 {
                     // Don't touch NC pins
-                    if (InvalidPin != pin)
+                    if(InvalidPin != pin)
                     {
                         int index = PinToIndex(pin);
 
-                        if (m_reservedPins[index] == true)
+                        if(m_reservedPins[index] == true)
                         {
                             m_reservedPins[index] = false;
                         }

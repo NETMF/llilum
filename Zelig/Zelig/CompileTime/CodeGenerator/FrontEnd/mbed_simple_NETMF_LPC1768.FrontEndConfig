@@ -1,0 +1,102 @@
+###
+### Location of the Zelig assemblies.
+###
+-HostAssemblyDir   ..\..\..\..\ZeligBuild\Host\bin\Debug
+-DeviceAssemblyDir ..\..\..\..\ZeligBuild\Target\bin\Debug
+
+-CompilationSetupPath ..\..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Llilum.BoardConfigurations.LPC1768.dll
+-CompilationSetup Microsoft.Llilum.BoardConfigurations.LPC1768MBEDHostedCompilationSetup
+
+###
+### We need to include this assembly to get the right drivers.
+###
+-Reference Microsoft.CortexM3OnMBED
+-Reference Microsoft.CortexM3OnCMSISCore
+-Reference Microsoft.DeviceModels.ModelForCortexM3
+-Reference LPC1768
+
+
+###
+### Add compilation phases, in order
+###
+-CompilationPhaseDisabled InitializeReferenceCountingGarbageCollection
+-CompilationPhaseDisabled EnableStrictReferenceCountingGarbageCollection
+#-CompilationPhaseDisabled ReduceNumberOfTemporaries
+#-CompilationPhaseDisabled TransformFinallyBlocksIntoTryBlocks
+#-CompilationPhaseDisabled ApplyClassExtensions
+#-CompilationPhaseDisabled PrepareImplementationOfInternalMethods  
+#-CompilationPhaseDisabled CrossReferenceTypeSystem
+#-CompilationPhaseDisabled ApplyConfigurationSettings
+-CompilationPhaseDisabled ResourceManagerOptimizations
+#-CompilationPhaseDisabled HighLevelTransformations
+#-CompilationPhaseDisabled PropagateCompilationConstraints
+#-CompilationPhaseDisabled ComputeCallsClosure
+#-CompilationPhaseDisabled EstimateTypeSystemReduction
+#-CompilationPhaseDisabled CompleteImplementationOfInternalMethods
+#-CompilationPhaseDisabled ReduceTypeSystem
+-CompilationPhaseDisabled PrepareExternalMethods
+#-CompilationPhaseDisabled DetectNonImplementedInternalCalls
+#-CompilationPhaseDisabled OrderStaticConstructors
+#-CompilationPhaseDisabled LayoutTypes
+#-CompilationPhaseDisabled HighLevelToMidLevelConversion
+#-CompilationPhaseDisabled FromImplicitToExplicitExceptions
+#-CompilationPhaseDisabled ReferenceCountingGarbageCollection
+-CompilationPhaseDisabled MidLevelToLowLevelConversion
+-CompilationPhaseDisabled ConvertUnsupportedOperatorsToMethodCalls
+-CompilationPhaseDisabled ExpandAggregateTypes
+-CompilationPhaseDisabled SplitComplexOperators
+-CompilationPhaseDisabled FuseOperators
+#-CompilationPhaseDisabled Optimizations
+-CompilationPhaseDisabled ConvertToSSA
+-CompilationPhaseDisabled PrepareForRegisterAllocation
+-CompilationPhaseDisabled CollectRegisterAllocationConstraints
+-CompilationPhaseDisabled AllocateRegisters
+#-CompilationPhaseDisabled GenerateImage
+#-CompilationPhaseDisabled Done
+
+###
+### The program to compile.
+###
+..\..\..\..\ZeligBuild\Target\bin\Debug\Microsoft.Zelig.Test.mbed.SimpleNetMF.exe
+
+###
+### Where to put the results.
+###
+-OutputName Microsoft.Zelig.Test.mbed.Simple
+-OutputDir  ..\..\..\..\LLVM2IR_results\mbed\simple
+
+###
+### Dumps and diagnostics
+###
+#-DumpIRBeforePhase ReduceNumberOfTemporaries TransformFinallyBlocksIntoTryBlocks ApplyClassExtensions
+#-DumpIRBeforePhase All
+-DumpIR
+#-DumpIRpre
+#-DumpIRpost
+#-DumpIRXML
+#-DumpFlattenedCallGraph
+-DumpLLVMIR
+#-ReloadState
+-DumpLLVMIR_TextRepresentation
+
+-MaxProcs 8
+
+-NoSDK
+
+###
+### LLVM CodeGeneration
+###
+-GenerateObj
+
+# examples of overriding opt.exe and llc arguments
+# the examples here are the same as the defaults but can be modified to suit a variety of test
+# scenarios and experimentations
+#-LlvmOptArgs "-verify-debug-info -verify-dom-info -verify-each -verify-loop-info -verify-regalloc -verify-region-info -march=thumb -mcpu=cortex-m3 -aa-eval -indvars -gvn -globaldce -adce -dce -tailcallopt -scalarrepl -mem2reg -ipconstprop -deadargelim -sccp -dce -ipsccp -dce -constmerge -scev-aa -targetlibinfo -irce -dse -dce -argpromotion -mem2reg -adce -mem2reg -globaldce -die -dce -dse"
+#-LlvmLlcArgs "-O2 -code-model=small -data-sections -relocation-model=pic -march=thumb -mcpu=cortex-m3 -filetype=obj -mtriple=thumbv7m-none-eabi"
+
+# While the compiler is pretty good at figuring out where the LLVM tools are from
+# current Environment variables or registry entires you can manually specify the
+# path to find the LLVM binaries.
+# note: Environment variabes (i.e %MY_VAR%) are supported and expanded as with all
+# options in the FrontendConfig files so you can specify a custom variable if needed
+#-LlvmBinPath \\netmfbld02\LLVM\3.7.0\build\Win32\Release\bin

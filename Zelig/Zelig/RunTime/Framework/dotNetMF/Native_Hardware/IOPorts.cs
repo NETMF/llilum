@@ -1,7 +1,8 @@
 using System;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Collections;
+
+using LLILUM = Microsoft.Llilum.Devices;
+
 
 namespace Microsoft.SPOT.Hardware
 {
@@ -13,23 +14,43 @@ namespace Microsoft.SPOT.Hardware
     public class NativeEventDispatcher : IDisposable
     {
         protected NativeEventHandler m_threadSpawn = null;
-        protected NativeEventHandler m_callbacks = null;
-        protected bool m_disposed = false;
-        private object m_NativeEventDispatcher;
+        protected NativeEventHandler m_callbacks   = null;
+        protected bool               m_disposed    = false;
+        private object               m_NativeEventDispatcher;
 
         //--//
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern public NativeEventDispatcher(string strDriverName, ulong drvData);
 
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern public virtual void EnableInterrupt();
+        public virtual void EnableInterrupt()
+        {
 
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern public virtual void DisableInterrupt();
+        }
 
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern protected virtual void Dispose(bool disposing);
+        public virtual void DisableInterrupt()
+        {
+
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+
+        }
+
+        protected void Dispatch( object sender, LLILUM.Gpio.PinEdge args )
+        {
+            NativeEventHandler eh = m_threadSpawn;
+
+            if(eh != null)
+            {
+                Port port = (Port)sender;
+
+                eh( (uint)port.Id, 
+                    (uint)((args == Llilum.Devices.Gpio.PinEdge.RisingEdge || args == Llilum.Devices.Gpio.PinEdge.LevelHigh) ? 1 : 0),
+                    DateTime.Now ); 
+            }
+        }
 
         //--//
 
@@ -158,33 +179,73 @@ namespace Microsoft.SPOT.Hardware
         }
 
         //--//
+        
+        extern protected LLILUM.Gpio.GpioPin Pin
+        {
+            [MethodImplAttribute( MethodImplOptions.InternalCall )]
+            get;
+        }
 
-        [Microsoft.SPOT.FieldNoReflection]
-
-        private InterruptMode m_interruptMode;
-        private ResistorMode m_resistorMode;
-        private uint m_portId;
-        private uint m_flags;
-        private bool m_glitchFilterEnable;
-        private bool m_initialState;
         //--//
 
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern protected Port(Cpu.Pin portId, bool glitchFilter, ResistorMode resistor, InterruptMode interruptMode);
+        [MethodImplAttribute( MethodImplOptions.InternalCall )]
+        extern protected Port( Cpu.Pin portId, bool glitchFilter, ResistorMode resistor, InterruptMode interruptMode );
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern protected Port(Cpu.Pin portId, bool initialState);
 
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern protected Port(Cpu.Pin portId, bool initialState, bool glitchFilter, ResistorMode resistor);
+        protected Port(Cpu.Pin portId, bool initialState, bool glitchFilter, ResistorMode resistor)
+            : this( portId, glitchFilter, resistor, InterruptMode.InterruptNone )
+        {
+        }
 
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern protected override void Dispose(bool disposing);
+        protected override void Dispose( bool disposing )
+        {
+            if(disposing)
+            {
+                this.Pin.Dispose( );
+            }
+        }
 
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern public bool Read();
+        public bool Read()
+        {
+            return this.Pin.Read( ) != 0; 
+        }
 
-        extern public Cpu.Pin Id
+        public Cpu.Pin Id
+        {
+            [MethodImplAttribute( MethodImplOptions.InternalCall )]
+            get;
+        }
+
+        protected ResistorMode Resistor
+        {
+            [MethodImplAttribute(MethodImplOptions.InternalCall)]
+            get;
+
+            [MethodImplAttribute(MethodImplOptions.InternalCall)]
+            set;
+        }
+
+        protected bool GlitchFilter
+        {
+            [MethodImplAttribute(MethodImplOptions.InternalCall)]
+            get;
+
+            [MethodImplAttribute(MethodImplOptions.InternalCall)]
+            set;
+        }
+
+        public InterruptMode Interrupt
+        {
+            [MethodImplAttribute( MethodImplOptions.InternalCall )]
+            get;
+            
+            [MethodImplAttribute(MethodImplOptions.InternalCall)]
+            set;
+        }
+
+        public bool InitialState
         {
             [MethodImplAttribute(MethodImplOptions.InternalCall)]
             get;
@@ -213,22 +274,30 @@ namespace Microsoft.SPOT.Hardware
         {
         }
 
-        extern public ResistorMode Resistor
+        public new ResistorMode Resistor
         {
-            [MethodImplAttribute(MethodImplOptions.InternalCall)]
-            get;
+            get
+            {
+                return base.Resistor;
+            }
 
-            [MethodImplAttribute(MethodImplOptions.InternalCall)]
-            set;
+            set
+            {
+                base.Resistor = value;
+            }
         }
 
-        extern public bool GlitchFilter
+        public new bool GlitchFilter
         {
-            [MethodImplAttribute(MethodImplOptions.InternalCall)]
-            get;
+            get
+            {
+                return base.GlitchFilter;
+            }
 
-            [MethodImplAttribute(MethodImplOptions.InternalCall)]
-            set;
+            set
+            {
+                base.GlitchFilter = value;
+            }
         }
     }
 
@@ -239,20 +308,26 @@ namespace Microsoft.SPOT.Hardware
         public OutputPort(Cpu.Pin portId, bool initialState)
             : base(portId, initialState)
         {
+            this.Pin.Write( initialState ? 1 : 0 ); 
         }
 
         protected OutputPort(Cpu.Pin portId, bool initialState, bool glitchFilter, ResistorMode resistor)
             : base(portId, initialState, glitchFilter, resistor)
         {
+            this.Pin.Write( initialState ? 1 : 0 ); 
         }
 
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern public void Write(bool state);
-
-        extern public bool InitialState
+        public void Write(bool state)
         {
-            [MethodImplAttribute(MethodImplOptions.InternalCall)]
-            get;
+            this.Pin.Write( state? 1 : 0 );
+        }
+
+        new public bool InitialState
+        {
+            get
+            {
+                return base.InitialState;
+            }
         }
     }
 
@@ -265,27 +340,38 @@ namespace Microsoft.SPOT.Hardware
         {
         }
 
-        extern public bool Active
+        public bool Active
         {
-            [MethodImplAttribute(MethodImplOptions.InternalCall)]
-            get;
-            [MethodImplAttribute(MethodImplOptions.InternalCall)]
-            set;
+            get
+            {
+                return this.Pin.Direction == LLILUM.Gpio.PinDirection.Output;
+            }
+
+            set
+            {
+                this.Pin.Direction = value ? LLILUM.Gpio.PinDirection.Output : LLILUM.Gpio.PinDirection.Input;
+            }
         }
 
-        extern public ResistorMode Resistor
+        new public ResistorMode Resistor
         {
-            [MethodImplAttribute(MethodImplOptions.InternalCall)]
-            get;
+            get
+            {
+                return base.Resistor;
+            }
 
-            [MethodImplAttribute(MethodImplOptions.InternalCall)]
-            set;
+            set
+            {
+                base.Resistor = value;
+            }
         }
 
-        extern public bool GlitchFilter
+        new public bool GlitchFilter
         {
-            [MethodImplAttribute(MethodImplOptions.InternalCall)]
-            get;
+            get
+            {
+                return base.GlitchFilter;
+            }
         }
     }
 
@@ -299,26 +385,36 @@ namespace Microsoft.SPOT.Hardware
             : base(portId, glitchFilter, resistor, interrupt)
         {
             m_threadSpawn = null;
-            m_callbacks = null;
+            m_callbacks   = null;
         }
 
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern public void ClearInterrupt();
-
-        extern public InterruptMode Interrupt
+        public void ClearInterrupt()
         {
-            [MethodImplAttribute(MethodImplOptions.InternalCall)]
-            get;
-            [MethodImplAttribute(MethodImplOptions.InternalCall)]
-            set;
+
         }
 
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern public override void EnableInterrupt();
+        new public InterruptMode Interrupt
+        {
+            get
+            {
+                return base.Interrupt;
+            }
+            
+            set
+            {
+                base.Interrupt = value;
+            }
+        }
 
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern public override void DisableInterrupt();
+        public override void EnableInterrupt()
+        {
+            this.Pin.ValueChanged += base.Dispatch;
+        }
 
+        public override void DisableInterrupt()
+        { 
+            this.Pin.ValueChanged -= base.Dispatch;
+        }
     }
 }
 

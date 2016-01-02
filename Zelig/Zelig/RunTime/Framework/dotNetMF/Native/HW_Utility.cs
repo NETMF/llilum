@@ -7,14 +7,22 @@ using System.Collections;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
+
 namespace Microsoft.SPOT.Hardware
 {
     public static class Utility
     {
         [Obsolete( "", false )]
-        [MethodImplAttribute( MethodImplOptions.InternalCall )]
-        extern static public uint ComputeCRC( byte[] buf, int offset, int length, uint crc );
-        
+        //////[MethodImplAttribute( MethodImplOptions.InternalCall )]
+        //////extern static public uint ComputeCRC( byte[] buf, int offset, int length, uint crc );
+        static public uint ComputeCRC(byte[] buf, int offset, int length, uint crc)
+        {
+            // TODO TODO TODO: Implement
+            throw new NotImplementedException( ); 
+        }
+
+        //--//
+
         //--//
 
         //////[MethodImplAttribute(MethodImplOptions.InternalCall)]

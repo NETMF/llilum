@@ -81,7 +81,11 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Native\Core_Native.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\Runtime\Framework\Llilum\Devices\Microsoft.Llilum.Devices.csproj">
+      <Project>{d68ee51b-a898-4a77-97d8-c61254cac122}</Project>
+      <Name>Microsoft.Llilum.Devices</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\Runtime\Framework\dotNetMF\Native\Core_Native.csproj">
       <Project>{1436d112-41d9-4bd4-9fa9-e38709cff861}</Project>
       <Name>Core_Native</Name>
     </ProjectReference>

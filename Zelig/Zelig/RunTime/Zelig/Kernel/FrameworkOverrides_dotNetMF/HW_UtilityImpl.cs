@@ -7,8 +7,7 @@ using System;
 
 namespace Microsoft.Zelig.Runtime
 {
-    [ExtendClass(typeof(Microsoft.SPOT.Hardware.Utility))]
-    public static class UtilityImpl
+    public static class Utility
     {
         static public uint ComputeCRC(byte[] buf, int offset, int length, uint crc)
         {
@@ -17,7 +16,7 @@ namespace Microsoft.Zelig.Runtime
         }
 
         //--//
-
+        
         static public void SetLocalTime(DateTime dt)
         {
             DateTimeImpl.SetUtcTime( dt ); 
@@ -29,5 +28,3 @@ namespace Microsoft.Zelig.Runtime
         }
     }
 }
-
-

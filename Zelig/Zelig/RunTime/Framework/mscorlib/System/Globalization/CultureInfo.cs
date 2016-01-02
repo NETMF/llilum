@@ -883,295 +883,298 @@ namespace System.Globalization
                 return m_InvariantCultureInfo;
             }
         }
-    
-    
-////    ////////////////////////////////////////////////////////////////////////
-////    //
-////    //  Parent
-////    //
-////    //  Return the parent CultureInfo for the current instance.
-////    //
-////    ////////////////////////////////////////////////////////////////////////
-////
-////    public virtual CultureInfo Parent
-////    {
-////        get
-////        {
-////            if(m_parent == null)
-////            {
-////                try
-////                {
-////                    int parentCulture = this.m_cultureTableRecord.IPARENT;
-////                    if(parentCulture == LOCALE_INVARIANT)
-////                    {
-////                        m_parent = InvariantCulture;
-////                    }
-////                    else if(CultureTableRecord.IsCustomCultureId( parentCulture ))
-////                    {
-////                        // Customized culture -- use the string for the parent.
-////                        m_parent = new CultureInfo( this.m_cultureTableRecord.SPARENT );
-////                    }
-////                    else
-////                    {
-////                        m_parent = new CultureInfo( parentCulture, this.m_cultureTableRecord.UseUserOverride );
-////                    }
-////                }
-////                catch(ArgumentException)
-////                {
-////                    // For whatever reason our IPARENT or SPARENT wasn't correct, so use invariant
-////                    // We can't allow ourselves to fail.  In case of custom cultures the parent of the
-////                    // current custom culture isn't installed.
-////                    m_parent = InvariantCulture;
-////                }
-////            }
-////
-////            return m_parent;
-////        }
-////    }
-////
-////    ////////////////////////////////////////////////////////////////////////
-////    //
-////    //  LCID
-////    //
-////    //  Returns a properly formed culture identifier for the current
-////    //  culture info.
-////    //
-////    ////////////////////////////////////////////////////////////////////////
-////
-////
-////    public virtual int LCID
-////    {
-////        get
-////        {
-////            return this.cultureID;
-////        }
-////    }
-////
-////    ////////////////////////////////////////////////////////////////////////
-////    //
-////    //  BaseInputLanguage
-////    //
-////    //  Essentially an LCID, though one that may be different than LCID in the case
-////    //  of a customized culture (LCID == -1).
-////    //
-////    ////////////////////////////////////////////////////////////////////////
-////
-////    public virtual int KeyboardLayoutId
-////    {
-////        get
-////        {
-////            int keyId = this.m_cultureTableRecord.IINPUTLANGUAGEHANDLE;
-////
-////            // Not a customized culture, return the default Keyboard layout ID, which is the same as the language ID.
-////            return keyId;
-////        }
-////    }
-////
-////
-////    public static CultureInfo[] GetCultures( CultureTypes types )
-////    {
-////        return CultureTable.Default.GetCultures( types );
-////    }
-////
-////
-////    ////////////////////////////////////////////////////////////////////////
-////    //
-////    //  Name
-////    //
-////    //  Returns the full name of the CultureInfo. The name is in format like
-////    //  "en-US"  This version does NOT include sort information in the name.
-////    //
-////    ////////////////////////////////////////////////////////////////////////
-////    public virtual String Name
-////    {
-////        get
-////        {
-////            // We return non sorting name here.
-////            if(this.m_nonSortName == null)
-////            {
-////                this.m_nonSortName = this.m_cultureTableRecord.CultureName;
-////            }
-////
-////            return this.m_nonSortName;
-////        }
-////    }
-////
-////
-////    internal String SortName
-////    {
-////        get
-////        {
-////            if(this.m_sortName == null)
-////            {
-////                if(CultureTableRecord.IsCustomCultureId( cultureID ))
-////                {
-////                    CultureInfo sortCI = CultureInfo.GetCultureInfo( CompareInfoId );
-////
-////                    BCLDebug.Assert( !CultureTableRecord.IsCustomCultureId( sortCI.cultureID ),
-////                                    "[CultureInfo.SortName]Expected non-custom sort id" );
-////
-////                    if(CultureTableRecord.IsCustomCultureId( sortCI.cultureID ))
-////                    {
-////                        // m_name create could call SortName (not supposed to for CI),
-////                        // but just to be safe, use SNAME not m_name
-////                        this.m_sortName = m_cultureTableRecord.SNAME;
-////                    }
-////                    else
-////                    {
-////                        this.m_sortName = sortCI.SortName;  // Name of culture doing our sort
-////                    }
-////                }
-////                else
-////                {
-////                    // If its not custom, our sort is our full name
-////                    BCLDebug.Assert( m_name != null, "[CultureInfo.SortName]Always expect m_name to be set" );
-////                    this.m_sortName = this.m_name;          // full name, including sort
-////                }
-////            }
-////
-////            return this.m_sortName;
-////        }
-////    }
-////
-////    public String IetfLanguageTag
-////    {
-////        get
-////        {
-////            if(this.m_ietfName == null)
-////            {
-////                this.m_ietfName = this.m_cultureTableRecord.SIETFTAG;
-////            }
-////
-////            // IETF RFC 3066 name goes here
-////            return this.m_ietfName;
-////        }
-////    }
-////
-////    ////////////////////////////////////////////////////////////////////////
-////    //
-////    //  DisplayName
-////    //
-////    //  Returns the full name of the CultureInfo in the localized language.
-////    //  For example, if the localized language of the runtime is Spanish and the CultureInfo is
-////    //  US English, "Ingles (Estados Unidos)" will be returned.
-////    //
-////    ////////////////////////////////////////////////////////////////////////
-////
-////
-////    public virtual String DisplayName
-////    {
-////        get
-////        {
-////            BCLDebug.Assert( m_name != null, "[CultureInfo.DisplayName]Always expect m_name to be set" );
-////
-////            if(m_cultureTableRecord.IsCustomCulture)
-////            {
-////                if(m_cultureTableRecord.IsReplacementCulture)
-////                {
-////                    // <SyntheticSupport/>
-////                    if(m_cultureTableRecord.IsSynthetic)
-////                    {
-////                        return m_cultureTableRecord.CultureNativeDisplayName;
-////                    }
-////                    else
-////                    {
-////                        return (Environment.GetResourceString( "Globalization.ci_" + this.m_name ));
-////                    }
-////                }
-////                else
-////                {
-////                    return m_cultureTableRecord.SNATIVEDISPLAYNAME;
-////                }
-////            }
-////            else
-////            {
-////                // <SyntheticSupport/>
-////                if(m_cultureTableRecord.IsSynthetic)
-////                {
-////                    return m_cultureTableRecord.CultureNativeDisplayName;
-////                }
-////                else
-////                {
-////                    return (Environment.GetResourceString( "Globalization.ci_" + this.m_name ));
-////                }
-////            }
-////        }
-////    }
-////
-////    ////////////////////////////////////////////////////////////////////////
-////    //
-////    //  GetNativeName
-////    //
-////    //  Returns the full name of the CultureInfo in the native language.
-////    //  For example, if the CultureInfo is US English, "English
-////    //  (United States)" will be returned.
-////    //
-////    ////////////////////////////////////////////////////////////////////////
-////
-////
-////    public virtual String NativeName
-////    {
-////        get
-////        {
-////            return (this.m_cultureTableRecord.SNATIVEDISPLAYNAME);
-////        }
-////    }
-////
-////    ////////////////////////////////////////////////////////////////////////
-////    //
-////    //  GetEnglishName
-////    //
-////    //  Returns the full name of the CultureInfo in English.
-////    //  For example, if the CultureInfo is US English, "English
-////    //  (United States)" will be returned.
-////    //
-////    ////////////////////////////////////////////////////////////////////////
-////
-////
-////    public virtual String EnglishName
-////    {
-////        get
-////        {
-////            return this.m_cultureTableRecord.SENGDISPLAYNAME;
-////        }
-////    }
-////
-////
-////    public virtual String TwoLetterISOLanguageName
-////    {
-////        get
-////        {
-////            return this.m_cultureTableRecord.SISO639LANGNAME;
-////        }
-////    }
-////
-////
-////    public virtual String ThreeLetterISOLanguageName
-////    {
-////        get
-////        {
-////            return this.m_cultureTableRecord.SISO639LANGNAME2;
-////        }
-////    }
-////
-////    ////////////////////////////////////////////////////////////////////////
-////    //
-////    //  GetAbbreviatedName
-////    //
-////    //  Returns the abbreviated name for the current instance.  The
-////    //  abbreviated form is usually based on the ISO 639 standard, for
-////    //  example the two letter abbreviation for English is "en".
-////    //
-////    ////////////////////////////////////////////////////////////////////////
-////
-////
-////    public virtual String ThreeLetterWindowsLanguageName
-////    {
-////        get
-////        {
-////            return this.m_cultureTableRecord.SABBREVLANGNAME;
-////        }
-////    }
+
+
+        ////    ////////////////////////////////////////////////////////////////////////
+        ////    //
+        ////    //  Parent
+        ////    //
+        ////    //  Return the parent CultureInfo for the current instance.
+        ////    //
+        ////    ////////////////////////////////////////////////////////////////////////
+        ////
+        ////    public virtual CultureInfo Parent
+        ////    {
+        ////        get
+        ////        {
+        ////            if(m_parent == null)
+        ////            {
+        ////                try
+        ////                {
+        ////                    int parentCulture = this.m_cultureTableRecord.IPARENT;
+        ////                    if(parentCulture == LOCALE_INVARIANT)
+        ////                    {
+        ////                        m_parent = InvariantCulture;
+        ////                    }
+        ////                    else if(CultureTableRecord.IsCustomCultureId( parentCulture ))
+        ////                    {
+        ////                        // Customized culture -- use the string for the parent.
+        ////                        m_parent = new CultureInfo( this.m_cultureTableRecord.SPARENT );
+        ////                    }
+        ////                    else
+        ////                    {
+        ////                        m_parent = new CultureInfo( parentCulture, this.m_cultureTableRecord.UseUserOverride );
+        ////                    }
+        ////                }
+        ////                catch(ArgumentException)
+        ////                {
+        ////                    // For whatever reason our IPARENT or SPARENT wasn't correct, so use invariant
+        ////                    // We can't allow ourselves to fail.  In case of custom cultures the parent of the
+        ////                    // current custom culture isn't installed.
+        ////                    m_parent = InvariantCulture;
+        ////                }
+        ////            }
+        ////
+        ////            return m_parent;
+        ////        }
+        ////    }
+        ////
+        ////    ////////////////////////////////////////////////////////////////////////
+        ////    //
+        ////    //  LCID
+        ////    //
+        ////    //  Returns a properly formed culture identifier for the current
+        ////    //  culture info.
+        ////    //
+        ////    ////////////////////////////////////////////////////////////////////////
+        ////
+        ////
+        ////    public virtual int LCID
+        ////    {
+        ////        get
+        ////        {
+        ////            return this.cultureID;
+        ////        }
+        ////    }
+        ////
+        ////    ////////////////////////////////////////////////////////////////////////
+        ////    //
+        ////    //  BaseInputLanguage
+        ////    //
+        ////    //  Essentially an LCID, though one that may be different than LCID in the case
+        ////    //  of a customized culture (LCID == -1).
+        ////    //
+        ////    ////////////////////////////////////////////////////////////////////////
+        ////
+        ////    public virtual int KeyboardLayoutId
+        ////    {
+        ////        get
+        ////        {
+        ////            int keyId = this.m_cultureTableRecord.IINPUTLANGUAGEHANDLE;
+        ////
+        ////            // Not a customized culture, return the default Keyboard layout ID, which is the same as the language ID.
+        ////            return keyId;
+        ////        }
+        ////    }
+        ////
+        ////
+        ////    public static CultureInfo[] GetCultures( CultureTypes types )
+        ////    {
+        ////        return CultureTable.Default.GetCultures( types );
+        ////    }
+        ////
+        ////
+
+        ////////////////////////////////////////////////////////////////////////
+        //
+        //  Name
+        //
+        //  Returns the full name of the CultureInfo. The name is in format like
+        //  "en-US"  This version does NOT include sort information in the name.
+        //
+        ////////////////////////////////////////////////////////////////////////
+        public virtual String Name
+        {
+            get
+            {
+                //////// We return non sorting name here.
+                //////if(this.m_nonSortName == null)
+                //////{
+                //////    this.m_nonSortName = this.m_cultureTableRecord.CultureName;
+                //////}
+
+                //////return this.m_nonSortName;
+                return "en";
+            }
+        }
+
+        ////
+        ////
+        ////    internal String SortName
+        ////    {
+        ////        get
+        ////        {
+        ////            if(this.m_sortName == null)
+        ////            {
+        ////                if(CultureTableRecord.IsCustomCultureId( cultureID ))
+        ////                {
+        ////                    CultureInfo sortCI = CultureInfo.GetCultureInfo( CompareInfoId );
+        ////
+        ////                    BCLDebug.Assert( !CultureTableRecord.IsCustomCultureId( sortCI.cultureID ),
+        ////                                    "[CultureInfo.SortName]Expected non-custom sort id" );
+        ////
+        ////                    if(CultureTableRecord.IsCustomCultureId( sortCI.cultureID ))
+        ////                    {
+        ////                        // m_name create could call SortName (not supposed to for CI),
+        ////                        // but just to be safe, use SNAME not m_name
+        ////                        this.m_sortName = m_cultureTableRecord.SNAME;
+        ////                    }
+        ////                    else
+        ////                    {
+        ////                        this.m_sortName = sortCI.SortName;  // Name of culture doing our sort
+        ////                    }
+        ////                }
+        ////                else
+        ////                {
+        ////                    // If its not custom, our sort is our full name
+        ////                    BCLDebug.Assert( m_name != null, "[CultureInfo.SortName]Always expect m_name to be set" );
+        ////                    this.m_sortName = this.m_name;          // full name, including sort
+        ////                }
+        ////            }
+        ////
+        ////            return this.m_sortName;
+        ////        }
+        ////    }
+        ////
+        ////    public String IetfLanguageTag
+        ////    {
+        ////        get
+        ////        {
+        ////            if(this.m_ietfName == null)
+        ////            {
+        ////                this.m_ietfName = this.m_cultureTableRecord.SIETFTAG;
+        ////            }
+        ////
+        ////            // IETF RFC 3066 name goes here
+        ////            return this.m_ietfName;
+        ////        }
+        ////    }
+        ////
+        ////    ////////////////////////////////////////////////////////////////////////
+        ////    //
+        ////    //  DisplayName
+        ////    //
+        ////    //  Returns the full name of the CultureInfo in the localized language.
+        ////    //  For example, if the localized language of the runtime is Spanish and the CultureInfo is
+        ////    //  US English, "Ingles (Estados Unidos)" will be returned.
+        ////    //
+        ////    ////////////////////////////////////////////////////////////////////////
+        ////
+        ////
+        ////    public virtual String DisplayName
+        ////    {
+        ////        get
+        ////        {
+        ////            BCLDebug.Assert( m_name != null, "[CultureInfo.DisplayName]Always expect m_name to be set" );
+        ////
+        ////            if(m_cultureTableRecord.IsCustomCulture)
+        ////            {
+        ////                if(m_cultureTableRecord.IsReplacementCulture)
+        ////                {
+        ////                    // <SyntheticSupport/>
+        ////                    if(m_cultureTableRecord.IsSynthetic)
+        ////                    {
+        ////                        return m_cultureTableRecord.CultureNativeDisplayName;
+        ////                    }
+        ////                    else
+        ////                    {
+        ////                        return (Environment.GetResourceString( "Globalization.ci_" + this.m_name ));
+        ////                    }
+        ////                }
+        ////                else
+        ////                {
+        ////                    return m_cultureTableRecord.SNATIVEDISPLAYNAME;
+        ////                }
+        ////            }
+        ////            else
+        ////            {
+        ////                // <SyntheticSupport/>
+        ////                if(m_cultureTableRecord.IsSynthetic)
+        ////                {
+        ////                    return m_cultureTableRecord.CultureNativeDisplayName;
+        ////                }
+        ////                else
+        ////                {
+        ////                    return (Environment.GetResourceString( "Globalization.ci_" + this.m_name ));
+        ////                }
+        ////            }
+        ////        }
+        ////    }
+        ////
+        ////    ////////////////////////////////////////////////////////////////////////
+        ////    //
+        ////    //  GetNativeName
+        ////    //
+        ////    //  Returns the full name of the CultureInfo in the native language.
+        ////    //  For example, if the CultureInfo is US English, "English
+        ////    //  (United States)" will be returned.
+        ////    //
+        ////    ////////////////////////////////////////////////////////////////////////
+        ////
+        ////
+        ////    public virtual String NativeName
+        ////    {
+        ////        get
+        ////        {
+        ////            return (this.m_cultureTableRecord.SNATIVEDISPLAYNAME);
+        ////        }
+        ////    }
+        ////
+        ////    ////////////////////////////////////////////////////////////////////////
+        ////    //
+        ////    //  GetEnglishName
+        ////    //
+        ////    //  Returns the full name of the CultureInfo in English.
+        ////    //  For example, if the CultureInfo is US English, "English
+        ////    //  (United States)" will be returned.
+        ////    //
+        ////    ////////////////////////////////////////////////////////////////////////
+        ////
+        ////
+        ////    public virtual String EnglishName
+        ////    {
+        ////        get
+        ////        {
+        ////            return this.m_cultureTableRecord.SENGDISPLAYNAME;
+        ////        }
+        ////    }
+        ////
+        ////
+        ////    public virtual String TwoLetterISOLanguageName
+        ////    {
+        ////        get
+        ////        {
+        ////            return this.m_cultureTableRecord.SISO639LANGNAME;
+        ////        }
+        ////    }
+        ////
+        ////
+        ////    public virtual String ThreeLetterISOLanguageName
+        ////    {
+        ////        get
+        ////        {
+        ////            return this.m_cultureTableRecord.SISO639LANGNAME2;
+        ////        }
+        ////    }
+        ////
+        ////    ////////////////////////////////////////////////////////////////////////
+        ////    //
+        ////    //  GetAbbreviatedName
+        ////    //
+        ////    //  Returns the abbreviated name for the current instance.  The
+        ////    //  abbreviated form is usually based on the ISO 639 standard, for
+        ////    //  example the two letter abbreviation for English is "en".
+        ////    //
+        ////    ////////////////////////////////////////////////////////////////////////
+        ////
+        ////
+        ////    public virtual String ThreeLetterWindowsLanguageName
+        ////    {
+        ////        get
+        ////        {
+        ////            return this.m_cultureTableRecord.SABBREVLANGNAME;
+        ////        }
+        ////    }
 
         ////////////////////////////////////////////////////////////////////////
         //

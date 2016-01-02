@@ -3,6 +3,7 @@ using System.Collections;
 using System.Threading;
 using System.Runtime.CompilerServices;
 
+
 namespace Microsoft.SPOT.Hardware
 {
     public static class Cpu
@@ -109,22 +110,22 @@ namespace Microsoft.SPOT.Hardware
 
         extern public static uint SystemClock
         {
-            [MethodImplAttribute(MethodImplOptions.InternalCall)]
+            [MethodImplAttribute( MethodImplOptions.InternalCall )]
             get;
         }
 
         extern public static uint SlowClock
         {
-            [MethodImplAttribute(MethodImplOptions.InternalCall)]
+            [MethodImplAttribute( MethodImplOptions.InternalCall )]
             get;
         }
 
         extern public static TimeSpan GlitchFilterTime
         {
-            [MethodImplAttribute(MethodImplOptions.InternalCall)]
+            [MethodImplAttribute( MethodImplOptions.InternalCall )]
             get;
 
-            [MethodImplAttribute(MethodImplOptions.InternalCall)]
+            [MethodImplAttribute( MethodImplOptions.InternalCall )]
             set;
         }
     }
