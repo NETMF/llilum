@@ -117,6 +117,12 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
         private bool RequiresAddress(IR.VariableExpression expr, IR.Operator[][] defChains, IR.Operator[][] useChains)
         {
+            // LLVM needs an address to attach debug info, so give an address to all named variables.
+            if (!string.IsNullOrWhiteSpace(expr.DebugName?.Name))
+            {
+                return true;
+            }
+
             // If the variable has more than one definition, give it an address instead of a phi node.
             if (defChains[expr.SpanningTreeIndex].Length > 1)
             {
