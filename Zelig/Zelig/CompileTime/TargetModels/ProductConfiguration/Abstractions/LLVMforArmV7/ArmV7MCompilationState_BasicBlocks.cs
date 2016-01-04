@@ -58,7 +58,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                     }
 
                     Debug.Assert( !m_localValues.ContainsKey( exp ), "Found multiple definitions for expression: " + exp );
-                    CreateValueCache( exp, useChains );
+                    CreateValueCache( exp, defChains, useChains );
                 }
             }
 
@@ -72,43 +72,6 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                 TranslateOperator( op, bb );
             }
 #endif // GENERATE_ONLY_TYPESYSTEM_AND_FUNCTION_DEFINITIONS
-        }
-
-        public override void FlushUnfinishedBlocks( )
-        {
-            foreach( var pendingNode in m_pendingPhiNodes )
-            {
-                IR.PhiOperator phiOp = pendingNode.Key;
-                _Value phiNode = pendingNode.Value;
-
-                for( int argumentIndex = 0; argumentIndex < phiOp.Arguments.Length; ++argumentIndex )
-                {
-                    IR.BasicBlock origin = phiOp.Origins[ argumentIndex ];
-                    int count = 1;
-
-                    // LLVM inserts a block's predecessor multiple times for switches, so we have to do the same.
-                    var switchOp = phiOp.Origins[ argumentIndex ].FlowControl as IR.MultiWayConditionalControlOperator;
-                    if( switchOp != null )
-                    {
-                        count = ( switchOp.TargetBranchNotTaken == phiOp.BasicBlock ) ? 1 : 0;
-                        foreach( IR.BasicBlock block in switchOp.Targets )
-                        {
-                            if( block == phiOp.BasicBlock )
-                            {
-                                ++count;
-                            }
-                        }
-                    }
-
-                    _BasicBlock originBlock = GetOrInsertBasicBlock( origin );
-                    _BasicBlock phiBlock = GetOrInsertBasicBlock( phiOp.BasicBlock );
-                    _Value value = GetValue( origin, phiOp.Arguments[ argumentIndex ], true, false );
-                    for( int i = 0; i < count; ++i)
-                    {
-                        phiBlock.AddPhiIncomingValue( phiNode, value, originBlock );
-                    }
-                }
-            }
         }
 
         protected override bool EmitCodeForBasicBlock_ShouldSkip( IR.Operator op )
@@ -130,87 +93,51 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         {
         }
 
-        private static bool ArgumentIsAddress( IR.Expression expr, IR.Operator op )
+        private void CreateValueCache(IR.VariableExpression expr, IR.Operator[][] defChains,  IR.Operator[][] useChains)
         {
-            // Address assignment operators take their argument's address by definition.
-            if (op is IR.AddressAssignmentOperator)
+            Debug.Assert(expr.AliasedVariable == expr, "Aliased variables are currently unsupported.");
+
+            // Get or create a slot for the backing variable.
+            if (!m_localValues.ContainsKey(expr))
+            {
+                ValueCache valueCache;
+                if (RequiresAddress(expr, defChains, useChains))
+                {
+                    _Value address = m_function.GetLocalStackValue(m_method, m_basicBlock, expr, m_manager);
+                    valueCache = new ValueCache(expr, address);
+                }
+                else
+                {
+                    valueCache = new ValueCache(expr, m_manager.GetOrInsertType(expr.Type));
+                }
+
+                m_localValues[expr] = valueCache;
+            }
+        }
+
+        private bool RequiresAddress(IR.VariableExpression expr, IR.Operator[][] defChains, IR.Operator[][] useChains)
+        {
+            // If the variable has more than one definition, give it an address instead of a phi node.
+            if (defChains[expr.SpanningTreeIndex].Length > 1)
             {
                 return true;
             }
 
-            // Field accessors need the first argument to be an address, so value types need to stay indirected.
-            if ((op is IR.StoreInstanceFieldOperator) ||
-                (op is IR.LoadInstanceFieldOperator) ||
-                (op is IR.LoadInstanceFieldAddressOperator))
+            // If any operator takes the variable's address, it must be addressable.
+            foreach (IR.Operator useOp in useChains[expr.SpanningTreeIndex])
             {
-                if ((expr == op.FirstArgument) && (expr.Type is TS.ValueTypeRepresentation))
+                // Address assignment operators take their argument's address by definition.
+                if (useOp is IR.AddressAssignmentOperator)
                 {
                     return true;
                 }
-            }
 
-            // Phi operators add complexity and make exception handling more difficult.
-            // We can let LLVM to do the heavy lifting by giving them an address.
-            if (op is IR.PhiOperator)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        private void CreateValueCache(IR.VariableExpression expr, IR.Operator[][] useChains)
-        {
-            // Resolve the origin of phi (and other aliased) variables. If a variable is unaliased, this is a no-op.
-            IR.VariableExpression alias = expr.AliasedVariable;
-
-            // Get or create a slot for the backing variable.
-            ValueCache aliasSlot;
-            if (!m_localValues.TryGetValue(alias, out aliasSlot))
-            {
-                if (IsAliasAddressed(alias, useChains))
+                // Field accessors need the first argument to be an address, so value types need to stay indirected.
+                if ((useOp is IR.StoreInstanceFieldOperator) ||
+                    (useOp is IR.LoadInstanceFieldOperator) ||
+                    (useOp is IR.LoadInstanceFieldAddressOperator))
                 {
-                    _Value address = m_function.GetLocalStackValue(m_method, m_basicBlock, alias, m_manager);
-                    aliasSlot = new ValueCache(alias, address);
-                }
-                else
-                {
-                    aliasSlot = new ValueCache(alias, m_manager.GetOrInsertType(alias.Type));
-                }
-
-                m_localValues[alias] = aliasSlot;
-            }
-
-            // If the expression aliases the slot we created above, add another entry for it.
-            if (alias != expr)
-            {
-                if (aliasSlot.IsAddressable)
-                {
-                    m_localValues[expr] = new ValueCache(expr, aliasSlot.Address);
-                }
-                else
-                {
-                    m_localValues[expr] = new ValueCache(expr, aliasSlot.Type);
-                }
-            }
-        }
-
-        private bool IsAliasAddressed(IR.VariableExpression alias, IR.Operator[][] useChains)
-        {
-            Debug.Assert(alias.AliasedVariable == alias, "Expected root aliased variable.");
-
-            // Analyze all variables which reference the given alias for whether any require an
-            // address. If so, all such variables should be given the same address.
-            foreach (IR.VariableExpression variable in m_variables)
-            {
-                if (variable.AliasedVariable != alias)
-                {
-                    continue;
-                }
-
-                foreach (IR.Operator useOp in useChains[variable.SpanningTreeIndex])
-                {
-                    if (ArgumentIsAddress(variable, useOp))
+                    if ((expr == useOp.FirstArgument) && (expr.Type is TS.ValueTypeRepresentation))
                     {
                         return true;
                     }
@@ -396,10 +323,6 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             else if( op is IR.InitialValueOperator )
             {
                 Translate_InitialValueOperator( ( IR.InitialValueOperator )op );
-            }
-            else if( op is IR.PhiOperator )
-            {
-                Translate_PhiOperator( ( IR.PhiOperator )op );
             }
             else if( op is IR.CompareAndSetOperator )
             {
@@ -637,7 +560,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         private void StoreValue( ValueCache dst, _Value src )
         {
             _Value convertedSrc = ConvertValueToStoreToTarget( src, dst.Type );
-            m_basicBlock.SetVariableName( convertedSrc, dst.Expression.AliasedVariable );
+            m_basicBlock.SetVariableName( convertedSrc, dst.Expression );
 
             if( dst.IsAddressable )
             {
@@ -741,13 +664,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
         private void Translate_InitialValueOperator( IR.InitialValueOperator op )
         {
-            IR.VariableExpression exp = op.FirstResult;
-            if( exp is IR.PhiVariableExpression )
-            {
-                exp = exp.AliasedVariable;
-            }
-
-            int index = exp.Number;
+            int index = op.FirstResult.Number;
             if (m_method is TS.StaticMethodRepresentation)
             {
                 --index;
@@ -756,30 +673,6 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             _Type type = m_manager.GetOrInsertType( op.FirstResult.Type );
             _Value argument = m_basicBlock.GetMethodArgument( index, type );
             StoreValue( m_localValues[ op.FirstResult ], argument );
-        }
-
-        private void Translate_PhiOperator( IR.PhiOperator op )
-        {
-            Debug.Assert( op.Origins.Length == op.Arguments.Length );
-
-            ValueCache result = m_localValues[op.FirstResult];
-
-            // If the result is addressable, then all of its arguments should be as well. Let it load on demand.
-            if (result.IsAddressable)
-            {
-                foreach (IR.Expression expr in op.Arguments)
-                {
-                    Debug.Assert(m_localValues[expr].IsAddressable, "All inputs of an addressable phi node must also be addressable.");
-                }
-
-                return;
-            }
-
-            // We need to delay adding values to the node as some predecessor blocks may not have been emitted yet.
-            _Value phiNode = m_basicBlock.InsertPhiNode( m_manager.GetOrInsertType( op.FirstResult.Type ) );
-            m_pendingPhiNodes.Add( op, phiNode );
-
-            StoreValue( result, phiNode );
         }
 
         private void Translate_CompareAndSetOperator( IR.CompareAndSetOperator op )

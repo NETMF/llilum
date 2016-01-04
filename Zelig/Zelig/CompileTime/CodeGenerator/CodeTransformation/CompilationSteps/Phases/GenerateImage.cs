@@ -35,7 +35,6 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
                 delegate( ControlFlowGraphStateForCodeTransformation cfg )
                 {
                     Transformations.MergeExtendedBasicBlocks.Execute( cfg, preserveInjectionSites: false );
-                    Transformations.StaticSingleAssignmentForm.ConvertInto( cfg );
                 } );
 #endif // LLVM
 
