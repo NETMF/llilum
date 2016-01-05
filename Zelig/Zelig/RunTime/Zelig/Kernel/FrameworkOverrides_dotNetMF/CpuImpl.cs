@@ -1,12 +1,12 @@
 using System;
 
-using NETMF = Microsoft.Zelig.Runtime;
+using NETMF = Microsoft.SPOT.Hardware;
 
 
 namespace Microsoft.Zelig.Runtime
 {
     [ExtendClass(typeof(NETMF.Cpu), NoConstructors = true)]
-    public static class Cpu
+    public static class CpuImpl
     {
         public static uint SystemClock
         {

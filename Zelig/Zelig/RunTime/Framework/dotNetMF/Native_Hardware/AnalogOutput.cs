@@ -1,7 +1,11 @@
 using System;
 using System.Runtime.CompilerServices;
 
-namespace Microsoft.SPOT.Hardware {
+using LLILUM = Microsoft.Llilum.Devices;
+
+
+namespace Microsoft.SPOT.Hardware
+{
 
     public class AnalogOutput : IDisposable
     {
@@ -9,11 +13,13 @@ namespace Microsoft.SPOT.Hardware {
 
         //--//
 
-        private readonly Cpu.Pin m_pin;
+        private readonly Cpu.Pin                 m_pin;
         private readonly Cpu.AnalogOutputChannel m_channel;
-        private double m_scale;
-        private double m_offset;
-        private readonly int m_precision;
+        private readonly int                     m_precision;
+        private          double                  m_scale;
+        private          double                  m_offset;
+        //--//
+        private readonly LLILUM.Adc.AdcPin      m_adc;
 
         //--//
 
@@ -24,44 +30,60 @@ namespace Microsoft.SPOT.Hardware {
         /// <param name="scale">A multiplicative factor to apply to the value written to the sensor</param>
         /// <param name="offset">A constant factor to add to the value written to the sensor</param>
         /// <param name="precisionInBits">The desired bit precision for the D/A conversion. A value of -1 indicates default precision.</param>
-        public AnalogOutput(Cpu.AnalogOutputChannel channel, double scale, double offset, int precisionInBits)
+        public AnalogOutput( Cpu.AnalogOutputChannel channel, double scale, double offset, int precisionInBits )
         {
             m_channel = channel;
 
             HardwareProvider hwProvider = HardwareProvider.HwProvider;
 
-            if (hwProvider == null) throw new InvalidOperationException();
-            
-            m_pin = hwProvider.GetAnalogOutputPinForChannel(channel);
+            if(hwProvider == null) throw new InvalidOperationException( );
+
+            m_pin = hwProvider.GetAnalogOutputPinForChannel( channel );
             m_scale = scale;
             m_offset = offset;
 
             int[] availablePrecisions = hwProvider.GetAvailableAnalogOutputPrecisionInBitsForChannel(channel);
-            if(precisionInBits == -1) {
-                if(availablePrecisions.Length == 0) throw new InvalidOperationException();
-                m_precision = availablePrecisions[0];
-            } else {
+            if(precisionInBits == -1)
+            {
+                if(availablePrecisions.Length == 0) throw new InvalidOperationException( );
+                m_precision = availablePrecisions[ 0 ];
+            }
+            else
+            {
                 bool found = false;
-                foreach(int precision in availablePrecisions) {
-                    if(precisionInBits == precision) {
+                foreach(int precision in availablePrecisions)
+                {
+                    if(precisionInBits == precision)
+                    {
                         m_precision = precision;
                         found = true;
                         break;
                     }
                 }
-                if(!found) {
-                    throw new ArgumentException();
+                if(!found)
+                {
+                    throw new ArgumentException( );
                 }
             }
+            
+            m_adc = new LLILUM.Adc.AdcPin( (int)m_pin ); 
+
             bool fReserved = false;
-            try {
-                lock (s_syncRoot) {
-                    fReserved = Port.ReservePin(m_pin, true);
-                    Initialize(channel, m_precision);
+            try
+            {
+                lock (s_syncRoot)
+                {
+                    fReserved = Port.ReservePin( m_pin, true );
+                    Initialize( channel, m_precision );
                 }
-            } catch {
-                if (fReserved) {
-                    Port.ReservePin(m_pin, false);
+            }
+            catch
+            {
+                m_adc.Dispose( ); 
+
+                if(fReserved)
+                {
+                    Port.ReservePin( m_pin, false );
                 }
                 throw;
             }
@@ -162,8 +184,12 @@ namespace Microsoft.SPOT.Hardware {
         /// Writes a raw level to the AnalogOutput.
         /// <param name="level">The raw D/A value</param>
         /// </summary>
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public extern void WriteRaw(int level);
+        //////[MethodImplAttribute(MethodImplOptions.InternalCall)]
+        //////public extern void WriteRaw(int level);
+        public void WriteRaw(int level)
+        {
+            throw new NotImplementedException( ); 
+        }
 
         //--//
 

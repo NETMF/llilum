@@ -94,6 +94,8 @@
     <Compile Include="FrameworkOverrides\Threading\InterlockedImpl.cs" />
     <Compile Include="FrameworkOverrides\Threading\ThreadImpl.cs" />
     <Compile Include="FrameworkOverrides\TypeImpl.cs" />
+    <Compile Include="FrameworkOverrides_dotNetMF\AnalogInputImpl.cs" />
+    <Compile Include="FrameworkOverrides_dotNetMF\AnalogOutputImpl.cs" />
     <Compile Include="FrameworkOverrides_dotNetMF\CpuImpl.cs" />
     <Compile Include="FrameworkOverrides_dotNetMF\HW_UtilityImpl.cs" />
     <Compile Include="FrameworkOverrides_dotNetMF\IOPortsImpl.cs" />

@@ -1,6 +1,9 @@
 using System;
 using System.Runtime.CompilerServices;
 
+using LLILUM = Microsoft.Llilum.Devices;
+
+
 namespace Microsoft.SPOT.Hardware
 {
     public class AnalogInput : IDisposable
@@ -9,12 +12,14 @@ namespace Microsoft.SPOT.Hardware
 
         //--//
 
-        private readonly Cpu.Pin m_pin;
+        private readonly Cpu.Pin           m_pin;
         private readonly Cpu.AnalogChannel m_channel;
-        private double m_scale;
-        private double m_offset;
-        private readonly int m_precision;
-        private bool m_disposed;
+        private readonly int               m_precision;
+        private double                     m_scale;
+        private double                     m_offset;
+        private bool                       m_disposed;
+        //--//
+        private readonly LLILUM.Adc.AdcPin m_adc;
 
         //--//
 
@@ -33,8 +38,8 @@ namespace Microsoft.SPOT.Hardware
 
             if(hwProvider == null) throw new InvalidOperationException();
             
-            m_pin = hwProvider.GetAnalogPinForChannel(channel);
-            m_scale = scale;
+            m_pin    = hwProvider.GetAnalogPinForChannel(channel);
+            m_scale  = scale;
             m_offset = offset;
 
             int[] availablePrecisions = hwProvider.GetAvailablePrecisionInBitsForChannel(channel);
@@ -62,6 +67,8 @@ namespace Microsoft.SPOT.Hardware
                     throw new ArgumentException();
                 }
             }
+            
+            m_adc = new LLILUM.Adc.AdcPin( (int)m_pin ); 
 
             bool fReserved = false;
             try
@@ -74,6 +81,8 @@ namespace Microsoft.SPOT.Hardware
             }
             catch
             {
+                m_adc.Dispose( ); 
+
                 if (fReserved)
                 {
                     Port.ReservePin(m_pin, false);
@@ -200,8 +209,12 @@ namespace Microsoft.SPOT.Hardware
         /// Reads from the AnalogInput and returns the raw reading.
         /// </summary>
         /// <returns>The raw AD value</returns>
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public extern int ReadRaw();
+        //////[MethodImplAttribute(MethodImplOptions.InternalCall)]
+        //////public extern int ReadRaw()
+        public int ReadRaw()
+        {
+            return (int)m_adc.ReadUnsigned( ); 
+        }
 
         //--//
 
