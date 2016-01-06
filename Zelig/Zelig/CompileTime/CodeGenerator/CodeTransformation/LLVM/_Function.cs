@@ -60,6 +60,35 @@ namespace Microsoft.Zelig.LLVM
             var function = ( Function )LlvmValue;
             if( function.BasicBlocks.Count == 0 )
                 function.Linkage( Linkage.ExternalWeak );
+
+            if (method.HasBuildTimeFlag(TS.MethodRepresentation.BuildTimeAttributes.Inline))
+            {
+                // BUGBUG: Should this be AlwaysInline?
+                AddAttribute(FunctionAttribute.InlineHint);
+            }
+
+            if (method.HasBuildTimeFlag(TS.MethodRepresentation.BuildTimeAttributes.NoInline))
+            {
+                AddAttribute(FunctionAttribute.NoInline);
+            }
+
+            if (method.HasBuildTimeFlag(TS.MethodRepresentation.BuildTimeAttributes.BottomOfCallStack))
+            {
+                AddAttribute(FunctionAttribute.Naked);
+            }
+
+            if (method.HasBuildTimeFlag(TS.MethodRepresentation.BuildTimeAttributes.NoReturn))
+            {
+                AddAttribute(FunctionAttribute.NoReturn);
+            }
+
+            // Try to find an explicit stack alignment attribute and apply it if it exists.
+            TS.WellKnownTypes wkt = module.TypeSystem.WellKnownTypes;
+            TS.CustomAttributeRepresentation alignAttr = method.FindCustomAttribute(wkt.Microsoft_Zelig_Runtime_AlignmentRequirementsAttribute);
+            if (alignAttr != null)
+            {
+                AddAttribute(FunctionAttribute.StackAlignment, (uint)alignAttr.FixedArgsValues[0]);
+            }
         }
 
         public Function LlvmFunction => ( Function )LlvmValue;

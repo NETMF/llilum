@@ -470,6 +470,7 @@ namespace Microsoft.Zelig.Runtime
         internal static void SelfTest__Memory()
         {
             SelfTest__Memory__BoxUnbox();
+            SelfTest__Memory__Delegates();
 
             SelfTest__Memory__BasicAllocation1();
             SelfTest__Memory__BasicAllocation2();
@@ -699,6 +700,64 @@ namespace Microsoft.Zelig.Runtime
             SELFTEST_ASSERT((int)boxedInt3 == 49);
 
             BugCheck.Log("BoxUnbox Succeeded.");
+        }
+
+        internal delegate void SelfTest_Delegate(object arg);
+
+        internal class DelegateHandlersBase
+        {
+            internal virtual void VirtualHandler(object arg)
+            {
+                // Intentionally fail the test.
+                BugCheck.Log("Failed test: Called an overridden method.");
+                SELFTEST_ASSERT(false);
+            }
+        }
+
+        internal class DelegateHandlers : DelegateHandlersBase
+        {
+            static internal object s_testArg;
+            internal object TestArg;
+
+            internal static void StaticHandler(object arg)
+            {
+                SELFTEST_ASSERT(arg == s_testArg);
+            }
+
+            internal void InstanceHandler(object arg)
+            {
+                SELFTEST_ASSERT(arg == TestArg);
+            }
+
+            internal override void VirtualHandler(object arg)
+            {
+                SELFTEST_ASSERT(arg == TestArg);
+            }
+        }
+
+        private static void SelfTest__Memory__Delegates()
+        {
+            BugCheck.Log("Delegates Started...");
+
+            object testObject = new object();
+            DelegateHandlers.s_testArg = testObject;
+
+            BugCheck.Log("    Testing static delegate...");
+            SelfTest_Delegate staticDel = DelegateHandlers.StaticHandler;
+            staticDel(testObject);
+
+            var handlers = new DelegateHandlers();
+            handlers.TestArg = testObject;
+
+            BugCheck.Log("    Testing instance delegate...");
+            SelfTest_Delegate instanceDel = handlers.InstanceHandler;
+            instanceDel(testObject);
+
+            BugCheck.Log("    Testing virtual delegate...");
+            SelfTest_Delegate virtualDel = handlers.VirtualHandler;
+            virtualDel(testObject);
+
+            BugCheck.Log("Delegates Succeeded.");
         }
 
         [DisableAutomaticReferenceCounting]

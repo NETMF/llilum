@@ -542,36 +542,9 @@ namespace Microsoft.Zelig.LLVM
             }
         }
 
-        private void LoadParams( _Function func, IList<_Value> args, IList<Value> parameters )
+        public _Value InsertCall( _Function func, List<_Value> args )
         {
-            for( int i = 0; i < args.Count; ++i )
-            {
-                ITypeRef pty = ( ( Function )func.LlvmValue ).Parameters[ i ].NativeType;
-                _Type paramType = _Type.GetTypeImpl( pty );
-
-                _Value argument = args[ i ];
-                Value llvmValue = argument.LlvmValue;
-
-                // IntPtr/UIntPtr can be cast to anything.
-                if ( argument.Type.Name == "System.IntPtr" || argument.Type.Name == "System.UIntPtr" )
-                {
-                    llvmValue = IrBuilder.BitCast( llvmValue, pty );
-                }
-
-                // Anything can be cast to IntPtr/UIntPtr.
-                if( paramType.Name == "System.IntPtr" || paramType.Name == "System.UIntPtr" )
-                {
-                    llvmValue = IrBuilder.BitCast( llvmValue, pty );
-                }
-
-                parameters.Add( llvmValue );
-            }
-        }
-
-        public _Value InsertCall( _Function func, List<_Value > args )
-        {
-            List< Value> parameters = new List<Value>();
-            LoadParams( func, args, parameters );
+            List<Value> parameters = args.Select((_Value value) => { return value.LlvmValue; }).ToList();
 
             Value retVal = IrBuilder.Call( func.LlvmValue, parameters )
                                     .SetDebugLocation( CurDILocation );
@@ -583,26 +556,30 @@ namespace Microsoft.Zelig.LLVM
             return new _Value( Module, _Type.GetTypeImpl( llvmFunc.ReturnType ), retVal );
         }
 
-        public _Value InsertIndirectCall( _Function func, _Value ptr, List<_Value> args )
+        public _Value InsertIndirectCall(_Value ptr, _Type returnType, List<_Value> args)
         {
-            List< Value > parameters = new List<Value>();
-            LoadParams( func, args, parameters );
+            List<Value> parameters = args.Select((_Value value) => { return value.LlvmValue; }).ToList();
 
-            _Type timpl = Module.GetOrInsertPointerType( func.Type );
+            // Manufacture a function prototype.
+            var paramTypes = parameters.Select((Value value) => { return value.NativeType; });
+            ITypeRef llvmFuncType = Module.LlvmContext.GetFunctionType(returnType.DebugType.NativeType, paramTypes);
+            ITypeRef funcPointerType = llvmFuncType.CreatePointerType();
 
-            Value extracted = IrBuilder.ExtractValue( ptr.LlvmValue, 0 )
-                                       .SetDebugLocation( CurDILocation );
-            Value pointer = IrBuilder.BitCast( extracted, timpl.DebugType )
-                                     .RegisterName( "DelegatePointer" )
-                                     .SetDebugLocation( CurDILocation );
-            Value retVal = IrBuilder.Call( pointer, parameters )
-                                    .SetDebugLocation( CurDILocation );
+            // Build a call to the code pointer.
+            Value extracted = IrBuilder.ExtractValue(ptr.LlvmValue, 0)
+                                       .SetDebugLocation(CurDILocation);
+            Value pointer = IrBuilder.BitCast(extracted, funcPointerType)
+                                     .SetDebugLocation(CurDILocation);
+            Value retVal = IrBuilder.Call(pointer, parameters)
+                                    .SetDebugLocation(CurDILocation);
 
-            var llvmFunc = ( Function )func.LlvmValue;
-            if( llvmFunc.ReturnType.IsVoid )
+            // Don't bother wrapping the return if we won't use it.
+            if (returnType.DebugType.IsVoid)
+            {
                 return null;
+            }
 
-            return new _Value( Module, _Type.GetTypeImpl( llvmFunc.ReturnType ), retVal );
+            return new _Value(Module, returnType, retVal);
         }
 
         static _Type SetValuesForByteOffsetAccess( _Type ty, List<uint> values, int offset, out string fieldName )

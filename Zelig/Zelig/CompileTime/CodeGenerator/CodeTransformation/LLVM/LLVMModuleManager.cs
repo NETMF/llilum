@@ -153,38 +153,6 @@ namespace Microsoft.Zelig.LLVM
         {
             _Function function = m_module.GetOrInsertFunction( this, md );
             function.LlvmFunction.Section = m_SectionNameProvider.GetSectionNameFor( md );
-
-            // FUTURE: We might see a very slight performance improvement by checking whether these already exist before
-            // setting them. However, setting each attribute is relatively cheap so we'll do it the naive way for now.
-            if( md.HasBuildTimeFlag( TS.MethodRepresentation.BuildTimeAttributes.Inline ) )
-            {
-                // BUGBUG: Should this be AlwaysInline?
-                function.AddAttribute( FunctionAttribute.InlineHint );
-            }
-
-            if( md.HasBuildTimeFlag( TS.MethodRepresentation.BuildTimeAttributes.NoInline ) )
-            {
-                function.AddAttribute( FunctionAttribute.NoInline );
-            }
-
-            if( md.HasBuildTimeFlag( TS.MethodRepresentation.BuildTimeAttributes.BottomOfCallStack ) )
-            {
-                function.AddAttribute( FunctionAttribute.Naked );
-            }
-
-            if ( md.HasBuildTimeFlag( TS.MethodRepresentation.BuildTimeAttributes.NoReturn ) )
-            {
-                function.AddAttribute( FunctionAttribute.NoReturn );
-            }
-
-            // Try to find an explicit stack alignment attribute and apply it if it exists.
-            TS.WellKnownTypes wkt = m_typeSystem.WellKnownTypes;
-            TS.CustomAttributeRepresentation alignAttr = md.FindCustomAttribute( wkt.Microsoft_Zelig_Runtime_AlignmentRequirementsAttribute );
-            if (alignAttr != null)
-            {
-                function.AddAttribute( FunctionAttribute.StackAlignment, (uint)alignAttr.FixedArgsValues[0] );
-            }
-
             return function;
         }
 

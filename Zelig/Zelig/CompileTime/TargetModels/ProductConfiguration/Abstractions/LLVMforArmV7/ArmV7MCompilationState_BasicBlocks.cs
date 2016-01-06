@@ -1004,7 +1004,13 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
             TS.MethodRepresentation method = op.TargetMethod;
             int firstArgument = ( method is TS.StaticMethodRepresentation ) ? 1 : 0;
-            int indirectAdjust = callIndirect ? 1 : 0;
+            int indirectAdjust = 0;
+
+            if (callIndirect)
+            {
+                firstArgument = ((IR.IndirectCallOperator)op).IsInstanceCall ? 0 : 1;
+                indirectAdjust = 1;
+            }
 
             for( int i = firstArgument; i < method.ThisPlusArguments.Length; ++i )
             {
@@ -1018,7 +1024,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             _Value result;
             if( !ReplaceMethodCallWithIntrinsic( method, args, out result ) )
             {
-                LLVM._Function targetFunc = m_manager.GetOrInsertFunction( method );
+                _Function targetFunc = m_manager.GetOrInsertFunction( method );
 
                 if( method.Flags.HasFlag( TS.MethodRepresentation.Attributes.PinvokeImpl ) )
                 {
@@ -1027,8 +1033,15 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
                 if( callIndirect )
                 {
-                    _Value callAddress = GetImmediate( op.BasicBlock, op.Arguments[ 0 ] );
-                    result = m_basicBlock.InsertIndirectCall( targetFunc, callAddress, args );
+                    _Value callAddress = GetImmediate(op.BasicBlock, op.Arguments[0]);
+
+                    _Type returnType = m_manager.GetOrInsertType(m_wkt.System_Void);
+                    if (op.Results.Length > 0)
+                    {
+                        returnType = m_manager.GetOrInsertType(op.FirstResult.Type);
+                    }
+
+                    result = m_basicBlock.InsertIndirectCall(callAddress, returnType, args);
                 }
                 else
                 {

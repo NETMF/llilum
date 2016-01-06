@@ -101,7 +101,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
                 VariableExpression methodPointer = LoadVirtualMethodPointer( nc, op, op.FirstArgument, op.TargetMethod );
                 Expression[] rhs = ArrayUtility.InsertAtHeadOfNotNullArray( op.Arguments, methodPointer );
-                CallOperator call = IndirectCallOperator.New( op.DebugInfo, op.TargetMethod, op.Results, rhs, false );
+                CallOperator call = IndirectCallOperator.New( op.DebugInfo, op.TargetMethod, op.Results, rhs, true, false );
 
                 op.SubstituteWithOperator( call, Operator.SubstitutionFlags.CopyAnnotations );
 
@@ -782,7 +782,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                         op.AddOperatorBefore( NullCheckOperator.New( debugInfo, op.SecondArgument ) );
                     }
 
-                    opNew = IndirectCallOperator.New( debugInfo, op.TargetMethod, op.Results, op.Arguments, false );
+                    bool isInstanceCall = ((IndirectCallOperator)op).IsInstanceCall;
+                    opNew = IndirectCallOperator.New(debugInfo, op.TargetMethod, op.Results, op.Arguments, isInstanceCall, false);
                 }
                 else
                 {

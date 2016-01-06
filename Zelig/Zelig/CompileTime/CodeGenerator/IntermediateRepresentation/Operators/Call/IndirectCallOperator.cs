@@ -19,8 +19,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         private IndirectCallOperator( Debugging.DebugInfo  debugInfo    ,
                                       OperatorCapabilities capabilities ,
                                       OperatorLevel        level        ,
-                                      MethodRepresentation md           ) : base( debugInfo, capabilities, level, CallKind.Indirect, md )
+                                      MethodRepresentation md           ,
+                                      bool                 isInstance   ) : base( debugInfo, capabilities, level, CallKind.Indirect, md )
         {
+            IsInstanceCall = isInstance;
         }
 
         //--//
@@ -28,11 +30,12 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         public static IndirectCallOperator New( Debugging.DebugInfo  debugInfo  ,
                                                 MethodRepresentation md         ,
                                                 Expression[]         rhs        ,
+                                                bool                 isInstance ,
                                                 bool                 fNullCheck )
         {
             CHECKS.ASSERT( md.ReturnType.BuiltInType == TypeRepresentation.BuiltInTypes.VOID, "Method '{0}' does not return a value, it cannot be assigned to an Lvalue", md );
 
-            IndirectCallOperator res = Alloc( debugInfo, md, rhs, fNullCheck );
+            IndirectCallOperator res = Alloc( debugInfo, md, rhs, isInstance, fNullCheck );
 
             res.SetRhsArray( rhs );
 
@@ -43,12 +46,13 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                                                 MethodRepresentation md         ,
                                                 VariableExpression[] lhs        ,
                                                 Expression[]         rhs        ,
+                                                bool                 isInstance ,
                                                 bool                 fNullCheck )
         {
             CHECKS.ASSERT( md.ReturnType.BuiltInType == TypeRepresentation.BuiltInTypes.VOID || lhs.Length != 0, "Method '{0}' does not return a value, it cannot be assigned to an Lvalue", md );
             CHECKS.ASSERT( md.ReturnType.BuiltInType != TypeRepresentation.BuiltInTypes.VOID || lhs.Length == 0, "Method '{0}' returns a value, it must be assigned to an Lvalue"          , md );
 
-            IndirectCallOperator res = Alloc( debugInfo, md, rhs, fNullCheck );
+            IndirectCallOperator res = Alloc( debugInfo, md, rhs, isInstance, fNullCheck );
 
             res.SetLhsArray( lhs );
             res.SetRhsArray( rhs );
@@ -59,6 +63,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         private static IndirectCallOperator Alloc( Debugging.DebugInfo  debugInfo  ,
                                                    MethodRepresentation md         ,
                                                    Expression[]         rhs        ,
+                                                   bool                 isInstance ,
                                                    bool                 fNullCheck )
         {
             CHECKS.ASSERT( CallOperator.MatchSignature( md, rhs, CallKind.Indirect ), "Incompatible arguments for call to '{0}'", md );
@@ -81,7 +86,6 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                                                              OperatorCapabilities.DoesNotWriteThroughPointerOperands |
                                                              OperatorCapabilities.DoesNotCapturePointerOperands      ;
 
-
             OperatorCapabilities capabilities = HasPointerArguments( rhs, 1 ) ? cCapabilitiesMay : cCapabilitiesDoesnt;
             OperatorLevel        level;
 
@@ -93,8 +97,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             {
                 level = OperatorLevel.ConcreteTypes_NoExceptions;
             }
-            
-            return new IndirectCallOperator( debugInfo, capabilities, level, md );
+
+            return new IndirectCallOperator(debugInfo, capabilities, level, md, isInstance);
         }
 
         //--//
@@ -107,7 +111,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         {
             MethodRepresentation md = context.ConvertMethod( m_md );
 
-            return RegisterAndCloneState( context, new IndirectCallOperator( m_debugInfo, m_capabilities, m_level, md ) );
+            var op = new IndirectCallOperator(m_debugInfo, m_capabilities, m_level, md, IsInstanceCall);
+            return RegisterAndCloneState(context, op);
         }
 
         //--//
@@ -115,6 +120,11 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         //
         // Access Methods
         //
+
+        public bool IsInstanceCall
+        {
+            get;
+        }
 
         //--//
 
