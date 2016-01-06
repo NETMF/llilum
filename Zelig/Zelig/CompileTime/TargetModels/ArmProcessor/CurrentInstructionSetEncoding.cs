@@ -33,7 +33,7 @@ namespace Microsoft.Zelig.TargetModel.ArmProcessor
                     case InstructionSetVersion.PlatformVersion_5:
                         enc = new EncodingDefinition_ARM();
                         break;
-                    case InstructionSetVersion.PlatformVersion_6:
+                    case InstructionSetVersion.PlatformVersion_6M:
                     case InstructionSetVersion.PlatformVersion_7M:
                     case InstructionSetVersion.PlatformVersion_7R:
                     case InstructionSetVersion.PlatformVersion_7A:

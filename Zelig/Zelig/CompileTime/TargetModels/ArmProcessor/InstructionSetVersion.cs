@@ -16,9 +16,9 @@ namespace Microsoft.Zelig.TargetModel.ArmProcessor
         //
         // Platform Version
         //
-        public const string PlatformVersion_4 = "v4";
-        public const string PlatformVersion_5 = "v5";
-        public const string PlatformVersion_6 = "v6";
+        public const string PlatformVersion_4  = "v4";
+        public const string PlatformVersion_5  = "v5";
+        public const string PlatformVersion_6M = "v6-M";
         public const string PlatformVersion_7M = "v7-M";
         public const string PlatformVersion_7R = "v7-R";
         public const string PlatformVersion_7A = "v7-A";

@@ -96,6 +96,7 @@
     <Compile Include="Abstractions\ARM\Operators\MoveFromCoprocessor.cs" />
     <Compile Include="Abstractions\ARM\Operators\MoveToCoprocessor.cs" />
     <Compile Include="Abstractions\ARM\Operators\SetStatusRegisterOperator.cs" />
+    <Compile Include="Abstractions\LLVMforArmV7\ArmV6M.cs" />
     <Compile Include="Abstractions\LLVMforArmV7\ArmV7M.cs" />
     <Compile Include="Abstractions\LLVMforArmV7\ArmV7MCallingConvention.cs" />
     <Compile Include="Abstractions\LLVMforArmV7\ArmV7MCompilationState.cs" />

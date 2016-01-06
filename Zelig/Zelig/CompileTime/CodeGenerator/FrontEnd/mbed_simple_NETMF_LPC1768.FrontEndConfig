@@ -4,6 +4,8 @@
 -HostAssemblyDir   ..\..\..\..\ZeligBuild\Host\bin\Debug
 -DeviceAssemblyDir ..\..\..\..\ZeligBuild\Target\bin\Debug
 
+-Architecture cortex-m3
+
 -CompilationSetupPath ..\..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Llilum.BoardConfigurations.LPC1768.dll
 -CompilationSetup Microsoft.Llilum.BoardConfigurations.LPC1768MBEDHostedCompilationSetup
 

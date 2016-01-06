@@ -96,10 +96,28 @@ namespace Microsoft.Zelig.FrontEnd
         // Environment variables that may refer to the LLVM tools location
         static readonly string[] LlvmBinPathEnvVarNames = { "LLILUM_LLVM", "LLVM_BIN" };
 
-        // These are the default arguments to LLC.EXE if not specified in the command line arguments
-        const string DefaultLlcArgs = "-O2 -code-model=small -data-sections -relocation-model=pic -march=thumb -mcpu=cortex-m3 -filetype=obj -mtriple=thumbv7m-none-eabi";
-        const string DefaultOptExeArgs = "-verify-debug-info -verify-dom-info -verify-each -verify-loop-info -verify-regalloc -verify-region-info -march=thumb -mcpu=cortex-m3 -aa-eval -indvars -gvn -globaldce -adce -dce -tailcallopt -scalarrepl -mem2reg -ipconstprop -deadargelim -sccp -dce -ipsccp -dce -constmerge -scev-aa -targetlibinfo -irce -dse -dce -argpromotion -mem2reg -adce -mem2reg -globaldce -die -dce -dse";
+        // Supported architectures
+        const string c_CortexM0 = "cortex-m0";
+        const string c_CortexM3 = "cortex-m3";
+        const string c_CortexM4 = "cortex-m4";
+        const string c_CortexM7 = "cortex-m7";
 
+        // These are the default arguments to LLC.EXE if not specified in the command line arguments
+        const string DefaultLlcArgs_common    = "-O2 -code-model=small -data-sections -filetype=obj";
+        const string DefaultLlcArgs_target_m0 = "-march=thumb -mcpu=cortex-m0 -mtriple=thumbv6m-none-eabi";
+        const string DefaultLlcArgs_target_m3 = "-march=thumb -mcpu=cortex-m3 -mtriple=thumbv7m-none-eabi";
+        const string DefaultLlcArgs_target_m4 = "-march=thumb -mcpu=cortex-m4 -mtriple=thumbv7m-none-eabi";
+        const string DefaultLlcArgs_target_m7 = "-march=thumb -mcpu=cortex-m7 -mtriple=thumbv7m-none-eabi";
+        const string DefaultLlcArgs_target_df = DefaultLlcArgs_target_m3;
+        const string DefaultLlcArgs_reloc     = "-relocation-model=pic";
+        //--//
+        const string DefaultOptExeArgs_common    = "-verify-debug-info -verify-dom-info -verify-each -verify-loop-info -verify-regalloc -verify-region-info -aa-eval -indvars -gvn -globaldce -adce -dce -tailcallopt -scalarrepl -mem2reg -ipconstprop -deadargelim -sccp -dce -ipsccp -dce -constmerge -scev-aa -targetlibinfo -irce -dse -dce -argpromotion -mem2reg -adce -mem2reg -globaldce -die -dce -dse";
+        const string DefaultOptArgs_target_m0 = "-march=thumb -mcpu=cortex-m0";
+        const string DefaultOptArgs_target_m3 = "-march=thumb -mcpu=cortex-m3";
+        const string DefaultOptArgs_target_m4 = "-march=thumb -mcpu=cortex-m4";
+        const string DefaultOptArgs_target_m7 = "-march=thumb -mcpu=cortex-m7";
+        const string DefaultOptArgs_target_df = DefaultOptArgs_target_m3;
+         
         //--//
 
         //
@@ -162,6 +180,13 @@ namespace Microsoft.Zelig.FrontEnd
         private Cfg.MemoryMapCategory               m_memoryMap;
 
         private IR.SourceCodeTracker                m_sourceCodeTracker;
+        
+        //
+        // This parameter overrides any infereces from compilation setup
+        // (e.g.: -CompilationSetup Microsoft.Llilum.BoardConfigurations.LPC1768MBEDHostedCompilationSetup)
+        // There is no reason for the compilation setup not to express all needed switches
+        //
+        private string                              m_architecture;
 
         //--//
 
@@ -1268,6 +1293,19 @@ namespace Microsoft.Zelig.FrontEnd
                         m_LlvmCodeGenOptions.HonorInlineAttribute = false;
                         m_LlvmCodeGenOptions.InjectPrologAndEpilog = false;
                     }
+                    else if( IsMatch( option, "Architecture" ) )
+                    {
+                        string arch;
+
+                        if( !GetArgument( arg, args, ref i, out arch, true ) )
+                        {
+                            return false;
+                        }
+
+                        ValidateArchitecture( arch );
+
+                        m_architecture = arch;
+                    }
                     else if( IsMatch( option, "DisableAutoInlining" ) )
                     {
                         m_LlvmCodeGenOptions.EnableAutoInlining = false;
@@ -1311,6 +1349,20 @@ namespace Microsoft.Zelig.FrontEnd
             }
 
             return true;
+        }
+        
+        private void ValidateArchitecture( string arch )
+        {
+            switch(arch)
+            {
+                case c_CortexM0:
+                case c_CortexM3:
+                case c_CortexM4:
+                case c_CortexM7:
+                    break;
+                default:
+                    throw new NotSupportedException( "The only architectures currently supported are Cortex-M, for M0[+], M3, M4 and M7 variants" );
+            }
         }
 
         private static bool IsMatch( string arg,
@@ -1975,10 +2027,13 @@ namespace Microsoft.Zelig.FrontEnd
 
             if( m_fDumpLLVMIR && !m_fSkipLlvmOptExe )
             {
+                var optSwitches = BuildOptArchitectureArgs( ); 
+
                 Console.WriteLine( "Optimizing LLVM Bitcode representation" );
-                var args = string.Format( "{0} {1} -o {2}"                ,
-                                        m_LlvmOptArgs ?? DefaultOptExeArgs,
-                                        filePrefix + ".bc"                ,
+
+                var args = string.Format( "{0} {1} -o {2}"          ,
+                                        m_LlvmOptArgs ?? optSwitches,
+                                        filePrefix + ".bc"          ,
                                         filePrefix + "_opt.bc" 
                                         );
                 ShellExec( "opt.exe", args );
@@ -1987,12 +2042,13 @@ namespace Microsoft.Zelig.FrontEnd
 
             if( m_fGenerateObj )
             {
-                var objFile = filePrefix + "_opt.o";
+                var objFile     = filePrefix + "_opt.o";
+                var llcSwitches = BuildLlcArchitectureArgs(); 
 
                 Console.WriteLine( "Compiling LLVM Bitcode" );
-                var args = string.Format( "{0} -o={1} {2}"             ,
-                                        m_LlvmLlcArgs ?? DefaultLlcArgs,
-                                        objFile                        ,
+                var args = string.Format( "{0} -o={1} {2}"          ,
+                                        m_LlvmLlcArgs ?? llcSwitches,
+                                        objFile                     ,
                                         filePrefix + "_opt.bc"         
                                         );
 
@@ -2039,6 +2095,67 @@ namespace Microsoft.Zelig.FrontEnd
             }
 
             Console.WriteLine( "{0}: Done", GetTime( ) );
+        }
+
+        private object BuildLlcArchitectureArgs( )
+        {
+            return ConcatArgs( DefaultLlcArgs_common, GetOptSwitchesForTargetArchitecture( ), DefaultLlcArgs_reloc ); 
+        }
+
+        private string BuildOptArchitectureArgs( )
+        {
+            return ConcatArgs( DefaultOptExeArgs_common, GetOptSwitchesForTargetArchitecture() ); 
+        }
+
+        private string GetOptSwitchesForTargetArchitecture( )
+        {
+            switch(m_architecture)
+            {
+                case c_CortexM0:
+                    return DefaultOptArgs_target_m0;
+                case c_CortexM3:
+                    return DefaultOptArgs_target_m3;
+                case c_CortexM4:
+                    return DefaultOptArgs_target_m4;
+                case c_CortexM7:
+                    return DefaultOptArgs_target_m7;
+                default:
+                    return DefaultOptArgs_target_df;
+            }
+        }
+
+        private string GetLlcSwitchesForTargetArchitecture( )
+        {
+            switch(m_architecture)
+            {
+                case c_CortexM0:
+                    return DefaultLlcArgs_target_m0;
+                case c_CortexM3:
+                    return DefaultLlcArgs_target_m3;
+                case c_CortexM4:
+                    return DefaultLlcArgs_target_m4;
+                case c_CortexM7:
+                    return DefaultLlcArgs_target_m7;
+                default:
+                    return DefaultLlcArgs_target_df;
+            }
+        }
+
+        private string ConcatArgs( params string[] args )
+        {
+            var sb = new StringBuilder();
+
+            for(int i = 0; i < args.Length; ++i)
+            {
+                sb.Append( args[i] );
+
+                if(i < args.Length - 1)
+                {
+                    sb.Append( " " );
+                }
+            }
+
+            return sb.ToString( ); 
         }
 
         private int ShellExec( string exe, string args )

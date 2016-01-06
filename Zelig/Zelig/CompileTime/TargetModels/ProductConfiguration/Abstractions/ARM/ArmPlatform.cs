@@ -44,9 +44,10 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
         {
             ARMv4  = 0x00000001,
             ARMv5  = 0x00000002,
-            ARMv7M = 0x00000004,
-            ARMv7R = 0x00000008,
-            ARMv7A = 0x00000010,
+            ARMv6M = 0x00000004,
+            ARMv7M = 0x00000008,
+            ARMv7R = 0x00000010,
+            ARMv7A = 0x00000020,
             VFPv2  = 0x00010000,
         }
 
@@ -408,9 +409,21 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
                 {
                     ver = InstructionSetVersion.PlatformVersion_5;
                 }
+                else if(0 != ( m_processorCapabilities & Capabilities.ARMv6M ))
+                {
+                    ver = InstructionSetVersion.PlatformVersion_6M;
+                }
                 else if(0 != ( m_processorCapabilities & Capabilities.ARMv7M ))
                 {
                     ver = InstructionSetVersion.PlatformVersion_7M;
+                }
+                else if(0 != ( m_processorCapabilities & Capabilities.ARMv7A ))
+                {
+                    ver = InstructionSetVersion.PlatformVersion_7A;
+                }
+                else if(0 != ( m_processorCapabilities & Capabilities.ARMv7R ))
+                {
+                    ver = InstructionSetVersion.PlatformVersion_7R;
                 }
 
                 return ver;

@@ -896,14 +896,14 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                 return true;
             }
 
-            // Microsoft.Zelig.Runtime.InterlockedImpl.InternalExchange(ref int, int) => llvm.atomicrmw xchg
-            // Microsoft.Zelig.Runtime.InterlockedImpl.InternalExchange(ref float, float) => llvm.atomicrmw xchg
+            // Microsoft.Zelig.Runtime.InterlockedImpl.InternalExchange(ref int, int)       => llvm.atomicrmw xchg
+            // Microsoft.Zelig.Runtime.InterlockedImpl.InternalExchange(ref float, float)   => llvm.atomicrmw xchg
             // Microsoft.Zelig.Runtime.InterlockedImpl.InternalExchange(ref IntPtr, IntPtr) => llvm.atomicrmw xchg
-            // Microsoft.Zelig.Runtime.InterlockedImpl.InternalExchange(ref T, T) => llvm.atomicrmw xchg
+            // Microsoft.Zelig.Runtime.InterlockedImpl.InternalExchange(ref T, T)           => llvm.atomicrmw xchg
             // Note: there's no built-in support for 64bit interlocked methods at the moment.
-            if(( method == wkm.InterlockedImpl_InternalExchange_int ) ||
-                ( method == wkm.InterlockedImpl_InternalExchange_float ) ||
-                ( method == wkm.InterlockedImpl_InternalExchange_IntPtr ) ||
+            if( ( method == wkm.InterlockedImpl_InternalExchange_int    )                                                  ||
+                ( method == wkm.InterlockedImpl_InternalExchange_float  )                                                  ||
+                ( method == wkm.InterlockedImpl_InternalExchange_IntPtr )                                                  ||
                 ( method.IsGenericInstantiation && method.GenericTemplate == wkm.InterlockedImpl_InternalExchange_Template ))
             {
                 _Value ptr = convertedArgs[ 0 ];
@@ -944,14 +944,14 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                 return true;
             }
 
-            // Microsoft.Zelig.Runtime.InterlockedImpl.InternalCompareExchange(ref int, int, int) => llvm.compxchg
-            // Microsoft.Zelig.Runtime.InterlockedImpl.InternalCompareExchange(ref float, float, float) => llvm.compxchg
+            // Microsoft.Zelig.Runtime.InterlockedImpl.InternalCompareExchange(ref int, int, int)          => llvm.compxchg
+            // Microsoft.Zelig.Runtime.InterlockedImpl.InternalCompareExchange(ref float, float, float)    => llvm.compxchg
             // Microsoft.Zelig.Runtime.InterlockedImpl.InternalCompareExchange(ref IntPtr, IntPtr, IntPtr) => llvm.compxchg
-            // Microsoft.Zelig.Runtime.InterlockedImpl.InternalCompareExchange(ref T, T, T) => llvm.compxchg
+            // Microsoft.Zelig.Runtime.InterlockedImpl.InternalCompareExchange(ref T, T, T)                => llvm.compxchg
             // Note: there's no built-in support for 64bit interlocked methods at the moment.
-            if(( method == wkm.InterlockedImpl_InternalCompareExchange_int ) ||
-                ( method == wkm.InterlockedImpl_InternalCompareExchange_float ) ||
-                ( method == wkm.InterlockedImpl_InternalCompareExchange_IntPtr ) ||
+            if( ( method == wkm.InterlockedImpl_InternalCompareExchange_int    )                                                  ||
+                ( method == wkm.InterlockedImpl_InternalCompareExchange_float  )                                                  ||
+                ( method == wkm.InterlockedImpl_InternalCompareExchange_IntPtr )                                                  ||
                 ( method.IsGenericInstantiation && method.GenericTemplate == wkm.InterlockedImpl_InternalCompareExchange_Template ))
             {
                 _Value ptr = convertedArgs[ 0 ];

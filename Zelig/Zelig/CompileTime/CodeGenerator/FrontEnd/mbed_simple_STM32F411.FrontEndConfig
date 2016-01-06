@@ -8,6 +8,8 @@
 -HostAssemblyDir   ..\..\..\..\ZeligBuild\Host\bin\Debug
 -DeviceAssemblyDir ..\..\..\..\ZeligBuild\Target\bin\Debug
 
+-Architecture cortex-m4
+
 -CompilationSetupPath ..\..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Llilum.BoardConfigurations.STM32F411.dll
 -CompilationSetup Microsoft.Llilum.BoardConfigurations.STM32F411MBEDHostedCompilationSetup
 
