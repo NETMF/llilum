@@ -396,7 +396,8 @@ namespace Microsoft.Zelig.LLVM
         {
             Value retVal = val.LlvmValue;
 
-            if( significantBits != val.Type.SizeInBits )
+            // TODO: Remove this workaround once issue #123 has been resolved.
+            if ( significantBits != val.Type.SizeInBits )
             {
                 retVal = IrBuilder.TruncOrBitCast( val.LlvmValue, Module.LlvmModule.Context.GetIntType( ( uint )significantBits ) )
                                   .SetDebugLocation( CurDILocation );
@@ -412,7 +413,8 @@ namespace Microsoft.Zelig.LLVM
         {
             Value retVal = val.LlvmValue;
 
-            if( significantBits != val.Type.SizeInBits )
+            // TODO: Remove this workaround once issue #123 has been resolved.
+            if ( significantBits != val.Type.SizeInBits )
             {
                 retVal = IrBuilder.TruncOrBitCast( val.LlvmValue, Module.LlvmModule.Context.GetIntType( ( uint )significantBits ) )
                                   .SetDebugLocation( CurDILocation );
@@ -424,13 +426,18 @@ namespace Microsoft.Zelig.LLVM
             return new _Value( Module, ty, retVal );
         }
 
-        public _Value InsertTrunc( _Value val, _Type ty, int significantBits )
+        public _Value InsertTrunc( _Value val, _Type type, int significantBits )
         {
-            // REVIEW: If (significantBits < ty.SizeInBits), this may not result in the correct value.
-            Value retVal = IrBuilder.TruncOrBitCast( val.LlvmValue, ty.DebugType )
+            // TODO: Remove this workaround once issue #123 has been resolved.
+            if (significantBits < type.SizeInBits)
+            {
+                return InsertZExt(val, type, significantBits);
+            }
+
+            Value retVal = IrBuilder.TruncOrBitCast( val.LlvmValue, type.DebugType )
                                     .SetDebugLocation( CurDILocation );
 
-            return new _Value( Module, ty, retVal );
+            return new _Value( Module, type, retVal );
         }
 
         public _Value InsertBitCast( _Value val, _Type type )
