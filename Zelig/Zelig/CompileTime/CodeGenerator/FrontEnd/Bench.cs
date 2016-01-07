@@ -2099,7 +2099,7 @@ namespace Microsoft.Zelig.FrontEnd
 
         private object BuildLlcArchitectureArgs( )
         {
-            return ConcatArgs( DefaultLlcArgs_common, GetOptSwitchesForTargetArchitecture( ), DefaultLlcArgs_reloc ); 
+            return ConcatArgs( DefaultLlcArgs_common, GetLlcSwitchesForTargetArchitecture( ), DefaultLlcArgs_reloc ); 
         }
 
         private string BuildOptArchitectureArgs( )
