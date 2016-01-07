@@ -2,6 +2,8 @@
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//#define TEST_EXCEPTIONS // https://github.com/NETMF/llilum/issues/130
+
 using System;
 using System.Reflection;
 using Microsoft.Zelig.Test;
@@ -408,11 +410,15 @@ namespace Microsoft.Zelig.Test
             Log.Comment("Each accessor declaration consists of an");
             Log.Comment("optional accessor-modifier, followed by the");
             Log.Comment("keyword get or set, followed by an accessor");
+#if TEST_EXCEPTIONS
             if (PropertiesTestClass053.testMethod())
             {
                 return TestResult.Pass;
             }
             return TestResult.Fail;
+#else
+            return TestResult.Skip;
+#endif
         }
         [TestMethod]
         public TestResult Properties054_Test()
@@ -421,11 +427,15 @@ namespace Microsoft.Zelig.Test
             Log.Comment("Each accessor declaration consists of an");
             Log.Comment("optional accessor-modifier, followed by the");
             Log.Comment("keyword get or set, followed by an accessor");
+#if TEST_EXCEPTIONS
             if (PropertiesTestClass054.testMethod())
             {
                 return TestResult.Pass;
             }
             return TestResult.Fail;
+#else
+            return TestResult.Skip;
+#endif
         }
         [TestMethod]
         public TestResult Properties056_Test()
@@ -681,12 +691,14 @@ namespace Microsoft.Zelig.Test
             Log.Comment("Each accessor declaration consists of an");
             Log.Comment("optional accessor-modifier, followed by the");
             Log.Comment("keyword get or set, followed by an accessor");
-            Log.Comment("This test is an expected fail");
+            //Log.Comment("This test is an expected fail");
             if (PropertiesTestClass123.testMethod())
             {
-                return TestResult.Fail;
+                //return TestResult.Fail;
+                return TestResult.Pass;
             }
-            return TestResult.Pass;
+            //return TestResult.Pass;
+            return TestResult.Fail;
         }
         [TestMethod]
         public TestResult Properties124_Test()
@@ -695,12 +707,14 @@ namespace Microsoft.Zelig.Test
             Log.Comment("Each accessor declaration consists of an");
             Log.Comment("optional accessor-modifier, followed by the");
             Log.Comment("keyword get or set, followed by an accessor");
-            Log.Comment("This test is an expected fail");
+            //Log.Comment("This test is an expected fail");
             if (PropertiesTestClass124.testMethod())
             {
-                return TestResult.Fail;
+                //return TestResult.Fail;
+                return TestResult.Pass;
             }
-            return TestResult.Pass;
+            //return TestResult.Pass;
+            return TestResult.Fail;
         }
         [TestMethod]
         public TestResult Properties125_Test()
@@ -1873,7 +1887,7 @@ namespace Microsoft.Zelig.Test
 	        public static bool testMethod() {
 		        PropertiesTestClass126_Base MC = new PropertiesTestClass126();
 		        MC.MyProp = 4;
-		        if (MC.MyProp == 4)
+		        if (MC.MyProp == -1)
 		        {
 			        return true;
 		        }

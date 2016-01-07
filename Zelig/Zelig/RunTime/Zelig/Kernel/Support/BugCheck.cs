@@ -103,12 +103,12 @@ namespace Microsoft.Zelig.Runtime
 
         public static void AssertInterruptsOff()
         {
-            Assert( Processor.Instance.AreInterruptsDisabled() == true, BugCheck.StopCode.InterruptsNotDisabled );
+            Assert( Processor.Instance.AreInterruptsDisabled(), BugCheck.StopCode.InterruptsNotDisabled );
         }
 
         public static void AssertInterruptsOn()
         {
-            Assert( Processor.Instance.AreInterruptsDisabled() == false, BugCheck.StopCode.InterruptsNotEnabled );
+            Assert( Processor.Instance.AreInterruptsEnabled(), BugCheck.StopCode.InterruptsNotEnabled );
         }
 
         //--//

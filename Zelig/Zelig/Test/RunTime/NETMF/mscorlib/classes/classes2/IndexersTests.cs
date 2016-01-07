@@ -369,7 +369,7 @@ namespace Microsoft.Zelig.Test
         [TestMethod]
         public TestResult Indexers46_Test()
         {
-            Log.Comment("Testing multiple comma seperated indexers");
+            Log.Comment("Testing multiple comma separated indexers");
             if (IndexersTestClass46.testMethod())
             {
                 return TestResult.Pass;
@@ -380,7 +380,7 @@ namespace Microsoft.Zelig.Test
         [TestMethod]
         public TestResult Indexers47_Test()
         {
-            Log.Comment("Testing multiple comma seperated indexers to a public variable");
+            Log.Comment("Testing multiple comma separated indexers to a public variable");
 
             if (IndexersTestClass47.testMethod())
             {
@@ -392,7 +392,7 @@ namespace Microsoft.Zelig.Test
         [TestMethod]
         public TestResult Indexers48_Test()
         {
-            Log.Comment("Testing multiple comma seperated indexers with a protected internal get and set");
+            Log.Comment("Testing multiple comma separated indexers with a protected internal get and set");
             if (IndexersTestClass48.testMethod())
             {
                 return TestResult.Pass;
@@ -403,7 +403,7 @@ namespace Microsoft.Zelig.Test
         [TestMethod]
         public TestResult Indexers49_Test()
         {
-            Log.Comment("Testing multiple comma seperated indexers with an internal get and set");
+            Log.Comment("Testing multiple comma separated indexers with an internal get and set");
             if (IndexersTestClass49.testMethod())
             {
                 return TestResult.Pass;
@@ -414,7 +414,7 @@ namespace Microsoft.Zelig.Test
         [TestMethod]
         public TestResult Indexers50_Test()
         {
-            Log.Comment("Testing multiple comma seperated indexers with a private get and set");
+            Log.Comment("Testing multiple comma separated indexers with a private get and set");
             if (IndexersTestClass50.testMethod())
             {
                 return TestResult.Pass;
@@ -425,7 +425,7 @@ namespace Microsoft.Zelig.Test
         [TestMethod]
         public TestResult Indexers51_Test()
         {
-            Log.Comment("Testing multiple comma seperated indexers with a public virtual get and set");
+            Log.Comment("Testing multiple comma separated indexers with a public virtual get and set");
             if (IndexersTestClass51.testMethod())
             {
                 return TestResult.Pass;
@@ -436,19 +436,18 @@ namespace Microsoft.Zelig.Test
         [TestMethod]
         public TestResult Indexers52_Test()
         {
-            Log.Comment("Testing multiple comma seperated indexers with an overridden public virtual get and set");
-            Log.Comment("This test is expected to fail");
+            Log.Comment("Testing multiple comma separated indexers with an overridden public virtual get and set");
             if (IndexersTestClass52.testMethod())
             {
-                return TestResult.Fail;
+                return TestResult.Pass;
             }
-            return TestResult.Pass;
+            return TestResult.Fail;
         }
 
         [TestMethod]
         public TestResult Indexers53_Test()
         {
-            Log.Comment("Testing multiple comma seperated indexers with an overridden public abstract get and set");
+            Log.Comment("Testing multiple comma separated indexers with an overridden public abstract get and set");
             if (IndexersTestClass53.testMethod())
             {
                 return TestResult.Pass;

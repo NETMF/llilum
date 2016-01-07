@@ -13,7 +13,7 @@ namespace Microsoft.Zelig.Runtime.Synchronization
         //
         // HACK: We have a bug in the liveness of multi-pointer structure. We have to use a class instead.
         //
-////    public struct Holder : IDisposable
+        ///     public struct Holder : IDisposable
         public class Holder : IDisposable
         {
             //
@@ -32,16 +32,6 @@ namespace Microsoft.Zelig.Runtime.Synchronization
             internal Holder()
             {
             }
-
-////        public Holder( ThreadImpl                     thread         ,
-////                       Synchronization.WaitableObject waitableObject ,
-////                       SchedulerTime                  timeout        )
-////        {
-////            m_thread         = thread;
-////            m_waitableObject = waitableObject;
-////            m_timeout        = timeout;
-////            m_wr             = null;
-////        }
 
             //
             // Helper Methods
@@ -64,12 +54,11 @@ namespace Microsoft.Zelig.Runtime.Synchronization
 
             //
             // HACK: We have a bug in the liveness of multi-pointer structure. We have to use a class instead. Use this instead of the parametrized constructor.
-            //
-            public static Holder Get( ThreadImpl                     thread         ,
-                                      Synchronization.WaitableObject waitableObject ,
-                                      SchedulerTime                  timeout        )
+            public static Holder Get(ThreadImpl thread,
+                                      Synchronization.WaitableObject waitableObject,
+                                      SchedulerTime timeout)
             {
-                Holder hld = thread.m_holder;
+                Holder hld           = thread.m_holder;
 
                 hld.m_thread         = thread;
                 hld.m_waitableObject = waitableObject;
@@ -105,7 +94,7 @@ namespace Microsoft.Zelig.Runtime.Synchronization
                     //
                     if(m_wr == null)
                     {
-                        m_wr = WaitingRecord.GetInstance( m_thread, m_waitableObject, m_timeout );
+                        m_wr = WaitingRecord.GetInstance(m_thread, m_waitableObject, m_timeout);
 
                         using(SmartHandles.InterruptState.Disable())
                         {
@@ -155,34 +144,37 @@ namespace Microsoft.Zelig.Runtime.Synchronization
 
         static WaitingRecord()
         {
-            s_recycledList = new KernelList< WaitingRecord >();
+            s_recycledList = new KernelList<WaitingRecord>();
 
-            while(s_recycledCount < RecycleLimit)
+            using(SmartHandles.InterruptState.Disable())
             {
-                WaitingRecord wr = new WaitingRecord();
+                while(s_recycledCount < RecycleLimit)
+                {
+                    WaitingRecord wr = new WaitingRecord();
 
-                wr.Recycle();
+                    wr.Recycle();
+                }
             }
         }
 
         private WaitingRecord()
         {
-            m_linkTowardSource = new KernelNode< WaitingRecord >( this );
-            m_linkTowardTarget = new KernelNode< WaitingRecord >( this );
+            m_linkTowardSource = new KernelNode<WaitingRecord>(this);
+            m_linkTowardTarget = new KernelNode<WaitingRecord>(this);
         }
 
         //
         // Helper Methods
         //
 
-        static WaitingRecord GetInstance( ThreadImpl     source  ,
-                                          WaitableObject target  ,
-                                          SchedulerTime  timeout )
+        static WaitingRecord GetInstance(ThreadImpl source,
+                                          WaitableObject target,
+                                          SchedulerTime timeout)
         {
             BugCheck.AssertInterruptsOn();
 
             WaitingRecord wr = null;
-            
+
             if(s_recycledCount > 0)
             {
                 using(SmartHandles.InterruptState.Disable())
@@ -213,13 +205,13 @@ namespace Microsoft.Zelig.Runtime.Synchronization
         {
             BugCheck.AssertInterruptsOff();
 
-            m_target.RegisterWait( m_linkTowardTarget );
-            m_source.RegisterWait( m_linkTowardSource );
+            m_target.RegisterWait(m_linkTowardTarget);
+            m_source.RegisterWait(m_linkTowardSource);
         }
 
         void Wait()
         {
-            ThreadManager.Instance.SwitchToWait( this );
+            ThreadManager.Instance.SwitchToWait(this);
         }
 
         void Recycle()
@@ -234,7 +226,7 @@ namespace Microsoft.Zelig.Runtime.Synchronization
                 m_fulfilled = false;
 
                 s_recycledCount++;
-                s_recycledList.InsertAtTail( m_linkTowardTarget );
+                s_recycledList.InsertAtTail(m_linkTowardTarget);
             }
         }
 
@@ -244,12 +236,12 @@ namespace Microsoft.Zelig.Runtime.Synchronization
 
             if(m_linkTowardSource.IsLinked)
             {
-                m_source.UnregisterWait( m_linkTowardSource );
+                m_source.UnregisterWait(m_linkTowardSource);
             }
 
             if(m_linkTowardTarget.IsLinked)
             {
-                m_target.UnregisterWait( m_linkTowardTarget );
+                m_target.UnregisterWait(m_linkTowardTarget);
             }
 
             m_target = null;
@@ -303,12 +295,15 @@ namespace Microsoft.Zelig.Runtime.Synchronization
             {
                 if(m_processed == false)
                 {
-                    m_fulfilled = value;
-                    m_processed = true;
+                    using(SmartHandles.InterruptState.Disable())
+                    {
+                        m_fulfilled = value;
+                        m_processed = true;
 
-                    Disconnect();
+                        Disconnect();
+                    }
                 }
             }
         }
-    }    
+    }
 }

@@ -56,12 +56,12 @@ namespace Microsoft.Zelig.LLVM
             m_SectionNameProvider = new Thumb2EabiSectionNameProvider( m_typeSystem );
         }
 
-        public void Compile( )
+        public void Compile()
         {
-            CompleteMissingDataDescriptors( );
+            CompleteMissingDataDescriptors();
 
             //
-            // Synthetize the code for all exported methods as a simple C-style function using the name
+            // Synthesize the code for all exported methods as a simple C-style function using the name
             // of the method without full qualification
             //
             foreach(TS.MethodRepresentation md in m_typeSystem.ExportedMethods)
@@ -71,12 +71,21 @@ namespace Microsoft.Zelig.LLVM
                 m_module.CreateAlias(handler.LlvmFunction, md.Name);
             }
 
-            if ( !m_turnOffCompilationAndValidation )
+            if(!m_turnOffCompilationAndValidation)
             {
                 TS.MethodRepresentation bootstrapResetMR = m_typeSystem.GetWellKnownMethod( "Bootstrap_Initialization" );
                 _Function bootstrapReset = GetOrInsertFunction( bootstrapResetMR );
-                m_module.CreateAlias(bootstrapReset.LlvmFunction, "main");
-                m_module.Compile( );
+
+                if(m_typeSystem.PlatformAbstraction.PlatformFamily == TargetModel.Win32.InstructionSetVersion.Platform_Family__Win32 )
+                {
+                    m_module.CreateAlias(bootstrapReset.LlvmFunction, "LLILUM_main");
+                }
+                else
+                {
+                    m_module.CreateAlias(bootstrapReset.LlvmFunction, "main");
+                }
+
+                m_module.Compile();
             }
         }
 

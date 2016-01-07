@@ -28,14 +28,14 @@ IF /i "%GCC_BIN%"=="" (
 IF %2.==. (
     ECHO No target passed in. Defaulting to LPC1768
     set TARGET=LPC1768
-    set SIZE_OF_HEAP=0x6B00
+    set SIZE_OF_HEAP=0x6A00
 ) ELSE (
     ECHO Detected target: %2
     set TARGET=%2
     IF "%2"=="K64F" (
     set SIZE_OF_HEAP=0x40000
     ) ELSE (
-    set SIZE_OF_HEAP=0x6B00
+    set SIZE_OF_HEAP=0x6A00
     )
 )
 

@@ -12,6 +12,9 @@ namespace Microsoft.Llilum.STM32L152
         [RT.ProductFilter("Microsoft.Llilum.BoardConfigurations.STM32L152MBEDHosted")]
         public new class Context : ChipsetModel.Processor.Context
         {
+            public Context(RT.ThreadImpl owner) : base(owner)
+            {
+            }
         }
 
         //
@@ -19,9 +22,9 @@ namespace Microsoft.Llilum.STM32L152
         //
         
         [RT.Inline]
-        public override RT.Processor.Context AllocateProcessorContext()
+        public override RT.Processor.Context AllocateProcessorContext(RT.ThreadImpl owner)
         {
-            return new Context();
+            return new Context(owner);
         }
     }
 }

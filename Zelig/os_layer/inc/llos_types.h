@@ -15,10 +15,14 @@
 #include <llos_error.h>
 
 #ifndef OS_TCB_H
+#ifndef WIN32
 typedef uint32_t      BOOL;
 #endif
+#endif
 
+#ifndef WIN32
 typedef void          VOID;
+#endif
 typedef uint32_t      LLOS_Address;
 typedef void*         LLOS_Opaque;
 typedef uint64_t      LLOS_Ticks;
@@ -26,6 +30,7 @@ typedef uint64_t      LLOS_Time;
 typedef uint64_t      LLOS_TimeSpan;
 typedef LLOS_Time     LLOS_Timeout;
 typedef LLOS_Opaque   LLOS_Context;
+typedef LLOS_Opaque   LLOS_Handle;
 typedef int8_t        LLOS_AesKey[ LLOS_PLATFORM_AES_KEY_LENGTH_BYTES ];
 typedef int8_t        LLOS_Hash  [ LLOS_PLATFORM_HASH_LENGTH_BYTES    ];
 //--//
@@ -51,8 +56,8 @@ typedef enum LLOS_AsyncStatus
     LLOS_CompletedWithCancellation,
 } LLOS_AsyncStatus;
 
-typedef VOID( *LLOS_Callback )( LLOS_Context );
-
+typedef VOID(*LLOS_Callback)(LLOS_Context);
+typedef VOID(*LLOS_ThreadEntry)(LLOS_Context);
 
 typedef struct LLOS_AddressRange
 {
@@ -63,13 +68,13 @@ typedef struct LLOS_AddressRange
 typedef struct LLOS_BBuffer
 {
     uint32_t Length;
-    uint8_t  Data[0];
+    uint8_t  Data[1];
 } LLOS_BBuffer;
 
 typedef struct LLOS_WBuffer
 {
     uint32_t Length;
-    uint16_t Data[0];
+    uint16_t Data[1];
 } LLOS_WBuffer;
 
 #endif // __LLOS_TYPES_H__

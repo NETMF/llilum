@@ -209,6 +209,11 @@
       <Name>ArmProcessor</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\CompileTime\TargetModels\Win32EmuProcessor\Win32Processor.csproj">
+      <Project>{46478CA2-8163-47A0-8C65-3ACFC21CE57F}</Project>
+      <Name>Win32Processor</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\mscorlib\mscorlib.csproj">
       <Project>{186F31A3-EF89-4A25-B2D5-20060501AA01}</Project>
       <Name>mscorlib</Name>

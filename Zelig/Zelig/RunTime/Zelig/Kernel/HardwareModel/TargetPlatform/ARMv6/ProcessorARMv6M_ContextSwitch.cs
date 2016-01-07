@@ -147,6 +147,10 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
 
             //--//
 
+            protected Context( RT.ThreadImpl owner ) : base(owner)
+            {
+            }
+
             //
             // Overrides
             //

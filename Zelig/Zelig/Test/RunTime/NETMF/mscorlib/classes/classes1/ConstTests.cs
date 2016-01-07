@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//#define GET_FIELD_WITH_BINDING_FLAGS_IMPLEMENTED
 
 using System;
 using System.Reflection;
@@ -58,8 +59,10 @@ namespace Microsoft.Zelig.Test
             result |= Assert.CheckFailed( Const33_Test( ) );
             result |= Assert.CheckFailed( Const34_Test( ) );
             result |= Assert.CheckFailed( Const35_Test( ) );
+#if GET_FIELD_WITH_BINDING_FLAGS_IMPLEMENTED
             result |= Assert.CheckFailed( Const42_Test( ) );
             result |= Assert.CheckFailed( Const43_Test( ) );
+#endif
             result |= Assert.CheckFailed( Const44_Test( ) );
             result |= Assert.CheckFailed( Const56_Test( ) );
             result |= Assert.CheckFailed( Const57_Test( ) );

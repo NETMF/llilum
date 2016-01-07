@@ -28,10 +28,17 @@ namespace Microsoft.Zelig.Test
         public override TestResult Run( string[] args )
         {
             TestResult result = TestResult.Pass;
-            
-            result |= Assert.CheckFailed( Destructors3_Test( ) );
-            result |= Assert.CheckFailed( Destructors4_Test( ) );
-            result |= Assert.CheckFailed( Destructors7_Test( ) );
+
+            if(GC.GetTotalMemory(false) != 0)
+            {
+                result |= Assert.CheckFailed(Destructors3_Test());
+                result |= Assert.CheckFailed(Destructors4_Test());
+                result |= Assert.CheckFailed(Destructors7_Test());
+            }
+            else
+            {
+                result = TestResult.Skip;
+            }
 
             return result;
         }

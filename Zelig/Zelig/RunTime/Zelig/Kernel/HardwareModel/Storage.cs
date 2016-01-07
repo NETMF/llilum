@@ -14,6 +14,68 @@ namespace Microsoft.Zelig.Runtime
     [ForceDevirtualization]
     public abstract class Storage
     {
+        private class EmptyStorage : Storage
+        {
+            public override bool EraseSectors( UIntPtr addressStart, UIntPtr addressEnd )
+            {
+                throw new NotImplementedException( );
+            }
+
+            public override void InitializeStorage( )
+            {
+            }
+
+            public override void Read( UIntPtr address, byte[] buffer, uint offset, uint numBytes )
+            {
+                throw new NotImplementedException( );
+            }
+
+            public override byte ReadByte( UIntPtr address )
+            {
+                throw new NotImplementedException( );
+            }
+
+            public override ushort ReadShort( UIntPtr address )
+            {
+                throw new NotImplementedException( );
+            }
+
+            public override uint ReadWord( UIntPtr address )
+            {
+                throw new NotImplementedException( );
+            }
+
+            public override void RebootDevice( )
+            {
+                throw new NotImplementedException( );
+            }
+
+            public override void SubstituteFirmware( UIntPtr addressDestination, UIntPtr addressSource, uint numBytes )
+            {
+                throw new NotImplementedException( );
+            }
+
+            public override bool Write( UIntPtr address, byte[] buffer, uint offset, uint numBytes )
+            {
+                throw new NotImplementedException( );
+            }
+
+            public override bool WriteByte( UIntPtr address, byte val )
+            {
+                throw new NotImplementedException( );
+            }
+
+            public override bool WriteShort( UIntPtr address, ushort val )
+            {
+                throw new NotImplementedException( );
+            }
+
+            public override bool WriteWord( UIntPtr address, uint val )
+            {
+                throw new NotImplementedException( );
+            }
+        }
+
         //
         // State
         //
@@ -63,7 +125,7 @@ namespace Microsoft.Zelig.Runtime
 
         public static extern Storage Instance
         {
-            [SingletonFactory()]
+            [SingletonFactory(Fallback = typeof(EmptyStorage))]
             [MethodImpl( MethodImplOptions.InternalCall )]
             get;
         }

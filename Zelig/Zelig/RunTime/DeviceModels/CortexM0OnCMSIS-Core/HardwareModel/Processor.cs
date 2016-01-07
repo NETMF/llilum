@@ -17,6 +17,9 @@ namespace Microsoft.CortexM0OnCMSISCore
             //
             // Constructor Methods
             //
+            protected Context( RT.ThreadImpl owner ) : base( owner )
+            {
+            }
 
             //
             // Helper Methods

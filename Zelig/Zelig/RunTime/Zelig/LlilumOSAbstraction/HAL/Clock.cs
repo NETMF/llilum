@@ -10,7 +10,7 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.HAL
     public static class Clock
     {
         [DllImport( "C" )]
-        public static unsafe extern ulong LLOS_CLOCK_GetTicks( );
+        public static unsafe extern ulong LLOS_CLOCK_GetClockTicks( );
 
         [DllImport( "C" )]
         public static unsafe extern ulong LLOS_CLOCK_GetClockFrequency( );

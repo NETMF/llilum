@@ -60,8 +60,11 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Debug\Debug.cs" />
     <Compile Include="HAL\Clock.cs" />
     <Compile Include="API\IO\Ethernet.cs" />
+    <Compile Include="HAL\Mutex.cs" />
+    <Compile Include="HAL\Thread.cs" />
     <Compile Include="HAL\Timer.cs" />
     <Compile Include="API\RuntimeMemory.cs" />
     <Compile Include="API\IO\Adc.cs" />
@@ -134,11 +137,20 @@
     <Content Include="..\..\..\..\os_layer\inc\api\llos_memory.h">
       <Link>Native\API\llos_memory.h</Link>
     </Content>
+    <Content Include="..\..\..\..\os_layer\inc\debug\llos_debug.h">
+      <Link>Native\Debug\llos_debug.h</Link>
+    </Content>
     <Content Include="..\..\..\..\os_layer\inc\hal\llos_clock.h">
       <Link>Native\HAL\llos_clock.h</Link>
     </Content>
+    <Content Include="..\..\..\..\os_layer\inc\hal\llos_mutex.h">
+      <Link>Native\HAL\llos_mutex.h</Link>
+    </Content>
     <Content Include="..\..\..\..\os_layer\inc\hal\llos_system_timer.h">
       <Link>Native\HAL\llos_system_timer.h</Link>
+    </Content>
+    <Content Include="..\..\..\..\os_layer\inc\hal\llos_thread.h">
+      <Link>Native\HAL\llos_thread.h</Link>
     </Content>
     <Content Include="..\..\..\..\os_layer\inc\llos_error.h">
       <Link>Native\llos_error.h</Link>

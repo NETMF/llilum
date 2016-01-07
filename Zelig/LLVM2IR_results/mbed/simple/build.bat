@@ -27,6 +27,7 @@ IF %1.==. (
     SET TARGET=LPC1768
     SET LLILUM_TARGET_CPU=cortex-m3
     SET LLILUM_TARGET_TRIPLE=Thumb-NoSubArch-UnknownVendor-UnknownOS-GNUEABI-ELF
+    SET LLILUM_TARGET_ARCH=thumb
     SET SIZE_OF_HEAP=0x6000
     SET LWIP_USE=0
 ) ELSE (
@@ -36,11 +37,13 @@ IF %1.==. (
     SET SIZE_OF_HEAP=0x10000
     SET LLILUM_TARGET_CPU=cortex-m4
     SET LLILUM_TARGET_TRIPLE=Thumb-NoSubArch-UnknownVendor-UnknownOS-GNUEABI-ELF
+    SET LLILUM_TARGET_ARCH=thumb
     SET LWIP_USE=1
     ) ELSE IF "%1"=="LPC1768" (
     SET SIZE_OF_HEAP=0x6000
     SET LLILUM_TARGET_CPU=cortex-m3
     SET LLILUM_TARGET_TRIPLE=Thumb-NoSubArch-UnknownVendor-UnknownOS-GNUEABI-ELF
+    SET LLILUM_TARGET_ARCH=thumb
     SET LWIP_USE=0
     ) ELSE IF "%1"=="STM32F091" (
     SET SIZE_OF_HEAP=0x6000
@@ -51,21 +54,33 @@ IF %1.==. (
     SET SIZE_OF_HEAP=0x10000
     SET LLILUM_TARGET_CPU=cortex-m4
     SET LLILUM_TARGET_TRIPLE=Thumb-NoSubArch-UnknownVendor-UnknownOS-GNUEABI-ELF
+    SET LLILUM_TARGET_ARCH=thumb
     SET LWIP_USE=0
     ) ELSE IF "%1"=="STM32F401" (
     SET SIZE_OF_HEAP=0x10000
     SET LLILUM_TARGET_CPU=cortex-m4
     SET LLILUM_TARGET_TRIPLE=Thumb-NoSubArch-UnknownVendor-UnknownOS-GNUEABI-ELF
+    SET LLILUM_TARGET_ARCH=thumb
     SET LWIP_USE=0
     ) ELSE IF "%1"=="STM32L152" (
     SET SIZE_OF_HEAP=0x10000
     SET LLILUM_TARGET_CPU=cortex-m3
     SET LLILUM_TARGET_TRIPLE=Thumb-NoSubArch-UnknownVendor-UnknownOS-GNUEABI-ELF
+    SET LLILUM_TARGET_ARCH=thumb
+    SET LWIP_USE=0
+    ) ELSE IF "%1"=="WIN32" (
+    SET SIZE_OF_HEAP=0x10000
+    SET LLILUM_TARGET_CPU=x86-64
+    SET LLILUM_TARGET_TRIPLE=x86_64-pc-windows-msvc
+    SET LLILUM_TARGET_ARCH=x86
+    SET LLILUM_TARGET_EXTRA=-function-sections -dwarf-version=3 
+    SET LLILUM_SKIP_LLC=0
     SET LWIP_USE=0
     ) ELSE (    
     SET SIZE_OF_HEAP=0x6000
     SET LLILUM_TARGET_CPU=cortex-m3
     SET LLILUM_TARGET_TRIPLE=Thumb-NoSubArch-UnknownVendor-UnknownOS-GNUEABI-ELF
+    SET LLILUM_TARGET_ARCH=thumb
     SET LWIP_USE=0
     )
 )
@@ -78,7 +93,7 @@ IF "%LLILUM_SKIP_OPT%" == "0" (
     @REM -"%LLVM_BIN%\opt" -O1 -globalopt -constmerge -adce -globaldce -time-passes Microsoft.Zelig.Test.mbed.Simple.bc -o Microsoft.Zelig.Test.mbed.Simple_opt.bc
 
     "%LLVM_BIN%\opt" -verify-debug-info -verify-dom-info -verify-each -verify-loop-info -verify-regalloc -verify-region-info Microsoft.Zelig.Test.mbed.Simple.bc -o Microsoft.Zelig.Test.mbed.Simple_verify.bc
-    "%LLVM_BIN%\opt" -march=thumb -mcpu=%LLILUM_TARGET_CPU% -aa-eval -indvars -gvn -globaldce -adce -dce -tailcallopt -scalarrepl -mem2reg -ipconstprop -deadargelim -sccp -dce -ipsccp -dce -constmerge -scev-aa -targetlibinfo -irce -dse -dce -argpromotion -mem2reg -adce -mem2reg -globaldce -die -dce -dse -time-passes Microsoft.Zelig.Test.mbed.Simple.bc -o Microsoft.Zelig.Test.mbed.Simple_opt.bc
+    "%LLVM_BIN%\opt" -march=%LLILUM_TARGET_ARCH% -mcpu=%LLILUM_TARGET_CPU% -aa-eval -indvars -gvn -globaldce -adce -dce -tailcallopt -scalarrepl -mem2reg -ipconstprop -deadargelim -sccp -dce -ipsccp -dce -constmerge -scev-aa -targetlibinfo -irce -dse -dce -argpromotion -mem2reg -adce -mem2reg -globaldce -die -dce -dse -time-passes Microsoft.Zelig.Test.mbed.Simple.bc -o Microsoft.Zelig.Test.mbed.Simple_opt.bc
 ) ELSE (
     ECHO Skipping optimization passes...
     COPY Microsoft.Zelig.Test.mbed.Simple.bc Microsoft.Zelig.Test.mbed.Simple_opt.bc 1>NUL
@@ -89,14 +104,18 @@ IF "%LLILUM_SKIP_LLC%" == "0" (
     ECHO Generating LLVM IR source file...
     "%LLVM_BIN%\llvm-dis" Microsoft.Zelig.Test.mbed.Simple_opt.bc
 
-    ECHO Compiling to ARM ^(optimization level %LLILUM_OPT_LEVEL%^)...
-    "%LLVM_BIN%\llc" -O%LLILUM_OPT_LEVEL% -code-model=small -data-sections -relocation-model=pic -march=thumb -mcpu=%LLILUM_TARGET_CPU% -filetype=obj -mtriple=%LLILUM_TARGET_TRIPLE% -o=Microsoft.Zelig.Test.mbed.Simple_opt.o Microsoft.Zelig.Test.mbed.Simple_opt.bc
+    ECHO Compiling to %LLILUM_TARGET_ARCH% ^(optimization level %LLILUM_OPT_LEVEL%^)...
+    "%LLVM_BIN%\llc" -O%LLILUM_OPT_LEVEL% %LLILUM_TARGET_EXTRA% -code-model=small -data-sections -relocation-model=pic -march=%LLILUM_TARGET_ARCH% -mcpu=%LLILUM_TARGET_CPU% -mtriple=%LLILUM_TARGET_TRIPLE% -filetype=obj -o=Microsoft.Zelig.Test.mbed.Simple_opt.o Microsoft.Zelig.Test.mbed.Simple_opt.bc
     if %ERRORLEVEL% LSS 0 (
         @ECHO ERRORLEVEL=%ERRORLEVEL%
         goto :EXIT
     )
 ) ELSE (
     ECHO skipping LLC compilation...
+)
+
+IF "%1"=="WIN32" (
+    GOTO :EXIT
 )
 
 ECHO Size Report...

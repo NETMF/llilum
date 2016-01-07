@@ -141,6 +141,12 @@
     <None Include="mbed_common_LPC1768.FrontEndConfig" />
     <None Include="mbed_simple_K64F.FrontEndConfig" />
     <None Include="mbed_simple_LPC1768.FrontEndConfig" />
+    <None Include="mbed_simple_Win32.FrontEndConfig">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="mbed_simple_Win32_Tester.FrontEndConfig">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Test\crypto_perf_test.FrontEndConfig" />
     <None Include="Test\Dhrystone_perf_test.FrontEndConfig" />
     <None Include="Test\ExternalLinking_Tester.FrontEndConfig" />

@@ -26,7 +26,7 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
         //--//
 
         //
-        // Contructors
+        // Constructors
         //
 
         protected CmsisObject()

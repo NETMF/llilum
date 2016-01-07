@@ -84,7 +84,7 @@ u32_t sys_now(void) {
 uint32_t sys_uSeconds() {
     uint64_t frequency = LLOS_SYSTEM_TIMER_GetTimerFrequency();
 
-    uint64_t ticks = LLOS_SYSTEM_TIMER_GetTicks();
+    uint64_t ticks = LLOS_SYSTEM_TIMER_GetTicks(NULL);
 
     return (uint32_t)((ticks * 1000000) / frequency);
 }

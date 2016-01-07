@@ -158,46 +158,67 @@ namespace Microsoft.Zelig.Runtime
         }
 
         //--//
-        
-            //////[Inline]
-            //////private unsafe void SetNextThread( ThreadImpl th )
-            //////{
-                
-            //////}
-            
-            //////[Inline]
-            //////private unsafe ThreadImpl GetNextThread( )
-            //////{
-            //////    return null;
-            //////}
-            
-            //////[Inline]
-            //////private unsafe void SetCurrentThread( ThreadImpl th )
-            //////{
-            //////}
-            
-            //////[Inline]
-            //////private unsafe ThreadImpl GetCurrentThread( )
-            //////{
-            //////    return null;
-            //////}
 
-            ////////--//
+        //////[Inline]
+        //////private unsafe void SetNextThread( ThreadImpl th )
+        //////{
 
-            //////[Inline]
-            //////private static extern unsafe void CUSTOM_STUB_CTX_SWITCH_SetCurrentThread( void* current );
+        //////}
 
+        //////[Inline]
+        //////private unsafe ThreadImpl GetNextThread( )
+        //////{
+        //////    return null;
+        //////}
 
-            //////[Inline]
-            //////private static extern unsafe void* CUSTOM_STUB_CTX_SWITCH_GetCurrentThread( );
+        //////[Inline]
+        //////private unsafe void SetCurrentThread( ThreadImpl th )
+        //////{
+        //////}
+
+        //////[Inline]
+        //////private unsafe ThreadImpl GetCurrentThread( )
+        //////{
+        //////    return null;
+        //////}
+
+        ////////--//
+
+        //////[Inline]
+        //////private static extern unsafe void CUSTOM_STUB_CTX_SWITCH_SetCurrentThread( void* current );
 
 
-            //////[Inline]
-            //////private static extern unsafe void CUSTOM_STUB_CTX_SWITCH_SetNextThread( void* next );
+        //////[Inline]
+        //////private static extern unsafe void* CUSTOM_STUB_CTX_SWITCH_GetCurrentThread( );
 
 
-            //////[Inline]
-            //////private static extern unsafe void* CUSTOM_STUB_CTX_SWITCH_GetNextThread( );
+        //////[Inline]
+        //////private static extern unsafe void CUSTOM_STUB_CTX_SWITCH_SetNextThread( void* next );
+
+
+        //////[Inline]
+        //////private static extern unsafe void* CUSTOM_STUB_CTX_SWITCH_GetNextThread( );
+
+
+        protected override void IdleThread( )
+        {
+            //BugCheck.Log( "!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
+            //BugCheck.Log( "!!! Idle thread running !!!" );
+            //BugCheck.Log( "!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
+
+            ProcessorARMv7M.InitiateContextSwitch( );
+
+            SmartHandles.InterruptState.EnableAll( ); 
+             
+            while(true)
+            {
+                //BugCheck.Log( "!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
+                //BugCheck.Log( "!!!       sleeping      !!!" );
+                //BugCheck.Log( "!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
+
+                Peripherals.Instance.WaitForInterrupt();
+            }
+        }
     }
 }
 

@@ -22,7 +22,7 @@
     <!--<LlilumLinkLibDepsLPC1768>mbed;lwip;mbedeth;lwIPeth;lwipsysarch;stdc++;supc++;m;c;gcc;nosys</LlilumLinkLibDepsLPC1768>-->
     <LlilumLinkLibDepsLPC1768>mbed;stdc++;supc++;m;c;gcc;nosys</LlilumLinkLibDepsLPC1768>
     <LlilumStackSizeLPC1768>0x800</LlilumStackSizeLPC1768>
-    <LlilumHeapSizeLPC1768>0x6B00</LlilumHeapSizeLPC1768>
+    <LlilumHeapSizeLPC1768>0x6A00</LlilumHeapSizeLPC1768>
     <LlilumAsmAdditionalOptionsLPC1768></LlilumAsmAdditionalOptionsLPC1768>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'" >

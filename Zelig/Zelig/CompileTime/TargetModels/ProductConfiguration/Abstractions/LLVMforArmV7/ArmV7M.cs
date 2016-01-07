@@ -94,7 +94,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         }
 
         //
-        // Not implememted, and used only during machine code emission
+        // Not implemented, and used only during machine code emission
         //
 
         public override bool HasRegisterContextArgument( MethodRepresentation md )

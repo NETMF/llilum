@@ -126,7 +126,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv5
             // Constructor Methods
             //
 
-            public Context()
+            public Context(ThreadImpl owner) : base(owner)
             {
             }
 
@@ -154,8 +154,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv5
             }
 
             [NoInline]
-            public unsafe override void PopulateFromDelegate( Delegate dlg   ,
-                                                              uint[]   stack )
+            public unsafe override void PopulateFromDelegate( Delegate dlg, uint[] stack )
             {
                 DelegateImpl dlgImpl   = (DelegateImpl)(object)dlg;
                 ArrayImpl    stackImpl = (ArrayImpl   )(object)stack;

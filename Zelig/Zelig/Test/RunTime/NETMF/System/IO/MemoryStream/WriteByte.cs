@@ -4,8 +4,7 @@
 using System;
 using System.IO;
 
-
-
+//#define TEST_EXCEPTIONS // https://github.com/NETMF/llilum/issues/130
 
 namespace Microsoft.Zelig.Test
 {
@@ -156,6 +155,7 @@ namespace Microsoft.Zelig.Test
                     if (!TestWrite(ms, 50, 100))
                         result = TestResult.Fail;
 
+#if TEST_EXCEPTIONS
                     Log.Comment("Any more bytes written should throw");
                     try
                     {
@@ -164,6 +164,7 @@ namespace Microsoft.Zelig.Test
                         Log.Exception("Expected NotSupportedException");
                     }
                     catch (NotSupportedException) { /* pass case */ }
+#endif
 
                     Log.Comment("Rewind and verify all bytes written");
                     ms.Seek(0, SeekOrigin.Begin);
@@ -238,6 +239,6 @@ namespace Microsoft.Zelig.Test
 
             return result;
         }
-        #endregion Test Cases
+#endregion Test Cases
     }
 }

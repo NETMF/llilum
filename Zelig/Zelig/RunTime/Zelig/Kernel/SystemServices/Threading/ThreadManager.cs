@@ -4,8 +4,6 @@
 
 #define ARMv7
 
-using Microsoft.Zelig.Runtime.TargetPlatform.ARMv7;
-
 namespace Microsoft.Zelig.Runtime
 {
     using System;
@@ -83,6 +81,10 @@ namespace Microsoft.Zelig.Runtime
                 {
                     return null;
                 }
+            }
+
+            protected override void IdleThread( )
+            {
             }
         }
 
@@ -524,25 +526,7 @@ namespace Microsoft.Zelig.Runtime
             thread.State &= ~System.Threading.ThreadState.WaitSleepJoin;
         }
 
-        private void IdleThread()
-        {
-            //BugCheck.Log( "!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
-            //BugCheck.Log( "!!! Idle thread running !!!" );
-            //BugCheck.Log( "!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
-
-            ProcessorARMv7M.InitiateContextSwitch( );
-
-            SmartHandles.InterruptState.EnableAll( ); 
-             
-            while(true)
-            {
-                //BugCheck.Log( "!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
-                //BugCheck.Log( "!!!       sleeping      !!!" );
-                //BugCheck.Log( "!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
-
-                Peripherals.Instance.WaitForInterrupt();
-            }
-        }
+        protected abstract void IdleThread( );
 
         private void MainThread()
         {
@@ -575,7 +559,7 @@ namespace Microsoft.Zelig.Runtime
             get;
         }
 
-        public ThreadImpl CurrentThread
+        public virtual ThreadImpl CurrentThread
         {
             get
             {
@@ -617,7 +601,7 @@ namespace Microsoft.Zelig.Runtime
             }
         }
 
-        public bool ShouldContextSwitch
+        public virtual bool ShouldContextSwitch
         {
             [Inline]
             get

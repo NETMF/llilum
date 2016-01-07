@@ -72,6 +72,24 @@ namespace Microsoft.Zelig.Runtime
                 return m_abortThread;
             }
         }
+
+        protected override void IdleThread( )
+        {
+            //BugCheck.Log( "!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
+            //BugCheck.Log( "!!! Idle thread running !!!" );
+            //BugCheck.Log( "!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
+
+            SmartHandles.InterruptState.EnableAll( ); 
+             
+            while(true)
+            {
+                //BugCheck.Log( "!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
+                //BugCheck.Log( "!!!       sleeping      !!!" );
+                //BugCheck.Log( "!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
+
+                Peripherals.Instance.WaitForInterrupt();
+            }
+        }
     }
 }
 

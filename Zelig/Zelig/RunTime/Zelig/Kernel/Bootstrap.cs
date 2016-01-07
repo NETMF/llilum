@@ -11,8 +11,6 @@
 // Enables self-tests covering null/bounds/overflow checks.
 //#define SELF_TEST_CHECKS
 
-using Microsoft.Zelig.Runtime.TargetPlatform.ARMv7;
-
 namespace Microsoft.Zelig.Runtime
 {
     using System;

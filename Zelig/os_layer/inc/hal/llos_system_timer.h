@@ -17,15 +17,12 @@ extern "C" {
 
 typedef VOID(*LLOS_SYSTEM_TIMER_Callback)(LLOS_Context callbackCtx, uint64_t ticks);
 
-HRESULT  LLOS_SYSTEM_TIMER_Enable  (LLOS_SYSTEM_TIMER_Callback callback);
-VOID     LLOS_SYSTEM_TIMER_Disable ();
-HRESULT  LLOS_SYSTEM_TIMER_SetTicks(uint64_t value);
-uint64_t LLOS_SYSTEM_TIMER_GetTicks();
-uint64_t LLOS_SYSTEM_TIMER_GetTimerFrequency();
-
-HRESULT  LLOS_SYSTEM_TIMER_AllocateTimer(LLOS_Context callbackContext, LLOS_Context *pTimer);
+HRESULT  LLOS_SYSTEM_TIMER_AllocateTimer(LLOS_SYSTEM_TIMER_Callback callback, LLOS_Context callbackContext, uint64_t microsecondsFromNow, LLOS_Context *pTimer);
 VOID     LLOS_SYSTEM_TIMER_FreeTimer    (LLOS_Context pTimer);
 HRESULT  LLOS_SYSTEM_TIMER_ScheduleTimer(LLOS_Context pTimer, uint64_t microsecondsFromNow);
+uint64_t LLOS_SYSTEM_TIMER_GetTimerFrequency(LLOS_Context pTimer);
+uint64_t LLOS_SYSTEM_TIMER_GetTicks(LLOS_Context pTimer);
+
 
 #ifdef __cplusplus
 }

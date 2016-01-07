@@ -3,8 +3,6 @@
 //
 
 
-#define ARMv7
-
 namespace Microsoft.Zelig.Runtime
 {
     using System;
@@ -12,7 +10,6 @@ namespace Microsoft.Zelig.Runtime
     using System.Runtime.CompilerServices;
 
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
-
     
     //[ExtendClass(typeof(System.Threading.Thread), PlatformFilter = "ARM")]
     [ExtendClass(typeof(System.Threading.Thread))]
@@ -55,7 +52,7 @@ namespace Microsoft.Zelig.Runtime
         // HACK: We have a bug in the liveness of multi-pointer structure. We have to use a class instead.
         //
         internal Synchronization.WaitingRecord.Holder m_holder;
-
+        
         //
         // Constructor Methods
         //
@@ -76,8 +73,8 @@ namespace Microsoft.Zelig.Runtime
 
             m_start             = start;
             m_stack             = stack;
-            m_swappedOutContext = Processor.Instance.AllocateProcessorContext();
-            m_throwContext      = Processor.Instance.AllocateProcessorContext();
+            m_swappedOutContext = Processor.Instance.AllocateProcessorContext(this);
+            m_throwContext      = Processor.Instance.AllocateProcessorContext(this);
 
             m_state             = ThreadState.Unstarted;
             m_registrationLink  = new KernelNode< ThreadImpl                     >( this );
@@ -112,7 +109,6 @@ namespace Microsoft.Zelig.Runtime
                 m_releaseReferenceHelper = new ReleaseReferenceHelper(0, 0);
             }
         }
-
 
         //--//
 
@@ -288,7 +284,7 @@ namespace Microsoft.Zelig.Runtime
                     fInvalidateTimer = false;
                 }
 
-                node.InsertBefore( node2 );
+                node.InsertBefore(node2);
 
                 if(fInvalidateTimer)
                 {
@@ -670,6 +666,13 @@ namespace Microsoft.Zelig.Runtime
             [TS.WellKnownMethod( "ThreadImpl_get_CurrentThread" )]
             get
             {
+                ThreadImpl curThread = ThreadManager.Instance.CurrentThread;
+
+                if( curThread != null )
+                {
+                    s_currentThread = curThread;
+                }
+
                 return s_currentThread;
             }
 
