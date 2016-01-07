@@ -746,36 +746,35 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             StoreValue( m_localValues[ op.FirstResult ], fieldAddress );
         }
 
-        private _Value ArrayAccessByIDX( _Value array, _Value idx )
+        private _Value GetElementAddress(IR.ElementOperator op)
         {
-            array = m_basicBlock.GetFieldAddress( array, ( int )m_wkt.System_Array.Size, null );
-            return m_basicBlock.IndexLLVMArray( array, ConvertValueToALUOperableType( idx ) );
+            var arrayType = (TS.ArrayReferenceTypeRepresentation)op.FirstArgument.Type;
+            _Type elementType = m_manager.GetOrInsertType(arrayType.ContainedType);
+
+            _Value array = GetImmediate(op.BasicBlock, op.FirstArgument);
+            _Value nativeArray = m_basicBlock.GetFieldAddress(array, (int)m_wkt.System_Array.Size, null);
+            _Value index = GetImmediate(op.BasicBlock, op.SecondArgument);
+            return m_basicBlock.IndexLLVMArray(nativeArray, index, elementType);
         }
 
-        private void Translate_LoadElementOperator( IR.LoadElementOperator op )
+        private void Translate_LoadElementOperator(IR.LoadElementOperator op)
         {
-            _Value array = GetImmediate( op.BasicBlock, op.FirstArgument );
-            _Value index = GetImmediate( op.BasicBlock, op.SecondArgument );
-            _Value elementAddress = ArrayAccessByIDX( array, index );
-            _Value value = m_basicBlock.InsertLoad( elementAddress );
-            StoreValue( m_localValues[ op.FirstResult ], value );
+            _Value elementAddress = GetElementAddress(op);
+            _Value value = m_basicBlock.InsertLoad(elementAddress);
+            StoreValue(m_localValues[op.FirstResult], value);
         }
 
-        private void Translate_LoadElementAddressOperator( IR.LoadElementAddressOperator op )
+        private void Translate_LoadElementAddressOperator(IR.LoadElementAddressOperator op)
         {
-            _Value array = GetImmediate( op.BasicBlock, op.FirstArgument );
-            _Value index = GetImmediate( op.BasicBlock, op.SecondArgument );
-            _Value elementAddress = ArrayAccessByIDX( array, index );
-            StoreValue( m_localValues[ op.FirstResult ], elementAddress );
+            _Value elementAddress = GetElementAddress(op);
+            StoreValue(m_localValues[op.FirstResult], elementAddress);
         }
 
-        private void Translate_StoreElementOperator( IR.StoreElementOperator op )
+        private void Translate_StoreElementOperator(IR.StoreElementOperator op)
         {
-            _Value array = GetImmediate( op.BasicBlock, op.FirstArgument );
-            _Value index = GetImmediate( op.BasicBlock, op.SecondArgument );
-            _Value value = GetImmediate( op.BasicBlock, op.ThirdArgument );
-            _Value elementAddress = ArrayAccessByIDX( array, index );
-            StoreValue( elementAddress, value ); 
+            _Value elementAddress = GetElementAddress(op);
+            _Value value = GetImmediate(op.BasicBlock, op.ThirdArgument);
+            StoreValue(elementAddress, value);
         }
 
         private void Translate_UnconditionalControlOperator( IR.UnconditionalControlOperator op )
@@ -1025,27 +1024,21 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             if( !ReplaceMethodCallWithIntrinsic( method, args, out result ) )
             {
                 _Function targetFunc = m_manager.GetOrInsertFunction( method );
+                _Type returnType = m_manager.GetOrInsertType(method.ReturnType);
 
                 if( method.Flags.HasFlag( TS.MethodRepresentation.Attributes.PinvokeImpl ) )
                 {
                     targetFunc.SetExternalLinkage( );
                 }
 
-                if( callIndirect )
+                if (callIndirect)
                 {
                     _Value callAddress = GetImmediate(op.BasicBlock, op.Arguments[0]);
-
-                    _Type returnType = m_manager.GetOrInsertType(m_wkt.System_Void);
-                    if (op.Results.Length > 0)
-                    {
-                        returnType = m_manager.GetOrInsertType(op.FirstResult.Type);
-                    }
-
                     result = m_basicBlock.InsertIndirectCall(callAddress, returnType, args);
                 }
                 else
                 {
-                    result = m_basicBlock.InsertCall( targetFunc, args );
+                    result = m_basicBlock.InsertCall(targetFunc, returnType, args);
                 }
             }
 

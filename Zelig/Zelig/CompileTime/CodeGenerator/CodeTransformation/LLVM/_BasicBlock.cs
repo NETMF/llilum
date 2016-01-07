@@ -542,18 +542,20 @@ namespace Microsoft.Zelig.LLVM
             }
         }
 
-        public _Value InsertCall( _Function func, List<_Value> args )
+        public _Value InsertCall(_Function func, _Type returnType, List<_Value> args)
         {
             List<Value> parameters = args.Select((_Value value) => { return value.LlvmValue; }).ToList();
 
-            Value retVal = IrBuilder.Call( func.LlvmValue, parameters )
-                                    .SetDebugLocation( CurDILocation );
+            Value retVal = IrBuilder.Call(func.LlvmValue, parameters)
+                                    .SetDebugLocation(CurDILocation);
 
-            var llvmFunc = (Function)(func.LlvmValue);
-            if( llvmFunc.ReturnType.IsVoid )
+            // Don't bother wrapping the return if we won't use it.
+            if (returnType.DebugType.IsVoid)
+            {
                 return null;
+            }
 
-            return new _Value( Module, _Type.GetTypeImpl( llvmFunc.ReturnType ), retVal );
+            return new _Value(Module, returnType, retVal);
         }
 
         public _Value InsertIndirectCall(_Value ptr, _Type returnType, List<_Value> args)
@@ -669,16 +671,14 @@ namespace Microsoft.Zelig.LLVM
             return new _Value( Module, pointerType, gep );
         }
 
-        public _Value IndexLLVMArray( _Value obj, _Value idx )
+        public _Value IndexLLVMArray(_Value obj, _Value idx, _Type elementType)
         {
-            // TODO: Should this be extract element instead?
             Value[] idxs = { Module.LlvmModule.Context.CreateConstant( 0 ), idx.LlvmValue };
             Value retVal = IrBuilder.GetElementPtr( obj.LlvmValue, idxs )
                                     .SetDebugLocation( CurDILocation );
 
-            var arrayType = ( IArrayType )obj.Type.UnderlyingType.DebugType;
-            _Type pointerType = Module.GetOrInsertPointerType( _Type.GetTypeImpl( arrayType.ElementType ) );
-            return new _Value( Module, pointerType, retVal );
+            _Type pointerType = Module.GetOrInsertPointerType(elementType);
+            return new _Value(Module, pointerType, retVal);
         }
 
         public void InsertRet( _Value val )

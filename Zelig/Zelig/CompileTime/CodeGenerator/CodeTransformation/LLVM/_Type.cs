@@ -12,8 +12,6 @@ namespace Microsoft.Zelig.LLVM
     public class _Type
     {
         private static readonly Dictionary< string, _Type > TypeImplMap = new Dictionary< string, _Type >( );
-        private static readonly Dictionary< IntPtr, _Type > TypeImplsReverseLookupForLlvmTypes =
-            new Dictionary< IntPtr, _Type >( );
 
         private NativeModule LlvmModule => Module.LlvmModule;
 
@@ -27,7 +25,6 @@ namespace Microsoft.Zelig.LLVM
             IsValueType = isValueType;
             DebugType = typeRef;
             Name = name;
-            TypeImplsReverseLookupForLlvmTypes[ DebugType.TypeHandle ] = this;
         }
 
         public _Type( _Module owner, TypeRepresentation tr, IDebugType<ITypeRef,DIType> typeRef )
@@ -38,8 +35,6 @@ namespace Microsoft.Zelig.LLVM
             IsValueType = tr is ValueTypeRepresentation;
             Name = tr.FullName;
             DebugType = typeRef;
-
-            TypeImplsReverseLookupForLlvmTypes[ DebugType.TypeHandle ] = this;
         }
 
         public _Type( _Module owner, TypeRepresentation tr )
@@ -126,8 +121,6 @@ namespace Microsoft.Zelig.LLVM
                 DebugType = new DebugStructType( LlvmModule, tr.FullName, (DIScope)diNamespace ?? LlvmModule.DICompileUnit, tr.FullName );
                 break;
             }
-
-            TypeImplsReverseLookupForLlvmTypes[ DebugType.TypeHandle ] = this;
         }
 
         internal TypeRepresentation TypeRepresentation { get; }
@@ -198,22 +191,6 @@ namespace Microsoft.Zelig.LLVM
             retVal = new _Type( owner, tr );
             TypeImplMap.Add( tr.FullName, retVal );
             return retVal;
-        }
-
-        internal static _Type GetTypeImpl( ITypeRef ty )
-        {
-            _Type retVal;
-            if( TypeImplsReverseLookupForLlvmTypes.TryGetValue( ty.TypeHandle, out retVal ) )
-                return retVal;
-
-            var pointerType = ty as IPointerType;
-            if( pointerType != null && pointerType.ElementType.IsStruct )
-            {
-                return TypeImplsReverseLookupForLlvmTypes[ pointerType.ElementType.TypeHandle ];
-            }
-
-            Debug.Assert( false );
-            return null;
         }
 
         public void AddField( uint offset, _Type type, string name )
