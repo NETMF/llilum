@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+//#define ENABLE_OVERFLOW_CHECKS
 
 namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 {
@@ -13,17 +14,26 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
     public class OperatorHandlers_FromImplicitToExplicitExceptions
     {
+#if ENABLE_OVERFLOW_CHECKS
         [CompilationSteps.PhaseFilter( typeof(Phases.FromImplicitToExplicitExceptions) )]
         [CompilationSteps.OperatorHandler( typeof(BinaryOperator) )]
+#endif // ENABLE_OVERFLOW_CHECKS
         private static void Handle_BinaryOperator( PhaseExecution.NotificationContext nc )
         {
             BinaryOperator op = (BinaryOperator)nc.CurrentOperator;
 
             if(op.CheckOverflow)
             {
-                var cc = CreateOverflowCheck( nc, op );
-
-                var opNew = BinaryOperatorWithCarryOut.New( op.DebugInfo, op.Alu, op.Signed, false, op.FirstResult, cc, op.FirstArgument, op.SecondArgument );
+                var overflowFlag = CreateOverflowCheck(nc, op);
+                var opNew = BinaryOperatorWithCarryOut.New(
+                    op.DebugInfo,
+                    op.Alu,
+                    op.Signed,
+                    false,
+                    op.FirstResult,
+                    overflowFlag,
+                    op.FirstArgument,
+                    op.SecondArgument);
 
                 op.SubstituteWithOperator( opNew, Operator.SubstitutionFlags.CopyAnnotations );
             }
@@ -33,17 +43,25 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
+#if ENABLE_OVERFLOW_CHECKS
         [CompilationSteps.PhaseFilter( typeof(Phases.FromImplicitToExplicitExceptions) )]
         [CompilationSteps.OperatorHandler( typeof(UnaryOperator) )]
+#endif // ENABLE_OVERFLOW_CHECKS
         private static void Handle_UnaryOperator( PhaseExecution.NotificationContext nc )
         {
             UnaryOperator op = (UnaryOperator)nc.CurrentOperator;
 
             if(op.CheckOverflow)
             {
-                var cc = CreateOverflowCheck( nc, op );
-
-                var opNew = UnaryOperatorWithCarryOut.New( op.DebugInfo, op.Alu, op.Signed, false, op.FirstResult, cc, op.FirstArgument );
+                var overflowFlag = CreateOverflowCheck(nc, op);
+                var opNew = UnaryOperatorWithCarryOut.New(
+                    op.DebugInfo,
+                    op.Alu,
+                    op.Signed,
+                    false,
+                    op.FirstResult,
+                    overflowFlag,
+                    op.FirstArgument);
 
                 op.SubstituteWithOperator( opNew, Operator.SubstitutionFlags.CopyAnnotations );
             }
@@ -234,40 +252,19 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
-        [CompilationSteps.PhaseFilter( typeof(Phases.FromImplicitToExplicitExceptions) )]
-        [CompilationSteps.OperatorHandler( typeof(OverflowCheckOperator) )]
-        private static void Handle_OverflowCheckOperator( PhaseExecution.NotificationContext nc )
+        private static VariableExpression CreateOverflowCheck(PhaseExecution.NotificationContext nc, Operator op)
         {
-            Operator                op        =                          nc.CurrentOperator;
-            Debugging.DebugInfo     debugInfo =                          op.DebugInfo;
-            ConditionCodeExpression cc        = (ConditionCodeExpression)op.FirstArgument;
-            BasicBlock              current   =                          op.BasicBlock;
-            BasicBlock              continueBB;
-            BasicBlock              throwBB;
+            TypeRepresentation boolType = nc.TypeSystem.WellKnownTypes.System_Boolean;
+            TemporaryVariableExpression overflowFlag = nc.CurrentCFG.AllocateTemporary(boolType, null);
 
-            SplitAndCall( nc, op, true, nc.TypeSystem.WellKnownMethods.ThreadImpl_ThrowOverflowException, out continueBB, out throwBB );
+            BasicBlock continueBB;
+            BasicBlock throwBB;
+            MethodRepresentation throwOverflow = nc.TypeSystem.WellKnownMethods.ThreadImpl_ThrowOverflowException;
+            SplitAndCall(nc, op, true, throwOverflow, out continueBB, out throwBB);
 
-            //--//
-
-            current.AddOperator( ConditionCodeConditionalControlOperator.New( debugInfo, ConditionCodeExpression.Comparison.Overflow, cc, continueBB, throwBB ) );
-
+            op.AddOperatorAfter(BinaryConditionalControlOperator.New(op.DebugInfo, overflowFlag, continueBB, throwBB));
             nc.MarkAsModified();
-        }
-
-        //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
-        //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
-        //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
-
-        private static ConditionCodeExpression CreateOverflowCheck( PhaseExecution.NotificationContext nc ,
-                                                                    Operator                           op )
-        {
-            ConditionCodeExpression cc = nc.CurrentCFG.EnsureConditionCode( op.Results );
-
-            op.AddOperatorAfter( OverflowCheckOperator.New( op.DebugInfo, cc ) );
-
-            nc.MarkAsModified();
-
-            return cc;
+            return overflowFlag;
         }
 
         private static void SplitAndCall(     PhaseExecution.NotificationContext nc              ,

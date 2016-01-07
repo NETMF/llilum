@@ -382,22 +382,6 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             return newCC;
         }
 
-        public ConditionCodeExpression EnsureConditionCode( Expression[] array )
-        {
-            foreach(var ex in array)
-            {
-                var cc = ex as ConditionCodeExpression;
-                if(cc != null)
-                {
-                    return cc;
-                }
-            }
-
-            return this.AllocateConditionCode();
-        }
-
-        //--//
-
         public void ApplyTransformation( TransformationContextForCodeTransformation context )
         {
             context.Push( this );
