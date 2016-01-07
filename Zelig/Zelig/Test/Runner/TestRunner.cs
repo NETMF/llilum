@@ -19,6 +19,7 @@ namespace Microsoft.Zelig.Test
         public void Run()
         {
             var tests = new List<TestBase>( );
+            bool testResults = true;
 
             //
             // System.Text.StringBuilder
@@ -28,59 +29,60 @@ namespace Microsoft.Zelig.Test
             ////////
             //////// System.IO.MemoryStream
             ////////
-            //tests.Add( new CanRead( ) );
-            //tests.Add( new CanSeek( ) );
-            //tests.Add( new CanWrite( ) );
-            //tests.Add( new Close( ) );
-            //tests.Add( new Flush( ) );
-            //tests.Add( new Length( ) );
-            //tests.Add( new MemoryStream_Ctor( ) );
-            //tests.Add( new Position( ) );
-            //tests.Add( new Read( ) );
-            //tests.Add( new ReadByte( ) );
-            //tests.Add( new Seek( ) );
-            //tests.Add( new SetLength( ) );
-            //tests.Add( new ToArray( ) );
-            //tests.Add( new Write( ) );
-            //tests.Add( new WriteByte( ) );
-            //tests.Add( new WriteTo( ) );
+            tests.Add(new CanRead());
+            tests.Add(new CanSeek());
+            tests.Add(new CanWrite());
+            tests.Add(new Close());
+            tests.Add(new Flush());
+            tests.Add(new Length());
+            tests.Add(new MemoryStream_Ctor());
+            tests.Add(new Position());
+            tests.Add(new Read());
+            tests.Add(new ReadByte());
+            tests.Add(new Seek());
+            tests.Add(new SetLength());
+            tests.Add(new ToArray());
+            tests.Add(new Write());
+            tests.Add(new WriteByte());
+            tests.Add(new WriteTo());
 
             ////////
             //////// mscorlib
             ////////
-            //tests.Add(new ArraysSimpleTests());
-            //tests.Add(new ArraysOtherTests());
-            //tests.Add(new BasicConceptTests());
-            //tests.Add(new ConstructorsTests());
-            //tests.Add(new ConstTests());
-            //tests.Add(new DeclarationsTests());
-            //tests.Add(new DestructorsTests());
-            //tests.Add(new EnumTests());
-            //tests.Add(new EventsTests());
-            //tests.Add(new FieldsTests());
-            //tests.Add(new IndexersTests());
+            tests.Add(new ArraysSimpleTests());
+            tests.Add(new ArraysOtherTests());
+            tests.Add(new BasicConceptTests());
+            tests.Add(new ConstructorsTests());
+            tests.Add(new ConstTests());
+            tests.Add(new DeclarationsTests());
+            tests.Add(new DestructorsTests());
+            tests.Add(new EnumTests());
+            tests.Add(new EventsTests());
+            tests.Add(new FieldsTests());
+            tests.Add(new IndexersTests());
             tests.Add(new InterfaceTests());
-            //tests.Add(new OperatorsTests());
-            //tests.Add(new PropertiesTests());
-            //tests.Add(new Static_InstTests());
-            //tests.Add(new MembersTests());
-            //tests.Add(new MethodsTests());
-            //tests.Add(new StructsTests());
+            tests.Add(new OperatorsTests());
+            tests.Add(new PropertiesTests());
+            tests.Add(new Static_InstTests());
+            tests.Add(new MembersTests());
+            tests.Add(new MethodsTests());
+            tests.Add(new StructsTests());
 
-            foreach (ITestInterface t in tests)
+            foreach(ITestInterface t in tests)
             {
                 try
                 {
-                    if (t.Initialize() == InitializeResult.ReadyToGo)
+                    if(t.Initialize() == InitializeResult.ReadyToGo)
                     {
                         var test = (TestBase)t;
                         TestConsole.WriteLine($"Test '{test.Name}' running...");
                         TestResult result = test.Run(null);
 
                         string resultString = "Passed";
-                        if ((result & TestResult.Fail) != 0)
+                        if(( result & TestResult.Fail ) != 0)
                         {
                             resultString = "Failed";
+                            testResults = false;
                         }
 
                         TestConsole.WriteLine("Result: " + resultString);
@@ -88,11 +90,15 @@ namespace Microsoft.Zelig.Test
                 }
                 catch
                 {
-                    Log.Comment( "caught exception while running tests" ); 
+                    Log.Comment("caught exception while running tests");
                 }
             }
 
             TestConsole.WriteLine("All tests complete.");
+            TestConsole.WriteLine("");
+            TestConsole.WriteLine("*************************");
+            TestConsole.WriteLine("* Test Run Result: " + ( testResults ? "PASS" : "FAIL *" ));
+            TestConsole.WriteLine("*************************");
         }
 
         public static void Main( string[] args)

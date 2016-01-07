@@ -13,6 +13,9 @@ namespace Microsoft.Llilum.LPC1768
     {
         public new class Context : ChipsetModel.Processor.Context
         {
+            public Context(RT.ThreadImpl owner) : base(owner)
+            {
+            }
         }
 
         //
@@ -20,9 +23,9 @@ namespace Microsoft.Llilum.LPC1768
         //
         
         [RT.Inline]
-        public override RT.Processor.Context AllocateProcessorContext()
+        public override RT.Processor.Context AllocateProcessorContext(RT.ThreadImpl owner)
         {
-            return new Context();
+            return new Context(owner);
         }
     }
 }

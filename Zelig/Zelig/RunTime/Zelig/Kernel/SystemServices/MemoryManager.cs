@@ -158,9 +158,12 @@ namespace Microsoft.Zelig.Runtime
         [ExportedMethod]
         public static void FreeFromManagedHeap( UIntPtr address )
         {
-            // Since AllocateFromManagedHeap returns pointer that were offset by object header size,
-            // we need to reverse it before handing it to Release()
-            Instance.Release( AddressMath.Decrement( address, ObjectHeader.HeaderSize ) );
+            if(address != UIntPtr.Zero)
+            {
+                // Since AllocateFromManagedHeap returns pointer that were offset by object header size,
+                // we need to reverse it before handing it to Release()
+                Instance.Release( AddressMath.Decrement( address, ObjectHeader.HeaderSize ) );
+            }
         }
 
         //--//

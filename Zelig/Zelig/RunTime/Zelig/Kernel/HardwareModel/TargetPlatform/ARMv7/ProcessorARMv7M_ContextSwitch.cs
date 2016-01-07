@@ -147,6 +147,10 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
             //--//
 
+            public Context(RT.ThreadImpl owner) : base(owner)
+            {
+            }
+
             //
             // Overrides
             //
@@ -603,6 +607,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
         //--//
         
+        [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv7M )]
         [ExportedMethod]
         private static unsafe void CUSTOM_STUB_NotifySoftwareFrameSnapshot( void* frame, int size )
         {

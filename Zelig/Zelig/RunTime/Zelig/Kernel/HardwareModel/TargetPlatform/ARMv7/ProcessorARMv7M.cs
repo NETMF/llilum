@@ -360,11 +360,11 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         public override void InitializeProcessor( )
         {
             //
-            // We want to run ISRs in privilged Handler mode using the Main Stack Pointer and all the other tasks 
+            // We want to run ISRs in privileged Handler mode using the Main Stack Pointer and all the other tasks 
             // in privileged Thread mode using the Process Stack Pointer. 
             //
             // We will assume that native context switching is possible when processor initialization is carried out in
-            // Handler/Privileged mode. Of course that is not a complete guarantee. After carrying out the initailization of the 
+            // Handler/Privileged mode. Of course that is not a complete guarantee. After carrying out the initialization of the 
             // idle thread task, we will let the initialization thread return to thread mode upon first context switch as per classic 
             // technique mentioned below, from ARM reference manual. As switching the mode is carried out naturally by 
             // setting the appropriate flag, there is nothing else we need to do at initialization time. See context switch code 
@@ -853,6 +853,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         /// Hard Fault is caused by Bus Fault, Memory Management Fault, or Usage Fault if their handler 
         /// cannot be executed.
         /// </summary>
+        [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv7M )]
         [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
         [RT.ExportedMethod]
         private static void HardFault_Handler_Zelig( uint sp )
@@ -991,6 +992,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             }
         }
         
+        [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv7M )]
         [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
         [RT.ExportedMethod]
         private static unsafe void MemManage_Handler_Zelig( uint sp )
@@ -1000,6 +1002,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             MemManage_Handler( ref *regs ); 
         }
         
+        [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv7M )]
         [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
         [RT.ExportedMethod]
         private static unsafe void UsageFault_Handler_Zelig( uint sp )
@@ -1009,6 +1012,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             UsageFault_Handler( ref *regs ); 
         }
         
+        [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv7M )]
         [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
         [RT.ExportedMethod]
         private static unsafe void BusFault_Handler_Zelig( uint sp )

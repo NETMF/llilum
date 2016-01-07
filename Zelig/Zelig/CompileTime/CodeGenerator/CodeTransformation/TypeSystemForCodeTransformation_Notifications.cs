@@ -451,26 +451,41 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             // for now disable inlining of these methods
             owner.BuildTimeFlags |=  MethodRepresentation.BuildTimeAttributes.NoInline;
             owner.BuildTimeFlags &= ~MethodRepresentation.BuildTimeAttributes.Inline;
-            
-            if(this.PlatformAbstraction.PlatformVersion == TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv7M)
-            {               
+
+            if(this.PlatformAbstraction.PlatformVersion == TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv7M ||
+               this.PlatformAbstraction.PlatformVersion == TargetModel.Win32.InstructionSetVersion.Platform_Version__x86)
+            {
                 CustomAttributeRepresentation cf = owner.FindCustomAttribute( this.WellKnownTypes.Microsoft_Zelig_Runtime_CapabilitiesFilterAttribute );
-                if( cf != null )
+                if(cf != null)
                 {
                     object obj = cf.GetNamedArg( "RequiredCapabilities" );
-                    if( obj != null )
+                    if(obj != null)
                     {
                         uint capabilities = (uint)obj;
 
-                        if( capabilities != this.PlatformAbstraction.PlatformVFP )
+                        uint reqFamily = capabilities & TargetModel.ArmProcessor.InstructionSetVersion.Platform_Family__Mask;
+                        uint reqVFP = capabilities & TargetModel.ArmProcessor.InstructionSetVersion.Platform_VFP__Mask;
+                        uint reqPlatformVersion = capabilities & TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__Mask;
+
+                        if(reqFamily != 0 && reqFamily != this.PlatformAbstraction.PlatformFamily)
                         {
-                            // This method is not conformant to the capabilities of the platform we are compiling
+                            // This method does not conform to the capabilities of the platform we are compiling
+                            return;
+                        }
+                        else if(reqVFP != 0 && reqVFP != this.PlatformAbstraction.PlatformVFP)
+                        {
+                            // This method does not conform to the capabilities of the platform we are compiling
+                            return;
+                        }
+                        else if(reqPlatformVersion != 0 && reqPlatformVersion != this.PlatformAbstraction.PlatformVersion)
+                        {
+                            // This method does not conform to the capabilities of the platform we are compiling
                             return;
                         }
                     }
                 }
 
-                ExportedMethods.Add( owner );
+                ExportedMethods.Add(owner);
             }
         }
 

@@ -58,8 +58,8 @@ namespace Microsoft.Zelig.Test
             result |= Assert.CheckFailed( Const33_Test( ) );
             result |= Assert.CheckFailed( Const34_Test( ) );
             result |= Assert.CheckFailed( Const35_Test( ) );
-            result |= Assert.CheckFailed( Const42_Test( ) );
-            result |= Assert.CheckFailed( Const43_Test( ) );
+            //result |= Assert.CheckFailed( Const42_Test( ) );
+            //result |= Assert.CheckFailed( Const43_Test( ) );
             result |= Assert.CheckFailed( Const44_Test( ) );
             result |= Assert.CheckFailed( Const56_Test( ) );
             result |= Assert.CheckFailed( Const57_Test( ) );

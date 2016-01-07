@@ -42,6 +42,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
         [Flags]
         public enum Capabilities : uint
         {
+            None   = 0x00000000,
             ARMv4  = 0x00000001,
             ARMv5  = 0x00000002,
             ARMv6M = 0x00000004,

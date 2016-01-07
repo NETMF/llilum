@@ -85,6 +85,9 @@ namespace Microsoft.DeviceModels.Chipset.LPC3180
             //
             // Constructor Methods
             //
+            public Context(RT.ThreadImpl owner) : base(owner)
+            {
+            }
 
             //
             // Helper Methods
@@ -146,9 +149,9 @@ namespace Microsoft.DeviceModels.Chipset.LPC3180
         //--//
 
         [RT.Inline]
-        public override Microsoft.Zelig.Runtime.Processor.Context AllocateProcessorContext()
+        public override Microsoft.Zelig.Runtime.Processor.Context AllocateProcessorContext(RT.ThreadImpl owner)
         {
-            return new Context();
+            return new Context(owner);
         }
 
         //--//

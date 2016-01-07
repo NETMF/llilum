@@ -37,7 +37,7 @@ namespace Microsoft.VoxSoloFormFactorLoader
         //--//
 
         [RT.Inline]
-        public override RT.Processor.Context AllocateProcessorContext()
+        public override RT.Processor.Context AllocateProcessorContext(RT.ThreadImpl owner)
         {
             return null;
         }

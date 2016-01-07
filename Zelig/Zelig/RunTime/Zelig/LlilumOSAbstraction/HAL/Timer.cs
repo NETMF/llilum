@@ -8,41 +8,36 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.HAL
     using System;
     using System.Runtime.InteropServices;
 
-    public unsafe delegate void TimerCallback( UIntPtr timerContext, ulong time );
+    public unsafe delegate void TimerCallback( ulong time );
 
     public static class Timer
     {
-        public static unsafe uint LLOS_SYSTEM_TIMER_Enable( TimerCallback callback )
+        public static unsafe uint LLOS_SYSTEM_TIMER_AllocateTimer( TimerCallback callback, ulong microsecondsFromNow, TimerContext** pTimer )
         {
             UIntPtr callbackPtr = UIntPtr.Zero;
+            UIntPtr callbackCtx = UIntPtr.Zero;
 
             if(callback != null)
             {
                 DelegateImpl dlg = (DelegateImpl)(object)callback;
 
                 callbackPtr = new UIntPtr( dlg.InnerGetCodePointer( ).Target.ToPointer( ) );
+
+                callbackCtx = ( (ObjectImpl)callback.Target ).ToPointer( );
             }
 
-            return LLOS_SYSTEM_TIMER_Enable( callbackPtr );
+            return LLOS_SYSTEM_TIMER_AllocateTimer( callbackPtr, callbackCtx, microsecondsFromNow, pTimer );
         }
 
         [DllImport( "C" )]
-        private static unsafe extern uint LLOS_SYSTEM_TIMER_Enable( UIntPtr callback );
+        public static unsafe extern ulong LLOS_SYSTEM_TIMER_GetTicks( TimerContext* pTimer );
+
 
         [DllImport( "C" )]
-        public static unsafe extern void LLOS_SYSTEM_TIMER_Disable( );
+        public static unsafe extern ulong LLOS_SYSTEM_TIMER_GetTimerFrequency( TimerContext* pTimer );
 
         [DllImport( "C" )]
-        public static unsafe extern uint LLOS_SYSTEM_TIMER_SetTicks( ulong value );
-
-        [DllImport( "C" )]
-        public static unsafe extern ulong LLOS_SYSTEM_TIMER_GetTicks( );
-
-        [DllImport( "C" )]
-        public static unsafe extern ulong LLOS_SYSTEM_TIMER_GetTimerFrequency( );
-
-        [DllImport( "C" )]
-        public static unsafe extern uint LLOS_SYSTEM_TIMER_AllocateTimer( UIntPtr timerContext, TimerContext** pTimer );
+        private static unsafe extern uint LLOS_SYSTEM_TIMER_AllocateTimer( UIntPtr callback, UIntPtr timerContext, ulong microsecondsFromNow, TimerContext** pTimer );
 
         [DllImport( "C" )]
         public static unsafe extern void LLOS_SYSTEM_TIMER_FreeTimer( TimerContext* pTimer );

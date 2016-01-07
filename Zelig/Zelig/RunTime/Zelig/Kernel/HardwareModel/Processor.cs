@@ -21,16 +21,22 @@ namespace Microsoft.Zelig.Runtime
             public bool InPrologue;
             public bool InEpilogue;
 
+            protected ThreadImpl m_owner;
+
             //
             // Helper Methods
             //
+
+            protected Context(ThreadImpl owner)
+            {
+                m_owner = owner;
+            }
 
             public abstract void Populate();
 
             public abstract void Populate( Context context );
 
-            public abstract void PopulateFromDelegate( Delegate dlg   ,
-                                                       uint[]   stack );
+            public abstract void PopulateFromDelegate( Delegate dlg, uint[] stack );
 
             public abstract void SetupForExceptionHandling( uint mode );
 
@@ -74,6 +80,11 @@ namespace Microsoft.Zelig.Runtime
             {
                 get;
             }
+
+            public ThreadImpl OwnerThread
+            {
+                get { return m_owner; }
+            }
         }
 
         //
@@ -82,11 +93,16 @@ namespace Microsoft.Zelig.Runtime
 
         public abstract void InitializeProcessor();
 
-        public abstract Context AllocateProcessorContext();
+        public abstract Context AllocateProcessorContext(ThreadImpl owner);
 
         //--//
 
-        public abstract bool AreInterruptsDisabled( );
+        public abstract bool AreInterruptsDisabled();
+
+        public virtual bool AreInterruptsEnabled()
+        {
+            return !AreAllInterruptsDisabled();
+        }
 
         public abstract bool AreAllInterruptsDisabled( );
 

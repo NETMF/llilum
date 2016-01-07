@@ -34,38 +34,22 @@ extern "C"
         }
     }
 
-    HRESULT LLOS_SYSTEM_TIMER_Enable(LLOS_SYSTEM_TIMER_Callback callback)
-    {
-        s_TimerCallback = callback;
-
-        us_ticker_init();
-
-        ticker_set_handler(s_pTickerData, MbedInterruptHandler);
-
-        return S_OK;
-    }
-
-    VOID LLOS_SYSTEM_TIMER_Disable()
-    {
-        s_TimerCallback = NULL;
-    }
-
     HRESULT LLOS_SYSTEM_TIMER_SetTicks(uint64_t value)
     {
         return LLOS_E_NOT_SUPPORTED;
     }
 
-    uint64_t LLOS_SYSTEM_TIMER_GetTicks()
+    uint64_t LLOS_SYSTEM_TIMER_GetTicks(LLOS_Context timerContext)
     {
         return us_ticker_read();
     }
 
-    uint64_t LLOS_SYSTEM_TIMER_GetTimerFrequency()
+    uint64_t LLOS_SYSTEM_TIMER_GetTimerFrequency(LLOS_Context timerContext)
     {
         return 1000000; // 1us tick timer = 1MHz
     }
 
-    HRESULT LLOS_SYSTEM_TIMER_AllocateTimer(LLOS_Context callbackContext, LLOS_Context *pTimer)
+    HRESULT LLOS_SYSTEM_TIMER_AllocateTimer(LLOS_SYSTEM_TIMER_Callback callback, LLOS_Context callbackContext, uint64_t usFromNow, LLOS_Context *pTimer)
     {
         LLOS_MbedTimer *pCtx;
 
@@ -80,6 +64,12 @@ extern "C"
         {
             return LLOS_E_OUT_OF_MEMORY;
         }
+
+        s_TimerCallback = callback;
+
+        us_ticker_init();
+
+        ticker_set_handler(s_pTickerData, MbedInterruptHandler);
 
         pCtx->Context = callbackContext;
 

@@ -69,6 +69,11 @@ namespace Microsoft.DeviceModels.Chipset.PXA27x
             // Constructor Methods
             //
 
+            public Context(RT.ThreadImpl owner) : base(owner)
+            {
+            }
+
+
             //
             // Helper Methods
             //
@@ -127,9 +132,9 @@ namespace Microsoft.DeviceModels.Chipset.PXA27x
         //--//
 
         [RT.Inline]
-        public override Microsoft.Zelig.Runtime.Processor.Context AllocateProcessorContext()
+        public override RT.Processor.Context AllocateProcessorContext(RT.ThreadImpl owner)
         {
-            return new Context();
+            return new Context(owner);
         }
 
         //--//

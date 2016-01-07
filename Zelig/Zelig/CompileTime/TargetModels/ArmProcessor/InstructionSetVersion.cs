@@ -14,7 +14,7 @@ namespace Microsoft.Zelig.TargetModel.ArmProcessor
         public const string CodeGenerator_LLVM  = "LLVM";
 
         //
-        // Platform desriptors fields: fields in the same group are mutually exclusive
+        // Platform descriptors fields: fields in the same group are mutually exclusive
         // 
 
         //

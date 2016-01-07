@@ -164,9 +164,9 @@ namespace Microsoft.DeviceModels.Chipset.CortexM.Drivers
         }
 
         [RT.Inline]
-        private uint GetTimerClockMhz( )
+        private unsafe uint GetTimerClockMhz( )
         {
-            return (uint)(LLOS.Timer.LLOS_SYSTEM_TIMER_GetTimerFrequency( ) / 1000000); 
+            return (uint)(LLOS.Timer.LLOS_SYSTEM_TIMER_GetTimerFrequency( null ) / 1000000); 
         }
 
         [RT.Inline]

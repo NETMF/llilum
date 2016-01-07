@@ -2,6 +2,8 @@
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//#define TEST_EXCEPTIONS  // https://github.com/NETMF/llilum/issues/130
+
 using System;
 
 namespace Microsoft.Zelig.Test
@@ -1165,22 +1167,30 @@ element_02,assign_argpass_01,assign_argpass_02,assign_argpass_03,object_sysarr_0
         {
             Log.Comment(" Arrays - Access and Iteration");
             Log.Comment(" Accessing an array's -1 element should throw an System.Exception");
+#if TEST_EXCEPTIONS
             if (Simple_TestClass_acc_iter_bounds_03.testMethod())
             {
                 return TestResult.Pass;
             }
             return TestResult.Fail;
+#else
+            return TestResult.Skip;
+#endif
         }
         [TestMethod]
         public TestResult Simple_acc_iter_bounds_04_Test()
         {
             Log.Comment(" Arrays - Access and Iteration");
             Log.Comment(" Accessing an array's maxlength+1 element should throw an System.Exception");
+#if TEST_EXCEPTIONS
             if (Simple_TestClass_acc_iter_bounds_04.testMethod())
             {
                 return TestResult.Pass;
             }
             return TestResult.Fail;
+#else
+            return TestResult.Skip;
+#endif
         }
         [TestMethod]
         public TestResult Simple_acc_iter_idxtype_a_01_Test()

@@ -55,7 +55,6 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
 
                         if(( filter & typeSystem.PlatformAbstraction.PlatformVersion ) != typeSystem.PlatformAbstraction.PlatformVersion)
                         {
-                            // This type is not an allowed extension for the current platform
                             continue;
                         }
                     }

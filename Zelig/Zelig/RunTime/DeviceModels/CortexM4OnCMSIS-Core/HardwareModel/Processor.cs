@@ -17,6 +17,9 @@ namespace Microsoft.CortexM4OnCMSISCore
             //
             // Constructor Methods
             //
+            public Context(RT.ThreadImpl owner) : base(owner)
+            {
+            }
 
             //
             // Helper Methods

@@ -25,6 +25,10 @@ namespace Microsoft.CortexM3OnMBED
 
             //--//
 
+            public Context(RT.ThreadImpl owner) : base(owner)
+            {
+            }
+
             //
             // Extensiblity 
             //

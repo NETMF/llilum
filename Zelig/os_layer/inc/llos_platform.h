@@ -36,8 +36,10 @@
 #ifndef LLOS_MEMSET
 #ifndef _STRING_H_
 
-#ifndef TARGET_STM32F411RE
+#ifndef TARGET_STM32F411RE 
+#ifndef WIN32
 extern void memset(void* addr, uint8_t fill, size_t size);
+#endif
 #else
 extern void* memset(void* addr, int fill, size_t size);
 #endif

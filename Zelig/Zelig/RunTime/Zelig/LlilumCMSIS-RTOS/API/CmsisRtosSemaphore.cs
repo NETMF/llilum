@@ -33,11 +33,11 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
 
         //--//
 
-        public int Acquire( int timeout )
+        public unsafe int Acquire( int timeout )
         {
             bool fAcquired = false;
 
-            var start = (uint)LLOS.HAL.Timer.LLOS_SYSTEM_TIMER_GetTicks();
+            var start = (uint)LLOS.HAL.Timer.LLOS_SYSTEM_TIMER_GetTicks(null);
 
             do
             {
@@ -65,7 +65,7 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
                     {
                         if(timeout >= 0)
                         {
-                            timeout -= (int)( ( (uint)LLOS.HAL.Timer.LLOS_SYSTEM_TIMER_GetTicks( ) - start ) / 1000 );
+                            timeout -= (int)( ( (uint)LLOS.HAL.Timer.LLOS_SYSTEM_TIMER_GetTicks( null ) - start ) / 1000 );
 
                             if(timeout < 0)
                             {

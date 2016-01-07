@@ -133,10 +133,6 @@ namespace Microsoft.CortexM0OnMBED.Drivers
             m_timers      = new RT.KernelList<Timer>();
             m_accumulator = 0;
             
-
-            // This call sets up the timer handler to call SystemTimer_Handler/ProcessTimeout
-            LLOS.HAL.Timer.LLOS_SYSTEM_TIMER_Enable( HandleSystemTimer );
-
             m_lastAccumulatorUpdate = this.Counter;
 
             // Allocate our one, and only, timer event
@@ -144,7 +140,7 @@ namespace Microsoft.CortexM0OnMBED.Drivers
             {
                 fixed (LLOS.HAL.TimerContext** timer_ptr = &m_timerEvent)
                 {
-                    LLOS.HAL.Timer.LLOS_SYSTEM_TIMER_AllocateTimer( UIntPtr.Zero, timer_ptr );
+                    LLOS.HAL.Timer.LLOS_SYSTEM_TIMER_AllocateTimer( HandleSystemTimer, ulong.MaxValue, timer_ptr );
                 }
             }
             
@@ -188,12 +184,12 @@ namespace Microsoft.CortexM0OnMBED.Drivers
         /// <summary>
         /// Gets the current value of the timer accumulator
         /// </summary>
-        public uint Counter
+        public unsafe uint Counter
         {
             [RT.Inline]
             get
             {
-                return (uint)LLOS.HAL.Timer.LLOS_SYSTEM_TIMER_GetTicks();
+                return (uint)LLOS.HAL.Timer.LLOS_SYSTEM_TIMER_GetTicks( m_timerEvent );
             }
         }
 
@@ -367,7 +363,7 @@ namespace Microsoft.CortexM0OnMBED.Drivers
                 c_MaxCounterValue - m_lastAccumulatorUpdate + current;
         }
 
-        private static void HandleSystemTimer(UIntPtr context, ulong ticks)
+        private static void HandleSystemTimer(ulong ticks)
         {
             using(RT.SmartHandles.InterruptState.Disable())
             {

@@ -12,7 +12,7 @@ namespace Microsoft.Zelig.Runtime.SmartHandles
 
     //
     // These methods are not really implemented as internal call,
-    // a open class will provide the implementation, based on the target platorm.
+    // a open class will provide the implementation, based on the target platform.
     //
     public struct InterruptState : IDisposable
     {

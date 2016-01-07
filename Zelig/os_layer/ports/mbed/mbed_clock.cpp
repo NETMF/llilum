@@ -10,7 +10,7 @@
 extern "C"
 {
 
-    uint64_t LLOS_CLOCK_GetTicks()
+    uint64_t LLOS_CLOCK_GetClockTicks()
     {
         return us_ticker_read();
     }

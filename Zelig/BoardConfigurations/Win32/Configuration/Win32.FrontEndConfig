@@ -1,0 +1,86 @@
+﻿###
+### README: This file can be used in the SDK AS-IS, or remove all instances of #~# to use with the FrontEnd project
+###
+
+###
+### Location of the Zelig assemblies.
+###
+#~#-HostAssemblyDir   ..\..\..\..\ZeligBuild\Host\bin\Debug
+#~#-DeviceAssemblyDir ..\..\..\..\ZeligBuild\Target\bin\Debug
+
+#~#-CompilationSetupPath ..\..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Llilum.BoardConfigurations.K26.dll
+-CompilationSetup Microsoft.Llilum.BoardConfigurations.K26CompilationSetup
+
+
+###
+### We need to include this assembly to get the right drivers.
+###
+-Reference Microsoft.DeviceModels.ModelForWin32
+-Reference Win32
+
+
+###
+### Add compilation phases, in order
+###
+-CompilationPhaseDisabled InitializeReferenceCountingGarbageCollection
+-CompilationPhaseDisabled EnableStrictReferenceCountingGarbageCollection
+#-CompilationPhaseDisabled ReduceNumberOfTemporaries
+#-CompilationPhaseDisabled TransformFinallyBlocksIntoTryBlocks
+#-CompilationPhaseDisabled ApplyClassExtensions
+#-CompilationPhaseDisabled PrepareImplementationOfInternalMethods  
+#-CompilationPhaseDisabled CrossReferenceTypeSystem
+#-CompilationPhaseDisabled ApplyConfigurationSettings
+-CompilationPhaseDisabled ResourceManagerOptimizations
+#-CompilationPhaseDisabled HighLevelTransformations
+#-CompilationPhaseDisabled PropagateCompilationConstraints
+#-CompilationPhaseDisabled ComputeCallsClosure
+#-CompilationPhaseDisabled EstimateTypeSystemReduction
+#-CompilationPhaseDisabled CompleteImplementationOfInternalMethods
+#-CompilationPhaseDisabled ReduceTypeSystem
+-CompilationPhaseDisabled PrepareExternalMethods
+#-CompilationPhaseDisabled DetectNonImplementedInternalCalls
+#-CompilationPhaseDisabled OrderStaticConstructors
+#-CompilationPhaseDisabled LayoutTypes
+#-CompilationPhaseDisabled HighLevelToMidLevelConversion
+#-CompilationPhaseDisabled FromImplicitToExplicitExceptions
+#-CompilationPhaseDisabled ReferenceCountingGarbageCollection
+-CompilationPhaseDisabled MidLevelToLowLevelConversion
+-CompilationPhaseDisabled ConvertUnsupportedOperatorsToMethodCalls
+-CompilationPhaseDisabled ExpandAggregateTypes
+-CompilationPhaseDisabled SplitComplexOperators
+-CompilationPhaseDisabled FuseOperators
+#-CompilationPhaseDisabled Optimizations
+-CompilationPhaseDisabled ConvertToSSA
+-CompilationPhaseDisabled PrepareForRegisterAllocation
+-CompilationPhaseDisabled CollectRegisterAllocationConstraints
+-CompilationPhaseDisabled AllocateRegisters
+#-CompilationPhaseDisabled GenerateImage
+#-CompilationPhaseDisabled Done
+
+###
+### The program to compile.
+###
+#~#..\..\..\..\ZeligBuild\Target\bin\Debug\Microsoft.Zelig.Test.mbed.Simple.exe
+
+###
+### Where to put the results.
+###
+#~#-OutputName Microsoft.Zelig.Test.mbed.Simple
+#~#-OutputDir  ..\..\..\..\LLVM2IR_results\mbed\simple
+
+#-DumpIR
+#-DumpIRpre
+#-DumpIRpost
+#-DumpIRXML
+-DumpLLVMIR
+#-ReloadState
+#-DumpLLVMIR_TextRepresentation
+
+-MaxProcs 8
+
+#-NoSDK
+#-GenerateObj
+
+#-LlvmOptArgs "-verify-debug-info -verify-dom-info -verify-each -verify-loop-info -verify-regalloc -verify-region-info -march=thumb -mcpu=cortex-m3 -aa-eval -indvars -gvn -globaldce -adce -dce -tailcallopt -scalarrepl -mem2reg -ipconstprop -deadargelim -sccp -dce -ipsccp -dce -constmerge -scev-aa -targetlibinfo -irce -dse -dce -argpromotion -mem2reg -adce -mem2reg -globaldce -die -dce -dse"
+#-LlvmLlcArgs "-O2 -code-model=small -data-sections -relocation-model=pic -march=thumb -mcpu=cortex-m3 -filetype=obj -mtriple=thumbv7m-none-eabi"
+

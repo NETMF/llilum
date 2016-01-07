@@ -2,7 +2,8 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-#define LPC1768
+#define WIN32
+//#define LPC1768
 //#define K64F
 //#define STM32F411
 //#define STM32F401
@@ -57,13 +58,14 @@ namespace Microsoft.Zelig.Test.mbed.Simple
     using Windows.Devices.Pwm;
 
     using ZeligSupport = Microsoft.Zelig.Support.mbed;
-
+    using Runtime;
 #if (LPC1768)
     using LPC1768 = Llilum.LPC1768;
 #elif (K64F)
     using K64F = Llilum.K64F;
 #elif (STM32F411)
     using STM32F411 = Llilum.STM32F411;
+#elif (WIN32)
 #elif (STM32F401)
     using STM32F401 = Llilum.STM32F401;
 #elif (STM32F091)
@@ -178,6 +180,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
         static int pwmPinNumber = (int)K64F.PinName.D3;
 #elif STM32F411
         static int pwmPinNumber = (int)STM32F411.PinName.D3;
+#elif (WIN32)
 #elif STM32F401
         static int pwmPinNumber = (int)STM32F401.PinName.D3;
 #else
@@ -199,6 +202,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             (int)STM32F411.PinName.D13,
             (int)STM32F411.PinName.D12,
             (int)STM32F411.PinName.D11,
+#elif (WIN32)
 #elif (STM32F401)
             (int)STM32F401.PinName.LED1,
             (int)STM32F401.PinName.D13,
@@ -209,8 +213,60 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 #endif
     };
 
+
+#if (WIN32)
+        static int s_Counter1 = 0;
+        static int s_Counter2 = 0;
+        static int s_Counter3 = 0;
+#endif
+
         static void Main()
         {
+#if (WIN32)
+            Thread th1 = new Thread( ( ) =>
+            {
+                int i=0;
+
+                while(true)
+                {
+                    BugCheck.Log( "Thread1: " + i++);
+                    Thread.Sleep(500);
+                }
+            } );
+            Thread th2 = new Thread( ( ) =>
+            {
+                int i=0;
+
+                while(true)
+                {
+                    BugCheck.Log( "Thread2: " + i++);
+                    Thread.Sleep(500);
+                }
+            } );
+
+            Timer t1 = new Timer( (object arg) =>
+            {
+                BugCheck.Log( "Timer1: " + s_Counter1++ );
+            }, null, 1000, 1000 );
+
+            Timer t2 = new Timer( (object arg) =>
+            {
+                BugCheck.Log( "Timer2: " + s_Counter2++ );
+            }, null, 2000, 2000 );
+
+            Timer t3 = new Timer( (object arg) =>
+            {
+                BugCheck.Log( "Timer3: " + s_Counter3++ );
+            }, null, 4000, 4000 );
+
+            th1.Start( );
+            th2.Start( );
+
+            while(true)
+            {
+                Thread.Sleep(-1);
+            }
+#else
             int currentMode = 0;
             int count = 0;
             float periodDivider = 1;
@@ -431,6 +487,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                 blinkingModes[currentMode].run(blinkingTimer.read() / (period / periodDivider));
 
             }
+#endif // WIN32
         }
 
 #if TEST_GPIO_INTERRUPTS
@@ -531,6 +588,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             (int)K64F.PinName.PTC7,
             (int)K64F.PinName.PTC5,
             (int)K64F.PinName.PTC0,
+#elif (WIN32)
 #else
 #error No target board defined.
 #endif

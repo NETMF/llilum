@@ -25,15 +25,19 @@ namespace Microsoft.CortexM4OnMBED
 
             //--//
 
+            public Context(RT.ThreadImpl owner) : base(owner)
+            {
+            }
+
             //
-            // Extensiblity 
+            // Extensibility 
             //
 #if THREADING_RTOS
             public override void SwitchTo()
             {
                 //
                 // When running on a RTOS, we will request the underlying system to choose the next thread
-                // basedon our indications. Need to solve priority and lock contention issues, e.g. priority inversion
+                // based on our indications. Need to solve priority and lock contention issues, e.g. priority inversion
                 // issues. 
                 //
          

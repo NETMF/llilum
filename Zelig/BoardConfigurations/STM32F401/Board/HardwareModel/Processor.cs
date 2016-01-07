@@ -15,6 +15,10 @@ namespace Microsoft.Llilum.STM32F401
     {
         public new class Context : ChipsetModel.Processor.Context
         {
+            public Context(RT.ThreadImpl owner) : base(owner)
+            {
+            }
+
             public override unsafe void SwitchTo( )
             {
                 //
@@ -37,9 +41,9 @@ namespace Microsoft.Llilum.STM32F401
         }
         
         [RT.Inline]
-        public override Microsoft.Zelig.Runtime.Processor.Context AllocateProcessorContext()
+        public override Microsoft.Zelig.Runtime.Processor.Context AllocateProcessorContext(RT.ThreadImpl owner)
         {
-            return new Context();
+            return new Context(owner);
         }
 
         //--//

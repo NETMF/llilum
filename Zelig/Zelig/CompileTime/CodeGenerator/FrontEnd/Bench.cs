@@ -102,24 +102,27 @@ namespace Microsoft.Zelig.FrontEnd
         const string c_CortexM3 = "cortex-m3";
         const string c_CortexM4 = "cortex-m4";
         const string c_CortexM7 = "cortex-m7";
+        const string c_x86_64   = "x86-64";
 
         // These are the default arguments to LLC.EXE if not specified in the command line arguments
-        const string DefaultLlcArgs_common    = "-O2 -code-model=small -data-sections -filetype=obj";
-        const string DefaultLlcArgs_target_m0 = "-march=thumb -mcpu=cortex-m0 -mtriple=thumbv6m-none-eabi";
-        const string DefaultLlcArgs_target_m3 = "-march=thumb -mcpu=cortex-m3 -mtriple=thumbv7m-none-eabi";
+        const string DefaultLlcArgs_common     = "-O2 -code-model=small -data-sections -filetype=obj";
+        const string DefaultLlcArgs_target_m0  = "-march=thumb -mcpu=cortex-m0 -mtriple=thumbv6m-none-eabi";
+        const string DefaultLlcArgs_target_m3  = "-march=thumb -mcpu=cortex-m3 -mtriple=thumbv7m-none-eabi";
         //const string DefaultLlcArgs_target_m4 = "-march=thumb -mcpu=cortex-m4 -mtriple=thumbv7m-none-eabi"; https://github.com/NETMF/llilum/issues/136
         const string DefaultLlcArgs_target_m4 = "-march=thumb -mcpu=cortex-m3 -mtriple=thumbv7m-none-eabi";
-        const string DefaultLlcArgs_target_m7 = "-march=thumb -mcpu=cortex-m7 -mtriple=thumbv7m-none-eabi";
-        const string DefaultLlcArgs_target_df = DefaultLlcArgs_target_m3;
-        const string DefaultLlcArgs_reloc     = "-relocation-model=pic";
+        const string DefaultLlcArgs_target_m7  = "-march=thumb -mcpu=cortex-m7 -mtriple=thumbv7m-none-eabi";
+        const string DefaultLlcArgs_target_x86 = "-march=x86   -mcpu=x86-64    -mtriple=x86_64-pc-windows-msvc";
+        const string DefaultLlcArgs_target_df  = DefaultLlcArgs_target_m3;
+        const string DefaultLlcArgs_reloc      = "-relocation-model=pic";
         //--//
-        const string DefaultOptExeArgs_common    = "-verify-debug-info -verify-dom-info -verify-each -verify-loop-info -verify-regalloc -verify-region-info -aa-eval -indvars -gvn -globaldce -adce -dce -tailcallopt -scalarrepl -mem2reg -ipconstprop -deadargelim -sccp -dce -ipsccp -dce -constmerge -scev-aa -targetlibinfo -irce -dse -dce -argpromotion -mem2reg -adce -mem2reg -globaldce -die -dce -dse";
-        const string DefaultOptArgs_target_m0 = "-march=thumb -mcpu=cortex-m0";
-        const string DefaultOptArgs_target_m3 = "-march=thumb -mcpu=cortex-m3";
+        const string DefaultOptExeArgs_common  = "-verify-debug-info -verify-dom-info -verify-each -verify-loop-info -verify-regalloc -verify-region-info -aa-eval -indvars -gvn -globaldce -adce -dce -tailcallopt -scalarrepl -mem2reg -ipconstprop -deadargelim -sccp -dce -ipsccp -dce -constmerge -scev-aa -targetlibinfo -irce -dse -dce -argpromotion -mem2reg -adce -mem2reg -globaldce -die -dce -dse";
+        const string DefaultOptArgs_target_m0  = "-march=thumb -mcpu=cortex-m0";
+        const string DefaultOptArgs_target_m3  = "-march=thumb -mcpu=cortex-m3";
         //const string DefaultOptArgs_target_m4 = "-march=thumb -mcpu=cortex-m4"; https://github.com/NETMF/llilum/issues/136
         const string DefaultOptArgs_target_m4 = "-march=thumb -mcpu=cortex-m3";
-        const string DefaultOptArgs_target_m7 = "-march=thumb -mcpu=cortex-m7";
-        const string DefaultOptArgs_target_df = DefaultOptArgs_target_m3;
+        const string DefaultOptArgs_target_m7  = "-march=thumb -mcpu=cortex-m7";
+        const string DefaultOptArgs_target_x86 = "-march=x86 -mcpu=x86-64 -function-sections -dwarf-version=3";
+        const string DefaultOptArgs_target_df  = DefaultOptArgs_target_m3;
          
         //--//
 
@@ -1362,9 +1365,10 @@ namespace Microsoft.Zelig.FrontEnd
                 case c_CortexM3:
                 case c_CortexM4:
                 case c_CortexM7:
+                case c_x86_64:
                     break;
                 default:
-                    throw new NotSupportedException( "The only architectures currently supported are Cortex-M, for M0[+], M3, M4 and M7 variants" );
+                    throw new NotSupportedException( "The only architectures currently supported are x86-64 and Cortex-M, for M0[+], M3, M4 and M7 variants" );
             }
         }
 
@@ -2122,6 +2126,8 @@ namespace Microsoft.Zelig.FrontEnd
                     return DefaultOptArgs_target_m4;
                 case c_CortexM7:
                     return DefaultOptArgs_target_m7;
+                case c_x86_64:
+                    return DefaultOptArgs_target_x86;
                 default:
                     return DefaultOptArgs_target_df;
             }
@@ -2139,6 +2145,8 @@ namespace Microsoft.Zelig.FrontEnd
                     return DefaultLlcArgs_target_m4;
                 case c_CortexM7:
                     return DefaultLlcArgs_target_m7;
+                case c_x86_64:
+                    return DefaultLlcArgs_target_x86;
                 default:
                     return DefaultLlcArgs_target_df;
             }

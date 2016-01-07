@@ -2,6 +2,8 @@
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//#define TEST_EXCEPTIONS  // https://github.com/NETMF/llilum/issues/130
+
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -291,11 +293,15 @@ namespace Microsoft.Zelig.Test
             Log.Comment(" its class is created, and ceases to exist when there ");
             Log.Comment(" are no references to that instance and the destructor");
             Log.Comment(" of the instance has executed.");
+#if TEST_EXCEPTIONS
             if (FieldsTestClass17.testMethod())
             {
                 return TestResult.Pass;
             }
             return TestResult.Fail;
+#else
+            return TestResult.Skip;
+#endif
         }
 
         [TestMethod]

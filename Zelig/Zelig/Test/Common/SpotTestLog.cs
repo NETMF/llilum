@@ -1,3 +1,4 @@
+using Microsoft.Zelig.Runtime;
 using System;
 
 
@@ -27,7 +28,8 @@ namespace Microsoft.Zelig.Test
         /// </summary>
         /// <param name="message">A string containing the test comments.</param>
         public static void Comment(string message)
-        {            
+        {
+            BugCheck.Log( "\t" + message );    
             //LocalComment(message, CommentType.Comment);
         }
 
