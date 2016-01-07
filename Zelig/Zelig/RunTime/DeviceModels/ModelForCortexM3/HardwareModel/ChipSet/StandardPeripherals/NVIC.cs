@@ -96,9 +96,9 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3
             CMSIS_STUB_NVIC_DisableIRQ( irq );
         }
 
-        public static void SetPriority( ProcessorARMv7M.IRQn_Type irq, int pri )
+        public static void SetPriority( ProcessorARMv7M.IRQn_Type irq, uint pri )
         {
-            CMSIS_STUB_NVIC_SetPriority( irq, (uint)pri );
+            CMSIS_STUB_NVIC_SetPriority( irq, pri );
         }
 
         public static uint GetPriority( ProcessorARMv7M.IRQn_Type irq )

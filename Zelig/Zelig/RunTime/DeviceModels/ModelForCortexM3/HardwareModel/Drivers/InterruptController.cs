@@ -215,7 +215,7 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
                     break;
                 }
 
-                NVIC.SetPriority( node.Target.Index, priorityIdx++ );
+                NVIC.SetPriority( node.Target.Index, (uint)priorityIdx++ );
             }
         }
 

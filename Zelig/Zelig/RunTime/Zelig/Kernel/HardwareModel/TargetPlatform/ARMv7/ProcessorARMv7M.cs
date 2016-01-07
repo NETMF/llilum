@@ -89,16 +89,16 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         // Exception priorities
         //
         
-        public const byte c_Priority__MASK                  = 0x000000FF;
-        public const byte c_Priority__NeverDisabled         = 0x00000000;
-        public const byte c_Priority__Highest               = 0x00000001;
-        public const byte c_Priority__Lowest                = 0x000000FF;
-        public const byte c_Priority__HigherThanAnyWeOwn    = 0x00000004;
-        public const byte c_Priority__SVCCall               = 0x00000005;
-        public const byte c_Priority__Default               = 0x00000007;
-        public const byte c_Priority__SystemTimer           = c_Priority__Default;
-        public const byte c_Priority__SysTick               = c_Priority__Default;
-        public const byte c_Priority__PendSV                = 0x0000000E;
+        public const uint c_Priority__MASK                  = 0x000000FFu;
+        public const uint c_Priority__NeverDisabled         = 0x00000000u;
+        public const uint c_Priority__Highest               = 0x00000001u;
+        public const uint c_Priority__Lowest                = 0x000000FFu;
+        public const uint c_Priority__HigherThanAnyWeOwn    = 0x00000004u;
+        public const uint c_Priority__SVCCall               = 0x00000005u;
+        public const uint c_Priority__Default               = 0x00000007u;
+        public const uint c_Priority__SystemTimer           = c_Priority__Default;
+        public const uint c_Priority__SysTick               = c_Priority__Default;
+        public const uint c_Priority__PendSV                = 0x0000000Eu;
 
         //--//
 
@@ -648,12 +648,12 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
         public static uint EnableInterrupts( )
         {
-            return DisableInterruptsWithPriorityLevelHigherOrEqualTo( c_Priority__Lowest );
+            return DisableInterruptsWithPriorityLevelLowerOrEqualTo( c_Priority__Lowest );
         }
         
         public static uint DisableInterrupts( )
         {
-            return DisableInterruptsWithPriorityLevelHigherOrEqualTo( c_Priority__Highest );
+            return DisableInterruptsWithPriorityLevelLowerOrEqualTo( c_Priority__Highest );
         }
         
         public static uint EnableFaults( )
@@ -685,7 +685,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             return DisableInterrupts( ) | DisableFaults( );
         }
 
-        public static uint DisableInterruptsWithPriorityLevelHigherOrEqualTo( uint basepri )
+        public static uint DisableInterruptsWithPriorityLevelLowerOrEqualTo( uint basepri )
         {
             return SetBasePriRegister( basepri );
         }

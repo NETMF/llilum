@@ -91,7 +91,7 @@ namespace Microsoft.Zelig.Runtime
             // Enable context switch through SVC call that will fall back into Thread/PSP mode onto 
             // whatever thread the standard thread manager intended to switch into 
             //
-            ProcessorARMv7M.DisableInterruptsWithPriorityLevelHigherOrEqualTo( ProcessorARMv7M.c_Priority__SVCCall + 1 );
+            ProcessorARMv7M.DisableInterruptsWithPriorityLevelLowerOrEqualTo( ProcessorARMv7M.c_Priority__SVCCall + 1 );
 
             //
             // Let the standard thread manager set up the next thread to run and request the switch to its context

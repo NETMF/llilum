@@ -36,7 +36,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7.SmartHandles
         [Inline]
         public void Dispose()
         {
-            ProcessorARMv7M.DisableInterruptsWithPriorityLevelHigherOrEqualTo( m_basepri );
+            ProcessorARMv7M.DisableInterruptsWithPriorityLevelLowerOrEqualTo( m_basepri );
         }
 
         [Inline]
