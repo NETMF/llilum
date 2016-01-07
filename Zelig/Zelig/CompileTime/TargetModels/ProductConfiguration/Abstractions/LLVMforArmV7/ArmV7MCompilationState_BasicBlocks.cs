@@ -861,8 +861,8 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
             // System.Buffer.InternalMemoryCopy(byte*, byte*, int) => llvm.memcpy
             // System.Buffer.InternalBackwardMemoryCopy(byte*, byte*, int) => llvm.memmove
-            if( ( method == wkm.System_Buffer_InternalMemoryCopy ) ||
-                ( method == wkm.System_Buffer_InternalBackwardMemoryCopy ) )
+            if ((method == wkm.System_Buffer_InternalMemoryCopy) ||
+                (method == wkm.System_Buffer_InternalBackwardMemoryCopy))
             {
                 bool overlapping = method != wkm.System_Buffer_InternalMemoryCopy;
 
@@ -901,10 +901,10 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             // Microsoft.Zelig.Runtime.InterlockedImpl.InternalExchange(ref IntPtr, IntPtr) => llvm.atomicrmw xchg
             // Microsoft.Zelig.Runtime.InterlockedImpl.InternalExchange(ref T, T)           => llvm.atomicrmw xchg
             // Note: there's no built-in support for 64bit interlocked methods at the moment.
-            if( ( method == wkm.InterlockedImpl_InternalExchange_int    )                                                  ||
-                ( method == wkm.InterlockedImpl_InternalExchange_float  )                                                  ||
-                ( method == wkm.InterlockedImpl_InternalExchange_IntPtr )                                                  ||
-                ( method.IsGenericInstantiation && method.GenericTemplate == wkm.InterlockedImpl_InternalExchange_Template ))
+            if ((method == wkm.InterlockedImpl_InternalExchange_int) ||
+                (method == wkm.InterlockedImpl_InternalExchange_float) ||
+                (method == wkm.InterlockedImpl_InternalExchange_IntPtr) ||
+                (method.IsGenericInstantiation && method.GenericTemplate == wkm.InterlockedImpl_InternalExchange_Template))
             {
                 _Value ptr = convertedArgs[ 0 ];
                 _Value val = convertedArgs[ 1 ];
@@ -949,10 +949,10 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             // Microsoft.Zelig.Runtime.InterlockedImpl.InternalCompareExchange(ref IntPtr, IntPtr, IntPtr) => llvm.compxchg
             // Microsoft.Zelig.Runtime.InterlockedImpl.InternalCompareExchange(ref T, T, T)                => llvm.compxchg
             // Note: there's no built-in support for 64bit interlocked methods at the moment.
-            if( ( method == wkm.InterlockedImpl_InternalCompareExchange_int    )                                                  ||
-                ( method == wkm.InterlockedImpl_InternalCompareExchange_float  )                                                  ||
-                ( method == wkm.InterlockedImpl_InternalCompareExchange_IntPtr )                                                  ||
-                ( method.IsGenericInstantiation && method.GenericTemplate == wkm.InterlockedImpl_InternalCompareExchange_Template ))
+            if ((method == wkm.InterlockedImpl_InternalCompareExchange_int) ||
+                (method == wkm.InterlockedImpl_InternalCompareExchange_float) ||
+                (method == wkm.InterlockedImpl_InternalCompareExchange_IntPtr) ||
+                (method.IsGenericInstantiation && method.GenericTemplate == wkm.InterlockedImpl_InternalCompareExchange_Template))
             {
                 _Value ptr = convertedArgs[ 0 ];
                 _Value val = convertedArgs[ 1 ];
