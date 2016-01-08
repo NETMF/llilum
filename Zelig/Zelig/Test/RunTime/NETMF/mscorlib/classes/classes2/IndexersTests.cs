@@ -4,11 +4,11 @@
 
 using System;
 using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
+using Microsoft.Zelig.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class IndexersTests : IMFTestInterface
+    public class IndexersTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -23,6 +23,45 @@ namespace Microsoft.SPOT.Platform.Tests
         {
             Log.Comment("Cleaning up after the tests");
         }
+        
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+            
+            result |= Assert.CheckFailed( Indexers1_Test( ) );
+            result |= Assert.CheckFailed( Indexers2_Test( ) );
+            result |= Assert.CheckFailed( Indexers3_Test( ) );
+            result |= Assert.CheckFailed( Indexers4_Test( ) );
+            result |= Assert.CheckFailed( Indexers5_Test( ) );
+            result |= Assert.CheckFailed( Indexers6_Test( ) );
+            result |= Assert.CheckFailed( Indexers10_Test( ) );
+            result |= Assert.CheckFailed( Indexers11_Test( ) );
+            result |= Assert.CheckFailed( Indexers12_Test( ) );
+            result |= Assert.CheckFailed( Indexers14_Test( ) );
+            result |= Assert.CheckFailed( Indexers18_Test( ) );
+            result |= Assert.CheckFailed( Indexers23_Test( ) );
+            result |= Assert.CheckFailed( Indexers29_Test( ) );
+            result |= Assert.CheckFailed( Indexers32_Test( ) );
+            result |= Assert.CheckFailed( Indexers33_Test( ) );
+            result |= Assert.CheckFailed( Indexers37_Test( ) );
+            result |= Assert.CheckFailed( Indexers38_Test( ) );
+            result |= Assert.CheckFailed( Indexers39_Test( ) );
+            result |= Assert.CheckFailed( Indexers42_Test( ) );
+            result |= Assert.CheckFailed( Indexers43_Test( ) );
+            result |= Assert.CheckFailed( Indexers46_Test( ) );
+            result |= Assert.CheckFailed( Indexers47_Test( ) );
+            result |= Assert.CheckFailed( Indexers48_Test( ) );
+            result |= Assert.CheckFailed( Indexers49_Test( ) );
+            result |= Assert.CheckFailed( Indexers50_Test( ) );
+            result |= Assert.CheckFailed( Indexers51_Test( ) );
+            result |= Assert.CheckFailed( Indexers52_Test( ) );
+            result |= Assert.CheckFailed( Indexers53_Test( ) );
+            result |= Assert.CheckFailed( Indexers55_Test( ) );
+            result |= Assert.CheckFailed( Indexers56_Test( ) );
+
+            return result;
+        }
+
 
         //Indexers Test methods
         //All test methods ported from folder current\test\cases\client\CLR\Conformance\10_classes\Indexers
@@ -31,7 +70,7 @@ namespace Microsoft.SPOT.Platform.Tests
         //52,54 Failed in the Baseline Document, test 54 has been removed because it would not compile.
 
         [TestMethod]
-        public MFTestResults Indexers1_Test()
+        public TestResult Indexers1_Test()
         {
             Log.Comment(" Section 10.8");
             Log.Comment(" An indexer-declaration may include set of");
@@ -39,13 +78,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" of the four access modifiers.");
             if (IndexersTestClass1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers2_Test()
+        public TestResult Indexers2_Test()
         {
             Log.Comment(" Section 10.8");
             Log.Comment(" An indexer-declaration may include set of");
@@ -53,13 +92,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" of the four access modifiers.");
             if (IndexersTestClass2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers3_Test()
+        public TestResult Indexers3_Test()
         {
             Log.Comment(" Section 10.8");
             Log.Comment(" An indexer-declaration may include set of");
@@ -67,14 +106,14 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" of the four access modifiers.");
             if (IndexersTestClass3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
 
         }
 
         [TestMethod]
-        public MFTestResults Indexers4_Test()
+        public TestResult Indexers4_Test()
         {
             Log.Comment(" Section 10.8");
             Log.Comment(" An indexer-declaration may include set of");
@@ -82,13 +121,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" of the four access modifiers.");
             if (IndexersTestClass4.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers5_Test()
+        public TestResult Indexers5_Test()
         {
             Log.Comment(" Section 10.8");
             Log.Comment(" An indexer-declaration may include set of");
@@ -96,13 +135,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" of the four access modifiers.");
             if (IndexersTestClass5.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers6_Test()
+        public TestResult Indexers6_Test()
         {
             Log.Comment(" Section 10.8");
             Log.Comment(" An indexer-declaration may include set of");
@@ -110,13 +149,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" of the four access modifiers.");
             if (IndexersTestClass6.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers10_Test()
+        public TestResult Indexers10_Test()
         {
             Log.Comment(" Section 10.8");
             Log.Comment(" An indexer-declaration may include set of");
@@ -124,13 +163,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" of the four access modifiers.");
             if (IndexersTestClass10.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers11_Test()
+        public TestResult Indexers11_Test()
         {
             Log.Comment(" Section 10.8");
             Log.Comment(" An indexer-declaration may include set of");
@@ -138,13 +177,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" of the four access modifiers.");
             if (IndexersTestClass11.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers12_Test()
+        public TestResult Indexers12_Test()
         {
             Log.Comment(" Section 10.8");
             Log.Comment(" The type on an indexer declaration specifies");
@@ -152,13 +191,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" by the declaration");
             if (IndexersTestClass12.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers14_Test()
+        public TestResult Indexers14_Test()
         {
             Log.Comment(" Unless the indexer is an explicit interface");
             Log.Comment(" member implementation, the type is followed");
@@ -169,13 +208,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("This is currently an expected fail, but is resolved in 3.0 see Bug  16341 for details");
             if (IndexersTestClass14.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers18_Test()
+        public TestResult Indexers18_Test()
         {
             Log.Comment(" Section 10.8");
             Log.Comment(" The formal-index-parameter-list specifies");
@@ -187,13 +226,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" permitted.");
             if (IndexersTestClass18.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers23_Test()
+        public TestResult Indexers23_Test()
         {
             Log.Comment(" Section 10.8");
             Log.Comment(" The type of an indexer declaration and each ");
@@ -202,13 +241,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" as the indexer itself.");
             if (IndexersTestClass23.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers29_Test()
+        public TestResult Indexers29_Test()
         {
             Log.Comment(" Section 10.8");
             Log.Comment(" The formal parameter list of an indexer defines");
@@ -219,13 +258,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" names of the formal parameters.");
             if (IndexersTestClass29.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers32_Test()
+        public TestResult Indexers32_Test()
         {
             Log.Comment(" Section 10.8");
             Log.Comment(" The formal parameter list of an indexer defines");
@@ -236,13 +275,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" names of the formal parameters.");
             if (IndexersTestClass32.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers33_Test()
+        public TestResult Indexers33_Test()
         {
             Log.Comment(" Section 10.8");
             Log.Comment(" The formal parameter list of an indexer defines");
@@ -253,13 +292,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" names of the formal parameters.");
             if (IndexersTestClass33.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers37_Test()
+        public TestResult Indexers37_Test()
         {
             Log.Comment(" Section 10.8");
             Log.Comment(" With these differences in mind, all rules");
@@ -267,13 +306,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" accessors as well as property accessors.");
             if (IndexersTestClass37.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers38_Test()
+        public TestResult Indexers38_Test()
         {
             Log.Comment(" Section 10.8");
             Log.Comment(" With these differences in mind, all rules");
@@ -281,12 +320,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" accessors as well as property accessors.");
             if (IndexersTestClass38.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Indexers39_Test()
+        public TestResult Indexers39_Test()
         {
             Log.Comment(" Section 10.8");
             Log.Comment(" With these differences in mind, all rules");
@@ -294,13 +333,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" accessors as well as property accessors.");
             if (IndexersTestClass39.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers42_Test()
+        public TestResult Indexers42_Test()
         {
             Log.Comment(" Section 10.8");
             Log.Comment(" With these differences in mind, all rules");
@@ -308,13 +347,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" accessors as well as property accessors.");
             if (IndexersTestClass42.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers43_Test()
+        public TestResult Indexers43_Test()
         {
             Log.Comment(" Section 10.8");
             Log.Comment(" With these differences in mind, all rules");
@@ -322,121 +361,121 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" accessors as well as property accessors.");
             if (IndexersTestClass43.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers46_Test()
+        public TestResult Indexers46_Test()
         {
             Log.Comment("Testing multiple comma seperated indexers");
             if (IndexersTestClass46.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers47_Test()
+        public TestResult Indexers47_Test()
         {
             Log.Comment("Testing multiple comma seperated indexers to a public variable");
 
             if (IndexersTestClass47.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers48_Test()
+        public TestResult Indexers48_Test()
         {
             Log.Comment("Testing multiple comma seperated indexers with a protected internal get and set");
             if (IndexersTestClass48.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers49_Test()
+        public TestResult Indexers49_Test()
         {
             Log.Comment("Testing multiple comma seperated indexers with an internal get and set");
             if (IndexersTestClass49.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers50_Test()
+        public TestResult Indexers50_Test()
         {
             Log.Comment("Testing multiple comma seperated indexers with a private get and set");
             if (IndexersTestClass50.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers51_Test()
+        public TestResult Indexers51_Test()
         {
             Log.Comment("Testing multiple comma seperated indexers with a public virtual get and set");
             if (IndexersTestClass51.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers52_Test()
+        public TestResult Indexers52_Test()
         {
             Log.Comment("Testing multiple comma seperated indexers with an overridden public virtual get and set");
             Log.Comment("This test is expected to fail");
             if (IndexersTestClass52.testMethod())
             {
-                return MFTestResults.Fail;
+                return TestResult.Fail;
             }
-            return MFTestResults.Pass;
+            return TestResult.Pass;
         }
 
         [TestMethod]
-        public MFTestResults Indexers53_Test()
+        public TestResult Indexers53_Test()
         {
             Log.Comment("Testing multiple comma seperated indexers with an overridden public abstract get and set");
             if (IndexersTestClass53.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers55_Test()
+        public TestResult Indexers55_Test()
         {
             Log.Comment("Testing 10 explicitly specified indexers");
             if (IndexersTestClass55.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Indexers56_Test()
+        public TestResult Indexers56_Test()
         {
             Log.Comment("Testing a single indexers with an overridden public abstract get");
             if (IndexersTestClass56.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
 

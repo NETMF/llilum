@@ -22,8 +22,6 @@ namespace Microsoft.Zelig.MetaData.UnitTest
 
         override public TestResult Run( string[] args )
         {
-            base.Run(args);
-
             MetaDataResolverTester pThis;
             
             string currentDir = System.Environment.CurrentDirectory;

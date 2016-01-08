@@ -38,6 +38,19 @@
     <Compile Include="arrays\ArraysOtherTests.cs" />
     <Compile Include="arrays\ArraysSimpleTests.cs" />
     <Compile Include="basicconcepts\BasicConceptTests.cs" />
+    <Compile Include="classes\classes1\ConstructorsTests.cs" />
+    <Compile Include="classes\classes1\ConstTests.cs" />
+    <Compile Include="classes\classes1\DeclarationsTests.cs" />
+    <Compile Include="classes\classes1\DestructorsTests.cs" />
+    <Compile Include="classes\classes1\EventsTests.cs" />
+    <Compile Include="classes\classes1\FieldsTests.cs" />
+    <Compile Include="classes\classes2\IndexersTests.cs" />
+    <Compile Include="classes\classes2\OperatorsTests.cs" />
+    <Compile Include="classes\classes2\PropertiesTests.cs" />
+    <Compile Include="classes\classes2\Static_InstTests.cs" />
+    <Compile Include="classes\classes3\MembersTests.cs" />
+    <Compile Include="classes\classes3\MethodsTests.cs" />
+    <Compile Include="structs\StructsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -47,11 +47,11 @@
       <Project>{186f31a3-ef89-4a25-b2d5-20060509aa01}</Project>
       <Name>Kernel</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\RunTime\Framework\system\system.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\system\system.csproj">
       <Project>{186f31a3-ef89-4a25-b2d5-20070702aa01}</Project>
       <Name>system</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\RunTime\Framework\System_Core\system_core.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\System_Core\system_core.csproj">
       <Project>{186f31a3-ef89-4a25-b2d5-20080628aa01}</Project>
       <Name>system_core</Name>
     </ProjectReference>

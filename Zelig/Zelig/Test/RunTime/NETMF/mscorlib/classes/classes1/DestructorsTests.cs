@@ -4,11 +4,11 @@
 
 using System;
 using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
+using Microsoft.Zelig.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class DestructorsTests : IMFTestInterface
+    public class DestructorsTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -24,6 +24,21 @@ namespace Microsoft.SPOT.Platform.Tests
         {
             Log.Comment("Cleaning up after the tests");
         }
+        
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+            
+            result |= Assert.CheckFailed( Destructors3_Test( ) );
+            result |= Assert.CheckFailed( Destructors4_Test( ) );
+            result |= Assert.CheckFailed( Destructors7_Test( ) );
+
+            return result;
+        }
+
+        //--//
+        //--//
+        //--//
 
         //Destructors Test methods
         //All test methods ported from folder current\test\cases\client\CLR\Conformance\10_classes\Destructors
@@ -31,7 +46,7 @@ namespace Microsoft.SPOT.Platform.Tests
         //1,2,5,6,8-10
 
         [TestMethod]
-        public MFTestResults Destructors3_Test()
+        public TestResult Destructors3_Test()
         {
             //Ported from Destructors3.cs
             Log.Comment(" Section 10.11");
@@ -41,14 +56,14 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("Note: This test may fail due to lengthy garbage collection, look for Destructor messages in later logs");
             if (DestructorsTestClass3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
 
         }
 
         [TestMethod]
-        public MFTestResults Destructors4_Test()
+        public TestResult Destructors4_Test()
         {
             //Ported from Destructors4.cs
             Log.Comment(" Section 10.11");
@@ -58,13 +73,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("Note: This test may fail due to lengthy garbage collection, look for Destructor messages in later logs");
             if (DestructorsTestClass4.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Destructors7_Test()
+        public TestResult Destructors7_Test()
         {
             //Ported from Destructors7.cs
             Log.Comment(" Section 10.12");
@@ -75,9 +90,9 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("Note: This test may fail due to lengthy garbage collection, look for Destructor messages in later logs");
             if (DestructorsTestClass7.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         class DestructorsTestClass3
@@ -95,7 +110,8 @@ namespace Microsoft.SPOT.Platform.Tests
             {
                 DestructorsTestClass3 mc = new DestructorsTestClass3();
                 mc = null;
-                Microsoft.SPOT.Debug.GC(true);
+                System.GC.Collect( );
+
                 int sleepTime = 5000;
                 int slept = 0;
                 while (intI != 2 && slept < sleepTime)
@@ -140,7 +156,7 @@ namespace Microsoft.SPOT.Platform.Tests
             {
                 DestructorsTestClass4 mc = new DestructorsTestClass4();
                 mc = null;
-                Microsoft.SPOT.Debug.GC(true); 
+                System.GC.Collect( ); 
                 int sleepTime = 5000;
                 int slept = 0;
                 while (intI != 8 && slept < sleepTime)
@@ -179,7 +195,7 @@ namespace Microsoft.SPOT.Platform.Tests
             {
                 DestructorsTestClass7 mc = new DestructorsTestClass7();
                 mc = null;
-                Microsoft.SPOT.Debug.GC(true); 
+                System.GC.Collect( ); 
                 int sleepTime = 5000;
                 int slept = 0;
                 while (intI != 3 && slept < sleepTime)

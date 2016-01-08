@@ -4,11 +4,11 @@
 
 using System;
 using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
+using Microsoft.Zelig.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class MethodsTests : IMFTestInterface
+    public class MethodsTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -23,6 +23,127 @@ namespace Microsoft.SPOT.Platform.Tests
         {
             Log.Comment("Cleaning up after the tests");
         }
+        
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+            
+            result |= Assert.CheckFailed( Methods1_Test( ) );
+            result |= Assert.CheckFailed( Methods2_Test( ) );
+            result |= Assert.CheckFailed( Methods3_Test( ) );
+            result |= Assert.CheckFailed( Methods4_Test( ) );
+            result |= Assert.CheckFailed( Methods6_Test( ) );
+            result |= Assert.CheckFailed( Methods7_Test( ) );
+            result |= Assert.CheckFailed( Methods9_Test( ) );
+            result |= Assert.CheckFailed( Methods10_Test( ) );
+            result |= Assert.CheckFailed( Methods11_Test( ) );
+            result |= Assert.CheckFailed( Methods13_Test( ) );
+            result |= Assert.CheckFailed( Methods17_Test( ) );
+            result |= Assert.CheckFailed( Methods19_Test( ) );
+            result |= Assert.CheckFailed( Methods20_Test( ) );
+            result |= Assert.CheckFailed( Methods22_Test( ) );
+            result |= Assert.CheckFailed( Methods23_Test( ) );
+            result |= Assert.CheckFailed( Methods24_Test( ) );
+            result |= Assert.CheckFailed( Methods25_Test( ) );
+            result |= Assert.CheckFailed( Methods26_Test( ) );
+            result |= Assert.CheckFailed( Methods29_Test( ) );
+            result |= Assert.CheckFailed( Methods30_Test( ) );
+            result |= Assert.CheckFailed( Methods33_Test( ) );
+            result |= Assert.CheckFailed( Methods34_Test( ) );
+            result |= Assert.CheckFailed( Methods35_Test( ) );
+            result |= Assert.CheckFailed( Methods56_Test( ) );
+            result |= Assert.CheckFailed( Methods57_Test( ) );
+            result |= Assert.CheckFailed( Methods58_Test( ) );
+            result |= Assert.CheckFailed( Methods59_Test( ) );
+            result |= Assert.CheckFailed( Methods60_Test( ) );
+            result |= Assert.CheckFailed( Methods61_Test( ) );
+            result |= Assert.CheckFailed( Methods66_Test( ) );
+            result |= Assert.CheckFailed( Methods67_Test( ) );
+            result |= Assert.CheckFailed( Methods68_Test( ) );
+            result |= Assert.CheckFailed( Methods69_Test( ) );
+            result |= Assert.CheckFailed( Methods70_Test( ) );
+            result |= Assert.CheckFailed( Methods71_Test( ) );
+            result |= Assert.CheckFailed( Methods75_Test( ) );
+            result |= Assert.CheckFailed( Methods78_Test( ) );
+            result |= Assert.CheckFailed( Methods79_Test( ) );
+            result |= Assert.CheckFailed( Methods80_Test( ) );
+            result |= Assert.CheckFailed( Methods84_Test( ) );
+            result |= Assert.CheckFailed( Methods85_Test( ) );
+            result |= Assert.CheckFailed( Methods92_Test( ) );
+            result |= Assert.CheckFailed( Methods93_Test( ) );
+            result |= Assert.CheckFailed( Methods94_Test( ) );
+            result |= Assert.CheckFailed( Methods95_Test( ) );
+            result |= Assert.CheckFailed( Methods103_Test( ) );
+            result |= Assert.CheckFailed( Methods104_Test( ) );
+            result |= Assert.CheckFailed( Methods105_Test( ) );
+            result |= Assert.CheckFailed( Methods106_Test( ) );
+            result |= Assert.CheckFailed( Methods107_Test( ) );
+            result |= Assert.CheckFailed( Methods108_Test( ) );
+            result |= Assert.CheckFailed( Methods109_Test( ) );
+            result |= Assert.CheckFailed( Methods110_Test( ) );
+            result |= Assert.CheckFailed( Methods111_Test( ) );
+            result |= Assert.CheckFailed( Methods112_Test( ) );
+            result |= Assert.CheckFailed( Methods116_Test( ) );
+            result |= Assert.CheckFailed( Methods117_Test( ) );
+            result |= Assert.CheckFailed( Methods119_Test( ) );
+            result |= Assert.CheckFailed( Methods120_Test( ) );
+            result |= Assert.CheckFailed( Methods121_Test( ) );
+            result |= Assert.CheckFailed( Methods124_Test( ) );
+            result |= Assert.CheckFailed( Methods125_Test( ) );
+            result |= Assert.CheckFailed( Methods132_Test( ) );
+            result |= Assert.CheckFailed( Methods133_Test( ) );
+            result |= Assert.CheckFailed( Methods134_Test( ) );
+            result |= Assert.CheckFailed( Methods142_Test( ) );
+            result |= Assert.CheckFailed( Methods148_Test( ) );
+            result |= Assert.CheckFailed( Methods149_Test( ) );
+            result |= Assert.CheckFailed( Methods150_Test( ) );
+            result |= Assert.CheckFailed( Methods154_Test( ) );
+            result |= Assert.CheckFailed( Methods159_Test( ) );
+            result |= Assert.CheckFailed( Methods160_Test( ) );
+            result |= Assert.CheckFailed( Methods161_Test( ) );
+            result |= Assert.CheckFailed( Methods163_Test( ) );
+            result |= Assert.CheckFailed( Methods164_Test( ) );
+            result |= Assert.CheckFailed( Methods169_Test( ) );
+            result |= Assert.CheckFailed( Methods172_Test( ) );
+            result |= Assert.CheckFailed( Methods173_Test( ) );
+            result |= Assert.CheckFailed( Methods174_Test( ) );
+            result |= Assert.CheckFailed( Methods175_Test( ) );
+            result |= Assert.CheckFailed( Methods179_Test( ) );
+            result |= Assert.CheckFailed( Methods180_Test( ) );
+            result |= Assert.CheckFailed( Methods181_Test( ) );
+            result |= Assert.CheckFailed( Methods182_Test( ) );
+            result |= Assert.CheckFailed( Methods183_Test( ) );
+            result |= Assert.CheckFailed( Methods184_Test( ) );
+            result |= Assert.CheckFailed( Methods185_Test( ) );
+            result |= Assert.CheckFailed( Methods186_Test( ) );
+            result |= Assert.CheckFailed( Methods187_Test( ) );
+            result |= Assert.CheckFailed( Methods188_Test( ) );
+            result |= Assert.CheckFailed( Methods190_Test( ) );
+            result |= Assert.CheckFailed( Methods191_Test( ) );
+            result |= Assert.CheckFailed( Methods192_Test( ) );
+            result |= Assert.CheckFailed( Methods193_Test( ) );
+            result |= Assert.CheckFailed( Methods194_Test( ) );
+            result |= Assert.CheckFailed( Methods195_Test( ) );
+            result |= Assert.CheckFailed( Methods196_Test( ) );
+            result |= Assert.CheckFailed( Methods197_Test( ) );
+            result |= Assert.CheckFailed( Methods199_Test( ) );
+            result |= Assert.CheckFailed( Methods200_Test( ) );
+            result |= Assert.CheckFailed( Methods201_Test( ) );
+            result |= Assert.CheckFailed( Methods204_Test( ) );
+            result |= Assert.CheckFailed( Methods205_Test( ) );
+            result |= Assert.CheckFailed( Methods206_Test( ) );
+            result |= Assert.CheckFailed( Methods207_Test( ) );
+            result |= Assert.CheckFailed( Methods210_Test( ) );
+            result |= Assert.CheckFailed( Methods223_Test( ) );
+            result |= Assert.CheckFailed( Methods224_Test( ) );
+            result |= Assert.CheckFailed( Methods229_Test( ) );
+            result |= Assert.CheckFailed( Methods230_Test( ) );
+            result |= Assert.CheckFailed( Methods231_Test( ) );
+            result |= Assert.CheckFailed( Methods232_Test( ) );
+            result |= Assert.CheckFailed( Methods233_Test( ) );
+
+            return result;
+        }
 
         //Methods Test methods
         //All test methods ported from folder current\test\cases\client\CLR\Conformance\10_classes\Methods
@@ -33,7 +154,7 @@ namespace Microsoft.SPOT.Platform.Tests
         //11,23,67,70,79,104,107,110,112,134,189,195,
         //Skip 17
         [TestMethod]
-        public MFTestResults Methods1_Test()
+        public TestResult Methods1_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A method-declaration may include set of attributes,");
@@ -42,13 +163,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" modifiers, and an extern modifier.");
             if (MethodsTestClass1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods2_Test()
+        public TestResult Methods2_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A method-declaration may include set of attributes,");
@@ -57,13 +178,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" modifiers, and an extern modifier.");
             if (MethodsTestClass2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods3_Test()
+        public TestResult Methods3_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A method-declaration may include set of attributes,");
@@ -72,14 +193,14 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" modifiers, and an extern modifier.");
             if (MethodsTestClass3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
 
         }
 
         [TestMethod]
-        public MFTestResults Methods4_Test()
+        public TestResult Methods4_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A method-declaration may include set of attributes,");
@@ -88,13 +209,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" modifiers, and an extern modifier.");
             if (MethodsTestClass4.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods6_Test()
+        public TestResult Methods6_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A method-declaration may include set of attributes,");
@@ -103,13 +224,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" modifiers, and an extern modifier.");
             if (MethodsTestClass6.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods7_Test()
+        public TestResult Methods7_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A method-declaration may include set of attributes,");
@@ -118,13 +239,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" modifiers, and an extern modifier.");
             if (MethodsTestClass7.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods9_Test()
+        public TestResult Methods9_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A method-declaration may include set of attributes,");
@@ -133,13 +254,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" modifiers, and an extern modifier.");
             if (MethodsTestClass9.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods10_Test()
+        public TestResult Methods10_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A method-declaration may include set of attributes,");
@@ -148,13 +269,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" modifiers, and an extern modifier.");
             if (MethodsTestClass10.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods11_Test()
+        public TestResult Methods11_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A method-declaration may include set of attributes,");
@@ -166,13 +287,13 @@ namespace Microsoft.SPOT.Platform.Tests
                 Log.Comment("This failure indicates a test is now passing that previously failed by design.");
                 Log.Comment("It previously marked as known failure because of bug # 21563");
                 Log.Comment("The Test owner needs to verify that the change was intentional and remove the known failure.");
-                return MFTestResults.Fail;
+                return TestResult.Fail;
             }
-            return MFTestResults.Pass;
+            return TestResult.Pass;
         }
 
         [TestMethod]
-        public MFTestResults Methods13_Test()
+        public TestResult Methods13_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A method-declaration may include set of attributes,");
@@ -181,13 +302,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" modifiers, and an extern modifier.");
             if (MethodsTestClass13.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods17_Test()
+        public TestResult Methods17_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A method-declaration may include set of attributes,");
@@ -196,13 +317,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" modifiers, and an extern modifier.");
             if (MethodsTestClass17.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods19_Test()
+        public TestResult Methods19_Test()
         {
             Log.Comment(" The return-type of a method declaration specifies");
             Log.Comment(" the type of the value computed and returned by the");
@@ -210,13 +331,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" not return a value.");
             if (MethodsTestClass19.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods20_Test()
+        public TestResult Methods20_Test()
         {
             Log.Comment(" The return-type of a method declaration specifies");
             Log.Comment(" the type of the value computed and returned by the");
@@ -224,13 +345,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" not return a value.");
             if (MethodsTestClass20.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods22_Test()
+        public TestResult Methods22_Test()
         {
             Log.Comment(" The return-type of a method declaration specifies");
             Log.Comment(" the type of the value computed and returned by the");
@@ -238,13 +359,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" not return a value.");
             if (MethodsTestClass22.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods23_Test()
+        public TestResult Methods23_Test()
         {
             Log.Comment(" The return-type of a method declaration specifies");
             Log.Comment(" the type of the value computed and returned by the");
@@ -252,13 +373,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" not return a value.");
             if (MethodsTestClass23.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods24_Test()
+        public TestResult Methods24_Test()
         {
             Log.Comment(" The return-type of a method declaration specifies");
             Log.Comment(" the type of the value computed and returned by the");
@@ -266,13 +387,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" not return a value.");
             if (MethodsTestClass24.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods25_Test()
+        public TestResult Methods25_Test()
         {
             Log.Comment(" The return-type of a method declaration specifies");
             Log.Comment(" the type of the value computed and returned by the");
@@ -280,13 +401,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" not return a value.");
             if (MethodsTestClass25.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods26_Test()
+        public TestResult Methods26_Test()
         {
             Log.Comment(" The return-type of a method declaration specifies");
             Log.Comment(" the type of the value computed and returned by the");
@@ -294,13 +415,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" not return a value.");
             if (MethodsTestClass26.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods29_Test()
+        public TestResult Methods29_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" The member-name specifies the name of the method.");
@@ -311,13 +432,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" interface-type followed by a . and an identifier.");
             if (MethodsTestClass29.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods30_Test()
+        public TestResult Methods30_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" The member-name specifies the name of the method.");
@@ -328,50 +449,50 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" interface-type followed by a . and an identifier.");
             if (MethodsTestClass30.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods33_Test()
+        public TestResult Methods33_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" The optional formal-parameter-list specifies");
             Log.Comment(" the parameters of the method.");
             if (MethodsTestClass33.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods34_Test()
+        public TestResult Methods34_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" The optional formal-parameter-list specifies");
             Log.Comment(" the parameters of the method.");
             if (MethodsTestClass34.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods35_Test()
+        public TestResult Methods35_Test()
         {
             Log.Comment("Testing method call with 10 parameters");
             if (MethodsTestClass35.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods56_Test()
+        public TestResult Methods56_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A method declaration creates a separate space");
@@ -384,13 +505,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" as another parameter or local variable.");
             if (MethodsTestClass56.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods57_Test()
+        public TestResult Methods57_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A method declaration creates a separate space");
@@ -403,13 +524,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" as another parameter or local variable.");
             if (MethodsTestClass57.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods58_Test()
+        public TestResult Methods58_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" When a formal parameter is a value parameter,");
@@ -418,13 +539,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" convertible to the formal parameter type.");
             if (MethodsTestClass58.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods59_Test()
+        public TestResult Methods59_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" When a formal parameter is a value parameter,");
@@ -433,13 +554,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" convertible to the formal parameter type.");
             if (MethodsTestClass59.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods60_Test()
+        public TestResult Methods60_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" When a formal parameter is a value parameter,");
@@ -448,13 +569,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" convertible to the formal parameter type.");
             if (MethodsTestClass60.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods61_Test()
+        public TestResult Methods61_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" When a formal parameter is a value parameter,");
@@ -463,13 +584,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" convertible to the formal parameter type.");
             if (MethodsTestClass61.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods66_Test()
+        public TestResult Methods66_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A method is permitted to assign new values to ");
@@ -479,13 +600,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" argument given in the method invocation.");
             if (MethodsTestClass66.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods67_Test()
+        public TestResult Methods67_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A method is permitted to assign new values to ");
@@ -495,13 +616,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" argument given in the method invocation.");
             if (MethodsTestClass67.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods68_Test()
+        public TestResult Methods68_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A method is permitted to assign new values to ");
@@ -511,13 +632,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" argument given in the method invocation.");
             if (MethodsTestClass68.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods69_Test()
+        public TestResult Methods69_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A parameter declared with a ref modifier is a ");
@@ -529,13 +650,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" invocation.");
             if (MethodsTestClass69.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods70_Test()
+        public TestResult Methods70_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A parameter declared with a ref modifier is a ");
@@ -547,13 +668,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" invocation.");
             if (MethodsTestClass70.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods71_Test()
+        public TestResult Methods71_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A parameter declared with a ref modifier is a ");
@@ -565,13 +686,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" invocation.");
             if (MethodsTestClass71.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods75_Test()
+        public TestResult Methods75_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" When a formal parameter is a reference parameter,");
@@ -582,13 +703,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" before it can be passed as a reference parameter.");
             if (MethodsTestClass75.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods78_Test()
+        public TestResult Methods78_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A parameter declared with an out modifier is an output");
@@ -598,13 +719,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" as the variable given as the argument in the method invocation.");
             if (MethodsTestClass78.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods79_Test()
+        public TestResult Methods79_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A parameter declared with an out modifier is an output");
@@ -614,13 +735,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" as the variable given as the argument in the method invocation.");
             if (MethodsTestClass79.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods80_Test()
+        public TestResult Methods80_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A parameter declared with an out modifier is an output");
@@ -630,13 +751,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" as the variable given as the argument in the method invocation.");
             if (MethodsTestClass80.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods84_Test()
+        public TestResult Methods84_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" When a formal parameter is an output parameter,");
@@ -650,13 +771,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" variable is considered definitely assigned.");
             if (MethodsTestClass84.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods85_Test()
+        public TestResult Methods85_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" When a formal parameter is an output parameter,");
@@ -670,65 +791,65 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" variable is considered definitely assigned.");
             if (MethodsTestClass85.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods92_Test()
+        public TestResult Methods92_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" Every output parameter of a method must be");
             Log.Comment(" definitely assigned before the method returns.");
             if (MethodsTestClass92.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods93_Test()
+        public TestResult Methods93_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" Every output parameter of a method must be");
             Log.Comment(" definitely assigned before the method returns.");
             if (MethodsTestClass93.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods94_Test()
+        public TestResult Methods94_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" Every output parameter of a method must be");
             Log.Comment(" definitely assigned before the method returns.");
             if (MethodsTestClass94.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods95_Test()
+        public TestResult Methods95_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" Every output parameter of a method must be");
             Log.Comment(" definitely assigned before the method returns.");
             if (MethodsTestClass95.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods103_Test()
+        public TestResult Methods103_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" The implementation of a non-virtual method");
@@ -738,14 +859,14 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" instance of the derived class.");
             if (MethodsTestClass103.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
 
         }
 
         [TestMethod]
-        public MFTestResults Methods104_Test()
+        public TestResult Methods104_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" The implementation of a non-virtual method");
@@ -758,14 +879,14 @@ namespace Microsoft.SPOT.Platform.Tests
                 Log.Comment("This failure indicates a test is now passing that previously failed by design.");
                 Log.Comment("It previously marked as known failure because of bug # 21563");
                 Log.Comment("The Test owner needs to verify that the change was intentional and remove the known failure.");
-                return MFTestResults.Fail;
+                return TestResult.Fail;
             }
-            return MFTestResults.Pass;
+            return TestResult.Pass;
 
         }
 
         [TestMethod]
-        public MFTestResults Methods105_Test()
+        public TestResult Methods105_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" The implementation of a non-virtual method");
@@ -775,13 +896,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" instance of the derived class.");
             if (MethodsTestClass105.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods106_Test()
+        public TestResult Methods106_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" For every virtual method declaration of M,");
@@ -796,13 +917,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" derived implementation of M.");
             if (MethodsTestClass106.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods107_Test()
+        public TestResult Methods107_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" For every virtual method declaration of M,");
@@ -820,13 +941,13 @@ namespace Microsoft.SPOT.Platform.Tests
                 Log.Comment("This failure indicates a test is now passing that previously failed by design.");
                 Log.Comment("It previously marked as known failure because of bug # 21563");
                 Log.Comment("The Test owner needs to verify that the change was intentional and remove the known failure.");
-                return MFTestResults.Fail;
+                return TestResult.Fail;
             }
-            return MFTestResults.Pass;
+            return TestResult.Pass;
         }
 
         [TestMethod]
-        public MFTestResults Methods108_Test()
+        public TestResult Methods108_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" For every virtual method declaration of M,");
@@ -845,13 +966,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" of M.");
             if (MethodsTestClass108.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods109_Test()
+        public TestResult Methods109_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" For every virtual method declaration of M,");
@@ -870,13 +991,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" of M.");
             if (MethodsTestClass109.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods110_Test()
+        public TestResult Methods110_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" For every virtual method declaration of M,");
@@ -898,13 +1019,13 @@ namespace Microsoft.SPOT.Platform.Tests
                 Log.Comment("This failure indicates a test is now passing that previously failed by design.");
                 Log.Comment("It previously marked as known failure because of bug # 21563");
                 Log.Comment("The Test owner needs to verify that the change was intentional and remove the known failure.");
-                return MFTestResults.Fail;
+                return TestResult.Fail;
             }
-            return MFTestResults.Pass;
+            return TestResult.Pass;
         }
 
         [TestMethod]
-        public MFTestResults Methods111_Test()
+        public TestResult Methods111_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" For every virtual method declaration of M,");
@@ -923,13 +1044,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" of M.");
             if (MethodsTestClass111.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods112_Test()
+        public TestResult Methods112_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" Because methods are allowed to hide inherited");
@@ -942,13 +1063,13 @@ namespace Microsoft.SPOT.Platform.Tests
                 Log.Comment("This failure indicates a test is now passing that previously failed by design.");
                 Log.Comment("It previously marked as known failure because of bug # 21563");
                 Log.Comment("The Test owner needs to verify that the change was intentional and remove the known failure.");
-                return MFTestResults.Fail;
+                return TestResult.Fail;
             }
-            return MFTestResults.Pass;
+            return TestResult.Pass;
         }
 
         [TestMethod]
-        public MFTestResults Methods116_Test()
+        public TestResult Methods116_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" It is an error for an override method declaration");
@@ -956,13 +1077,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" abstract modifiers.");
             if (MethodsTestClass116.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods117_Test()
+        public TestResult Methods117_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" For purposes of locating the overridden base");
@@ -973,13 +1094,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" containing the declaration of C.");
             if (MethodsTestClass117.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods119_Test()
+        public TestResult Methods119_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" For purposes of locating the overridden base");
@@ -990,13 +1111,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" containing the declaration of C.");
             if (MethodsTestClass119.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods120_Test()
+        public TestResult Methods120_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" For purposes of locating the overridden base");
@@ -1007,13 +1128,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" containing the declaration of C.");
             if (MethodsTestClass120.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods121_Test()
+        public TestResult Methods121_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" For purposes of locating the overridden base");
@@ -1024,13 +1145,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" containing the declaration of C.");
             if (MethodsTestClass121.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods124_Test()
+        public TestResult Methods124_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A compile time-error occurs unless all");
@@ -1046,13 +1167,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" be static or non-virtual.");
             if (MethodsTestClass124.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods125_Test()
+        public TestResult Methods125_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A compile time-error occurs unless all");
@@ -1068,39 +1189,39 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" be static or non-virtual.");
             if (MethodsTestClass125.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods132_Test()
+        public TestResult Methods132_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" An override declaration can access the overridden ");
             Log.Comment(" base method using a base-access.");
             if (MethodsTestClass132.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods133_Test()
+        public TestResult Methods133_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" An override declaration can access the overridden ");
             Log.Comment(" base method using a base-access.");
             if (MethodsTestClass133.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods134_Test()
+        public TestResult Methods134_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" Only by including an override modifier can");
@@ -1113,23 +1234,23 @@ namespace Microsoft.SPOT.Platform.Tests
                 Log.Comment("This failure indicates a test is now passing that previously failed by design.");
                 Log.Comment("It previously marked as known failure because of bug # 21563");
                 Log.Comment("The Test owner needs to verify that the change was intentional and remove the known failure.");
-                return MFTestResults.Fail;
+                return TestResult.Fail;
             }
-            return MFTestResults.Pass;
+            return TestResult.Pass;
         }
 
         [TestMethod]
-        public MFTestResults Methods142_Test()
+        public TestResult Methods142_Test()
         {
             if (MethodsTestClass142.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods148_Test()
+        public TestResult Methods148_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" If execution of the method body of a void");
@@ -1138,13 +1259,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" method simply returns to the caller.");
             if (MethodsTestClass148.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods149_Test()
+        public TestResult Methods149_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" When the return type of a method is not void,");
@@ -1153,13 +1274,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" covertable to the return type.");
             if (MethodsTestClass149.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods150_Test()
+        public TestResult Methods150_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" When the return type of a method is not void,");
@@ -1168,13 +1289,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" covertable to the return type.");
             if (MethodsTestClass150.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods154_Test()
+        public TestResult Methods154_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" When the return type of a method is not void,");
@@ -1183,13 +1304,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" covertable to the return type.");
             if (MethodsTestClass154.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods159_Test()
+        public TestResult Methods159_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" When the return type of a method is not void,");
@@ -1202,13 +1323,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" an System.Exception.");
             if (MethodsTestClass159.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods160_Test()
+        public TestResult Methods160_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" When the return type of a method is not void,");
@@ -1221,13 +1342,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" an System.Exception.");
             if (MethodsTestClass160.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods161_Test()
+        public TestResult Methods161_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" When the return type of a method is not void,");
@@ -1240,13 +1361,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" an System.Exception.");
             if (MethodsTestClass161.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods163_Test()
+        public TestResult Methods163_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A parameter declared with a params modifier is");
@@ -1259,13 +1380,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" used in this way.");
             if (MethodsTestClass163.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods164_Test()
+        public TestResult Methods164_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A parameter declared with a params modifier is");
@@ -1278,13 +1399,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" used in this way.");
             if (MethodsTestClass164.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods169_Test()
+        public TestResult Methods169_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A params parameter enables a caller to supply values");
@@ -1295,13 +1416,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" a value parameter.");
             if (MethodsTestClass169.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods172_Test()
+        public TestResult Methods172_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A params parameter enables a caller to supply values");
@@ -1314,13 +1435,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" the caller.");
             if (MethodsTestClass172.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods173_Test()
+        public TestResult Methods173_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A params parameter enables a caller to supply values");
@@ -1333,13 +1454,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" the caller.");
             if (MethodsTestClass173.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods174_Test()
+        public TestResult Methods174_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A params parameter enables a caller to supply values");
@@ -1352,13 +1473,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" the caller.");
             if (MethodsTestClass174.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods175_Test()
+        public TestResult Methods175_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A params parameter enables a caller to supply values");
@@ -1371,13 +1492,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" the caller.");
             if (MethodsTestClass175.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods179_Test()
+        public TestResult Methods179_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A params parameter enables a caller to supply values");
@@ -1390,13 +1511,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" the caller.");
             if (MethodsTestClass179.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods180_Test()
+        public TestResult Methods180_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A params parameter enables a caller to supply values");
@@ -1409,13 +1530,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" the caller.");
             if (MethodsTestClass180.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods181_Test()
+        public TestResult Methods181_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A params parameter enables a caller to supply values");
@@ -1428,13 +1549,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" the caller.");
             if (MethodsTestClass181.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods182_Test()
+        public TestResult Methods182_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A params parameter enables a caller to supply values");
@@ -1447,13 +1568,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" the caller.");
             if (MethodsTestClass182.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods183_Test()
+        public TestResult Methods183_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A params parameter enables a caller to supply values");
@@ -1466,13 +1587,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" the caller.");
             if (MethodsTestClass183.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods184_Test()
+        public TestResult Methods184_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A params parameter enables a caller to supply values");
@@ -1485,13 +1606,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" the caller.");
             if (MethodsTestClass184.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods185_Test()
+        public TestResult Methods185_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A method is permitted to assign new values");
@@ -1500,105 +1621,105 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" by the params parameter.");
             if (MethodsTestClass185.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods186_Test()
+        public TestResult Methods186_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A params parameter can be passed along to another");
             Log.Comment(" params parameter.");
             if (MethodsTestClass186.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods187_Test()
+        public TestResult Methods187_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A params parameter can be passed along to another");
             Log.Comment(" params parameter.");
             if (MethodsTestClass187.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods188_Test()
+        public TestResult Methods188_Test()
         {
             Log.Comment("Testing explicit base method call to a child class whose parent implements");
             if (MethodsTestClass188.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods190_Test()
+        public TestResult Methods190_Test()
         {
             Log.Comment("Testing implicit base method calls to protected methods in parent class");
             if (MethodsTestClass190.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods191_Test()
+        public TestResult Methods191_Test()
         {
             Log.Comment("Testing implicit base method calls to internal methods in parent class");
             if (MethodsTestClass191.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods192_Test()
+        public TestResult Methods192_Test()
         {
             Log.Comment("Testing implicit base method calls to protected internal methods in parent class");
             if (MethodsTestClass192.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods193_Test()
+        public TestResult Methods193_Test()
         {
             Log.Comment("Testing implicit base method calls to private methods in parent class");
             if (MethodsTestClass193.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods194_Test()
+        public TestResult Methods194_Test()
         {
             Log.Comment("Testing implicit base method calls to public virtual methods in parent class");
             if (MethodsTestClass194.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods195_Test()
+        public TestResult Methods195_Test()
         {
             Log.Comment("Tests if a new method does not overwrite a virtual method in a base class");
             if (MethodsTestClass195.testMethod())
@@ -1606,192 +1727,192 @@ namespace Microsoft.SPOT.Platform.Tests
                 Log.Comment("This failure indicates a test is now passing that previously failed by design.");
                 Log.Comment("It previously marked as known failure because of bug # 21563");
                 Log.Comment("The Test owner needs to verify that the change was intentional and remove the known failure.");
-                return MFTestResults.Fail;
+                return TestResult.Fail;
             }
-            return MFTestResults.Pass;
+            return TestResult.Pass;
         }
 
         [TestMethod]
-        public MFTestResults Methods196_Test()
+        public TestResult Methods196_Test()
         {
             Log.Comment("Tests if a new method does overwrite an abstract method in a base class");
             if (MethodsTestClass196.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods197_Test()
+        public TestResult Methods197_Test()
         {
             Log.Comment("Tests the calling of an empty delegate");
             if (MethodsTestClass197.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods199_Test()
+        public TestResult Methods199_Test()
         {
             Log.Comment("Tests if a sealed method overwrites a virtual method in a base class");
             if (MethodsTestClass199.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods200_Test()
+        public TestResult Methods200_Test()
         {
             Log.Comment("Tests large number of assignments inside a public method");
             if (MethodsTestClass200.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods201_Test()
+        public TestResult Methods201_Test()
         {
             Log.Comment("Tests large number of assignments inside a public static method");
             if (MethodsTestClass201.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods204_Test()
+        public TestResult Methods204_Test()
         {
             Log.Comment("Tests a method with explicit, params signature");
             if (MethodsTestClass204.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods205_Test()
+        public TestResult Methods205_Test()
         {
             Log.Comment("Tests a method with a mixed explicit and params signature");
             if (MethodsTestClass205.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods206_Test()
+        public TestResult Methods206_Test()
         {
             Log.Comment("Tests method overloading between params and explicit signatures (static)");
             if (MethodsTestClass206.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods207_Test()
+        public TestResult Methods207_Test()
         {
             Log.Comment("Tests method overloading between params and explicit signatures");
             if (MethodsTestClass207.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods210_Test()
+        public TestResult Methods210_Test()
         {
             Log.Comment(" Section 10.5 If the declaration includes the sealed modifier, then the ");
             Log.Comment(" declaration must also include the override modifier.");
             if (MethodsTestClass210.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Methods223_Test()
+        public TestResult Methods223_Test()
         {
             Log.Comment(" Section 10.5 The ref and out parameters are part of a method's signature, but the params modifier is not.");
         if (MethodsTestClass223.testMethod())
         {
-        return MFTestResults.Pass;
+        return TestResult.Pass;
         }
-        return MFTestResults.Fail;
+        return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Methods224_Test()
+        public TestResult Methods224_Test()
         {
             Log.Comment(" Section 10.5 The ref and out parameters are part of a method's signature, but the params modifier is not.");
         if (MethodsTestClass224.testMethod())
         {
-        return MFTestResults.Pass;
+        return TestResult.Pass;
         }
-        return MFTestResults.Fail;
+        return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Methods229_Test()
+        public TestResult Methods229_Test()
         {
             Log.Comment(" error CS0114: 'function1' hides inherited member 'function2'.");
             Log.Comment(" To make the current method override that implementation, add ");
             Log.Comment(" the override keyword. Otherwise add the new keyword.");
         if (MethodsTestClass229.testMethod())
         {
-        return MFTestResults.Pass;
+        return TestResult.Pass;
         }
-        return MFTestResults.Fail;
+        return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Methods230_Test()
+        public TestResult Methods230_Test()
         {
             Log.Comment(" error CS0114: 'function1' hides inherited member 'function2'.");
             Log.Comment(" To make the current method override that implementation, add ");
             Log.Comment(" the override keyword. Otherwise add the new keyword.");
         if (MethodsTestClass230.testMethod())
         {
-        return MFTestResults.Pass;
+        return TestResult.Pass;
         }
-        return MFTestResults.Fail;
+        return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Methods231_Test()
+        public TestResult Methods231_Test()
         {
             Log.Comment(" error CS0114: 'function1' hides inherited member 'function2'.");
             Log.Comment(" To make the current method override that implementation, add ");
             Log.Comment(" the override keyword. Otherwise add the new keyword.");
         if (MethodsTestClass231.testMethod())
         {
-        return MFTestResults.Pass;
+        return TestResult.Pass;
         }
-        return MFTestResults.Fail;
+        return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Methods232_Test()
+        public TestResult Methods232_Test()
         {
             Log.Comment(" error CS0114: 'function1' hides inherited member 'function2'.");
             Log.Comment(" To make the current method override that implementation, add ");
             Log.Comment(" the override keyword. Otherwise add the new keyword.");
             if (MethodsTestClass232.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Methods233_Test()
+        public TestResult Methods233_Test()
         {
             Log.Comment(" Section 10.5");
             Log.Comment(" A method-declaration may include set of attributes,");
@@ -1800,9 +1921,9 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" modifiers, and an extern modifier.");
             if (MethodsTestClass233.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
 
@@ -1817,7 +1938,7 @@ namespace Microsoft.SPOT.Platform.Tests
         public class MethodsTestClass1 : MethodsTestClass_Base1
         {
             //new modifier
-            new public int MyMeth()
+            public int MyMeth()
             {
                 return 2;
             }
@@ -1838,7 +1959,7 @@ namespace Microsoft.SPOT.Platform.Tests
         public class MethodsTestClass2
         {
             //new modifier
-            new public int MyMeth()
+            public int MyMeth()
             {
                 return 2;
             }
@@ -2118,7 +2239,7 @@ namespace Microsoft.SPOT.Platform.Tests
 			        return true;
 		        }
 		        else {
-			        Microsoft.SPOT.Debug.Print(test.MyMeth().intTest.ToString());
+			        Log.Comment(test.MyMeth().intTest.ToString());
 			        return false;
 		        }
 	        }
@@ -2843,7 +2964,7 @@ namespace Microsoft.SPOT.Platform.Tests
 	        }
         }
         public class MethodsTestClass_Sub1102 : MethodsTestClass_Sub110 {
-	        new public virtual int Test() {
+	        public virtual int Test() {
 		        return 3;
 	        }
         }
@@ -3276,7 +3397,7 @@ namespace Microsoft.SPOT.Platform.Tests
 		        try {
 			        test.RetVal(false);		
 		        }
-		        catch (System.Exception e) {
+		        catch (System.Exception) {
 			        val = true;
 		        }
 		        return val;
@@ -3304,7 +3425,7 @@ namespace Microsoft.SPOT.Platform.Tests
 		        try {
 			        test.RetVal(true);		
 		        }
-		        catch (System.Exception e) {
+		        catch (System.Exception) {
 			        val = true;
 		        }
 		        return val;
@@ -4242,7 +4363,7 @@ namespace Microsoft.SPOT.Platform.Tests
         }
         public class MethodsTestClass233 : MethodsTestClass233_Base {	
 	        //new modifier
-	        new public int MyMeth(){
+	        public int MyMeth(){
 		        return 2;
 	        }	
 	        public static bool testMethod() {

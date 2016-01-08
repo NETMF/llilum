@@ -24,6 +24,16 @@ namespace Microsoft.Zelig.Test
             Log.Comment("Cleaning up after the tests");
         }
 
+        public override TestResult Run( string[] args )
+        {
+            return TestResult.Pass;
+        }
+        
+        //--//
+        //--//
+        //--//
+
+
         //BasicConcept Test methods
         //The following tests were ported from folder current\test\cases\client\CLR\Conformance\10_classes\BasicConcept
         //scope001,scope002,scope003,scope004,scope005,scope006,scope012,scope019,scope022,scope023,scope024,scope025,scope027,scope029,scope033,scope037,scope041,scope044,scope051,scope053,scope055,scope056,scope057,scope058,scope059,scope061,scope062,scope063,scope064,scope067,scope068,scope069,scope070,scope071,scope074,nhide001,nhide002,nhide003,nhide004,nhide005,nhide006,nhide007,nhide008,nhide009,nhide010,nhide011,nhide012,nhide013,nhide014,nhide015,nhide016,nhide017,nhide018,nhide019,nhide020,nhide021,nhide022,nhide023,nhide024,nhide025,nhide026,nhide027,nhide028,nhide029,nhide030,nhide031,nhide032,nhide033,nhide034,nhide035,nhide036,nhide037,nhide038,nhide039,nhide040,nhide041,nhide042,nhide043,nhide044,nhide045,nhide047,nhide049,nhide050,nhide051,nhide053,nhide055,nhide056,nhide057,nhide059,nhide061,nhide062,nhide063,nhide064,nhide067,nhide068,nhide071,nhide072,nhide075,nhide076,nhide077,nhide079,nhide081,nhide082,nhide085,nhide086,nhide087,nhide088,nhide089,nhide090,nhide091,nhide092,memac009,memac010,memac011,memac012,memac013,memac014,memac019,memac020,memac021,memac022,memac025,memac027,memac029,memac030,memac033,memac034,memac039,memac041,memac042,memac043,memac044,memac045,memac046,memac047,accon001,accon003,accon005,accon007,accon009,accon011,accon013,accon015,accon019,accon021,accon023,accon025,accon027,accon029,accon031,accon033,accon035,accon037,accon039,accon041,accon043,accon045,accon047,accon049,accon051,accon053,accon055
@@ -4867,7 +4877,7 @@ namespace Microsoft.Zelig.Test
                 Basic_TestClass_nhide088 test = new Basic_TestClass_nhide088();
                 string s1 = test.ToString();
                 string s2 = test.ToString("Basic_TestClass_nhide088");
-                if ((s1 == "Microsoft.SPOT.Platform.Tests.BasicConceptTests.Basic_TestClass_nhide088") && (s2 == "Basic_TestClass_nhide088"))
+                if ((s1 == "Microsoft.Zelig.Test.BasicConceptTests.Basic_TestClass_nhide088") && (s2 == "Basic_TestClass_nhide088"))
                 {
                     return 0;
                 }
@@ -5403,7 +5413,7 @@ namespace Microsoft.Zelig.Test
         }
         class Basic_TestClass_memac042_D : Basic_TestClass_memac042_B
         {
-            new public static int F()
+            public static int F()
             {
                 return Basic_TestClass_memac042_B.F();
             }
@@ -5437,7 +5447,7 @@ namespace Microsoft.Zelig.Test
         }
         class Basic_TestClass_memac043_D : Basic_TestClass_memac043_B
         {
-            new public static int F()
+            public static int F()
             {
                 return Basic_TestClass_memac043_B.F();
             }

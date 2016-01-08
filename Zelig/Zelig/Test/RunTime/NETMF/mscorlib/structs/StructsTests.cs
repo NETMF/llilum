@@ -4,11 +4,11 @@
 
 using System;
 using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
+using Microsoft.Zelig.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class StructsTests : IMFTestInterface
+    public class StructsTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -24,281 +24,317 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("Cleaning up after the tests");
         }
 
+        
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+
+            result |= Assert.CheckFailed( Structs01_Test( ) );
+            result |= Assert.CheckFailed( Structs04_Test() );
+            result |= Assert.CheckFailed( Structs11_Test() );
+            result |= Assert.CheckFailed( Structs12_Test() );
+            result |= Assert.CheckFailed( Structs13_Test() );
+            result |= Assert.CheckFailed( Structs14_Test() );
+            result |= Assert.CheckFailed( Structs15_Test() );
+            result |= Assert.CheckFailed( Structs19_Test() );
+            result |= Assert.CheckFailed( Structs21_Test() );
+            result |= Assert.CheckFailed( Structs23_Test() );
+            result |= Assert.CheckFailed( Structs24_Test() );
+            result |= Assert.CheckFailed( Structs26_Test() );
+            result |= Assert.CheckFailed( Structs28_Test() );
+            result |= Assert.CheckFailed( Structs29_Test() );
+            result |= Assert.CheckFailed( Structs32_Test() );
+            result |= Assert.CheckFailed( Structs33_Test() );
+            result |= Assert.CheckFailed( Structs34_Test() );
+            result |= Assert.CheckFailed( Structs35_Test() );
+            result |= Assert.CheckFailed( Structs36_Test() );
+            result |= Assert.CheckFailed( Structs37_Test() );
+            result |= Assert.CheckFailed( Structs38_Test() );
+            result |= Assert.CheckFailed( Structs40_Test() );
+            result |= Assert.CheckFailed( Structs41_Test() );
+            result |= Assert.CheckFailed( Structs42_Test() );
+            result |= Assert.CheckFailed( Structs43_Test() );
+            result |= Assert.CheckFailed( Structs44_Test() );
+            result |= Assert.CheckFailed( Structs55_Test() );
+
+            return result;
+        }
+
         //Structs Test methods
         //The following tests were ported from folder current\test\cases\client\CLR\Conformance\10_classes\Structs
 
         //Test Case Calls 
         [TestMethod]
-        public MFTestResults Structs01_Test()
+        public TestResult Structs01_Test()
         {
             StructsTestClass_01_Notes.Note();
             if (StructsTestClass_01.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs04_Test()
+        public TestResult Structs04_Test()
         {
             StructsTestClass_04_Notes.Note();
             if (StructsTestClass_04.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs11_Test()
+        public TestResult Structs11_Test()
         {
             StructsTestClass_11_Notes.Note();
             if (StructsTestClass_11.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs12_Test()
+        public TestResult Structs12_Test()
         {
             StructsTestClass_12_Notes.Note();
             if (StructsTestClass_12.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs13_Test()
+        public TestResult Structs13_Test()
         {
             Log.Comment("Expected failure, see 16852 for more details");
             
             StructsTestClass_13_Notes.Note();
             if (StructsTestClass_13.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs14_Test()
+        public TestResult Structs14_Test()
         {
             StructsTestClass_14_Notes.Note();
             if (StructsTestClass_14.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs15_Test()
+        public TestResult Structs15_Test()
         {
             StructsTestClass_15_Notes.Note();
             if (StructsTestClass_15.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs19_Test()
+        public TestResult Structs19_Test()
         {
             StructsTestClass_19_Notes.Note();
             if (StructsTestClass_19.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs21_Test()
+        public TestResult Structs21_Test()
         {
             StructsTestClass_21_Notes.Note();
             if (StructsTestClass_21.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs23_Test()
+        public TestResult Structs23_Test()
         {
             StructsTestClass_23_Notes.Note();
             if (StructsTestClass_23.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs24_Test()
+        public TestResult Structs24_Test()
         {
             StructsTestClass_24_Notes.Note();
             if (StructsTestClass_24.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs26_Test()
+        public TestResult Structs26_Test()
         {
             StructsTestClass_26_Notes.Note();
             if (StructsTestClass_26.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs28_Test()
+        public TestResult Structs28_Test()
         {
             StructsTestClass_28_Notes.Note();
             if (StructsTestClass_28.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs29_Test()
+        public TestResult Structs29_Test()
         {
             StructsTestClass_29_Notes.Note();
             if (StructsTestClass_29.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs32_Test()
+        public TestResult Structs32_Test()
         {
             StructsTestClass_32_Notes.Note();
             if (StructsTestClass_32.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs33_Test()
+        public TestResult Structs33_Test()
         {
             StructsTestClass_33_Notes.Note();
             if (StructsTestClass_33.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs34_Test()
+        public TestResult Structs34_Test()
         {
             StructsTestClass_34_Notes.Note();
             if (StructsTestClass_34.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs35_Test()
+        public TestResult Structs35_Test()
         {
             StructsTestClass_35_Notes.Note();
             if (StructsTestClass_35.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs36_Test()
+        public TestResult Structs36_Test()
         {
             StructsTestClass_36_Notes.Note();
             if (StructsTestClass_36.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs37_Test()
+        public TestResult Structs37_Test()
         {
             StructsTestClass_37_Notes.Note();
             if (StructsTestClass_37.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs38_Test()
+        public TestResult Structs38_Test()
         {
             StructsTestClass_38_Notes.Note();
             if (StructsTestClass_38.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs40_Test()
+        public TestResult Structs40_Test()
         {
             StructsTestClass_40_Notes.Note();
             if (StructsTestClass_40.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs41_Test()
+        public TestResult Structs41_Test()
         {
             StructsTestClass_41_Notes.Note();
             if (StructsTestClass_41.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs42_Test()
+        public TestResult Structs42_Test()
         {
             StructsTestClass_42_Notes.Note();
             if (StructsTestClass_42.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs43_Test()
+        public TestResult Structs43_Test()
         {
             StructsTestClass_43_Notes.Note();
             if (StructsTestClass_43.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs44_Test()
+        public TestResult Structs44_Test()
         {
             StructsTestClass_44_Notes.Note();
             if (StructsTestClass_44.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Structs55_Test()
+        public TestResult Structs55_Test()
         {
             StructsTestClass_55_Notes.Note();
             if (StructsTestClass_55.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
 

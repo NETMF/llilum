@@ -25,32 +25,45 @@ namespace Microsoft.Zelig.Test
             //
             //////tests.Add( new StringBuilderTests( ) ); // https://github.com/NETMF/llilum/issues/109, https://github.com/NETMF/llilum/issues/108
 
-            //
-            // System.IO.MemoryStream
-            //
-            tests.Add( new CanRead( ) );
-            tests.Add( new CanSeek( ) );
-            tests.Add( new CanWrite( ) );
-            tests.Add( new Close( ) );
-            tests.Add( new Flush( ) );
-            tests.Add( new Length( ) );
-            tests.Add( new MemoryStream_Ctor( ) );
-            tests.Add( new Position( ) );
-            tests.Add( new Read( ) );
-            tests.Add( new ReadByte( ) );
-            tests.Add( new Seek( ) );
-            tests.Add( new SetLength( ) );
-            tests.Add( new ToArray( ) );
-            tests.Add( new Write( ) );
-            tests.Add( new WriteByte( ) );
-            tests.Add( new WriteTo( ) );
+            ////////
+            //////// System.IO.MemoryStream
+            ////////
+            //tests.Add( new CanRead( ) );
+            //tests.Add( new CanSeek( ) );
+            //tests.Add( new CanWrite( ) );
+            //tests.Add( new Close( ) );
+            //tests.Add( new Flush( ) );
+            //tests.Add( new Length( ) );
+            //tests.Add( new MemoryStream_Ctor( ) );
+            //tests.Add( new Position( ) );
+            //tests.Add( new Read( ) );
+            //tests.Add( new ReadByte( ) );
+            //tests.Add( new Seek( ) );
+            //tests.Add( new SetLength( ) );
+            //tests.Add( new ToArray( ) );
+            //tests.Add( new Write( ) );
+            //tests.Add( new WriteByte( ) );
+            //tests.Add( new WriteTo( ) );
 
-            //
-            // mscorlib
-            //
-            tests.Add( new ArraysSimpleTests() );
-            tests.Add( new ArraysOtherTests() );
-            tests.Add( new BasicConceptTests() );
+            ////////
+            //////// mscorlib
+            ////////
+            //tests.Add( new ArraysSimpleTests( ) );
+            //tests.Add( new ArraysOtherTests( ) );
+            //tests.Add( new BasicConceptTests( ) );
+            //tests.Add( new ConstructorsTests( ) );
+            //tests.Add( new ConstTests( ) ); 
+            //tests.Add( new DeclarationsTests( ) ); 
+            //tests.Add( new DestructorsTests( ) ); 
+            //tests.Add( new EventsTests( ) ); 
+            //tests.Add( new FieldsTests( ) ); 
+            //tests.Add( new IndexersTests( ) ); 
+            //tests.Add( new OperatorsTests( ) ); 
+            //tests.Add( new PropertiesTests( ) ); 
+            //tests.Add( new Static_InstTests( ) ); 
+            //tests.Add( new MembersTests( ) ); 
+            //tests.Add( new MethodsTests( ) ); 
+            tests.Add( new StructsTests( ) );
 
             foreach(ITestInterface t in tests)
             {

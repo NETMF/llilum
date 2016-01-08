@@ -39,6 +39,16 @@ namespace Microsoft.Zelig.Test
             // TODO: Add your clean up steps here.
         }
 
+        public override TestResult Run( string[] args )
+        {
+            return TestResult.Pass;
+        }
+        
+        //--//
+        //--//
+        //--//
+
+
         #region Test
         [TestMethod]
         public TestResult ValidDefaultTestHTTPStatusCodeHTTP1_1()

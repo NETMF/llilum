@@ -35,6 +35,16 @@ namespace Microsoft.Zelig.Test
             // TODO: Add your clean up steps here.
         }
 
+        public override TestResult Run( string[] args )
+        {
+            return TestResult.Pass;
+        }
+        
+        //--//
+        //--//
+        //--//
+
+
         #region Helper methods
         private TestResult Verify(HttpWebRequest Request, Version ExpectedVersion)
         {

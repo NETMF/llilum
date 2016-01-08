@@ -20,8 +20,6 @@ namespace Microsoft.Zelig.MetaData.UnitTest
 
         override public TestResult Run( string[] args )
         {
-            base.Run(args);
-
             string currentDir = System.Environment.CurrentDirectory;
 
             LoadPE( Expand( @"%WINDIR%\Microsoft.NET\Framework\v2.0.50727\mscorlib.dll"  ) );

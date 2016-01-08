@@ -30,6 +30,16 @@ namespace Microsoft.Zelig.Test
             // TODO: Add your clean up steps here.
         }
 
+        public override TestResult Run( string[] args )
+        {
+            return TestResult.Pass;
+        }
+        
+        //--//
+        //--//
+        //--//
+
+
         #region helper functions
 
         private bool ValidUri(Uri uri, UriProperties props)

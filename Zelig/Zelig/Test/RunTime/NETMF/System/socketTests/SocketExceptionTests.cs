@@ -60,6 +60,16 @@ namespace Microsoft.Zelig.Test
 
         }
 
+        public override TestResult Run( string[] args )
+        {
+            return TestResult.Pass;
+        }
+        
+        //--//
+        //--//
+        //--//
+
+
         [TestMethod]
         public TestResult SocketExceptionTest2_AddressAlreadyInUse()
         {

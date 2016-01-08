@@ -44,6 +44,16 @@ namespace Microsoft.Zelig.Test
             Log.Comment("Cleaning up after the tests.");
         }
 
+        public override TestResult Run( string[] args )
+        {
+            return TestResult.Pass;
+        }
+        
+        //--//
+        //--//
+        //--//
+
+
         //This is a large number greater than the max buffer size
         private const int LARGE_NUM = 5000;
 

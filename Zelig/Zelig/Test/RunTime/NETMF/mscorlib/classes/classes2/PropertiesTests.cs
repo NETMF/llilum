@@ -4,11 +4,11 @@
 
 using System;
 using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
+using Microsoft.Zelig.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class PropertiesTests : IMFTestInterface
+    public class PropertiesTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -23,6 +23,62 @@ namespace Microsoft.SPOT.Platform.Tests
         {
             Log.Comment("Cleaning up after the tests");
         }
+        
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+
+            result |= Assert.CheckFailed( Properties003_Test( ) );
+            result |= Assert.CheckFailed( Properties004_Test( ) );
+            result |= Assert.CheckFailed( Properties005_Test( ) );
+            result |= Assert.CheckFailed( Properties006_Test( ) );
+            result |= Assert.CheckFailed( Properties007_Test( ) );
+            result |= Assert.CheckFailed( Properties008_Test( ) );
+            result |= Assert.CheckFailed( Properties009_Test( ) );
+            result |= Assert.CheckFailed( Properties010_Test( ) );
+            result |= Assert.CheckFailed( Properties011_Test( ) );
+            result |= Assert.CheckFailed( Properties024_Test( ) );
+            result |= Assert.CheckFailed( Properties025_Test( ) );
+            result |= Assert.CheckFailed( Properties026_Test( ) );
+            result |= Assert.CheckFailed( Properties027_Test( ) );
+            result |= Assert.CheckFailed( Properties033_Test( ) );
+            result |= Assert.CheckFailed( Properties034_Test( ) );
+            result |= Assert.CheckFailed( Properties035_Test( ) );
+            result |= Assert.CheckFailed( Properties036_Test( ) );
+            result |= Assert.CheckFailed( Properties037_Test( ) );
+            result |= Assert.CheckFailed( Properties038_Test( ) );
+            result |= Assert.CheckFailed( Properties043_Test( ) );
+            result |= Assert.CheckFailed( Properties046_Test( ) );
+            result |= Assert.CheckFailed( Properties048_Test( ) );
+            result |= Assert.CheckFailed( Properties050_Test( ) );
+            result |= Assert.CheckFailed( Properties053_Test( ) );
+            result |= Assert.CheckFailed( Properties054_Test( ) );
+            result |= Assert.CheckFailed( Properties056_Test( ) );
+            result |= Assert.CheckFailed( Properties058_Test( ) );
+            result |= Assert.CheckFailed( Properties059_Test( ) );
+            result |= Assert.CheckFailed( Properties060_Test( ) );
+            result |= Assert.CheckFailed( Properties062_Test( ) );
+            result |= Assert.CheckFailed( Properties068_Test( ) );
+            result |= Assert.CheckFailed( Properties071_Test( ) );
+            result |= Assert.CheckFailed( Properties072_Test( ) );
+            result |= Assert.CheckFailed( Properties073_Test( ) );
+            result |= Assert.CheckFailed( Properties074_Test( ) );
+            result |= Assert.CheckFailed( Properties075_Test( ) );
+            result |= Assert.CheckFailed( Properties078_Test( ) );
+            result |= Assert.CheckFailed( Properties089_Test( ) );
+            result |= Assert.CheckFailed( Properties090_Test( ) );
+            result |= Assert.CheckFailed( Properties097_Test( ) );
+            result |= Assert.CheckFailed( Properties109_Test( ) );
+            result |= Assert.CheckFailed( Properties110_Test( ) );
+            result |= Assert.CheckFailed( Properties121_Test( ) );
+            result |= Assert.CheckFailed( Properties122_Test( ) );
+            result |= Assert.CheckFailed( Properties123_Test( ) );
+            result |= Assert.CheckFailed( Properties124_Test( ) );
+            result |= Assert.CheckFailed( Properties125_Test( ) );
+            result |= Assert.CheckFailed( Properties126_Test( ) );
+
+            return result;
+        }
 
         //Properties Test methods
         //The following test methods were ported from the folder 
@@ -35,7 +91,7 @@ namespace Microsoft.SPOT.Platform.Tests
 
         //Test Case Calls 
         [TestMethod]
-        public MFTestResults Properties003_Test()
+        public TestResult Properties003_Test()
         {
             
             Log.Comment("Section 10.6");
@@ -44,12 +100,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("nof the four access modifiers, and a static modifier.");
             if (PropertiesTestClass003.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties004_Test()
+        public TestResult Properties004_Test()
         {
             Log.Comment("Section 10.6");
             Log.Comment("A property declaration may include set of");
@@ -57,12 +113,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("nof the four access modifiers, and a static modifier.");
             if (PropertiesTestClass004.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties005_Test()
+        public TestResult Properties005_Test()
         {
             Log.Comment("Section 10.6");
             Log.Comment("A property declaration may include set of");
@@ -70,12 +126,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("nof the four access modifiers, and a static modifier.");
             if (PropertiesTestClass005.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties006_Test()
+        public TestResult Properties006_Test()
         {
             Log.Comment("Section 10.6");
             Log.Comment("A property declaration may include set of");
@@ -83,12 +139,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("nof the four access modifiers, and a static modifier.");
             if (PropertiesTestClass006.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties007_Test()
+        public TestResult Properties007_Test()
         {
             Log.Comment("Section 10.6");
             Log.Comment("A property declaration may include set of");
@@ -96,12 +152,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("nof the four access modifiers, and a static modifier.");
             if (PropertiesTestClass007.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties008_Test()
+        public TestResult Properties008_Test()
         {
             Log.Comment("Section 10.6");
             Log.Comment("A property declaration may include set of");
@@ -109,12 +165,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("nof the four access modifiers, and a static modifier.");
             if (PropertiesTestClass008.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties009_Test()
+        public TestResult Properties009_Test()
         {
             Log.Comment("Section 10.6");
             Log.Comment("A property declaration may include set of");
@@ -122,12 +178,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("nof the four access modifiers, and a static modifier.");
             if (PropertiesTestClass009.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties010_Test()
+        public TestResult Properties010_Test()
         {
             Log.Comment("Section 10.6");
             Log.Comment("A property declaration may include set of");
@@ -135,12 +191,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("nof the four access modifiers, and a static modifier.");
             if (PropertiesTestClass010.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties011_Test()
+        public TestResult Properties011_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("The type of a property declaration specifies");
@@ -155,12 +211,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("This is currently an expected fail, but is resolved in 3.0 see Bug  16341 for details");
             if (PropertiesTestClass011.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties024_Test()
+        public TestResult Properties024_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("An instance property is associated with");
@@ -169,12 +225,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("the property.");
             if (PropertiesTestClass024.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties025_Test()
+        public TestResult Properties025_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("An instance property is associated with");
@@ -183,12 +239,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("the property.");
             if (PropertiesTestClass025.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties026_Test()
+        public TestResult Properties026_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("When a property is referenced in a member-access");
@@ -197,12 +253,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("E must denote an instance.");
             if (PropertiesTestClass026.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties027_Test()
+        public TestResult Properties027_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("When a property is referenced in a member-access");
@@ -211,12 +267,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("E must denote an instance.");
             if (PropertiesTestClass027.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties033_Test()
+        public TestResult Properties033_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("The accessor declarations consist of a ");
@@ -224,12 +280,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("declaration, or both.");
             if (PropertiesTestClass033.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties034_Test()
+        public TestResult Properties034_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("The accessor declarations consist of a ");
@@ -237,12 +293,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("declaration, or both.");
             if (PropertiesTestClass034.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties035_Test()
+        public TestResult Properties035_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("The accessor declarations consist of a ");
@@ -250,12 +306,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("declaration, or both.");
             if (PropertiesTestClass035.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties036_Test()
+        public TestResult Properties036_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -263,12 +319,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass036.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties037_Test()
+        public TestResult Properties037_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -276,12 +332,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass037.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties038_Test()
+        public TestResult Properties038_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -289,12 +345,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass038.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties043_Test()
+        public TestResult Properties043_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -302,12 +358,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass043.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties046_Test()
+        public TestResult Properties046_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -315,12 +371,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass046.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties048_Test()
+        public TestResult Properties048_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -328,12 +384,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass048.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties050_Test()
+        public TestResult Properties050_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -341,12 +397,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass050.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties053_Test()
+        public TestResult Properties053_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -354,12 +410,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass053.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties054_Test()
+        public TestResult Properties054_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -367,12 +423,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass054.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties056_Test()
+        public TestResult Properties056_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -380,12 +436,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass056.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties058_Test()
+        public TestResult Properties058_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -393,12 +449,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass058.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties059_Test()
+        public TestResult Properties059_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -406,12 +462,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass059.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties060_Test()
+        public TestResult Properties060_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -419,12 +475,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass060.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties062_Test()
+        public TestResult Properties062_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -432,12 +488,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass062.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties068_Test()
+        public TestResult Properties068_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -445,12 +501,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass068.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties071_Test()
+        public TestResult Properties071_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -458,12 +514,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass071.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties072_Test()
+        public TestResult Properties072_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -471,12 +527,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass072.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties073_Test()
+        public TestResult Properties073_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -484,12 +540,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass073.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties074_Test()
+        public TestResult Properties074_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -497,12 +553,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass074.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties075_Test()
+        public TestResult Properties075_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -510,12 +566,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass075.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties078_Test()
+        public TestResult Properties078_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -523,12 +579,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass078.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties089_Test()
+        public TestResult Properties089_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -536,12 +592,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass089.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties090_Test()
+        public TestResult Properties090_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -549,12 +605,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass090.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties097_Test()
+        public TestResult Properties097_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -562,12 +618,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass097.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties109_Test()
+        public TestResult Properties109_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -575,12 +631,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass109.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties110_Test()
+        public TestResult Properties110_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -588,12 +644,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass110.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties121_Test()
+        public TestResult Properties121_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -601,12 +657,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass121.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties122_Test()
+        public TestResult Properties122_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -614,12 +670,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass122.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties123_Test()
+        public TestResult Properties123_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -628,12 +684,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("This test is an expected fail");
             if (PropertiesTestClass123.testMethod())
             {
-                return MFTestResults.Fail;
+                return TestResult.Fail;
             }
-            return MFTestResults.Pass;
+            return TestResult.Pass;
         }
         [TestMethod]
-        public MFTestResults Properties124_Test()
+        public TestResult Properties124_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -642,12 +698,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("This test is an expected fail");
             if (PropertiesTestClass124.testMethod())
             {
-                return MFTestResults.Fail;
+                return TestResult.Fail;
             }
-            return MFTestResults.Pass;
+            return TestResult.Pass;
         }
         [TestMethod]
-        public MFTestResults Properties125_Test()
+        public TestResult Properties125_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -655,12 +711,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass125.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Properties126_Test()
+        public TestResult Properties126_Test()
         {
             Log.Comment("Section 10.6 ");
             Log.Comment("Each accessor declaration consists of an");
@@ -668,9 +724,9 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("keyword get or set, followed by an accessor");
             if (PropertiesTestClass126.testMethod())
             {
-                return MFTestResults.Fail;
+                return TestResult.Fail;
             }
-            return MFTestResults.Pass;
+            return TestResult.Pass;
         }
 
         //Compiled Test Cases 
@@ -1212,7 +1268,7 @@ namespace Microsoft.SPOT.Platform.Tests
 		        try {
 			        int intJ = test.MyProp;
 		        }
-		        catch (System.Exception e) {
+		        catch (System.Exception) {
 			        return true;
 		        }
 		        return false;			
@@ -1243,7 +1299,7 @@ namespace Microsoft.SPOT.Platform.Tests
 		        try {
 			        int intJ = MC2.MyProp;
 		        }
-		        catch (System.Exception e) {
+		        catch (System.Exception) {
 			        return true;
 		        }
 		        return false;
@@ -1397,7 +1453,7 @@ namespace Microsoft.SPOT.Platform.Tests
 	        }
         }
         public class PropertiesTestClass071 : PropertiesTestClass071_Base {
-	        new public int MyProp {
+	        public int MyProp {
 		        set {}
 	        }
 	        public static bool testMethod() {

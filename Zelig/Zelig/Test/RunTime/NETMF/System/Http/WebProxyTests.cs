@@ -28,6 +28,16 @@ namespace Microsoft.Zelig.Test
             // TODO: Add your clean up steps here.
         }
 
+        public override TestResult Run( string[] args )
+        {
+            return TestResult.Pass;
+        }
+        
+        //--//
+        //--//
+        //--//
+
+
 
         [TestMethod]
         public TestResult TestDefaultWebProxy()

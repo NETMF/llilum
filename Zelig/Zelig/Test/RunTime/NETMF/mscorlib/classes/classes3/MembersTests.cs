@@ -4,11 +4,11 @@
 
 using System;
 using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
+using Microsoft.Zelig.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class MembersTests : IMFTestInterface
+    public class MembersTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -25,7 +25,77 @@ namespace Microsoft.SPOT.Platform.Tests
         {
             Log.Comment("Cleaning up after the tests");
         }
+        
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+            
+            result |= Assert.CheckFailed( Members23_Test( ) );
+            result |= Assert.CheckFailed( Members24_Test( ) );
+            result |= Assert.CheckFailed( Members25_Test( ) );
+            result |= Assert.CheckFailed( Members26_Test( ) );
+            result |= Assert.CheckFailed( Members27_Test( ) );
+            result |= Assert.CheckFailed( Members28_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance001_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance002_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance003_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance004_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance005_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance006_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance007_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance008_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance018_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance019_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance020_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance021_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance022_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance023_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance024_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance025_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance026_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance027_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance028_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance029_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance030_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance031_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance032_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance033_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance034_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance035_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance036_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance037_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance038_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance039_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance040_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance041_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance042_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance043_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance044_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance045_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance046_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance047_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance053_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance054_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance057_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance058_Test( ) );
+            result |= Assert.CheckFailed( MembersInheritance059_Test( ) );
+            result |= Assert.CheckFailed( MembersModifiers01_Test( ) );
+            result |= Assert.CheckFailed( MembersModifiers02_Test( ) );
+            result |= Assert.CheckFailed( MembersModifiers03_Test( ) );
+            result |= Assert.CheckFailed( MembersModifiers04_Test( ) );
+            result |= Assert.CheckFailed( MembersModifiers05_Test( ) );
+            result |= Assert.CheckFailed( MembersModifiers06_Test( ) );
+            result |= Assert.CheckFailed( MembersModifiers07_Test( ) );
+            result |= Assert.CheckFailed( MembersModifiers08_Test( ) );
+            result |= Assert.CheckFailed( MembersModifiers12_Test( ) );
+            result |= Assert.CheckFailed( MembersModifiers23_Test( ) );
+            result |= Assert.CheckFailed( MembersModifiers24_Test( ) );
+            result |= Assert.CheckFailed( MembersModifiers25_Test( ) );
+            result |= Assert.CheckFailed( MembersModifiers26_Test( ) );
+            result |= Assert.CheckFailed( MembersModifiers27_Test( ) );
 
+            return result;
+        }
         //Members Tests
         //The following tests ported from folder current\test\cases\client\CLR\Conformance\10_classes\Members
         //023,024,025,026,027,028
@@ -36,7 +106,7 @@ namespace Microsoft.SPOT.Platform.Tests
         //All tests that were not ported did not appear in the Baseline Document
 
         [TestMethod]
-        public MFTestResults Members23_Test()
+        public TestResult Members23_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" The inherited members of a class are specifically");
@@ -46,13 +116,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" hides the inherited member).");
             if (MembersTestClass023.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Members24_Test()
+        public TestResult Members24_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" The inherited members of a class are specifically");
@@ -62,13 +132,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" hides the inherited member).");
             if (MembersTestClass024.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Members25_Test()
+        public TestResult Members25_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" The inherited members of a class are specifically");
@@ -78,13 +148,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" hides the inherited member).");
             if (MembersTestClass025.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Members26_Test()
+        public TestResult Members26_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" The inherited members of a class are specifically");
@@ -94,13 +164,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" hides the inherited member).");
             if (MembersTestClass026.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Members27_Test()
+        public TestResult Members27_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" The inherited members of a class are specifically");
@@ -110,13 +180,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" hides the inherited member).");
             if (MembersTestClass027.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Members28_Test()
+        public TestResult Members28_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" The inherited members of a class are specifically");
@@ -126,14 +196,14 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" hides the inherited member).");
             if (MembersTestClass028.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         //Test Case Calls 
         [TestMethod]
-        public MFTestResults MembersInheritance001_Test()
+        public TestResult MembersInheritance001_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" Inheritance is transitive. If C is derived from");
@@ -141,12 +211,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" members declared in B as well as the members");
             if (MembersInheritanceTestClass001.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance002_Test()
+        public TestResult MembersInheritance002_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" Inheritance is transitive. If C is derived from");
@@ -154,12 +224,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" members declared in B as well as the members");
             if (MembersInheritanceTestClass002.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance003_Test()
+        public TestResult MembersInheritance003_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" Inheritance is transitive. If C is derived from");
@@ -167,12 +237,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" members declared in B as well as the members");
             if (MembersInheritanceTestClass003.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance004_Test()
+        public TestResult MembersInheritance004_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" Inheritance is transitive. If C is derived from");
@@ -180,12 +250,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" members declared in B as well as the members");
             if (MembersInheritanceTestClass004.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance005_Test()
+        public TestResult MembersInheritance005_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" Inheritance is transitive. If C is derived from");
@@ -193,12 +263,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" members declared in B as well as the members");
             if (MembersInheritanceTestClass005.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance006_Test()
+        public TestResult MembersInheritance006_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" Inheritance is transitive. If C is derived from");
@@ -206,12 +276,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" members declared in B as well as the members");
             if (MembersInheritanceTestClass006.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance007_Test()
+        public TestResult MembersInheritance007_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" Inheritance is transitive. If C is derived from");
@@ -219,12 +289,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" members declared in B as well as the members");
             if (MembersInheritanceTestClass007.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance008_Test()
+        public TestResult MembersInheritance008_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" Inheritance is transitive. If C is derived from");
@@ -232,12 +302,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" members declared in B as well as the members");
             if (MembersInheritanceTestClass008.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance018_Test()
+        public TestResult MembersInheritance018_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" Constructors and destructors are not inherited, but all");
@@ -246,12 +316,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" members may not be accessible in the derived class.");
             if (MembersInheritanceTestClass018.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance019_Test()
+        public TestResult MembersInheritance019_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" Constructors and destructors are not inherited, but all");
@@ -260,12 +330,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" members may not be accessible in the derived class.");
             if (MembersInheritanceTestClass019.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance020_Test()
+        public TestResult MembersInheritance020_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" Constructors and destructors are not inherited, but all");
@@ -274,12 +344,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" members may not be accessible in the derived class.");
             if (MembersInheritanceTestClass020.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance021_Test()
+        public TestResult MembersInheritance021_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" Constructors and destructors are not inherited, but all");
@@ -288,12 +358,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" members may not be accessible in the derived class.");
             if (MembersInheritanceTestClass021.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance022_Test()
+        public TestResult MembersInheritance022_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" Constructors and destructors are not inherited, but all");
@@ -302,12 +372,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" members may not be accessible in the derived class.");
             if (MembersInheritanceTestClass022.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance023_Test()
+        public TestResult MembersInheritance023_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" Constructors and destructors are not inherited, but all");
@@ -316,12 +386,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" members may not be accessible in the derived class.");
             if (MembersInheritanceTestClass023.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance024_Test()
+        public TestResult MembersInheritance024_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" Constructors and destructors are not inherited, but all");
@@ -330,12 +400,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" members may not be accessible in the derived class.");
             if (MembersInheritanceTestClass024.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance025_Test()
+        public TestResult MembersInheritance025_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" Constructors and destructors are not inherited, but all");
@@ -344,12 +414,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" members may not be accessible in the derived class.");
             if (MembersInheritanceTestClass025.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance026_Test()
+        public TestResult MembersInheritance026_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" An instance of a class contains a copy of all instance fields");
@@ -359,12 +429,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" can be treated as a reference to a base class instance.");
             if (MembersInheritanceTestClass026.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance027_Test()
+        public TestResult MembersInheritance027_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" An instance of a class contains a copy of all instance fields");
@@ -374,12 +444,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" can be treated as a reference to a base class instance.");
             if (MembersInheritanceTestClass027.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance028_Test()
+        public TestResult MembersInheritance028_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" A class can declare virtual methods, properties,");
@@ -391,12 +461,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" through which the member is invoked.");
             if (MembersInheritanceTestClass028.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance029_Test()
+        public TestResult MembersInheritance029_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" A class can declare virtual methods, properties,");
@@ -408,12 +478,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" through which the member is invoked.");
             if (MembersInheritanceTestClass029.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance030_Test()
+        public TestResult MembersInheritance030_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" A class can declare virtual methods, properties,");
@@ -425,12 +495,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" through which the member is invoked.");
             if (MembersInheritanceTestClass030.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance031_Test()
+        public TestResult MembersInheritance031_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" A class can declare virtual methods, properties,");
@@ -442,12 +512,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" through which the member is invoked.");
             if (MembersInheritanceTestClass031.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance032_Test()
+        public TestResult MembersInheritance032_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" A class can declare virtual methods, properties,");
@@ -462,12 +532,12 @@ namespace Microsoft.SPOT.Platform.Tests
                 Log.Comment("This failure indicates a test is now passing that previously failed by design.");
                 Log.Comment("It previously marked as known failure because of bug # 21562");
                 Log.Comment("The Test owner needs to verify that the change was intentional and remove the known failure.");
-                return MFTestResults.Fail;
+                return TestResult.Fail;
             }
-            return MFTestResults.Pass;
+            return TestResult.Pass;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance033_Test()
+        public TestResult MembersInheritance033_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" A class can declare virtual methods, properties,");
@@ -479,12 +549,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" through which the member is invoked.");
             if (MembersInheritanceTestClass033.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance034_Test()
+        public TestResult MembersInheritance034_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" A class can declare virtual methods, properties,");
@@ -496,12 +566,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" through which the member is invoked.");
             if (MembersInheritanceTestClass034.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance035_Test()
+        public TestResult MembersInheritance035_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" A class can declare virtual methods, properties,");
@@ -513,12 +583,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" through which the member is invoked.");
             if (MembersInheritanceTestClass035.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance036_Test()
+        public TestResult MembersInheritance036_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" A class can declare virtual methods, properties,");
@@ -533,12 +603,12 @@ namespace Microsoft.SPOT.Platform.Tests
                 Log.Comment("This failure indicates a test is now passing that previously failed by design.");
                 Log.Comment("It previously marked as known failure because of bug # 21562");
                 Log.Comment("The Test owner needs to verify that the change was intentional and remove the known failure.");
-                return MFTestResults.Fail;
+                return TestResult.Fail;
             }
-            return MFTestResults.Pass;
+            return TestResult.Pass;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance037_Test()
+        public TestResult MembersInheritance037_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" A class-member-declaration is permitted to declare");
@@ -547,12 +617,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" class member is said to hide the base class member.");
             if (MembersInheritanceTestClass037.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance038_Test()
+        public TestResult MembersInheritance038_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" A class-member-declaration is permitted to declare");
@@ -561,12 +631,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" class member is said to hide the base class member.");
             if (MembersInheritanceTestClass038.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance039_Test()
+        public TestResult MembersInheritance039_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" A class-member-declaration is permitted to declare");
@@ -575,12 +645,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" class member is said to hide the base class member.");
             if (MembersInheritanceTestClass039.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance040_Test()
+        public TestResult MembersInheritance040_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" A class-member-declaration is permitted to declare");
@@ -589,12 +659,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" class member is said to hide the base class member.");
             if (MembersInheritanceTestClass040.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance041_Test()
+        public TestResult MembersInheritance041_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" If a new modifier is included in a declaration");
@@ -602,12 +672,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" is issued to that effect.");
             if (MembersInheritanceTestClass041.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance042_Test()
+        public TestResult MembersInheritance042_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" If a new modifier is included in a declaration");
@@ -615,12 +685,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" is issued to that effect.");
             if (MembersInheritanceTestClass042.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance043_Test()
+        public TestResult MembersInheritance043_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" If a new modifier is included in a declaration");
@@ -628,12 +698,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" is issued to that effect.");
             if (MembersInheritanceTestClass043.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance044_Test()
+        public TestResult MembersInheritance044_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" If a new modifier is included in a declaration");
@@ -641,12 +711,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" is issued to that effect.");
             if (MembersInheritanceTestClass044.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance045_Test()
+        public TestResult MembersInheritance045_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" If a new modifier is included in a declaration");
@@ -654,12 +724,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" is issued to that effect.");
             if (MembersInheritanceTestClass045.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance046_Test()
+        public TestResult MembersInheritance046_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" If a new modifier is included in a declaration");
@@ -667,12 +737,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" is issued to that effect.");
             if (MembersInheritanceTestClass046.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance047_Test()
+        public TestResult MembersInheritance047_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" If a new modifier is included in a declaration");
@@ -680,12 +750,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" is issued to that effect.");
             if (MembersInheritanceTestClass047.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance053_Test()
+        public TestResult MembersInheritance053_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" If a new modifier is included in a declaration");
@@ -693,55 +763,55 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" is issued to that effect.");
             if (MembersInheritanceTestClass053.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance054_Test()
+        public TestResult MembersInheritance054_Test()
         {
             Log.Comment("Testing that protected members can be passed to a grandchild class");
             if (MembersInheritanceTestClass054.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance057_Test()
+        public TestResult MembersInheritance057_Test()
         {
             Log.Comment("Testing that you can inherit from a member class");
 
             if (MembersInheritanceTestClass057.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance058_Test()
+        public TestResult MembersInheritance058_Test()
         {
             Log.Comment("Testing that you can inherit from a class declared later in the file");
             if (MembersInheritanceTestClass058.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersInheritance059_Test()
+        public TestResult MembersInheritance059_Test()
         {
             Log.Comment("Testing that an inner class inherit from another class");
             if (MembersInheritanceTestClass059.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         //Test Case Calls 
         [TestMethod]
-        public MFTestResults MembersModifiers01_Test()
+        public TestResult MembersModifiers01_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" A class-member-declaration may include one of the ");
@@ -752,12 +822,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" defaults to private.");
             if (MembersModifiersTestClass01.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersModifiers02_Test()
+        public TestResult MembersModifiers02_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" A class-member-declaration may include one of the ");
@@ -768,12 +838,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" defaults to private.");
             if (MembersModifiersTestClass02.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersModifiers03_Test()
+        public TestResult MembersModifiers03_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" A class-member-declaration may include one of the ");
@@ -784,12 +854,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" defaults to private.");
             if (MembersModifiersTestClass03.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersModifiers04_Test()
+        public TestResult MembersModifiers04_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" A class-member-declaration may include one of the ");
@@ -800,12 +870,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" defaults to private.");
             if (MembersModifiersTestClass04.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersModifiers05_Test()
+        public TestResult MembersModifiers05_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" A class-member-declaration may include one of the ");
@@ -816,12 +886,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" defaults to private.");
             if (MembersModifiersTestClass05.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersModifiers06_Test()
+        public TestResult MembersModifiers06_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" A class-member-declaration may include one of the ");
@@ -832,12 +902,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" defaults to private.");
             if (MembersModifiersTestClass06.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersModifiers07_Test()
+        public TestResult MembersModifiers07_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" A class-member-declaration may include one of the ");
@@ -848,12 +918,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" defaults to private.");
             if (MembersModifiersTestClass07.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersModifiers08_Test()
+        public TestResult MembersModifiers08_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" A class-member-declaration may include one of the ");
@@ -864,12 +934,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" defaults to private.");
             if (MembersModifiersTestClass08.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersModifiers12_Test()
+        public TestResult MembersModifiers12_Test()
         {
             Log.Comment(" Section 10.2");
             Log.Comment(" A class-member-declaration may include one of the ");
@@ -880,54 +950,54 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" defaults to private.");
             if (MembersModifiersTestClass12.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersModifiers23_Test()
+        public TestResult MembersModifiers23_Test()
         {
             if (MembersModifiersTestClass23.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersModifiers24_Test()
+        public TestResult MembersModifiers24_Test()
         {
             if (MembersModifiersTestClass24.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersModifiers25_Test()
+        public TestResult MembersModifiers25_Test()
         {
             if (MembersModifiersTestClass25.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersModifiers26_Test()
+        public TestResult MembersModifiers26_Test()
         {
             if (MembersModifiersTestClass26.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults MembersModifiers27_Test()
+        public TestResult MembersModifiers27_Test()
         {
             if (MembersModifiersTestClass27.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
 
@@ -1268,7 +1338,7 @@ namespace Microsoft.SPOT.Platform.Tests
 	        public int intI = 1;
         }
         class MembersInheritanceTestClass019 : MembersInheritanceTestClass019_Base {
-	        new public int intI = 2;
+	        public int intI = 2;
 	        public static bool testMethod() {
 		        MembersInheritanceTestClass019 test = new MembersInheritanceTestClass019();
 		        if (test.intI == 2) {
@@ -1298,7 +1368,7 @@ namespace Microsoft.SPOT.Platform.Tests
 	        public static int intI = 1;
         }
         class MembersInheritanceTestClass021 : MembersInheritanceTestClass021_Base {
-	        new public static int intI = 2;
+	        public static int intI = 2;
 	        public static bool testMethod() {
 		        MembersInheritanceTestClass021 test = new MembersInheritanceTestClass021();
 		        if (intI == 2) {
@@ -1314,7 +1384,7 @@ namespace Microsoft.SPOT.Platform.Tests
 	        public String strS = "MembersInheritanceTestClass022_Base";
         }
         class MembersInheritanceTestClass022 : MembersInheritanceTestClass022_Base {
-	        new public static String strS = "MembersInheritanceTestClass022";
+	        public static String strS = "MembersInheritanceTestClass022";
 	        public static bool testMethod() {
 		        MembersInheritanceTestClass022 test = new MembersInheritanceTestClass022();
 		        if (strS.Equals("MembersInheritanceTestClass022")) {
@@ -1347,7 +1417,7 @@ namespace Microsoft.SPOT.Platform.Tests
 	        public enum AA {one, two}
         }
         class MembersInheritanceTestClass024 : MembersInheritanceTestClass024_Base {
-	        new public enum AA {zero, one}
+	        public enum AA {zero, one}
 	        public static bool testMethod() {
         
 		        AA MyEnum = AA.one;
@@ -1683,10 +1753,10 @@ namespace Microsoft.SPOT.Platform.Tests
 	        public static int intK = 3;
         }
         class MembersInheritanceTestClass037 : MembersInheritanceTestClass037_Base {
-	        new public int intI = 4;
-	        new public String strS = "MembersInheritanceTestClass037";
-	        new public int intJ() {return 5;}
-	        new public static int intK = 6;
+	        public int intI = 4;
+	        public String strS = "MembersInheritanceTestClass037";
+	        public int intJ() {return 5;}
+	        public static int intK = 6;
 	        public static bool testMethod() {
 		        MembersInheritanceTestClass037 testc = new MembersInheritanceTestClass037();
 		        MembersInheritanceTestClass037_Base testb = (MembersInheritanceTestClass037_Base) testc;
@@ -1712,7 +1782,7 @@ namespace Microsoft.SPOT.Platform.Tests
 	        }
         }
         class MembersInheritanceTestClass038 : MembersInheritanceTestClass038_Base {
-	        new public struct MyStruct {
+	        public struct MyStruct {
 		        public int retInt() {
 			        return 2;
 		        }
@@ -1732,7 +1802,7 @@ namespace Microsoft.SPOT.Platform.Tests
 	        public enum MyEnum {zero, one}
         }
         class MembersInheritanceTestClass039 : MembersInheritanceTestClass039_Base {
-	        new public enum MyEnum {one, two}
+	        public enum MyEnum {one, two}
 	        public static bool testMethod() {
 		        MyEnum test = MyEnum.one;
 		        if ((int)test == 0) {
@@ -1752,7 +1822,7 @@ namespace Microsoft.SPOT.Platform.Tests
 	        }
         }
         class MembersInheritanceTestClass040 : MembersInheritanceTestClass040_Base {
-	        new public class MyInner {
+	        public class MyInner {
 		        public int retInt() {
 			        return 2;
 		        }
@@ -1771,7 +1841,7 @@ namespace Microsoft.SPOT.Platform.Tests
         class MembersInheritanceTestClass041_Base {}
         class MembersInheritanceTestClass041 : MembersInheritanceTestClass041_Base {
         
-	        new public int intI = 1;
+	        public int intI = 1;
 	        public static bool testMethod() {
 		        MembersInheritanceTestClass041 test = new MembersInheritanceTestClass041();
 		        if (test.intI == 1) {
@@ -1786,7 +1856,7 @@ namespace Microsoft.SPOT.Platform.Tests
         class MembersInheritanceTestClass042_Base {}
         class MembersInheritanceTestClass042 : MembersInheritanceTestClass042_Base {
         
-	        new public String strS = "MembersInheritanceTestClass042";
+	        public String strS = "MembersInheritanceTestClass042";
 	        public static bool testMethod() {
 		        MembersInheritanceTestClass042 test = new MembersInheritanceTestClass042();
 		        if (test.strS.Equals("MembersInheritanceTestClass042")) {
@@ -1801,7 +1871,7 @@ namespace Microsoft.SPOT.Platform.Tests
         class MembersInheritanceTestClass043_Base {}
         class MembersInheritanceTestClass043 : MembersInheritanceTestClass043_Base {
         
-	        new public int intJ() {return 2;}
+	        public int intJ() {return 2;}
 	        public static bool testMethod() {
 		        MembersInheritanceTestClass043 test = new MembersInheritanceTestClass043();
 		        if (test.intJ() == 2) {
@@ -1816,7 +1886,7 @@ namespace Microsoft.SPOT.Platform.Tests
         class MembersInheritanceTestClass044_Base {}
         class MembersInheritanceTestClass044 : MembersInheritanceTestClass044_Base {
         
-	        new public static int intK = 3;
+	        public static int intK = 3;
 	        public static bool testMethod() {
 		        if (MembersInheritanceTestClass044.intK == 3) {
 			        return true;
@@ -1830,7 +1900,7 @@ namespace Microsoft.SPOT.Platform.Tests
         class MembersInheritanceTestClass045_Base {}
         class MembersInheritanceTestClass045 : MembersInheritanceTestClass045_Base {
         
-	        new public struct MyStruct {
+	        public struct MyStruct {
 		        public int intRet() {return 1;}
 	        }
 	        public static bool testMethod() {
@@ -1847,7 +1917,7 @@ namespace Microsoft.SPOT.Platform.Tests
         class MembersInheritanceTestClass046_Base {}
         class MembersInheritanceTestClass046 : MembersInheritanceTestClass046_Base {
         
-	        new enum MyEnum {one, two}
+	        enum MyEnum {one, two}
 	        public static bool testMethod() {
 		        MyEnum test = MyEnum.one;
 		        if ((int)test == 0) {
@@ -1862,7 +1932,7 @@ namespace Microsoft.SPOT.Platform.Tests
         class MembersInheritanceTestClass047_Base {}
         class MembersInheritanceTestClass047 : MembersInheritanceTestClass047_Base {
         
-	        new public class MyInner {
+	        public class MyInner {
 		        public int intRet() {return 1;}
 	        }
 	        public static bool testMethod() {

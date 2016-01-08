@@ -4,11 +4,11 @@
 
 using System;
 using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
+using Microsoft.Zelig.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class DeclarationsTests : IMFTestInterface
+    public class DeclarationsTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -25,11 +25,48 @@ namespace Microsoft.SPOT.Platform.Tests
         {
             Log.Comment("Cleaning up after the tests");
         }
+        
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+            
+            result |= Assert.CheckFailed( Meta_Test( ) );
+            result |= Assert.CheckFailed( BaseClass1_Test( ) );
+            result |= Assert.CheckFailed( BaseClass2_Test( ) );
+            result |= Assert.CheckFailed( BaseClass3_Test( ) );
+            result |= Assert.CheckFailed( BaseClass4_Test( ) );
+            result |= Assert.CheckFailed( BaseClass10_Test( ) );
+            result |= Assert.CheckFailed( BaseClass13_Test( ) );
+            result |= Assert.CheckFailed( BaseClass25_Test( ) );
+            result |= Assert.CheckFailed( BaseClass29_Test( ) );
+            result |= Assert.CheckFailed( Modifiers2_Test( ) );
+            result |= Assert.CheckFailed( Modifiers3_Test( ) );
+            result |= Assert.CheckFailed( Modifiers4_Test( ) );
+            result |= Assert.CheckFailed( Modifiers6_Test( ) );
+            result |= Assert.CheckFailed( Modifiers7_Test( ) );
+            result |= Assert.CheckFailed( Modifiers8_Test( ) );
+            result |= Assert.CheckFailed( Modifiers10_Test( ) );
+            result |= Assert.CheckFailed( Modifiers11_Test( ) );
+            result |= Assert.CheckFailed( Modifiers12_Test( ) );
+            result |= Assert.CheckFailed( Modifiers13_Test( ) );
+            result |= Assert.CheckFailed( Modifiers14_Test( ) );
+            result |= Assert.CheckFailed( Modifiers23_Test( ) );
+            result |= Assert.CheckFailed( Modifiers24_Test( ) );
+            result |= Assert.CheckFailed( Modifiers25_Test( ) );
+            result |= Assert.CheckFailed( Modifiers26_Test( ) );
+            result |= Assert.CheckFailed( Modifiers31_Test( ) );
+
+            return result;
+        }
+
+        //--//
+        //--//
+        //--//
 
         [TestMethod]
-        public MFTestResults Meta_Test()
+        public TestResult Meta_Test()
         {
-            return MFTestResults.Pass;
+            return TestResult.Pass;
         }
 
         //Delcarations Tests
@@ -41,57 +78,57 @@ namespace Microsoft.SPOT.Platform.Tests
         //Modifiers: 1,5,9,15-22,27-30,32
 
         [TestMethod]
-        public MFTestResults BaseClass1_Test()
+        public TestResult BaseClass1_Test()
         {
             Log.Comment("Tests an int declaration with assignment in a base class");
             if (BaseClassTestClass1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults BaseClass2_Test()
+        public TestResult BaseClass2_Test()
         {
 
             Log.Comment("Tests a function declaration in a implementing class still");
             Log.Comment("works after child is cast as an implemented interface");
             if (BaseClassTestClass2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults BaseClass3_Test()
+        public TestResult BaseClass3_Test()
         {
 
             Log.Comment("Tests a function declaration in an implementing class still works after child is cast as");
             Log.Comment("each of two implemented interfaces");
             if (BaseClassTestClass3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
 
         }
 
         [TestMethod]
-        public MFTestResults BaseClass4_Test()
+        public TestResult BaseClass4_Test()
         {
             Log.Comment("Tests a function declaration in a child class still works after child is cast as");
             Log.Comment("its parent class and an interface it implements");
             if (BaseClassTestClass4.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults BaseClass10_Test()
+        public TestResult BaseClass10_Test()
         {
             Log.Comment("Section 10.1");
             Log.Comment("The base classes of a class are the direct base");
@@ -100,183 +137,183 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("direct base class relatationship.");
             if (BaseClassTestClass10.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         
         [TestMethod]
-        public MFTestResults BaseClass13_Test()
+        public TestResult BaseClass13_Test()
         {
             Log.Comment("Section 10.1");
             Log.Comment("Note that a class does not depend on the");
             Log.Comment("classes that are nested within it. ");
             if (BaseClassTestClass13.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults BaseClass25_Test()
+        public TestResult BaseClass25_Test()
         {
             Log.Comment("10.1.2.1 ");
             Log.Comment("inheriting from nested types");
             if (BaseClassTestClass25.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults BaseClass29_Test()
+        public TestResult BaseClass29_Test()
         {
             Log.Comment("10.1.2.1 ");
             Log.Comment("inheriting from nested types");
             
             if (BaseClassTestClass29.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Modifiers2_Test()
+        public TestResult Modifiers2_Test()
         {
             Log.Comment("Testing  a public int inside an inner class with modifier 'new' ");
             
             if (ModifiersTestClass2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Modifiers3_Test()
+        public TestResult Modifiers3_Test()
         {
 
             Log.Comment("Testing  a public int directly inside a public class");
             if (ModifiersTestClass3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
 
         }
 
         [TestMethod]
-        public MFTestResults Modifiers4_Test()
+        public TestResult Modifiers4_Test()
         {
 
             Log.Comment("Testing  a public int inside an inner class with modifier 'public' ");
             if (ModifiersTestClass4.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Modifiers6_Test()
+        public TestResult Modifiers6_Test()
         {
 
             Log.Comment("Testing  a public int inside an inner class with modifier 'protected' ");
             if (ModifiersTestClass6.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Modifiers7_Test()
+        public TestResult Modifiers7_Test()
         {
 
             Log.Comment("Testing  a public int directly inside an internal class");
             if (ModifiersTestClass7.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Modifiers8_Test()
+        public TestResult Modifiers8_Test()
         {
             Log.Comment("Testing  a public int inside an inner class with modifier 'internal' ");
             if (ModifiersTestClass8.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Modifiers10_Test()
+        public TestResult Modifiers10_Test()
         {
 
             Log.Comment("Testing  a public int inside an inner class with modifier 'private' ");
             if (ModifiersTestClass10.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Modifiers11_Test()
+        public TestResult Modifiers11_Test()
         {
 
             Log.Comment("Testing  a public int inside an abstract class that is implemented");
             if (ModifiersTestClass11.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Modifiers12_Test()
+        public TestResult Modifiers12_Test()
         {
 
             Log.Comment("Testing  a public int inside an inner abstract class that is implemented");
             if (ModifiersTestClass12.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Modifiers13_Test()
+        public TestResult Modifiers13_Test()
         {
             Log.Comment("Testing  a public int directly inside a sealed class");
             
             if (ModifiersTestClass13.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Modifiers14_Test()
+        public TestResult Modifiers14_Test()
         {
 
             Log.Comment("Testing  a public int inside an inner sealed class");
             if (ModifiersTestClass14.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Modifiers23_Test()
+        public TestResult Modifiers23_Test()
         {
             Log.Comment("An abstract class cannot be instantiated, and it is");
             Log.Comment("an error to use the new operator on an abstract class.");
@@ -287,13 +324,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("abstract types.");
             if (ModifiersTestClass23.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Modifiers24_Test()
+        public TestResult Modifiers24_Test()
         {
             Log.Comment("An abstract class cannot be instantiated, and it is");
             Log.Comment("an error to use the new operator on an abstract class.");
@@ -304,39 +341,39 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("abstract types.");
             if (ModifiersTestClass24.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Modifiers25_Test()
+        public TestResult Modifiers25_Test()
         {
             Log.Comment("Section 10.1");
             Log.Comment("An abstract class is permitted (but not required)");
             Log.Comment("to contain abstract methods and accessors.");
             if (ModifiersTestClass25.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Modifiers26_Test()
+        public TestResult Modifiers26_Test()
         {
             Log.Comment("Section 10.1");
             Log.Comment("An abstract class is permitted (but not required)");
             Log.Comment("to contain abstract methods and accessors.");
             if (ModifiersTestClass26.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Modifiers31_Test()
+        public TestResult Modifiers31_Test()
         {
 
             Log.Comment("Section 10.1");
@@ -348,9 +385,9 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("and accessors.");
             if (ModifiersTestClass31.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         class BaseClassTestClass1_Base

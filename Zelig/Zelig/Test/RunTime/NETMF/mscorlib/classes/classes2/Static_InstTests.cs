@@ -4,11 +4,11 @@
 
 using System;
 using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
+using Microsoft.Zelig.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class Static_InstTests : IMFTestInterface
+    public class Static_InstTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -23,13 +23,30 @@ namespace Microsoft.SPOT.Platform.Tests
         {
             Log.Comment("Cleaning up after the tests");
         }
+        
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+            
+            result |= Assert.CheckFailed( Static_Inst01_Test( ) );
+            result |= Assert.CheckFailed( Static_Inst07_Test( ) );
+            result |= Assert.CheckFailed( Static_Inst14_Test( ) );
+            result |= Assert.CheckFailed( Static_Inst18_Test( ) );
+            result |= Assert.CheckFailed( Static_Inst19_Test( ) );
+            result |= Assert.CheckFailed( Static_Inst20_Test( ) );
+            result |= Assert.CheckFailed( Static_Inst21_Test( ) );
+            result |= Assert.CheckFailed( Static_Inst22_Test( ) );
+            result |= Assert.CheckFailed( Static_Inst23_Test( ) );
+
+            return result;
+        }
 
         //Static_Inst Test methods
         //The following tests were ported from folder current\test\cases\client\CLR\Conformance\10_classes\Static_Inst
 
         //Test Case Calls 
         [TestMethod]
-        public MFTestResults Static_Inst01_Test()
+        public TestResult Static_Inst01_Test()
         {
             Log.Comment(" Section 10.2 ");
             Log.Comment(" When a static member is referenced in a member-access");
@@ -37,12 +54,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" E to denote an instance.");
             if (Static_InstTestClass01.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Static_Inst07_Test()
+        public TestResult Static_Inst07_Test()
         {
             Log.Comment(" Section 10.2 ");
             Log.Comment(" A static field identifies exactly one storage location.");
@@ -50,12 +67,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" there is only ever one copy of a static field.");
             if (Static_InstTestClass07.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Static_Inst14_Test()
+        public TestResult Static_Inst14_Test()
         {
             Log.Comment(" Section 10.2 ");
             Log.Comment(" When an instance member is referenced in a member-access");
@@ -63,24 +80,24 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" for E to denote a type.");
             if (Static_InstTestClass14.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Static_Inst18_Test()
+        public TestResult Static_Inst18_Test()
         {
             Log.Comment(" Section 10.2 ");
             Log.Comment(" Every instance of a class contains a separate copy ");
             Log.Comment(" of all instance fields of the class.");
             if (Static_InstTestClass18.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Static_Inst19_Test()
+        public TestResult Static_Inst19_Test()
         {
             Log.Comment(" Section 10.2 ");
             Log.Comment(" An instance function member (method, property ");
@@ -90,12 +107,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" this.");
             if (Static_InstTestClass19.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Static_Inst20_Test()
+        public TestResult Static_Inst20_Test()
         {
             Log.Comment(" Section 10.2 ");
             Log.Comment(" An instance function member (method, property ");
@@ -105,12 +122,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" this.");
             if (Static_InstTestClass20.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Static_Inst21_Test()
+        public TestResult Static_Inst21_Test()
         {
             Log.Comment(" Section 10.2 ");
             Log.Comment(" An instance function member (method, property ");
@@ -120,12 +137,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" this.");
             if (Static_InstTestClass21.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Static_Inst22_Test()
+        public TestResult Static_Inst22_Test()
         {
             Log.Comment(" Section 10.2 ");
             Log.Comment(" An instance function member (method, property ");
@@ -135,12 +152,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" this.");
             if (Static_InstTestClass22.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Static_Inst23_Test()
+        public TestResult Static_Inst23_Test()
         {
             Log.Comment(" Section 10.2 ");
             Log.Comment(" An instance function member (method, property ");
@@ -150,9 +167,9 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" this.");
             if (Static_InstTestClass23.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         //Compiled Test Cases 

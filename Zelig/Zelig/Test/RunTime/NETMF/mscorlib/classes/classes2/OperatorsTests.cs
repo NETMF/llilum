@@ -4,11 +4,11 @@
 
 using System;
 using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
+using Microsoft.Zelig.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class OperatorsTests : IMFTestInterface
+    public class OperatorsTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -23,6 +23,55 @@ namespace Microsoft.SPOT.Platform.Tests
         {
             Log.Comment("Cleaning up after the tests");
         }
+        
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+            
+            result |= Assert.CheckFailed( Operators1_Test( ) );
+            result |= Assert.CheckFailed( Operators2_Test( ) );
+            result |= Assert.CheckFailed( Operators3_Test( ) );
+            result |= Assert.CheckFailed( Operators4_Test( ) );
+            result |= Assert.CheckFailed( Operators5_Test( ) );
+            result |= Assert.CheckFailed( Operators6_Test( ) );
+            result |= Assert.CheckFailed( Operators7_Test( ) );
+            result |= Assert.CheckFailed( Operators13_Test( ) );
+            result |= Assert.CheckFailed( Operators14_Test( ) );
+            result |= Assert.CheckFailed( Operators15_Test( ) );
+            result |= Assert.CheckFailed( Operators16_Test( ) );
+            result |= Assert.CheckFailed( Operators17_Test( ) );
+            result |= Assert.CheckFailed( Operators18_Test( ) );
+            result |= Assert.CheckFailed( Operators19_Test( ) );
+            result |= Assert.CheckFailed( Operators20_Test( ) );
+            result |= Assert.CheckFailed( Operators21_Test( ) );
+            result |= Assert.CheckFailed( Operators22_Test( ) );
+            result |= Assert.CheckFailed( Operators23_Test( ) );
+            result |= Assert.CheckFailed( Operators24_Test( ) );
+            result |= Assert.CheckFailed( Operators38_Test( ) );
+            result |= Assert.CheckFailed( Operators39_Test( ) );
+            result |= Assert.CheckFailed( Operators40_Test( ) );
+            result |= Assert.CheckFailed( Operators41_Test( ) );
+            result |= Assert.CheckFailed( Operators42_Test( ) );
+            result |= Assert.CheckFailed( Operators43_Test( ) );
+            result |= Assert.CheckFailed( Operators44_Test( ) );
+            result |= Assert.CheckFailed( Operators45_Test( ) );
+            result |= Assert.CheckFailed( Operators46_Test( ) );
+            result |= Assert.CheckFailed( Operators67_Test( ) );
+            result |= Assert.CheckFailed( Operators68_Test( ) );
+            result |= Assert.CheckFailed( Operators69_Test( ) );
+            result |= Assert.CheckFailed( Operators88_Test( ) );
+            result |= Assert.CheckFailed( Operators89_Test( ) );
+            result |= Assert.CheckFailed( Operators90_Test( ) );
+            result |= Assert.CheckFailed( Operators91_Test( ) );
+            result |= Assert.CheckFailed( Operators92_Test( ) );
+            result |= Assert.CheckFailed( Operators93_Test( ) );
+            result |= Assert.CheckFailed( Operators94_Test( ) );
+            result |= Assert.CheckFailed( Operators95_Test( ) );
+            result |= Assert.CheckFailed( Operators96_Test( ) );
+
+            return result;
+        }
+
 
         //Operators Test methods
         //All test methods ported from folder current\test\cases\client\CLR\Conformance\10_classes\Operators
@@ -30,444 +79,444 @@ namespace Microsoft.SPOT.Platform.Tests
         //8-12,26-37,47-66,70-87
 
         [TestMethod]
-        public MFTestResults Operators1_Test()
+        public TestResult Operators1_Test()
         {
             Log.Comment("Tests overriding unary plus");
             if (OperatorsTestClass1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators2_Test()
+        public TestResult Operators2_Test()
         {
             Log.Comment("Tests overriding unary minus");
             if (OperatorsTestClass2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators3_Test()
+        public TestResult Operators3_Test()
         {
             Log.Comment("Tests overriding tilde");
             if (OperatorsTestClass3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
 
         }
 
         [TestMethod]
-        public MFTestResults Operators4_Test()
+        public TestResult Operators4_Test()
         {
             Log.Comment("Tests overriding increment prefix");
             if (OperatorsTestClass4.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators5_Test()
+        public TestResult Operators5_Test()
         {
             Log.Comment("Tests overriding increment suffix");
             if (OperatorsTestClass5.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators6_Test()
+        public TestResult Operators6_Test()
         {
             Log.Comment("Tests overriding decrement prefix");
             if (OperatorsTestClass6.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators7_Test()
+        public TestResult Operators7_Test()
         {
             Log.Comment("Tests overriding decrement suffix");
             if (OperatorsTestClass7.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators13_Test()
+        public TestResult Operators13_Test()
         {
             Log.Comment("Tests overriding binary plus");
             if (OperatorsTestClass13.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators14_Test()
+        public TestResult Operators14_Test()
         {
             Log.Comment("Tests overriding binary minus");
             if (OperatorsTestClass14.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators15_Test()
+        public TestResult Operators15_Test()
         {
             Log.Comment("Tests overriding asterisk (multiply)");
             if (OperatorsTestClass15.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators16_Test()
+        public TestResult Operators16_Test()
         {
             Log.Comment("Tests overriding slash (division)");
             if (OperatorsTestClass16.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators17_Test()
+        public TestResult Operators17_Test()
         {
             Log.Comment("Tests overriding percent (modulus)");
             if (OperatorsTestClass17.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators18_Test()
+        public TestResult Operators18_Test()
         {
             Log.Comment("Tests overriding caret (xor)");
             if (OperatorsTestClass18.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Operators19_Test()
+        public TestResult Operators19_Test()
         {
             Log.Comment("Tests overriding ampersand");
             if (OperatorsTestClass19.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators20_Test()
+        public TestResult Operators20_Test()
         {
             Log.Comment("Tests overriding pipe (or)");
             if (OperatorsTestClass20.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators21_Test()
+        public TestResult Operators21_Test()
         {
             Log.Comment("Tests overriding double less-than (left shift)");
             if (OperatorsTestClass21.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators22_Test()
+        public TestResult Operators22_Test()
         {
             Log.Comment("Tests overriding double greater-than (right shift)");
             if (OperatorsTestClass22.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators23_Test()
+        public TestResult Operators23_Test()
         {
             Log.Comment("Tests overriding binary plus with 1 int parameter");
             if (OperatorsTestClass23.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators24_Test()
+        public TestResult Operators24_Test()
         {
             Log.Comment("Tests overriding double equals (equality comparison) and exclamation-equals (non-equality comparison)");
             if (OperatorsTestClass24.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators38_Test()
+        public TestResult Operators38_Test()
         {
             Log.Comment("Tests overriding binary plus with 1 int parameter");
             if (OperatorsTestClass38.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators39_Test()
+        public TestResult Operators39_Test()
         {
             Log.Comment("Tests overriding binary minus with 1 int parameter");
             if (OperatorsTestClass39.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators40_Test()
+        public TestResult Operators40_Test()
         {
             Log.Comment("Tests overriding asterisk (multiply) with 1 int parameter");
             if (OperatorsTestClass40.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators41_Test()
+        public TestResult Operators41_Test()
         {
             Log.Comment("Tests overriding slash (divide) with 1 int parameter");
             if (OperatorsTestClass41.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators42_Test()
+        public TestResult Operators42_Test()
         {
             Log.Comment("Tests overriding percent (modulus) with 1 int parameter");
             if (OperatorsTestClass42.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators43_Test()
+        public TestResult Operators43_Test()
         {
             Log.Comment("Tests overriding caret (xor) with 1 int parameter");
             if (OperatorsTestClass43.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators44_Test()
+        public TestResult Operators44_Test()
         {
             Log.Comment("Tests overriding ampersand with 1 int parameter");
             if (OperatorsTestClass44.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators45_Test()
+        public TestResult Operators45_Test()
         {
             Log.Comment("Tests overriding pipe (or) with 1 int parameter");
             if (OperatorsTestClass45.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators46_Test()
+        public TestResult Operators46_Test()
         {
             Log.Comment("Tests overriding double equals (equality comparison) and exclamation-equals ");
             Log.Comment("(non-equality comparison) with 1 int");
             if (OperatorsTestClass46.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators67_Test()
+        public TestResult Operators67_Test()
         {
             Log.Comment("Tests overriding unary exclamation (not)");
             if (OperatorsTestClass67.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators68_Test()
+        public TestResult Operators68_Test()
         {
             Log.Comment("Tests overriding true and false");
             if (OperatorsTestClass68.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators69_Test()
+        public TestResult Operators69_Test()
         {
             Log.Comment("Tests overriding true and false and ampersand");
             if (OperatorsTestClass69.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators88_Test()
+        public TestResult Operators88_Test()
         {
             Log.Comment("Tests true and false with ampersand");
             if (OperatorsTestClass88.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators89_Test()
+        public TestResult Operators89_Test()
         {
             Log.Comment("Tests true and false with double ampersand");
             if (OperatorsTestClass89.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators90_Test()
+        public TestResult Operators90_Test()
         {
             Log.Comment("Tests true and false with pipe (or)");
             if (OperatorsTestClass90.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators91_Test()
+        public TestResult Operators91_Test()
         {
             Log.Comment("Tests true and false with double pipe (or)");
             if (OperatorsTestClass91.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators92_Test()
+        public TestResult Operators92_Test()
         {
             Log.Comment("Tests true and false with caret (xor)");
             if (OperatorsTestClass92.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators93_Test()
+        public TestResult Operators93_Test()
         {
             Log.Comment("Tests numerical types with plus");
             if (OperatorsTestClass93.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators94_Test()
+        public TestResult Operators94_Test()
         {
             Log.Comment("Tests numerical types with minus");
             if (OperatorsTestClass94.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators95_Test()
+        public TestResult Operators95_Test()
         {
             Log.Comment("Tests numerical types with asterisk (multiply)");
             if (OperatorsTestClass95.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Operators96_Test()
+        public TestResult Operators96_Test()
         {
             Log.Comment("Tests numerical types with slash (divide)");
             if (OperatorsTestClass96.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         class OperatorsTestClass1

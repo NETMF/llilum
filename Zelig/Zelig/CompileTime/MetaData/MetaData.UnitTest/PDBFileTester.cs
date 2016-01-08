@@ -16,8 +16,6 @@ namespace Microsoft.Zelig.MetaData.UnitTest
     {
         override public TestResult Run( string[] args )
         {
-            base.Run(args);
-
             string currentDir = System.Environment.CurrentDirectory;
 
             LoadSymbols( Expand( currentDir + @"\Test\TestPayload__CLR1_1__VanillaSingleClass.pdb" ) );

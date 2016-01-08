@@ -4,11 +4,11 @@
 
 using System;
 using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
+using Microsoft.Zelig.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class ConstTests : IMFTestInterface
+    public class ConstTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -25,6 +25,52 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("Cleaning up after the tests");
         }
 
+        
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+            
+            result |= Assert.CheckFailed( Const1_Test( ) );
+            result |= Assert.CheckFailed( Const2_Test( ) );
+            result |= Assert.CheckFailed( Const3_Test( ) );
+            result |= Assert.CheckFailed( Const4_Test( ) );
+            result |= Assert.CheckFailed( Const5_Test( ) );
+            result |= Assert.CheckFailed( Const6_Test( ) );
+            result |= Assert.CheckFailed( Const9_Test( ) );
+            result |= Assert.CheckFailed( Const11_Test( ) );
+            result |= Assert.CheckFailed( Const12_Test( ) );
+            result |= Assert.CheckFailed( Const13_Test( ) );
+            result |= Assert.CheckFailed( Const14_Test( ) );
+            result |= Assert.CheckFailed( Const15_Test( ) );
+            result |= Assert.CheckFailed( Const16_Test( ) );
+            result |= Assert.CheckFailed( Const17_Test( ) );
+            result |= Assert.CheckFailed( Const18_Test( ) );
+            result |= Assert.CheckFailed( Const19_Test( ) );
+            result |= Assert.CheckFailed( Const20_Test( ) );
+            result |= Assert.CheckFailed( Const21_Test( ) );
+            result |= Assert.CheckFailed( Const24_Test( ) );
+            result |= Assert.CheckFailed( Const25_Test( ) );
+            result |= Assert.CheckFailed( Const26_Test( ) );
+            result |= Assert.CheckFailed( Const27_Test( ) );
+            result |= Assert.CheckFailed( Const28_Test( ) );
+            result |= Assert.CheckFailed( Const30_Test( ) );
+            result |= Assert.CheckFailed( Const32_Test( ) );
+            result |= Assert.CheckFailed( Const33_Test( ) );
+            result |= Assert.CheckFailed( Const34_Test( ) );
+            result |= Assert.CheckFailed( Const35_Test( ) );
+            result |= Assert.CheckFailed( Const42_Test( ) );
+            result |= Assert.CheckFailed( Const43_Test( ) );
+            result |= Assert.CheckFailed( Const44_Test( ) );
+            result |= Assert.CheckFailed( Const56_Test( ) );
+            result |= Assert.CheckFailed( Const57_Test( ) );
+
+            return result;
+        }
+
+        //--//
+        //--//
+        //--//
+
         //Const test methods
         //All test methods ported from folder current\test\cases\client\CLR\Conformance\10_classes\const
         //The following tests were removed because they were build failure tests:
@@ -35,7 +81,7 @@ namespace Microsoft.SPOT.Platform.Tests
         //20,42,43
 
         [TestMethod]
-        public MFTestResults Const1_Test()
+        public TestResult Const1_Test()
         {
             //Ported from const1.cs
             Log.Comment("Section 10.3");
@@ -45,13 +91,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("declared by the constant declaration.");
             if (ConstTestClass1.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Const2_Test()
+        public TestResult Const2_Test()
         {
             //Ported from const2.cs
             Log.Comment("Section 10.3");
@@ -61,13 +107,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("declared by the constant declaration.");
             if (ConstTestClass2.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Const3_Test()
+        public TestResult Const3_Test()
         {
             //Ported from const3.cs
             Log.Comment("Section 10.3");
@@ -77,14 +123,14 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("declared by the constant declaration.");
             if (ConstTestClass3.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
 
         }
 
         [TestMethod]
-        public MFTestResults Const4_Test()
+        public TestResult Const4_Test()
         {
             //Ported from const4.cs
             Log.Comment("Section 10.3");
@@ -94,13 +140,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("declared by the constant declaration.");
             if (ConstTestClass4.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Const5_Test()
+        public TestResult Const5_Test()
         {
             //Ported from const5.cs
             Log.Comment("Section 10.3");
@@ -110,13 +156,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("declared by the constant declaration.");
             if (ConstTestClass5.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Const6_Test()
+        public TestResult Const6_Test()
         {
             //Ported from const6.cs
             Log.Comment("Section 10.3");
@@ -126,14 +172,14 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("declared by the constant declaration.");
             if (ConstTestClass6.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
 
         [TestMethod]
-        public MFTestResults Const9_Test()
+        public TestResult Const9_Test()
         {
             //Ported from const9.cs
             Log.Comment("Section 10.3");
@@ -143,14 +189,14 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("declared by the constant declaration.");
             if (ConstTestClass9.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
 
         [TestMethod]
-        public MFTestResults Const11_Test()
+        public TestResult Const11_Test()
         {
             Log.Comment("Section 10.3");
             Log.Comment("The type specified in a constant declaration");
@@ -163,13 +209,13 @@ namespace Microsoft.SPOT.Platform.Tests
             //Ported from const11.cs
             if (ConstTestClass11.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Const12_Test()
+        public TestResult Const12_Test()
         {
             //Ported from const12.cs
             Log.Comment("Section 10.3");
@@ -182,13 +228,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("by implicit conversion.");
             if (ConstTestClass12.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Const13_Test()
+        public TestResult Const13_Test()
         {
             //Ported from const13.cs
             Log.Comment("Section 10.3");
@@ -201,13 +247,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("by implicit conversion.");
             if (ConstTestClass13.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Const14_Test()
+        public TestResult Const14_Test()
         {
             //Ported from const14.cs
             Log.Comment("Section 10.3");
@@ -220,13 +266,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("by implicit conversion.");
             if (ConstTestClass14.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Const15_Test()
+        public TestResult Const15_Test()
         {
             //Ported from const15.cs
             Log.Comment("Section 10.3");
@@ -239,13 +285,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("by implicit conversion.");
             if (ConstTestClass15.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Const16_Test()
+        public TestResult Const16_Test()
         {
             //Ported from const16.cs
             Log.Comment("Section 10.3");
@@ -258,13 +304,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("by implicit conversion.");
             if (ConstTestClass16.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Const17_Test()
+        public TestResult Const17_Test()
         {
             //Ported from const17.cs
             Log.Comment("Section 10.3");
@@ -277,13 +323,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("by implicit conversion.");
             if (ConstTestClass17.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Const18_Test()
+        public TestResult Const18_Test()
         {
             //Ported from const18.cs
             Log.Comment("Section 10.3");
@@ -296,13 +342,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("by implicit conversion.");
             if (ConstTestClass18.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Const19_Test()
+        public TestResult Const19_Test()
         {
             //Ported from const19.cs
             Log.Comment("Section 10.3");
@@ -315,13 +361,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("by implicit conversion.");
             if (ConstTestClass19.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Const20_Test()
+        public TestResult Const20_Test()
         {
             //Ported from const20.cs
             Log.Comment("Section 10.3");
@@ -334,13 +380,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("by implicit conversion.");
             if (ConstTestClass20.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Const21_Test()
+        public TestResult Const21_Test()
         {
             //Ported from const21.cs
             Log.Comment("Section 10.3");
@@ -353,13 +399,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("by implicit conversion.");
             if (ConstTestClass21.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Const24_Test()
+        public TestResult Const24_Test()
         {
             //Ported from const24.cs
             Log.Comment("Section 10.3");
@@ -372,13 +418,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("by implicit conversion.");
             if (ConstTestClass24.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Const25_Test()
+        public TestResult Const25_Test()
         {
             //Ported from const25.cs
             Log.Comment("Section 10.3");
@@ -389,13 +435,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("attributes, and other constant declarations.");
             if (ConstTestClass25.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Const26_Test()
+        public TestResult Const26_Test()
         {
             //Ported from const26.cs
             Log.Comment("Section 10.3");
@@ -406,13 +452,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("attributes, and other constant declarations.");
             if (ConstTestClass26.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Const27_Test()
+        public TestResult Const27_Test()
         {
             //Ported from const27.cs
             Log.Comment("Section 10.3");
@@ -423,13 +469,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("attributes, and other constant declarations.");
             if (ConstTestClass27.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Const28_Test()
+        public TestResult Const28_Test()
         {
             //Ported from const28.cs
             Log.Comment("Section 10.3");
@@ -440,14 +486,14 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("attributes, and other constant declarations.");
             if (ConstTestClass28.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
 
         [TestMethod]
-        public MFTestResults Const30_Test()
+        public TestResult Const30_Test()
         {
             //Ported from const30.cs
             Log.Comment("Section 10.3");
@@ -458,15 +504,15 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("appropriate order.");
             if (ConstTestClass30.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
 
 
         [TestMethod]
-        public MFTestResults Const32_Test()
+        public TestResult Const32_Test()
         {
             //Ported from const32.cs
             Log.Comment("Section 10.3");
@@ -479,13 +525,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("by implicit conversion.");
             if (ConstTestClass32.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Const33_Test()
+        public TestResult Const33_Test()
         {
             //Ported from const33.cs
             Log.Comment("Section 10.3");
@@ -498,13 +544,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("by implicit conversion.");
             if (ConstTestClass33.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Const34_Test()
+        public TestResult Const34_Test()
         {
             //Ported from const34.cs
             Log.Comment("Section 10.3");
@@ -517,13 +563,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("by implicit conversion.");
             if (ConstTestClass34.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Const35_Test()
+        public TestResult Const35_Test()
         {
             //Ported from const35.cs
             Log.Comment("Section 10.3");
@@ -536,13 +582,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("by implicit conversion.");
             if (ConstTestClass35.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Const42_Test()
+        public TestResult Const42_Test()
         {
             //Ported from const42.cs
             Log.Comment("Section 10.3");
@@ -553,13 +599,13 @@ namespace Microsoft.SPOT.Platform.Tests
                 Log.Comment("This failure indicates a test is now passing that previously failed by design.");
                 Log.Comment("It previously marked as known failure because of bug # 17246");
                 Log.Comment("The Test owner needs to verify that the change was intentional and remove the known failure.");
-                return MFTestResults.Fail;
+                return TestResult.Fail;
             }
-            return MFTestResults.Pass;
+            return TestResult.Pass;
         }
 
         [TestMethod]
-        public MFTestResults Const43_Test()
+        public TestResult Const43_Test()
         {
             //Ported from const43.cs
             Log.Comment("Section 10.3");
@@ -570,27 +616,27 @@ namespace Microsoft.SPOT.Platform.Tests
                 Log.Comment("This failure indicates a test is now passing that previously failed by design.");
                 Log.Comment("It previously marked as known failure because of bug # 17246");
                 Log.Comment("The Test owner needs to verify that the change was intentional and remove the known failure.");
-                return MFTestResults.Fail;
+                return TestResult.Fail;
             }
-            return MFTestResults.Pass;
+            return TestResult.Pass;
         }
 
         [TestMethod]
-        public MFTestResults Const44_Test()
+        public TestResult Const44_Test()
         {
             //Ported from const44.cs
             Log.Comment("Section 10.3");
             Log.Comment("The type of a constant must be at least as acccessible as the constant itself.");
             if (ConstTestClass44.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
 
         [TestMethod]
-        public MFTestResults Const56_Test()
+        public TestResult Const56_Test()
         {
             //Ported from const56.cs
             Log.Comment("Section 10.3");
@@ -598,13 +644,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("string is null");
             if (ConstTestClass56.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Const57_Test()
+        public TestResult Const57_Test()
         {
             //Ported from const57.cs
             Log.Comment("Section 10.3");
@@ -613,9 +659,9 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("modifiers, and type. ");
             if (ConstTestClass57.test())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         //Const test classes

@@ -4,11 +4,11 @@
 
 using System;
 using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
+using Microsoft.Zelig.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class EventsTests : IMFTestInterface
+    public class EventsTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -24,6 +24,19 @@ namespace Microsoft.SPOT.Platform.Tests
         {
             Log.Comment("Cleaning up after the tests");
         }
+        
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+            
+            //////result |= Assert.CheckFailed( Events1_Test( ) );
+
+            return result;
+        }
+
+        //--//
+        //--//
+        //--//
 
         //Events Test methods
         //All test methods ported from folder current\test\cases\client\CLR\Conformance\10_classes\Events
@@ -31,14 +44,14 @@ namespace Microsoft.SPOT.Platform.Tests
         //2-9,12-41
 
         [TestMethod]
-        public MFTestResults Events1_Test()
+        public TestResult Events1_Test()
         {
             Log.Comment("This is testing an obsolete event structure, but should pass.");
             if (EventsTestClass1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
 

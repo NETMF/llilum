@@ -125,7 +125,7 @@ namespace Microsoft.Zelig.LLVM
                 Console.WriteLine("cast<IPointerType>(getOperand(1).getType()).getElementType()");
                 Console.WriteLine(ptrType.ElementType);
                 Console.WriteLine("");
-                throw new ApplicationException();
+                throw new NotSupportedException();
             }
 
             IrBuilder.Store(src, dst);
@@ -273,7 +273,7 @@ namespace Microsoft.Zelig.LLVM
                         retVal = bldr.LogicalShiftRight( loadedA, loadedB );
                     break;
                 default:
-                    throw new ApplicationException( $"Parameters combination not supported for Binary Operator: {binOp}" );
+                    throw new NotSupportedException( $"Parameters combination not supported for Binary Operator: {binOp}" );
                 }
             }
             else if( a.IsFloatingPoint && b.IsFloatingPoint )
@@ -293,11 +293,11 @@ namespace Microsoft.Zelig.LLVM
                     retVal = bldr.FDiv( loadedA, loadedB );
                     break;
                 default:
-                    throw new ApplicationException( $"Parameters combination not supported for Binary Operator: {binOp}" );
+                    throw new NotSupportedException( $"Parameters combination not supported for Binary Operator: {binOp}" );
                 }
             }
             else
-                throw new ApplicationException( $"Parameters combination not supported for Binary Operator: {binOp}" );
+                throw new NotSupportedException( $"Parameters combination not supported for Binary Operator: {binOp}" );
 
             retVal = retVal.SetDebugLocation( CurDILocation );
             return new _Value( Module, a.Type, retVal );
@@ -389,7 +389,7 @@ namespace Microsoft.Zelig.LLVM
             Console.WriteLine( valA.ToString( ) );
             Console.WriteLine( "valB:" );
             Console.WriteLine( valB.ToString( ) );
-            throw new ApplicationException( "Parameter combination not supported for CMP Operator." );
+            throw new NotSupportedException( "Parameter combination not supported for CMP Operator." );
         }
 
         public _Value InsertZExt( _Value val, _Type ty, int significantBits )
@@ -615,7 +615,7 @@ namespace Microsoft.Zelig.LLVM
                 }
             }
 
-            throw new ApplicationException( "Invalid offset for field access." );
+            throw new NotSupportedException( "Invalid offset for field access." );
         }
 
         public _Value GetFieldAddress( _Value objAddress, int offset, _Type fieldType )

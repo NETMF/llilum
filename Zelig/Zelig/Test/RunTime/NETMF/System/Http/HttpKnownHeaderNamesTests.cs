@@ -26,6 +26,16 @@ namespace Microsoft.Zelig.Test
             // TODO: Add your clean up steps here.
         }
 
+        public override TestResult Run( string[] args )
+        {
+            return TestResult.Pass;
+        }
+        
+        //--//
+        //--//
+        //--//
+
+
 
         #region Helper methods
         private bool VerifyHeaderIsIllegal( WebHeaderCollection wrc, string header, string content, Type exceptionType )

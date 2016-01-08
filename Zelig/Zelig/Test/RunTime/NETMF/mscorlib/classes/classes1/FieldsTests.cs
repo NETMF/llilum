@@ -5,11 +5,11 @@
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Microsoft.SPOT.Platform.Test;
+using Microsoft.Zelig.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class FieldsTests : IMFTestInterface
+    public class FieldsTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -25,6 +25,51 @@ namespace Microsoft.SPOT.Platform.Tests
         {
             Log.Comment("Cleaning up after the tests");
         }
+        
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+            
+            result |= Assert.CheckFailed( Fields1_testMethod( ) );
+            result |= Assert.CheckFailed( Fields2_testMethod( ) );
+            result |= Assert.CheckFailed( Fields3_testMethod( ) );
+            result |= Assert.CheckFailed( Fields4_testMethod( ) );
+            result |= Assert.CheckFailed( Fields5_testMethod( ) );
+            result |= Assert.CheckFailed( Fields6_testMethod( ) );
+            result |= Assert.CheckFailed( Fields7_testMethod( ) );
+            result |= Assert.CheckFailed( Fields8_testMethod( ) );
+            result |= Assert.CheckFailed( Fields13_testMethod( ) );
+            result |= Assert.CheckFailed( Fields14_testMethod( ) );
+            result |= Assert.CheckFailed( Fields15_testMethod( ) );
+            result |= Assert.CheckFailed( Fields16_testMethod( ) );
+            result |= Assert.CheckFailed( Fields17_testMethod( ) );
+            result |= Assert.CheckFailed( Fields18_testMethod( ) );
+            result |= Assert.CheckFailed( Fields20_testMethod( ) );
+            result |= Assert.CheckFailed( Fields22_testMethod( ) );
+            result |= Assert.CheckFailed( Fields23_testMethod( ) );
+            result |= Assert.CheckFailed( Fields24_testMethod( ) );
+            result |= Assert.CheckFailed( Fields41_testMethod( ) );
+            //////result |= Assert.CheckFailed( Fields42_testMethod( ) );
+            result |= Assert.CheckFailed( Fields43_testMethod( ) );
+            result |= Assert.CheckFailed( Fields44_testMethod( ) );
+            result |= Assert.CheckFailed( Fields45_testMethod( ) );
+            result |= Assert.CheckFailed( Fields46_testMethod( ) );
+            result |= Assert.CheckFailed( Fields49_testMethod( ) );
+            result |= Assert.CheckFailed( Fields51_testMethod( ) );
+            result |= Assert.CheckFailed( Fields52_testMethod( ) );
+            result |= Assert.CheckFailed( Fields53_testMethod( ) );
+            result |= Assert.CheckFailed( Fields54_testMethod( ) );
+            result |= Assert.CheckFailed( Fields55_testMethod( ) );
+            result |= Assert.CheckFailed( Fields56_testMethod( ) );
+            result |= Assert.CheckFailed( Fields57_testMethod( ) );
+            result |= Assert.CheckFailed( Fields58_testMethod( ) );
+
+            return result;
+        }
+
+        //--//
+        //--//
+        //--//
 
         //Fields Test methods
         //The Fields*_testMethod() functions are ported from Fields\field*.cs files
@@ -42,7 +87,7 @@ namespace Microsoft.SPOT.Platform.Tests
         //22,23,24,42
         
         [TestMethod]
-        public MFTestResults Fields1_testMethod()
+        public TestResult Fields1_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" A field-declaration may include set of attributes,");
@@ -52,13 +97,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" members declared by the field-declaration.");
             if (FieldsTestClass1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Fields2_testMethod()
+        public TestResult Fields2_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" A field-declaration may include set of attributes,");
@@ -68,13 +113,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" members declared by the field-declaration.");
             if (FieldsTestClass2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Fields3_testMethod()
+        public TestResult Fields3_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" A field-declaration may include set of attributes,");
@@ -84,14 +129,14 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" members declared by the field-declaration.");
             if (FieldsTestClass3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
 
         }
 
         [TestMethod]
-        public MFTestResults Fields4_testMethod()
+        public TestResult Fields4_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" A field-declaration may include set of attributes,");
@@ -101,13 +146,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" members declared by the field-declaration.");
             if (FieldsTestClass4.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Fields5_testMethod()
+        public TestResult Fields5_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" A field-declaration may include set of attributes,");
@@ -117,13 +162,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" members declared by the field-declaration.");
             if (FieldsTestClass5.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Fields6_testMethod()
+        public TestResult Fields6_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" A field-declaration may include set of attributes,");
@@ -133,13 +178,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" members declared by the field-declaration.");
             if (FieldsTestClass6.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Fields7_testMethod()
+        public TestResult Fields7_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" A field-declaration may include set of attributes,");
@@ -149,13 +194,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" members declared by the field-declaration.");
             if (FieldsTestClass7.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Fields8_testMethod()
+        public TestResult Fields8_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" A field-declaration may include set of attributes,");
@@ -165,13 +210,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" members declared by the field-declaration.");
             if (FieldsTestClass8.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Fields13_testMethod()
+        public TestResult Fields13_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" A field-declaration may include set of attributes,");
@@ -185,13 +230,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" fields with the same attributes, modifiers, and type.");
             if (FieldsTestClass13.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Fields14_testMethod()
+        public TestResult Fields14_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" A static field identifies exactly on storage location.");
@@ -199,13 +244,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" there is only ever one copy of a static field.");
             if (FieldsTestClass14.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Fields15_testMethod()
+        public TestResult Fields15_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" A static field comes into existence when the ");
@@ -214,13 +259,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" is declared in unloaded.");
             if (FieldsTestClass15.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Fields16_testMethod()
+        public TestResult Fields16_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" Every instance of a class contains a separate copy");
@@ -231,13 +276,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" of the instance has executed.");
             if (FieldsTestClass16.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Fields17_testMethod()
+        public TestResult Fields17_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" Every instance of a class contains a separate copy");
@@ -248,13 +293,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" of the instance has executed.");
             if (FieldsTestClass17.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Fields18_testMethod()
+        public TestResult Fields18_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" When a field is referenced in a member-access of");
@@ -263,13 +308,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" denote an instance.");
             if (FieldsTestClass18.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         
         [TestMethod]
-        public MFTestResults Fields20_testMethod()
+        public TestResult Fields20_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" When a field is referenced in a member-access of");
@@ -278,13 +323,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" denote an instance.");
             if (FieldsTestClass20.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Fields22_testMethod()
+        public TestResult Fields22_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" When a field-declaration includes a readonly");
@@ -294,13 +339,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" same class.");
             if (FieldsTestClass22.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Fields23_testMethod()
+        public TestResult Fields23_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" When a field-declaration includes a readonly");
@@ -310,13 +355,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" same class.");
             if (FieldsTestClass23.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Fields24_testMethod()
+        public TestResult Fields24_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" When a field-declaration includes a readonly");
@@ -326,13 +371,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" same class.");
             if (FieldsTestClass24.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         
         [TestMethod]
-        public MFTestResults Fields41_testMethod()
+        public TestResult Fields41_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" A static readonly field is useful when a symbolic");
@@ -342,31 +387,31 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" by a constant expression.");
             if (FieldsTestClass41.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         
-        [TestMethod]
-        public MFTestResults Fields42_testMethod()
-        {
-            Log.Comment(" Section 10.4");
-            Log.Comment(" Field declarations may include variable-initializers.");
-            Log.Comment(" For static fields, varaible initializers correspond to");
-            Log.Comment(" assignment statements that are executed when the class");
-            Log.Comment(" is loaded. For instance fields, variable initializers");
-            Log.Comment(" correspond to assignment statements that are executed");
-            Log.Comment(" when an instance of the class is created.");
-            Log.Comment("This test has been rewritten to avoid use of the Math.Abs function which the MF does not support");
-            if (FieldsTestClass42.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
+        //////[TestMethod]
+        //////public TestResult Fields42_testMethod()
+        //////{
+        //////    Log.Comment(" Section 10.4");
+        //////    Log.Comment(" Field declarations may include variable-initializers.");
+        //////    Log.Comment(" For static fields, varaible initializers correspond to");
+        //////    Log.Comment(" assignment statements that are executed when the class");
+        //////    Log.Comment(" is loaded. For instance fields, variable initializers");
+        //////    Log.Comment(" correspond to assignment statements that are executed");
+        //////    Log.Comment(" when an instance of the class is created.");
+        //////    Log.Comment("This test has been rewritten to avoid use of the Math.Abs function which the MF does not support");
+        //////    if (FieldsTestClass42.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
         
         [TestMethod]
-        public MFTestResults Fields43_testMethod()
+        public TestResult Fields43_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" The static field variable initializers of a class");
@@ -377,13 +422,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" in the class declaration.");
             if (FieldsTestClass43.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Fields44_testMethod()
+        public TestResult Fields44_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" The static field variable initializers of a class");
@@ -394,13 +439,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" in the class declaration.");
             if (FieldsTestClass44.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Fields45_testMethod()
+        public TestResult Fields45_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" The static field variable initializers of a class");
@@ -411,13 +456,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" in the class declaration.");
             if (FieldsTestClass45.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Fields46_testMethod()
+        public TestResult Fields46_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" The instance field variable initializers of a class");
@@ -426,13 +471,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" constructors of the class.");
             if (FieldsTestClass46.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Fields49_testMethod()
+        public TestResult Fields49_testMethod()
         {
             Log.Comment(" A variable initializer for an instance field");
             Log.Comment(" cannot reference the instance being created.");
@@ -442,13 +487,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" member through a simple-name.");
             if (FieldsTestClass49.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
                 
         [TestMethod]
-        public MFTestResults Fields51_testMethod()
+        public TestResult Fields51_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" Specifically, assignments to a readonly field");
@@ -462,13 +507,13 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" as an out or ref parameter.");
             if (FieldsTestClass51.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
                 
         [TestMethod]
-        public MFTestResults Fields52_testMethod()
+        public TestResult Fields52_testMethod()
         {
             Log.Comment(" Section 10.4");
             Log.Comment(" Specifically, assignments to a readonly field");
@@ -482,75 +527,75 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" as an out or ref parameter.");
             if (FieldsTestClass52.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
                 
         [TestMethod]
-        public MFTestResults Fields53_testMethod()
+        public TestResult Fields53_testMethod()
         {
             Log.Comment("Testing bools assigned with (x == y)");
             if (FieldsTestClass53.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
                 
         [TestMethod]
-        public MFTestResults Fields54_testMethod()
+        public TestResult Fields54_testMethod()
         {
             Log.Comment("Testing bools assigned with function calls");
             if (FieldsTestClass54.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
                 
         [TestMethod]
-        public MFTestResults Fields55_testMethod()
+        public TestResult Fields55_testMethod()
         {
             Log.Comment("Testing bools assigned with conditionals");
             if (FieldsTestClass55.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
                 
         [TestMethod]
-        public MFTestResults Fields56_testMethod()
+        public TestResult Fields56_testMethod()
         {
             Log.Comment("Testing ints assigned with function calls");
             if (FieldsTestClass56.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
                 
         [TestMethod]
-        public MFTestResults Fields57_testMethod()
+        public TestResult Fields57_testMethod()
         {
             Log.Comment("Testing strings assigned with \"x\" + \"y\"");
             if (FieldsTestClass57.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
                 
         [TestMethod]
-        public MFTestResults Fields58_testMethod()
+        public TestResult Fields58_testMethod()
         {
             Log.Comment("Testing strings assigned with function calls");
             if (FieldsTestClass58.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         class FieldsTestClass1
@@ -848,7 +893,7 @@ namespace Microsoft.SPOT.Platform.Tests
                     {
                         int intJ = test.tc.intI; //MyTest hasn't been instantiated
                     }
-                    catch (System.Exception e)
+                    catch (System.Exception)
                     {
                         RetVal = true;
                     }
@@ -1089,32 +1134,35 @@ namespace Microsoft.SPOT.Platform.Tests
                 }
             }
         }
-        public class FieldsTestClass42
-        {
-            static int x = Math.Cos(4-2) ;
-            int i = 100;
-            string s = "Hello";
 
-            public static bool testMethod()
-            {
-                try
-                {
-                    FieldsTestClass42 t = new FieldsTestClass42();
-                    if ((x == Math.Cos(2)) && (t.i == 100) && (t.s.Equals("Hello")))
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                catch 
-                {
-                    return false;
-                }
-            }
-        }
+        //////https://github.com/NETMF/llilum/issues/127
+        //////public class FieldsTestClass42
+        //////{
+        //////    static int x = (int)Math.Cos(4-2) * 100;
+        //////    int i = 100;
+        //////    string s = "Hello";
+
+        //////    public static bool testMethod()
+        //////    {
+        //////        try
+        //////        {
+        //////            FieldsTestClass42 t = new FieldsTestClass42();
+        //////            if ((x == Math.Cos(2)) && (t.i == 100) && (t.s.Equals("Hello")))
+        //////            {
+        //////                return true;
+        //////            }
+        //////            else
+        //////            {
+        //////                return false;
+        //////            }
+        //////        }
+        //////        catch 
+        //////        {
+        //////            return false;
+        //////        }
+        //////    }
+        //////}
+
         public class FieldsTestClass43
         {
 

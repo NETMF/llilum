@@ -35,6 +35,16 @@ namespace Microsoft.Zelig.Test
             Log.Comment("Cleaning up after the tests");
         }
 
+        public override TestResult Run( string[] args )
+        {
+            return TestResult.Pass;
+        }
+        
+        //--//
+        //--//
+        //--//
+
+
         [TestMethod]
         public TestResult NetTest1_DNS()
         {

@@ -390,7 +390,7 @@ namespace Microsoft.Zelig.LLVM
             //{
             //    // TODO: we need a better error handling strategy than this!
             //    Console.Error.WriteLine( msg );
-            //    throw new ApplicationException( $"LLVM module verification failed:\n{msg}" );
+            //    throw new NotSupportedException( $"LLVM module verification failed:\n{msg}" );
             //}
             return true;
         }
