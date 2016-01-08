@@ -189,15 +189,6 @@ namespace Microsoft.Zelig.LLVM
                 llvmType.IsBoxed = true;
 
                 llvmType.AddField( 0, objectType.UnderlyingType, ".extends" );
-
-                // REVIEW: Instead of adding the field and returning early here, we should be able to fall through to
-                // the loop below. However, the fields are currently stripped due to Load/StoreInstanceField being
-                // replaced with Load/StoreIndirect, which results in an unreferenced field. Tracked by issue #113.
-
-                // Note: The zero offset here is intentional, as we want to be consistent with other reference types.
-                llvmType.AddField( 0, underlyingType, ".value" );
-                llvmType.SetupFields();
-                return m_typeRepresentationsToType[ tr ];
             }
 
             foreach( var field in tr.Fields )

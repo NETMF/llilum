@@ -138,21 +138,8 @@ namespace Microsoft.Zelig.LLVM
 
         public _Value LoadIndirect( _Value val, _Type loadedType )
         {
-            _Type pointerType = val.Type;
-            Value resultVal;
-
-            _Type underlyingType = pointerType.UnderlyingType;
-            if( ( underlyingType != null ) && underlyingType.IsBoxed )
-            {
-                pointerType = Module.GetOrInsertPointerType( underlyingType.UnderlyingType );
-                resultVal = IrBuilder.GetStructElementPointer( val.LlvmValue, 1 );
-            }
-            else
-            {
-                pointerType = Module.GetOrInsertPointerType( loadedType );
-                resultVal = IrBuilder.BitCast( val.LlvmValue, pointerType.DebugType );
-            }
-
+            _Type pointerType = Module.GetOrInsertPointerType( loadedType );
+            Value resultVal = IrBuilder.BitCast( val.LlvmValue, pointerType.DebugType );
             return new _Value( Module, pointerType, resultVal );
         }
 

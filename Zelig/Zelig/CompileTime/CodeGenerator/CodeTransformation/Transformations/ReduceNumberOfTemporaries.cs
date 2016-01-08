@@ -5,6 +5,7 @@
 namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
 {
     using System;
+    using System.Diagnostics;
     using System.Collections.Generic;
 
     using Microsoft.Zelig.Runtime.TypeSystem;
@@ -78,198 +79,116 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
         {
             bool fChanged = false;
 
-            foreach(VariableExpression var in m_variables)
+            foreach (VariableExpression var in m_variables)
             {
                 int idx = var.SpanningTreeIndex;
 
-                if(var is TemporaryVariableExpression && 
-                   m_defChains[idx].Length == 1        )
+                // Only process temporary variables with a single definition.
+                if (!(var is TemporaryVariableExpression) || (m_defChains[idx].Length != 1))
                 {
-                    Operator   opDef  = m_defChains[idx][0];
-                    Operator[] opUses = m_useChains[idx];
+                    continue;
+                }
 
-                    switch(opUses.Length)
+                Operator opDef = m_defChains[idx][0];
+                Operator[] opUses = m_useChains[idx];
+
+                // Skip variables with multiple uses.
+                if (opUses.Length != 1)
+                {
+                    continue;
+                }
+
+                Operator opUse = opUses[0];
+
+                // Skip variables that are defined and used across basic block boundaries.
+                if (opUse.BasicBlock != opDef.BasicBlock)
+                {
+                    continue;
+                }
+
+                int start = opDef.SpanningTreeIndex;
+                int end = opUse.SpanningTreeIndex;
+                Debug.Assert(start < end, "Variable used before being defined.");
+
+                VariableExpression exDef = opDef.FirstResult;
+
+                if (opDef is SingleAssignmentOperator)
+                {
+                    //
+                    // Detect pattern:
+                    //
+                    //      $Temp = <var1>
+                    //      <op>: $Temp
+                    //
+                    // Convert into:
+                    //
+                    //      <op>: <var1>
+                    //
+                    Expression exDefSrc = opDef.FirstArgument;
+
+                    if (!IsRedefinedInRange(exDefSrc, start, end) &&
+                        opUse.CanPropagateCopy(exDef, exDefSrc) &&
+                        exDef.Type.CanBeAssignedFrom(exDefSrc.Type, null))
                     {
-                        case 1:
-                            //
-                            // One definition and one use, let's see if we can short-circuit the two.
-                            //
-                            {
-                                Operator opUse = opUses[0];
+                        opUse.SubstituteUsage(exDef, exDefSrc);
+                        fChanged = true;
+                    }
+                }
+                else if (opDef is ZeroExtendOperator && opUse is BinaryConditionalControlOperator)
+                {
+                    //
+                    // Detect pattern:
+                    //
+                    //      $TempA = zeroextend bool <var> from 8 bits 
+                    //      if $TempA != ZERO then goto BasicBlock(T) else goto BasicBlock(F)
+                    //
+                    // Convert into:
+                    //
+                    //      if <var> != ZERO then goto BasicBlock(T) else goto BasicBlock(F)
+                    //
+                    Expression exDefSrc = opDef.FirstArgument;
 
-                                if(opUse.BasicBlock == opDef.BasicBlock)
-                                {
-                                    int start = opDef.SpanningTreeIndex;
-                                    int end   = opUse.SpanningTreeIndex;
+                    if (!IsRedefinedInRange(exDefSrc, start, end))
+                    {
+                        opDef.Delete();
+                        opUse.SubstituteUsage(exDef, exDefSrc);
+                        fChanged = true;
+                    }
+                }
+                else if (opDef is CompareAndSetOperator && opUse is CompareAndSetOperator)
+                {
+                    //
+                    // Detect pattern:
+                    //
+                    //      $TempA = <var1> <rel> <var2>
+                    //      $TempB = $TempA EQ.signed $Const(int 0)
+                    //
+                    // Convert into:
+                    //
+                    //      $TempB = <var1> !<rel> <var2>
+                    //
+                    CompareAndSetOperator opCmpDef = (CompareAndSetOperator)opDef;
+                    CompareAndSetOperator opCmpUse = (CompareAndSetOperator)opUse;
 
-                                    if(start < end)
-                                    {
-                                        VariableExpression exDef = opDef.FirstResult;
+                    if (opCmpUse.Condition == CompareAndSetOperator.ActionCondition.EQ)
+                    {
+                        opCmpUse.EnsureConstantToTheRight();
 
-                                        if(opUse is SingleAssignmentOperator)
-                                        {
-                                            VariableExpression exUse = opUse.FirstResult;
+                        ConstantExpression exRight = opCmpUse.SecondArgument as ConstantExpression;
+                        if (exRight != null && exRight.IsEqualToZero())
+                        {
+                            CompareAndSetOperator opNew = CompareAndSetOperator.New(
+                                opCmpDef.DebugInfo,
+                                opCmpDef.InvertedCondition,
+                                opCmpDef.Signed,
+                                opCmpUse.FirstResult,
+                                opCmpDef.FirstArgument,
+                                opCmpDef.SecondArgument);
 
-                                            if(IsRedefinedInRange( exUse, start, end ) == false)
-                                            {
-                                                opDef.SubstituteDefinition( exDef, exUse );
-                                                opUse.Delete();
-                                                fChanged = true;
-                                            }
-                                        }
-                                        else if(opDef is ZeroExtendOperator               &&
-                                                opUse is BinaryConditionalControlOperator  )
-                                        {
-                                            //
-                                            // Detect pattern:
-                                            //
-                                            //      $TempA = zeroextend bool <var> from 8 bits 
-                                            //      if $TempA != ZERO then goto BasicBlock(T) else goto BasicBlock(F)
-                                            //
-                                            // Convert into:
-                                            //
-                                            //      if <var> != ZERO then goto BasicBlock(T) else goto BasicBlock(F)
-                                            //
-                                            Expression exDefSrc = opDef.FirstArgument;
-
-                                            if(IsRedefinedInRange( exDefSrc, start, end ) == false             && 
-                                               exDefSrc.Type == m_cfg.TypeSystem.WellKnownTypes.System_Boolean  )
-                                            {
-                                                opDef.Delete();
-                                                opUse.SubstituteUsage( exDef, exDefSrc );
-                                                fChanged = true;
-                                            }
-                                        }
-                                        else if(opDef is CompareAndSetOperator &&
-                                                opUse is CompareAndSetOperator  )
-                                        {
-                                            //
-                                            // Detect pattern:
-                                            //
-                                            //      $TempA = <var1> <rel> <var2>
-                                            //      $TempB = $TempA EQ.signed $Const(int 0)
-                                            //
-                                            // Convert into:
-                                            //
-                                            //      $TempB = <var1> !<rel> <var2>
-                                            //
-                                            CompareAndSetOperator opCmpDef = (CompareAndSetOperator)opDef;
-                                            CompareAndSetOperator opCmpUse = (CompareAndSetOperator)opUse;
-
-                                            if(opCmpUse.Condition == CompareAndSetOperator.ActionCondition.EQ)
-                                            {
-                                                opCmpUse.EnsureConstantToTheRight();
-
-                                                ConstantExpression exRight = opCmpUse.SecondArgument as ConstantExpression;
-                                                if(exRight != null && exRight.IsEqualToZero())
-                                                {
-                                                    CompareAndSetOperator opNew = CompareAndSetOperator.New( opCmpDef.DebugInfo, opCmpDef.InvertedCondition, opCmpDef.Signed, opCmpUse.FirstResult, opCmpDef.FirstArgument, opCmpDef.SecondArgument );
-
-                                                    opUse.SubstituteWithOperator( opNew, Operator.SubstitutionFlags.Default );
-                                                    opDef.Delete();
-                                                    fChanged = true;
-                                                }
-                                            }
-                                        }
-                                        else if(opDef is SingleAssignmentOperator)
-                                        {
-                                            Expression exDefSrc = opDef.FirstArgument;
-
-                                            if(IsRedefinedInRange    (        exDefSrc, start, end ) == false &&
-                                               opUse.CanPropagateCopy( exDef, exDefSrc             )          &&
-                                               AreTypesCompatible    ( exDef, exDefSrc             )           )
-                                            {
-                                                opUse.SubstituteUsage( exDef, exDefSrc );
-                                                fChanged = true;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            break;
-
-                        default:
-                            //
-                            // One definition and multiple uses, let's see if one of the uses is a local/arg assignment and
-                            // all the other can be short-circuit to the local/arg variable.
-                            //
-                            {
-                                Operator target = null;
-                                bool     fSkip  = false;
-                                int      posDef = opDef.SpanningTreeIndex;
-
-                                foreach(Operator opUse in opUses)
-                                {
-                                    if(opUse.BasicBlock != opDef.BasicBlock)
-                                    {
-                                        fSkip = true;
-                                        break;
-                                    }
-                                    
-                                    int posUse = opUse.SpanningTreeIndex;
-
-                                    if(posUse <= posDef)
-                                    {
-                                        fSkip = true;
-                                        break;
-                                    }
-
-                                    if(opUse is SingleAssignmentOperator)
-                                    {
-                                        VariableExpression lhs = opUse.FirstResult;
-
-                                        if(lhs is LocalVariableExpression    ||
-                                           lhs is ArgumentVariableExpression  )
-                                        {
-                                            if(target != null)
-                                            {
-                                                fSkip = true;
-                                                break;
-                                            }
-
-                                            target = opUse;
-                                        }
-                                    }
-                                }
-
-                                if(fSkip == false && target != null)
-                                {
-                                    VariableExpression exUse = target.FirstResult;
-
-                                    foreach(Operator opUse in opUses)
-                                    {
-                                        int posUse = opUse.SpanningTreeIndex;
-
-                                        if(opUse != target)
-                                        {
-                                            if(IsRedefinedInRange    (      exUse, posDef, posUse )          ||
-                                               opUse.CanPropagateCopy( var, exUse                 ) == false ||
-                                               AreTypesCompatible    ( var, exUse                 ) == false  )
-                                            {
-                                                fSkip = true;
-                                                break;
-                                            }
-                                        }
-                                    }
-
-                                    if(fSkip == false)
-                                    {
-                                        opDef.SubstituteDefinition( var, exUse );
-
-                                        foreach(Operator opUse in opUses)
-                                        {
-                                            if(opUse != target)
-                                            {
-                                                opUse.SubstituteUsage( var, exUse );
-                                            }
-                                        }
-
-                                        target.Delete();
-                                        fChanged = true;
-                                    }
-                                }
-                            }
-                            break;
+                            opUse.SubstituteWithOperator(opNew, Operator.SubstitutionFlags.Default);
+                            opDef.Delete();
+                            fChanged = true;
+                        }
                     }
                 }
             }
@@ -304,12 +223,6 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
             }
 
             return false;
-        }
-
-        private bool AreTypesCompatible( Expression exDef    ,
-                                         Expression exDefSrc )
-        {
-            return exDef.Type.CanBeAssignedFrom( exDefSrc.Type, null );
         }
 
         //--//

@@ -56,7 +56,12 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
             foreach (var callOp in cfg.FilterOperators<InstanceCallOperator>())
             {
                 var thisPtr = callOp.FirstArgument as VariableExpression;
-                var thisType = callOp.FirstArgument.Type.UnderlyingType as ScalarTypeRepresentation;
+                if (!IsScalarPointer(thisPtr))
+                {
+                    continue;
+                }
+
+                var thisType = thisPtr.Type.UnderlyingType as ScalarTypeRepresentation;
                 var targetMethod = callOp.TargetMethod as ConstructorMethodRepresentation;
 
                 // Determine whether this is a scalar constructor.
@@ -103,56 +108,57 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
             foreach (var callOp in cfg.FilterOperators<CallOperator>())
             {
                 var thisPtr = callOp.FirstArgument as VariableExpression;
-                var thisType = callOp.FirstArgument.Type.UnderlyingType as ScalarTypeRepresentation;
-                var targetMethod = callOp.TargetMethod;
-
-                if (thisType != null)
+                if (!IsScalarPointer(thisPtr))
                 {
-                    bool isStatic = targetMethod is StaticMethodRepresentation;
-                    CompareAndSetOperator.ActionCondition condition;
-                    switch (targetMethod.Name)
+                    continue;
+                }
+
+                var targetMethod = callOp.TargetMethod;
+                bool isStatic = targetMethod is StaticMethodRepresentation;
+
+                CompareAndSetOperator.ActionCondition condition;
+                switch (targetMethod.Name)
+                {
+                case "op_Equality":
+                case "Equals":
+                    condition = CompareAndSetOperator.ActionCondition.EQ;
+                    break;
+
+                case "op_Inequality":
+                    condition = CompareAndSetOperator.ActionCondition.NE;
+                    break;
+
+                default:
+                    // Not an equality operator.
+                    continue;
+                }
+
+                Expression left;
+                Expression right;
+
+                if (isStatic)
+                {
+                    Debug.Assert(callOp.Arguments.Length == 3, "Static equality operators should always have exactly three arguments: null 'this', value, and the value to compare to.");
+                    left = callOp.Arguments[1];
+                    right = callOp.Arguments[2];
+                }
+                else
+                {
+                    Debug.Assert(callOp.Arguments.Length == 2, "Instance equality operators should always have exactly two arguments: 'this' and the value to compare to.");
+
+                    right = callOp.Arguments[1];
+                    if (!(right.Type is ScalarTypeRepresentation))
                     {
-                    case "op_Equality":
-                    case "Equals":
-                        condition = CompareAndSetOperator.ActionCondition.EQ;
-                        break;
-
-                    case "op_Inequality":
-                        condition = CompareAndSetOperator.ActionCondition.NE;
-                        break;
-
-                    default:
-                        // Not an equality operator.
+                        // Comparand is not a scalar, so skip inlining.
                         continue;
                     }
 
-                    Expression left;
-                    Expression right;
-
-                    if (isStatic)
-                    {
-                        Debug.Assert(callOp.Arguments.Length == 3, "Static equality operators should always have exactly three arguments: null 'this', value, and the value to compare to.");
-                        left = callOp.Arguments[1];
-                        right = callOp.Arguments[2];
-                    }
-                    else
-                    {
-                        Debug.Assert(callOp.Arguments.Length == 2, "Instance equality operators should always have exactly two arguments: 'this' and the value to compare to.");
-
-                        right = callOp.Arguments[1];
-                        if (!(right.Type is ScalarTypeRepresentation))
-                        {
-                            // Comparand is not a scalar, so skip inlining.
-                            continue;
-                        }
-
-                        left = LoadScalarAddress(cfg, defChains, thisPtr, callOp, true);
-                    }
-
-                    var compOperator = CompareAndSetOperator.New(callOp.DebugInfo, condition, false, callOp.FirstResult, left, right);
-                    callOp.SubstituteWithOperator(compOperator, Operator.SubstitutionFlags.Default);
-                    fModified = true;
+                    left = LoadScalarAddress(cfg, defChains, thisPtr, callOp, true);
                 }
+
+                var compOperator = CompareAndSetOperator.New(callOp.DebugInfo, condition, false, callOp.FirstResult, left, right);
+                callOp.SubstituteWithOperator(compOperator, Operator.SubstitutionFlags.Default);
+                fModified = true;
             }
 
             cfg.AssertNoCacheRefreshSinceCheckpoint( );
@@ -171,22 +177,22 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
             // Pattern: Replace (scalarPtr->m_value) with (*scalarPtr)
             foreach (var loadFieldOp in cfg.FilterOperators<LoadInstanceFieldOperator>())
             {
-                VariableExpression thisPtr = loadFieldOp.FirstArgument as VariableExpression;
-                TypeRepresentation thisType = loadFieldOp.FirstArgument.Type.UnderlyingType as ScalarTypeRepresentation;
-
-                if ((thisPtr != null) && (thisType != null))
+                var thisPtr = loadFieldOp.FirstArgument as VariableExpression;
+                if (!IsScalarPointer(thisPtr))
                 {
-                    Expression loadedValue = LoadScalarAddress(cfg, defChains, thisPtr, loadFieldOp, loadFieldOp.MayThrow);
-
-                    VariableExpression field = loadFieldOp.FirstResult;
-                    foreach (Operator useOp in useChains[field.SpanningTreeIndex])
-                    {
-                        useOp.SubstituteUsage(field, loadedValue);
-                    }
-
-                    loadFieldOp.SubstituteWithOperator(NopOperator.New(loadFieldOp.DebugInfo), Operator.SubstitutionFlags.Default);
-                    fModified = true;
+                    continue;
                 }
+
+                Expression loadedValue = LoadScalarAddress(cfg, defChains, thisPtr, loadFieldOp, loadFieldOp.MayThrow);
+
+                VariableExpression field = loadFieldOp.FirstResult;
+                foreach (Operator useOp in useChains[field.SpanningTreeIndex])
+                {
+                    useOp.SubstituteUsage(field, loadedValue);
+                }
+
+                loadFieldOp.SubstituteWithOperator(NopOperator.New(loadFieldOp.DebugInfo), Operator.SubstitutionFlags.Default);
+                fModified = true;
             }
 
             // If modified, we need to refresh useChains in case variables were changed. If we don't do this, FilterOperators
@@ -203,25 +209,47 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
             // Pattern: Replace (&scalarPtr->m_value) with (scalarPtr)
             foreach (var loadFieldOp in cfg.FilterOperators<LoadInstanceFieldAddressOperator>())
             {
-                VariableExpression thisPtr = loadFieldOp.FirstArgument as VariableExpression;
-                TypeRepresentation thisType = loadFieldOp.FirstArgument.Type.UnderlyingType as ScalarTypeRepresentation;
-
-                if ((thisPtr != null) && (thisType != null))
+                var thisPtr = loadFieldOp.FirstArgument as VariableExpression;
+                if (!IsScalarPointer(thisPtr))
                 {
-                    VariableExpression fieldPtr = loadFieldOp.FirstResult;
-                    foreach (Operator useOp in useChains[fieldPtr.SpanningTreeIndex])
-                    {
-                        useOp.SubstituteUsage(fieldPtr, thisPtr);
-                    }
-
-                    loadFieldOp.SubstituteWithOperator(NopOperator.New(loadFieldOp.DebugInfo), Operator.SubstitutionFlags.Default);
-                    fModified = true;
+                    continue;
                 }
+
+                VariableExpression fieldPtr = loadFieldOp.FirstResult;
+                foreach (Operator useOp in useChains[fieldPtr.SpanningTreeIndex])
+                {
+                    useOp.SubstituteUsage(fieldPtr, thisPtr);
+                }
+
+                loadFieldOp.SubstituteWithOperator(NopOperator.New(loadFieldOp.DebugInfo), Operator.SubstitutionFlags.Default);
+                fModified = true;
             }
 
             cfg.AssertNoCacheRefreshSinceCheckpoint( );
 
             return fModified;
+        }
+
+        private static bool IsScalarPointer(VariableExpression pointer)
+        {
+            if (pointer == null)
+            {
+                return false;
+            }
+
+            var pointerType = pointer.Type as PointerTypeRepresentation;
+            if (pointerType == null)
+            {
+                return false;
+            }
+
+            TypeRepresentation thisType = pointerType.UnderlyingType as ScalarTypeRepresentation;
+            if (thisType == null)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private static Expression LoadScalarAddress(
