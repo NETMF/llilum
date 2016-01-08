@@ -64,7 +64,7 @@ namespace Microsoft.Zelig.Runtime
                 {
                     char c = chars[i];
 
-                    ret <<= 4;
+                    ret *= 10;
 
                     if (c <= '9' && c >= '0')
                     {

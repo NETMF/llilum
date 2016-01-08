@@ -66,7 +66,7 @@ endif
 MBED_LIBS = $(LLILUM_ROOT)Zelig
 MBED_ROOT = $(LLILUM_ROOT)Zelig\mbed
 SOURCE_ROOT = $(LLILUM_ROOT)Zelig\Zelig\Test\mbed\SimpleSDK\Native
-LIBRARIES = -lmbed
+LIBRARIES += -lmbed
 LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc -lnosys
 INCLUDE_PATHS = -I. -I$(MBED_ROOT) -I$(LLILUM_ROOT)Zelig\os_layer\inc -I$(LLILUM_ROOT)Zelig\os_layer\inc\api -I$(LLILUM_ROOT)Zelig\os_layer\inc\api\io -I$(LLILUM_ROOT)Zelig\os_layer\inc\hal
 
@@ -90,7 +90,8 @@ OBJECTS += \
 	
 ifeq ($(TARGET),K64F)
 	# Ethernet controller
-	LIBRARIES += -llwIP -lmbedeth -llwIPeth
+    # NOTE: mbed lib is in the back. Order matters, and it needs to be referenced after the lwip libs
+	LIBRARIES += -lmbedeth -llwIPeth -llwIP -lmbed
 endif
 
     LIBRARY_PATHS += -L$(MBED_LIBS)/lwip/lwip/lib
@@ -295,7 +296,7 @@ $(TARGET)\\%.o: $(LLILUM_ROOT)\Zelig\os_layer\ports\mbed\%.cpp
 	$(CPP) $(CC_FLAGS) $(CC_SYMBOLS) -std=gnu++98 -fno-rtti $(INCLUDE_PATHS) -o $@ $<
 
 $(TARGET)\$(PROJECT).elf: $(OBJECTS) $(SYS_OBJECTS)
-	$(LD) $(LD_FLAGS) -T$(LINKER_SCRIPT) $(LIBRARY_PATHS) -o $@ $^ $(LIBRARIES) $(LD_SYS_LIBS) $(LIBRARIES) $(LD_SYS_LIBS)
+	$(LD) $(LD_FLAGS) -T$(LINKER_SCRIPT) $(LIBRARY_PATHS) -o $@ $^ $(LIBRARIES) $(LD_SYS_LIBS)
 
 $(TARGET)\$(PROJECT).bin: $(TARGET)\$(PROJECT).elf
 	$(OBJCOPY) -O binary $< $@
