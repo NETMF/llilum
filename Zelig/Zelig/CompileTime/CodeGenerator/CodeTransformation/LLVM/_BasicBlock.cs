@@ -516,16 +516,27 @@ namespace Microsoft.Zelig.LLVM
                      .SetDebugLocation( CurDILocation );
         }
 
-        public void InsertSwitchAndCases( _Value cond, _BasicBlock defaultBB, List<int> casesValues, List<_BasicBlock> casesBBs )
+        public void InsertSwitchAndCases(_Value cond, _BasicBlock defaultBB, List<int> casesValues, List<_BasicBlock> casesBBs)
         {
-            Debug.Assert( cond.IsInteger );
+            Debug.Assert(cond.IsInteger);
+            Value val = cond.LlvmValue;
 
-            var si = IrBuilder.Switch( cond.LlvmValue, defaultBB.LlvmBasicBlock, ( uint )casesBBs.Count )
-                              .SetDebugLocation( CurDILocation );
-
-            for( int i = 0; i < casesBBs.Count; ++i )
+            // force all values to uint32 so they match the case table for LLVM
+            // CLI spec (ECMA-335 III.3.66) requires an int32 operand that is
+            // treated as unsigned. LLVM requires that the table entries and the
+            // conditional value are of the same type. So zero extend the value
+            // if it is smaller than an i32.
+            if (cond.LlvmValue.NativeType.IntegerBitWidth < 32)
             {
-                si.AddCase( Module.LlvmModule.Context.CreateConstant( casesValues[ i ] ), casesBBs[ i ].LlvmBasicBlock );
+                val = IrBuilder.ZeroExtend(cond.LlvmValue, Owner.Module.LlvmContext.Int32Type);
+            }
+
+            var si = IrBuilder.Switch(val, defaultBB.LlvmBasicBlock, (uint)casesBBs.Count)
+                              .SetDebugLocation(CurDILocation);
+
+            for (int i = 0; i < casesBBs.Count; ++i)
+            {
+                si.AddCase(Module.LlvmModule.Context.CreateConstant(casesValues[i]), casesBBs[i].LlvmBasicBlock);
             }
         }
 
