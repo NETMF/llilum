@@ -76,6 +76,8 @@ namespace Microsoft.Zelig.Test
                 listener.Listen( 10 );
                 Socket handler = null;
 
+                StringBuilder builder = new StringBuilder();
+
                 //
                 // Start listening for connections.
                 //
@@ -110,26 +112,37 @@ namespace Microsoft.Zelig.Test
                                     ) );
 
                                 int bytesRead = handler.Receive(buffer);
+                                Console.WriteLine(string.Format("Received: {0} bytes", bytesRead));
 
                                 bytesReceived += bytesRead;
 
                                 var moreData = Encoding.ASCII.GetString( buffer, 0, bytesRead );
 
-                                data.Add( moreData );
+                                builder.Append(moreData);
 
+                                string finalString = builder.ToString();
+
+                                // Ensure we got the return char terminated request
+                                if (finalString.IndexOf("\n") != -1)
+                                {
+                                    builder.Clear();
+                                    data.Add(finalString);
+                                    Console.WriteLine(String.Format("Received: {0}", finalString));
+                                }
+                                
                                 //
                                 // Echo data back
                                 //
-                                handler.Send( buffer, 0, bytesReceived, SocketFlags.None );
+                                handler.Send( buffer, 0, bytesRead, SocketFlags.None );
 
-                                if(moreData.IndexOf( "TEST_COMPLETED" ) != -1)
+                                if (finalString.IndexOf("TEST_COMPLETED") != -1)
                                 {
-                                    Console.WriteLine( "" );
-                                    Console.WriteLine( String.Format( "<= <= <= <= <= <= {0} completed", handler.RemoteEndPoint.ToString() ) );
+                                    Console.WriteLine("");
+                                    Console.WriteLine(String.Format("<= <= <= <= <= <= {0} completed", handler.RemoteEndPoint.ToString()));
 
                                     break;
                                 }
-                            }
+                        }
                         }
                         catch(Exception ex)
                         {
@@ -154,11 +167,6 @@ namespace Microsoft.Zelig.Test
             Console.Read( );
 
             return bytesReceived;
-        }
-
-        void Accumulate( byte[] buffer )
-        {
-
         }
 
         //--//

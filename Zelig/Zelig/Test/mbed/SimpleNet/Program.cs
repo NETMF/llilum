@@ -10,6 +10,7 @@ namespace Microsoft.Zelig.Test.mbed.SimpleNet
     using System.Net;
     using System.Threading;
     using Microsoft.Llilum.Lwip;
+    using Microsoft.Zelig.Runtime;
 
     using System.Text;
 
@@ -19,6 +20,9 @@ namespace Microsoft.Zelig.Test.mbed.SimpleNet
         {
             NetworkInterface netif = NetworkInterface.GetAllNetworkInterfaces()[0];
             netif.EnableDhcp( );
+
+            BugCheck.Log("Acquired IPv4 Address");
+            BugCheck.Log(netif.IPAddress.ToString());
 
             //netif.EnableStaticIP("10.125.148.136", "255.255.254.0", "10.125.148.1");
 
@@ -38,7 +42,8 @@ namespace Microsoft.Zelig.Test.mbed.SimpleNet
             var msgBytes = ASCIIEncoding.ASCII.GetBytes(msg);
             var endBytes = ASCIIEncoding.ASCII.GetBytes(end);
             
-            IPEndPoint endPoint = new IPEndPoint( IPAddress.Parse( "10.0.1.4" ), 11000);
+            // NOTE: Be sure to change this to your local machine IP that is running the NetworkTest app
+            IPEndPoint endPoint = new IPEndPoint( IPAddress.Parse("10.91.68.176"), 11000);
 
             var recBuffer = new byte[512];
             
