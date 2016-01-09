@@ -50,6 +50,8 @@
     <Compile Include="classes\classes2\Static_InstTests.cs" />
     <Compile Include="classes\classes3\MembersTests.cs" />
     <Compile Include="classes\classes3\MethodsTests.cs" />
+    <Compile Include="enums\EnumTests.cs" />
+    <Compile Include="interfaces\InterfaceTests.cs" />
     <Compile Include="structs\StructsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

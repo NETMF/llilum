@@ -4,11 +4,11 @@
 
 using System;
 using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
+using Microsoft.Zelig.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class InterfaceTests : IMFTestInterface
+    public class InterfaceTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -24,1101 +24,1250 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("Cleaning up after the tests");
         }
 
-        //Interface Test methods
-        //The following tests were ported from folder current\test\cases\client\CLR\Conformance\10_classes\Interface
-        //struct_impl_01,struct_impl_02,struct_impl_04,struct_impl_05,struct_impl_06,struct_impl_07,struct_impl_08,struct_impl_09,struct_explicit_01,struct_explicit_03,struct_explicit_04,struct_explicit_05,struct_explicit_06,struct_explicit_07,struct_explicit_09,struct_explicit_10,struct_explicit_11,struct_explicit_12,struct_explicit_13,struct_explicit_19,struct_explicit_20,struct_decl_01,struct_decl_02,struct_inherit_01,struct_modifier_01,struct_modifier_02,struct_modifier_03,struct_semicolon_01,struct_semicolon_02
+        public override TestResult Run(string[] args)
+        {
+            TestResult result = TestResult.Pass;
 
+            string testName = "Interface_base_";
+            result |= Assert.CheckFailed(Interface_base_06_Test(), testName, 6);
+
+            testName = "Interface_decl_";
+            result |= Assert.CheckFailed(Interface_decl_01_Test(), testName, 1);
+            result |= Assert.CheckFailed(Interface_decl_03_Test(), testName, 3);
+            result |= Assert.CheckFailed(Interface_decl_05_Test(), testName, 5);
+            result |= Assert.CheckFailed(Interface_decl_06_Test(), testName, 6);
+            result |= Assert.CheckFailed(Interface_decl_07_Test(), testName, 7);
+
+            testName = "Interface_inherit_";
+            result |= Assert.CheckFailed(Interface_inherit_01_Test(), testName, 1);
+            result |= Assert.CheckFailed(Interface_inherit_02_Test(), testName, 2);
+            result |= Assert.CheckFailed(Interface_inherit_03_Test(), testName, 3);
+            result |= Assert.CheckFailed(Interface_inherit_04_Test(), testName, 4);
+            result |= Assert.CheckFailed(Interface_inherit_08_Test(), testName, 8);
+
+            testName = "Interface_modifier_";
+            result |= Assert.CheckFailed(Interface_modifier_01_Test(), testName, 1);
+            result |= Assert.CheckFailed(Interface_modifier_02_Test(), testName, 2);
+            result |= Assert.CheckFailed(Interface_modifier_03_Test(), testName, 3);
+            result |= Assert.CheckFailed(Interface_modifier_05_Test(), testName, 5);
+            result |= Assert.CheckFailed(Interface_modifier_06_Test(), testName, 6);
+            result |= Assert.CheckFailed(Interface_modifier_07_Test(), testName, 7);
+            result |= Assert.CheckFailed(Interface_modifier_08_Test(), testName, 8);
+            result |= Assert.CheckFailed(Interface_modifier_10_Test(), testName, 10);
+
+            testName = "Interface_semicolon_";
+            result |= Assert.CheckFailed(Interface_semicolon_01_Test(), testName, 1);
+            result |= Assert.CheckFailed(Interface_semicolon_03_Test(), testName, 3);
+
+            testName = "Interface_impl_";
+            result |= Assert.CheckFailed(Interface_impl_04_Test(), testName, 4);
+            result |= Assert.CheckFailed(Interface_impl_05_Test(), testName, 5);
+            result |= Assert.CheckFailed(Interface_impl_06_Test(), testName, 6);
+            result |= Assert.CheckFailed(Interface_impl_07_Test(), testName, 7);
+            result |= Assert.CheckFailed(Interface_impl_08_Test(), testName, 8);
+            result |= Assert.CheckFailed(Interface_impl_09_Test(), testName, 9);
+            result |= Assert.CheckFailed(Interface_impl_10_Test(), testName, 10);
+            result |= Assert.CheckFailed(Interface_impl_11_Test(), testName, 11);
+            result |= Assert.CheckFailed(Interface_impl_12_Test(), testName, 12);
+            result |= Assert.CheckFailed(Interface_impl_13_Test(), testName, 13);
+
+            testName = "Interface_implinherit_";
+            result |= Assert.CheckFailed(Interface_implinherit_01_Test(), testName, 1);
+            result |= Assert.CheckFailed(Interface_implinherit_02_Test(), testName, 2);
+
+            testName = "Interface_explicit_";
+            result |= Assert.CheckFailed(Interface_explicit_04_Test(), testName, 4);
+            result |= Assert.CheckFailed(Interface_explicit_05_Test(), testName, 5);
+            result |= Assert.CheckFailed(Interface_explicit_06_Test(), testName, 6);
+            result |= Assert.CheckFailed(Interface_explicit_07_Test(), testName, 7);
+            result |= Assert.CheckFailed(Interface_explicit_10_Test(), testName, 10);
+            result |= Assert.CheckFailed(Interface_explicit_11_Test(), testName, 11);
+            result |= Assert.CheckFailed(Interface_explicit_12_Test(), testName, 12);
+            result |= Assert.CheckFailed(Interface_explicit_13_Test(), testName, 13);
+            result |= Assert.CheckFailed(Interface_explicit_21_Test(), testName, 21);
+            result |= Assert.CheckFailed(Interface_explicit_25_Test(), testName, 25);
+
+            testName = "Interface_mdfrmeth_";
+            result |= Assert.CheckFailed(Interface_mdfrmeth_09_Test(), testName, 9);
+
+            testName = "Interface_ifreimp_";
+            result |= Assert.CheckFailed(Interface_ifreimp_01_Test(), testName, 1);
+            result |= Assert.CheckFailed(Interface_ifreimp_02_Test(), testName, 2);
+            result |= Assert.CheckFailed(Interface_ifreimp_03_Test(), testName, 3);
+
+            testName = "Interface_abstract_";
+            result |= Assert.CheckFailed(Interface_abstract_01_Test(), testName, 1);
+            result |= Assert.CheckFailed(Interface_abstract_02_Test(), testName, 2);
+            result |= Assert.CheckFailed(Interface_abstract_03_Test(), testName, 3);
+
+            testName = "Interface_indexer_";
+            result |= Assert.CheckFailed(Interface_indexer_02_Test(), testName, 2);
+            result |= Assert.CheckFailed(Interface_indexer_03_Test(), testName, 3);
+            result |= Assert.CheckFailed(Interface_indexer_04_Test(), testName, 4);
+            result |= Assert.CheckFailed(Interface_indexer_05_Test(), testName, 5);
+            result |= Assert.CheckFailed(Interface_indexer_06_Test(), testName, 6);
+            result |= Assert.CheckFailed(Interface_indexer_07_Test(), testName, 7);
+            result |= Assert.CheckFailed(Interface_indexer_18_Test(), testName, 18);
+
+            testName = "Interface_meth_";
+            result |= Assert.CheckFailed(Interface_meth_09_Test(), testName, 9);
+
+            testName = "Interface_prop_";
+            result |= Assert.CheckFailed(Interface_prop_09_Test(), testName, 9);
+
+            testName = "Interface_namesig_";
+            result |= Assert.CheckFailed(Interface_namesig_02_Test(), testName, 2);
+            result |= Assert.CheckFailed(Interface_namesig_03_Test(), testName, 3);
+            result |= Assert.CheckFailed(Interface_namesig_04_Test(), testName, 4);
+            result |= Assert.CheckFailed(Interface_namesig_05_Test(), testName, 5);
+
+            testName = "Interface_events_";
+            result |= Assert.CheckFailed(Interface_events_08_Test(), testName, 8);
+            result |= Assert.CheckFailed(Interface_events_09_Test(), testName, 9);
+
+            testName = "Interface_maccess_";
+            result |= Assert.CheckFailed(Interface_maccess_01_Test(), testName, 1);
+            result |= Assert.CheckFailed(Interface_maccess_03_Test(), testName, 3);
+            result |= Assert.CheckFailed(Interface_maccess_04_Test(), testName, 4);
+
+            testName = "Interface_modifier_";
+            result |= Assert.CheckFailed(Interface_modifier_02_Test(), testName, 2);
+            result |= Assert.CheckFailed(Interface_modifier_03_Test(), testName, 3);
+
+            testName = "Interface_struct_impl_";
+            result |= Assert.CheckFailed(Interface_struct_impl_01_Test(), testName, 1);
+            result |= Assert.CheckFailed(Interface_struct_impl_02_Test(), testName, 2);
+            result |= Assert.CheckFailed(Interface_struct_impl_04_Test(), testName, 4);
+            result |= Assert.CheckFailed(Interface_struct_impl_05_Test(), testName, 5);
+            result |= Assert.CheckFailed(Interface_struct_impl_06_Test(), testName, 6);
+            result |= Assert.CheckFailed(Interface_struct_impl_07_Test(), testName, 7);
+            result |= Assert.CheckFailed(Interface_struct_impl_08_Test(), testName, 8);
+            result |= Assert.CheckFailed(Interface_struct_impl_09_Test(), testName, 9);
+
+            testName = "Interface_struct_explicit_";
+            result |= Assert.CheckFailed(Interface_struct_explicit_01_Test(), testName, 1);
+            result |= Assert.CheckFailed(Interface_struct_explicit_03_Test(), testName, 3);
+            result |= Assert.CheckFailed(Interface_struct_explicit_04_Test(), testName, 4);
+            result |= Assert.CheckFailed(Interface_struct_explicit_05_Test(), testName, 5);
+            result |= Assert.CheckFailed(Interface_struct_explicit_06_Test(), testName, 6);
+            result |= Assert.CheckFailed(Interface_struct_explicit_07_Test(), testName, 7);
+            result |= Assert.CheckFailed(Interface_struct_explicit_09_Test(), testName, 9);
+            result |= Assert.CheckFailed(Interface_struct_explicit_10_Test(), testName, 10);
+            result |= Assert.CheckFailed(Interface_struct_explicit_11_Test(), testName, 11);
+            result |= Assert.CheckFailed(Interface_struct_explicit_12_Test(), testName, 12);
+            result |= Assert.CheckFailed(Interface_struct_explicit_13_Test(), testName, 13);
+            result |= Assert.CheckFailed(Interface_struct_explicit_19_Test(), testName, 19);
+            result |= Assert.CheckFailed(Interface_struct_explicit_20_Test(), testName, 20);
+
+            testName = "Interface_struct_decl_";
+            result |= Assert.CheckFailed(Interface_struct_decl_01_Test(), testName, 1);
+            result |= Assert.CheckFailed(Interface_struct_decl_02_Test(), testName, 2);
+
+            testName = "Interface_struct_inherit_";
+            result |= Assert.CheckFailed(Interface_struct_inherit_01_Test(), testName, 1);
+
+            testName = "Interface_struct_modifier_";
+            result |= Assert.CheckFailed(Interface_struct_modifier_01_Test(), testName, 1);
+            result |= Assert.CheckFailed(Interface_struct_modifier_02_Test(), testName, 2);
+            result |= Assert.CheckFailed(Interface_struct_modifier_03_Test(), testName, 3);
+
+            testName = "Interface_struct_semicolon_";
+            result |= Assert.CheckFailed(Interface_struct_semicolon_01_Test(), testName, 1);
+            result |= Assert.CheckFailed(Interface_struct_semicolon_02_Test(), testName, 2);
+
+            return result;
+        }
 
         //Test Case Calls 
         [TestMethod]
-        public MFTestResults Interface_base_06_Test()
+        public TestResult Interface_base_06_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("If effective visibility is internal, public iface may have an internal base iface ");
             Log.Comment("(Bug 86453: has some details on this.  But it has to do with class  internal)");
             if (Interface_TestClass_base_06.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_decl_01_Test()
+        public TestResult Interface_decl_01_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Simplest interface declared in global namespace");
             if (Interface_TestClass_decl_01.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Interface_decl_03_Test()
+        public TestResult Interface_decl_03_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Simplest interface declared in class in default global namespace");
             if (Interface_TestClass_decl_03.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Interface_decl_05_Test()
+        public TestResult Interface_decl_05_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Simple interface declaration with diff types of methods, args, and properties");
             if (Interface_TestClass_decl_05.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_decl_06_Test()
+        public TestResult Interface_decl_06_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Simple interface declaration properties with only gets");
             if (Interface_TestClass_decl_06.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_decl_07_Test()
+        public TestResult Interface_decl_07_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Simple interface declaration properties with only sets");
             if (Interface_TestClass_decl_07.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_inherit_01_Test()
+        public TestResult Interface_inherit_01_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Verify that an interface can be hidden by 'new' member in derived class");
             if (Interface_TestClass_inherit_01.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_inherit_02_Test()
+        public TestResult Interface_inherit_02_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Simplest form of interface inheritance");
             if (Interface_TestClass_inherit_02.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_inherit_03_Test()
+        public TestResult Interface_inherit_03_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Simplest form of interface inheritance, inheriting multiple interfaces");
             if (Interface_TestClass_inherit_03.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_inherit_04_Test()
+        public TestResult Interface_inherit_04_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Simplest form of interface inheritance, inheriting multiple interfaces");
             if (Interface_TestClass_inherit_04.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_inherit_08_Test()
+        public TestResult Interface_inherit_08_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Verify that an interface hidden without using new results in warning");
             if (Interface_TestClass_inherit_08.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_modifier_01_Test()
+        public TestResult Interface_modifier_01_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Verify public and internal interfaces declared in global namespace are valid");
             if (Interface_TestClass_modifier_01.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_modifier_05_Test()
+        public TestResult Interface_modifier_05_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Verify public and internal interfaces are valid inside classes");
             if (Interface_TestClass_modifier_05.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_modifier_06_Test()
+        public TestResult Interface_modifier_06_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Verify private and protected interfaces are valid inside classes");
             if (Interface_TestClass_modifier_06.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_modifier_07_Test()
+        public TestResult Interface_modifier_07_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Verify new interface gens warning if not hiding anything");
             if (Interface_TestClass_modifier_07.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_modifier_08_Test()
+        public TestResult Interface_modifier_08_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Verify new interface is valid inside classes when properly hiding an inherited member");
             if (Interface_TestClass_modifier_08.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_modifier_10_Test()
+        public TestResult Interface_modifier_10_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Verify protected internal interfaces are valid inside classes");
             if (Interface_TestClass_modifier_10.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_semicolon_01_Test()
+        public TestResult Interface_semicolon_01_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Simplest interface declared (with semi-colon) in global namespace");
             if (Interface_TestClass_semicolon_01.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Interface_semicolon_03_Test()
+        public TestResult Interface_semicolon_03_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Simplest interface declared (with semi-colon) in  class in default global namespace");
             if (Interface_TestClass_semicolon_03.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
 
         [TestMethod]
-        public MFTestResults Interface_impl_04_Test()
+        public TestResult Interface_impl_04_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("A member of an interface-type can be assigned an instance of class that implements it");
             if (Interface_TestClass_impl_04.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_impl_05_Test()
+        public TestResult Interface_impl_05_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Warning gets generated when two methods implement an inherited method");
             if (Interface_TestClass_impl_05.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_impl_06_Test()
+        public TestResult Interface_impl_06_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Using the 'override' keyword allows you to hide previous method implementation");
             if (Interface_TestClass_impl_06.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_impl_07_Test()
+        public TestResult Interface_impl_07_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("A class that implements an interface with method, property, event, and indexer");
             if (Interface_TestClass_impl_07.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_impl_08_Test()
+        public TestResult Interface_impl_08_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Implementing method that was defined identically by two different base-interfaces should work");
             if (Interface_TestClass_impl_08.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_impl_09_Test()
+        public TestResult Interface_impl_09_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Implementing property that was defined identically by two different base-interfaces should work");
             if (Interface_TestClass_impl_09.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_impl_10_Test()
+        public TestResult Interface_impl_10_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Implementing an event that was defined identically by two different base-interfaces should work");
             if (Interface_TestClass_impl_10.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_impl_11_Test()
+        public TestResult Interface_impl_11_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Implementing an indexer that was defined identically by two different base-interfaces should work");
             if (Interface_TestClass_impl_11.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_impl_12_Test()
+        public TestResult Interface_impl_12_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("The members of base class participate in interface mapping");
             if (Interface_TestClass_impl_12.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_impl_13_Test()
+        public TestResult Interface_impl_13_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Two interfaces on the same object must resolve to the same reference");
             if (Interface_TestClass_impl_13.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_implinherit_01_Test()
+        public TestResult Interface_implinherit_01_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Interface methods implementation inheritance map as expected (1st/2nd example in 13.4.3)");
             if (Interface_TestClass_implinherit_01.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_implinherit_02_Test()
+        public TestResult Interface_implinherit_02_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Interface methods implementation inheritance (w/virtual) map as expected (3rd/4th example in 13.4.3)");
             if (Interface_TestClass_implinherit_02.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
 
         [TestMethod]
-        public MFTestResults Interface_explicit_04_Test()
+        public TestResult Interface_explicit_04_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Explicit interface member implementation of a method");
             if (Interface_TestClass_explicit_04.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_explicit_05_Test()
+        public TestResult Interface_explicit_05_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Explicit interface member implementation of a property");
             if (Interface_TestClass_explicit_05.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_explicit_06_Test()
+        public TestResult Interface_explicit_06_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Explicit interface member implementation of an event (Bug 89766)");
             if (Interface_TestClass_explicit_06.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_explicit_07_Test()
+        public TestResult Interface_explicit_07_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Explicit interface member implementation of an indexer");
             if (Interface_TestClass_explicit_07.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Interface_explicit_10_Test()
+        public TestResult Interface_explicit_10_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Explicitly implemented members (method) can be called through interface instances");
             if (Interface_TestClass_explicit_10.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_explicit_11_Test()
+        public TestResult Interface_explicit_11_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Explicitly implemented members (property) can be called through interface instances");
             if (Interface_TestClass_explicit_11.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_explicit_12_Test()
+        public TestResult Interface_explicit_12_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Explicitly implemented members (indexer) can be called through interface instances");
             if (Interface_TestClass_explicit_12.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_explicit_13_Test()
+        public TestResult Interface_explicit_13_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Explicitly implemented members (event) can be called through interface instances  (Bug 89766)");
             if (Interface_TestClass_explicit_13.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Interface_explicit_21_Test()
+        public TestResult Interface_explicit_21_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Hidden base interface members may be implemented in all of the ways used in this");
             if (Interface_TestClass_explicit_21.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_explicit_25_Test()
+        public TestResult Interface_explicit_25_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Explicitly implementing overloaded methods should work ");
             if (Interface_TestClass_explicit_25.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_mdfrmeth_09_Test()
+        public TestResult Interface_mdfrmeth_09_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("An abstract class can implement an interface's methods as abstract");
             if (Interface_TestClass_mdfrmeth_09.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_ifreimp_01_Test()
+        public TestResult Interface_ifreimp_01_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("A class that inherits an interface implementation is permitted to re-implement the interface by including it in the base class list");
             if (Interface_TestClass_ifreimp_01.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
             else
             {
                 Log.Comment("This in a known bug captured in Issue #95");
-                return MFTestResults.KnownFailure;
+                return TestResult.KnownFailure;
             }
         }
         [TestMethod]
-        public MFTestResults Interface_ifreimp_02_Test()
+        public TestResult Interface_ifreimp_02_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Inherited public member declarations and inherited explicit interface member declarations participate in the interface mapping process for re-implemented interfaces (Bug 90165)");
             if (Interface_TestClass_ifreimp_02.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
             else
             {
                 Log.Comment("This in a known bug captured in Issue #95");
-                return MFTestResults.KnownFailure;
+                return TestResult.KnownFailure;
             }
         }
         [TestMethod]
-        public MFTestResults Interface_ifreimp_03_Test()
+        public TestResult Interface_ifreimp_03_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Interface reimplementation also reimplements the interface's base interfaces.  Verify mapping is done correctly. (90165)");
             Log.Comment("This Test is an expected fail in the baseline, but has passed in recent testing");
             if (Interface_TestClass_ifreimp_03.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_abstract_01_Test()
+        public TestResult Interface_abstract_01_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("An abstract class is permitted to map base-interface methods onto abstract methods");
             if (Interface_TestClass_abstract_01.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_abstract_02_Test()
+        public TestResult Interface_abstract_02_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("The abstract methods implementing interface methods must be overridden by inheriting classes");
             if (Interface_TestClass_abstract_02.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_abstract_03_Test()
+        public TestResult Interface_abstract_03_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Explicit interface member implementations are permitted to call abstract methods");
             if (Interface_TestClass_abstract_03.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_indexer_02_Test()
+        public TestResult Interface_indexer_02_Test()
         {
             Log.Comment("Section 13.2 Interface members");
             Log.Comment("Simplest interface indexer declaration (int)");
             if (Interface_TestClass_indexer_02.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_indexer_03_Test()
+        public TestResult Interface_indexer_03_Test()
         {
             Log.Comment("Section 13.2 Interface members");
             Log.Comment("Simplest interface indexer declaration (String)");
             if (Interface_TestClass_indexer_03.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_indexer_04_Test()
+        public TestResult Interface_indexer_04_Test()
         {
             Log.Comment("Section 13.2 Interface members");
             Log.Comment("Simplest interface indexer declaration (user-defined struct)");
             if (Interface_TestClass_indexer_04.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_indexer_05_Test()
+        public TestResult Interface_indexer_05_Test()
         {
             Log.Comment("Section 13.2 Interface members");
             Log.Comment("Interface indexer with multiple parameters in formal-index-parameter-list");
             if (Interface_TestClass_indexer_05.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_indexer_06_Test()
+        public TestResult Interface_indexer_06_Test()
         {
             Log.Comment("Section 13.2 Interface members");
             Log.Comment("Interface indexer with just get accessor");
             if (Interface_TestClass_indexer_06.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_indexer_07_Test()
+        public TestResult Interface_indexer_07_Test()
         {
             Log.Comment("Section 13.2 Interface members");
             Log.Comment("Interface indexer with just set accessor");
             if (Interface_TestClass_indexer_07.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_indexer_18_Test()
+        public TestResult Interface_indexer_18_Test()
         {
             Log.Comment("Section 13.2 Interface members");
             Log.Comment("Using 'new' on an interface member (indexer) that doesn't hide an inherited member should gen warning ");
             Log.Comment("(Related Bug: 86609)");
             if (Interface_TestClass_indexer_18.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_meth_09_Test()
+        public TestResult Interface_meth_09_Test()
         {
             Log.Comment("Section 13.2 Interface members");
             Log.Comment("Using 'new' on an interface member (method) that doesn't hide an inherited member should gen warning (Bug: 86609)");
             if (Interface_TestClass_meth_09.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_prop_09_Test()
+        public TestResult Interface_prop_09_Test()
         {
             Log.Comment("Section 13.2 Interface members");
             Log.Comment("Using 'new' on an interface member (property) that doesn't hide an inherited member should gen warning (Bug: 86609)");
             if (Interface_TestClass_prop_09.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_namesig_02_Test()
+        public TestResult Interface_namesig_02_Test()
         {
             Log.Comment("Section 13.2 Interface members");
             Log.Comment("Member functions of an interface may have same name if they have diff args");
             if (Interface_TestClass_namesig_02.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_namesig_03_Test()
+        public TestResult Interface_namesig_03_Test()
         {
             Log.Comment("Section 13.2 Interface members");
             Log.Comment("Interface member that is hidden by an inheriting interface (without using new) gens warning");
             if (Interface_TestClass_namesig_03.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_namesig_04_Test()
+        public TestResult Interface_namesig_04_Test()
         {
             Log.Comment("Section 13.2 Interface members");
             Log.Comment("Interface that inherits 2 other interfaces that have a member with same sig");
             if (Interface_TestClass_namesig_04.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_namesig_05_Test()
+        public TestResult Interface_namesig_05_Test()
         {
             Log.Comment("Section 13.2 Interface members");
             Log.Comment("Interface member that is hidden by an inheriting interface (using new) works correctly");
             if (Interface_TestClass_namesig_05.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_events_08_Test()
+        public TestResult Interface_events_08_Test()
         {
             Log.Comment("Section 13.2 Interface members");
             Log.Comment("Using 'new' on an interface member (event) that doesn't hide an inherited member should gen warning (Bug: 118831)");
             if (Interface_TestClass_events_08.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_events_09_Test()
+        public TestResult Interface_events_09_Test()
         {
             Log.Comment("Section 13.2 Interface members");
             Log.Comment("Simple Event declaration within an interface");
             if (Interface_TestClass_events_09.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_maccess_01_Test()
+        public TestResult Interface_maccess_01_Test()
         {
             Log.Comment("Section 13.2 Interface members");
             Log.Comment("Inherited members with same sig, from diff interfaces, can be accessed through casting");
             if (Interface_TestClass_maccess_01.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_maccess_03_Test()
+        public TestResult Interface_maccess_03_Test()
         {
             Log.Comment("Section 13.2 Interface members");
             Log.Comment("Inherited members with same method names but diff args can be accessed by casting");
             if (Interface_TestClass_maccess_03.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_maccess_04_Test()
+        public TestResult Interface_maccess_04_Test()
         {
             Log.Comment("Section 13.2 Interface members");
             Log.Comment("Inherited members with same method names but diff args should work if arg passed is not ambiguous (Regression bug: 90867)");
             if (Interface_TestClass_maccess_04.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Interface_modifier_02_Test()
+        public TestResult Interface_modifier_02_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Verify private interfaces gen error when declared in global namespace");
             if (Interface_TestClass_modifier_02.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_modifier_03_Test()
+        public TestResult Interface_modifier_03_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Verify protected interfaces gen error when declared in global namespace");
             if (Interface_TestClass_modifier_03.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         //Test Case Calls 
         [TestMethod]
-        public MFTestResults Interface_struct_impl_01_Test()
+        public TestResult Interface_struct_impl_01_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Simple struct implementation of two interfaces");
             if (Interface_TestClass_struct_impl_01.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_impl_02_Test()
+        public TestResult Interface_struct_impl_02_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("A struct that implements an interface also implicitly implements all of the interface's base interfaces");
             if (Interface_TestClass_struct_impl_02.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_impl_04_Test()
+        public TestResult Interface_struct_impl_04_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("A member of an interface-type can be assigned an instance of a struct that implements it");
             if (Interface_TestClass_struct_impl_04.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_impl_05_Test()
+        public TestResult Interface_struct_impl_05_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("A struct that implements an interface with a method, property, event, and indexer");
             if (Interface_TestClass_struct_impl_05.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_impl_06_Test()
+        public TestResult Interface_struct_impl_06_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Implementing a method that was defined identically by two different base-interfaces should work");
             if (Interface_TestClass_struct_impl_06.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_impl_07_Test()
+        public TestResult Interface_struct_impl_07_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Implementing a property that was defined identically by two different base-interfaces should work");
             if (Interface_TestClass_struct_impl_07.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_impl_08_Test()
+        public TestResult Interface_struct_impl_08_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Implementing an event that was defined identically by two different base-interfaces should work");
             if (Interface_TestClass_struct_impl_08.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_impl_09_Test()
+        public TestResult Interface_struct_impl_09_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Implementing an indexer that was defined identically by two different base-interfaces should work");
             if (Interface_TestClass_struct_impl_09.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_explicit_01_Test()
+        public TestResult Interface_struct_explicit_01_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Explicit interface member implementations");
             if (Interface_TestClass_struct_explicit_01.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_explicit_03_Test()
+        public TestResult Interface_struct_explicit_03_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Implementing an iface method in a struct that doesn't list the iface as a base iface but does list a iface that inherits the iface should work");
             if (Interface_TestClass_struct_explicit_03.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_explicit_04_Test()
+        public TestResult Interface_struct_explicit_04_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Explicit interface member implementation of a method");
             if (Interface_TestClass_struct_explicit_04.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_explicit_05_Test()
+        public TestResult Interface_struct_explicit_05_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Explicit interface member implementation of a property");
             if (Interface_TestClass_struct_explicit_05.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_explicit_06_Test()
+        public TestResult Interface_struct_explicit_06_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Explicit interface member implementation of an event (Bug: 89766)");
             if (Interface_TestClass_struct_explicit_06.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_explicit_07_Test()
+        public TestResult Interface_struct_explicit_07_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Explicit interface member implementation of an indexer");
             if (Interface_TestClass_struct_explicit_07.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_explicit_09_Test()
+        public TestResult Interface_struct_explicit_09_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Multiple base interfaces and explicit interface member implementations work");
             if (Interface_TestClass_struct_explicit_09.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_explicit_10_Test()
+        public TestResult Interface_struct_explicit_10_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Explicitly implemented members (method) can be called through interface instances");
             if (Interface_TestClass_struct_explicit_10.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_explicit_11_Test()
+        public TestResult Interface_struct_explicit_11_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Explicitly implemented members (property) can be called through interface instances (Bug 90570)");
             if (Interface_TestClass_struct_explicit_11.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_explicit_12_Test()
+        public TestResult Interface_struct_explicit_12_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Explicitly implemented members (indexer) can be called through interface instances (Bug 90570)");
             if (Interface_TestClass_struct_explicit_12.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_explicit_13_Test()
+        public TestResult Interface_struct_explicit_13_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Explicitly implemented members (event) can be called through interface instances (89766)");
             if (Interface_TestClass_struct_explicit_13.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_explicit_19_Test()
+        public TestResult Interface_struct_explicit_19_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Explicitly implementing member from interface not in base-list (but in base-list of a base interface) should work");
             if (Interface_TestClass_struct_explicit_19.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_explicit_20_Test()
+        public TestResult Interface_struct_explicit_20_Test()
         {
             Log.Comment("Section 13.4 Interface implementations");
             Log.Comment("Hidden base interface members may be implemented in all of the ways used in this");
             if (Interface_TestClass_struct_explicit_20.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_decl_01_Test()
+        public TestResult Interface_struct_decl_01_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Simplest interface declared in a struct in default global namespace");
             if (Interface_TestClass_struct_decl_01.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_decl_02_Test()
+        public TestResult Interface_struct_decl_02_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Simplest interface declared in a struct in a declared namespace");
             if (Interface_TestClass_decl_02_NS.Interface_TestClass_decl_02.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_inherit_01_Test()
+        public TestResult Interface_struct_inherit_01_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Simplest form of interface inheritance, inheriting multiple interfaces");
             if (Interface_TestClass_struct_inherit_01.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_modifier_01_Test()
+        public TestResult Interface_struct_modifier_01_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Verify public and internal interfaces are valid inside structs");
             if (Interface_TestClass_struct_modifier_01.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_modifier_02_Test()
+        public TestResult Interface_struct_modifier_02_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Verify private interfaces are valid inside structs");
             if (Interface_TestClass_struct_modifier_02.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_modifier_03_Test()
+        public TestResult Interface_struct_modifier_03_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Verify new interface gens warning if not hiding anything");
             if (Interface_TestClass_struct_modifier_03.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_semicolon_01_Test()
+        public TestResult Interface_struct_semicolon_01_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Simplest interface declared (with semi-colon) in a struct in default global namespace");
             if (Interface_TestClass_struct_semicolon_01.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Interface_struct_semicolon_02_Test()
+        public TestResult Interface_struct_semicolon_02_Test()
         {
             Log.Comment("Section 13.1 Interface declarations ");
             Log.Comment("Simplest interface declared (with semi-colon) in a struct in a declared namespace");
             if (Interface_TestClass_semicolon_02_NS.Interface_TestClass_semicolon_02.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
 

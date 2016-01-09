@@ -4,7 +4,6 @@
 
 using System;
 using System.Reflection;
-using Microsoft.Zelig.Test;
 
 namespace Microsoft.Zelig.Test
 {
@@ -27,16 +26,17 @@ namespace Microsoft.Zelig.Test
         public override TestResult Run( string[] args )
         {
             TestResult result = TestResult.Pass;
-            
-            result |= Assert.CheckFailed( Static_Inst01_Test( ) );
-            result |= Assert.CheckFailed( Static_Inst07_Test( ) );
-            result |= Assert.CheckFailed( Static_Inst14_Test( ) );
-            result |= Assert.CheckFailed( Static_Inst18_Test( ) );
-            result |= Assert.CheckFailed( Static_Inst19_Test( ) );
-            result |= Assert.CheckFailed( Static_Inst20_Test( ) );
-            result |= Assert.CheckFailed( Static_Inst21_Test( ) );
-            result |= Assert.CheckFailed( Static_Inst22_Test( ) );
-            result |= Assert.CheckFailed( Static_Inst23_Test( ) );
+
+            string testName = "Static_Inst";
+            result |= Assert.CheckFailed(Static_Inst01_Test(), testName, 1);
+            result |= Assert.CheckFailed(Static_Inst07_Test(), testName, 7);
+            result |= Assert.CheckFailed(Static_Inst14_Test(), testName, 14);
+            result |= Assert.CheckFailed(Static_Inst18_Test(), testName, 18);
+            result |= Assert.CheckFailed(Static_Inst19_Test(), testName, 19);
+            result |= Assert.CheckFailed(Static_Inst20_Test(), testName, 20);
+            result |= Assert.CheckFailed(Static_Inst21_Test(), testName, 21);
+            result |= Assert.CheckFailed(Static_Inst22_Test(), testName, 22);
+            result |= Assert.CheckFailed(Static_Inst23_Test(), testName, 23);
 
             return result;
         }

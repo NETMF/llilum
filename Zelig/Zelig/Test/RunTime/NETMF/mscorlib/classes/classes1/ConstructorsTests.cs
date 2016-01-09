@@ -14,7 +14,7 @@ namespace Microsoft.Zelig.Test
         public InitializeResult Initialize()
         {
             Log.Comment("Adding set up for the tests.");
-            // Add your functionality here.                
+            // Add your functionality here.
 
             return InitializeResult.ReadyToGo;
         }
@@ -31,7 +31,7 @@ namespace Microsoft.Zelig.Test
         //12,14,15,18,29,30,35-43,48,49,59,60-62,65,67,69-74
         //The following tests were removed because they require additional files to run
         //58,66,68. 58 Failed in the Baseline document, 66 and 68 were not included
-        //Test 63 would not compile because it referenced System.Type.GetConstructors() which doesn't exist, 
+        //Test 63 would not compile because it referenced System.Type.GetConstructors() which doesn't exist,
         //it was skipped in the baseline document
         //Test 63a was removed because it caused Null reference exceptions, it failed in the Baseline doc
         //47,58,63a Failed
@@ -122,7 +122,7 @@ namespace Microsoft.Zelig.Test
             }
             return TestResult.Fail;
         }
-        
+
         [TestMethod]
         public TestResult Constructors11_Test()
         {
@@ -253,7 +253,7 @@ namespace Microsoft.Zelig.Test
         [TestMethod]
         public TestResult Constructors26_Test()
         {
-            //Ported from Const26.cs            
+            //Ported from Const26.cs
             Log.Comment("Tests if assignments in all a class' constructors are functional when a not-parametered one extends a");
             Log.Comment("not-parametered one in its base class, which in turn extends a parametered one in the base class");
             if (ConstructorsTestClass26.testMethod())
@@ -288,7 +288,7 @@ namespace Microsoft.Zelig.Test
             }
             return TestResult.Fail;
         }
-        
+
         [TestMethod]
         public TestResult Constructors31_Test()
         {
@@ -354,7 +354,7 @@ namespace Microsoft.Zelig.Test
             return TestResult.Fail;
         }
 
-	[TestMethod]
+    [TestMethod]
         public TestResult Constructors44_Test()
         {
             //Ported from Const44.cs
@@ -387,37 +387,39 @@ namespace Microsoft.Zelig.Test
 
         //We initialize static constructors on load rather when enumerated, so order is not guaranteed (unlike desktop)
 
-        //[TestMethod]
-        //public TestResult Constructors46_Test()
-        //{
-        //    //Ported from Const46.cs
-        //    Log.Comment("Section 10.11.");
-        //    Log.Comment("It is possible to construct circular dependencies that");
-        //    Log.Comment("allow static fields with variable initializers to be");
-        //    Log.Comment("observed in their default value state.");
-        //    if (ConstructorsTestClass46.testMethod())
-        //    {
-        //        return TestResult.Pass;
-        //    }
-        //    return TestResult.Fail;
-        //}
+        [TestMethod]
+        public TestResult Constructors46_Test()
+        {
+            //Ported from Const46.cs
+            Log.Comment("Section 10.11.");
+            Log.Comment("It is possible to construct circular dependencies that");
+            Log.Comment("allow static fields with variable initializers to be");
+            Log.Comment("observed in their default value state.");
+            return TestResult.Skip;
+            //if (ConstructorsTestClass46.testMethod())
+            //{
+            //    return TestResult.Pass;
+            //}
+            //return TestResult.Fail;
+        }
 
-        //[TestMethod]
-        //public TestResult Constructors47_Test()
-        //{
-        //    //Ported from Const47.cs
-        //    Log.Comment("Section 10.11.");
-        //    Log.Comment("It is possible to construct circular dependencies that");
-        //    Log.Comment("allow static fields with variable initializers to be");
-        //    Log.Comment("observed in their default value state.");
-        //    Log.Comment("This test is expected to fail.");
-        //    if (ConstructorsTestClass47.testMethod())
-        //    {
-        //        return TestResult.Fail;
-        //    }
-        //    return TestResult.Pass;
-        //}
-        
+        [TestMethod]
+        public TestResult Constructors47_Test()
+        {
+            //Ported from Const47.cs
+            Log.Comment("Section 10.11.");
+            Log.Comment("It is possible to construct circular dependencies that");
+            Log.Comment("allow static fields with variable initializers to be");
+            Log.Comment("observed in their default value state.");
+            Log.Comment("This test is expected to fail.");
+            return TestResult.Skip;
+            //if (ConstructorsTestClass47.testMethod())
+            //{
+            //    return TestResult.Fail;
+            //}
+            //return TestResult.Pass;
+        }
+
         [TestMethod]
         public TestResult Constructors50_Test()
         {
@@ -532,43 +534,44 @@ namespace Microsoft.Zelig.Test
         {
             TestResult result = TestResult.Pass;
 
-            result |= Assert.CheckFailed( Constructors1_Test( ) );
-            result |= Assert.CheckFailed( Constructors2_Test( ) );
-            result |= Assert.CheckFailed( Constructors3_Test( ) );
-            result |= Assert.CheckFailed( Constructors5_Test( ) );
-            result |= Assert.CheckFailed( Constructors6_Test( ) );
-            result |= Assert.CheckFailed( Constructors8_Test( ) );
-            result |= Assert.CheckFailed( Constructors10_Test( ) );
-            result |= Assert.CheckFailed( Constructors11_Test( ) );
-            result |= Assert.CheckFailed( Constructors13_Test( ) );
-            result |= Assert.CheckFailed( Constructors16_Test( ) );
-            result |= Assert.CheckFailed( Constructors17_Test( ) );
-            result |= Assert.CheckFailed( Constructors20_Test( ) );
-            result |= Assert.CheckFailed( Constructors21_Test( ) );
-            result |= Assert.CheckFailed( Constructors22_Test( ) );
-            result |= Assert.CheckFailed( Constructors23_Test( ) );
-            result |= Assert.CheckFailed( Constructors24_Test( ) );
-            result |= Assert.CheckFailed( Constructors25_Test( ) );
-            result |= Assert.CheckFailed( Constructors26_Test( ) );
-            result |= Assert.CheckFailed( Constructors27_Test( ) );
-            result |= Assert.CheckFailed( Constructors28_Test( ) );
-            result |= Assert.CheckFailed( Constructors31_Test( ) );
-            result |= Assert.CheckFailed( Constructors32_Test( ) );
-            result |= Assert.CheckFailed( Constructors33_Test( ) );
-            result |= Assert.CheckFailed( Constructors34_Test( ) );
-            result |= Assert.CheckFailed( Constructors35_Test( ) );
-            result |= Assert.CheckFailed( Constructors44_Test( ) );
-            result |= Assert.CheckFailed( Constructors45_Test( ) );
-            //////result |= Assert.CheckFailed( Constructors46_Test() );
-            //////result |= Assert.CheckFailed( Constructors47_Test() );
-            result |= Assert.CheckFailed( Constructors50_Test( ) );
-            result |= Assert.CheckFailed( Constructors51_Test( ) );
-            result |= Assert.CheckFailed( Constructors52_Test( ) );
-            result |= Assert.CheckFailed( Constructors54_Test( ) );
-            result |= Assert.CheckFailed( Constructors55_Test( ) );
-            result |= Assert.CheckFailed( Constructors56_Test( ) );
-            result |= Assert.CheckFailed( Constructors57_Test( ) );
-            result |= Assert.CheckFailed( Constructors64_Test( ) );
+            string testName = "Constructors";
+            result |= Assert.CheckFailed(Constructors1_Test(), testName, 1);
+            result |= Assert.CheckFailed(Constructors2_Test(), testName, 2);
+            result |= Assert.CheckFailed(Constructors3_Test(), testName, 3);
+            result |= Assert.CheckFailed(Constructors5_Test(), testName, 5);
+            result |= Assert.CheckFailed(Constructors6_Test(), testName, 6);
+            result |= Assert.CheckFailed(Constructors8_Test(), testName, 8);
+            result |= Assert.CheckFailed(Constructors10_Test(), testName, 10);
+            result |= Assert.CheckFailed(Constructors11_Test(), testName, 11);
+            result |= Assert.CheckFailed(Constructors13_Test(), testName, 13);
+            result |= Assert.CheckFailed(Constructors16_Test(), testName, 16);
+            result |= Assert.CheckFailed(Constructors17_Test(), testName, 17);
+            result |= Assert.CheckFailed(Constructors20_Test(), testName, 20);
+            result |= Assert.CheckFailed(Constructors21_Test(), testName, 21);
+            result |= Assert.CheckFailed(Constructors22_Test(), testName, 22);
+            result |= Assert.CheckFailed(Constructors23_Test(), testName, 23);
+            result |= Assert.CheckFailed(Constructors24_Test(), testName, 24);
+            result |= Assert.CheckFailed(Constructors25_Test(), testName, 25);
+            result |= Assert.CheckFailed(Constructors26_Test(), testName, 26);
+            result |= Assert.CheckFailed(Constructors27_Test(), testName, 27);
+            result |= Assert.CheckFailed(Constructors28_Test(), testName, 28);
+            result |= Assert.CheckFailed(Constructors31_Test(), testName, 31);
+            result |= Assert.CheckFailed(Constructors32_Test(), testName, 32);
+            result |= Assert.CheckFailed(Constructors33_Test(), testName, 33);
+            result |= Assert.CheckFailed(Constructors34_Test(), testName, 34);
+            //result |= Assert.CheckFailed(Constructors35_Test(), testName, 35); https://github.com/NETMF/llilum/issues/130
+            result |= Assert.CheckFailed(Constructors44_Test(), testName, 44);
+            result |= Assert.CheckFailed(Constructors45_Test(), testName, 45);
+            result |= Assert.CheckFailed(Constructors46_Test(), testName, 46);
+            result |= Assert.CheckFailed(Constructors47_Test(), testName, 47);
+            result |= Assert.CheckFailed(Constructors50_Test(), testName, 50);
+            result |= Assert.CheckFailed(Constructors51_Test(), testName, 51);
+            result |= Assert.CheckFailed(Constructors52_Test(), testName, 52);
+            result |= Assert.CheckFailed(Constructors54_Test(), testName, 54);
+            result |= Assert.CheckFailed(Constructors55_Test(), testName, 55);
+            result |= Assert.CheckFailed(Constructors56_Test(), testName, 56);
+            result |= Assert.CheckFailed(Constructors57_Test(), testName, 57);
+            result |= Assert.CheckFailed(Constructors64_Test(), testName, 64);
 
             return result;
         }
@@ -782,24 +785,24 @@ namespace Microsoft.Zelig.Test
 
 
         class ConstructorsTestClass13
-        {	
+        {
 
         //multiple parameters
         ConstructorsTestClass13(int int1, int int2, int int3, int int4, int int5, int int6, int int7, int int8, int int9, int int10) {
-	        intI = int1 + int2 + int3 + int4 + int5 + int6 + int7 + int8 + int9 + int10;
+            intI = int1 + int2 + int3 + int4 + int5 + int6 + int7 + int8 + int9 + int10;
         }
 
         int intI;
 
         public static bool testMethod() {
-	        ConstructorsTestClass13 test = new ConstructorsTestClass13(1,2,3,4,5,6,7,8,9,10);
-	        if (test.intI == 55) {
-		        return true;
-	        }
-	        else {
-		        return false;
+            ConstructorsTestClass13 test = new ConstructorsTestClass13(1,2,3,4,5,6,7,8,9,10);
+            if (test.intI == 55) {
+                return true;
             }
-	        }
+            else {
+                return false;
+            }
+            }
         }
 
 
@@ -807,31 +810,31 @@ namespace Microsoft.Zelig.Test
 
         class ConstructorsTestClass16_Base {
 
-	        public int intI = 1;
+            public int intI = 1;
 
-	        protected ConstructorsTestClass16_Base() {
-		        intI = 2;
-	        }
+            protected ConstructorsTestClass16_Base() {
+                intI = 2;
+            }
         }
 
-        class ConstructorsTestClass16 : ConstructorsTestClass16_Base {	
+        class ConstructorsTestClass16 : ConstructorsTestClass16_Base {
 
-	        //base constructor initializer
-	        ConstructorsTestClass16() : base() {
-		        intI = intI * 2;
-	        }
+            //base constructor initializer
+            ConstructorsTestClass16() : base() {
+                intI = intI * 2;
+            }
 
-	        public static bool testMethod() {
+            public static bool testMethod() {
 
-		        ConstructorsTestClass16 Test = new ConstructorsTestClass16();
-        			
-		        if (Test.intI == 4) {
-			        return true;
-		        }
-		        else {
-			        return false;
-                 }
-		    }
+                ConstructorsTestClass16 Test = new ConstructorsTestClass16();
+
+                if (Test.intI == 4) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
         }
 
         class ConstructorsTestClass17_Base {
@@ -839,31 +842,31 @@ namespace Microsoft.Zelig.Test
             public int intI = 1;
 
             protected ConstructorsTestClass17_Base() {
-	            intI = 2;
+                intI = 2;
             }
             protected ConstructorsTestClass17_Base(int intJ) {
-	            intI = intJ;
+                intI = intJ;
             }
         }
 
         class ConstructorsTestClass17 : ConstructorsTestClass17_Base
-        {	
+        {
             //base constructor initializer
             ConstructorsTestClass17() : base(3) {
-	            intI = intI * 2;
+                intI = intI * 2;
             }
 
             public static bool testMethod() {
 
-	            ConstructorsTestClass17 Test = new ConstructorsTestClass17();
-        			
-	            if (Test.intI == 6) {
-		            return true;
-	            }
-	            else {
-		            return false;
-                }   
-	        }
+                ConstructorsTestClass17 Test = new ConstructorsTestClass17();
+
+                if (Test.intI == 6) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
         }
 
         class ConstructorsTestClass20_Base
@@ -1317,18 +1320,18 @@ namespace Microsoft.Zelig.Test
             }
         }
 
-        class ConstructorsTestClass34 {	
+        class ConstructorsTestClass34 {
 
-	        //static constructor
-	        static ConstructorsTestClass34() {
-		        intI = 2;
-	        }
+            //static constructor
+            static ConstructorsTestClass34() {
+                intI = 2;
+            }
 
-	        ConstructorsTestClass34() {
-		        intI = 3;
-	        }
+            ConstructorsTestClass34() {
+                intI = 3;
+            }
 
-	        static int intI = 1;
+            static int intI = 1;
 
             public static bool testMethod()
             {
@@ -1349,24 +1352,24 @@ namespace Microsoft.Zelig.Test
 
                 return RetVal;
             }
-	    }
+        }
 
-	class ConstructorsTestClass35 {
+        class ConstructorsTestClass35 {
 
-		// static constructor - with Exception
-		static ConstructorsTestClass35() {
-			try { throw new Exception(); }
-			catch { }
-			intI = 5;			
-		}
+            // static constructor - with Exception
+            static ConstructorsTestClass35() {
+                try { throw new Exception(); }
+                catch { }
+                intI = 5;
+            }
 
-		static int intI = 1;
+            static int intI = 1;
 
-		public static bool testMethod()
-		{
-			return (intI == 5);
-		}
-	}
+            public static bool testMethod()
+            {
+                return (intI == 5);
+            }
+        }
 
 
         class ConstructorsTestClass44_Base
@@ -1470,10 +1473,10 @@ namespace Microsoft.Zelig.Test
                 }
             }
         }
-        
+
         class ConstructorsTestClass47_sub
         {
-	        public static int Y = ConstructorsTestClass47.X + 1;
+            public static int Y = ConstructorsTestClass47.X + 1;
         }
 
         class ConstructorsTestClass50_Base
@@ -1725,12 +1728,12 @@ namespace Microsoft.Zelig.Test
 
         public class ConstructorsTestClass64_Base
         {
-	        public ConstructorsTestClass64_Base() 
-	        {
-	        }
-	        ~ConstructorsTestClass64_Base() 
-	        {
-	        }
+            public ConstructorsTestClass64_Base()
+            {
+            }
+            ~ConstructorsTestClass64_Base()
+            {
+            }
         }
 
         class ConstructorsTestClass64_Derived : ConstructorsTestClass64_Base

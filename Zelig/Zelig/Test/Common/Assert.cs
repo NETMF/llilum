@@ -5,18 +5,30 @@ namespace Microsoft.Zelig.Test
 {
     public static class Assert
     {
-        public static TestResult CheckFailed( TestResult result )
+        public static TestResult CheckFailed(TestResult result)
         {
-            if(result == TestResult.Fail)
+            if ((result & TestResult.Fail) != 0)
             {
-                BugCheck.Assert( false, BugCheck.StopCode.InvalidOperation ); 
+                BugCheck.Assert(false, BugCheck.StopCode.InvalidOperation);
             }
-
-            BugCheck.Log( "pass" );
 
             return result;
         }
-            
+
+        public static TestResult CheckFailed(TestResult result, string testName, int testNumber)
+        {
+            if ((result & TestResult.Fail) != 0)
+            {
+                TestConsole.WriteLine($"Failed: {testName}{testNumber}");
+            }
+            else if ((result & TestResult.KnownFailure) != 0)
+            {
+                TestConsole.WriteLine($"Known failure: {testName}{testNumber}");
+            }
+
+            return result;
+        }
+
         public static void AreEqual(object expected, object actual)
         {
             AreEqual(expected, actual, null);

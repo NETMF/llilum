@@ -48,30 +48,42 @@ namespace Microsoft.Zelig.Test
             ////////
             //////// mscorlib
             ////////
-            //tests.Add( new ArraysSimpleTests( ) );
-            //tests.Add( new ArraysOtherTests( ) );
-            //tests.Add( new BasicConceptTests( ) );
-            //tests.Add( new ConstructorsTests( ) );
-            //tests.Add( new ConstTests( ) ); 
-            //tests.Add( new DeclarationsTests( ) ); 
-            //tests.Add( new DestructorsTests( ) ); 
-            //tests.Add( new EventsTests( ) ); 
-            //tests.Add( new FieldsTests( ) ); 
-            //tests.Add( new IndexersTests( ) ); 
-            //tests.Add( new OperatorsTests( ) ); 
-            //tests.Add( new PropertiesTests( ) ); 
-            //tests.Add( new Static_InstTests( ) ); 
-            //tests.Add( new MembersTests( ) ); 
-            //tests.Add( new MethodsTests( ) ); 
-            tests.Add( new StructsTests( ) );
+            //tests.Add(new ArraysSimpleTests());
+            //tests.Add(new ArraysOtherTests());
+            //tests.Add(new BasicConceptTests());
+            //tests.Add(new ConstructorsTests());
+            //tests.Add(new ConstTests());
+            //tests.Add(new DeclarationsTests());
+            //tests.Add(new DestructorsTests());
+            //tests.Add(new EnumTests());
+            //tests.Add(new EventsTests());
+            //tests.Add(new FieldsTests());
+            //tests.Add(new IndexersTests());
+            tests.Add(new InterfaceTests());
+            //tests.Add(new OperatorsTests());
+            //tests.Add(new PropertiesTests());
+            //tests.Add(new Static_InstTests());
+            //tests.Add(new MembersTests());
+            //tests.Add(new MethodsTests());
+            //tests.Add(new StructsTests());
 
-            foreach(ITestInterface t in tests)
+            foreach (ITestInterface t in tests)
             {
                 try
                 {
-                    if(t.Initialize() == InitializeResult.ReadyToGo)
+                    if (t.Initialize() == InitializeResult.ReadyToGo)
                     {
-                        ((TestBase)t).Run( null ); 
+                        var test = (TestBase)t;
+                        TestConsole.WriteLine($"Test '{test.Name}' running...");
+                        TestResult result = test.Run(null);
+
+                        string resultString = "Passed";
+                        if ((result & TestResult.Fail) != 0)
+                        {
+                            resultString = "Failed";
+                        }
+
+                        TestConsole.WriteLine("Result: " + resultString);
                     }
                 }
                 catch
@@ -79,6 +91,8 @@ namespace Microsoft.Zelig.Test
                     Log.Comment( "caught exception while running tests" ); 
                 }
             }
+
+            TestConsole.WriteLine("All tests complete.");
         }
 
         public static void Main( string[] args)

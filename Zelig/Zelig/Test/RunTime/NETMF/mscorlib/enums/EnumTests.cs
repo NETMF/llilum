@@ -4,17 +4,16 @@
 
 using System;
 using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class EnumTests : IMFTestInterface
+    public class EnumTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
         {
             Log.Comment("Adding set up for the tests.");
-            // Add your functionality here.                
+            // Add your functionality here.
 
             return InitializeResult.ReadyToGo;
         }
@@ -25,628 +24,695 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("Cleaning up after the tests");
         }
 
+        public override TestResult Run(string[] args)
+        {
+            TestResult result = TestResult.Pass;
+
+            string testName = "Enum";
+            result |= Assert.CheckFailed(Enum01_Test(), testName, 1);
+            result |= Assert.CheckFailed(Enum02_Test(), testName, 2);
+            result |= Assert.CheckFailed(Enum07_Test(), testName, 7);
+            result |= Assert.CheckFailed(Enum09_Test(), testName, 9);
+            result |= Assert.CheckFailed(Enum10_Test(), testName, 10);
+            result |= Assert.CheckFailed(Enum11_Test(), testName, 11);
+            result |= Assert.CheckFailed(Enum27_Test(), testName, 27);
+            result |= Assert.CheckFailed(Enum28_Test(), testName, 28);
+            result |= Assert.CheckFailed(Enum29_Test(), testName, 29);
+            result |= Assert.CheckFailed(Enum30_Test(), testName, 30);
+            result |= Assert.CheckFailed(Enum31_Test(), testName, 31);
+            result |= Assert.CheckFailed(Enum33_Test(), testName, 33);
+            result |= Assert.CheckFailed(Enum34_Test(), testName, 34);
+            result |= Assert.CheckFailed(Enum35_Test(), testName, 35);
+            result |= Assert.CheckFailed(Enum36_Test(), testName, 36);
+            result |= Assert.CheckFailed(Enum37_Test(), testName, 37);
+            result |= Assert.CheckFailed(Enum38_Test(), testName, 38);
+            result |= Assert.CheckFailed(Enum39_Test(), testName, 39);
+            result |= Assert.CheckFailed(Enum40_Test(), testName, 40);
+            result |= Assert.CheckFailed(Enum41_Test(), testName, 41);
+            result |= Assert.CheckFailed(Enum42_Test(), testName, 42);
+            result |= Assert.CheckFailed(Enum43_Test(), testName, 43);
+            result |= Assert.CheckFailed(Enum44_Test(), testName, 44);
+            result |= Assert.CheckFailed(Enum45_Test(), testName, 45);
+            result |= Assert.CheckFailed(Enum46_Test(), testName, 46);
+            result |= Assert.CheckFailed(Enum47_Test(), testName, 47);
+            result |= Assert.CheckFailed(Enum48_Test(), testName, 48);
+            result |= Assert.CheckFailed(Enum54_Test(), testName, 54);
+            result |= Assert.CheckFailed(Enum55_Test(), testName, 55);
+            result |= Assert.CheckFailed(Enum56_Test(), testName, 56);
+            result |= Assert.CheckFailed(Enum57_Test(), testName, 57);
+            result |= Assert.CheckFailed(Enum58_Test(), testName, 58);
+            result |= Assert.CheckFailed(Enum62_Test(), testName, 62);
+            result |= Assert.CheckFailed(Enum63_Test(), testName, 63);
+            result |= Assert.CheckFailed(Enum64_Test(), testName, 64);
+            result |= Assert.CheckFailed(Enum65_Test(), testName, 65);
+            result |= Assert.CheckFailed(Enum66_Test(), testName, 66);
+            result |= Assert.CheckFailed(Enum67_Test(), testName, 67);
+            result |= Assert.CheckFailed(Enum68_Test(), testName, 68);
+            result |= Assert.CheckFailed(Enum69_Test(), testName, 69);
+            result |= Assert.CheckFailed(Enum70_Test(), testName, 70);
+            result |= Assert.CheckFailed(Enum71_Test(), testName, 71);
+            result |= Assert.CheckFailed(Enum72_Test(), testName, 72);
+            result |= Assert.CheckFailed(Enum73_Test(), testName, 73);
+            result |= Assert.CheckFailed(Enum74_Test(), testName, 74);
+            result |= Assert.CheckFailed(Enum75_Test(), testName, 75);
+            result |= Assert.CheckFailed(Enum77_Test(), testName, 77);
+            result |= Assert.CheckFailed(Enum78_Test(), testName, 78);
+            result |= Assert.CheckFailed(Enum83_Test(), testName, 83);
+            result |= Assert.CheckFailed(Enum86_Test(), testName, 86);
+            result |= Assert.CheckFailed(Enum93_Test(), testName, 93);
+            result |= Assert.CheckFailed(Enum94_Test(), testName, 94);
+
+            testName = "EnumFlags";
+            result |= Assert.CheckFailed(EnumFlags01_Test(), testName, 1);
+            result |= Assert.CheckFailed(EnumFlags02_Test(), testName, 2);
+            result |= Assert.CheckFailed(EnumFlags03_Test(), testName, 3);
+            result |= Assert.CheckFailed(EnumFlags04_Test(), testName, 4);
+
+            return result;
+        }
+
         //Enum Test methods
         //The following tests were ported from folder current\test\cases\client\CLR\Conformance\10_classes\Enum
         //enum01,enum02,enum07,enum09,enum10,enum11,enum27,enum28,enum29,enum30,enum31,enum33,enum34,enum35,enum36,enum37,enum38,enum39,enum40,enum41,enum42,enum43,enum43u,enum44,enum45,enum46,enum46u,enum47,enum47u,enum48,enum48u,enum54,enum55,enum56,enum57,enum58,enum62,enum63,enum64,enum65,enum66,enum67,enum68,enum69,enum70,enum71,enum72,enum73,enum74,enum75,enum77,enum78,enum83,enum86,enum93,enum94,enum_flags01,enum_flags02,enum_flags03,enum_flags04
 
         //Test Case Calls 
         [TestMethod]
-        public MFTestResults Enum_enum01_Test()
+        public TestResult Enum01_Test()
         {
             Log.Comment("Make sure that a basic enum declaration, definition, and assignment work.");
             if (Enum_TestClass_enum01.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum02_Test()
+        public TestResult Enum02_Test()
         {
             Log.Comment("Make sure that basic enum-with-base-type declarations, definitions, and assignments work.");
             if (Enum_TestClass_enum02.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum07_Test()
+        public TestResult Enum07_Test()
         {
             Log.Comment("Make sure that basic enum-with-base-type declarations, definitions, and assignments work.");
             if (Enum_TestClass_enum07.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum09_Test()
+        public TestResult Enum09_Test()
         {
             Log.Comment("Make sure that basic enum-with-base-type declarations, definitions, and assignments work.");
             if (Enum_TestClass_enum09.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum10_Test()
+        public TestResult Enum10_Test()
         {
             Log.Comment("Make sure that basic enum-with-base-type declarations, definitions, and assignments work.");
             if (Enum_TestClass_enum10.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum11_Test()
+        public TestResult Enum11_Test()
         {
             Log.Comment("Make sure that basic enum-with-base-type declarations, definitions, and assignments work.");
             if (Enum_TestClass_enum11.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum27_Test()
+        public TestResult Enum27_Test()
         {
             Log.Comment("Check that enumerator values are initialized as expected");
             if (Enum_TestClass_enum27.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum28_Test()
+        public TestResult Enum28_Test()
         {
             Log.Comment("Check that enumerator values are initialized as expected");
             if (Enum_TestClass_enum28.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum29_Test()
+        public TestResult Enum29_Test()
         {
             Log.Comment("The values of the enumerators need not be distinct");
             if (Enum_TestClass_enum29.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum30_Test()
+        public TestResult Enum30_Test()
         {
             Log.Comment("Check the point of definition of an enumerator");
             if (Enum_TestClass_enum30.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum31_Test()
+        public TestResult Enum31_Test()
         {
             Log.Comment("Check the point of definition of an enumerator");
             if (Enum_TestClass_enum31.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum33_Test()
+        public TestResult Enum33_Test()
         {
             Log.Comment("Enums obey local scope rules.  An enum of the same name may be defined in an inner scope.");
             if (Enum_TestClass_enum33.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum34_Test()
+        public TestResult Enum34_Test()
         {
             Log.Comment("Enums can be converted to int.");
             if (Enum_TestClass_enum34.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum35_Test()
+        public TestResult Enum35_Test()
         {
             Log.Comment("If no enumerator-definitions with = appear, then the");
             Log.Comment(" values of the corresponding constants begin at zero and");
             if (Enum_TestClass_enum35.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum36_Test()
+        public TestResult Enum36_Test()
         {
             Log.Comment("If no enumerator-definitions with = appear, then the");
             Log.Comment(" values of the corresponding constants begin at zero and");
             if (Enum_TestClass_enum36.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum37_Test()
+        public TestResult Enum37_Test()
         {
             Log.Comment("If no enumerator-definitions with = appear, then the");
             Log.Comment(" values of the corresponding constants begin at zero and");
             if (Enum_TestClass_enum37.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum38_Test()
+        public TestResult Enum38_Test()
         {
             Log.Comment("Enums can be declared in any scopt that a class can be declared in.");
             if (Enum_TestClass_enum38.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum39_Test()
+        public TestResult Enum39_Test()
         {
             Log.Comment("If the constant-expression initilizing an enumerator is of integral type,");
             Log.Comment("it must be within the range of values that can be represented by the underlying type.");
             if (Enum_TestClass_enum39.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum40_Test()
+        public TestResult Enum40_Test()
         {
             Log.Comment("If the constant-expression initilizing an enumerator is of integral type,");
             Log.Comment("it must be within the range of values that can be represented by the underlying type.");
             if (Enum_TestClass_enum40.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum41_Test()
+        public TestResult Enum41_Test()
         {
             Log.Comment("If the constant-expression initilizing an enumerator is of integral type,");
             Log.Comment("it must be within the range of values that can be represented by the underlying type.");
             if (Enum_TestClass_enum41.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum42_Test()
+        public TestResult Enum42_Test()
         {
             Log.Comment("If the constant-expression initilizing an enumerator is of integral type,");
             Log.Comment("it must be within the range of values that can be represented by the underlying type.");
             if (Enum_TestClass_enum42.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum43_Test()
+        public TestResult Enum43_Test()
         {
             Log.Comment("If the constant-expression initilizing an enumerator is of integral type,");
             Log.Comment("it must be within the range of values that can be represented by the underlying type.");
             if (Enum_TestClass_enum43.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum43u_Test()
+        public TestResult Enum43u_Test()
         {
             Log.Comment("If the constant-expression initilizing an enumerator is of integral type,");
             Log.Comment("it must be within the range of values that can be represented by the underlying type.");
             if (Enum_TestClass_enum43u.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum44_Test()
+        public TestResult Enum44_Test()
         {
             Log.Comment("If the constant-expression initilizing an enumerator is of integral type,");
             Log.Comment("it must be within the range of values that can be represented by the underlying type.");
             if (Enum_TestClass_enum44.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum45_Test()
+        public TestResult Enum45_Test()
         {
             Log.Comment("If the constant-expression initilizing an enumerator is of integral type,");
             Log.Comment("it must be within the range of values that can be represented by the underlying type.");
             if (Enum_TestClass_enum45.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum46_Test()
+        public TestResult Enum46_Test()
         {
             Log.Comment("If the constant-expression initilizing an enumerator is of integral type,");
             Log.Comment("it must be within the range of values that can be represented by the underlying type.");
             if (Enum_TestClass_enum46.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum46u_Test()
+        public TestResult Enum46u_Test()
         {
             Log.Comment("If the constant-expression initilizing an enumerator is of integral type,");
             Log.Comment("it must be within the range of values that can be represented by the underlying type.");
             if (Enum_TestClass_enum46u.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum47_Test()
+        public TestResult Enum47_Test()
         {
             Log.Comment("If the constant-expression initilizing an enumerator is of integral type,");
             Log.Comment("it must be within the range of values that can be represented by the underlying type.");
             if (Enum_TestClass_enum47.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum47u_Test()
+        public TestResult Enum47u_Test()
         {
             Log.Comment("If the constant-expression initilizing an enumerator is of integral type,");
             Log.Comment("it must be within the range of values that can be represented by the underlying type.");
             if (Enum_TestClass_enum47u.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum48_Test()
+        public TestResult Enum48_Test()
         {
             Log.Comment("If the constant-expression initilizing an enumerator is of integral type,");
             Log.Comment("it must be within the range of values that can be represented by the underlying type.");
             if (Enum_TestClass_enum48.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum48u_Test()
+        public TestResult Enum48u_Test()
         {
             Log.Comment("If the constant-expression initilizing an enumerator is of integral type,");
             Log.Comment("it must be within the range of values that can be represented by the underlying type.");
             if (Enum_TestClass_enum48u.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum54_Test()
+        public TestResult Enum54_Test()
         {
             Log.Comment("++ and -- operators can be used with objects of enumeration type.  Check postfix form.");
             if (Enum_TestClass_enum54.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum55_Test()
+        public TestResult Enum55_Test()
         {
             Log.Comment("++ and -- operators can be used with objects of enumeration type.  Check postfix form.");
             if (Enum_TestClass_enum55.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum56_Test()
+        public TestResult Enum56_Test()
         {
             Log.Comment("++ and -- operators can be used with objects of enumeration type.  Check postfix form.");
             if (Enum_TestClass_enum56.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum57_Test()
+        public TestResult Enum57_Test()
         {
             Log.Comment("++ and -- operators can be used with objects of enumeration type.  Check postfix form.");
             if (Enum_TestClass_enum57.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum58_Test()
+        public TestResult Enum58_Test()
         {
             Log.Comment("Bitwise operators AND, OR, XOR, and NOT can be used with objects of enumeration type.");
 
             if (Enum_TestClass_enum58.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum62_Test()
+        public TestResult Enum62_Test()
         {
             if (Enum_TestClass_enum62.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum63_Test()
+        public TestResult Enum63_Test()
         {
             Log.Comment("Make sure that a basic enum declaration, definition, and assignment work.");
             if (Enum_TestClass_enum63.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum64_Test()
+        public TestResult Enum64_Test()
         {
             Log.Comment("Make sure that a basic enum declaration, definition, and assignment work.");
             if (Enum_TestClass_enum64.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum65_Test()
+        public TestResult Enum65_Test()
         {
             Log.Comment("Make sure that a basic enum declaration, definition, and assignment work.");
             if (Enum_TestClass_enum65.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum66_Test()
+        public TestResult Enum66_Test()
         {
             Log.Comment("Make sure that a basic enum declaration, definition, and assignment work.");
             if (Enum_TestClass_enum66.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum67_Test()
+        public TestResult Enum67_Test()
         {
             Log.Comment("Make sure that a basic enum declaration, definition, and assignment work.");
             if (Enum_TestClass_enum67.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum68_Test()
+        public TestResult Enum68_Test()
         {
             Log.Comment("Make sure that a basic enum declaration, definition, and assignment work.");
             if (Enum_TestClass_enum68.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum69_Test()
+        public TestResult Enum69_Test()
         {
             Log.Comment("Make sure that a basic enum declaration, definition, and assignment work.");
             if (Enum_TestClass_enum69.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum70_Test()
+        public TestResult Enum70_Test()
         {
             Log.Comment("Make sure that a basic enum declaration, definition, and assignment work.");
             if (Enum_TestClass_enum70.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum71_Test()
+        public TestResult Enum71_Test()
         {
             Log.Comment("Make sure that a basic enum declaration, definition, and assignment work.");
             Log.Comment("This test is expeced to fail");
             if (Enum_TestClass_enum71.testMethod())
             {
-                return MFTestResults.Fail;
+                return TestResult.Fail;
             }
-            return MFTestResults.Pass;
+            return TestResult.Pass;
         }
         [TestMethod]
-        public MFTestResults Enum_enum72_Test()
+        public TestResult Enum72_Test()
         {
             Log.Comment("Enum_TestClass_? bitwise and on enums");
             if (Enum_TestClass_enum72.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum73_Test()
+        public TestResult Enum73_Test()
         {
             Log.Comment("Enum_TestClass_? bitwise or on enums");
             if (Enum_TestClass_enum73.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum74_Test()
+        public TestResult Enum74_Test()
         {
             Log.Comment("Enum_TestClass_? bitwise xor on enums");
             if (Enum_TestClass_enum74.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum75_Test()
+        public TestResult Enum75_Test()
         {
             Log.Comment("Enum_TestClass_? bitwise not on enums");
             if (Enum_TestClass_enum75.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum77_Test()
+        public TestResult Enum77_Test()
         {
             Log.Comment("Enum_TestClass_? bitwise not on enums");
             if (Enum_TestClass_enum77.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum78_Test()
+        public TestResult Enum78_Test()
         {
             if (Enum_TestClass_enum78.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum83_Test()
+        public TestResult Enum83_Test()
         {
             Log.Comment("Enum member list can end with a comma");
             if (Enum_TestClass_enum83.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum86_Test()
+        public TestResult Enum86_Test()
         {
             Log.Comment("[Access] modifiers of an enum declaration have the same meaning");
             Log.Comment("as those of a class declaration.");
             if (Enum_TestClass_enum86.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum93_Test()
+        public TestResult Enum93_Test()
         {
             Log.Comment("Example from Enums chapter in CLS");
             if (Enum_TestClass_enum93.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum94_Test()
+        public TestResult Enum94_Test()
         {
             Log.Comment("...any value of the underlying type of an enum can be cast to the enum type.");
             if (Enum_TestClass_enum94.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum_flags01_Test()
+        public TestResult EnumFlags01_Test()
         {
             Log.Comment("check FlagAttribute with enum");
-            if (Enum_TestClass_enum_flags01.testMethod())
+            if (Enum_TestClassFlags01.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum_flags02_Test()
+        public TestResult EnumFlags02_Test()
         {
             Log.Comment("check FlagAttribute with enum");
-            if (Enum_TestClass_enum_flags02.testMethod())
+            if (Enum_TestClassFlags02.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum_flags03_Test()
+        public TestResult EnumFlags03_Test()
         {
             Log.Comment("check FlagAttribute with enum");
-            if (Enum_TestClass_enum_flags03.testMethod())
+            if (Enum_TestClassFlags03.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Enum_enum_flags04_Test()
+        public TestResult EnumFlags04_Test()
         {
             Log.Comment("check FlagAttribute with enum with conversion");
-            if (Enum_TestClass_enum_flags04.testMethod())
+            if (Enum_TestClassFlags04.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         //Compiled Test Cases 
@@ -2815,7 +2881,7 @@ namespace Microsoft.SPOT.Platform.Tests
             }
         }
         [Flags]
-        enum Enum_TestClass_enum_flags01_Flag
+        enum Enum_TestClassFlags01_Flag
         {
             Zero = 0x0000,
             First = 0x0001,
@@ -2823,11 +2889,11 @@ namespace Microsoft.SPOT.Platform.Tests
             Third = 0x0004,
             Fourth = 0x0008,
         }
-        public class Enum_TestClass_enum_flags01
+        public class Enum_TestClassFlags01
         {
             public static int Main_old()
 	{
-		Enum_TestClass_enum_flags01_Flag r = Enum_TestClass_enum_flags01_Flag.First | Enum_TestClass_enum_flags01_Flag.Fourth;
+		Enum_TestClassFlags01_Flag r = Enum_TestClassFlags01_Flag.First | Enum_TestClassFlags01_Flag.Fourth;
 		Log.Comment(r.ToString());
 		return (int)r == (int)0x0009 ? 0 : 1;
 	}
@@ -2837,7 +2903,7 @@ namespace Microsoft.SPOT.Platform.Tests
             }
         }
         [Flags]
-        enum Enum_TestClass_enum_flags02_Flag
+        enum Enum_TestClassFlags02_Flag
         {
             Zero = 0x0000,
             First = 0x0001,
@@ -2845,12 +2911,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Third = 0x0004,
             Fourth = 0x0008,
         }
-        public class Enum_TestClass_enum_flags02
+        public class Enum_TestClassFlags02
         {
             public static int Main_old()
 	{
-		Enum_TestClass_enum_flags02_Flag r = Enum_TestClass_enum_flags02_Flag.First  | Enum_TestClass_enum_flags02_Flag.Fourth;
-		r = r | Enum_TestClass_enum_flags02_Flag.Second  | Enum_TestClass_enum_flags02_Flag.Third;
+		Enum_TestClassFlags02_Flag r = Enum_TestClassFlags02_Flag.First  | Enum_TestClassFlags02_Flag.Fourth;
+		r = r | Enum_TestClassFlags02_Flag.Second  | Enum_TestClassFlags02_Flag.Third;
 
 		Log.Comment(r.ToString());
 		return (int)r == (int)0x000f ? 0 : 1;
@@ -2861,7 +2927,7 @@ namespace Microsoft.SPOT.Platform.Tests
             }
         }
         [Flags]
-        enum Enum_TestClass_enum_flags03_Flag
+        enum Enum_TestClassFlags03_Flag
         {
             Zero = 0x0000,
             First = 0x0001,
@@ -2869,11 +2935,11 @@ namespace Microsoft.SPOT.Platform.Tests
             Third = 0x0004,
             Fourth = 0x0008,
         }
-        public class Enum_TestClass_enum_flags03
+        public class Enum_TestClassFlags03
         {
             public static int Main_old()
 	{
-		Enum_TestClass_enum_flags03_Flag r = Enum_TestClass_enum_flags03_Flag.First | Enum_TestClass_enum_flags03_Flag.Fourth;
+		Enum_TestClassFlags03_Flag r = Enum_TestClassFlags03_Flag.First | Enum_TestClassFlags03_Flag.Fourth;
 		r+= 0x00f;	// out of range
 		Log.Comment(r.ToString());
 		return (int)r == (int)24 ? 0 : 1;
@@ -2884,7 +2950,7 @@ namespace Microsoft.SPOT.Platform.Tests
             }
         }
         [Flags]
-        enum Enum_TestClass_enum_flags04_Flag
+        enum Enum_TestClassFlags04_Flag
         {
             Zero = 0x0000,
             First = 0x0001,
@@ -2892,12 +2958,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Third = 0x0004,
             Fourth = 0x0008,
         }
-        public class Enum_TestClass_enum_flags04
+        public class Enum_TestClassFlags04
         {
             public static int Main_old()
 	{
 		int i = 0x0f;
-		Enum_TestClass_enum_flags04_Flag r  = (Enum_TestClass_enum_flags04_Flag)i;
+		Enum_TestClassFlags04_Flag r  = (Enum_TestClassFlags04_Flag)i;
 		Log.Comment(r.ToString());
 		return (int)r == (int)0x000f ? 0 : 1;
 	}

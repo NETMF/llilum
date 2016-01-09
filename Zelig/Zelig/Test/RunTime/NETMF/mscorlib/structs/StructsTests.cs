@@ -29,33 +29,34 @@ namespace Microsoft.Zelig.Test
         {
             TestResult result = TestResult.Pass;
 
-            result |= Assert.CheckFailed( Structs01_Test( ) );
-            result |= Assert.CheckFailed( Structs04_Test() );
-            result |= Assert.CheckFailed( Structs11_Test() );
-            result |= Assert.CheckFailed( Structs12_Test() );
-            result |= Assert.CheckFailed( Structs13_Test() );
-            result |= Assert.CheckFailed( Structs14_Test() );
-            result |= Assert.CheckFailed( Structs15_Test() );
-            result |= Assert.CheckFailed( Structs19_Test() );
-            result |= Assert.CheckFailed( Structs21_Test() );
-            result |= Assert.CheckFailed( Structs23_Test() );
-            result |= Assert.CheckFailed( Structs24_Test() );
-            result |= Assert.CheckFailed( Structs26_Test() );
-            result |= Assert.CheckFailed( Structs28_Test() );
-            result |= Assert.CheckFailed( Structs29_Test() );
-            result |= Assert.CheckFailed( Structs32_Test() );
-            result |= Assert.CheckFailed( Structs33_Test() );
-            result |= Assert.CheckFailed( Structs34_Test() );
-            result |= Assert.CheckFailed( Structs35_Test() );
-            result |= Assert.CheckFailed( Structs36_Test() );
-            result |= Assert.CheckFailed( Structs37_Test() );
-            result |= Assert.CheckFailed( Structs38_Test() );
-            result |= Assert.CheckFailed( Structs40_Test() );
-            result |= Assert.CheckFailed( Structs41_Test() );
-            result |= Assert.CheckFailed( Structs42_Test() );
-            result |= Assert.CheckFailed( Structs43_Test() );
-            result |= Assert.CheckFailed( Structs44_Test() );
-            result |= Assert.CheckFailed( Structs55_Test() );
+            string testName = "Structs";
+            result |= Assert.CheckFailed(Structs01_Test(), testName, 1);
+            result |= Assert.CheckFailed(Structs04_Test(), testName, 4);
+            result |= Assert.CheckFailed(Structs11_Test(), testName, 11);
+            result |= Assert.CheckFailed(Structs12_Test(), testName, 12);
+            result |= Assert.CheckFailed(Structs13_Test(), testName, 13);
+            result |= Assert.CheckFailed(Structs14_Test(), testName, 14);
+            result |= Assert.CheckFailed(Structs15_Test(), testName, 15);
+            result |= Assert.CheckFailed(Structs19_Test(), testName, 19);
+            result |= Assert.CheckFailed(Structs21_Test(), testName, 21);
+            result |= Assert.CheckFailed(Structs23_Test(), testName, 23);
+            result |= Assert.CheckFailed(Structs24_Test(), testName, 24);
+            result |= Assert.CheckFailed(Structs26_Test(), testName, 26);
+            result |= Assert.CheckFailed(Structs28_Test(), testName, 28);
+            result |= Assert.CheckFailed(Structs29_Test(), testName, 29);
+            result |= Assert.CheckFailed(Structs32_Test(), testName, 32);
+            result |= Assert.CheckFailed(Structs33_Test(), testName, 33);
+            result |= Assert.CheckFailed(Structs34_Test(), testName, 34);
+            result |= Assert.CheckFailed(Structs35_Test(), testName, 35);
+            result |= Assert.CheckFailed(Structs36_Test(), testName, 36);
+            result |= Assert.CheckFailed(Structs37_Test(), testName, 37);
+            result |= Assert.CheckFailed(Structs38_Test(), testName, 38);
+            result |= Assert.CheckFailed(Structs40_Test(), testName, 40);
+            result |= Assert.CheckFailed(Structs41_Test(), testName, 41);
+            result |= Assert.CheckFailed(Structs42_Test(), testName, 42);
+            result |= Assert.CheckFailed(Structs43_Test(), testName, 43);
+            result |= Assert.CheckFailed(Structs44_Test(), testName, 44);
+            result |= Assert.CheckFailed(Structs55_Test(), testName, 55);
 
             return result;
         }
@@ -107,8 +108,6 @@ namespace Microsoft.Zelig.Test
         [TestMethod]
         public TestResult Structs13_Test()
         {
-            Log.Comment("Expected failure, see 16852 for more details");
-            
             StructsTestClass_13_Notes.Note();
             if (StructsTestClass_13.testMethod())
             {

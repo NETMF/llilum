@@ -423,6 +423,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
 
                 newVar = m_cfg.AllocatePhiVariable( newTarget );
             }
+            else if (var is ExceptionObjectVariableExpression)
+            {
+                newVar = m_cfg.AllocateExceptionObjectVariable(var.Type);
+            }
             else
             {
                 throw TypeConsistencyErrorException.Create( "Unexpected expression '{0}' in expanding call to '{1}'", var, call.TargetMethod );

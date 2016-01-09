@@ -26,8 +26,6 @@ namespace Microsoft.Zelig.Test
 
         public virtual TestResult Run( string[] args )
         {
-            TestConsole.WriteLine( String.Format("test '{0}' running...", this.Name ) );
-
             return TestResult.Pass;
         }
     }
