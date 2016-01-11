@@ -106,7 +106,8 @@ namespace Microsoft.Zelig.FrontEnd
         const string DefaultLlcArgs_common    = "-O2 -code-model=small -data-sections -filetype=obj";
         const string DefaultLlcArgs_target_m0 = "-march=thumb -mcpu=cortex-m0 -mtriple=thumbv6m-none-eabi";
         const string DefaultLlcArgs_target_m3 = "-march=thumb -mcpu=cortex-m3 -mtriple=thumbv7m-none-eabi";
-        const string DefaultLlcArgs_target_m4 = "-march=thumb -mcpu=cortex-m4 -mtriple=thumbv7m-none-eabi";
+        //const string DefaultLlcArgs_target_m4 = "-march=thumb -mcpu=cortex-m4 -mtriple=thumbv7m-none-eabi"; https://github.com/NETMF/llilum/issues/136
+        const string DefaultLlcArgs_target_m4 = "-march=thumb -mcpu=cortex-m3 -mtriple=thumbv7m-none-eabi";
         const string DefaultLlcArgs_target_m7 = "-march=thumb -mcpu=cortex-m7 -mtriple=thumbv7m-none-eabi";
         const string DefaultLlcArgs_target_df = DefaultLlcArgs_target_m3;
         const string DefaultLlcArgs_reloc     = "-relocation-model=pic";
@@ -114,7 +115,8 @@ namespace Microsoft.Zelig.FrontEnd
         const string DefaultOptExeArgs_common    = "-verify-debug-info -verify-dom-info -verify-each -verify-loop-info -verify-regalloc -verify-region-info -aa-eval -indvars -gvn -globaldce -adce -dce -tailcallopt -scalarrepl -mem2reg -ipconstprop -deadargelim -sccp -dce -ipsccp -dce -constmerge -scev-aa -targetlibinfo -irce -dse -dce -argpromotion -mem2reg -adce -mem2reg -globaldce -die -dce -dse";
         const string DefaultOptArgs_target_m0 = "-march=thumb -mcpu=cortex-m0";
         const string DefaultOptArgs_target_m3 = "-march=thumb -mcpu=cortex-m3";
-        const string DefaultOptArgs_target_m4 = "-march=thumb -mcpu=cortex-m4";
+        //const string DefaultOptArgs_target_m4 = "-march=thumb -mcpu=cortex-m4"; https://github.com/NETMF/llilum/issues/136
+        const string DefaultOptArgs_target_m4 = "-march=thumb -mcpu=cortex-m3";
         const string DefaultOptArgs_target_m7 = "-march=thumb -mcpu=cortex-m7";
         const string DefaultOptArgs_target_df = DefaultOptArgs_target_m3;
          

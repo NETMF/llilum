@@ -34,7 +34,8 @@ IF %1.==. (
     SET TARGET=%1
     IF "%1"=="K64F" (
     SET SIZE_OF_HEAP=0x10000
-    SET LLILUM_TARGET_CPU=cortex-m4
+    REM SET LLILUM_TARGET_CPU=cortex-m4 https://github.com/NETMF/llilum/issues/136
+    SET LLILUM_TARGET_CPU=cortex-m3
     SET LLILUM_TARGET_TRIPLE=Thumb-NoSubArch-UnknownVendor-UnknownOS-GNUEABI-ELF
     SET LWIP_USE=1
     ) ELSE IF "%1"=="LPC1768" (
