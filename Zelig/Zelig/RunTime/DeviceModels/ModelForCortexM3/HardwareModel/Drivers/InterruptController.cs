@@ -165,10 +165,10 @@ namespace Microsoft.DeviceModels.Chipset.CortexM3.Drivers
 
         public void Initialize()
         {
-            m_handlers = new RT.KernelList< Handler >();
-            m_interrupts = new RT.KernelCircularBuffer<InterruptData>(32);
-            m_interruptThread = new System.Threading.Thread(DispatchInterrupts);
-            m_interruptThread.Priority = System.Threading.ThreadPriority.Highest;
+            m_handlers                  = new RT.KernelList< Handler >();
+            m_interrupts                = new RT.KernelCircularBuffer<InterruptData>(32);
+            m_interruptThread           = new System.Threading.Thread(DispatchInterrupts);
+            m_interruptThread.Priority  = System.Threading.ThreadPriority.Highest;
         }
 
         public void Activate()

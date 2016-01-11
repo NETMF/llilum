@@ -845,7 +845,10 @@ namespace Microsoft.Zelig.Runtime
                     return;
 
                 default:
-                    BugCheck.Raise( BugCheck.StopCode.HeapCorruptionDetected );
+                    {
+                        BugCheck.Log  ( "Corruption! address=0x%08x, flags=0x%08x", (int)address.ToUInt32( ), (int)flags );
+                        BugCheck.Raise( BugCheck.StopCode.HeapCorruptionDetected );
+                    }
                     return;
             }
 

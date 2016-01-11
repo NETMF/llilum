@@ -4,11 +4,11 @@
 
 namespace Microsoft.CortexM3OnMBED
 {
-using System;
+    using System;
 
+    using Zelig;
     using RT      = Microsoft.Zelig.Runtime;
     using Chipset = Microsoft.CortexM3OnCMSISCore;
-    using MBED    = Microsoft.Zelig.Support.mbed;
     using LLOS    = Zelig.LlilumOSAbstraction;
 
     public class MemoryManager : Chipset.MemoryManager
@@ -40,7 +40,12 @@ using System;
 
         public override bool RefersToMemory( UIntPtr address )
         {
-            return ( uint )ManagedHeap >= ( uint )address && ( uint )address < ( uint )ManagedHeapEnd;
+            if(AddressMath.IsInRange( address, ManagedHeap, ManagedHeapEnd ))
+            {
+                return true;
+            }
+
+            return false;
         }     
     }
 }
