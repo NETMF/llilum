@@ -2,9 +2,10 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-#define LPC1768
+//#define LPC1768
 //#define K64F
 //#define STM32F411
+#define STM32F401
 //#define USE_I2C
 //#define USE_SPI
 #define USE_GPIO
@@ -60,6 +61,8 @@ namespace Microsoft.Zelig.Test.mbed.Simple
     using K64F = Llilum.K64F;
 #elif (STM32F411)
     using STM32F411 = Llilum.STM32F411;
+#elif (STM32F401)
+    using STM32F401 = Llilum.STM32F401;
 #else
 #error No target board defined.
 #endif
@@ -170,6 +173,8 @@ namespace Microsoft.Zelig.Test.mbed.Simple
         static int pwmPinNumber = (int)K64F.PinName.D3;
 #elif STM32F411
         static int pwmPinNumber = (int)STM32F411.PinName.D3;
+#elif STM32F401
+        static int pwmPinNumber = (int)STM32F401.PinName.D3;
 #else
 #error No target board defined.
 #endif
@@ -189,6 +194,11 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             (int)STM32F411.PinName.D13,
             (int)STM32F411.PinName.D12,
             (int)STM32F411.PinName.D11,
+#elif (STM32F401)
+            (int)STM32F401.PinName.LED1,
+            (int)STM32F401.PinName.D13,
+            (int)STM32F401.PinName.D12,
+            (int)STM32F401.PinName.D11,
 #else
 #error No target board defined.
 #endif
@@ -227,7 +237,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                 pins[i] = pin;
             }
 
-#if !(STM32F411)
+#if !(STM32F411 || STM32F401)
             var solitary = controller.OpenPin(threadPin);
             solitary.SetDriveMode(GpioPinDriveMode.Output);
 #endif
@@ -241,7 +251,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 
             blinkingTimer.start();
             blinkingModeSwitchTimer.start();
-#if !(STM32F411)
+#if !(STM32F411 || STM32F401)
 #region SPI
 #if USE_SPI
             // Get the device selector by friendly name

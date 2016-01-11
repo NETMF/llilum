@@ -5,6 +5,7 @@
 #define LPC1768
 //#define K64F
 //#define STM32F411
+//#define STM32F401
 
 namespace Managed
 {
@@ -19,6 +20,8 @@ namespace Managed
     using Microsoft.Llilum.K64F;
 #elif STM32F411
     using Microsoft.Llilum.STM32F411;
+#elif STM32F401
+    using Microsoft.Llilum.STM32F401;
 #endif
 
     class Program
@@ -39,7 +42,7 @@ namespace Managed
 #elif (K64F)
             (int)PinName.LED_BLUE,
             (int)PinName.LED_RED,
-#elif (STM32F411)
+#elif (STM32F411 || STM32F401)
             (int)PinName.LED1,
             (int)PinName.LED1,
 #else
@@ -53,7 +56,7 @@ namespace Managed
 
             var threadToggledPin = controller.OpenPin(pinNumbers[0]);
 
-#if (STM32F411)
+#if (STM32F411 || STM32F401)
             var loopToggledPin = threadToggledPin;
 #else
             var loopToggledPin = controller.OpenPin(pinNumbers[1]);

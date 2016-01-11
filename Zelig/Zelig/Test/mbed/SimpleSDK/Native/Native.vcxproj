@@ -24,8 +24,8 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <!-- Use the enlistment version of the target props files (rather than the SDK) for Zelig.sln projects -->
   <PropertyGroup Condition="'$(LLILUM_ROOT)'!='' AND EXISTS('$(LLILUM_ROOT)')">
-      <LlilumSDK>$(LLILUM_ROOT)Zelig\</LlilumSDK>
-      <LlilumApplicationTypeDir>$(LLILUM_ROOT)VisualStudio\LlilumApplicationType\Llilum\1.0\</LlilumApplicationTypeDir>
+    <LlilumSDK>$(LLILUM_ROOT)Zelig\</LlilumSDK>
+    <LlilumApplicationTypeDir>$(LLILUM_ROOT)VisualStudio\LlilumApplicationType\Llilum\1.0\</LlilumApplicationTypeDir>
   </PropertyGroup>
   <!-- Supported platform property sheets -->
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -80,7 +80,6 @@
     <LlilumStackSize>$(LlilumStackSizeK64F)</LlilumStackSize>
     <LlilumHeapSize>$(LlilumHeapSizeK64F)</LlilumHeapSize>
   </PropertyGroup>
-  
   <!-- STM32L152 -->
   <PropertyGroup Label="Llilum" Condition="'$(LlilumBoardName)' == 'STM32L152'">
     <LlilumClAdditionalOptions>$(LlilumClAdditionalOptionsSTM32L152)</LlilumClAdditionalOptions>
@@ -95,7 +94,6 @@
     <LlilumStackSize>$(LlilumStackSizeSTM32L152)</LlilumStackSize>
     <LlilumHeapSize>$(LlilumHeapSizeSTM32L152)</LlilumHeapSize>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -208,6 +206,10 @@
   </ItemGroup>
   <ItemGroup Condition="'$(LlilumBoardName)'=='STM32L152'">
     <ArmAssemble Include="$(LlilumSourceRoot)\..\os_layer\ARMv7M\Vectors\startup_stm32l152xe.S" />
+  </ItemGroup>
+  <ItemGroup>
+    <ArmAssemble Include="..\..\..\..\..\os_layer\ARMv7M\Vectors\startup_stm32f401xe.S" />
+    <ArmAssemble Include="..\..\..\..\..\os_layer\ARMv7M\Vectors\startup_stm32f411xe.S" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

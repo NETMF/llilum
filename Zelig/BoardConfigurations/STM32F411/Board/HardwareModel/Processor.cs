@@ -46,10 +46,10 @@ namespace Microsoft.Llilum.STM32F411
 
         private unsafe void DisableMPU()
         {
-            CUSTOM_STUB_STM32F411_DisableMPU( ); 
+            CUSTOM_STUB_STM32F4xx_DisableMPU( ); 
         }
 
         [DllImport( "C" )]
-        private static extern void CUSTOM_STUB_STM32F411_DisableMPU( ); 
+        private static extern void CUSTOM_STUB_STM32F4xx_DisableMPU( ); 
     }
 }

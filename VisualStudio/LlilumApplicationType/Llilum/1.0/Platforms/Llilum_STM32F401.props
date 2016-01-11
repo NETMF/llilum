@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <LlilumTargetDirSTM32F401>$(LlilumSDK)mbed\</LlilumTargetDirSTM32F401>
+    <LlilumTargetBoardSTM32F401>TARGET_NUCLEO_F401RE</LlilumTargetBoardSTM32F401>
+    <LlilumTargetBrandSTM32F401>TARGET_STM</LlilumTargetBrandSTM32F401>
+    <LlilumTargetToolchainSTM32F401>TOOLCHAIN_GCC_ARM</LlilumTargetToolchainSTM32F401>
+    <LlilumTargetClassSTM32F401>TARGET_STM32F4</LlilumTargetClassSTM32F401>
+    <LlilumTargetBoardMbedSTM32F401>TARGET_NUCLEO_F401RE</LlilumTargetBoardMbedSTM32F401>
+    <LlilumTargetBoardArchitectureSTM32F401>cortex-m4</LlilumTargetBoardArchitectureSTM32F401>
+    <!-- This is only used to find EthernetInterface.h right now -->
+    <LlilumLwipIncludeDirs>$(LlilumTargetDirLPC1768)EthernetInterface;$(LlilumSDK)lwip\lwip;$(LlilumSDK)lwip\lwip\include;$(LlilumSDK)lwip\lwip\include\ipv4;$(LlilumSDK)lwip\lwip\include\ipv4\lwip;$(LlilumSDK)lwip\lwip\include\lwip;$(LlilumSDK)lwip\lwip\include\netif;$(LlilumSDK)lwip\lwip\netif;$(LlilumSDK)lwip/lwip/netif/ppp;$(LlilumSDK)lwip/lwip/api;$(LlilumSDK)lwip/lwip/core;$(LlilumSDK)lwip/lwip/core/ipv4;$(LlilumSDK)lwip/lwip/core/snmp;$(LlilumSDK)lwip/lwip-eth;$(LlilumSDK)lwip/lwip-eth/arch;$(LlilumSDK)lwip/lwip-sys;$(LlilumSDK)lwip/lwip-sys/arch;$(LlilumSDK)mbed-rtos/llos;$(LlilumSDK)mbed-rtos/llos/TARGET_CORTEX_M;$(LlilumSDK)lwip/lwip-eth/arch/TARGET_NXP</LlilumLwipIncludeDirs>
+    
+    <!-- Open OCD config files -->
+    <LlilumOpenOcdInterfaceCfgSTM32F401>stlink-v2-1.cfg</LlilumOpenOcdInterfaceCfgSTM32F401>
+    <LlilumOpenOcdBoardCfgSTM32F401>st_nucleo_f4.cfg</LlilumOpenOcdBoardCfgSTM32F401>
+    
+    <!-- MSBuild includes -->
+    <LlilumClAdditionalOptionsSTM32F401>-mcpu=$(LlilumTargetBoardArchitectureSTM32F401) -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=softfp</LlilumClAdditionalOptionsSTM32F401>
+    <LlilumClAdditionalIncludesSTM32F401>$(LlilumLwipIncludeDirs);$(LlilumTargetDirSTM32F401);$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401);$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401);$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetBrandSTM32F401);$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetBrandSTM32F401)/$(LlilumTargetClassSTM32F401);$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetBrandSTM32F401)/$(LlilumTargetClassSTM32F401)/$(LlilumTargetBoardMbedSTM32F401);</LlilumClAdditionalIncludesSTM32F401>
+    <LlilumClPreprocessorDefsSTM32F401>TARGET_FF_ARDUINO;TOOLCHAIN_GCC_ARM;TARGET_NUCLEO_F401RE;__CORTEX_M4;TARGET_CORTEX_M;__FPU_PRESENT=1;__MBED__=1;TARGET_M4;TARGET_FF_MORPHO;TARGET_STM;TARGET_STM32F4;TOOLCHAIN_GCC;TARGET_STM32F401RE;ARM_MATH_CM4;MBED_BUILD_TIMESTAMP=1450373147.1 </LlilumClPreprocessorDefsSTM32F401>
+    <LlilumLinkAdditionalDepsSTM32F401>$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_flash_ramfunc.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/board.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/cmsis_nvic.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/hal_tick.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/mbed_overrides.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/retarget.o                                                                           ;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_adc.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_adc_ex.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_can.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_cec.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_cortex.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_crc.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_cryp.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_cryp_ex.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_dac.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_dac_ex.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_dcmi.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_dcmi_ex.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_dma.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_dma2d.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_dma_ex.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_dsi.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_eth.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_flash.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_flash_ex.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_fmpi2c_ex.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_fmpi2c.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_msp_template.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_gpio.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_hash.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_hash_ex.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_hcd.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_i2c.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_i2c_ex.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_i2s.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_i2s_ex.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_irda.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_iwdg.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_lptim.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_ltdc.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_ltdc_ex.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_smartcard.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_nand.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_nor.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_pccard.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_pcd.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_pcd_ex.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_pwr.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_pwr_ex.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_qspi.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_rcc.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_rcc_ex.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_rng.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_rtc.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_rtc_ex.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_sai.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_sai_ex.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_sd.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_sdram.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_spdifrx.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_spi.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_sram.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_tim.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_tim_ex.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_uart.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_usart.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_hal_wwdg.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_ll_fmc.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_ll_fsmc.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_ll_sdmmc.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/stm32f4xx_ll_usb.o;$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/system_stm32f4xx.o </LlilumLinkAdditionalDepsSTM32F401>
+    <LlilumLinkAdditionalLibDirsSTM32F401>$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)</LlilumLinkAdditionalLibDirsSTM32F401>
+    <LlilumLinkAdditionalOptionsSTM32F401>-T$(LlilumTargetDirSTM32F401)$(LlilumTargetBoardSTM32F401)/$(LlilumTargetToolchainSTM32F401)/STM32F401XE.ld -Wl,--gc-sections --specs=nano.specs -u _printf_float -u _scanf_float -Wl,--wrap,main</LlilumLinkAdditionalOptionsSTM32F401>
+    <LlilumLinkLibDepsSTM32F401>mbed;stdc++;supc++;m;c;gcc;nosys</LlilumLinkLibDepsSTM32F401>
+    <LlilumStackSizeSTM32F401>0x800</LlilumStackSizeSTM32F401>
+    <LlilumHeapSizeSTM32F401>0x6000</LlilumHeapSizeSTM32F401>
+    <LlilumAsmAdditionalOptionsSTM32F401></LlilumAsmAdditionalOptionsSTM32F401>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup />
+  <ItemGroup>
+    <BuildMacro Include="LlilumTargetDirSTM32F401">
+      <Value>$(LlilumTargetDirSTM32F401)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumTargetBoardSTM32F401">
+      <Value>$(LlilumTargetBoardSTM32F401)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumTargetBrandSTM32F401">
+      <Value>$(LlilumTargetBrandSTM32F401)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumTargetToolchainSTM32F401">
+      <Value>$(LlilumTargetToolchainSTM32F401)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumTargetClassSTM32F401">
+      <Value>$(LlilumTargetClassSTM32F401)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumTargetBoardMbedSTM32F401">
+      <Value>$(LlilumTargetBoardMbedSTM32F401)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumTargetBoardArchitectureSTM32F401">
+      <Value>$(LlilumTargetBoardArchitectureSTM32F401)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumLwipIncludeDirs">
+      <Value>$(LlilumLwipIncludeDirs)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumClAdditionalOptionsSTM32F401">
+      <Value>$(LlilumClAdditionalOptionsSTM32F401)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumClAdditionalIncludesSTM32F401">
+      <Value>$(LlilumClAdditionalIncludesSTM32F401)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumClPreprocessorDefsSTM32F401">
+      <Value>$(LlilumClPreprocessorDefsSTM32F401)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumLinkAdditionalDepsSTM32F401">
+      <Value>$(LlilumLinkAdditionalDepsSTM32F401)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumLinkAdditionalLibDirsSTM32F401">
+      <Value>$(LlilumLinkAdditionalLibDirsSTM32F401)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumLinkAdditionalOptionsSTM32F401">
+      <Value>$(LlilumLinkAdditionalOptionsSTM32F401)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumLinkLibDepsSTM32F401">
+      <Value>$(LlilumLinkLibDepsSTM32F401)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumAsmAdditionalOptionsSTM32F401">
+      <Value>$(LlilumAsmAdditionalOptionsSTM32F401)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumStacSizeSTM32F401">
+      <Value>$(LlilumStackSizeSTM32F401)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumHeapSizeSTM32F401">
+      <Value>$(LlilumHeapSizeSTM32F401)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumOpenOcdInterfaceCfgSTM32F401">
+      <Value>$(LlilumOpenOcdInterfaceCfgSTM32F401)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LlilumOpenOcdBoardCfgSTM32F401">
+      <Value>$(LlilumOpenOcdBoardCfgSTM32F401)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

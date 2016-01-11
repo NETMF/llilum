@@ -43,7 +43,14 @@ IF %1.==. (
     SET LLILUM_TARGET_CPU=cortex-m3
     SET LLILUM_TARGET_TRIPLE=Thumb-NoSubArch-UnknownVendor-UnknownOS-GNUEABI-ELF
     SET LWIP_USE=0
-    ) ELSE IF "%1"=="STM32F411RE" (
+    ) ELSE IF "%1"=="STM32F411" (
+@REM - TODO: Need to use cortex-m3 for now, change to cortex-m4 when bug fixed
+    SET SIZE_OF_HEAP=0x10000
+    SET LLILUM_TARGET_CPU=cortex-m3
+    SET LLILUM_TARGET_TRIPLE=Thumb-NoSubArch-UnknownVendor-UnknownOS-GNUEABI-ELF
+    SET LWIP_USE=0
+    ) ELSE IF "%1"=="STM32F401" (
+@REM - TODO: Need to use cortex-m3 for now, change to cortex-m4 when bug fixed
     SET SIZE_OF_HEAP=0x10000
     SET LLILUM_TARGET_CPU=cortex-m3
     SET LLILUM_TARGET_TRIPLE=Thumb-NoSubArch-UnknownVendor-UnknownOS-GNUEABI-ELF

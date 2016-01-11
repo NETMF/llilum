@@ -1,0 +1,84 @@
+﻿###
+### README: This file can be used in the SDK AS-IS, or remove all instances of #~# to use with the FrontEnd project
+###
+
+###
+### Location of the Zelig assemblies.
+###
+#~#-HostAssemblyDir   ..\..\..\..\ZeligBuild\Host\bin\Debug
+#~#-DeviceAssemblyDir ..\..\..\..\ZeligBuild\Target\bin\Debug
+
+#~#-CompilationSetupPath ..\..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Llilum.BoardConfigurations.STM32F401.dll
+-CompilationSetup Microsoft.Llilum.BoardConfigurations.STM32F401MBEDHostedCompilationSetup
+
+
+###
+### We need to include this assembly to get the right drivers.
+###
+-Reference Microsoft.CortexM4OnMBED
+-Reference Microsoft.CortexM4OnCMSISCore
+-Reference Microsoft.DeviceModels.ModelForCortexM4
+-Reference STM32F401
+
+
+###
+### Add compilation phases, in order
+###
+-CompilationPhaseDisabled InitializeReferenceCountingGarbageCollection
+-CompilationPhaseDisabled EnableStrictReferenceCountingGarbageCollection
+#-CompilationPhaseDisabled ReduceNumberOfTemporaries
+#-CompilationPhaseDisabled TransformFinallyBlocksIntoTryBlocks
+#-CompilationPhaseDisabled ApplyClassExtensions
+#-CompilationPhaseDisabled PrepareImplementationOfInternalMethods  
+#-CompilationPhaseDisabled CrossReferenceTypeSystem
+#-CompilationPhaseDisabled ApplyConfigurationSettings
+-CompilationPhaseDisabled ResourceManagerOptimizations
+#-CompilationPhaseDisabled HighLevelTransformations
+#-CompilationPhaseDisabled PropagateCompilationConstraints
+#-CompilationPhaseDisabled ComputeCallsClosure
+#-CompilationPhaseDisabled EstimateTypeSystemReduction
+#-CompilationPhaseDisabled CompleteImplementationOfInternalMethods
+#-CompilationPhaseDisabled ReduceTypeSystem
+-CompilationPhaseDisabled PrepareExternalMethods
+#-CompilationPhaseDisabled DetectNonImplementedInternalCalls
+#-CompilationPhaseDisabled OrderStaticConstructors
+#-CompilationPhaseDisabled LayoutTypes
+#-CompilationPhaseDisabled HighLevelToMidLevelConversion
+#-CompilationPhaseDisabled FromImplicitToExplicitExceptions
+#-CompilationPhaseDisabled ReferenceCountingGarbageCollection
+-CompilationPhaseDisabled MidLevelToLowLevelConversion
+-CompilationPhaseDisabled ConvertUnsupportedOperatorsToMethodCalls
+-CompilationPhaseDisabled ExpandAggregateTypes
+-CompilationPhaseDisabled SplitComplexOperators
+-CompilationPhaseDisabled FuseOperators
+#-CompilationPhaseDisabled Optimizations
+-CompilationPhaseDisabled ConvertToSSA
+-CompilationPhaseDisabled PrepareForRegisterAllocation
+-CompilationPhaseDisabled CollectRegisterAllocationConstraints
+-CompilationPhaseDisabled AllocateRegisters
+#-CompilationPhaseDisabled GenerateImage
+#-CompilationPhaseDisabled Done
+
+###
+### The program to compile.
+###
+#~#..\..\..\..\ZeligBuild\Target\bin\Debug\Microsoft.Zelig.Test.mbed.Simple.exe
+
+###
+### Where to put the results.
+###
+#~#-OutputName Microsoft.Zelig.Test.mbed.Simple
+#~#-OutputDir  ..\..\..\..\LLVM2IR_results\mbed\simple
+
+#-DumpIR
+#-DumpIRpre
+#-DumpIRpost
+#-DumpIRXML
+-DumpLLVMIR
+#-ReloadState
+#-DumpLLVMIR_TextRepresentation
+
+-MaxProcs 8
+
+#~#-NoSDK
+

@@ -76,6 +76,10 @@
       <Project>{186f31a3-ef89-4a25-b2d5-20060509aa01}</Project>
       <Name>Kernel</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\BoardConfigurations\STM32F401\Board\STM32F401.csproj">
+      <Project>{6194144a-f8b1-4525-829f-061df4a5645a}</Project>
+      <Name>STM32F401</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\BoardConfigurations\STM32F411\Board\STM32F411.csproj">
       <Project>{dd4371de-85a8-49aa-b939-10e03b7ed3c9}</Project>
       <Name>STM32F411</Name>
