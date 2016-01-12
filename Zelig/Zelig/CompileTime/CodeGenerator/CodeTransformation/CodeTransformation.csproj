@@ -171,11 +171,11 @@
     <Compile Include="LLVM\LLVMModuleManager_Types.cs" />
     <Compile Include="LLVM\ITargetSectionOptions.cs" />
     <Compile Include="LLVM\TypeField.cs" />
+    <Compile Include="LLVM\ValueExtensions.cs" />
     <Compile Include="LLVM\_BasicBlock.cs" />
     <Compile Include="LLVM\_Function.cs" />
     <Compile Include="LLVM\_Module.cs" />
     <Compile Include="LLVM\_Type.cs" />
-    <Compile Include="LLVM\_Value.cs" />
     <Compile Include="Operators\BinaryOperatorWithCarryOut.cs" />
     <Compile Include="Operators\BitTestOperator.cs" />
     <Compile Include="Operators\BinaryOperatorWithCarryIn.cs" />

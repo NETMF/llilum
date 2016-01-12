@@ -49,14 +49,14 @@ namespace Microsoft.Zelig.LLVM
     // Given that this has no data members beyond those from the base class
     // this class probably ought to be a static class with extensions methods 
     // on the Llvm.NET.Values.Function class. 
-    public class _Function : _Value
+    public class _Function
     {
-        internal _Function( _Module module, LLVMModuleManager manager, TS.MethodRepresentation method )
-            : base( module
-                  , manager.GetOrInsertType( method )
-                  , CreateLLvmFunctionWithDebugInfo( module, manager, method )
-                  )
+        internal _Function(_Module module, LLVMModuleManager manager, TS.MethodRepresentation method)
         {
+            Module = module;
+            LlvmValue = CreateLLvmFunctionWithDebugInfo(module, manager, method);
+            LlvmValue.SetDebugType(manager.GetOrInsertType(method));
+
             var function = ( Function )LlvmValue;
             if( function.BasicBlocks.Count == 0 )
                 function.Linkage( Linkage.ExternalWeak );
@@ -91,42 +91,51 @@ namespace Microsoft.Zelig.LLVM
             }
         }
 
-        public Function LlvmFunction => ( Function )LlvmValue;
-
-        public void AddAttribute( FunctionAttribute kind )
+        // In LLVM, the context owns the value. However, a _Module here is a container for the
+        // context, a module, and a DiBuilder with assorted other state info.
+        public _Module Module
         {
-            var func = ( Function )LlvmValue;
-            func.AddAttributes( ( AttributeKind )kind );
+            get;
         }
 
-        public void AddAttribute( FunctionAttribute kind, ulong value )
+        public Function LlvmFunction => (Function)LlvmValue;
+
+        private Value LlvmValue
         {
-            var func = ( Function )LlvmValue;
-            func.AddAttributes( new AttributeValue( (AttributeKind )kind, value ) );
+            get;
         }
 
-        public void RemoveAttribute( FunctionAttribute kind )
+        public void AddAttribute(FunctionAttribute kind)
         {
-            var func = ( Function )LlvmValue;
-            func.RemoveAttribute( ( AttributeKind )kind );
+            LlvmFunction.AddAttributes((AttributeKind)kind);
         }
 
-        public _BasicBlock GetOrInsertBasicBlock( string blockName )
+        public void AddAttribute(FunctionAttribute kind, ulong value)
         {
-            var func = ( Function )LlvmValue;
-            return new _BasicBlock( this, func.FindOrCreateNamedBlock( blockName ) );
+            LlvmFunction.AddAttributes(new AttributeValue((AttributeKind)kind, value));
         }
 
-        public _Value GetLocalStackValue( TS.MethodRepresentation method
-                                        , _BasicBlock block
-                                        , IR.VariableExpression val
-                                        , LLVMModuleManager manager )
+        public void RemoveAttribute(FunctionAttribute kind)
+        {
+            LlvmFunction.RemoveAttribute((AttributeKind)kind);
+        }
+
+        public _BasicBlock GetOrInsertBasicBlock(string blockName)
+        {
+            return new _BasicBlock(this, LlvmFunction.FindOrCreateNamedBlock(blockName));
+        }
+
+        public Value GetLocalStackValue(
+            TS.MethodRepresentation method,
+            _BasicBlock block,
+            IR.VariableExpression val,
+            LLVMModuleManager manager)
         {
             block.EnsureDebugInfo( manager, method );
 
             bool hasDebugName = !string.IsNullOrWhiteSpace( val.DebugName?.Name );
 
-            var retVal = block.InsertAlloca(
+            Value retVal = block.InsertAlloca(
                 hasDebugName ? val.DebugName.Name : val.ToString( ),
                 manager.GetOrInsertType( val.Type ) );
 
@@ -175,23 +184,23 @@ namespace Microsoft.Zelig.LLVM
 
             // For reference types passed as a pointer, tell debugger to deref the pointer.
             DIExpression expr = Module.DIBuilder.CreateExpression( );
-            if( !retVal.Type.IsValueType )
+            if( !retVal.GetDebugType().IsValueType )
             {
                 expr = Module.DIBuilder.CreateExpression( ExpressionOp.deref );
             }
 
-            Module.DIBuilder.InsertDeclare( retVal.LlvmValue, localSym, expr, block.CurDILocation, block.LlvmBasicBlock );
+            Module.DIBuilder.InsertDeclare( retVal, localSym, expr, block.CurDILocation, block.LlvmBasicBlock );
             return retVal;
         }
 
-        public void SetExternalLinkage( )
+        public void SetExternalLinkage()
         {
-            ( ( Function )LlvmValue ).Linkage = Linkage.External;
+            LlvmFunction.Linkage = Linkage.External;
         }
 
-        public void SetInternalLinkage( )
+        public void SetInternalLinkage()
         {
-            ( ( Function )LlvmValue ).Linkage = Linkage.Internal;
+            LlvmFunction.Linkage = Linkage.Internal;
         }
 
         private static Function CreateLLvmFunctionWithDebugInfo( _Module module, LLVMModuleManager manager, TS.MethodRepresentation method )

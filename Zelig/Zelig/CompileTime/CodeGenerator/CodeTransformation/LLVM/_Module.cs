@@ -165,15 +165,18 @@ namespace Microsoft.Zelig.LLVM
             yield return fullName;
         }
 
-        public _Value GetScalarConstant( _Type type, object value )
+        public Value GetScalarConstant(_Type type, object value)
         {
-            Constant ucv = GetUCVScalar( type, value );
-            return new _Value( this, type, ucv );
+            Constant ucv = GetUCVScalar(type, value);
+            ucv.SetDebugType(type);
+            return ucv;
         }
 
-        public _Value GetNullValue( _Type type )
+        public Value GetNullValue(_Type type)
         {
-            return new _Value( this, type, type.DebugType.GetNullValue( ) );
+            Constant ucv = type.DebugType.GetNullValue();
+            ucv.SetDebugType(type);
+            return ucv;
         }
 
         public _Function GetOrInsertFunction( LLVMModuleManager manager, MethodRepresentation method )
@@ -286,20 +289,18 @@ namespace Microsoft.Zelig.LLVM
             return type.DebugType.GetNullValue( );
         }
 
-        public Constant GetUCVConstantPointerFromValue( _Value val ) => ( Constant )val.LlvmValue;
-
-        public _Value GetUninitializedGlobal(_Type type)
+        public Value GetUninitializedGlobal(_Type type)
         {
             var gv = LlvmModule.AddGlobal(type.DebugType, string.Empty);
             gv.IsConstant = false;
             gv.Linkage = Linkage.Internal;
 
             // This returns the equivalent of a "this" pointer for the object.
-            _Type pointerType = GetOrInsertPointerType(type);
-            return new _Value(this, pointerType, gv);
+            gv.SetDebugType(GetOrInsertPointerType(type));
+            return gv;
         }
 
-        public _Value GetGlobalFromUCV(
+        public Value GetGlobalFromUCV(
             _Type type,
             Constant header,
             Constant ucv,
@@ -340,8 +341,8 @@ namespace Microsoft.Zelig.LLVM
             }
 
             // This returns the equivalent of a "this" pointer for the object.
-            _Type pointerType = GetOrInsertPointerType(type);
-            return new _Value(this, pointerType, result);
+            result.SetDebugType(GetOrInsertPointerType(type));
+            return result;
         }
 
         public void FinalizeGlobals()
@@ -365,18 +366,17 @@ namespace Microsoft.Zelig.LLVM
             }
         }
 
-        public void CreateAlias( _Value val, string name )
+        public void CreateAlias(Value value, string name)
         {
-            Value llvmVal = val.LlvmValue;
-            var gv = llvmVal as GlobalObject;
-            if( gv != null )
+            var gv = value as GlobalObject;
+            if (gv != null)
             {
-                var alias =LlvmModule.AddAlias( gv, name );
+                var alias = LlvmModule.AddAlias(gv, name);
                 alias.Linkage = Linkage.External;
             }
             else
             {
-                Console.Error.WriteLine( "Warning: Ignoring alias \"{0}\" because aliasee is not global.", name );
+                Console.Error.WriteLine("Warning: Ignoring alias \"{0}\" because aliasee is not global.", name);
             }
         }
 

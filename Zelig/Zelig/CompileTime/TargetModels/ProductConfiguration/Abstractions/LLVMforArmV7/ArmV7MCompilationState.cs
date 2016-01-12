@@ -20,7 +20,6 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         private TS.WellKnownTypes                                  m_wkt;
         private GrowOnlyHashTable<ZeligIR.Expression, ValueCache>  m_localValues;
         private GrowOnlyHashTable<ZeligIR.BasicBlock, _BasicBlock> m_blocks;
-        private IDictionary      <ZeligIR.PhiOperator, _Value>     m_pendingPhiNodes;
 
         protected ArmV7MCompilationState( ) // Default constructor required by TypeSystemSerializer.
         {
@@ -30,12 +29,11 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                                          ZeligIR.ControlFlowGraphStateForCodeTransformation cfg )
             : base( owner, cfg )
         {
-            m_method          = cfg.Method;
-            m_wkf             = cfg.TypeSystem.WellKnownFields;
-            m_wkt             = cfg.TypeSystem.WellKnownTypes;
-            m_localValues     = HashTableFactory.New<ZeligIR.Expression, ValueCache>( );
-            m_blocks          = HashTableFactory.New<ZeligIR.BasicBlock, _BasicBlock>( );
-            m_pendingPhiNodes = new Dictionary<ZeligIR.PhiOperator, _Value>( );
+            m_method = cfg.Method;
+            m_wkf = cfg.TypeSystem.WellKnownFields;
+            m_wkt = cfg.TypeSystem.WellKnownTypes;
+            m_localValues = HashTableFactory.New<ZeligIR.Expression, ValueCache>();
+            m_blocks = HashTableFactory.New<ZeligIR.BasicBlock, _BasicBlock>();
         }
 
         //

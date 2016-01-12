@@ -29,8 +29,8 @@ namespace Microsoft.Zelig.LLVM
         private readonly IR.TypeSystemForCodeTransformation m_typeSystem;
 
         private GrowOnlyHashTable <TS.TypeRepresentation, _Type>                     m_typeRepresentationsToType;
-        private GrowOnlyHashTable <TS.MethodRepresentation, Debugging.DebugInfo >    m_debugInfoForMethods;
-        private GrowOnlyHashTable < IR.DataManager.DataDescriptor, _Value >          m_globalInitializedValues;
+        private GrowOnlyHashTable <TS.MethodRepresentation, Debugging.DebugInfo>     m_debugInfoForMethods;
+        private GrowOnlyHashTable <IR.DataManager.DataDescriptor, Value>             m_globalInitializedValues;
         private uint                                                                 m_nativeIntSize;
         private bool                                                                 m_typeSystemAlreadyConverted;
         private bool                                                                 m_turnOffCompilationAndValidation;
@@ -43,8 +43,8 @@ namespace Microsoft.Zelig.LLVM
 
             m_nativeIntSize = 32;
             m_debugInfoForMethods = HashTableFactory.New<TS.MethodRepresentation, Debugging.DebugInfo>( );
-            m_typeRepresentationsToType = HashTableFactory.New<TS.TypeRepresentation, LLVM._Type>( );
-            m_globalInitializedValues = HashTableFactory.New<IR.DataManager.DataDescriptor, LLVM._Value>( );
+            m_typeRepresentationsToType = HashTableFactory.New<TS.TypeRepresentation, _Type>( );
+            m_globalInitializedValues = HashTableFactory.New<IR.DataManager.DataDescriptor, Value>( );
 
             m_typeSystemAlreadyConverted = false;
             m_turnOffCompilationAndValidation = false;
@@ -127,14 +127,14 @@ namespace Microsoft.Zelig.LLVM
             {
                 _Function handler = GetOrInsertFunction( md );
 
-                m_module.CreateAlias( handler, md.Name );
+                m_module.CreateAlias(handler.LlvmFunction, md.Name);
             }
 
             if ( !m_turnOffCompilationAndValidation )
             {
                 TS.MethodRepresentation bootstrapResetMR = m_typeSystem.GetWellKnownMethod( "Bootstrap_Initialization" );
                 _Function bootstrapReset = GetOrInsertFunction( bootstrapResetMR );
-                m_module.CreateAlias( bootstrapReset, "main" );
+                m_module.CreateAlias(bootstrapReset.LlvmFunction, "main");
                 m_module.Compile( );
             }
         }
@@ -242,7 +242,7 @@ namespace Microsoft.Zelig.LLVM
                         }
                         else
                         {
-                            fields.Add( m_module.GetUCVConstantPointerFromValue( GlobalValueFromDataDescriptor( valDD, false ) ) );
+                            fields.Add((Constant)GlobalValueFromDataDescriptor(valDD, false));
                         }
                     }
                     else if( ad.Context.ContainedType is TS.ScalarTypeRepresentation )
@@ -270,7 +270,7 @@ namespace Microsoft.Zelig.LLVM
             return dd is IR.DataManager.ArrayDescriptor || dd.Context == m_typeSystem.WellKnownTypes.System_String;
         }
 
-        public _Value GlobalValueFromDataDescriptor( IR.DataManager.DataDescriptor dd, bool setInitializer )
+        public Value GlobalValueFromDataDescriptor(IR.DataManager.DataDescriptor dd, bool setInitializer)
         {
             // If the type changes after creation it's a string or array type, so force initialization.
             if (TypeChangesAfterCreation(dd))
@@ -278,7 +278,7 @@ namespace Microsoft.Zelig.LLVM
                 setInitializer = true;
             }
 
-            _Value global;
+            Value global;
             if (m_globalInitializedValues.TryGetValue(dd, out global))
             {
                 // If we already have an initialized global, or an uninitialized one that we're still not initializing,
@@ -326,7 +326,7 @@ namespace Microsoft.Zelig.LLVM
             }
 
             // If we had an uninitialized placeholder, replace it with the new copy.
-            _Value cachedGlobal;
+            Value cachedGlobal;
             if (m_globalInitializedValues.TryGetValue(dd, out cachedGlobal))
             {
                 cachedGlobal.MergeToAndRemove(global);
@@ -354,10 +354,10 @@ namespace Microsoft.Zelig.LLVM
                 flags = Runtime.ObjectHeader.GarbageCollectorFlags.ReadOnlyObject;
             }
 
-            var descriptor = ( IR.DataManager.DataDescriptor )dd.Owner.GetObjectDescriptor( dd.Context.VirtualTable );
-            _Value virtualTable = GlobalValueFromDataDescriptor( descriptor, false );
-            fields.Add( GetScalarTypeUCV( wkf.ObjectHeader_MultiUseWord.FieldType, ( ulong )flags ) );
-            fields.Add( m_module.GetUCVConstantPointerFromValue( virtualTable ) );
+            var descriptor = (IR.DataManager.DataDescriptor)dd.Owner.GetObjectDescriptor(dd.Context.VirtualTable);
+            Value virtualTable = GlobalValueFromDataDescriptor(descriptor, false);
+            fields.Add(GetScalarTypeUCV(wkf.ObjectHeader_MultiUseWord.FieldType, (ulong)flags));
+            fields.Add((Constant)virtualTable);
 
             _Type headerType = GetOrInsertType( wkt.Microsoft_Zelig_Runtime_ObjectHeader );
             return m_module.GetUCVStruct( headerType.UnderlyingType, fields, false );
@@ -428,7 +428,7 @@ namespace Microsoft.Zelig.LLVM
                             if( ptr is TS.MethodRepresentation )
                             {
                                 TS.MethodRepresentation md = ( TS.MethodRepresentation )ptr;
-                                Constant ucv = m_module.GetUCVConstantPointerFromValue( GetOrInsertFunction( md ) );
+                                Constant ucv = GetOrInsertFunction(md).LlvmFunction;
                                 ucv = GetUCVStruct( GetOrInsertType( fd.FieldType ), false, ucv );
                                 fields.Add( ucv );
                             }
@@ -439,7 +439,7 @@ namespace Microsoft.Zelig.LLVM
                                 //
                                 // temporary place-holder
                                 //
-                                Constant ucv = m_module.GetUCVConstantPointerFromValue( GetOrInsertFunction( wkm.TypeSystemManager_Throw ) );
+                                Constant ucv = GetOrInsertFunction(wkm.TypeSystemManager_Throw).LlvmFunction;
                                 ucv = GetUCVStruct( GetOrInsertType( fd.FieldType ), false, ucv );
                                 fields.Add( ucv );
 
@@ -463,7 +463,7 @@ namespace Microsoft.Zelig.LLVM
                             }
                             else
                             {
-                                fields.Add( m_module.GetUCVConstantPointerFromValue( GlobalValueFromDataDescriptor( valDD, false ) ) );
+                                fields.Add((Constant)GlobalValueFromDataDescriptor(valDD, false));
                             }
                         }
                         else if( fd.FieldType is TS.ScalarTypeRepresentation )

@@ -3,6 +3,7 @@
 //
 
 using System;
+using Llvm.NET.Values;
 using Microsoft.Zelig.LLVM;
 using Microsoft.Zelig.CodeGeneration.IR;
 
@@ -10,17 +11,17 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 {
     internal class ValueCache
     {
-        private GrowOnlyHashTable<_BasicBlock, _Value> m_loadedValues;
+        private GrowOnlyHashTable<_BasicBlock, Value> m_loadedValues;
 
         public ValueCache(VariableExpression expression, _Type type)
         {
             Expression = expression;
             Type = type;
-            m_loadedValues = HashTableFactory.New<_BasicBlock, _Value>();
+            m_loadedValues = HashTableFactory.New<_BasicBlock, Value>();
         }
 
-        public ValueCache(VariableExpression expression, _Value address) :
-            this(expression, address.Type.UnderlyingType)
+        public ValueCache(VariableExpression expression, Value address) :
+            this(expression, address.GetUnderlyingType())
         {
             Address = address;
         }
@@ -29,7 +30,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
         public _Type Type { get; }
 
-        public _Value Address { get; }
+        public Value Address { get; }
 
         public bool IsAddressable
         {
@@ -39,9 +40,9 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             }
         }
 
-        public _Value GetValueFromBlock(_BasicBlock block)
+        public Value GetValueFromBlock(_BasicBlock block)
         {
-            _Value value;
+            Value value;
             if (m_loadedValues.TryGetValue(block, out value))
             {
                 return value;
@@ -50,7 +51,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             return null;
         }
 
-        public void SetValueForBlock(_BasicBlock block, _Value value)
+        public void SetValueForBlock(_BasicBlock block, Value value)
         {
             m_loadedValues[block] = value;
         }

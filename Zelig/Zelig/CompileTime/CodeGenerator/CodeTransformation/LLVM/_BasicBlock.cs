@@ -92,28 +92,31 @@ namespace Microsoft.Zelig.LLVM
             Debug.Assert( CurDISubProgram != null );
         }
 
-        public _Value GetMethodArgument( int index, _Type type )
+        public Value GetMethodArgument(int index, _Type type)
         {
-            var llvmFunc = (Function)Owner.LlvmValue;
-            Value value = llvmFunc.Parameters[ index ];
-            return new _Value( Module, type, value );
+            var llvmFunc = Owner.LlvmFunction;
+            Value value = llvmFunc.Parameters[index];
+            value.SetDebugType(type);
+            return value;
         }
 
-        public _Value InsertAlloca( string name, _Type type )
+        public Value InsertAlloca(string name, _Type type)
         {
-            Value value = IrBuilder.Alloca( type.DebugType ).RegisterName( name );
-            _Type pointerType = Module.GetOrInsertPointerType( type );
-            return new _Value( Module, pointerType, value );
+            Value value = IrBuilder.Alloca(type.DebugType);
+            value.RegisterName(name);
+            value.SetDebugType(Module.GetOrInsertPointerType(type));
+            return value;
         }
 
-        public _Value InsertLoad( _Value value )
+        public Value InsertLoad(Value value)
         {
-            var resultValue = IrBuilder.Load( value.LlvmValue )
-                                       .SetDebugLocation( CurDILocation );
-            return new _Value( Module, value.Type.UnderlyingType, resultValue );
+            Value resultValue = IrBuilder.Load(value);
+            resultValue.SetDebugLocation(CurDILocation);
+            resultValue.SetDebugType(value.GetUnderlyingType());
+            return resultValue;
         }
 
-        private void InsertStore(Value src, Value dst)
+        public void InsertStore(Value src, Value dst)
         {
             var ptrType = dst.NativeType as IPointerType;
             if (src.NativeType != ptrType.ElementType)
@@ -131,64 +134,30 @@ namespace Microsoft.Zelig.LLVM
             IrBuilder.Store(src, dst);
         }
 
-        public void InsertStore(_Value src, _Value dst)
+        public Value LoadIndirect(Value val, _Type loadedType)
         {
-            InsertStore(src.LlvmValue, dst.LlvmValue);
+            _Type pointerType = Module.GetOrInsertPointerType(loadedType);
+            Value resultVal = IrBuilder.BitCast(val, pointerType.DebugType);
+            resultVal.SetDebugLocation(CurDILocation);
+            resultVal.SetDebugType(pointerType);
+            return resultVal;
         }
 
-        public _Value LoadIndirect( _Value val, _Type loadedType )
+        public void InsertMemCpy(Value dst, Value src, Value size, bool overlapping)
         {
-            _Type pointerType = Module.GetOrInsertPointerType( loadedType );
-            Value resultVal = IrBuilder.BitCast( val.LlvmValue, pointerType.DebugType );
-            return new _Value( Module, pointerType, resultVal );
-        }
-
-        public _Value InsertPhiNode( _Type type )
-        {
-            var builder = IrBuilder;
-
-            // Ensure phi nodes are grouped at the top of the block.
-            var lastInstruction = LlvmBasicBlock.LastInstruction;
-            if( ( lastInstruction != null ) && !( lastInstruction is PhiNode ) )
+            if (overlapping)
             {
-                // We have an instruction that isn't a phi node, so move the insertion point to just
-                // after any existing phi nodes.
-                foreach( Instruction instruction in LlvmBasicBlock.Instructions )
-                {
-                    if( !( instruction is PhiNode ) )
-                    {
-                        builder = new InstructionBuilder( LlvmBasicBlock );
-                        builder.PositionBefore( instruction );
-                        break;
-                    }
-                }
-            }
-
-            var phiNode = builder.PhiNode( type.DebugType );
-            return new _Value( Module, type, phiNode );
-        }
-
-        public void AddPhiIncomingValue( _Value phiNode, _Value value, _BasicBlock origin )
-        {
-            PhiNode node = (PhiNode)phiNode.LlvmValue;
-            node.AddIncoming( value.LlvmValue, origin.LlvmBasicBlock );
-        }
-
-        public void InsertMemCpy( _Value dst, _Value src, _Value size, bool overlapping )
-        {
-            if( overlapping )
-            {
-                IrBuilder.MemMove( Module.LlvmModule, dst.LlvmValue, src.LlvmValue, size.LlvmValue, 0, false );
+                IrBuilder.MemMove(Module.LlvmModule, dst, src, size, 0, false);
             }
             else
             {
-                IrBuilder.MemCpy( Module.LlvmModule, dst.LlvmValue, src.LlvmValue, size.LlvmValue, 0, false );
+                IrBuilder.MemCpy(Module.LlvmModule, dst, src, size, 0, false);
             }
         }
 
-        public void InsertMemSet( _Value dst, _Value value, _Value size )
+        public void InsertMemSet(Value dst, Value value, Value size)
         {
-            IrBuilder.MemSet( Module.LlvmModule, dst.LlvmValue, value.LlvmValue, size.LlvmValue, 0, false);
+            IrBuilder.MemSet(Module.LlvmModule, dst, value, size, 0, false);
         }
 
         enum BinaryOperator
@@ -205,89 +174,91 @@ namespace Microsoft.Zelig.LLVM
             SHR = 9,
         };
 
-        public _Value InsertBinaryOp( int op, _Value a, _Value b, bool isSigned )
+        public Value InsertBinaryOp( int op, Value left, Value right, bool isSigned )
         {
-            var binOp = ( BinaryOperator )op;
-            Debug.Assert( a.IsInteger || a.IsFloatingPoint );
-            Debug.Assert( b.IsInteger || b.IsFloatingPoint );
+            var binOp = (BinaryOperator)op;
+            var bldr = IrBuilder;
             Value retVal;
 
-            Value loadedA = a.LlvmValue;
-            Value loadedB = b.LlvmValue;
-            var bldr = IrBuilder;
-
-            if( a.IsInteger && b.IsInteger )
+            if (left.NativeType.IsInteger && right.NativeType.IsInteger)
             {
-                switch( binOp )
+                switch (binOp)
                 {
                 case BinaryOperator.ADD:
-                    retVal = bldr.Add( loadedA, loadedB );
+                    retVal = bldr.Add(left, right);
                     break;
                 case BinaryOperator.SUB:
-                    retVal = bldr.Sub( loadedA, loadedB );
+                    retVal = bldr.Sub(left, right);
                     break;
                 case BinaryOperator.MUL:
-                    retVal = bldr.Mul( loadedA, loadedB );
+                    retVal = bldr.Mul(left, right);
                     break;
                 case BinaryOperator.DIV:
-                    if( isSigned )
-                        retVal = bldr.SDiv( loadedA, loadedB );
+                    if (isSigned)
+                        retVal = bldr.SDiv(left, right);
                     else
-                        retVal = bldr.UDiv( loadedA, loadedB );
+                        retVal = bldr.UDiv(left, right);
                     break;
                 case BinaryOperator.REM:
-                    if( isSigned )
-                        retVal = bldr.SRem( loadedA, loadedB );
+                    if (isSigned)
+                        retVal = bldr.SRem(left, right);
                     else
-                        retVal = bldr.URem( loadedA, loadedB );
+                        retVal = bldr.URem(left, right);
                     break;
                 case BinaryOperator.AND:
-                    retVal = bldr.And( loadedA, loadedB );
+                    retVal = bldr.And(left, right);
                     break;
                 case BinaryOperator.OR:
-                    retVal = bldr.Or( loadedA, loadedB );
+                    retVal = bldr.Or(left, right);
                     break;
                 case BinaryOperator.XOR:
-                    retVal = bldr.Xor( loadedA, loadedB );
+                    retVal = bldr.Xor(left, right);
                     break;
                 case BinaryOperator.SHL:
-                    retVal = bldr.ShiftLeft( loadedA, loadedB );
+                    retVal = bldr.ShiftLeft(left, right);
                     break;
                 case BinaryOperator.SHR:
-                    if( isSigned )
-                        retVal = bldr.ArithmeticShiftRight( loadedA, loadedB );
+                    if (isSigned)
+                    {
+                        retVal = bldr.ArithmeticShiftRight(left, right);
+                    }
                     else
-                        retVal = bldr.LogicalShiftRight( loadedA, loadedB );
+                    {
+                        retVal = bldr.LogicalShiftRight(left, right);
+                    }
                     break;
                 default:
-                    throw new NotSupportedException( $"Parameters combination not supported for Binary Operator: {binOp}" );
+                    throw new NotSupportedException($"Parameters combination not supported for Binary Operator: {binOp}");
                 }
             }
-            else if( a.IsFloatingPoint && b.IsFloatingPoint )
+            else if (left.NativeType.IsFloatingPoint && right.NativeType.IsFloatingPoint)
             {
-                switch( binOp )
+                switch (binOp)
                 {
                 case BinaryOperator.ADD:
-                    retVal = bldr.FAdd( loadedA, loadedB );
+                    retVal = bldr.FAdd(left, right);
                     break;
                 case BinaryOperator.SUB:
-                    retVal = bldr.FSub( loadedA, loadedB );
+                    retVal = bldr.FSub(left, right);
                     break;
                 case BinaryOperator.MUL:
-                    retVal = bldr.FMul( loadedA, loadedB );
+                    retVal = bldr.FMul(left, right);
                     break;
                 case BinaryOperator.DIV:
-                    retVal = bldr.FDiv( loadedA, loadedB );
+                    retVal = bldr.FDiv(left, right);
                     break;
                 default:
-                    throw new NotSupportedException( $"Parameters combination not supported for Binary Operator: {binOp}" );
+                    throw new NotSupportedException($"Parameters combination not supported for Binary Operator: {binOp}");
                 }
             }
             else
-                throw new NotSupportedException( $"Parameters combination not supported for Binary Operator: {binOp}" );
+            {
+                throw new NotSupportedException($"Parameters combination not supported for Binary Operator: {binOp}");
+            }
 
-            retVal = retVal.SetDebugLocation( CurDILocation );
-            return new _Value( Module, a.Type, retVal );
+            retVal.SetDebugLocation(CurDILocation);
+            retVal.SetDebugType(left.GetDebugType());
+            return retVal;
         }
 
         enum UnaryOperator
@@ -297,32 +268,35 @@ namespace Microsoft.Zelig.LLVM
             FINITE = 2,
         };
 
-        public _Value InsertUnaryOp( int op, _Value val, bool isSigned )
+        public Value InsertUnaryOp( int op, Value val, bool isSigned )
         {
-            var unOp = ( UnaryOperator )op;
+            var unOp = (UnaryOperator)op;
 
-            Debug.Assert( val.IsInteger || val.IsFloatingPoint );
+            Debug.Assert(val.NativeType.IsInteger || val.NativeType.IsFloatingPoint);
 
-            Value retVal = val.LlvmValue;
+            Value retVal = val;
 
             switch( unOp )
             {
             case UnaryOperator.NEG:
-                if( val.IsInteger )
+                if (val.NativeType.IsInteger)
                 {
                     retVal = IrBuilder.Neg( retVal );
-                }            
+                }
                 else
                 {
                     retVal = IrBuilder.FNeg( retVal );
                 }
                 break;
+
             case UnaryOperator.NOT:
                 retVal = IrBuilder.Not( retVal );
                 break;
             }
-            retVal = retVal.SetDebugLocation( CurDILocation );
-            return new _Value( Module, val.Type, retVal );
+
+            retVal.SetDebugLocation(CurDILocation);
+            retVal.SetDebugType(val.GetDebugType());
+            return retVal;
         }
         const int SignedBase = 10;
         const int FloatBase = SignedBase + 10;
@@ -351,25 +325,27 @@ namespace Microsoft.Zelig.LLVM
             [ FloatBase + 5 ] = Predicate.OrderedAndNotEqual            //llvm::CmpInst::FCMP_ONE;
         };
 
-        public _Value InsertCmp( int predicate, bool isSigned, _Value valA, _Value valB )
+        public Value InsertCmp( int predicate, bool isSigned, Value valA, Value valB )
         {
             _Type booleanImpl = Module.GetNativeBoolType();
 
-            if( (valA.IsInteger && valB.IsInteger) ||
-                (valA.IsPointer && valB.IsPointer) )
+            if( (valA.NativeType.IsInteger && valB.NativeType.IsInteger) ||
+                (valA.NativeType.IsPointer && valB.NativeType.IsPointer) )
             {
                 Predicate p = PredicateMap[ predicate + ( isSigned ? SignedBase : 0 ) ];
-                var cmp = IrBuilder.Compare( ( IntPredicate )p, valA.LlvmValue, valB.LlvmValue )
-                                   .SetDebugLocation( CurDILocation );
-                return new _Value( Module, booleanImpl, cmp );
+                var cmp = IrBuilder.Compare((IntPredicate)p, valA, valB);
+                cmp.SetDebugLocation(CurDILocation);
+                cmp.SetDebugType(booleanImpl);
+                return cmp;
             }
 
-            if( valA.IsFloatingPoint && valB.IsFloatingPoint )
+            if( valA.NativeType.IsFloatingPoint && valB.NativeType.IsFloatingPoint )
             {
                 Predicate p = PredicateMap[ predicate + FloatBase ];
-                var cmp = IrBuilder.Compare( ( RealPredicate )p, valA.LlvmValue, valB.LlvmValue )
-                                   .SetDebugLocation( CurDILocation );
-                return new _Value( Module, booleanImpl, cmp );
+                var cmp = IrBuilder.Compare((RealPredicate)p, valA, valB);
+                cmp.SetDebugLocation(CurDILocation);
+                cmp.SetDebugType(booleanImpl);
+                return cmp;
             }
 
             Console.WriteLine( "valA:" );
@@ -379,41 +355,41 @@ namespace Microsoft.Zelig.LLVM
             throw new NotSupportedException( "Parameter combination not supported for CMP Operator." );
         }
 
-        public _Value InsertZExt( _Value val, _Type ty, int significantBits )
+        public Value InsertZExt( Value val, _Type ty, int significantBits )
         {
-            Value retVal = val.LlvmValue;
+            Value retVal = val;
 
             // TODO: Remove this workaround once issue #123 has been resolved.
-            if ( significantBits != val.Type.SizeInBits )
+            if (significantBits != val.GetDebugType().SizeInBits)
             {
-                retVal = IrBuilder.TruncOrBitCast( val.LlvmValue, Module.LlvmModule.Context.GetIntType( ( uint )significantBits ) )
+                retVal = IrBuilder.TruncOrBitCast( val, Module.LlvmModule.Context.GetIntType( ( uint )significantBits ) )
                                   .SetDebugLocation( CurDILocation );
             }
 
-            retVal = IrBuilder.ZeroExtendOrBitCast( retVal, ty.DebugType )
-                              .SetDebugLocation( CurDILocation );
-
-            return new _Value( Module, ty, retVal );
+            retVal = IrBuilder.ZeroExtendOrBitCast(retVal, ty.DebugType);
+            retVal.SetDebugLocation(CurDILocation);
+            retVal.SetDebugType(ty);
+            return retVal;
         }
 
-        public _Value InsertSExt( _Value val, _Type ty, int significantBits )
+        public Value InsertSExt( Value val, _Type ty, int significantBits )
         {
-            Value retVal = val.LlvmValue;
+            Value retVal = val;
 
             // TODO: Remove this workaround once issue #123 has been resolved.
-            if ( significantBits != val.Type.SizeInBits )
+            if (significantBits != val.GetDebugType().SizeInBits)
             {
-                retVal = IrBuilder.TruncOrBitCast( val.LlvmValue, Module.LlvmModule.Context.GetIntType( ( uint )significantBits ) )
-                                  .SetDebugLocation( CurDILocation );
+                retVal = IrBuilder.TruncOrBitCast(val, Module.LlvmModule.Context.GetIntType((uint)significantBits))
+                                  .SetDebugLocation(CurDILocation);
             }
 
-            retVal = IrBuilder.SignExtendOrBitCast( retVal, ty.DebugType )
-                              .SetDebugLocation( CurDILocation );
-
-            return new _Value( Module, ty, retVal );
+            retVal = IrBuilder.SignExtendOrBitCast(retVal, ty.DebugType);
+            retVal.SetDebugLocation(CurDILocation);
+            retVal.SetDebugType(ty);
+            return retVal;
         }
 
-        public _Value InsertTrunc( _Value val, _Type type, int significantBits )
+        public Value InsertTrunc(Value val, _Type type, int significantBits)
         {
             // TODO: Remove this workaround once issue #123 has been resolved.
             if (significantBits < type.SizeInBits)
@@ -421,114 +397,116 @@ namespace Microsoft.Zelig.LLVM
                 return InsertZExt(val, type, significantBits);
             }
 
-            Value retVal = IrBuilder.TruncOrBitCast( val.LlvmValue, type.DebugType )
-                                    .SetDebugLocation( CurDILocation );
-
-            return new _Value( Module, type, retVal );
+            Value retVal = IrBuilder.TruncOrBitCast(val, type.DebugType);
+            retVal.SetDebugLocation(CurDILocation);
+            retVal.SetDebugType(type);
+            return retVal;
         }
 
-        public _Value InsertBitCast( _Value val, _Type type )
+        public Value InsertBitCast(Value val, _Type type)
         {
-            var bitCast = IrBuilder.BitCast( val.LlvmValue, type.DebugType )
-                                   .SetDebugLocation( CurDILocation );
-
-            return new _Value( Module, type, bitCast );
+            var bitCast = IrBuilder.BitCast(val, type.DebugType);
+            bitCast.SetDebugLocation(CurDILocation);
+            bitCast.SetDebugType(type);
+            return bitCast;
         }
 
-        public _Value InsertPointerToInt( _Value val, _Type intType )
+        public Value InsertPointerToInt(Value val, _Type intType)
         {
-            Value llvmVal = IrBuilder.PointerToInt( val.LlvmValue, intType.DebugType )
-                                     .SetDebugLocation( CurDILocation );
-            return new _Value( Module, intType, llvmVal );
+            Value llvmVal = IrBuilder.PointerToInt(val, intType.DebugType);
+            llvmVal.SetDebugLocation(CurDILocation);
+            llvmVal.SetDebugType(intType);
+            return llvmVal;
         }
 
-        public _Value InsertIntToPointer( _Value val, _Type pointerType )
+        public Value InsertIntToPointer(Value val, _Type pointerType)
         {
-            Value llvmVal = IrBuilder.IntToPointer( val.LlvmValue, (IPointerType)pointerType.DebugType )
-                                     .SetDebugLocation( CurDILocation );
-            return new _Value( Module, pointerType, llvmVal );
+            Value llvmVal = IrBuilder.IntToPointer(val, (IPointerType)pointerType.DebugType);
+            llvmVal.SetDebugLocation(CurDILocation);
+            llvmVal.SetDebugType(pointerType);
+            return llvmVal;
         }
 
-        public _Value InsertIntToFP( _Value val, _Type type )
+        public Value InsertIntToFP(Value val, _Type type)
         {
             Value result;
-            if( val.Type.IsSigned )
+            if (val.GetDebugType().IsSigned)
             {
-                result = IrBuilder.SIToFPCast( val.LlvmValue, type.DebugType )
-                                  .SetDebugLocation( CurDILocation );
+                result = IrBuilder.SIToFPCast(val, type.DebugType);
             }
             else
             {
-                result = IrBuilder.UIToFPCast( val.LlvmValue, type.DebugType )
-                                  .SetDebugLocation( CurDILocation );
+                result = IrBuilder.UIToFPCast(val, type.DebugType);
             }
 
-            return new _Value( Module, type, result );
+            result.SetDebugLocation(CurDILocation);
+            result.SetDebugType(type);
+            return result;
         }
 
-        public _Value InsertFPExt( _Value val, _Type type )
+        public Value InsertFPExt(Value val, _Type type)
         {
-            var value = IrBuilder.FPExt( val.LlvmValue, type.DebugType )
-                                 .SetDebugLocation( CurDILocation );
-
-            return new _Value( Module, type, value );
+            var value = IrBuilder.FPExt(val, type.DebugType);
+            value.SetDebugLocation(CurDILocation);
+            value.SetDebugType(type);
+            return value;
         }
 
-        public _Value InsertFPTrunc( _Value val, _Type type )
+        public Value InsertFPTrunc(Value val, _Type type)
         {
-            var value = IrBuilder.FPTrunc( val.LlvmValue, type.DebugType )
-                                 .SetDebugLocation( CurDILocation );
-
-            return new _Value( Module, type, value );
+            var value = IrBuilder.FPTrunc(val, type.DebugType);
+            value.SetDebugLocation(CurDILocation);
+            value.SetDebugType(type);
+            return value;
         }
 
-        public _Value InsertFPToInt( _Value val, _Type intType )
+        public Value InsertFPToInt(Value val, _Type intType)
         {
             Value result;
-            if( val.Type.IsSigned )
+            if (val.GetDebugType().IsSigned)
             {
-                result = IrBuilder.FPToSICast( val.LlvmValue, intType.DebugType )
-                                  .SetDebugLocation( CurDILocation );
+                result = IrBuilder.FPToSICast(val, intType.DebugType);
             }
             else
             {
-                result = IrBuilder.FPToUICast( val.LlvmValue, intType.DebugType )
-                                  .SetDebugLocation( CurDILocation );
+                result = IrBuilder.FPToUICast(val, intType.DebugType);
             }
 
-            return new _Value( Module, intType, result );
+            result.SetDebugLocation(CurDILocation);
+            result.SetDebugType(intType);
+            return result;
         }
 
         public void InsertUnreachable()
         {
-            IrBuilder.Unreachable( ).SetDebugLocation( CurDILocation );
+            IrBuilder.Unreachable().SetDebugLocation(CurDILocation);
         }
 
-        public void InsertUnconditionalBranch( _BasicBlock bb )
+        public void InsertUnconditionalBranch(_BasicBlock bb)
         {
-            IrBuilder.Branch( bb.LlvmBasicBlock )
-                     .SetDebugLocation( CurDILocation );
+            IrBuilder.Branch(bb.LlvmBasicBlock)
+                     .SetDebugLocation(CurDILocation);
         }
 
-        public void InsertConditionalBranch( _Value cond, _BasicBlock trueBB, _BasicBlock falseBB )
+        public void InsertConditionalBranch(Value cond, _BasicBlock trueBB, _BasicBlock falseBB)
         {
-            IrBuilder.Branch( cond.LlvmValue, trueBB.LlvmBasicBlock, falseBB.LlvmBasicBlock )
-                     .SetDebugLocation( CurDILocation );
+            IrBuilder.Branch(cond, trueBB.LlvmBasicBlock, falseBB.LlvmBasicBlock)
+                     .SetDebugLocation(CurDILocation);
         }
 
-        public void InsertSwitchAndCases(_Value cond, _BasicBlock defaultBB, List<int> casesValues, List<_BasicBlock> casesBBs)
+        public void InsertSwitchAndCases(Value cond, _BasicBlock defaultBB, List<int> casesValues, List<_BasicBlock> casesBBs)
         {
-            Debug.Assert(cond.IsInteger);
-            Value val = cond.LlvmValue;
+            Debug.Assert(cond.NativeType.IsInteger);
+            Value val = cond;
 
             // force all values to uint32 so they match the case table for LLVM
             // CLI spec (ECMA-335 III.3.66) requires an int32 operand that is
             // treated as unsigned. LLVM requires that the table entries and the
             // conditional value are of the same type. So zero extend the value
             // if it is smaller than an i32.
-            if (cond.LlvmValue.NativeType.IntegerBitWidth < 32)
+            if (val.NativeType.IntegerBitWidth < 32)
             {
-                val = IrBuilder.ZeroExtend(cond.LlvmValue, Owner.Module.LlvmContext.Int32Type);
+                val = IrBuilder.ZeroExtend(val, Owner.Module.LlvmContext.Int32Type);
             }
 
             var si = IrBuilder.Switch(val, defaultBB.LlvmBasicBlock, (uint)casesBBs.Count)
@@ -540,36 +518,25 @@ namespace Microsoft.Zelig.LLVM
             }
         }
 
-        public _Value InsertCall(_Function func, _Type returnType, List<_Value> args)
+        public Value InsertCall(Value func, _Type returnType, List<Value> args, bool isIndirect)
         {
-            List<Value> parameters = args.Select((_Value value) => { return value.LlvmValue; }).ToList();
+            List<Value> parameters = args.Select((Value value) => { return (Value)value; }).ToList();
 
-            Value retVal = IrBuilder.Call(func.LlvmValue, parameters)
-                                    .SetDebugLocation(CurDILocation);
-
-            // Don't bother wrapping the return if we won't use it.
-            if (returnType.DebugType.IsVoid)
+            Value pointer = func;
+            if (isIndirect)
             {
-                return null;
+                // Manufacture a function prototype.
+                var paramTypes = parameters.Select((Value value) => { return value.NativeType; });
+                ITypeRef llvmFuncType = Module.LlvmContext.GetFunctionType(returnType.DebugType.NativeType, paramTypes);
+                ITypeRef funcPointerType = llvmFuncType.CreatePointerType();
+
+                // Bitcast the given pointer to the prototype we just created.
+                Value extracted = IrBuilder.ExtractValue(func, 0)
+                                           .SetDebugLocation(CurDILocation);
+                pointer = IrBuilder.BitCast(extracted, funcPointerType)
+                                   .SetDebugLocation(CurDILocation);
             }
 
-            return new _Value(Module, returnType, retVal);
-        }
-
-        public _Value InsertIndirectCall(_Value ptr, _Type returnType, List<_Value> args)
-        {
-            List<Value> parameters = args.Select((_Value value) => { return value.LlvmValue; }).ToList();
-
-            // Manufacture a function prototype.
-            var paramTypes = parameters.Select((Value value) => { return value.NativeType; });
-            ITypeRef llvmFuncType = Module.LlvmContext.GetFunctionType(returnType.DebugType.NativeType, paramTypes);
-            ITypeRef funcPointerType = llvmFuncType.CreatePointerType();
-
-            // Build a call to the code pointer.
-            Value extracted = IrBuilder.ExtractValue(ptr.LlvmValue, 0)
-                                       .SetDebugLocation(CurDILocation);
-            Value pointer = IrBuilder.BitCast(extracted, funcPointerType)
-                                     .SetDebugLocation(CurDILocation);
             Value retVal = IrBuilder.Call(pointer, parameters)
                                     .SetDebugLocation(CurDILocation);
 
@@ -579,8 +546,10 @@ namespace Microsoft.Zelig.LLVM
                 return null;
             }
 
-            return new _Value(Module, returnType, retVal);
+            retVal.SetDebugType(returnType);
+            return retVal;
         }
+
 
         static _Type SetValuesForByteOffsetAccess( _Type ty, List<uint> values, int offset, out string fieldName )
         {
@@ -616,13 +585,13 @@ namespace Microsoft.Zelig.LLVM
             throw new NotSupportedException( "Invalid offset for field access." );
         }
 
-        public _Value GetFieldAddress( _Value objAddress, int offset, _Type fieldType )
+        public Value GetFieldAddress( Value objAddress, int offset, _Type fieldType )
         {
             Context ctx = Module.LlvmModule.Context;
 
-            Debug.Assert( objAddress.Type.IsPointer, "Cannot get field address from a loaded value type." );
+            Debug.Assert(objAddress.GetDebugType().IsPointer, "Cannot get field address from a loaded value type.");
 
-            _Type underlyingType = objAddress.Type.UnderlyingType;
+            _Type underlyingType = objAddress.GetUnderlyingType();
             List<Value> valuesForGep = new List<Value>();
 
             // Add an initial 0 value to index into the address.
@@ -661,77 +630,80 @@ namespace Microsoft.Zelig.LLVM
                 return objAddress;
             }
 
-            var gep = IrBuilder.GetElementPtr( objAddress.LlvmValue, valuesForGep )
-                               .RegisterName( $"{objAddress.LlvmValue.Name}.{fieldName}" )
-                               .SetDebugLocation( CurDILocation );
+            var gep = IrBuilder.GetElementPtr(objAddress, valuesForGep)
+                               .RegisterName($"{objAddress.Name}.{fieldName}")
+                               .SetDebugLocation(CurDILocation);
 
             _Type pointerType = Module.GetOrInsertPointerType( underlyingType );
-            return new _Value( Module, pointerType, gep );
+            gep.SetDebugType(pointerType);
+            return gep;
         }
 
-        public _Value IndexLLVMArray(_Value obj, _Value idx, _Type elementType)
+        public Value IndexLLVMArray(Value obj, Value idx, _Type elementType)
         {
-            Value[] idxs = { Module.LlvmModule.Context.CreateConstant( 0 ), idx.LlvmValue };
-            Value retVal = IrBuilder.GetElementPtr( obj.LlvmValue, idxs )
-                                    .SetDebugLocation( CurDILocation );
+            Value[] idxs = { Module.LlvmModule.Context.CreateConstant(0), idx };
+            Value retVal = IrBuilder.GetElementPtr(obj, idxs)
+                                    .SetDebugLocation(CurDILocation);
 
             _Type pointerType = Module.GetOrInsertPointerType(elementType);
-            return new _Value(Module, pointerType, retVal);
+            retVal.SetDebugType(pointerType);
+            return retVal;
         }
 
-        public void InsertRet( _Value val )
+        public void InsertRet(Value val)
         {
-            if( val == null )
+            if (val == null)
             {
-                IrBuilder.Return( )
-                         .SetDebugLocation( CurDILocation );
+                IrBuilder.Return()
+                         .SetDebugLocation(CurDILocation);
             }
             else
             {
-                IrBuilder.Return( val.LlvmValue )
-                         .SetDebugLocation( CurDILocation );
+                IrBuilder.Return(val)
+                         .SetDebugLocation(CurDILocation);
             }
         }
 
-        public _Value InsertAtomicXchg( _Value ptr, _Value val ) => InsertAtomicBinaryOp( IrBuilder.AtomicXchg, ptr, val );
-        public _Value InsertAtomicAdd( _Value ptr, _Value val ) => InsertAtomicBinaryOp( IrBuilder.AtomicAdd, ptr, val );
-        public _Value InsertAtomicSub( _Value ptr, _Value val ) => InsertAtomicBinaryOp( IrBuilder.AtomicSub, ptr, val );
-        public _Value InsertAtomicAnd( _Value ptr, _Value val ) => InsertAtomicBinaryOp( IrBuilder.AtomicAnd, ptr, val );
-        public _Value InsertAtomicNand( _Value ptr, _Value val ) => InsertAtomicBinaryOp( IrBuilder.AtomicNand, ptr, val );
-        public _Value InsertAtomicOr( _Value ptr, _Value val ) => InsertAtomicBinaryOp( IrBuilder.AtomicOr, ptr, val );
-        public _Value InsertAtomicXor( _Value ptr, _Value val ) => InsertAtomicBinaryOp( IrBuilder.AtomicXor, ptr, val );
-        public _Value InsertAtomicMax( _Value ptr, _Value val ) => InsertAtomicBinaryOp( IrBuilder.AtomicMax, ptr, val );
-        public _Value InsertAtomicMin( _Value ptr, _Value val ) => InsertAtomicBinaryOp( IrBuilder.AtomicMin, ptr, val );
-        public _Value InsertAtomicUMax( _Value ptr, _Value val ) => InsertAtomicBinaryOp( IrBuilder.AtomicUMax, ptr, val );
-        public _Value InsertAtomicUMin( _Value ptr, _Value val ) => InsertAtomicBinaryOp( IrBuilder.AtomicUMin, ptr, val );
+        public Value InsertAtomicXchg(Value ptr, Value val) => InsertAtomicBinaryOp(IrBuilder.AtomicXchg, ptr, val);
+        public Value InsertAtomicAdd(Value ptr, Value val) => InsertAtomicBinaryOp(IrBuilder.AtomicAdd, ptr, val);
+        public Value InsertAtomicSub(Value ptr, Value val) => InsertAtomicBinaryOp(IrBuilder.AtomicSub, ptr, val);
+        public Value InsertAtomicAnd(Value ptr, Value val) => InsertAtomicBinaryOp(IrBuilder.AtomicAnd, ptr, val);
+        public Value InsertAtomicNand(Value ptr, Value val) => InsertAtomicBinaryOp(IrBuilder.AtomicNand, ptr, val);
+        public Value InsertAtomicOr(Value ptr, Value val) => InsertAtomicBinaryOp(IrBuilder.AtomicOr, ptr, val);
+        public Value InsertAtomicXor(Value ptr, Value val) => InsertAtomicBinaryOp(IrBuilder.AtomicXor, ptr, val);
+        public Value InsertAtomicMax(Value ptr, Value val) => InsertAtomicBinaryOp(IrBuilder.AtomicMax, ptr, val);
+        public Value InsertAtomicMin(Value ptr, Value val) => InsertAtomicBinaryOp(IrBuilder.AtomicMin, ptr, val);
+        public Value InsertAtomicUMax(Value ptr, Value val) => InsertAtomicBinaryOp(IrBuilder.AtomicUMax, ptr, val);
+        public Value InsertAtomicUMin(Value ptr, Value val) => InsertAtomicBinaryOp(IrBuilder.AtomicUMin, ptr, val);
 
-        private _Value InsertAtomicBinaryOp( Func<Value, Value, Value> fn, _Value ptr, _Value val)
+        private Value InsertAtomicBinaryOp(Func<Value, Value, Value> fn, Value ptr, Value val)
         {
             // LLVM atomicRMW returns the old value at ptr
-            var retVal = fn( ptr.LlvmValue, val.LlvmValue );
-
-            retVal = retVal.SetDebugLocation( CurDILocation );
-            return new _Value( Module, val.Type, retVal );
+            Value retVal = fn(ptr, val);
+            retVal.SetDebugLocation(CurDILocation);
+            retVal.SetDebugType(val.GetDebugType());
+            return retVal;
         }
 
-        public _Value InsertAtomicCmpXchg( _Value ptr, _Value cmp, _Value val )
+        public Value InsertAtomicCmpXchg(Value ptr, Value cmp, Value val)
         {
             // LLVM cmpxchg instruction returns { ty, i1 } for { oldValue, isSuccess }
-            var retVal = IrBuilder.AtomicCmpXchg( ptr.LlvmValue, cmp.LlvmValue, val.LlvmValue );
+            var retVal = IrBuilder.AtomicCmpXchg(ptr, cmp, val);
 
             // And we only want the old value
-            var oldVal = IrBuilder.ExtractValue( retVal, 0 );
+            var oldVal = IrBuilder.ExtractValue(retVal, 0);
 
-            oldVal = oldVal.SetDebugLocation( CurDILocation );
-            return new _Value( Module, val.Type, oldVal );
+            oldVal.SetDebugLocation(CurDILocation);
+            oldVal.SetDebugType(val.GetDebugType());
+            return oldVal;
         }
 
-        public void SetVariableName( _Value value, VariableExpression expression )
+        public void SetVariableName(Value value, VariableExpression expression)
         {
             string name = expression.DebugName?.Name;
-            if( !string.IsNullOrWhiteSpace( name ) )
+            if (!string.IsNullOrWhiteSpace(name))
             {
-                value.LlvmValue.RegisterName( name );
+                value.RegisterName(name);
             }
         }
 
