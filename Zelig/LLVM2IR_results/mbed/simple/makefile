@@ -110,8 +110,8 @@ endif
 ifeq ($(TARGET),LPC1768)
 
 ifeq ($(HEAP_SIZE),)
-	AS_FLAGS += --defsym __HEAP_SIZE=0x6C00
-	CC_FLAGS += -D__HEAP_SIZE=0x6C00
+	AS_FLAGS += --defsym __HEAP_SIZE=0x6000
+	CC_FLAGS += -D__HEAP_SIZE=0x6000
 else
 	AS_FLAGS += --defsym __HEAP_SIZE=$(HEAP_SIZE)
 	CC_FLAGS += -D__HEAP_SIZE=$(HEAP_SIZE)

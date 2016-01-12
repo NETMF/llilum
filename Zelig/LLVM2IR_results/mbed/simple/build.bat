@@ -27,7 +27,7 @@ IF %1.==. (
     SET TARGET=LPC1768
     SET LLILUM_TARGET_CPU=cortex-m3
     SET LLILUM_TARGET_TRIPLE=Thumb-NoSubArch-UnknownVendor-UnknownOS-GNUEABI-ELF
-    SET SIZE_OF_HEAP=0x6C00
+    SET SIZE_OF_HEAP=0x6000
     SET LWIP_USE=0
 ) ELSE (
     ECHO Detected target: %1
