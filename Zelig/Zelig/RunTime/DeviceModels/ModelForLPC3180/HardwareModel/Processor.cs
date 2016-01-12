@@ -52,16 +52,16 @@ namespace Microsoft.DeviceModels.Chipset.LPC3180
                 }
             }
             
-            public static uint DefaultThreadPooThreads
+            public static uint DefaultThreadPoolThreads
             {
-                [RT.ConfigurationOption( "System__Runtime_DefaultThreadPooThreads" )]
+                [RT.ConfigurationOption( "System__Runtime_DefaultThreadPoolThreads" )]
                 get
                 {
                     return Int32.MaxValue;
                 }
             }
 
-            public static uint DefaultTimerPooThreads
+            public static uint DefaultTimerPoolThreads
             {
                 [RT.ConfigurationOption( "System__Runtime_DefaultTimerPooThreads" )]
                 get

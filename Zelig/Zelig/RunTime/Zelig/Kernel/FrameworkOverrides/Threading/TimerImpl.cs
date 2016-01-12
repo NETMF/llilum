@@ -82,7 +82,7 @@ namespace Microsoft.Zelig.Runtime
             // State
             //
 
-            private static readonly int c_MaxIdleHandlers = Configuration.DefaultTimerPooThreads;
+            private static readonly int c_MaxIdleHandlers = Configuration.DefaultTimerPoolThreads;
             
             KernelList< TimerImpl >  m_timers;
 

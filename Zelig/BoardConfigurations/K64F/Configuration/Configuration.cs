@@ -83,8 +83,8 @@ namespace Microsoft.Llilum.BoardConfigurations
         [AllowedOptions(typeof(K64F))]
         [Defaults("CoreClockFrequency"    , 120000000UL)]
         [Defaults("RealTimeClockFrequency", 1000000UL  )]
-        [Defaults("DefaultThreadPooThreads", 3)]
-        [Defaults("DefaultTimerPooThreads" , 2)]
+        [Defaults("DefaultThreadPoolThreads", 3)]
+        [Defaults("DefaultTimerPoolThreads" , 2)]
         public K64F Processor;
 
         //--//

@@ -23,11 +23,11 @@ namespace Microsoft.Zelig.Configuration.Environment
         public ulong RealTimeClockFrequency;
 
         [DisplayName("Number of Threads in Thread Pool")]
-        [LinkToConfigurationOption("System__Runtime_DefaultThreadPooThreads")]
-        public int DefaultThreadPooThreads;
+        [LinkToConfigurationOption("System__Runtime_DefaultThreadPoolThreads")]
+        public int DefaultThreadPoolThreads;
 
         [DisplayName("Number of Threads in Timer Pool")]
         [LinkToConfigurationOption("System__Runtime_DefaultTimerPooThreads")]
-        public int DefaultTimerPooThreads;
+        public int DefaultTimerPoolThreads;
     }
 }

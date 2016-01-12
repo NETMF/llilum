@@ -100,9 +100,9 @@ namespace Microsoft.CortexM4OnMBED
             }
         }
             
-        public static uint DefaultThreadPooThreads
+        public static uint DefaultThreadPoolThreads
         {
-            [RT.ConfigurationOption( "System__Runtime_DefaultThreadPooThreads" )]
+            [RT.ConfigurationOption( "System__Runtime_DefaultThreadPoolThreads" )]
             get
             {
                 RT.BugCheck.Assert( false, RT.BugCheck.StopCode.IllegalConfiguration );

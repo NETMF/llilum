@@ -32,7 +32,7 @@ namespace Microsoft.Zelig.Runtime
             Queue< WorkItem > m_queue        = new Queue< WorkItem >();
             Queue< WorkItem > m_queueFree    = new Queue< WorkItem >();
             AutoResetEvent    m_wakeup       = new AutoResetEvent( false );
-            int               m_maxThreads   = Configuration.DefaultThreadPooThreads;
+            int               m_maxThreads   = Configuration.DefaultThreadPoolThreads;
             int               m_activeThreads;
             int               m_busyThreads;
 

@@ -84,8 +84,8 @@ namespace Microsoft.Llilum.BoardConfigurations
         [AllowedOptions(typeof(LPC1768))]
         [Defaults("CoreClockFrequency"     , 96000000UL)]
         [Defaults("RealTimeClockFrequency" , 1000000UL )]
-        [Defaults("DefaultThreadPooThreads", 2)]
-        [Defaults("DefaultTimerPooThreads" , 1)]
+        [Defaults("DefaultThreadPoolThreads", 2)]
+        [Defaults("DefaultTimerPoolThreads" , 1)]
         public LPC1768 Processor;
 
         //--//

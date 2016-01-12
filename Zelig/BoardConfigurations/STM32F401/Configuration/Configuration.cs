@@ -83,8 +83,8 @@ namespace Microsoft.Llilum.BoardConfigurations
         [AllowedOptions(typeof(STM32F401))]
         [Defaults("CoreClockFrequency", 84000000UL)]
         [Defaults("RealTimeClockFrequency", 1000000UL)]
-        [Defaults("DefaultThreadPooThreads", 2)]
-        [Defaults("DefaultTimerPooThreads", 2)]
+        [Defaults("DefaultThreadPoolThreads", 2)]
+        [Defaults("DefaultTimerPoolThreads", 2)]
         public STM32F401 Processor;
 
         //--//
