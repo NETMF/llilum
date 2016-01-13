@@ -14,17 +14,46 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
 
     public static class TransformFinallyBlocksIntoTryBlocks
     {
-        public static void Execute( ControlFlowGraphStateForCodeTransformation cfg )
+        struct FinallyRange
         {
-            while(true)
+            public ExceptionHandlerBasicBlock Entry;
+            public BasicBlock Exit;
+
+            public override bool Equals(Object obj)
+            {
+                return (obj is FinallyRange) && (this == (FinallyRange)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                return Entry.GetHashCode() ^ Exit.GetHashCode();
+            }
+
+            public static bool operator ==(FinallyRange x, FinallyRange y)
+            {
+                return (x.Entry == y.Entry) && (x.Entry == y.Entry);
+            }
+
+            public static bool operator !=(FinallyRange x, FinallyRange y)
+            {
+                return !(x == y);
+            }
+        };
+
+        public static void Execute(ControlFlowGraphStateForCodeTransformation cfg)
+        {
+            // This maps finally block ranges to the entry block of their cloned 'normal' region.
+            var clonedRanges = HashTableFactory.New<FinallyRange, BasicBlock>();
+
+            while (true)
             {
                 cfg.TraceToFile( "TransformFinallyBlocksIntoTryBlocks" );
 
                 bool fDone = true;
 
-                foreach(BasicBlock bb in cfg.DataFlow_SpanningTree_BasicBlocks)
+                foreach (BasicBlock block in cfg.DataFlow_SpanningTree_BasicBlocks)
                 {
-                    if(RemoveFinally( cfg, bb ))
+                    if (RemoveFinally(cfg, block, clonedRanges))
                     {
                         fDone = false;
                         break;
@@ -40,82 +69,94 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
             }
         }
 
-        private static bool RemoveFinally( ControlFlowGraphStateForCodeTransformation cfg ,
-                                           BasicBlock                                 bb  )
+        private static bool RemoveFinally(
+            ControlFlowGraphStateForCodeTransformation cfg,
+            BasicBlock block,
+            GrowOnlyHashTable<FinallyRange, BasicBlock> clonedRanges)
         {
-            ExceptionHandlerBasicBlock ehBB = bb as ExceptionHandlerBasicBlock;
-
-            if(ehBB != null)
+            ExceptionHandlerBasicBlock ehBB = block as ExceptionHandlerBasicBlock;
+            if (ehBB == null)
             {
-                foreach(ExceptionClause ec in ehBB.HandlerFor)
+                return false;
+            }
+
+            foreach(ExceptionClause ec in ehBB.HandlerFor)
+            {
+                if(ec.Flags == ExceptionClause.ExceptionFlag.Finally)
                 {
-                    if(ec.Flags == ExceptionClause.ExceptionFlag.Finally)
+                    GrowOnlySet<BasicBlock> setVisited = SetFactory.NewWithReferenceEquality<BasicBlock>();
+
+                    //
+                    // Collect all the basic blocks that are part of the handler.
+                    //
+                    CollectFinallyHandler(ehBB, setVisited);
+
+                    //
+                    // First, see if there's any nested finally clause. If so, bail out.
+                    //
+                    foreach (BasicBlock bbSub in setVisited)
                     {
-                        GrowOnlySet< BasicBlock > setVisited = SetFactory.NewWithReferenceEquality< BasicBlock >();
-
-                        //
-                        // Collect all the basic blocks that are part of the handler.
-                        //
-                        CollectFinallyHandler( ehBB, setVisited );
-
-                        //
-                        // First, see if there's any nested finally clause. If so, bail out.
-                        //
-                        foreach(BasicBlock bbSub in setVisited)
+                        if (bbSub != ehBB)
                         {
-                            if(bbSub != ehBB)
+                            if (RemoveFinally(cfg, bbSub, clonedRanges))
                             {
-                                if(RemoveFinally( cfg, bbSub ))
-                                {
-                                    return true;
-                                }
+                                return true;
                             }
                         }
+                    }
 
-                        GrowOnlySet< ControlOperator > setLeave   = SetFactory.NewWithReferenceEquality< ControlOperator >();
-                        GrowOnlySet< ControlOperator > setFinally = SetFactory.NewWithReferenceEquality< ControlOperator >();
+                    GrowOnlySet<ControlOperator> setLeave = SetFactory.NewWithReferenceEquality<ControlOperator>();
+                    GrowOnlySet<ControlOperator> setFinally = SetFactory.NewWithReferenceEquality<ControlOperator>();
 
-                        //
-                        // Find all the leave operators in the basic blocks protected by this finally handler.
-                        //
-                        FindAllLeaveOperators( ehBB, setLeave );
+                    //
+                    // Find all the leave operators in the basic blocks protected by this finally handler.
+                    //
+                    FindAllLeaveOperators(ehBB, setLeave);
 
-                        //
-                        // For each of them:
-                        //
-                        //      1) Clone the finally handler(s) protecting the leaving block.
-                        //      2) Convert the leave to a branch to the cloned handler.
-                        //      3) Change endfinally to a leave to the same original target.
-                        //
-                        foreach (LeaveControlOperator leave in setLeave)
+                    //
+                    // For each of them:
+                    //
+                    //      1) Clone the finally handler(s) protecting the leaving block.
+                    //      2) Convert the leave to a branch to the cloned handler.
+                    //      3) Change endfinally to a leave to the same original target.
+                    //
+                    foreach (LeaveControlOperator leave in setLeave)
+                    {
+                        CloningContext context = new CloneForwardGraphButLinkToExceptionHandlers(cfg, cfg, null);
+                        var finallyHandlers = new Stack<BasicBlock>();
+
+                        FinallyRange currentRange = new FinallyRange{ Entry = null, Exit = leave.TargetBranch };
+
+                        // Unwind all finally blocks that either ehBB itself or protected by it. These are always in
+                        // order from innermost to outermost; we can just chain them together until we hit ehBB.
+                        foreach (var handler in leave.BasicBlock.ProtectedBy)
                         {
-                            CloningContext context = new CloneForwardGraphButLinkToExceptionHandlers(cfg, cfg, null);
-                            var finallyHandlers = new Stack<BasicBlock>();
-
-                            // Unwind all finally blocks that either ehBB itself or protected by it. These are always in
-                            // order from innermost to outermost; we can just chain them together until we hit ehBB.
-                            foreach (var handler in leave.BasicBlock.ProtectedBy)
+                            foreach (var clause in handler.HandlerFor)
                             {
-                                foreach (var clause in handler.HandlerFor)
+                                if ((clause.Flags & ExceptionClause.ExceptionFlag.Finally) != 0)
                                 {
-                                    if ((clause.Flags & ExceptionClause.ExceptionFlag.Finally) != 0)
+                                    // Set the range's entry block to the first one we encounter.
+                                    if (currentRange.Entry == null)
                                     {
-                                        finallyHandlers.Push(handler);
-                                        break;
+                                        currentRange.Entry = handler;
                                     }
-                                }
 
-                                if (handler == ehBB)
-                                {
+                                    finallyHandlers.Push(handler);
                                     break;
                                 }
                             }
 
-                            // REVIEW: This loop can create multiple identical blocks. In the future we should detect if
-                            // a leave operator has the same handlers as a previous one and reuse its cloned blocks.
-                            // https://github.com/NETMF/llilum/issues/138
+                            if (handler == ehBB)
+                            {
+                                break;
+                            }
+                        }
 
-                            BasicBlock nextBlock = leave.TargetBranch;
+                        // If we already cloned this range of finally blocks, just reuse the existing entry block.
+                        BasicBlock nextBlock;
+                        if (!clonedRanges.TryGetValue(currentRange, out nextBlock))
+                        {
+                            nextBlock = leave.TargetBranch;
 
                             // Clone each handler block in reverse order.
                             while (finallyHandlers.Count != 0)
@@ -130,30 +171,23 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                                 nextBlock = clonedBlock;
                             }
 
-                            var leaveBranch = UnconditionalControlOperator.New(leave.DebugInfo, nextBlock);
-                            leave.SubstituteWithOperator(leaveBranch, Operator.SubstitutionFlags.Default);
+                            clonedRanges[currentRange] = nextBlock;
                         }
 
-                        //--//
-
-                        //
-                        // To finish, all the endfinally operators should be converted to simple rethrow.
-                        //
-                        setFinally.Clear();
-
-                        FindAllFinallyOperators( ehBB, setFinally );
-
-                        SubstituteFinallyForRethrow( setFinally );
-
-                        //
-                        // Convert the finally exception clauses to catch all ones.
-                        //
-                        ExceptionClause ecNew = new ExceptionClause( ExceptionClause.ExceptionFlag.None, null );
-
-                        ehBB.SubstituteHandlerFor( ec, ecNew );
-
-                        return true;
+                        var leaveBranch = UnconditionalControlOperator.New(leave.DebugInfo, nextBlock);
+                        leave.SubstituteWithOperator(leaveBranch, Operator.SubstitutionFlags.Default);
                     }
+
+                    // To finish, all the endfinally operators should be converted to simple rethrow.
+                    setFinally.Clear();
+                    FindAllFinallyOperators(ehBB, setFinally);
+                    SubstituteFinallyForRethrow(setFinally);
+
+                    // Convert the finally exception clauses to catch all ones.
+                    ExceptionClause ecNew = new ExceptionClause(ExceptionClause.ExceptionFlag.None, null);
+                    ehBB.SubstituteHandlerFor(ec, ecNew);
+
+                    return true;
                 }
             }
 
