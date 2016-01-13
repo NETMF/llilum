@@ -388,10 +388,6 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             {
                 Translate_ReturnControlOperator( ( IR.ReturnControlOperator )op );
             }
-            else if( op is IR.LeaveControlOperator )
-            {
-                Translate_LeaveControlOperator( ( IR.LeaveControlOperator )op );
-            }
             else if( op is IR.DeadControlOperator )
             {
                 Translate_DeadControlOperator( ( IR.DeadControlOperator )op );
@@ -842,12 +838,6 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             default:
                 throw new System.InvalidOperationException( "ReturnControlOperator with more than one arg not supported. " + op );
             }
-        }
-
-        private void Translate_LeaveControlOperator( IR.LeaveControlOperator op )
-        {
-            // Jump to a finally block.
-            m_basicBlock.InsertUnconditionalBranch( GetOrInsertBasicBlock( op.TargetBranch ) );
         }
 
         private void Translate_DeadControlOperator( IR.DeadControlOperator op )

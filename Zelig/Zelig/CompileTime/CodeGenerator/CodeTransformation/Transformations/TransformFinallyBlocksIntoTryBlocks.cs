@@ -83,21 +83,55 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                         //
                         // For each of them:
                         //
-                        //      1) clone the handler,
-                        //      2) change endfinally to a leave to the same original target,
-                        //      3) convert the leave to a branch to the cloned handler.
+                        //      1) Clone the finally handler(s) protecting the leaving block.
+                        //      2) Convert the leave to a branch to the cloned handler.
+                        //      3) Change endfinally to a leave to the same original target.
                         //
-                        foreach(Operator leave in setLeave)
+                        foreach (LeaveControlOperator leave in setLeave)
                         {
-                            CloningContext context = new CloneForwardGraphButLinkToExceptionHandlers( cfg, cfg, null );
+                            CloningContext context = new CloneForwardGraphButLinkToExceptionHandlers(cfg, cfg, null);
+                            var finallyHandlers = new Stack<BasicBlock>();
 
-                            BasicBlock bbCloned = context.Clone( ehBB.FirstSuccessor );
+                            // Unwind all finally blocks that either ehBB itself or protected by it. These are always in
+                            // order from innermost to outermost; we can just chain them together until we hit ehBB.
+                            foreach (var handler in leave.BasicBlock.ProtectedBy)
+                            {
+                                foreach (var clause in handler.HandlerFor)
+                                {
+                                    if ((clause.Flags & ExceptionClause.ExceptionFlag.Finally) != 0)
+                                    {
+                                        finallyHandlers.Push(handler);
+                                        break;
+                                    }
+                                }
 
-                            setFinally.Clear();
+                                if (handler == ehBB)
+                                {
+                                    break;
+                                }
+                            }
 
-                            FindAllFinallyOperators( bbCloned, setFinally );
+                            // REVIEW: This loop can create multiple identical blocks. In the future we should detect if
+                            // a leave operator has the same handlers as a previous one and reuse its cloned blocks.
+                            // https://github.com/NETMF/llilum/issues/138
 
-                            SubstituteFinallyForBranch( setFinally, (LeaveControlOperator)leave, bbCloned );
+                            BasicBlock nextBlock = leave.TargetBranch;
+
+                            // Clone each handler block in reverse order.
+                            while (finallyHandlers.Count != 0)
+                            {
+                                BasicBlock handler = finallyHandlers.Pop();
+                                BasicBlock clonedBlock = context.Clone(handler.FirstSuccessor);
+
+                                setFinally.Clear();
+                                FindAllFinallyOperators(clonedBlock, setFinally);
+                                SubstituteFinallyForBranch(setFinally, nextBlock);
+
+                                nextBlock = clonedBlock;
+                            }
+
+                            var leaveBranch = UnconditionalControlOperator.New(leave.DebugInfo, nextBlock);
+                            leave.SubstituteWithOperator(leaveBranch, Operator.SubstitutionFlags.Default);
                         }
 
                         //--//
@@ -202,19 +236,12 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
             }
         }
 
-        private static void SubstituteFinallyForBranch( GrowOnlySet<ControlOperator> setFinally ,
-                                                        LeaveControlOperator         leave      ,
-                                                        BasicBlock                   handler    )
+        private static void SubstituteFinallyForBranch(GrowOnlySet<ControlOperator> setFinally, BasicBlock target)
         {
-            BasicBlock oldTarget = leave.TargetBranch;
-
-            UnconditionalControlOperator leaveNew = UnconditionalControlOperator.New( leave.DebugInfo, handler );
-            leave.SubstituteWithOperator( leaveNew, Operator.SubstitutionFlags.Default );
-
-            foreach(ControlOperator op in setFinally)
+            foreach (ControlOperator op in setFinally)
             {
-                LeaveControlOperator opNew = LeaveControlOperator.New( op.DebugInfo, oldTarget );
-                op.SubstituteWithOperator( opNew, Operator.SubstitutionFlags.Default );
+                var opNew = UnconditionalControlOperator.New(op.DebugInfo, target);
+                op.SubstituteWithOperator(opNew, Operator.SubstitutionFlags.Default);
             }
         }
 
