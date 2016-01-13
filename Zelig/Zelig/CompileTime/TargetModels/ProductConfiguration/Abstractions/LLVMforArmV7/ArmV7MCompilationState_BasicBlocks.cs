@@ -756,7 +756,8 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             Value array = GetImmediate(op.BasicBlock, op.FirstArgument);
             Value nativeArray = m_basicBlock.GetFieldAddress(array, (int)m_wkt.System_Array.Size, null);
             Value index = GetImmediate(op.BasicBlock, op.SecondArgument);
-            return m_basicBlock.IndexLLVMArray(nativeArray, index, elementType);
+            Value aluIndex = ConvertValueToALUOperableType(index);
+            return m_basicBlock.IndexLLVMArray(nativeArray, aluIndex, elementType);
         }
 
         private void Translate_LoadElementOperator(IR.LoadElementOperator op)
