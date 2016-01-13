@@ -19,7 +19,7 @@ namespace Microsoft.Zelig.Runtime
             // State
             //
 
-            volatile EventWaitHandleImpl m_owner;
+            private EventWaitHandleImpl m_owner;
 
             //
             // Constructor Methods
