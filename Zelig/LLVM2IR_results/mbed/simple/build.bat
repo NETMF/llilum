@@ -34,25 +34,22 @@ IF %1.==. (
     SET TARGET=%1
     IF "%1"=="K64F" (
     SET SIZE_OF_HEAP=0x10000
-    REM SET LLILUM_TARGET_CPU=cortex-m4 https://github.com/NETMF/llilum/issues/136
-    SET LLILUM_TARGET_CPU=cortex-m3
+    SET LLILUM_TARGET_CPU=cortex-m4
     SET LLILUM_TARGET_TRIPLE=Thumb-NoSubArch-UnknownVendor-UnknownOS-GNUEABI-ELF
     SET LWIP_USE=1
     ) ELSE IF "%1"=="LPC1768" (
-    SET SIZE_OF_HEAP=0x6C00
+    SET SIZE_OF_HEAP=0x6000
     SET LLILUM_TARGET_CPU=cortex-m3
     SET LLILUM_TARGET_TRIPLE=Thumb-NoSubArch-UnknownVendor-UnknownOS-GNUEABI-ELF
     SET LWIP_USE=0
     ) ELSE IF "%1"=="STM32F411" (
-@REM - TODO: Need to use cortex-m3 for now, change to cortex-m4 when bug fixed
     SET SIZE_OF_HEAP=0x10000
-    SET LLILUM_TARGET_CPU=cortex-m3
+    SET LLILUM_TARGET_CPU=cortex-m4
     SET LLILUM_TARGET_TRIPLE=Thumb-NoSubArch-UnknownVendor-UnknownOS-GNUEABI-ELF
     SET LWIP_USE=0
     ) ELSE IF "%1"=="STM32F401" (
-@REM - TODO: Need to use cortex-m3 for now, change to cortex-m4 when bug fixed
     SET SIZE_OF_HEAP=0x10000
-    SET LLILUM_TARGET_CPU=cortex-m3
+    SET LLILUM_TARGET_CPU=cortex-m4
     SET LLILUM_TARGET_TRIPLE=Thumb-NoSubArch-UnknownVendor-UnknownOS-GNUEABI-ELF
     SET LWIP_USE=0
     ) ELSE IF "%1"=="STM32L152" (
@@ -61,7 +58,7 @@ IF %1.==. (
     SET LLILUM_TARGET_TRIPLE=Thumb-NoSubArch-UnknownVendor-UnknownOS-GNUEABI-ELF
     SET LWIP_USE=0
     ) ELSE (    
-    SET SIZE_OF_HEAP=0x6C00
+    SET SIZE_OF_HEAP=0x6000
     SET LLILUM_TARGET_CPU=cortex-m3
     SET LLILUM_TARGET_TRIPLE=Thumb-NoSubArch-UnknownVendor-UnknownOS-GNUEABI-ELF
     SET LWIP_USE=0

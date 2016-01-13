@@ -2,10 +2,10 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-//#define LPC1768
+#define LPC1768
 //#define K64F
 //#define STM32F411
-#define STM32F401
+//#define STM32F401
 //#define USE_I2C
 //#define USE_SPI
 #define USE_GPIO
