@@ -121,6 +121,45 @@ namespace Llvm.NET
             return retVal;
         }
 
+        public Invoke Invoke( Value func, IReadOnlyList<Value> args, BasicBlock then, BasicBlock catchBlock )
+        {
+            ValidateCallArgs( func, args );
+
+            LLVMValueRef[] llvmArgs = args.Select( v => v.ValueHandle ).ToArray();
+            int argCount = llvmArgs.Length;
+
+            // Must always provide at least one element for succesful marshaling/interop, but tell LLVM there are none.
+            if( argCount == 0 )
+            {
+                llvmArgs = new LLVMValueRef[1];
+            }
+
+            LLVMValueRef invoke = NativeMethods.BuildInvoke( BuilderHandle
+                                                           , func.ValueHandle
+                                                           , out llvmArgs[0]
+                                                           , (uint)argCount
+                                                           , then.BlockHandle
+                                                           , catchBlock.BlockHandle
+                                                           , string.Empty );
+            return Value.FromHandle<Invoke>( invoke );
+        }
+
+        public LandingPad LandingPad( ITypeRef resultType )
+        {
+            LLVMValueRef landingPad = NativeMethods.BuildLandingPad( BuilderHandle
+                                                                   , resultType.GetTypeRef()
+                                                                   , LLVMValueRef.Zero
+                                                                   , 0
+                                                                   , string.Empty );
+            return Value.FromHandle<LandingPad>( landingPad );
+        }
+
+        public ResumeInstruction Resume( Value exception )
+        {
+            LLVMValueRef resume = NativeMethods.BuildResume( BuilderHandle, exception.ValueHandle );
+            return Value.FromHandle<ResumeInstruction>( resume );
+        }
+
         /// <summary>Builds an LLVM Store instruction</summary>
         /// <param name="value">Value to store in destination</param>
         /// <param name="destination">value for the destination</param>
@@ -912,11 +951,7 @@ namespace Llvm.NET
             return Value.FromHandle( handle );
         }
 
-        private LLVMValueRef BuildCall( Value func, params Value[ ] args ) => BuildCall( func, ( IReadOnlyList<Value> )args );
-
-        private LLVMValueRef BuildCall( Value func ) => BuildCall( func, new List<Value>( ) );
-
-        private LLVMValueRef BuildCall( Value func, IReadOnlyList<Value> args )
+        private static void ValidateCallArgs( Value func, IReadOnlyList<Value> args )
         {
             if( func == null )
                 throw new ArgumentNullException( nameof( func ) );
@@ -941,6 +976,15 @@ namespace Llvm.NET
                     throw new ArgumentException( msg, nameof( args ) );
                 }
             }
+        }
+
+        private LLVMValueRef BuildCall( Value func, params Value[ ] args ) => BuildCall( func, ( IReadOnlyList<Value> )args );
+
+        private LLVMValueRef BuildCall( Value func ) => BuildCall( func, new List<Value>( ) );
+
+        private LLVMValueRef BuildCall( Value func, IReadOnlyList<Value> args )
+        {
+            ValidateCallArgs( func, args );
 
             LLVMValueRef[ ] llvmArgs = args.Select( v => v.ValueHandle ).ToArray( );
             int argCount = llvmArgs.Length;
