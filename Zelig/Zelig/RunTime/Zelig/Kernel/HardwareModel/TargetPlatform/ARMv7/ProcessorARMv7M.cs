@@ -202,9 +202,8 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         public const uint c_CCR__STKALIGN__4            = 0u << c_CCR__STKALIGN__SHIFT; 
         public const uint c_CCR__STKALIGN__8            = 1u << c_CCR__STKALIGN__SHIFT;
         
-        public const uint c_CCR_STD_CONFIG_4            = (                     c_CCR__DIV_0_TRP__TRAP | c_CCR__UNALIGN_TRP__TRAP | c_CCR__NONBASETHRDENA__ANY) & c_CCR__MASK; 
-        public const uint c_CCR_STD_CONFIG_8            = (c_CCR__STKALIGN__8 | c_CCR__DIV_0_TRP__TRAP | c_CCR__UNALIGN_TRP__TRAP | c_CCR__NONBASETHRDENA__ANY) & c_CCR__MASK;
-        public const uint c_CCR_STD_CONFIG              = (c_CCR__STKALIGN__8 | c_CCR__DIV_0_TRP__TRAP | c_CCR__NONBASETHRDENA__ANY) & c_CCR__MASK;
+        public const uint c_CCR_STD_CONFIG_4            = (                     c_CCR__DIV_0_TRP__TRAP | c_CCR__UNALIGN_TRP__NOTRAP | c_CCR__NONBASETHRDENA__ANY) & c_CCR__MASK; 
+        public const uint c_CCR_STD_CONFIG_8            = (c_CCR__STKALIGN__8 | c_CCR__DIV_0_TRP__TRAP | c_CCR__UNALIGN_TRP__NOTRAP | c_CCR__NONBASETHRDENA__ANY) & c_CCR__MASK;
 
         //
         // ICSR
@@ -440,9 +439,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             // NOTE: LWIP uses memory functions on addresses which are not 8 byte aligned
             // This prevents faults from occurring from those memory accesses
 
-            //CUSTOM_STUB_SCB_set_CCR( c_CCR_STD_CONFIG_8 );
-            CUSTOM_STUB_SCB_set_CCR(c_CCR_STD_CONFIG);
-            
+            CUSTOM_STUB_SCB_set_CCR( c_CCR_STD_CONFIG_8 );
         }
 
         internal static void RaiseSystemHandler( uint mask )

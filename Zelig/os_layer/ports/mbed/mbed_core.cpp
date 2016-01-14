@@ -6,6 +6,16 @@
 
 //--//
 
+#define __ATTRIBUTE_ALIGNMENT_8__ __attribute__((aligned(8)))
+#define __DIRECTIVE_ALIGNMENT_8__ __ASM volatile (".align 8");
+
+#define __ATTRIBUTE_ALIGNMENT_4__ __attribute__((aligned(4)))
+#define __DIRECTIVE_ALIGNMENT_4__ __ASM volatile (".align 4");
+
+#define __ATTRIBUTE_ALIGNMENT__   __ATTRIBUTE_ALIGNMENT_8__
+#define __DIRECTIVE_ALIGNMENT__   __DIRECTIVE_ALIGNMENT_8__
+
+
 extern "C"
 {
 
@@ -283,7 +293,7 @@ extern "C"
     
     /*__STATIC_INLINE*/ 
     __attribute__((naked)) 
-    __attribute__((aligned(8))) 
+    __ATTRIBUTE_ALIGNMENT__ 
     void CUSTOM_STUB_RaiseSupervisorCallForLongJump()
     {
         __ASM volatile ("svc #17");
@@ -291,7 +301,7 @@ extern "C"
 
     /*__STATIC_INLINE*/
     __attribute__((naked))
-    __attribute__((aligned(8)))
+    __ATTRIBUTE_ALIGNMENT__
     void CUSTOM_STUB_RaiseSupervisorCallForStartThreads()
     {
         __ASM volatile ("svc #18");
@@ -299,7 +309,7 @@ extern "C"
 
     /*__STATIC_INLINE*/ 
     __attribute__((naked))
-    __attribute__((aligned(8)))
+    __ATTRIBUTE_ALIGNMENT__
     void CUSTOM_STUB_RaiseSupervisorCallForRetireThread()
     {
         __ASM volatile ("svc #19");
@@ -308,7 +318,7 @@ extern "C"
 
     /*__STATIC_INLINE*/
     /*__attribute__((naked))*/
-    __attribute__((aligned(8)))
+    __ATTRIBUTE_ALIGNMENT__
         void CUSTOM_STUB_RaiseSupervisorCallForSnapshotProcessModeRegisters()
     {
         __ASM volatile ("svc #20");
@@ -355,7 +365,7 @@ extern "C"
     // Pull
     //
     /*__STATIC_INLINE*/
-    __attribute__((aligned(8)))
+    __ATTRIBUTE_ALIGNMENT__
     uint32_t* CUSTOM_STUB_FetchSoftwareFrameSnapshot()
     {
         //
@@ -372,8 +382,8 @@ extern "C"
 
 
     /*__STATIC_INLINE*/
-    __attribute__((aligned(8)))
-        void NotifySoftwareFrameSnapshot()
+    __ATTRIBUTE_ALIGNMENT__
+    void NotifySoftwareFrameSnapshot()
     {
         //
         // Grab the snapshot from the storage area at sw_hw__frame
@@ -383,8 +393,11 @@ extern "C"
 
     
     __attribute__((naked)) 
+    __ATTRIBUTE_ALIGNMENT__
     void SVC_Handler(void)
-    {    
+    {
+        __DIRECTIVE_ALIGNMENT__;
+
         __ASM volatile ("TST    LR, #0x4");                 // Test bit 3 to use decide which stack pointer we are coming from 
         __ASM volatile ("ITE    EQ");        
         __ASM volatile ("MRSEQ  R0, msp");
@@ -481,8 +494,12 @@ extern "C"
     // point context is active 
     //
 
-    __attribute__((naked)) void PendSV_Handler(void)
+    __attribute__((naked))
+    __ATTRIBUTE_ALIGNMENT__
+    void PendSV_Handler(void)
     {
+        __DIRECTIVE_ALIGNMENT__;                        // 8 bytes alignment
+
         __ASM volatile ("MRS      R0, PSP");                 // Save current process stack pointer value into R0
 
 #if __FPU_USED != 0

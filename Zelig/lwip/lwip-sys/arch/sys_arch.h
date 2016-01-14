@@ -89,8 +89,6 @@ typedef struct {
 typedef struct {
     osThreadId    id;
     osThreadDef_t def;
-	void(*thread)(void *arg);
-	void* arg;
 } sys_thread_data_t;
 typedef sys_thread_data_t* sys_thread_t;
 
