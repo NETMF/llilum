@@ -165,14 +165,14 @@ namespace Microsoft.Zelig.LLVM
             yield return fullName;
         }
 
-        public Value GetScalarConstant(_Type type, object value)
+        public Constant GetScalarConstant(_Type type, object value)
         {
             Constant ucv = GetUCVScalar(type, value);
             ucv.SetDebugType(type);
             return ucv;
         }
 
-        public Value GetNullValue(_Type type)
+        public Constant GetNullValue(_Type type)
         {
             Constant ucv = type.DebugType.GetNullValue();
             ucv.SetDebugType(type);
@@ -289,7 +289,7 @@ namespace Microsoft.Zelig.LLVM
             return type.DebugType.GetNullValue( );
         }
 
-        public Value GetUninitializedGlobal(_Type type)
+        public Constant GetUninitializedGlobal(_Type type)
         {
             var gv = LlvmModule.AddGlobal(type.DebugType, string.Empty);
             gv.IsConstant = false;
@@ -300,7 +300,7 @@ namespace Microsoft.Zelig.LLVM
             return gv;
         }
 
-        public Value GetGlobalFromUCV(
+        public Constant GetGlobalFromUCV(
             _Type type,
             Constant header,
             Constant ucv,

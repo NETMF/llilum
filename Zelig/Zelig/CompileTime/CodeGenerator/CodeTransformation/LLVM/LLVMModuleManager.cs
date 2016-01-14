@@ -30,8 +30,7 @@ namespace Microsoft.Zelig.LLVM
 
         private GrowOnlyHashTable <TS.TypeRepresentation, _Type>                     m_typeRepresentationsToType;
         private GrowOnlyHashTable <TS.MethodRepresentation, Debugging.DebugInfo>     m_debugInfoForMethods;
-        private GrowOnlyHashTable <IR.DataManager.DataDescriptor, Value>             m_globalInitializedValues;
-        private uint                                                                 m_nativeIntSize;
+        private GrowOnlyHashTable <IR.DataManager.DataDescriptor, Constant>          m_globalInitializedValues;
         private bool                                                                 m_typeSystemAlreadyConverted;
         private bool                                                                 m_turnOffCompilationAndValidation;
 
@@ -41,10 +40,9 @@ namespace Microsoft.Zelig.LLVM
             m_imageName = imageName;
             m_typeSystem = typeSystem;
 
-            m_nativeIntSize = 32;
             m_debugInfoForMethods = HashTableFactory.New<TS.MethodRepresentation, Debugging.DebugInfo>( );
             m_typeRepresentationsToType = HashTableFactory.New<TS.TypeRepresentation, _Type>( );
-            m_globalInitializedValues = HashTableFactory.New<IR.DataManager.DataDescriptor, Value>( );
+            m_globalInitializedValues = HashTableFactory.New<IR.DataManager.DataDescriptor, Constant>();
 
             m_typeSystemAlreadyConverted = false;
             m_turnOffCompilationAndValidation = false;
@@ -61,63 +59,6 @@ namespace Microsoft.Zelig.LLVM
         public void Compile( )
         {
             CompleteMissingDataDescriptors( );
-
-            //
-            // Synthesize calls to well known handlers methods for low level HW interaction
-            // 
-            //////TS.MethodRepresentation handlerMd;
-            //////LLVM._Function handler; 
-
-            //
-            //  Not implemented yet
-            //
-            //////handlerMd = m_typeSystem.GetWellKnownMethod( "Hardware_InvokeResetHandler" );
-            //////handler = GetOrInsertFunction( handlerMd );
-            //////m_module.CreateAlias( handler, handlerMd.Name );
-            
-            //////handlerMd = m_typeSystem.GetWellKnownMethod( "Hardware_InvokeHardFaultHandler" );
-            //////handler = GetOrInsertFunction( handlerMd );
-            //////m_module.CreateAlias( handler, handlerMd.Name );
-            
-            //////handlerMd = m_typeSystem.GetWellKnownMethod( "Hardware_InvokeDebugMonHandler" );
-            //////handler = GetOrInsertFunction( handlerMd );
-            //////m_module.CreateAlias( handler, handlerMd.Name );
-            
-            //////handlerMd = m_typeSystem.GetWellKnownMethod( "Hardware_InvokeNMIHandler" );
-            //////handler = GetOrInsertFunction( handlerMd );
-            //////m_module.CreateAlias( handler, handlerMd.Name );
-            
-            //////handlerMd = m_typeSystem.GetWellKnownMethod( "Hardware_InvokeMemManageHandler" );
-            //////handler = GetOrInsertFunction( handlerMd );
-            //////m_module.CreateAlias( handler, handlerMd.Name );
-            
-            //////handlerMd = m_typeSystem.GetWellKnownMethod( "Hardware_InvokeBusFaultHandler" );
-            //////handler = GetOrInsertFunction( handlerMd );
-            //////m_module.CreateAlias( handler, handlerMd.Name );
-            
-            //////handlerMd = m_typeSystem.GetWellKnownMethod( "Hardware_InvokeUsageFaultHandler" );
-            //////handler = GetOrInsertFunction( handlerMd );
-            //////m_module.CreateAlias( handler, handlerMd.Name );
-            
-            //////handlerMd = m_typeSystem.GetWellKnownMethod( "Hardware_InvokeSVCHandler" );
-            //////handler = GetOrInsertFunction( handlerMd );
-            //////m_module.CreateAlias( handler, handlerMd.Name );
-            
-            //////handlerMd = m_typeSystem.GetWellKnownMethod( "Hardware_InvokePendSVHandler" );
-            //////handler = GetOrInsertFunction( handlerMd );
-            //////m_module.CreateAlias( handler, handlerMd.Name );
-            
-            //////handlerMd = m_typeSystem.GetWellKnownMethod( "Hardware_InvokeSysTickHandler" );
-            //////handler = GetOrInsertFunction( handlerMd );
-            //////m_module.CreateAlias( handler, handlerMd.Name );
-            
-            //////handlerMd = m_typeSystem.GetWellKnownMethod( "Hardware_InvokeAnyInterruptHandler" );
-            //////handler = GetOrInsertFunction( handlerMd );
-            //////m_module.CreateAlias( handler, handlerMd.Name );
-
-            //////handlerMd = m_typeSystem.GetWellKnownMethod("Hardware_InvokeSystemTimerHandler");
-            //////handler = GetOrInsertFunction(handlerMd);
-            //////m_module.CreateAlias(handler, handlerMd.Name);
 
             //
             // Synthetize the code for all exported methods as a simple C-style function using the name
@@ -230,7 +171,7 @@ namespace Microsoft.Zelig.LLVM
 
                     if( val == null )
                     {
-                        fields.Add( m_module.GetUCVZeroInitialized( GetOrInsertType( elTR ) ) );
+                        fields.Add(m_module.GetNullValue(GetOrInsertType(elTR)));
                     }
                     else if( val is IR.DataManager.DataDescriptor )
                     {
@@ -242,7 +183,7 @@ namespace Microsoft.Zelig.LLVM
                         }
                         else
                         {
-                            fields.Add((Constant)GlobalValueFromDataDescriptor(valDD, false));
+                            fields.Add(GlobalValueFromDataDescriptor(valDD, false));
                         }
                     }
                     else if( ad.Context.ContainedType is TS.ScalarTypeRepresentation )
@@ -270,7 +211,7 @@ namespace Microsoft.Zelig.LLVM
             return dd is IR.DataManager.ArrayDescriptor || dd.Context == m_typeSystem.WellKnownTypes.System_String;
         }
 
-        public Value GlobalValueFromDataDescriptor(IR.DataManager.DataDescriptor dd, bool setInitializer)
+        public Constant GlobalValueFromDataDescriptor(IR.DataManager.DataDescriptor dd, bool setInitializer)
         {
             // If the type changes after creation it's a string or array type, so force initialization.
             if (TypeChangesAfterCreation(dd))
@@ -278,7 +219,7 @@ namespace Microsoft.Zelig.LLVM
                 setInitializer = true;
             }
 
-            Value global;
+            Constant global;
             if (m_globalInitializedValues.TryGetValue(dd, out global))
             {
                 // If we already have an initialized global, or an uninitialized one that we're still not initializing,
@@ -326,7 +267,7 @@ namespace Microsoft.Zelig.LLVM
             }
 
             // If we had an uninitialized placeholder, replace it with the new copy.
-            Value cachedGlobal;
+            Constant cachedGlobal;
             if (m_globalInitializedValues.TryGetValue(dd, out cachedGlobal))
             {
                 cachedGlobal.MergeToAndRemove(global);
@@ -355,9 +296,9 @@ namespace Microsoft.Zelig.LLVM
             }
 
             var descriptor = (IR.DataManager.DataDescriptor)dd.Owner.GetObjectDescriptor(dd.Context.VirtualTable);
-            Value virtualTable = GlobalValueFromDataDescriptor(descriptor, false);
+            Constant virtualTable = GlobalValueFromDataDescriptor(descriptor, false);
             fields.Add(GetScalarTypeUCV(wkf.ObjectHeader_MultiUseWord.FieldType, (ulong)flags));
-            fields.Add((Constant)virtualTable);
+            fields.Add(virtualTable);
 
             _Type headerType = GetOrInsertType( wkt.Microsoft_Zelig_Runtime_ObjectHeader );
             return m_module.GetUCVStruct( headerType.UnderlyingType, fields, false );
@@ -410,7 +351,7 @@ namespace Microsoft.Zelig.LLVM
 
                         if( !od.Values.ContainsKey( fd ) )
                         {
-                            fields.Add( m_module.GetUCVZeroInitialized( GetOrInsertType( fd.FieldType ) ) );
+                            fields.Add(m_module.GetNullValue(GetOrInsertType(fd.FieldType)));
                             continue;
                         }
 
@@ -451,7 +392,7 @@ namespace Microsoft.Zelig.LLVM
                         }
                         else if( fdVal == null )
                         {
-                            fields.Add( m_module.GetUCVZeroInitialized( GetOrInsertType( fd.FieldType ) ) );
+                            fields.Add(m_module.GetNullValue(GetOrInsertType(fd.FieldType)));
                         }
                         else if( fdVal is IR.DataManager.DataDescriptor )
                         {
@@ -463,7 +404,7 @@ namespace Microsoft.Zelig.LLVM
                             }
                             else
                             {
-                                fields.Add((Constant)GlobalValueFromDataDescriptor(valDD, false));
+                                fields.Add(GlobalValueFromDataDescriptor(valDD, false));
                             }
                         }
                         else if( fd.FieldType is TS.ScalarTypeRepresentation )
@@ -520,13 +461,6 @@ namespace Microsoft.Zelig.LLVM
             get
             {
                 return m_module;
-            }
-        }
-        public uint NativeIntSize
-        {
-            get
-            {
-                return m_nativeIntSize;
             }
         }
 
