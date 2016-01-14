@@ -27,6 +27,7 @@
     <Rule Id="CA1024" Action="Warning" />
     <Rule Id="CA1025" Action="Warning" />
     <Rule Id="CA1027" Action="Warning" />
+    <Rule Id="CA1028" Action="Warning" />
     <Rule Id="CA1030" Action="Warning" />
     <Rule Id="CA1031" Action="Warning" />
     <Rule Id="CA1032" Action="Warning" />
@@ -57,13 +58,13 @@
     <Rule Id="CA1059" Action="Warning" />
     <Rule Id="CA1060" Action="Warning" />
     <Rule Id="CA1061" Action="Warning" />
+    <Rule Id="CA1062" Action="Error" />
     <Rule Id="CA1063" Action="Warning" />
     <Rule Id="CA1064" Action="Warning" />
     <Rule Id="CA1065" Action="Warning" />
     <Rule Id="CA1300" Action="Warning" />
     <Rule Id="CA1301" Action="Warning" />
     <Rule Id="CA1302" Action="Warning" />
-    <Rule Id="CA1303" Action="Warning" />
     <Rule Id="CA1304" Action="Warning" />
     <Rule Id="CA1306" Action="Warning" />
     <Rule Id="CA1307" Action="Warning" />
@@ -101,7 +102,7 @@
     <Rule Id="CA1712" Action="Warning" />
     <Rule Id="CA1713" Action="Warning" />
     <Rule Id="CA1714" Action="Warning" />
-    <Rule Id="CA1716" Action="Warning" />
+    <Rule Id="CA1715" Action="Warning" />
     <Rule Id="CA1717" Action="Warning" />
     <Rule Id="CA1719" Action="Warning" />
     <Rule Id="CA1720" Action="Warning" />
@@ -187,7 +188,6 @@
     <Rule Id="CA2205" Action="Warning" />
     <Rule Id="CA2207" Action="Warning" />
     <Rule Id="CA2208" Action="Warning" />
-    <Rule Id="CA2210" Action="Warning" />
     <Rule Id="CA2211" Action="Warning" />
     <Rule Id="CA2212" Action="Warning" />
     <Rule Id="CA2213" Action="Warning" />
@@ -224,6 +224,15 @@
     <Rule Id="CA5122" Action="Warning" />
   </Rules>
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
-    <Rule Id="IDE0001" Action="Warning" />
+    <Rule Id="IDE0001" Action="None" />
+    <Rule Id="IDE0002" Action="Info" />
+    <Rule Id="IDE0003" Action="Info" />
+    <Rule Id="IDE0004" Action="Info" />
+    <Rule Id="IDE0005" Action="Info" />
+  </Rules>
+  <Rules AnalyzerId="RefactoringEssentials" RuleNamespace="RefactoringEssentials">
+    <Rule Id="RECS0070" Action="None" />
+    <Rule Id="RECS0129" Action="None" />
+    <Rule Id="RECS0145" Action="None" />
   </Rules>
 </RuleSet>

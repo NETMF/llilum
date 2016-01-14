@@ -19,10 +19,10 @@ namespace Llvm.NET.Types
         /// <summary>Flag to indicate if this type is an integer</summary>
         bool IsInteger { get; }
 
-        // Return true if value is 'float', a 32-bit IEEE fp type.
+        // Return true if value is 'float', a 32-bit IEEE floating point type.
         bool IsFloat { get; }
 
-        // Return true if this is 'double', a 64-bit IEEE fp type
+        // Return true if this is 'double', a 64-bit IEEE floating point type
         bool IsDouble { get; }
 
         /// <summary>Flag to indicate if this type represents the void type</summary>
@@ -64,12 +64,12 @@ namespace Llvm.NET.Types
         IArrayType CreateArrayType( uint count );
 
         /// <summary>Get a <see cref="IPointerType"/> for a type that points to elements of this type in the default (0) address space</summary>
-        /// <returns><see cref="IPointerType"/>corresponding to the type of a pointer that referns to elements of this type</returns>
+        /// <returns><see cref="IPointerType"/>corresponding to the type of a pointer that refers to elements of this type</returns>
         IPointerType CreatePointerType( );
 
         /// <summary>Get a <see cref="IPointerType"/> for a type that points to elements of this type in the specified address space</summary>
         /// <param name="addressSpace">Address space for the pointer</param>
-        /// <returns><see cref="IPointerType"/>corresponding to the type of a pointer that referns to elements of this type</returns>
+        /// <returns><see cref="IPointerType"/>corresponding to the type of a pointer that refers to elements of this type</returns>
         IPointerType CreatePointerType( uint addressSpace );
     }
 

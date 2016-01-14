@@ -69,7 +69,6 @@ namespace Microsoft.Zelig.LLVM
             var llvmArgs = argTypes.Select( t => t.DebugType );
 
             var funcType = LlvmModule.Context.CreateFunctionType( LlvmModule.DIBuilder
-                                                                , null
                                                                 , returnType.DebugType
                                                                 , llvmArgs
                                                                 );

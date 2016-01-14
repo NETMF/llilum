@@ -6,7 +6,7 @@ namespace Llvm.NET.Types
     public interface IPointerType
         : ISequenceType
     {
-        /// <summary>Address space the pointer referes to</summary>
+        /// <summary>Address space the pointer refers to</summary>
         uint AddressSpace { get; }
     }
 

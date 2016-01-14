@@ -101,16 +101,6 @@ namespace Llvm.NET.Values
             return hInst.Pointer == IntPtr.Zero ? null : Value.FromHandle<Instruction>( hInst );
         }
 
-        private BasicBlock( LLVMValueRef valueRef )
-            : this( valueRef, false )
-        {
-        }
-
-        private BasicBlock( LLVMBasicBlockRef basicBlockRef )
-            : this( NativeMethods.BasicBlockAsValue( basicBlockRef ), false )
-        {
-        }
-
         internal BasicBlock( LLVMValueRef valueRef, bool preValidated )
             : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsABasicBlock ) )
         {

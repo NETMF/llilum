@@ -12,6 +12,6 @@ namespace Llvm.NET.DebugInfo
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "Specific type required by interop call" )]
-        public bool Describes( Function function ) => NativeMethods.SubProgramDescribes( MetadataHandle, function.ValueHandle );
+        public bool Describes( Function function ) => NativeMethods.SubProgramDescribes( MetadataHandle, function.VerifyArgNotNull( nameof( function )).ValueHandle );
     }
 }

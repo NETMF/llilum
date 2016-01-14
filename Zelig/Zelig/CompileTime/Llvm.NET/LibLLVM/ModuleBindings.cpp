@@ -1,7 +1,10 @@
 #include <llvm/IR/Module.h>
 #include "ModuleBindings.h"
+#include "IRBindings.h"
 
 using namespace llvm;
+
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS( NamedMDNode, LLVMNamedMDNodeRef )
 
 extern "C"
 {
@@ -31,5 +34,32 @@ extern "C"
     {
         auto pModule = unwrap( module );
         return wrap( pModule->getNamedAlias( name ) );
+    }
+
+    LLVMNamedMDNodeRef LLVMModuleGetModuleFlagsMetadata( LLVMModuleRef module )
+    {
+        auto pModule = unwrap( module );
+        return wrap( pModule->getModuleFlagsMetadata( ) );
+    }
+
+    unsigned LLVMNamedMDNodeGetNumOperands( LLVMNamedMDNodeRef namedMDNode )
+    {
+        auto pMDNode = unwrap( namedMDNode );
+        return pMDNode->getNumOperands( );
+    }
+
+    LLVMMetadataRef LLVMNamedMDNodeGetOperand( LLVMNamedMDNodeRef namedMDNode, unsigned index )
+    {
+        auto pMDNode = unwrap( namedMDNode );
+        if( index >= pMDNode->getNumOperands( ) )
+            return nullptr;
+
+        return wrap( pMDNode->getOperand( index ) );
+    }
+
+    LLVMModuleRef LLVMNamedMDNodeGetParentModule( LLVMNamedMDNodeRef namedMDNode )
+    {
+        auto pMDNode = unwrap( namedMDNode );
+        return wrap( pMDNode->getParent( ) );
     }
 }

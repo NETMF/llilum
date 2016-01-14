@@ -11,7 +11,7 @@ namespace Llvm.NET.Values
     /// Value is the root of a hierarchy of types representing values
     /// in LLVM. Values (and derived classes) are never constructed 
     /// directly with the new operator. Instead, they are produced by
-    /// other classes in this library internally. This is becuase they
+    /// other classes in this library internally. This is because they
     /// are just wrappers around the LLVM-C API handles and must
     /// maintain the "uniqueing" semantics. (e.g. allowing reference
     /// equality for values that are fundamentally the same value)
@@ -64,6 +64,9 @@ namespace Llvm.NET.Values
 
         public void ReplaceAllUsesWith( Value other )
         {
+            if( other == null )
+                throw new ArgumentNullException( nameof( other ) );
+
             NativeMethods.ReplaceAllUsesWith( ValueHandle, other.ValueHandle );
         }
 
@@ -90,7 +93,7 @@ namespace Llvm.NET.Values
             where T : Value
         {
             var context = Context.GetContextFor( valueRef );
-            return (T)context.GetValueFor( valueRef, StaticFactory );
+            return ( T )context.GetValueFor( valueRef, StaticFactory );
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling" )]
@@ -102,7 +105,7 @@ namespace Llvm.NET.Values
             {
             case ValueKind.Argument:
                 return new Argument( h, true );
-                
+
             case ValueKind.BasicBlock:
                 return new BasicBlock( h, true );
 
@@ -174,7 +177,7 @@ namespace Llvm.NET.Values
 
             case ValueKind.Invoke:
                 return new Instructions.Invoke( h, true );
-                
+
             case ValueKind.Unreachable:
                 return new Instructions.Unreachable( h, true );
 
@@ -322,14 +325,14 @@ namespace Llvm.NET.Values
         /// casting). Using a central function ensures the error reporting and diagnostics for tracing the
         /// problem are consistent without repeating the same code everywhere.
         /// </remarks>
-        internal static LLVMValueRef ValidateConversion( LLVMValueRef fromHandle, Func<LLVMValueRef,LLVMValueRef> converter )
+        internal static LLVMValueRef ValidateConversion( LLVMValueRef fromHandle, Func<LLVMValueRef, LLVMValueRef> converter )
         {
             LLVMValueRef toHandle = converter( fromHandle );
             if( toHandle.Pointer != IntPtr.Zero )
                 return toHandle;
 
             var ex = new ArgumentException( "Incompatible handle type" );
-            
+
             // Use LLVM to print to the debugger what the handle is for use in diagnosing the problem
             var msgString = NativeMethods.MarshalMsg( NativeMethods.PrintValueToString( fromHandle ) );
             Debug.Print( msgString );
@@ -346,7 +349,7 @@ namespace Llvm.NET.Values
     /// <remarks>
     /// Using generic static extension methods allows for fluent coding while retaining the type of the "this" parameter.
     /// If these were members of the <see cref="Value"/> class then the only return type could be <see cref="Value"/>,
-    /// thus losing the orignal type and requiring a cast to get back to it.
+    /// thus losing the original type and requiring a cast to get back to it.
     /// </remarks>
     public static class ValueExtensions
     {
@@ -365,7 +368,7 @@ namespace Llvm.NET.Values
         /// the original and no additional casting is needed, which would defeat the purpose of doing this. For
         /// <see cref="Value"/> types that are not instructions this does nothing. This allows for a simpler fluent
         /// style of programming where the actual type is retained even in cases where an <see cref="InstructionBuilder"/>
-        /// method will always return an atual instruction.</para>
+        /// method will always return an actual instruction.</para>
         /// <para>In order to help simplify code generation for cases where not all of the source information is
         /// available this is a NOP if <paramref name="location"/> is null. Thus, it is safe to call even when debugging
         /// information isn't actually available. This helps to avoid cluttering calling code with test for debug info
@@ -398,7 +401,7 @@ namespace Llvm.NET.Values
         /// the original and no additional casting is needed, which would defeat the purpose of doing this. For
         /// <see cref="Value"/> types that are not instructions this does nothing. This allows for a simpler fluent
         /// style of programming where the actual type is retained even in cases where an <see cref="InstructionBuilder"/>
-        /// method will always return an atual instruction.</para>
+        /// method will always return an actual instruction.</para>
         /// <para>In order to help simplify code generation for cases where not all of the source information is
         /// available this is a NOP if <paramref name="scope"/> is null. Thus, it is safe to call even when debugging
         /// information isn't actually available. This helps to avoid cluttering calling code with test for debug info
@@ -429,12 +432,12 @@ namespace Llvm.NET.Values
         /// the original and no additional casting is needed, which would defeat the purpose of doing this. For
         ///  <see cref="Value"/> types that are not instructions this does nothing. This allows for a simpler fluent
         /// style of programming where the actual type is retained even in cases where an <see cref="InstructionBuilder"/>
-        /// method will always return an atual instruction.</para>
+        /// method will always return an actual instruction.</para>
         /// <para>Since the <see cref="Value.Name"/> property is available on all <see cref="Value"/>s this is slightly
-        /// redundant. It is useful for maintining the fluent style of coding along with expressing intent more clearly.
+        /// redundant. It is useful for maintaining the fluent style of coding along with expressing intent more clearly.
         /// (e.g. using this makes it expressly clear that the intent is to set the virtual register name and not the
-        /// name of a local variable etc...) Using the fluent style allows a 50% reduction in the number of overloaded
-        /// methods in <see cref="InstructionBuilder"/> to account for all variations with or without a name.
+        /// name of a local variable etc...) Using the fluent style allows a significant reduction in the number of
+        /// overloaded methods in <see cref="InstructionBuilder"/> to account for all variations with or without a name.
         /// </para>
         /// </remarks>
         public static T RegisterName<T>( this T value, string name )

@@ -54,14 +54,7 @@ namespace Llvm.NET
             return new TargetMachine( context, targetMachineHandle );
         }
 
-        internal Target( LLVMTargetRef targetHandle )
-        {
-            TargetHandle = targetHandle;
-        }
-
-        internal LLVMTargetRef TargetHandle { get; }
-
-        /// <summary>Retrives an enumerable collection of the available targets built into this library</summary>
+        /// <summary>Retrieves an enumerable collection of the available targets built into this library</summary>
         public static IEnumerable<Target> AvailableTargets
         {
             get
@@ -90,6 +83,13 @@ namespace Llvm.NET
 
             return FromHandle( targetHandle );
         }
+
+        internal Target( LLVMTargetRef targetHandle )
+        {
+            TargetHandle = targetHandle;
+        }
+
+        internal LLVMTargetRef TargetHandle { get; }
 
         internal static Target FromHandle( LLVMTargetRef targetHandle )
         {

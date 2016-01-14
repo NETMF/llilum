@@ -3,11 +3,6 @@
     public class ReturnInstruction
         : Terminator
     {
-        internal ReturnInstruction( LLVMValueRef valueRef )
-            : this( valueRef, false )
-        {
-        }
-
         internal ReturnInstruction( LLVMValueRef valueRef, bool preValidated )
             : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAReturnInst ) )
         {

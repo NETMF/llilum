@@ -41,7 +41,7 @@ namespace Llvm.NET.DebugInfo
         public bool IsPrivate => ( DebugInfoFlags & DebugInfoFlags.AccessibilityMask ) == DebugInfoFlags.Private;
         public bool IsProtected => ( DebugInfoFlags & DebugInfoFlags.AccessibilityMask ) == DebugInfoFlags.Protected;
         public bool IsPublic => ( DebugInfoFlags & DebugInfoFlags.AccessibilityMask ) == DebugInfoFlags.Public;
-        public bool IsForwardDeclaration => DebugInfoFlags.HasFlag( DebugInfoFlags.FwdDecl );
+        public bool IsForwardDeclaration => DebugInfoFlags.HasFlag( DebugInfoFlags.ForwardDeclaration );
         public bool IsAppleBlockExtension => DebugInfoFlags.HasFlag( DebugInfoFlags.AppleBlock );
         public bool IsBlockByRefStruct => DebugInfoFlags.HasFlag( DebugInfoFlags.BlockByrefStruct );
         public bool IsVirtual => DebugInfoFlags.HasFlag( DebugInfoFlags.Virtual );

@@ -141,8 +141,6 @@ extern "C" {
         LLVMMetadataFormatAsOperand,
     };
 
-    #define DECLARE_LLVMC_REF( n ) typedef struct LLVMOpaque##n##* LLVM##n##Ref
-
     typedef struct LLVMOpaqueDIBuilder *LLVMDIBuilderRef;
 
     void LLVMSetDILocation( LLVMValueRef inst, LLVMMetadataRef location );
@@ -420,6 +418,23 @@ extern "C" {
                                                    , LLVMValueRef InsertBefore // Instruction
                                                    );
     
+    /// Insert a new llvm.dbg.value intrinsic call.
+    /// \param Val          llvm::Value of the variable
+    /// \param Offset       Offset
+    /// \param VarInfo      Variable's debug info descriptor.
+    /// \param Expr         A complex location expression.
+    /// \param DL           Debug info location.
+    /// \param InsertBefore Location for the new intrinsic.
+    /*Instruction **/
+    LLVMValueRef LLVMDIBuilderInsertValueBefore( LLVMDIBuilderRef Dref
+                                                 , /*llvm::Value **/LLVMValueRef Val
+                                                 , uint64_t Offset
+                                                 , /*DILocalVariable **/ LLVMMetadataRef VarInfo
+                                                 , /*DIExpression **/ LLVMMetadataRef Expr
+                                                 , /*const DILocation **/ LLVMMetadataRef DL
+                                                 , /*Instruction **/ LLVMValueRef InsertBefore
+                                                 );
+
     // caller must call LLVMDisposeMessage() on the returned string
     char const* LLVMMetadataAsString( LLVMMetadataRef descriptor );
 
@@ -434,6 +449,8 @@ extern "C" {
     uint32_t LLVMMDNodeGetNumOperands( LLVMMetadataRef /*MDNode*/ node );
     LLVMMDOperandRef LLVMMDNodeGetOperand( LLVMMetadataRef /*MDNode*/ node, uint32_t index );
     LLVMMetadataRef LLVMGetOperandNode( LLVMMDOperandRef operand );
+    /*DISubProgram*/ LLVMMetadataRef LLVMDILocalScopeGetSubProgram( LLVMMetadataRef /*DILocalScope*/ localScope );
+    /*DIScope*/ LLVMMetadataRef LLVMDIVariableGetScope( LLVMMetadataRef /*DIVariable*/ variable );
 
 #ifdef __cplusplus
 } // extern "C"

@@ -38,12 +38,13 @@ namespace Llvm.NET.DebugInfo
         OCaml = 0x001b,
 
         UserMin = 0x8000,
-        LLvmMipsAssembler = UserMin + 1,
+        LlvmMipsAssembler = UserMin + 1,
         CSharp = UserMin + 0x0100,
         ILAsm = UserMin + 0x01001,
         UserMax = 0xffff
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1028:EnumStorageShouldBeInt32" )]
     public enum Tag : ushort
     {
         Invalid = 0,
@@ -124,7 +125,7 @@ namespace Llvm.NET.DebugInfo
         FormatLabel= LLVMDwarfTag.LLVMDwarfTagFormatLabel,
         FunctionTemplate= LLVMDwarfTag.LLVMDwarfTagFunctionTemplate,
         ClassTemplate= LLVMDwarfTag.LLVMDwarfTagClassTemplate,
-        GnuTemplateTemplateParam= LLVMDwarfTag.LLVMDwarfTagGnuTemplateTemplateParam,
+        GnuTemplateTemplateParameter = LLVMDwarfTag.LLVMDwarfTagGnuTemplateTemplateParam,
         GnuTemplateParameterPack= LLVMDwarfTag.LLVMDwarfTagGnuTemplateParameterPack,
         GnuFormalParameterPack= LLVMDwarfTag.LLVMDwarfTagGnuFormalParameterPack,
         LoUser= LLVMDwarfTag.LLVMDwarfTagLoUser,
@@ -139,6 +140,7 @@ namespace Llvm.NET.DebugInfo
         Volatile = Tag.VolatileType,
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1028:EnumStorageShouldBeInt32" )]
     public enum DiTypeKind : uint
     {
         Invalid = 0,
@@ -178,7 +180,7 @@ namespace Llvm.NET.DebugInfo
         Public = 3,
         AccessibilityMask = 1 << 0 | 1 << 1,
 
-        FwdDecl = 1 << 2,
+        ForwardDeclaration = 1 << 2,
         AppleBlock = 1 << 3,
         BlockByrefStruct = 1 << 4,
         Virtual = 1 << 5,
@@ -194,6 +196,7 @@ namespace Llvm.NET.DebugInfo
         RValueReference = 1 << 15
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1028:EnumStorageShouldBeInt32" )]
     public enum ExpressionOp : long
     {
         Invalid = 0,

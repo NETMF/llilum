@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Llvm.NET.Types
 {
-    /// <summary>Interface to repersent the LLVM type of a function (e.g. a signature)</summary>
+    /// <summary>Interface to represent the LLVM type of a function (e.g. a signature)</summary>
     public interface IFunctionType
         : ITypeRef
     {
@@ -13,11 +13,11 @@ namespace Llvm.NET.Types
         /// <summary>Return type of the function</summary>
         ITypeRef ReturnType { get; }
 
-        /// <summary>Collection of types of the paramters for the function</summary>
+        /// <summary>Collection of types of the parameters for the function</summary>
         IReadOnlyList<ITypeRef> ParameterTypes { get; }
     }
 
-    /// <summary>Class to repersent the LLVM type of a function (e.g. a signature)</summary>
+    /// <summary>Class to represent the LLVM type of a function (e.g. a signature)</summary>
     internal class FunctionType
         : TypeRef
         , IFunctionType

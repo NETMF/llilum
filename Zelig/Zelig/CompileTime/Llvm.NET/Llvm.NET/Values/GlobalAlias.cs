@@ -21,11 +21,6 @@ namespace Llvm.NET.Values
             }
         }
 
-        internal GlobalAlias( LLVMValueRef valueRef )
-            : this( valueRef, false )
-        {
-        }
-
         internal GlobalAlias( LLVMValueRef valueRef, bool preValidated )
             : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAGlobalAlias ) )
         {

@@ -6,8 +6,8 @@ namespace Llvm.NET.Instructions
     public class MemCpy
         : MemIntrinsic
     {
-        internal MemCpy( LLVMValueRef valueRef )
-            : base( ValidateConversion( valueRef, NativeMethods.IsAMemCpyInst ) )
+        internal MemCpy( LLVMValueRef handle )
+            : base( handle )
         {
         }
 

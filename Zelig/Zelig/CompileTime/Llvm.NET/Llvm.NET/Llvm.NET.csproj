@@ -20,7 +20,6 @@
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>Llvm.NET.ruleset</CodeAnalysisRuleSet>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>$(LlilumBuildRoot)\Host\bin\$(Configuration)\</OutputPath>
@@ -29,7 +28,6 @@
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>Llvm.NET.ruleset</CodeAnalysisRuleSet>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'">
     <DebugSymbols>true</DebugSymbols>
@@ -39,7 +37,6 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">
     <OutputPath>$(LlilumBuildRoot)\Host\bin\$(Configuration)\</OutputPath>
@@ -48,7 +45,6 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -58,7 +54,6 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>Llvm.NET.ruleset</CodeAnalysisRuleSet>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>$(LlilumBuildRoot)\Host\bin\$(Configuration)\</OutputPath>
@@ -67,7 +62,6 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>Llvm.NET.ruleset</CodeAnalysisRuleSet>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -75,11 +69,13 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArgValidationExtensions.cs" />
+    <Compile Include="ContextValidator.cs" />
     <Compile Include="DebugInfo\DebugArrayType.cs" />
     <Compile Include="DebugInfo\DebugMemberInfo.cs" />
     <Compile Include="DebugInfo\DebugPointerType.cs" />
     <Compile Include="DebugInfo\DebugStructType.cs" />
-    <Compile Include="DebugInfo\DIArray.cs" />
+    <Compile Include="DebugInfo\DINodeArray.cs" />
     <Compile Include="DebugInfo\DIBasicType.cs" />
     <Compile Include="DebugInfo\DICompileUnit.cs" />
     <Compile Include="DebugInfo\DICompositeType.cs" />
@@ -133,13 +129,17 @@
     <Compile Include="Instructions\UserOp1.cs" />
     <Compile Include="Instructions\UserOp2.cs" />
     <Compile Include="Instructions\VaArg.cs" />
+    <Compile Include="LLVM\LlvmHandles.cs" />
     <Compile Include="Metadata.cs" />
+    <Compile Include="NamedMDNode.cs" />
     <Compile Include="ScalarEnumerable.cs" />
     <Compile Include="DebugInfo\DebugBasicType.cs" />
     <Compile Include="DebugInfo\DebugFunctionType.cs" />
     <Compile Include="Types\ITypeRef.cs" />
     <Compile Include="Values\Argument.cs" />
     <Compile Include="Types\ArrayType.cs" />
+    <Compile Include="Values\AttributeBuilder.cs" />
+    <Compile Include="Values\AttributeKindExtensions.cs" />
     <Compile Include="Values\AttributeValue.cs" />
     <Compile Include="Values\BasicBlock.cs" />
     <Compile Include="Values\BlockAddress.cs" />

@@ -8,22 +8,17 @@
             get
             {
                 bool loosesInfo;
-                return GetValueWithLossFlag( out loosesInfo );
+                return GetValueWithLoss( out loosesInfo );
             }
         }
 
-        public double GetValueWithLossFlag( out bool loosesInfo )
+        public double GetValueWithLoss( out bool loosesInfo )
         {
             loosesInfo = false;
             LLVMBool nativeLoosesInfo;
             var retVal = NativeMethods.ConstRealGetDouble( ValueHandle, out nativeLoosesInfo );
             loosesInfo = nativeLoosesInfo;
             return retVal;
-        }
-
-        internal ConstantFP( LLVMValueRef valueRef )
-            : this( valueRef, false )
-        {
         }
 
         internal ConstantFP( LLVMValueRef valueRef, bool preValidated )

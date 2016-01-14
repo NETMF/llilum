@@ -2,10 +2,10 @@
 
 extern "C"
 {
-    // exportable wrappers around static inlined functions
+    // exportable wrappers around static in-lined functions
     // EXPORTS.DEF uses aliasing to export these as the standard name
     // (e.g. dropping the trailing "Export" from the name.) This 
-    // mechanism is needed since the inlined functions are marked static
+    // mechanism is needed since the in-lined functions are marked static
     // and therefore the linker doesn't see them as externally visible
     // so it can't export them. 
 

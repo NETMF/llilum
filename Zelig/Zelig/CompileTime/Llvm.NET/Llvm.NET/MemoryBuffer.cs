@@ -18,7 +18,7 @@ namespace Llvm.NET
         }
 
         /// <summary>Size of the buffer</summary>
-        int Size
+        public int Size
         {
             get
             {

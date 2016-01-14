@@ -22,8 +22,6 @@ namespace Llvm.NET.DebugInfo
         {
         }
 
-        internal static DINode FromHandle( LLVMMetadataRef handle ) => FromHandle<DINode>( handle );
-
         internal static T FromHandle<T>( LLVMMetadataRef handle )
             where T : DINode
         {

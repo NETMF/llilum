@@ -9,11 +9,6 @@ namespace Llvm.NET.Values
             return FromHandle<ConstantPointerNull>( NativeMethods.ConstPointerNull( type.GetTypeRef() ) );
         }
 
-        internal ConstantPointerNull( LLVMValueRef valueRef )
-            : this( valueRef, false )
-        {
-        }
-
         internal ConstantPointerNull( LLVMValueRef valueRef, bool preValidated )
             : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAConstantPointerNull ) )
         {

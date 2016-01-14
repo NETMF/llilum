@@ -5,6 +5,10 @@ using Llvm.NET.Values;
 
 namespace Llvm.NET
 {
+    // TODO: rename this to DataLayout to match underlying LLVM
+    // TODO: update this to reflect the deprecation of retrieving a pointer to the layout in 3.7.0
+    //       (e.g. the layout should be copy constructed, rather than holding a pointer/handle)
+
     /// <summary>Provides access to LLVM target data layout information</summary>
     /// <remarks>
     /// <para>There is a distinction between various sizes and alignment for a given type
@@ -36,12 +40,15 @@ namespace Llvm.NET
     public class TargetData
         : IDisposable
     {
+        /// <summary>Context used for this data (in particular, for retrieving pointer types)</summary>
+        public Context Context { get; }
+
         /// <summary>Retrives the byte ordering for this target</summary>
-        public ByteOrdering Endianess => (ByteOrdering)NativeMethods.ByteOrder( OpaqueHandle );
+        public ByteOrdering Endianess => ( ByteOrdering )NativeMethods.ByteOrder( OpaqueHandle );
 
         /// <summary>Retrieves the size of a pointer for the default address space of the target</summary>
         /// <returns>Size of a pointer to the default address space</returns>
-        public uint PointerSize() => NativeMethods.PointerSize( OpaqueHandle );
+        public uint PointerSize( ) => NativeMethods.PointerSize( OpaqueHandle );
 
         /// <summary>Retrieves the size of a pointer for a given address space of the target</summary>
         /// <param name="addressSpace">Address space for the pointer</param>
@@ -51,7 +58,7 @@ namespace Llvm.NET
         /// <summary>Retrives an LLVM integer type with the same bit width as
         /// a pointer for the default address sapce of the target</summary>
         /// <returns>Integer type matching the bit width of a native pointer in the target's default address space</returns>
-        public ITypeRef IntPtrType() => TypeRef.FromHandle( NativeMethods.IntPtrTypeInContext( Context.ContextHandle, OpaqueHandle ) );
+        public ITypeRef IntPtrType( ) => TypeRef.FromHandle( NativeMethods.IntPtrTypeInContext( Context.ContextHandle, OpaqueHandle ) );
 
         /// <summary>Retrives an LLVM integer type with the same bit width as
         /// a pointer for the given address sapce of the target</summary>
@@ -72,7 +79,7 @@ namespace Llvm.NET
         public ulong BitSizeOf( ITypeRef typeRef )
         {
             VerifySized( typeRef, nameof( typeRef ) );
-            return NativeMethods.SizeOfTypeInBits( OpaqueHandle, typeRef.GetTypeRef() );
+            return NativeMethods.SizeOfTypeInBits( OpaqueHandle, typeRef.GetTypeRef( ) );
         }
 
         /// <summary>Retrieves the number of bits required to store a value of the given type</summary>
@@ -87,7 +94,7 @@ namespace Llvm.NET
         public ulong StoreSizeOf( ITypeRef typeRef )
         {
             VerifySized( typeRef, nameof( typeRef ) );
-            return NativeMethods.StoreSizeOfType( OpaqueHandle, typeRef.GetTypeRef() );
+            return NativeMethods.StoreSizeOfType( OpaqueHandle, typeRef.GetTypeRef( ) );
         }
 
         /// <summary>Retrieves the ABI specified size of the given type</summary>
@@ -96,7 +103,7 @@ namespace Llvm.NET
         public ulong AbiSizeOf( ITypeRef typeRef )
         {
             VerifySized( typeRef, nameof( typeRef ) );
-            return NativeMethods.ABISizeOfType( OpaqueHandle, typeRef.GetTypeRef() );
+            return NativeMethods.ABISizeOfType( OpaqueHandle, typeRef.GetTypeRef( ) );
         }
 
         /// <summary>Retrieves the ABI specified alignment, in bytes, for a specified type</summary>
@@ -105,7 +112,7 @@ namespace Llvm.NET
         public uint AbiAlignmentOf( ITypeRef typeRef )
         {
             VerifySized( typeRef, nameof( typeRef ) );
-            return NativeMethods.ABIAlignmentOfType( OpaqueHandle, typeRef.GetTypeRef() );
+            return NativeMethods.ABIAlignmentOfType( OpaqueHandle, typeRef.GetTypeRef( ) );
         }
 
         /// <summary>Retrieves the call frame alignment for a given type</summary>
@@ -114,17 +121,20 @@ namespace Llvm.NET
         public uint CallFrameAlignmentOf( ITypeRef typeRef )
         {
             VerifySized( typeRef, nameof( typeRef ) );
-            return NativeMethods.CallFrameAlignmentOfType( OpaqueHandle, typeRef.GetTypeRef() );
+            return NativeMethods.CallFrameAlignmentOfType( OpaqueHandle, typeRef.GetTypeRef( ) );
         }
 
         public uint PreferredAlignmentOf( ITypeRef typeRef )
         {
             VerifySized( typeRef, nameof( typeRef ) );
-            return NativeMethods.PreferredAlignmentOfType( OpaqueHandle, typeRef.GetTypeRef() );
+            return NativeMethods.PreferredAlignmentOfType( OpaqueHandle, typeRef.GetTypeRef( ) );
         }
 
         public uint PreferredAlignmentOf( Value value )
         {
+            if( value == null )
+                throw new ArgumentNullException( nameof( value ) );
+
             VerifySized( value.NativeType, nameof( value ) );
             return NativeMethods.PreferredAlignmentOfGlobal( OpaqueHandle, value.ValueHandle );
         }
@@ -133,14 +143,14 @@ namespace Llvm.NET
         public uint ElementAtOffset( IStructType structType, ulong offset )
         {
             VerifySized( structType, nameof( structType ) );
-            return NativeMethods.ElementAtOffset( OpaqueHandle, structType.GetTypeRef(), offset );
+            return NativeMethods.ElementAtOffset( OpaqueHandle, structType.GetTypeRef( ), offset );
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "Specific type required by interop call" )]
         public ulong OffsetOfElement( IStructType structType, uint element )
         {
             VerifySized( structType, nameof( structType ) );
-            return NativeMethods.OffsetOfElement( OpaqueHandle, structType.GetTypeRef(), element );
+            return NativeMethods.OffsetOfElement( OpaqueHandle, structType.GetTypeRef( ), element );
         }
 
         public override string ToString( )
@@ -176,7 +186,7 @@ namespace Llvm.NET
             if( OpaqueHandle.Pointer != IntPtr.Zero && IsDisposable )
             {
                 NativeMethods.DisposeTargetData( OpaqueHandle );
-                OpaqueHandle = default(LLVMTargetDataRef);
+                OpaqueHandle = default( LLVMTargetDataRef );
             }
         }
 
@@ -191,7 +201,7 @@ namespace Llvm.NET
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose( true );
-             GC.SuppressFinalize(this);
+            GC.SuppressFinalize( this );
         }
         #endregion
 
@@ -204,7 +214,7 @@ namespace Llvm.NET
 
         internal static TargetData FromHandle( Context context, LLVMTargetDataRef targetDataRef, bool isDisposable )
         {
-            lock( TargetDataMap )
+            lock ( TargetDataMap )
             {
                 TargetData retVal;
                 if( TargetDataMap.TryGetValue( targetDataRef.Pointer, out retVal ) )
@@ -215,8 +225,6 @@ namespace Llvm.NET
                 return retVal;
             }
         }
-
-        public Context Context { get; }
 
         internal LLVMTargetDataRef OpaqueHandle { get; private set; }
 

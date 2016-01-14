@@ -604,6 +604,26 @@ extern "C"
         return wrap( pInstruction );
     }
 
+    LLVMValueRef LLVMDIBuilderInsertValueBefore( LLVMDIBuilderRef Dref
+                                                 , /*llvm::Value **/LLVMValueRef Val
+                                                 , uint64_t Offset
+                                                 , /*DILocalVariable **/ LLVMMetadataRef VarInfo
+                                                 , /*DIExpression **/ LLVMMetadataRef Expr
+                                                 , /*const DILocation **/ LLVMMetadataRef DL
+                                                 , /*Instruction **/ LLVMValueRef InsertBefore
+                                                 )
+    {
+        DIBuilder* D = unwrap( Dref );
+        Instruction* pInstruction = D->insertDbgValueIntrinsic( unwrap( Val )
+                                                                , Offset
+                                                                , unwrap<DILocalVariable>( VarInfo )
+                                                                , unwrap<DIExpression>( Expr )
+                                                                , unwrap<DILocation>( DL )
+                                                                , unwrap<Instruction>( InsertBefore )
+                                                                );
+        return wrap( pInstruction );
+    }
+
     char const* LLVMMetadataAsString( LLVMMetadataRef descriptor )
     {
         std::string Messages;
@@ -670,5 +690,17 @@ extern "C"
     {
         MDOperand const* pOperand = unwrap( operand );
         return wrap( pOperand->get( ) );
+    }
+
+    /*DISubProgram*/ LLVMMetadataRef LLVMDILocalScopeGetSubProgram( LLVMMetadataRef /*DILocalScope*/ localScope )
+    {
+        DILocalScope* pScope = unwrap<DILocalScope>( localScope );
+        return wrap( pScope->getSubprogram( ) );
+    }
+
+    /*DIScope*/ LLVMMetadataRef LLVMDIVariableGetScope( LLVMMetadataRef /*DIVariable*/ variable )
+    {
+        DIVariable* pVariable = unwrap<DIVariable>( variable );
+        return wrap( pVariable->getScope( ) );
     }
 }

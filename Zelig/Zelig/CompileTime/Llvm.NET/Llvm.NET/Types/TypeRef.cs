@@ -138,7 +138,7 @@ namespace Llvm.NET.Types
         public bool TryGetExtendedPropertyValue<T>( string id, out T value ) => ExtensibleProperties.TryGetExtendedPropertyValue<T>( id, out value );
         public void AddExtendedPropertyValue( string id, object value ) => ExtensibleProperties.AddExtendedPropertyValue( id, value );
 
-        /// <summary>Builds a string repersentation for this type in LLVM assembly language form</summary>
+        /// <summary>Builds a string representation for this type in LLVM assembly language form</summary>
         /// <returns>Formatted string for this type</returns>
         public override string ToString( )
         {

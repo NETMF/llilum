@@ -8,6 +8,7 @@
 namespace Llvm.NET
 {
     /// See Module::ModFlagBehavior
+    [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1028:EnumStorageShouldBeInt32" )]
     [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flag" )]
     public enum ModuleFlagBehavior : uint
     {
@@ -21,6 +22,7 @@ namespace Llvm.NET
     };
 
     /// <summary>LLVM Instruction opcodes</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1028:EnumStorageShouldBeInt32" )]
     [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1027:MarkEnumsWithFlags", Justification = "Not actually flags" )]
     public enum OpCode : uint
     {
@@ -102,6 +104,7 @@ namespace Llvm.NET
     }
 
     /// <summary>Basic kind of a type</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1028:EnumStorageShouldBeInt32" )]
     public enum TypeKind : uint
     {
         Void = LLVMTypeKind.LLVMVoidTypeKind,           // type with no size
@@ -123,6 +126,7 @@ namespace Llvm.NET
     }
 
     /// <summary>Calling Convention for functions</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1028:EnumStorageShouldBeInt32" )]
     public enum CallingConvention : uint
     {
         C = LLVMCallConv.LLVMCCallConv,
@@ -135,6 +139,7 @@ namespace Llvm.NET
     }
 
     /// <summary>Linkage specification for functions and globals</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1028:EnumStorageShouldBeInt32" )]
     public enum Linkage : uint
     {
         External = LLVMLinkage.LLVMExternalLinkage,    /*< Externally visible function */
@@ -157,6 +162,7 @@ namespace Llvm.NET
     }
 
     ///<summary>Enumeration for the visibility of a global value</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1028:EnumStorageShouldBeInt32" )]
     public enum Visibility : uint
     {
         Default = LLVMVisibility.LLVMDefaultVisibility,  /*< The GV is visible */
@@ -169,6 +175,7 @@ namespace Llvm.NET
     /// Underneath the C API this is what LLVM uses. For some reason the C API
     /// split it into the integer and float predicate enumerations.
     /// </remarks>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1028:EnumStorageShouldBeInt32" )]
     [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1027:MarkEnumsWithFlags" )]
     public enum Predicate : uint
     {
@@ -210,6 +217,7 @@ namespace Llvm.NET
     }
 
     ///<summary>Predicate enumeration for integer comparison</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1028:EnumStorageShouldBeInt32" )]
     public enum IntPredicate : uint
     {
         False = LLVMRealPredicate.LLVMRealPredicateFalse,
@@ -226,6 +234,7 @@ namespace Llvm.NET
     }
 
     ///<summary>Predicate enumeration for integer comparison</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1028:EnumStorageShouldBeInt32" )]
     public enum RealPredicate : uint
     {
         False = LLVMRealPredicate.LLVMRealPredicateFalse,
@@ -247,6 +256,7 @@ namespace Llvm.NET
     }
 
     /// <summary>Optimization level for target code generation</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1028:EnumStorageShouldBeInt32" )]
     public enum CodeGenOpt : uint
     {
         None = LLVMCodeGenOptLevel.LLVMCodeGenLevelNone,
@@ -256,6 +266,7 @@ namespace Llvm.NET
     }
 
     /// <summary>Relocation type for target code generation</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1028:EnumStorageShouldBeInt32" )]
     public enum Reloc : uint
     {
         Default = LLVMRelocMode.LLVMRelocDefault,
@@ -265,6 +276,7 @@ namespace Llvm.NET
     }
 
     /// <summary>Code model to use for target code generation</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1028:EnumStorageShouldBeInt32" )]
     public enum CodeModel : uint
     {
         Default = LLVMCodeModel.LLVMCodeModelDefault,
@@ -276,6 +288,7 @@ namespace Llvm.NET
     }
 
     /// <summary>Output file type for target code generation</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1028:EnumStorageShouldBeInt32" )]
     public enum CodeGenFileType : uint
     {
         AssemblySource = LLVMCodeGenFileType.LLVMAssemblyFile,
@@ -283,6 +296,7 @@ namespace Llvm.NET
     }
 
     /// <summary>Byte ordering for target code generation and data type layout</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1028:EnumStorageShouldBeInt32" )]
     public enum ByteOrdering : uint
     {
         LittleEndian = LLVMByteOrdering.LLVMLittleEndian,
@@ -290,6 +304,7 @@ namespace Llvm.NET
     }
 
     /// <summary>LLVM module linker mode</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1028:EnumStorageShouldBeInt32" )]
     public enum LinkerMode : uint
     {
         DestroySource = LLVMLinkerMode.LLVMLinkerDestroySource,
@@ -450,6 +465,8 @@ namespace Llvm.NET
         SanitizeMemory,        // MemorySanitizer is on.
         UWTable,               // Function must be in a unwind table
         ZExt,                  // Zero extended before/after call
+
+        EndAttrKinds           // Sentinal value useful for loops
     };
 
     /// <summary>Function index for attributes</summary>

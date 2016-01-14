@@ -1,9 +1,9 @@
 ﻿namespace Llvm.NET.DebugInfo
 {
     /// <summary>see <a href="http://llvm.org/docs/LangRef.html#disubrange"/></summary>
-    public class DISubrange : DINode
+    public class DISubRange : DINode
     {
-        internal DISubrange( LLVMMetadataRef handle )
+        internal DISubRange( LLVMMetadataRef handle )
             : base( handle )
         {
         }

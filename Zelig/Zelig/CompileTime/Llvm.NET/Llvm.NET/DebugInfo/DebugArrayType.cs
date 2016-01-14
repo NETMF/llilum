@@ -24,6 +24,12 @@ namespace Llvm.NET.DebugInfo
                   , CreateDebugInfoForArray( llvmType, elementType, module, count, lowerBound )
                   )
         {
+            if( llvmType == null )
+                throw new ArgumentNullException( nameof( llvmType ) );
+
+            if( elementType == null )
+                throw new ArgumentNullException( nameof( elementType ) );
+
             if( llvmType.ElementType.TypeHandle != elementType.TypeHandle )
                 throw new ArgumentException( "elementType doesn't match array element type" );
 
@@ -34,9 +40,9 @@ namespace Llvm.NET.DebugInfo
         /// <param name="elementType">Type of elements in the array</param>
         /// <param name="module"><see cref="NativeModule"/> to use for the context of the debug information</param>
         /// <param name="count">Number of elements in the array</param>
-        /// <param name="lowerBound">Lowerbound value for the array indeces [Default: 0]</param>
+        /// <param name="lowerBound"><see cref="LowerBound"/> value for the array indices [Default: 0]</param>
         public DebugArrayType( IDebugType<ITypeRef, DIType> elementType, NativeModule module, uint count, uint lowerBound = 0 )
-            : this( elementType.CreateArrayType( count )
+            : this( elementType.VerifyArgNotNull( nameof( elementType ) ).CreateArrayType( count )
                   , elementType
                   , module
                   , count
@@ -50,9 +56,9 @@ namespace Llvm.NET.DebugInfo
         /// <param name="module"><see cref="NativeModule"/> to use for the context of the debug information</param>
         /// <param name="elementType">Debug type of the array elements</param>
         /// <param name="count">Number of elements in the array</param>
-        /// <param name="lowerbound">Lowerbound value for the array indeces [Default: 0]</param>
-        public DebugArrayType( IArrayType llvmType, NativeModule module, DIType elementType, uint count, uint lowerbound = 0 )
-            : this( DebugType.Create( llvmType.ElementType, elementType), module, count, lowerbound )
+        /// <param name="lowerBound"><see cref="LowerBound"/> value for the array indices [Default: 0]</param>
+        public DebugArrayType( IArrayType llvmType, NativeModule module, DIType elementType, uint count, uint lowerBound = 0 )
+            : this( DebugType.Create( llvmType.VerifyArgNotNull( nameof( llvmType ) ).ElementType, elementType ), module, count, lowerBound )
         {
         }
 
@@ -73,12 +79,18 @@ namespace Llvm.NET.DebugInfo
         /// <param name="diBuilder">Debug information builder for creating the new debug information</param>
         public void ResolveTemporary( TargetData layout, DebugInfoBuilder diBuilder )
         {
+            if( layout == null )
+                throw new ArgumentNullException( nameof( layout ) );
+
+            if( diBuilder == null )
+                throw new ArgumentNullException( nameof( diBuilder ) );
+
             if( DIType.IsTemporary && !DIType.IsResolved )
             {
                 DIType = diBuilder.CreateArrayType( layout.BitSizeOf( NativeType )
                                                   , layout.AbiBitAlignmentOf( NativeType )
                                                   , DebugElementType.DIType
-                                                  , diBuilder.CreateSubrange( LowerBound, NativeType.Length )
+                                                  , diBuilder.CreateSubRange( LowerBound, NativeType.Length )
                                                   );
             }
         }
@@ -95,7 +107,7 @@ namespace Llvm.NET.DebugInfo
                 return module.DIBuilder.CreateArrayType( module.Layout.BitSizeOf( llvmType )
                                                        , module.Layout.AbiBitAlignmentOf( llvmType )
                                                        , elementType.DIType
-                                                       , module.DIBuilder.CreateSubrange( lowerBound, count )
+                                                       , module.DIBuilder.CreateSubRange( lowerBound, count )
                                                        );
             }
             else

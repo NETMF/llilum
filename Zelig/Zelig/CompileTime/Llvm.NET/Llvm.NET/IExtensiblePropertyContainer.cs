@@ -48,7 +48,7 @@ namespace Llvm.NET
         /// <returns>Value retrieved from the property or the default value of type <typeparamref name="T"/></returns>
         public T GetValueFrom( IExtensiblePropertyContainer container )
         {
-            return GetValueFrom( container, default(T) );
+            return GetValueFrom( container, default( T ) );
         }
 
         /// <summary>Gets a value for the property from the container</summary>
@@ -68,6 +68,12 @@ namespace Llvm.NET
         /// <remarks>If the value didn't exist a new value created by calling with <paramref name="lazyDefaultFactory"/> is added to the container</remarks>
         public T GetValueFrom( IExtensiblePropertyContainer container, Func<T> lazyDefaultFactory )
         {
+            if( container == null )
+                throw new ArgumentNullException( nameof( container ) );
+
+            if( lazyDefaultFactory == null )
+                throw new ArgumentNullException( nameof( lazyDefaultFactory ) );
+
             T retVal;
             if( container.TryGetExtendedPropertyValue( Name, out retVal ) )
                 return retVal;
@@ -82,6 +88,9 @@ namespace Llvm.NET
         /// <param name="value">value of the property</param>
         public void SetValueIn( IExtensiblePropertyContainer container, T value )
         {
+            if( container == null )
+                throw new ArgumentNullException( nameof( container ) );
+
             container.AddExtendedPropertyValue( Name, value );
         }
 
@@ -94,12 +103,12 @@ namespace Llvm.NET
     {
         public void AddExtendedPropertyValue( string id, object value )
         {
-            lock(Items)
+            lock ( Items )
             {
                 object currentValue;
                 if( Items.TryGetValue( id, out currentValue ) )
                 {
-                    if( currentValue != null && value !=null && currentValue.GetType( ) != value.GetType() )
+                    if( currentValue != null && value != null && currentValue.GetType( ) != value.GetType( ) )
                         throw new ArgumentException( " Cannot change type of an extended property once set", nameof( value ) );
                 }
                 Items[ id ] = value;
@@ -108,15 +117,15 @@ namespace Llvm.NET
 
         public bool TryGetExtendedPropertyValue<T>( string id, out T value )
         {
-            value = default(T);
+            value = default( T );
             object item;
-            lock( Items )
+            lock ( Items )
             {
                 if( !Items.TryGetValue( id, out item ) )
                     return false;
             }
 
-            if( !(item is T) )
+            if( !( item is T ) )
                 return false;
 
             value = ( T )item;

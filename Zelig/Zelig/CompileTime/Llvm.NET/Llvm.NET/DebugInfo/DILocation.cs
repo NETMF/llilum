@@ -10,7 +10,13 @@ namespace Llvm.NET.DebugInfo
         }
 
         public DILocation( Context context, uint line, uint column, DILocalScope scope, DILocation inlinedAt )
-            : base( NativeMethods.DILocation( context.ContextHandle, line, column, scope.MetadataHandle, inlinedAt?.MetadataHandle ?? LLVMMetadataRef.Zero ) )
+            : base( NativeMethods.DILocation( context.VerifyArgNotNull( nameof( context ) ).ContextHandle
+                                            , line
+                                            , column
+                                            , scope.VerifyArgNotNull(nameof(scope)).MetadataHandle
+                                            , inlinedAt?.MetadataHandle ?? LLVMMetadataRef.Zero 
+                                            )
+                  )
         {
         }
 

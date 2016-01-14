@@ -62,7 +62,7 @@ namespace Llvm.NET.Values
 
             set
             {
-                NativeMethods.SetInitializer( ValueHandle, value.ValueHandle );
+                NativeMethods.SetInitializer( ValueHandle, value?.ValueHandle ?? LLVMValueRef.Zero );
             }
         }
 
@@ -70,11 +70,6 @@ namespace Llvm.NET.Values
         public void RemoveFromParent()
         {
             NativeMethods.RemoveGlobalFromParent( ValueHandle );
-        }
-
-        internal GlobalVariable( LLVMValueRef valueRef )
-            : this( valueRef, false )
-        {
         }
 
         internal GlobalVariable( LLVMValueRef valueRef, bool preValidated )

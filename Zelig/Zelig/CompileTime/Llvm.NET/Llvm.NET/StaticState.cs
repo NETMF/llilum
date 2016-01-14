@@ -20,17 +20,20 @@ namespace Llvm.NET
         Disassembler = 0x10,
         /// <summary>Registers the assembly source parser for a target</summary>
         AsmParser = 0x20,
-        /// <summary>Registers all the codegeneration components</summary>
+        /// <summary>Registers all the code generation components</summary>
         CodeGen = Target | TargetInfo | TargetMachine,
         /// <summary>Registers all components</summary>
         All = CodeGen | AsmPrinter | Disassembler | AsmParser
     }
-    
+
     /// <summary>Provides support for various LLVM static state initialization and manipulation</summary>
     public static class StaticState
     {
-        public static void ParseCommandLineOptions( string[] args, string overview )
+        public static void ParseCommandLineOptions( string[ ] args, string overview )
         {
+            if( args == null )
+                throw new ArgumentNullException( nameof( args ) );
+
             NativeMethods.ParseCommandLineOptions( args.Length, args, overview );
         }
 
@@ -104,7 +107,7 @@ namespace Llvm.NET
 
         /// <summary>Registers components for ARM AArch64 target(s)</summary>
         /// <param name="registrations">Flags indicating which components to register/enable</param>
-        public static void RegisterAArch64( TargetRegistrations registrations = TargetRegistrations.All  )
+        public static void RegisterAArch64( TargetRegistrations registrations = TargetRegistrations.All )
         {
             if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializeAArch64Target( );
@@ -127,7 +130,7 @@ namespace Llvm.NET
 
         /// <summary>Registers components for ARM 32bit and 16bit thumb targets</summary>
         /// <param name="registrations">Flags indicating which components to register/enable</param>
-        public static void RegisterARM( TargetRegistrations registrations = TargetRegistrations.All  )
+        public static void RegisterARM( TargetRegistrations registrations = TargetRegistrations.All )
         {
             if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializeARMTarget( );
@@ -150,7 +153,7 @@ namespace Llvm.NET
 
         /// <summary>Registers components for the Hexagon CPU</summary>
         /// <param name="registrations">Flags indicating which components to register/enable</param>
-        public static void RegisterHexagon( TargetRegistrations registrations = TargetRegistrations.All  )
+        public static void RegisterHexagon( TargetRegistrations registrations = TargetRegistrations.All )
         {
             if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializeHexagonTarget( );
@@ -173,7 +176,7 @@ namespace Llvm.NET
 
         /// <summary>Registers components for MIPS targets</summary>
         /// <param name="registrations">Flags indicating which components to register/enable</param>
-        public static void RegisterMips( TargetRegistrations registrations = TargetRegistrations.All  )
+        public static void RegisterMips( TargetRegistrations registrations = TargetRegistrations.All )
         {
             if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializeMipsTarget( );
@@ -196,7 +199,7 @@ namespace Llvm.NET
 
         /// <summary>Registers components for MSP430 targets</summary>
         /// <param name="registrations">Flags indicating which components to register/enable</param>
-        public static void RegisterMSP430( TargetRegistrations registrations = TargetRegistrations.All  )
+        public static void RegisterMSP430( TargetRegistrations registrations = TargetRegistrations.All )
         {
             if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializeMSP430Target( );
@@ -219,7 +222,7 @@ namespace Llvm.NET
 
         /// <summary>Registers components for the NVPTX targets</summary>
         /// <param name="registrations">Flags indicating which components to register/enable</param>
-        public static void RegisterNVPTX( TargetRegistrations registrations = TargetRegistrations.All  )
+        public static void RegisterNVPTX( TargetRegistrations registrations = TargetRegistrations.All )
         {
             if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializeNVPTXTarget( );
@@ -242,7 +245,7 @@ namespace Llvm.NET
 
         /// <summary>Registers components for the PowerPC targets</summary>
         /// <param name="registrations">Flags indicating which components to register/enable</param>
-        public static void RegisterPowerPC( TargetRegistrations registrations = TargetRegistrations.All  )
+        public static void RegisterPowerPC( TargetRegistrations registrations = TargetRegistrations.All )
         {
             if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializePowerPCTarget( );
@@ -265,7 +268,7 @@ namespace Llvm.NET
 
         /// <summary>Registers components for AMDGPU targets</summary>
         /// <param name="registrations">Flags indicating which components to register/enable</param>
-        public static void RegisterAMDGPU( TargetRegistrations registrations = TargetRegistrations.All  )
+        public static void RegisterAMDGPU( TargetRegistrations registrations = TargetRegistrations.All )
         {
             if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializeAMDGPUTarget( );
@@ -288,7 +291,7 @@ namespace Llvm.NET
 
         /// <summary>Registers components for SPARC targets</summary>
         /// <param name="registrations">Flags indicating which components to register/enable</param>
-        public static void RegisterSparc( TargetRegistrations registrations = TargetRegistrations.All  )
+        public static void RegisterSparc( TargetRegistrations registrations = TargetRegistrations.All )
         {
             if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializeSparcTarget( );
@@ -311,7 +314,7 @@ namespace Llvm.NET
 
         /// <summary>Registers components for SystemZ targets</summary>
         /// <param name="registrations">Flags indicating which components to register/enable</param>
-        public static void RegisterSystemZ( TargetRegistrations registrations = TargetRegistrations.All  )
+        public static void RegisterSystemZ( TargetRegistrations registrations = TargetRegistrations.All )
         {
             if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializeSystemZTarget( );
@@ -334,7 +337,7 @@ namespace Llvm.NET
 
         /// <summary>Registers components for X86 targets</summary>
         /// <param name="registrations">Flags indicating which components to register/enable</param>
-        public static void RegisterX86( TargetRegistrations registrations = TargetRegistrations.All  )
+        public static void RegisterX86( TargetRegistrations registrations = TargetRegistrations.All )
         {
             if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializeX86Target( );
@@ -357,7 +360,7 @@ namespace Llvm.NET
 
         /// <summary>Registers components for XCore targets</summary>
         /// <param name="registrations">Flags indicating which components to register/enable</param>
-        public static void RegisterXCore( TargetRegistrations registrations = TargetRegistrations.All  )
+        public static void RegisterXCore( TargetRegistrations registrations = TargetRegistrations.All )
         {
             if( registrations.HasFlag( TargetRegistrations.Target ) )
                 NativeMethods.InitializeXCoreTarget( );

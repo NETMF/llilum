@@ -11,14 +11,14 @@ namespace Llvm.NET.Instructions
             get 
             {
                 if( TargetFunction == null )
-                    return null;
+                    return new AttributeSet();
 
-                return new AttributeSet( TargetFunction, ( p ) => NativeMethods.GetCallSiteAttributeSet( ValueHandle, p ) );
+                return new AttributeSet( NativeMethods.GetCallSiteAttributeSet( ValueHandle ) );
             }
 
             set
             {
-                value.Store( ( p ) => NativeMethods.SetCallSiteAttributeSet( ValueHandle, p ) );
+                NativeMethods.SetCallSiteAttributeSet( ValueHandle, value.NativeAttributeSet );
             }
         }
 
@@ -31,6 +31,19 @@ namespace Llvm.NET.Instructions
 
                 // last Operand is the target function
                 return Operands[ Operands.Count - 1 ] as Function;
+            }
+        }
+
+        public bool IsTailCall 
+        {
+            get
+            {
+                return NativeMethods.IsTailCall( ValueHandle );
+            }
+
+            set
+            {
+                NativeMethods.SetTailCall( ValueHandle, value );
             }
         }
 

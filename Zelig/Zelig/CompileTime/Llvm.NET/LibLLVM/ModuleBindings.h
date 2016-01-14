@@ -2,10 +2,12 @@
 #define _MODULE_BINDINGS_H_
 
 #include "llvm-c/Core.h"
+#include "IRBindings.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+    typedef struct OpaqueNameMDNodeRef* LLVMNamedMDNodeRef;
 
     /// See Module::ModFlagBehavior
     enum LLVMModFlagBehavior
@@ -29,6 +31,11 @@ extern "C" {
     LLVMValueRef LLVMGetOrInsertFunction( LLVMModuleRef module, const char* name, LLVMTypeRef functionType );
     char const* LLVMGetModuleName( LLVMModuleRef module );
     LLVMValueRef LLVMGetGlobalAlias( LLVMModuleRef module, char const* name );
+
+    LLVMNamedMDNodeRef LLVMModuleGetModuleFlagsMetadata( LLVMModuleRef module );
+    unsigned LLVMNamedMDNodeGetNumOperands( LLVMNamedMDNodeRef namedMDNode );
+    /*MDNode*/ LLVMMetadataRef LLVMNamedMDNodeGetOperand( LLVMNamedMDNodeRef namedMDNode, unsigned index );
+    LLVMModuleRef LLVMNamedMDNodeGetParentModule( LLVMNamedMDNodeRef namedMDNode );
 
 #ifdef __cplusplus
 }

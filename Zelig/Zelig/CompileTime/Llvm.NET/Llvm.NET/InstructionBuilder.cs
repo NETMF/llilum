@@ -16,6 +16,9 @@ namespace Llvm.NET
         /// <param name="context">Context used for creating instructions</param>
         public InstructionBuilder( Context context )
         {
+            if( context == null )
+                throw new ArgumentNullException( nameof( context ) );
+
             Context = context;
             BuilderHandle = NativeMethods.CreateBuilderInContext( context.ContextHandle );
         }
@@ -23,7 +26,7 @@ namespace Llvm.NET
         /// <summary>Creates an <see cref="InstructionBuilder"/> for a <see cref="BasicBlock"/></summary>
         /// <param name="block">Block this builder is initially attached to</param>
         public InstructionBuilder( BasicBlock block )
-            : this( block.ContainingFunction.ParentModule.Context )
+            : this( block.VerifyArgNotNull( nameof( block ) ).ContainingFunction.ParentModule.Context )
         {
             PositionAtEnd( block );
         }
@@ -35,13 +38,16 @@ namespace Llvm.NET
         /// <param name="basicBlock"></param>
         public void PositionAtEnd( BasicBlock basicBlock )
         {
+            if( basicBlock == null )
+                throw new ArgumentNullException( nameof( basicBlock ) );
+
             NativeMethods.PositionBuilderAtEnd( BuilderHandle, basicBlock.BlockHandle );
         }
 
         /// <summary>Positions the builder before the given instruction</summary>
         /// <param name="instr">Instruction to position the builder before</param>
         /// <remarks>This method will position the builder to add new instructions
-        /// immeidiately before the specified instruction.
+        /// immediately before the specified instruction.
         /// <note type="note">It is important to keep in mind that this can change the
         /// block this builder is targeting. That is, <paramref name="instr"/>
         /// is not required to come from the same block the instruction builder is
@@ -50,6 +56,9 @@ namespace Llvm.NET
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "Specific type required by interop call" )]
         public void PositionBefore( Instruction instr )
         {
+            if( instr == null )
+                throw new ArgumentNullException( nameof( instr ) );
+
             NativeMethods.PositionBuilderBefore( BuilderHandle, instr.ValueHandle );
         }
 
@@ -95,29 +104,39 @@ namespace Llvm.NET
 
         public Alloca Alloca( ITypeRef typeRef )
         {
-            var handle = NativeMethods.BuildAlloca( BuilderHandle, typeRef.GetTypeRef(), string.Empty );
+            var handle = NativeMethods.BuildAlloca( BuilderHandle, typeRef.GetTypeRef( ), string.Empty );
             return Value.FromHandle<Alloca>( handle );
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "Specific type required by interop call" )]
         public Alloca Alloca( ITypeRef typeRef, ConstantInt elements )
         {
-            var instHandle = NativeMethods.BuildArrayAlloca( BuilderHandle, typeRef.GetTypeRef(), elements.ValueHandle, string.Empty );
+            if( typeRef == null )
+                throw new ArgumentNullException( nameof( typeRef ) );
+
+            if( elements == null )
+                throw new ArgumentNullException( nameof( elements ) );
+
+            var instHandle = NativeMethods.BuildArrayAlloca( BuilderHandle, typeRef.GetTypeRef( ), elements.ValueHandle, string.Empty );
             return Value.FromHandle<Alloca>( instHandle );
         }
 
         public ReturnInstruction Return( ) => Value.FromHandle<ReturnInstruction>( NativeMethods.BuildRetVoid( BuilderHandle ) );
 
-        public ReturnInstruction Return( Value value ) => Value.FromHandle<ReturnInstruction>( NativeMethods.BuildRet( BuilderHandle, value.ValueHandle ) );
+        public ReturnInstruction Return( Value value )
+        {
+            if( value == null )
+                throw new ArgumentNullException( nameof( value ) );
+
+            var handle = NativeMethods.BuildRet( BuilderHandle, value.ValueHandle );
+            return Value.FromHandle<ReturnInstruction>( handle );
+        }
 
         public CallInstruction Call( Value func, params Value[ ] args ) => Call( func, ( IReadOnlyList<Value> )args );
         public CallInstruction Call( Value func, IReadOnlyList<Value> args )
         {
             LLVMValueRef hCall = BuildCall( func, args );
-            var retVal =  Value.FromHandle<CallInstruction>( hCall );
-            // review:
-            // Should this add callsite param attributes from function?
-            // Underlying LLVM doesn't do that, what's the thinking there...
+            var retVal = Value.FromHandle<CallInstruction>( hCall );
             return retVal;
         }
 
@@ -140,7 +159,8 @@ namespace Llvm.NET
                                                            , (uint)argCount
                                                            , then.BlockHandle
                                                            , catchBlock.BlockHandle
-                                                           , string.Empty );
+                                                           , string.Empty
+                                                           );
             return Value.FromHandle<Invoke>( invoke );
         }
 
@@ -150,7 +170,8 @@ namespace Llvm.NET
                                                                    , resultType.GetTypeRef()
                                                                    , LLVMValueRef.Zero
                                                                    , 0
-                                                                   , string.Empty );
+                                                                   , string.Empty
+                                                                   );
             return Value.FromHandle<LandingPad>( landingPad );
         }
 
@@ -172,6 +193,12 @@ namespace Llvm.NET
         /// </remarks>
         public Store Store( Value value, Value destination )
         {
+            if( value == null )
+                throw new ArgumentNullException( nameof( value ) );
+
+            if( destination == null )
+                throw new ArgumentNullException( nameof( destination ) );
+
             var ptrType = destination.NativeType as IPointerType;
             if( ptrType == null )
                 throw new ArgumentException( "Expected pointer value", nameof( destination ) );
@@ -188,6 +215,9 @@ namespace Llvm.NET
 
         public Load Load( Value sourcePtr )
         {
+            if( sourcePtr == null )
+                throw new ArgumentNullException( nameof( sourcePtr ) );
+
             var handle = NativeMethods.BuildLoad( BuilderHandle, sourcePtr.ValueHandle, string.Empty );
             return Value.FromHandle<Load>( handle );
         }
@@ -206,14 +236,23 @@ namespace Llvm.NET
 
         public Value AtomicCmpXchg( Value ptr, Value cmp, Value value )
         {
+            if( ptr == null )
+                throw new ArgumentNullException( nameof( ptr ) );
+
+            if( cmp == null )
+                throw new ArgumentNullException( nameof( cmp ) );
+
+            if( value == null )
+                throw new ArgumentNullException( nameof( value ) );
+
             var ptrType = ptr.NativeType as IPointerType;
-            if(ptrType == null)
+            if( ptrType == null )
                 throw new ArgumentException( "Expected pointer value", nameof( ptr ) );
 
-            if(ptrType.ElementType != cmp.NativeType)
+            if( ptrType.ElementType != cmp.NativeType )
                 throw new ArgumentException( string.Format( IncompatibleTypeMsgFmt, ptrType.ElementType, cmp.NativeType ) );
 
-            if(ptrType.ElementType != value.NativeType)
+            if( ptrType.ElementType != value.NativeType )
                 throw new ArgumentException( string.Format( IncompatibleTypeMsgFmt, ptrType.ElementType, value.NativeType ) );
 
             var handle = NativeMethods.BuildAtomicCmpXchg( BuilderHandle
@@ -228,7 +267,7 @@ namespace Llvm.NET
         }
 
         /// <summary>Creates a <see cref="Value"/> that accesses an element (field) of a structure</summary>
-        /// <param name="pointer">pointer to the strucure to get an element from</param>
+        /// <param name="pointer">pointer to the structure to get an element from</param>
         /// <param name="index">element index</param>
         /// <returns>
         /// <para><see cref="Value"/> for the member access. This is a <see cref="Value"/>
@@ -236,10 +275,13 @@ namespace Llvm.NET
         /// can so the actual type of the result may be <see cref="ConstantExpression"/>
         /// or <see cref="Instructions.GetElementPtr"/>.</para>
         /// <para>Note that <paramref name="pointer"/> must be a pointer to a structure
-        /// or an excpetion is thrown.</para>
+        /// or an exception is thrown.</para>
         /// </returns>
         public Value GetStructElementPointer( Value pointer, uint index )
         {
+            if( pointer == null )
+                throw new ArgumentNullException( nameof( pointer ) );
+
             var ptrType = pointer.NativeType as IPointerType;
             if( ptrType == null )
                 throw new ArgumentException( "Pointer value expected", nameof( pointer ) );
@@ -257,14 +299,14 @@ namespace Llvm.NET
 
         /// <summary>Creates a <see cref="Value"/> that accesses an element of a type referenced by a pointer</summary>
         /// <param name="pointer">pointer to get an element from</param>
-        /// <param name="args">additional indeces for computing the resulting pointer</param>
+        /// <param name="args">additional indices for computing the resulting pointer</param>
         /// <returns>
         /// <para><see cref="Value"/> for the member access. This is a <see cref="Value"/>
         /// as LLVM may optimize the expression to a <see cref="ConstantExpression"/> if it 
         /// can so the actual type of the result may be <see cref="ConstantExpression"/>
         /// or <see cref="Instructions.GetElementPtr"/>.</para>
         /// <para>Note that <paramref name="pointer"/> must be a pointer to a structure
-        /// or an excpetion is thrown.</para>
+        /// or an exception is thrown.</para>
         /// </returns>
         /// <remarks>
         /// For details on GetElementPointer (GEP) see http://llvm.org/docs/GetElementPtr.html. The
@@ -290,14 +332,14 @@ namespace Llvm.NET
 
         /// <summary>Creates a <see cref="Value"/> that accesses an element of a type referenced by a pointer</summary>
         /// <param name="pointer">pointer to get an element from</param>
-        /// <param name="args">additional indeces for computing the resulting pointer</param>
+        /// <param name="args">additional indices for computing the resulting pointer</param>
         /// <returns>
         /// <para><see cref="Value"/> for the member access. This is a <see cref="Value"/>
         /// as LLVM may optimize the expression to a <see cref="ConstantExpression"/> if it 
         /// can so the actual type of the result may be <see cref="ConstantExpression"/>
         /// or <see cref="Instructions.GetElementPtr"/>.</para>
         /// <para>Note that <paramref name="pointer"/> must be a pointer to a structure
-        /// or an excpetion is thrown.</para>
+        /// or an exception is thrown.</para>
         /// </returns>
         /// <remarks>
         /// For details on GetElementPointer (GEP) see http://llvm.org/docs/GetElementPtr.html. The
@@ -313,14 +355,14 @@ namespace Llvm.NET
 
         /// <summary>Creates a <see cref="Value"/> that accesses an element of a type referenced by a pointer</summary>
         /// <param name="pointer">pointer to get an element from</param>
-        /// <param name="args">additional indeces for computing the resulting pointer</param>
+        /// <param name="args">additional indices for computing the resulting pointer</param>
         /// <returns>
         /// <para><see cref="Value"/> for the member access. This is a <see cref="Value"/>
         /// as LLVM may optimize the expression to a <see cref="ConstantExpression"/> if it 
         /// can so the actual type of the result may be <see cref="ConstantExpression"/>
         /// or <see cref="Instructions.GetElementPtr"/>.</para>
         /// <para>Note that <paramref name="pointer"/> must be a pointer to a structure
-        /// or an excpetion is thrown.</para>
+        /// or an exception is thrown.</para>
         /// </returns>
         /// <remarks>
         /// For details on GetElementPointer (GEP) see http://llvm.org/docs/GetElementPtr.html. The
@@ -346,14 +388,14 @@ namespace Llvm.NET
 
         /// <summary>Creates a <see cref="Value"/> that accesses an element of a type referenced by a pointer</summary>
         /// <param name="pointer">pointer to get an element from</param>
-        /// <param name="args">additional indeces for computing the resulting pointer</param>
+        /// <param name="args">additional indices for computing the resulting pointer</param>
         /// <returns>
         /// <para><see cref="Value"/> for the member access. This is a User as LLVM may 
         /// optimize the expression to a <see cref="ConstantExpression"/> if it 
         /// can so the actual type of the result may be <see cref="ConstantExpression"/>
         /// or <see cref="Instructions.GetElementPtr"/>.</para>
         /// <para>Note that <paramref name="pointer"/> must be a pointer to a structure
-        /// or an excpetion is thrown.</para>
+        /// or an exception is thrown.</para>
         /// </returns>
         /// <remarks>
         /// For details on GetElementPointer (GEP) see http://llvm.org/docs/GetElementPtr.html. The
@@ -385,10 +427,16 @@ namespace Llvm.NET
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "Specific type required by interop call" )]
         public Value IntToPointer( Value intValue, IPointerType ptrType )
         {
-            if( intValue is Constant )
-                return Value.FromHandle( NativeMethods.ConstIntToPtr( intValue.ValueHandle, ptrType.GetTypeRef() ) );
+            if( intValue == null )
+                throw new ArgumentNullException( nameof( intValue ) );
 
-            var handle = NativeMethods.BuildIntToPtr( BuilderHandle, intValue.ValueHandle, ptrType.GetTypeRef(), string.Empty );
+            if( ptrType == null )
+                throw new ArgumentNullException( nameof( ptrType ) );
+
+            if( intValue is Constant )
+                return Value.FromHandle( NativeMethods.ConstIntToPtr( intValue.ValueHandle, ptrType.GetTypeRef( ) ) );
+
+            var handle = NativeMethods.BuildIntToPtr( BuilderHandle, intValue.ValueHandle, ptrType.GetTypeRef( ), string.Empty );
             return Value.FromHandle( handle );
         }
 
@@ -403,6 +451,12 @@ namespace Llvm.NET
         /// </remarks>
         public Value PointerToInt( Value ptrValue, ITypeRef intType )
         {
+            if( ptrValue == null )
+                throw new ArgumentNullException( nameof( ptrValue ) );
+
+            if( intType == null )
+                throw new ArgumentNullException( nameof( intType ) );
+
             if( ptrValue.NativeType.Kind != TypeKind.Pointer )
                 throw new ArgumentException( "Expected a pointer value", nameof( ptrValue ) );
 
@@ -410,16 +464,25 @@ namespace Llvm.NET
                 throw new ArgumentException( "Expected pointer to integral type", nameof( intType ) );
 
             if( ptrValue is Constant )
-                return Value.FromHandle( NativeMethods.ConstPtrToInt( ptrValue.ValueHandle, intType.GetTypeRef() ) );
+                return Value.FromHandle( NativeMethods.ConstPtrToInt( ptrValue.ValueHandle, intType.GetTypeRef( ) ) );
 
-            var handle = NativeMethods.BuildPtrToInt( BuilderHandle, ptrValue.ValueHandle, intType.GetTypeRef(), string.Empty );
+            var handle = NativeMethods.BuildPtrToInt( BuilderHandle, ptrValue.ValueHandle, intType.GetTypeRef( ), string.Empty );
             return Value.FromHandle( handle );
         }
 
-        public Branch Branch( BasicBlock target ) => Value.FromHandle<Branch>( NativeMethods.BuildBr( BuilderHandle, target.BlockHandle ) );
+        public Branch Branch( BasicBlock target ) => Value.FromHandle<Branch>( NativeMethods.BuildBr( BuilderHandle, target.VerifyArgNotNull( nameof( target ) ).BlockHandle ) );
 
         public Branch Branch( Value ifCondition, BasicBlock thenTarget, BasicBlock elseTarget )
         {
+            if( ifCondition == null )
+                throw new ArgumentNullException( nameof( ifCondition ) );
+
+            if( thenTarget == null )
+                throw new ArgumentNullException( nameof( thenTarget ) );
+
+            if( elseTarget == null )
+                throw new ArgumentNullException( nameof( elseTarget ) );
+
             var handle = NativeMethods.BuildCondBr( BuilderHandle
                                                   , ifCondition.ValueHandle
                                                   , thenTarget.BlockHandle
@@ -438,6 +501,12 @@ namespace Llvm.NET
         /// <returns>Comparison instruction</returns>
         public Value Compare( IntPredicate predicate, Value lhs, Value rhs )
         {
+            if( lhs == null )
+                throw new ArgumentNullException( nameof( lhs ) );
+
+            if( rhs == null )
+                throw new ArgumentNullException( nameof( rhs ) );
+
             if( !lhs.NativeType.IsInteger && !lhs.NativeType.IsPointer )
                 throw new ArgumentException( "Expecting an integer or pointer type", nameof( lhs ) );
 
@@ -455,6 +524,12 @@ namespace Llvm.NET
         /// <returns>Comparison instruction</returns>
         public Value Compare( RealPredicate predicate, Value lhs, Value rhs )
         {
+            if( lhs == null )
+                throw new ArgumentNullException( nameof( lhs ) );
+
+            if( rhs == null )
+                throw new ArgumentNullException( nameof( rhs ) );
+
             if( !lhs.NativeType.IsFloatingPoint )
                 throw new ArgumentException( "Expecting an integer type", nameof( lhs ) );
 
@@ -488,51 +563,75 @@ namespace Llvm.NET
 
         public Value ZeroExtendOrBitCast( Value valueRef, ITypeRef targetType )
         {
+            if( valueRef == null )
+                throw new ArgumentNullException( nameof( valueRef ) );
+
+            if( targetType == null )
+                throw new ArgumentNullException( nameof( targetType ) );
+
             // short circuit cast to same type as it won't be a Constant or a BitCast
             if( valueRef.NativeType == targetType )
                 return valueRef;
 
             LLVMValueRef handle;
             if( valueRef is Constant )
-                handle = NativeMethods.ConstZExtOrBitCast( valueRef.ValueHandle, targetType.GetTypeRef() );
+                handle = NativeMethods.ConstZExtOrBitCast( valueRef.ValueHandle, targetType.GetTypeRef( ) );
             else
-                handle = NativeMethods.BuildZExtOrBitCast( BuilderHandle, valueRef.ValueHandle, targetType.GetTypeRef(), string.Empty );
+                handle = NativeMethods.BuildZExtOrBitCast( BuilderHandle, valueRef.ValueHandle, targetType.GetTypeRef( ), string.Empty );
 
             return Value.FromHandle( handle );
         }
 
         public Value SignExtendOrBitCast( Value valueRef, ITypeRef targetType )
         {
+            if( valueRef == null )
+                throw new ArgumentNullException( nameof( valueRef ) );
+
+            if( targetType == null )
+                throw new ArgumentNullException( nameof( targetType ) );
+
             // short circuit cast to same type as it won't be a Constant or a BitCast
             if( valueRef.NativeType == targetType )
                 return valueRef;
 
             LLVMValueRef handle;
             if( valueRef is Constant )
-                handle = NativeMethods.ConstSExtOrBitCast( valueRef.ValueHandle, targetType.GetTypeRef() );
+                handle = NativeMethods.ConstSExtOrBitCast( valueRef.ValueHandle, targetType.GetTypeRef( ) );
             else
-                handle = NativeMethods.BuildSExtOrBitCast( BuilderHandle, valueRef.ValueHandle, targetType.GetTypeRef(), string.Empty );
+                handle = NativeMethods.BuildSExtOrBitCast( BuilderHandle, valueRef.ValueHandle, targetType.GetTypeRef( ), string.Empty );
 
             return Value.FromHandle( handle );
         }
 
         public Value TruncOrBitCast( Value valueRef, ITypeRef targetType )
         {
+            if( valueRef == null )
+                throw new ArgumentNullException( nameof( valueRef ) );
+
+            if( targetType == null )
+                throw new ArgumentNullException( nameof( targetType ) );
+
             // short circuit cast to same type as it won't be a Constant or a BitCast
             if( valueRef.NativeType == targetType )
                 return valueRef;
 
             LLVMValueRef handle;
             if( valueRef is Constant )
-                handle = NativeMethods.ConstTruncOrBitCast( valueRef.ValueHandle, targetType.GetTypeRef() );
+                handle = NativeMethods.ConstTruncOrBitCast( valueRef.ValueHandle, targetType.GetTypeRef( ) );
             else
-                handle = NativeMethods.BuildTruncOrBitCast( BuilderHandle, valueRef.ValueHandle, targetType.GetTypeRef(), string.Empty );
+                handle = NativeMethods.BuildTruncOrBitCast( BuilderHandle, valueRef.ValueHandle, targetType.GetTypeRef( ), string.Empty );
 
             return Value.FromHandle( handle );
         }
 
         public Value ZeroExtend( Value valueRef, ITypeRef targetType )
         {
+            if( valueRef == null )
+                throw new ArgumentNullException( nameof( valueRef ) );
+
+            if( targetType == null )
+                throw new ArgumentNullException( nameof( targetType ) );
+
             LLVMValueRef handle;
             if( valueRef is Constant )
                 handle = NativeMethods.ConstZExt( valueRef.ValueHandle, targetType.GetTypeRef( ) );
@@ -544,60 +643,96 @@ namespace Llvm.NET
 
         public Value SignExtend( Value valueRef, ITypeRef targetType )
         {
-            if( valueRef is Constant )
-                return Value.FromHandle( NativeMethods.ConstSExt( valueRef.ValueHandle, targetType.GetTypeRef() ) );
+            if( valueRef == null )
+                throw new ArgumentNullException( nameof( valueRef ) );
 
-            var retValueRef = NativeMethods.BuildSExt( BuilderHandle, valueRef.ValueHandle, targetType.GetTypeRef(), string.Empty );
+            if( targetType == null )
+                throw new ArgumentNullException( nameof( targetType ) );
+
+            if( valueRef is Constant )
+                return Value.FromHandle( NativeMethods.ConstSExt( valueRef.ValueHandle, targetType.GetTypeRef( ) ) );
+
+            var retValueRef = NativeMethods.BuildSExt( BuilderHandle, valueRef.ValueHandle, targetType.GetTypeRef( ), string.Empty );
             return Value.FromHandle( retValueRef );
         }
 
         public Value BitCast( Value valueRef, ITypeRef targetType )
         {
+            if( valueRef == null )
+                throw new ArgumentNullException( nameof( valueRef ) );
+
+            if( targetType == null )
+                throw new ArgumentNullException( nameof( targetType ) );
+
             // short circuit cast to same type as it won't be a Constant or a BitCast
             if( valueRef.NativeType == targetType )
                 return valueRef;
 
             LLVMValueRef handle;
             if( valueRef is Constant )
-                handle = NativeMethods.ConstBitCast( valueRef.ValueHandle, targetType.GetTypeRef() );
+                handle = NativeMethods.ConstBitCast( valueRef.ValueHandle, targetType.GetTypeRef( ) );
             else
-                handle = NativeMethods.BuildBitCast( BuilderHandle, valueRef.ValueHandle, targetType.GetTypeRef(), string.Empty );
+                handle = NativeMethods.BuildBitCast( BuilderHandle, valueRef.ValueHandle, targetType.GetTypeRef( ), string.Empty );
 
             return Value.FromHandle( handle );
         }
 
         public Value IntCast( Value valueRef, ITypeRef targetType, bool isSigned )
         {
+            if( valueRef == null )
+                throw new ArgumentNullException( nameof( valueRef ) );
+
+            if( targetType == null )
+                throw new ArgumentNullException( nameof( targetType ) );
+
             LLVMValueRef handle;
             if( valueRef is Constant )
-                handle = NativeMethods.ConstIntCast( valueRef.ValueHandle, targetType.GetTypeRef(), isSigned );
+                handle = NativeMethods.ConstIntCast( valueRef.ValueHandle, targetType.GetTypeRef( ), isSigned );
             else
-                handle = NativeMethods.BuildIntCast( BuilderHandle, valueRef.ValueHandle, targetType.GetTypeRef(), string.Empty );
+                handle = NativeMethods.BuildIntCast( BuilderHandle, valueRef.ValueHandle, targetType.GetTypeRef( ), string.Empty );
 
             return Value.FromHandle( handle );
         }
 
         public Value Trunc( Value valueRef, ITypeRef targetType )
         {
-            if( valueRef is Constant )
-                return Value.FromHandle( NativeMethods.ConstTrunc( valueRef.ValueHandle, targetType.GetTypeRef() ) );
+            if( valueRef == null )
+                throw new ArgumentNullException( nameof( valueRef ) );
 
-            return Value.FromHandle( NativeMethods.BuildTrunc( BuilderHandle, valueRef.ValueHandle, targetType.GetTypeRef(), string.Empty ) );
+            if( targetType == null )
+                throw new ArgumentNullException( nameof( targetType ) );
+
+            if( valueRef is Constant )
+                return Value.FromHandle( NativeMethods.ConstTrunc( valueRef.ValueHandle, targetType.GetTypeRef( ) ) );
+
+            return Value.FromHandle( NativeMethods.BuildTrunc( BuilderHandle, valueRef.ValueHandle, targetType.GetTypeRef( ), string.Empty ) );
         }
 
         public Value SIToFPCast( Value valueRef, ITypeRef targetType )
         {
+            if( valueRef == null )
+                throw new ArgumentNullException( nameof( valueRef ) );
+
+            if( targetType == null )
+                throw new ArgumentNullException( nameof( targetType ) );
+
             LLVMValueRef handle;
             if( valueRef is Constant )
-                handle = NativeMethods.ConstSIToFP( valueRef.ValueHandle, targetType.GetTypeRef() );
+                handle = NativeMethods.ConstSIToFP( valueRef.ValueHandle, targetType.GetTypeRef( ) );
             else
-                handle = NativeMethods.BuildSIToFP( BuilderHandle, valueRef.ValueHandle, targetType.GetTypeRef(), string.Empty );
+                handle = NativeMethods.BuildSIToFP( BuilderHandle, valueRef.ValueHandle, targetType.GetTypeRef( ), string.Empty );
 
             return Value.FromHandle( handle );
         }
 
         public Value UIToFPCast( Value valueRef, ITypeRef targetType )
         {
+            if( valueRef == null )
+                throw new ArgumentNullException( nameof( valueRef ) );
+
+            if( targetType == null )
+                throw new ArgumentNullException( nameof( targetType ) );
+
             LLVMValueRef handle;
             if( valueRef is Constant )
                 handle = NativeMethods.ConstUIToFP( valueRef.ValueHandle, targetType.GetTypeRef( ) );
@@ -609,17 +744,29 @@ namespace Llvm.NET
 
         public Value FPToUICast( Value valueRef, ITypeRef targetType )
         {
+            if( valueRef == null )
+                throw new ArgumentNullException( nameof( valueRef ) );
+
+            if( targetType == null )
+                throw new ArgumentNullException( nameof( targetType ) );
+
             LLVMValueRef handle;
             if( valueRef is Constant )
-                handle = NativeMethods.ConstFPToUI( valueRef.ValueHandle, targetType.GetTypeRef() );
+                handle = NativeMethods.ConstFPToUI( valueRef.ValueHandle, targetType.GetTypeRef( ) );
             else
-                handle = NativeMethods.BuildFPToUI( BuilderHandle, valueRef.ValueHandle, targetType.GetTypeRef(), string.Empty );
+                handle = NativeMethods.BuildFPToUI( BuilderHandle, valueRef.ValueHandle, targetType.GetTypeRef( ), string.Empty );
 
             return Value.FromHandle( handle );
         }
 
         public Value FPToSICast( Value valueRef, ITypeRef targetType )
         {
+            if( valueRef == null )
+                throw new ArgumentNullException( nameof( valueRef ) );
+
+            if( targetType == null )
+                throw new ArgumentNullException( nameof( targetType ) );
+
             LLVMValueRef handle;
             if( valueRef is Constant )
                 handle = NativeMethods.ConstFPToSI( valueRef.ValueHandle, targetType.GetTypeRef( ) );
@@ -631,46 +778,70 @@ namespace Llvm.NET
 
         public Value FPExt( Value valueRef, ITypeRef toType )
         {
+            if( valueRef == null )
+                throw new ArgumentNullException( nameof( valueRef ) );
+
+            if( toType == null )
+                throw new ArgumentNullException( nameof( toType ) );
+
             LLVMValueRef handle;
             if( valueRef is Constant )
-                handle = NativeMethods.ConstFPExt( valueRef.ValueHandle, toType.GetTypeRef() );
+                handle = NativeMethods.ConstFPExt( valueRef.ValueHandle, toType.GetTypeRef( ) );
             else
-                handle = NativeMethods.BuildFPExt( BuilderHandle, valueRef.ValueHandle, toType.GetTypeRef(), string.Empty );
+                handle = NativeMethods.BuildFPExt( BuilderHandle, valueRef.ValueHandle, toType.GetTypeRef( ), string.Empty );
 
             return Value.FromHandle( handle );
         }
 
         public Value FPTrunc( Value valueRef, ITypeRef toType )
         {
+            if( valueRef == null )
+                throw new ArgumentNullException( nameof( valueRef ) );
+
+            if( toType == null )
+                throw new ArgumentNullException( nameof( toType ) );
+
             LLVMValueRef handle;
             if( valueRef is Constant )
-                handle = NativeMethods.ConstFPTrunc( valueRef.ValueHandle, toType.GetTypeRef() );
+                handle = NativeMethods.ConstFPTrunc( valueRef.ValueHandle, toType.GetTypeRef( ) );
             else
-                handle = NativeMethods.BuildFPTrunc( BuilderHandle, valueRef.ValueHandle, toType.GetTypeRef(), string.Empty );
+                handle = NativeMethods.BuildFPTrunc( BuilderHandle, valueRef.ValueHandle, toType.GetTypeRef( ), string.Empty );
 
             return Value.FromHandle( handle );
         }
 
         public PhiNode PhiNode( ITypeRef resultType )
         {
-            var handle = NativeMethods.BuildPhi( BuilderHandle, resultType.GetTypeRef(), string.Empty );
+            var handle = NativeMethods.BuildPhi( BuilderHandle, resultType.GetTypeRef( ), string.Empty );
             return Value.FromHandle<PhiNode>( handle );
         }
 
         public Value ExtractValue( Value instance, uint index )
         {
+            if( instance == null )
+                throw new ArgumentNullException( nameof( instance ) );
+
             var handle = NativeMethods.BuildExtractValue( BuilderHandle, instance.ValueHandle, index, string.Empty );
             return Value.FromHandle( handle );
         }
 
         public Instructions.Switch Switch( Value value, BasicBlock defaultCase, uint numCases )
         {
+            if( value == null )
+                throw new ArgumentNullException( nameof( value ) );
+
+            if( defaultCase == null )
+                throw new ArgumentNullException( nameof( defaultCase ) );
+
             var handle = NativeMethods.BuildSwitch( BuilderHandle, value.ValueHandle, defaultCase.BlockHandle, numCases );
             return Value.FromHandle<Instructions.Switch>( handle );
         }
 
         public Value DoNothing( NativeModule module )
         {
+            if( module == null )
+                throw new ArgumentNullException( nameof( module ) );
+
             var func = module.GetFunction( Intrinsic.DoNothingName );
             if( func == null )
             {
@@ -685,6 +856,9 @@ namespace Llvm.NET
 
         public Value DebugTrap( NativeModule module )
         {
+            if( module == null )
+                throw new ArgumentNullException( nameof( module ) );
+
             var func = module.GetFunction( Intrinsic.DebugTrapName );
             if( func == null )
             {
@@ -704,16 +878,28 @@ namespace Llvm.NET
         /// <param name="source">Source pointer of the memcpy</param>
         /// <param name="len">length of the data to copy</param>
         /// <param name="align">Alignment of the data for the copy</param>
-        /// <param name="isVolatile">Flag to indicate if the copy invovles volatile data such as physical registers</param>
+        /// <param name="isVolatile">Flag to indicate if the copy involves volatile data such as physical registers</param>
         /// <returns><see cref="Intrinsic"/> call for the memcpy</returns>
         /// <remarks>
-        /// LLVM has many overloaded variants of the memcpy instrinsic, this implementation will deduce the types from
+        /// LLVM has many overloaded variants of the memcpy intrinsic, this implementation will deduce the types from
         /// the provided values and generate a more specific call without the need to provide overloaded forms of this
         /// method and otherwise complicating the calling code.
         /// </remarks>
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "MemCopy" )]
         public Value MemCpy( NativeModule module, Value destination, Value source, Value len, Int32 align, bool isVolatile )
         {
+            if( module == null )
+                throw new ArgumentNullException( nameof( module ) );
+
+            if( destination == null )
+                throw new ArgumentNullException( nameof( destination ) );
+
+            if( source == null )
+                throw new ArgumentNullException( nameof( source ) );
+
+            if( len == null )
+                throw new ArgumentNullException( nameof( len ) );
+
             if( destination == source )
                 throw new InvalidOperationException( "Source and destination arguments for MemCopy are the same value" );
 
@@ -733,13 +919,13 @@ namespace Llvm.NET
 
             if( !dstPtrType.ElementType.IsInteger )
             {
-                dstPtrType = module.Context.Int8Type.CreatePointerType();
+                dstPtrType = module.Context.Int8Type.CreatePointerType( );
                 destination = BitCast( destination, dstPtrType );
             }
 
             if( !srcPtrType.ElementType.IsInteger )
             {
-                srcPtrType = module.Context.Int8Type.CreatePointerType();
+                srcPtrType = module.Context.Int8Type.CreatePointerType( );
                 source = BitCast( source, srcPtrType );
             }
 
@@ -774,17 +960,29 @@ namespace Llvm.NET
         /// <param name="source">Source pointer of the memcpy</param>
         /// <param name="len">length of the data to copy</param>
         /// <param name="align">Alignment of the data for the copy</param>
-        /// <param name="isVolatile">Flag to indicate if the copy invovles volatile data such as physical registers</param>
+        /// <param name="isVolatile">Flag to indicate if the copy involves volatile data such as physical registers</param>
         /// <returns><see cref="Intrinsic"/> call for the memcpy</returns>
         /// <remarks>
-        /// LLVM has many overloaded variants of the memmov instrinsic, this implementation currently assumes the 
+        /// LLVM has many overloaded variants of the memmov intrinsic, this implementation currently assumes the 
         /// single form defined by <see cref="Intrinsic.MemMoveName"/>, which matches the classic "C" style memmov
         /// function. However future implementations should be able to deduce the types from the provided values
         /// and generate a more specific call without changing any caller code (as is done with <see cref="MemCpy(NativeModule, Value, Value, Value, int, bool)"/>. 
         /// </remarks>
         public Value MemMove( NativeModule module, Value destination, Value source, Value len, Int32 align, bool isVolatile )
         {
-            //TODO: make this auto select the LLVM instrinsic signature like memcpy...
+            if( module == null )
+                throw new ArgumentNullException( nameof( module ) );
+
+            if( destination == null )
+                throw new ArgumentNullException( nameof( destination ) );
+
+            if( source == null )
+                throw new ArgumentNullException( nameof( source ) );
+
+            if( len == null )
+                throw new ArgumentNullException( nameof( len ) );
+
+            //TODO: make this auto select the LLVM intrinsic signature like memcpy...
             if( !destination.NativeType.IsPointer )
                 throw new ArgumentException( "Pointer type expected", nameof( destination ) );
 
@@ -822,16 +1020,28 @@ namespace Llvm.NET
         /// <param name="value">fill value for the memset</param>
         /// <param name="len">length of the data to fill</param>
         /// <param name="align">ALignment of the data for the fill</param>
-        /// <param name="isVolatile">Flag to indicate if the fill invovles volatile data such as physical registers</param>
+        /// <param name="isVolatile">Flag to indicate if the fill involves volatile data such as physical registers</param>
         /// <returns><see cref="Intrinsic"/> call for the memcpy</returns>
         /// <remarks>
-        /// LLVM has many overloaded variants of the memcpy instrinsic, this implementation currently assumes the 
+        /// LLVM has many overloaded variants of the memcpy intrinsic, this implementation currently assumes the 
         /// single form defined by <see cref="Intrinsic.MemSetName"/>, which matches the classic "C" style memcpy
         /// function. However future implementations should be able to deduce the types from the provided values
         /// and generate a more specific call without changing any caller code (as is done with <see cref="MemCpy(NativeModule, Value, Value, Value, int, bool)"/>. 
         /// </remarks>
         public Value MemSet( NativeModule module, Value destination, Value value, Value len, Int32 align, bool isVolatile )
         {
+            if( module == null )
+                throw new ArgumentNullException( nameof( module ) );
+
+            if( destination == null )
+                throw new ArgumentNullException( nameof( destination ) );
+
+            if( value == null )
+                throw new ArgumentNullException( nameof( value ) );
+
+            if( len == null )
+                throw new ArgumentNullException( nameof( len ) );
+
             if( destination.NativeType.Kind != TypeKind.Pointer )
                 throw new ArgumentException( "Pointer type expected", nameof( destination ) );
 
@@ -868,6 +1078,12 @@ namespace Llvm.NET
 
         public Value InsertValue( Value aggValue, Value elementValue, uint index )
         {
+            if( aggValue == null )
+                throw new ArgumentNullException( nameof( aggValue ) );
+
+            if( elementValue == null )
+                throw new ArgumentNullException( nameof( elementValue ) );
+
             var handle = NativeMethods.BuildInsertValue( BuilderHandle, aggValue.ValueHandle, elementValue.ValueHandle, index, string.Empty );
             return Value.FromHandle( handle );
         }
@@ -890,7 +1106,7 @@ namespace Llvm.NET
         }
         #endregion
 
-        static internal LLVMValueRef[ ] GetValidatedGEPArgs( Value pointer, IEnumerable<Value> args)
+        internal static LLVMValueRef[ ] GetValidatedGEPArgs( Value pointer, IEnumerable<Value> args )
         {
             if( pointer == null )
                 throw new ArgumentNullException( nameof( pointer ) );
@@ -899,7 +1115,7 @@ namespace Llvm.NET
                 throw new ArgumentException( "Pointer value expected", nameof( pointer ) );
 
             // if not an array already, pull from source enumerable into an array only once
-            var argsArray = args as Value[] ?? args.ToArray( );
+            var argsArray = args as Value[ ] ?? args.ToArray( );
             if( argsArray.Any( a => !a.NativeType.IsInteger ) )
                 throw new ArgumentException( $"GEP index arguments must be integers" );
 
@@ -919,7 +1135,7 @@ namespace Llvm.NET
                                   , Value operand
                                   )
         {
-            var valueRef = opFactory( BuilderHandle,operand.ValueHandle, string.Empty );
+            var valueRef = opFactory( BuilderHandle, operand.ValueHandle, string.Empty );
             return Value.FromHandle( valueRef );
         }
 
@@ -938,11 +1154,11 @@ namespace Llvm.NET
         private Value BuildAtomicBinOp( LLVMAtomicRMWBinOp op, Value ptr, Value val )
         {
             var ptrType = ptr.NativeType as IPointerType;
-            if(ptrType == null)
+            if( ptrType == null )
             {
                 throw new ArgumentException( "Expected pointer type", nameof( ptr ) );
             }
-            if(ptrType.ElementType != val.NativeType)
+            if( ptrType.ElementType != val.NativeType )
             {
                 throw new ArgumentException( string.Format( IncompatibleTypeMsgFmt, ptrType.ElementType, val.NativeType ) );
             }
@@ -967,9 +1183,9 @@ namespace Llvm.NET
             if( args.Count != elementType.ParameterTypes.Count )
                 throw new ArgumentException( "Mismatched parameter count with call site", nameof( args ) );
 
-            for(int i = 0; i < args.Count; ++i )
+            for( int i = 0; i < args.Count; ++i )
             {
-                if( args[i].NativeType != elementType.ParameterTypes[ i ] )
+                if( args[ i ].NativeType != elementType.ParameterTypes[ i ] )
                 {
                     var msg = $"Call site argument type mismatch for function {func} at index {i}; argType={args[ i ].NativeType}; signatureType={elementType.ParameterTypes[ i ]}";
                     Debug.WriteLine( msg );
@@ -989,7 +1205,7 @@ namespace Llvm.NET
             LLVMValueRef[ ] llvmArgs = args.Select( v => v.ValueHandle ).ToArray( );
             int argCount = llvmArgs.Length;
 
-            // must always provide at least one element for succesful marshaling/interop, but tell LLVM there are none
+            // must always provide at least one element for successful marshaling/interop, but tell LLVM there are none
             if( argCount == 0 )
                 llvmArgs = new LLVMValueRef[ 1 ];
 

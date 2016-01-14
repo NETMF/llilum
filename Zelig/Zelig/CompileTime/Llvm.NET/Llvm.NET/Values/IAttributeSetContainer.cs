@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Llvm.NET.Values
 {
@@ -6,12 +7,13 @@ namespace Llvm.NET.Values
     /// <remarks>
     /// This is used to allow the <see cref="AttributeSetContainer"/> extension
     /// to act as mutators for the otherwise immutable <see cref="AttributeSet"/>.
-    /// Each method of the sextension class will read the attribute set from the container
-    /// and create a new set based on the paramaters (addding or removing attributes fom the set)
+    /// Each method of the extension class will read the attribute set from the container
+    /// and create a new set based on the parameters (adding or removing attributes from the set)
     /// producing a new attributeSet that is then re-assigned back to the container. 
     /// </remarks>
     public interface IAttributeSetContainer
     {
+        /// <summary>Attributes for this container</summary>
         AttributeSet Attributes { get; set; }
     }
 
@@ -25,11 +27,34 @@ namespace Llvm.NET.Values
     /// change the attributes of a <see cref="IAttributeSetContainer"/> you must get the
     /// <see cref="IAttributeSetContainer.Attributes"/> set, produce a modified version and then set the
     /// new value back to the <see cref="IAttributeSetContainer.Attributes"/> property. The methods in 
-    /// this class will perform the read, modify and writeback sequence as a single call for any of the
+    /// this class will perform the read, modify and write back sequence as a single call for any of the
     /// available <see cref="IAttributeSetContainer"/> implementations. 
     /// </remarks>
     public static class AttributeSetContainer
     {
+        public static T AddAttribute<T>( this T self, FunctionAttributeIndex index, AttributeKind[] values )
+            where T : IAttributeSetContainer
+        {
+            if(values == null)
+                throw new ArgumentNullException( nameof( values ) );
+
+            using( var bldr = new AttributeBuilder( self.Attributes, index ) )
+            {
+                foreach( var kind in values )
+                    bldr.Add( kind );
+
+                self.Attributes = self.Attributes.Add( index, bldr.ToAttributeSet( index ) );
+                return self;
+            }
+        }
+
+        public static T AddAttribute<T>( this T self, FunctionAttributeIndex index, AttributeKind value )
+            where T : IAttributeSetContainer
+        {
+            self.Attributes = self.Attributes.Add( index, new AttributeValue( self.Attributes.Context, value ) );
+            return self;
+        }
+
         public static T AddAttribute<T>( this T self, FunctionAttributeIndex index, AttributeValue value )
             where T : IAttributeSetContainer
         {
@@ -48,6 +73,9 @@ namespace Llvm.NET.Values
         /// </remarks>
         public static Function AddAttributes( this Function self, params AttributeValue[] attributes)
         {
+            if(self == null)
+                throw new ArgumentNullException( nameof( self ) );
+
             self.Attributes = self.Attributes.Add( FunctionAttributeIndex.Function, attributes );
             return self;
         }
@@ -63,6 +91,9 @@ namespace Llvm.NET.Values
         /// </remarks>
         public static Function AddAttributes( this Function self, IEnumerable<AttributeValue> attributes)
         {
+            if(self == null)
+                throw new ArgumentNullException( nameof( self ) );
+
             self.Attributes = self.Attributes.Add( FunctionAttributeIndex.Function, attributes );
             return self;
         }
@@ -78,6 +109,9 @@ namespace Llvm.NET.Values
         /// </remarks>
         public static Function RemoveAttribute( this Function self, AttributeKind kind )
         {
+            if(self == null)
+                throw new ArgumentNullException( nameof( self ) );
+
             self.Attributes = self.Attributes.Remove( FunctionAttributeIndex.Function, kind );
             return self;
         }
@@ -93,6 +127,9 @@ namespace Llvm.NET.Values
         /// </remarks>
         public static Function RemoveAttribute( this Function self, string name )
         {
+            if(self == null)
+                throw new ArgumentNullException( nameof( self ) );
+
             self.Attributes = self.Attributes.Remove( FunctionAttributeIndex.Function, name );
             return self;
         }

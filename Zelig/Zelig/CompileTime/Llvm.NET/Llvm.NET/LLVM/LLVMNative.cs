@@ -46,6 +46,13 @@ namespace Llvm.NET
     {
         internal static ValueKind GetValueKind( LLVMValueRef valueRef ) => ( ValueKind )GetValueID( valueRef );
 
+        /// <summary>This method is used to marshal a string when NativeMethods.DisposeMessage() is required on the string allocated from native code</summary>
+        /// <param name="msg">POinter to the native code allocated string</param>
+        /// <returns>Managed code string marshaled from the native content</returns>
+        /// <remarks>
+        /// This method will, construct a new managed string containing the test of the string from native code, normalizing
+        /// the line endings to the current execution environments line endings (See: <see cref="Environment.NewLine"/>).
+        /// </remarks>
         internal static string MarshalMsg( IntPtr msg )
         {
             var retVal = string.Empty;
@@ -63,6 +70,7 @@ namespace Llvm.NET
             return retVal;
         }
 
+        /// <summary>Static constructor for NativeMethods</summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline" )]
         static NativeMethods()
         {
@@ -76,13 +84,14 @@ namespace Llvm.NET
             }
             else
             {
-                // fallback to standard library search paths to allow building
-                // CPU specific variants with only one DLL without needing
+                // fall-back to standard library search paths to allow building
+                // CPU specific variants with only one native DLL without needing
                 // conditional compilation on this library, which is useful for
                 // unit testing or whenever the Nuget packaging isn't desired.
                 LoadWin32Library( libraryPath, null );
             }
 
+            // initialize the static fields
             LineEndingNormalizingRegEx = new Regex( "(\r\n|\n\r|\r|\n)" );
         }
 

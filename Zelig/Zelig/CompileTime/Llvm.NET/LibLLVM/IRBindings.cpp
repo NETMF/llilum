@@ -20,181 +20,12 @@
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/CallSite.h"
+#include <type_traits>
 
 using namespace llvm;
 
 extern "C"
 {
-    unsigned LLVMGetAttributeSetSize( )
-    {
-        return sizeof( AttributeSet );
-    }
-
-    void LLVMCopyConstructAttributeSet( uintptr_t pDst, uintptr_t pSrc )
-    {
-        AttributeSet const& srcAttributes = *reinterpret_cast< AttributeSet const* >( pSrc );
-        AttributeSet&  dstAttributes = *reinterpret_cast< AttributeSet* >( pDst );
-        dstAttributes = srcAttributes;
-    }
-
-    void LLVMAttributeSetAddAttribute( LLVMContextRef context, uintptr_t pAttributeSet, int index, LLVMAttrKind kind )
-    {
-        AttributeSet& attributes = *reinterpret_cast< AttributeSet* >( pAttributeSet );
-        attributes = attributes.addAttribute( *unwrap( context ), index, ( Attribute::AttrKind )kind );
-    }
-
-    void LLVMAttributeSetAddTargetDependentAttribute( LLVMContextRef context, uintptr_t pAttributeSet, int index, char const* name, char const* value )
-    {
-        AttributeSet& attributes = *reinterpret_cast< AttributeSet* >( pAttributeSet );
-        attributes = attributes.addAttribute( *unwrap( context ), index, name, value );
-    }
-
-    void LLVMAttributeSetRemoveTargetDependentAttribute( LLVMContextRef context, uintptr_t pAttributeSet, int index, char const* name )
-    {
-        AttributeSet& attributes = *reinterpret_cast< AttributeSet* >( pAttributeSet );
-        AttrBuilder bldr;
-        bldr.addAttribute( name );
-        attributes = attributes.removeAttributes( *unwrap( context ), index, bldr );
-    }
-
-    LLVMBool LLVMAttributeSetHasAttribute( uintptr_t pAttributeSet, int index, LLVMAttrKind kind )
-    {
-        AttributeSet& attributes = *reinterpret_cast< AttributeSet* >( pAttributeSet );
-        return attributes.hasAttribute( index, ( Attribute::AttrKind )kind );
-    }
-
-    void LLVMAttributeSetRemoveAttribute( LLVMContextRef context, uintptr_t pAttributeSet, int index, LLVMAttrKind kind )
-    {
-        AttributeSet& attributes = *reinterpret_cast< AttributeSet* >( pAttributeSet );
-        attributes = attributes.removeAttribute( *unwrap( context ), index, (Attribute::AttrKind)kind );
-    }
-
-    void LLVMAttributeSetSetAttributeValue( LLVMContextRef context, uintptr_t pAttributeSet, int index, LLVMAttrKind kind, uint64_t value )
-    {
-        AttributeSet& attributes = *reinterpret_cast< AttributeSet* >( pAttributeSet );
-        AttrBuilder builder( attributes, index );
-        switch( kind )
-        {
-        case LLVMAttrKind::LLVMAttrKindAlignment:
-            assert( index > AttributeSet::AttrIndex::ReturnIndex && "Expected parameter index");
-            assert( value <= UINT32_MAX && "expected value <= UINT32_MAX");
-            builder.addAlignmentAttr( value );
-            break;
-
-        case LLVMAttrKind::LLVMAttrKindStackAlignment:
-            assert( index == AttributeSet::AttrIndex::FunctionIndex && "Stack alignment only applicable to the function itself" );
-            assert( value <= UINT32_MAX && "expected value <= UINT32_MAX" );
-            builder.addStackAlignmentAttr( value );
-            break;
-
-        case LLVMAttrKind::LLVMAttrKindDereferenceable:
-            assert( index != AttributeSet::AttrIndex::FunctionIndex && "Expected a return or param index" );
-            builder.addDereferenceableAttr( value );
-            break;
-
-        case LLVMAttrKind::LLVMAttrKindDereferenceableOrNull:
-            assert( index != AttributeSet::AttrIndex::FunctionIndex && "Expected a return or param index" );
-            builder.addDereferenceableOrNullAttr( value );
-            break;
-
-        default:
-            assert( false && "Attribute kind doesn't have a value to set" );
-            break;
-        }
-
-        LLVMContext& ctx = *unwrap( context );
-        attributes = attributes.addAttributes( ctx, index, AttributeSet::get( ctx, index, builder ) );
-    }
-
-    uint64_t LLVMAttributeSetGetAttributeValue( uintptr_t pAttributeSet, int index, LLVMAttrKind kind )
-    {
-        AttributeSet* pAttributes = reinterpret_cast< AttributeSet* >( pAttributeSet );
-        Attribute attr = pAttributes->getAttribute( index, ( Attribute::AttrKind )kind );
-        return attr.getValueAsInt( );
-    }
-
-    LLVMBool LLVMAttributeSetHasAttributes( uintptr_t pAttributeSet, int index )
-    {
-        AttributeSet* pAttributes = reinterpret_cast< AttributeSet* >( pAttributeSet );
-        return pAttributes->hasAttributes( index );
-    }
-
-    char const* LLVMAttributeSetGetAttributesAsString( uintptr_t pAttributeSet, int index )
-    {
-        AttributeSet* pAttributes = reinterpret_cast< AttributeSet* >( pAttributeSet );
-        return LLVMCreateMessage( pAttributes->getAsString( index ).c_str( ) );
-    }
-
-    LLVMBool LLVMAttributeSetHasTargetDependentAttribute( uintptr_t pAttributeSet, int index, char const* name )
-    {
-        AttributeSet* pAttributes = reinterpret_cast< AttributeSet* >( pAttributeSet );
-        return pAttributes->hasAttribute( index, name );
-    }
-
-    LLVMBool LLVMAttributeSetHasAny( uintptr_t pAttributeSet, int index )
-    {
-        AttributeSet* pAttributes = reinterpret_cast< AttributeSet* >( pAttributeSet );
-        return pAttributes->hasAttributes( index );
-    }
-
-    void LLVMGetFunctionAttributeSet( LLVMValueRef /*Function*/ function, uintptr_t pAttributeSet )
-    {
-        Function* pFunc = unwrap<Function>( function );
-        AttributeSet& attributes = *reinterpret_cast< AttributeSet* >( pAttributeSet );
-        attributes = pFunc->getAttributes( );
-    }
-
-    void LLVMSetFunctionAttributeSet( LLVMValueRef /*Function*/ function, uintptr_t pAttributeSet )
-    {
-        Function* pFunc = unwrap<Function>( function );
-        AttributeSet& attributes = *reinterpret_cast< AttributeSet* >( pAttributeSet );
-        pFunc->setAttributes( attributes );
-    }
-
-    void LLVMAttributeSetGetParamAttributes( uintptr_t pAttributeSet, int index, uintptr_t pResult )
-    {
-        AttributeSet const& src = *reinterpret_cast< AttributeSet* >( pAttributeSet );
-        AttributeSet& resultSet = *reinterpret_cast< AttributeSet* >( pResult );
-        resultSet = src.getParamAttributes( index );
-    }
-
-    void LLVMAttributeSetGetReturnAttributes( uintptr_t pAttributeSet, uintptr_t pResult )
-    {
-        AttributeSet const& src = *reinterpret_cast< AttributeSet* >( pAttributeSet );
-        AttributeSet& resultSet = *reinterpret_cast< AttributeSet* >( pResult );
-        resultSet = src.getRetAttributes( );
-    }
-
-    void LLVMAttributeSetGetFunctionAttributes( int index, uintptr_t pAttributeSet, uintptr_t pResult )
-    {
-        AttributeSet const& src = *reinterpret_cast< AttributeSet* >( pAttributeSet );
-        AttributeSet& resultSet = *reinterpret_cast< AttributeSet* >( pResult );
-        resultSet = src.getFnAttributes( );
-    }
-
-    void LLVMAttributeSetAddAttributes2( LLVMContextRef context, uintptr_t pSrcAttributeSet, int index, uintptr_t pAttributes, uintptr_t pResult )
-    {
-        AttributeSet const& src = *reinterpret_cast< AttributeSet* >( pSrcAttributeSet );
-        AttributeSet const& attributes = *reinterpret_cast< AttributeSet* >( pAttributes );
-        AttributeSet& resultSet = *reinterpret_cast< AttributeSet* >( pResult );
-        resultSet = src.addAttributes( *unwrap( context ), index, attributes );
-    }
-
-    void LLVMGetCallSiteAttributeSet( LLVMValueRef /*Instruction*/ instruction, uintptr_t pAttributeSet )
-    {
-        CallSite call = CallSite( unwrap<Instruction>( instruction ) );
-
-        AttributeSet& attributes = *reinterpret_cast< AttributeSet* >( pAttributeSet );
-        attributes = call.getAttributes( );
-    }
-
-    void LLVMSetCallSiteAttributeSet( LLVMValueRef /*Instruction*/ instruction, uintptr_t pAttributeSet )
-    {
-        CallSite call = CallSite( unwrap<Instruction>( instruction ) );
-        AttributeSet& attributes = *reinterpret_cast< AttributeSet* >( pAttributeSet );
-        call.setAttributes( attributes );
-    }
-
     LLVMMetadataRef LLVMConstantAsMetadata( LLVMValueRef C )
     {
         return wrap( ConstantAsMetadata::get( unwrap<Constant>( C ) ) );
@@ -354,4 +185,5 @@ extern "C"
 
         return wrap( cmpxchg );
     }
+
 }

@@ -10,7 +10,10 @@ namespace Llvm.NET.Instructions
         /// <summary>Block that contains this instruction</summary>
         public BasicBlock ContainingBlock => BasicBlock.FromHandle( NativeMethods.GetInstructionParent( ValueHandle ) );
 
+        /// <summary>Gets the LLVM opcode for the instruction</summary>
         public OpCode Opcode => (OpCode)NativeMethods.GetInstructionOpcode( ValueHandle );
+
+        /// <summary>FLag to indicate if the opcode is for a memory access <see cref="Alloca"/>, <see cref="Load"/>, <see cref="Store"/></summary>
         public bool IsMemoryAccess
         {
             get
@@ -24,11 +27,10 @@ namespace Llvm.NET.Instructions
 
         /// <summary>Alignment for the instruction</summary>
         /// <remarks>
-        /// The alignemnt is always 0 for instructions other than Alloca, Load, and Store
+        /// The alignment is always 0 for instructions other than Alloca, Load, and Store
         /// that deal with memory accesses. Setting the alignment for other instructions
         /// results in an InvalidOperationException()
         /// </remarks>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "alloca" )]
         public uint Alignment
         {
             get
@@ -54,10 +56,15 @@ namespace Llvm.NET.Instructions
     /// <remarks>
     /// Using generic static extension methods allows for fluent coding while retaining the type of the "this" parameter.
     /// If these were members of the <see cref="Instruction"/> class then the only return type could be <see cref="Instruction"/>
-    /// thus losing the orignal type and requiring a cast to get back to it.
+    /// thus losing the original type and requiring a cast to get back to it, thereby defeating the purpose of the fluent style.
     /// </remarks>
     public static class InstructionExtensions
     {
+        /// <summary>Fluent style extension method to set the <see cref="Instruction.Alignment"/> for an instruction</summary>
+        /// <typeparam name="T">Type of the instruction (usually implicitly inferred from usage)</typeparam>
+        /// <param name="self">Instruction to set the <see cref="Instruction.Alignment"/> for</param>
+        /// <param name="value">New alignment for the instruction</param>
+        /// <returns>To allow fluent style coding this returns the <paramref name="self"/> parameter</returns>
         public static T Alignment<T>( this T self, uint value )
             where T : Instruction
         {
@@ -67,11 +74,27 @@ namespace Llvm.NET.Instructions
             return self;
         }
 
-        public static T IsVolatile<T>( this T self, uint value )
+        /// <summary>Fluent style extension method to set the Volatile property of a <see cref="Load"/> or <see cref="Store"/> instruction</summary>
+        /// <typeparam name="T">Type of the instruction (usually implicitly inferred from usage)</typeparam>
+        /// <param name="self">Instruction to set the Volatile property for</param>
+        /// <param name="value">Flag to indicate if the instruction's operation is volatile</param>
+        /// <returns>To allow fluent style coding this returns the <paramref name="self"/> parameter</returns>
+        public static T IsVolatile<T>( this T self, bool value )
             where T : Instruction
         {
             if( self.IsMemoryAccess )
-                self.Alignment = value;
+            {
+                // only load and store instructions have the volatile property
+                var loadInst = self as Load;
+                if( loadInst != null )
+                    loadInst.IsVolatile = value;
+                else
+                {
+                    var storeinst = self as Store;
+                    if( storeinst != null )
+                        storeinst.IsVolatile = value;
+                }
+            }
 
             return self;
         }

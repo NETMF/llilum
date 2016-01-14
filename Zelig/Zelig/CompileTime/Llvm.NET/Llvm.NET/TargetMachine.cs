@@ -28,6 +28,9 @@ namespace Llvm.NET
             get
             {
                 var handle = NativeMethods.GetTargetMachineData( TargetMachineHandle );
+                if( handle.Pointer == IntPtr.Zero )
+                    return null;
+
                 return TargetData.FromHandle( Context, handle, isDisposable: false );
             }
         }

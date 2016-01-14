@@ -78,7 +78,7 @@ namespace Llvm.NET.Values
             }
             set
             {
-                if( !value.Describes( this ) )
+                if( ( value != null ) && !value.Describes( this ) )
                     throw new ArgumentException( "Subprogram does not describe this Function" );
 
                 DISubProgram_ = value;
@@ -102,30 +102,31 @@ namespace Llvm.NET.Values
         }
 
         /// <summary>Verifies the function is valid and all blocks properly terminated</summary>
-        public void Verify()
+        public void Verify( )
         {
             IntPtr errMsgPtr;
             var status = NativeMethods.VerifyFunctionEx( ValueHandle, LLVMVerifierFailureAction.LLVMReturnStatusAction, out errMsgPtr );
             if( status )
-                throw new InternalCodeGeneratorException( NativeMethods.MarshalMsg( errMsgPtr) );
+                throw new InternalCodeGeneratorException( NativeMethods.MarshalMsg( errMsgPtr ) );
         }
 
         public AttributeSet Attributes
         {
-            get 
+            get
             {
-                return new AttributeSet( this, ( p ) => NativeMethods.GetFunctionAttributeSet( ValueHandle, p ) );
+                return new AttributeSet( NativeMethods.GetFunctionAttributeSet( ValueHandle ) );
             }
 
             set
             {
-                value.Store( ( p ) => NativeMethods.SetFunctionAttributeSet( ValueHandle, p ) );
+                // TODO: verify that the attribute set doesn't contain any attributes for parameter indices not available in this function.
+                NativeMethods.SetFunctionAttributeSet( ValueHandle, value.NativeAttributeSet );
             }
         }
 
         /// <summary>Add a new basic block to the beginning of a function</summary>
         /// <param name="name">Name (label) for the block</param>
-        /// <returns><see cref="BasicBlock"/> created and insterted into the begining function</returns>
+        /// <returns><see cref="BasicBlock"/> created and inserted at the beginning of the function</returns>
         public BasicBlock PrependBasicBlock( string name )
         {
             LLVMBasicBlockRef firstBlock = NativeMethods.GetFirstBasicBlock( ValueHandle );
@@ -144,7 +145,7 @@ namespace Llvm.NET.Values
 
         /// <summary>Appends a new basic block to a function</summary>
         /// <param name="name">Name (label) of the block</param>
-        /// <returns><see cref="BasicBlock"/> created and insterted onto the end of the function</returns>
+        /// <returns><see cref="BasicBlock"/> created and inserted onto the end of the function</returns>
         public BasicBlock AppendBasicBlock( string name )
         {
             LLVMBasicBlockRef blockRef = NativeMethods.AppendBasicBlockInContext( NativeType.Context.ContextHandle, ValueHandle, name );
@@ -168,13 +169,7 @@ namespace Llvm.NET.Values
             return retVal;
         }
 
-
-        internal Function( LLVMValueRef valueRef ) 
-            : this( valueRef, false )
-        {
-        }
-
-        internal Function( LLVMValueRef valueRef, bool preValidated ) 
+        internal Function( LLVMValueRef valueRef, bool preValidated )
             : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAFunction ) )
         {
         }

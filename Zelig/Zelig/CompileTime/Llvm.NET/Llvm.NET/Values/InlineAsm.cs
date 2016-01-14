@@ -8,11 +8,6 @@
 
     public class InlineAsm : Value
     {
-        internal InlineAsm( LLVMValueRef valueRef )
-            : this( valueRef, false )
-        {
-        }
-
         internal InlineAsm( LLVMValueRef valueRef, bool preValidated )
             : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAInlineAsm ) )
         {

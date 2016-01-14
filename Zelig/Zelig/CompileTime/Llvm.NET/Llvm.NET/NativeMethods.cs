@@ -13,9 +13,9 @@ namespace Llvm.NET
         /// <returns>Handle for the DLL</returns>
         /// <remarks>
         /// <para>This method will detect the architecture the code is executing on (i.e. x86 or x64)
-        /// and will load the dll from an architecture specific sub folder of <paramref name="rootPath"/>.
+        /// and will load the DLL from an architecture specific sub folder of <paramref name="rootPath"/>.
         /// This allows use of AnyCPU builds and interop to simplify build processes from needing to
-        /// deal with "mixed" configurations or other accidental compbinations that are a pain to 
+        /// deal with "mixed" configurations or other accidental combinations that are a pain to 
         /// sort out and keep straight when the tools insist on creating AnyCPU projects and "mixed" configurations
         /// by default.</para>
         /// <para>If the <paramref name="rootPath"/>Is <see langword="null"/>, empty or all whitespace then
