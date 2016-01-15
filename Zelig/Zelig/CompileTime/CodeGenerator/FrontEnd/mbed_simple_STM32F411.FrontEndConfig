@@ -72,18 +72,27 @@
 -OutputName Microsoft.Zelig.Test.mbed.Simple
 -OutputDir  ..\..\..\..\LLVM2IR_results\mbed\simple
 
-#-DumpIR
+###
+### Dumps and diagnostics
+###
+#-DumpIRBeforePhase ReduceNumberOfTemporaries TransformFinallyBlocksIntoTryBlocks ApplyClassExtensions
+#-DumpIRBeforePhase All
+-DumpIR
 #-DumpIRpre
 #-DumpIRpost
 #-DumpIRXML
 #-DumpFlattenedCallGraph
 -DumpLLVMIR
 #-ReloadState
-#-DumpLLVMIR_TextRepresentation
+-DumpLLVMIR_TextRepresentation
 
 -MaxProcs 8
 
 -NoSDK
+
+###
+### LLVM CodeGeneration
+###
 -GenerateObj
 
 # examples of overriding opt.exe and llc arguments

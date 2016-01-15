@@ -38,7 +38,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
 
             m_state = new CompilationSteps.ComputeCallsClosure( this.TypeSystem, this.DelegationCache, this.CallsDataBase, this, false );
 
-            if( this.TypeSystem.PlatformAbstraction.PlatformName.Equals( "LLVM" ) )
+            if( this.TypeSystem.PlatformAbstraction.CodeGenerator == TargetModel.ArmProcessor.InstructionSetVersion.CodeGenerator_LLVM )
             {
                 //MethodRepresentation mainThread = null;
                 //this.TypeSystem.EnumerateMethods( delegate( MethodRepresentation md )

@@ -47,16 +47,16 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
                 {
                     object             objTarget = ca.FixedArgsValues[0];
                     TypeRepresentation tdTarget  = objTarget as TypeRepresentation;
-                    
-                    object obj = ca.GetNamedArg( "PlatformFilter" );
+
+                    object obj = ca.GetNamedArg( "PlatformVersionFilter" );
                     if(obj != null)
                     {
-                        string platform = (string)obj;
+                        uint filter = (uint)obj;
 
-                        if(platform != typeSystem.PlatformAbstraction.PlatformName)
+                        if(( filter & typeSystem.PlatformAbstraction.PlatformVersion ) != typeSystem.PlatformAbstraction.PlatformVersion)
                         {
                             // This type is not an allowed extension for the current platform
-                            return false;
+                            continue;
                         }
                     }
 
@@ -219,12 +219,12 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
                     bool               fNoConstructors = false;
                     object             obj;
 
-                    obj = ca.GetNamedArg( "PlatformFilter" );
+                    obj = ca.GetNamedArg( "PlatformVersionFilter" );
                     if(obj != null)
                     {
-                        string platform = (string)obj;
+                        uint filter = (uint)obj;
 
-                        if(platform != m_typeSystem.PlatformAbstraction.PlatformName)
+                        if((filter & m_typeSystem.PlatformAbstraction.PlatformVersion) != m_typeSystem.PlatformAbstraction.PlatformVersion)
                         {
                             // This type is not an allowed extension for the current platform
                             return;

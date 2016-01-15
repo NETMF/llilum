@@ -5,14 +5,13 @@
 namespace Microsoft.CortexM3OnMBED.HardwareModel
 {
     using System;
-    using Chipset = Microsoft.CortexM3OnCMSISCore;
-    using ChipsetAbstration = Microsoft.DeviceModels.Chipset.CortexM3;
-    using Framework = Microsoft.Llilum.Devices.Adc;
-    using Runtime = Microsoft.Zelig.Runtime;
     using Zelig.LlilumOSAbstraction.API.IO;
     using System.Text;
 
-    public sealed class SocketProvider : Runtime.SocketProvider
+    using RT = Microsoft.Zelig.Runtime;
+
+
+    public sealed class SocketProvider : RT.SocketProvider
     {
         //       
         // Socket protocol types (TCP/UDP/RAW) 

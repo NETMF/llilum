@@ -7,7 +7,6 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 {
     using System;
     using System.Runtime.InteropServices;
-    using System.Threading;
 
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
     using RT = Microsoft.Zelig.Runtime;
@@ -21,18 +20,18 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             Reset_IRQn              = -42,      /*!< Exception#: 1 Reset (not actually defined as an IRQn_Type)   */
             NonMaskableInt_IRQn     = -14,      /*!< Exception#: 2 Non Maskable Interrupt                         */
             HardFault_IRQn          = -13,      /*!< Exception#: 3 Non Maskable Interrupt                         */
-            MemoryManagement_IRQn   = -12,      /*!< Exception#: 4 Cortex-M3 Memory Management Interrupt          */
-            BusFault_IRQn           = -11,      /*!< Exception#: 5 Cortex-M3 Bus Fault Interrupt                  */
-            UsageFault_IRQn         = -10,      /*!< Exception#: 6 Cortex-M3 Usage Fault Interrupt                */
-            Reservedr_IRQn9         = -9,       /*!< Exception#: 7 Reserved                                       */
-            Reservedr_IRQn8         = -8,       /*!< Exception#: 8 Reserved                                       */
-            Reservedr_IRQn7         = -7,       /*!< Exception#: 9 Reserved                                       */
-            Reservedr_IRQn6         = -6,       /*!< Exception#: 10 Reserved                                      */
-            SVCall_IRQn             = -5,       /*!< Exception#: 11 Cortex-M3 SV Call Interrupt                   */
-            DebugMonitor_IRQn       = -4,       /*!< Exception#: 12 Cortex-M3 Debug Monitor Interrupt             */
-            Reservedr_IRQn3         = -3,       /*!< Exception#: 13 Reserved                                      */
-            PendSV_IRQn             = -2,       /*!< Exception#: 14 Cortex-M3 Pend SV Interrupt                   */
-            SysTick_IRQn            = -1,       /*!< Exception#: 15 Cortex-M3 System Tick Interrupt               */
+            MemoryManagement_IRQn   = -12,      /*!< Exception#: 4 Cortex-M3/4 Memory Management Interrupt        */
+            BusFault_IRQn           = -11,      /*!< Exception#: 5 Cortex-M3/4 Bus Fault Interrupt                */
+            UsageFault_IRQn         = -10,      /*!< Exception#: 6 Cortex-M3/4 Usage Fault Interrupt              */
+            Reserved_IRQn9          = -9,       /*!< Exception#: 7 Reserved                                       */
+            Reserved_IRQn8          = -8,       /*!< Exception#: 8 Reserved                                       */
+            Reserved_IRQn7          = -7,       /*!< Exception#: 9 Reserved                                       */
+            Reserved_IRQn6          = -6,       /*!< Exception#: 10 Reserved                                      */
+            SVCall_IRQn             = -5,       /*!< Exception#: 11 Cortex-M3/4 SV Call Interrupt                 */
+            DebugMonitor_IRQn       = -4,       /*!< Exception#: 12 Cortex-M3/4 Debug Monitor Interrupt           */
+            Reserved_IRQn3          = -3,       /*!< Exception#: 13 Reserved                                      */
+            PendSV_IRQn             = -2,       /*!< Exception#: 14 Cortex-M3/4 Pend SV Interrupt                 */
+            SysTick_IRQn            = -1,       /*!< Exception#: 15 Cortex-M3/4 System Tick Interrupt             */
             //--//
             AnyInterrupt16          =  0,
             
@@ -202,7 +201,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         public const uint c_CCR__STKALIGN__4            = 0u << c_CCR__STKALIGN__SHIFT; 
         public const uint c_CCR__STKALIGN__8            = 1u << c_CCR__STKALIGN__SHIFT;
         
-        public const uint c_CCR_STD_CONFIG_4            = (                     c_CCR__DIV_0_TRP__TRAP | c_CCR__UNALIGN_TRP__NOTRAP | c_CCR__NONBASETHRDENA__ANY) & c_CCR__MASK; 
+        public const uint c_CCR_STD_CONFIG_4            = (c_CCR__STKALIGN__4 | c_CCR__DIV_0_TRP__TRAP | c_CCR__UNALIGN_TRP__NOTRAP | c_CCR__NONBASETHRDENA__ANY) & c_CCR__MASK; 
         public const uint c_CCR_STD_CONFIG_8            = (c_CCR__STKALIGN__8 | c_CCR__DIV_0_TRP__TRAP | c_CCR__UNALIGN_TRP__NOTRAP | c_CCR__NONBASETHRDENA__ANY) & c_CCR__MASK;
 
         //
@@ -1098,7 +1097,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         internal static extern void CMSIS_STUB_SCB__Disable_Irq( );
 
         //
-        // !!! Cortex M3 only !!!
+        // !!! Cortex M3/4 only !!!
         //
         
         [DllImport( "C" )]

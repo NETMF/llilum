@@ -6,6 +6,7 @@
 //#define K64F
 //#define STM32F411
 //#define STM32F401
+//#define STM32F091
 
 namespace Managed
 {
@@ -22,6 +23,8 @@ namespace Managed
     using Microsoft.Llilum.STM32F411;
 #elif STM32F401
     using Microsoft.Llilum.STM32F401;
+#elif STM32F091
+    using Microsoft.Llilum.STM32F091;
 #endif
 
     class Program
@@ -42,7 +45,7 @@ namespace Managed
 #elif (K64F)
             (int)PinName.LED_BLUE,
             (int)PinName.LED_RED,
-#elif (STM32F411 || STM32F401)
+#elif (STM32F411 || STM32F401 || STM32F091)
             (int)PinName.LED1,
             (int)PinName.LED1,
 #else
@@ -56,7 +59,7 @@ namespace Managed
 
             var threadToggledPin = controller.OpenPin(pinNumbers[0]);
 
-#if (STM32F411 || STM32F401)
+#if (STM32F411 || STM32F401 || STM32F091)
             var loopToggledPin = threadToggledPin;
 #else
             var loopToggledPin = controller.OpenPin(pinNumbers[1]);

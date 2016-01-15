@@ -32,11 +32,17 @@
     <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_LPC1768.props" />
     <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_K64F.props" />
     <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_STM32L152.props" />
+    <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_STM32F411.props" />
+    <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_STM32F401.props" />
+    <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_STM32F091.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_LPC1768.props" />
     <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_K64F.props" />
     <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_STM32L152.props" />
+    <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_STM32F411.props" />
+    <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_STM32F401.props" />
+    <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_STM32F091.props" />
   </ImportGroup>
   <!-- General Llilum Settings -->
   <PropertyGroup Label="Llilum">
@@ -207,6 +213,16 @@
   <ItemGroup Condition="'$(LlilumBoardName)'=='STM32L152'">
     <ArmAssemble Include="$(LlilumSourceRoot)\..\os_layer\ARMv7M\Vectors\startup_stm32l152xe.S" />
   </ItemGroup>
+  
+  <ItemGroup Condition="'$(LlilumBoardName)'!='STM32F091'">
+    <ArmAssemble Include="$(LlilumSourceRoot)\..\os_layer\ARMv7M\Vectors\startup_stm32f091xc.S">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ArmAssemble>
+  </ItemGroup>
+  <ItemGroup Condition="'$(LlilumBoardName)'=='STM32F091'">
+    <ArmAssemble Include="$(LlilumSourceRoot)\..\os_layer\ARMv7M\Vectors\startup_stm32f091xc.S" />
+  </ItemGroup>
+  
   <ItemGroup>
     <ArmAssemble Include="..\..\..\..\..\os_layer\ARMv7M\Vectors\startup_stm32f401xe.S" />
     <ArmAssemble Include="..\..\..\..\..\os_layer\ARMv7M\Vectors\startup_stm32f411xe.S" />

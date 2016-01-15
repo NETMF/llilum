@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription( "" )]
 [assembly: AssemblyConfiguration( "" )]
 [assembly: AssemblyCompany( "Microsoft" )]
-[assembly: AssemblyProduct( "Microsoft.CortexM3OnCMSISCore" )]
+[assembly: AssemblyProduct( "LLILUM" )]
 [assembly: AssemblyCopyright( "Copyright © Microsoft 2015" )]
 [assembly: AssemblyTrademark( "" )]
 [assembly: AssemblyCulture( "" )]

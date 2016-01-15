@@ -13,7 +13,6 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
     public sealed class ArmV7M_VFP : ArmPlatform
     {
         private const Capabilities c_ProcessorCapabilities = Capabilities.ARMv7M | Capabilities.VFPv2;
-        private const String       c_PlatformName          = InstructionSetVersion.Platform_LLVM;
 
         //
         // State
@@ -50,24 +49,35 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         // Access Methods
         //
 
-        public override string PlatformName
-        {
-            get { return c_PlatformName; }
-        }
-
-        public override string PlatformVersion
+        public override string CodeGenerator
         {
             get
             {
-                return InstructionSetVersion.PlatformVersion_7M;
+                return InstructionSetVersion.CodeGenerator_LLVM;
             }
         }
 
-        public override string PlatformVFP
+        public override uint PlatformFamily
         {
             get
             {
-                return InstructionSetVersion.PlatformVFP_VFP;
+                return InstructionSetVersion.Platform_Family__Cortex;
+            }
+        }
+
+        public override uint PlatformVersion
+        {
+            get
+            {
+                return InstructionSetVersion.Platform_Version__ARMv7M;
+            }
+        }
+
+        public override uint PlatformVFP
+        {
+            get
+            {
+                return InstructionSetVersion.Platform_VFP__HardVFP;
             }
         }
 

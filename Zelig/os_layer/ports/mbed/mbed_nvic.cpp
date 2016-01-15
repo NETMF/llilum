@@ -12,6 +12,7 @@ extern "C"
 	//
 	// NVIC
 	//
+#if !__CORTEX_M0
 
 	/*__STATIC_INLINE*/ void CMSIS_STUB_NVIC_SetPriorityGrouping(uint32_t PriorityGroup)
 	{
@@ -23,6 +24,8 @@ extern "C"
 	{
 		return NVIC_GetPriorityGrouping();
 	}
+
+#endif
 
 	/*__STATIC_INLINE*/ void CMSIS_STUB_NVIC_EnableIRQ(IRQn_Type IRQn)
 	{
@@ -49,10 +52,12 @@ extern "C"
 		NVIC_ClearPendingIRQ(IRQn);
 	}
 
+#if !__CORTEX_M0
 	/*__STATIC_INLINE*/ uint32_t CMSIS_STUB_NVIC_GetActive(IRQn_Type IRQn)
 	{
 		return NVIC_GetActive(IRQn);
 	}
+#endif
 
 	/*__STATIC_INLINE*/ void CMSIS_STUB_NVIC_SetPriority(IRQn_Type IRQn, uint32_t priority)
 	{
@@ -65,6 +70,7 @@ extern "C"
 		return NVIC_GetPriority(IRQn);
 	}
 
+#if !__CORTEX_M0
 	/*__STATIC_INLINE*/ uint32_t CMSIS_STUB_NVIC_EncodePriority(uint32_t PriorityGroup, uint32_t PreemptPriority, uint32_t SubPriority)
 	{
 		return NVIC_EncodePriority(PriorityGroup, PreemptPriority, SubPriority);
@@ -74,6 +80,7 @@ extern "C"
 	{
 		NVIC_DecodePriority(Priority, PriorityGroup, pPreemptPriority, pSubPriority);
 	}
+#endif
 
 	/*__STATIC_INLINE*/ void CMSIS_STUB_NVIC_SystemReset(void)
 	{

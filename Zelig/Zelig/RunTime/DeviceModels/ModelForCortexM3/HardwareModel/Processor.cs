@@ -4,40 +4,10 @@
 
 namespace Microsoft.DeviceModels.Chipset.CortexM3
 {
-    using System;
-
-    using RT           = Microsoft.Zelig.Runtime;
-    using ChipsetModel = Microsoft.Zelig.Runtime.TargetPlatform.ARMv7;
+    using ChipsetModel = Microsoft.DeviceModels.Chipset.CortexM;
 
 
-    public abstract class Processor : ChipsetModel.ProcessorARMv7M
+    public abstract class Processor : ChipsetModel.Processor
     {
-        //
-        // Helper Methods
-        //
-
-        public override void InitializeProcessor()
-        {
-            base.InitializeProcessor();
-
-            //
-            // Ensure privileged Handler mode
-            //
-            
-            if(!ChipsetModel.ProcessorARMv7M.VerifyHandlerMode())
-            {
-                RT.BugCheck.Log( "Cannot bootstrap in Thread mode" );
-                RT.BugCheck.Assert( false, RT.BugCheck.StopCode.FailedBootstrap );
-            }
-
-            //
-            // For a Cortex-M with caches or MPU, we could initialize it here
-            //
-
-            //
-            // Reset the priority grouping that we assume not used
-            //
-            NVIC.SetPriorityGrouping( 0 ); 
-        }
     }
 }

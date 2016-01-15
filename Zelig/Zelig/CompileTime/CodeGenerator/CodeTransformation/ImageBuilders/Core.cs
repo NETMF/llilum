@@ -850,7 +850,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ImageBuilders
                     DataManager.DataDescriptor dd = m_pendingDataDescriptors.Dequeue( );
 
 #if ARMv7M_BUILD__LLVM_IR_ONLY
-                    if( TypeSystem.PlatformAbstraction.PlatformName != "LLVM" )
+                    if( TypeSystem.PlatformAbstraction.CodeGenerator != InstructionSetVersion.CodeGenerator_LLVM )
 #endif
                     {
                         dd.Write( m_dataDescriptors[ dd ] );
@@ -864,7 +864,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ImageBuilders
                     ExternalDataDescriptor dd = ( ExternalDataDescriptor )m_pendingExternalDataDescriptors.Dequeue( ); 
                     
 #if ARMv7M_BUILD__LLVM_IR_ONLY
-                    if( TypeSystem.PlatformAbstraction.PlatformName != "LLVM" )
+                    if( TypeSystem.PlatformAbstraction.CodeGenerator != InstructionSetVersion.CodeGenerator_LLVM )
 #endif
                     {
                         dd.Write( m_externalDataRegions[ dd.ExternContext ] );
@@ -944,7 +944,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ImageBuilders
                 {
                                         
 #if ARMv7M_BUILD__LLVM_IR_ONLY
-                    if( TypeSystem.PlatformAbstraction.PlatformName != "LLVM" )
+                    if( TypeSystem.PlatformAbstraction.CodeGenerator != InstructionSetVersion.CodeGenerator_LLVM )
 #endif
                     {
                         dd.Write( reg );

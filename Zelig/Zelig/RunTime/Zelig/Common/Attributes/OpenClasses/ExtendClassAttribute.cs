@@ -28,7 +28,10 @@ namespace Microsoft.Zelig.Runtime
         public string   TargetByWellKnownName;
         public bool     NoConstructors;
         public Type     ProcessAfter;
-        public string   PlatformFilter;
+        public string   CodeGeneratorFilter;
+        public uint     PlatformFamilyFilter;
+        public uint     PlatformVersionFilter;
+        public uint     PlatformVFPSupportFilter;
 
         //
         // Constructor Methods

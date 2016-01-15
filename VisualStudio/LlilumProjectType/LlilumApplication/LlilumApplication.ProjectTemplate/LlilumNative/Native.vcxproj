@@ -28,6 +28,7 @@
     <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_STM32L152.props" />
     <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_STM32F411.props" />
     <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_STM32F401.props" />
+    <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_STM32F091.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_LPC1768.props" />
@@ -35,6 +36,7 @@
     <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_STM32L152.props" />
     <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_STM32F411.props" />
     <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_STM32F401.props" />
+    <Import Project="$(LlilumApplicationTypeDir)Platforms\Llilum_STM32F091.props" />
   </ImportGroup>
   <!-- General Llilum Settings -->
   <PropertyGroup Label="Llilum" >
@@ -77,6 +79,23 @@
     <LlilumAsmAdditionalOptions>$(LlilumAsmAdditionalOptionsK64F)</LlilumAsmAdditionalOptions>
     <LlilumStackSize>$(LlilumStackSizeK64F)</LlilumStackSize>
     <LlilumHeapSize>$(LlilumHeapSizeK64F)</LlilumHeapSize>
+  </PropertyGroup>
+  
+  <!-- STM32F091 -->
+  <PropertyGroup Label="Llilum" Condition="'$(LlilumBoardName)' == 'STM32F091'">
+    <LlilumClAdditionalOptions>$(LlilumClAdditionalOptionsSTM32F091)</LlilumClAdditionalOptions>
+    <LlilumClAdditionalIncludes>$(LlilumClAdditionalIncludesSTM32F091)</LlilumClAdditionalIncludes>
+    <LlilumClPreprocessorDefs>$(LlilumClPreprocessorDefsSTM32F091)</LlilumClPreprocessorDefs>
+    <LlilumLinkAdditionalDeps>$(LlilumLinkAdditionalDepsSTM32F091)</LlilumLinkAdditionalDeps>
+    <LlilumLinkAdditionalLibDirs>$(LlilumLinkAdditionalLibDirsSTM32F091)</LlilumLinkAdditionalLibDirs>
+    <LlilumLinkAdditionalOptions>$(LlilumLinkAdditionalOptionsSTM32F091)</LlilumLinkAdditionalOptions>
+    <LlilumLinkLibDeps>$(LlilumLinkLibDepsSTM32F091)</LlilumLinkLibDeps>
+    <LlilumTargetBoardArchitecture>$(LlilumTargetBoardArchitectureSTM32F091)</LlilumTargetBoardArchitecture>
+    <LlilumAsmAdditionalOptions>$(LlilumAsmAdditionalOptionsSTM32F091)</LlilumAsmAdditionalOptions>
+    <LlilumStackSize>$(LlilumStackSizeSTM32F091)</LlilumStackSize>
+    <LlilumHeapSize>$(LlilumHeapSizeSTM32F091)</LlilumHeapSize>
+    <LlilumOpenOcdInterfaceCfg>$(LlilumOpenOcdInterfaceCfgSTM32F091)</LlilumOpenOcdInterfaceCfg>
+    <LlilumOpenOcdBoardCfg>$(LlilumOpenOcdBoardCfgSTM32F091)</LlilumOpenOcdBoardCfg>
   </PropertyGroup>
   
   <!-- STM32L152 -->

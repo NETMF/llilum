@@ -58,6 +58,9 @@
     <Reference Include="STM32L152">
       <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\STM32L152.dll</HintPath>
     </Reference>
+    <Reference Include="STM32F091">
+      <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\STM32F091.dll</HintPath>
+    </Reference>
     <Reference Include="STM32F411">
       <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\STM32F411.dll</HintPath>
     </Reference>

@@ -13,7 +13,6 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
     public sealed class ArmV6M : ArmPlatform
     {
         private const Capabilities c_ProcessorCapabilities = Capabilities.ARMv6M;
-        private const String       c_PlatformName          = InstructionSetVersion.Platform_LLVM;
 
         //
         // State
@@ -50,24 +49,29 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         // Access Methods
         //
 
-        public override string PlatformName
+        public override string CodeGenerator
         {
-            get { return c_PlatformName; }
+            get { return InstructionSetVersion.CodeGenerator_LLVM; }
         }
 
-        public override string PlatformVersion
+        public override uint PlatformFamily
+        {
+            get { return InstructionSetVersion.Platform_Family__Cortex; }
+        }
+
+        public override uint PlatformVersion
         {
             get
             {
-                return InstructionSetVersion.PlatformVersion_6M;
+                return InstructionSetVersion.Platform_Version__ARMv6M;
             }
         }
 
-        public override string PlatformVFP
+        public override uint PlatformVFP
         {
             get
             {
-                return InstructionSetVersion.PlatformVFP_SoftVFP;
+                return InstructionSetVersion.Platform_VFP__NoVFP;
             }
         }
 
@@ -80,7 +84,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
         public override TypeRepresentation GetMethodWrapperType( )
         {
-            return m_typeSystem.GetWellKnownType( "Microsoft_Zelig_ARMv7_MethodWrapper" );
+            return m_typeSystem.GetWellKnownType( "Microsoft_Zelig_ARMv6_MethodWrapper" );
         }
 
         //

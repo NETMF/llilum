@@ -4,9 +4,9 @@
 
 namespace Microsoft.CortexM3OnMBED
 {
-    using Chipset = Microsoft.CortexM3OnCMSISCore;
+    using ChipsetModel = Microsoft.CortexM0OnMBED;
 
-    public abstract class GarbageCollectionManager : Chipset.GarbageCollectionManager
+    public abstract class GarbageCollectionManager : ChipsetModel.GarbageCollectionManager
     {
     }
 }

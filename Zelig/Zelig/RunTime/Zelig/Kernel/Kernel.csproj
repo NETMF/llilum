@@ -134,7 +134,10 @@
     <Compile Include="HardwareModel\TargetPlatform\AbstractMethodWrapper.cs" />
     <Compile Include="HardwareModel\TargetPlatform\ARMv5\ProcessorARMv5.cs" />
     <Compile Include="HardwareModel\TargetPlatform\ARMv5\ProcessorARMv5_ContextSwitch.cs" />
-    <Compile Include="HardwareModel\TargetPlatform\ARMv7\InterruptsSafeHandle.cs" />
+    <Compile Include="HardwareModel\TargetPlatform\ARMv6\InterruptsSafeHandleARMv6M.cs" />
+    <Compile Include="HardwareModel\TargetPlatform\ARMv6\ProcessorARMv6M.cs" />
+    <Compile Include="HardwareModel\TargetPlatform\ARMv6\ProcessorARMv6M_ContextSwitch.cs" />
+    <Compile Include="HardwareModel\TargetPlatform\ARMv7\InterruptsSafeHandleARMv7M.cs" />
     <Compile Include="HardwareModel\TargetPlatform\ARMv7\ProcessorARMv7M.cs" />
     <Compile Include="HardwareModel\TargetPlatform\ARMv7\ProcessorARMv7M_ContextSwitch.cs" />
     <Compile Include="HardwareModel\TargetPlatform\ARMv7_VFP\ProcessorARMv7M_VFP.cs" />

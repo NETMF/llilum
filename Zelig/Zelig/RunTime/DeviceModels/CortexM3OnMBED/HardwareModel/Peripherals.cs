@@ -7,39 +7,12 @@
 
 namespace Microsoft.CortexM3OnMBED
 {
-    using Microsoft.Zelig.Runtime.TargetPlatform.ARMv7;
 
-    using RT      = Microsoft.Zelig.Runtime;
-    using CMSIS   = Microsoft.DeviceModels.Chipset.CortexM3;
-    using Chipset = Microsoft.CortexM3OnCMSISCore;
+    using RT            = Microsoft.Zelig.Runtime;
+    using ChipsetModel  = Microsoft.CortexM0OnMBED;
 
 
-    public class Peripherals : Chipset.Peripherals
+    public class Peripherals : ChipsetModel.Peripherals
     {
-        //
-        // State
-        //
-
-        //
-        // Helper Methods
-        //
-        
-        public override void Activate()
-        {
-            base.Activate( ); 
-            
-            Drivers.SystemTimer.Instance.Initialize();
-
-            //Drivers.GPIO.Instance.Initialize();
-            //Drivers.I2C.Instance.Initialize();
-            //Drivers.SPI.Instance.Initialize();
-        }
-        
-        [RT.Inline]
-        [RT.DisableNullChecks()]
-        public override uint ReadPerformanceCounter()
-        {
-            return Drivers.SystemTimer.Instance.Counter;
-        }
     }
 }

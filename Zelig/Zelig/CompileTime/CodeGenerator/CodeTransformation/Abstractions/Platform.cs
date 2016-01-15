@@ -97,10 +97,15 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Abstractions
 
         //--//
         
-        public abstract string PlatformName      { get; }
-        public abstract string PlatformVersion   { get; }
-        public abstract string PlatformVFP       { get; }
-        public abstract bool   PlatformBigEndian { get; }
+        public abstract string CodeGenerator     { get; }
+
+        public abstract uint PlatformFamily      { get; }
+
+        public abstract uint PlatformVersion     { get; }
+
+        public abstract uint PlatformVFP         { get; }
+
+        public abstract bool PlatformBigEndian   { get; }
 
         public abstract InstructionSet GetInstructionSetProvider();
 

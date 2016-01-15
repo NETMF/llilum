@@ -20,36 +20,6 @@ extern "C"
         return (rand() % max) + 42;
     }
 
-    void BreakWithTrap()
-    {
-        // this will likely generate a hard fault
-        __builtin_trap();
-    }
-
-    void Break()
-    {
-        if ((CoreDebug->DHCSR & 0x00000001) == 1)
-        {
-            asm("bkpt");
-        }
-        else
-        {
-            while (1)
-            {
-                __WFE();
-            }
-        }
-    }
-
-    // placing this outside the BreakPoint() function to avoid compiler unused var warning
-    volatile uint32_t valueToWatch;
-    void Breakpoint(unsigned n)
-    {
-        valueToWatch = n;
-
-        Break();
-    }
-
     void Nop()
     {
         asm("nop");
@@ -210,7 +180,11 @@ extern "C"
 
     uint32_t CUSTOM_STUB_DebuggerConnected()
     {
+#if __CORTEX_M0
+        return false;
+#else
         return (CoreDebug->DHCSR & 0x00000001);
+#endif
     }
 
     uint32_t CUSTOM_STUB_GetProgramCounter()
@@ -238,6 +212,36 @@ extern "C"
         return *((uint32_t volatile *)0xE000ED38);
     }
 
+    void BreakWithTrap()
+    {
+        // this will likely generate a hard fault
+        __builtin_trap();
+    }
+
+    void Break()
+    {
+        if (CUSTOM_STUB_DebuggerConnected())
+        {
+            asm("bkpt");
+        }
+        else
+        {
+            while (1)
+            {
+                __WFE();
+            }
+        }
+    }
+
+    // placing this outside the BreakPoint() function to avoid compiler unused var warning
+    volatile uint32_t valueToWatch;
+    void Breakpoint(unsigned n)
+    {
+        valueToWatch = n;
+
+        Break();
+    }
+
     //
     // Stubs for Faults
     //
@@ -249,6 +253,14 @@ extern "C"
 
     //--//
 
+#if __CORTEX_M0
+
+    !IMPLEMENT!
+
+#define DEFAULT_FAULT_HANDLER(handler)  
+
+#else
+
 #define DEFAULT_FAULT_HANDLER(handler)  \
     __ASM volatile ("TST    LR, #0x4"); \
     __ASM volatile ("ITE    EQ");       \
@@ -257,6 +269,7 @@ extern "C"
     handler();                          \
     __ASM volatile ("BX     LR");       \
 
+#endif
 
     __attribute__((naked)) void HardFault_Handler(void)
     {

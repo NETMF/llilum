@@ -4,13 +4,10 @@
 
 namespace Microsoft.CortexM3OnMBED
 {
-    using System.Runtime.CompilerServices;
-    
-    using RT      = Microsoft.Zelig.Runtime;
-    using Chipset = Microsoft.CortexM3OnCMSISCore;
-    
-    
-    public abstract class Board : Chipset.Board
+    using ChipsetModel = Microsoft.CortexM0OnMBED;
+
+
+    public abstract class Board : ChipsetModel.Board
     {
     }
 }

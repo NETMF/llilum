@@ -16,7 +16,7 @@ namespace Microsoft.Zelig.Runtime
         // State
         //
 
-        public String RequiredCapabilities;
+        public uint RequiredCapabilities;
 
         //
         // Constructor Methods

@@ -25,6 +25,7 @@ namespace Microsoft.Zelig.FrontEnd
     using ARM = Microsoft.Zelig.Emulation.ArmProcessor;
     using ELF = Microsoft.Zelig.Elf;
     using LLVM;
+    using CodeGeneration.IR.CompilationSteps;
 
     class Bench :
         TS.IEnvironmentProvider,
@@ -273,9 +274,9 @@ namespace Microsoft.Zelig.FrontEnd
             m_typeSystem.GetTypeSystemStatistics( ref types, ref fields, ref methods );
 
             ConsoleColor color = Console.ForegroundColor;
-            Console.Write( "{0}: Phase: {1} ", GetTime( ), phase );
+            Console.Write( "{0}: Phase: {1,-50} ", GetTime( ), phase );
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine( "[types: {0}, fields: {1}, methods: {2}]", types, fields, methods );
+            Console.WriteLine( "[types: {0,5},  fields: {1,6},  methods: {2,6}]", types, fields, methods );
             Console.ForegroundColor = color;
 
 #if DEBUG_SAVE_STATE

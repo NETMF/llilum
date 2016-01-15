@@ -27,28 +27,28 @@ namespace Microsoft.Zelig.TargetModel.ArmProcessor
                 }
 
                 EncodingDefinition_ARM enc = null;
-                switch(isv.ISAVersion)
+                switch(isv.PlatformVersion)
                 {
-                    case InstructionSetVersion.PlatformVersion_4:
-                    case InstructionSetVersion.PlatformVersion_5:
+                    case InstructionSetVersion.Platform_Version__ARMv4:
+                    case InstructionSetVersion.Platform_Version__ARMv5:
                         enc = new EncodingDefinition_ARM();
                         break;
-                    case InstructionSetVersion.PlatformVersion_6M:
-                    case InstructionSetVersion.PlatformVersion_7M:
-                    case InstructionSetVersion.PlatformVersion_7R:
-                    case InstructionSetVersion.PlatformVersion_7A:
+                    case InstructionSetVersion.Platform_Version__ARMv6M:
+                    case InstructionSetVersion.Platform_Version__ARMv7M:
+                    case InstructionSetVersion.Platform_Version__ARMv7R:
+                    case InstructionSetVersion.Platform_Version__ARMv7A:
                     default:
                         throw new ArgumentException("Cannot register unsupported instruction set");
                 }
                 
                 EncodingDefinition_VFP encVFP = null;
-                switch(isv.VFPVersion)
+                switch(isv.PlatformVFPSupport)
                 {
-                    case InstructionSetVersion.PlatformVFP_VFP:
+                    case InstructionSetVersion.Platform_VFP__HardVFP:
                         encVFP = new EncodingDefinition_VFP_ARM();
                         break;
-                    case InstructionSetVersion.PlatformVFP_SoftVFP:
-                    case InstructionSetVersion.PlatformVFP_NoVFP:
+                    case InstructionSetVersion.Platform_VFP__SoftVFP:
+                    case InstructionSetVersion.Platform_VFP__NoVFP:
                         break;
                     default:
                         throw new ArgumentException("Cannot register unsupported instruction set");

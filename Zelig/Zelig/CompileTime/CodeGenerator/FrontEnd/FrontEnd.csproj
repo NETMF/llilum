@@ -129,6 +129,7 @@
   <ItemGroup>
     <None Include="mbed_common.FrontEndConfig" />
     <None Include="mbed_simple_HTTP_K64F.FrontEndConfig" />
+    <None Include="mbed_simple_STM32F091.FrontEndConfig" />
     <None Include="mbed_simple_NETMF_LPC1768.FrontEndConfig" />
     <None Include="mbed_simple_LPC1768_Tester.FrontEndConfig" />
     <None Include="mbed_simple_NET_K64F_Tester.FrontEndConfig" />

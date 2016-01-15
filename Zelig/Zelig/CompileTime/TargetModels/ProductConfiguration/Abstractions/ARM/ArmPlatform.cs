@@ -101,7 +101,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
         {
             if(m_instructionSetProvider == null)
             {
-                InstructionSetVersion iset = new InstructionSetVersion(this.PlatformName, this.PlatformVersion, this.PlatformVFP);
+                InstructionSetVersion iset = InstructionSetVersion.Build( this.PlatformFamily ).With( this.PlatformVersion ).With( this.PlatformVFP );
 
                 if(this.HasVFPv2)
                 {
@@ -390,55 +390,66 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
         // Access Methods
         //
 
-        public override string PlatformName
+        public override string CodeGenerator
         {
-            get { return InstructionSetVersion.Platform_ARM; }
+            get
+            {
+                return InstructionSetVersion.CodeGenerator_Zelig;
+            }
         }
 
-        public override string PlatformVersion
+        public override uint PlatformFamily
+        {
+            get
+            {
+                return InstructionSetVersion.Platform_Family__ARM;
+            }
+        }
+
+        public override uint PlatformVersion
         {
             get 
             {
-                string ver = InstructionSetVersion.PlatformVersion_4;
+                uint ver = InstructionSetVersion.Platform_Version__ARMv4;
 
                 if(0 != (m_processorCapabilities & Capabilities.ARMv4))
                 {
-                    ver = InstructionSetVersion.PlatformVersion_4;
+                    ver = InstructionSetVersion.Platform_Version__ARMv4;
                 }
                 else if(0 != ( m_processorCapabilities & Capabilities.ARMv5 ))
                 {
-                    ver = InstructionSetVersion.PlatformVersion_5;
+                    ver = InstructionSetVersion.Platform_Version__ARMv5;
                 }
                 else if(0 != ( m_processorCapabilities & Capabilities.ARMv6M ))
                 {
-                    ver = InstructionSetVersion.PlatformVersion_6M;
+                    ver = InstructionSetVersion.Platform_Version__ARMv6M;
                 }
                 else if(0 != ( m_processorCapabilities & Capabilities.ARMv7M ))
                 {
-                    ver = InstructionSetVersion.PlatformVersion_7M;
-                }
-                else if(0 != ( m_processorCapabilities & Capabilities.ARMv7A ))
-                {
-                    ver = InstructionSetVersion.PlatformVersion_7A;
+                    ver = InstructionSetVersion.Platform_Version__ARMv7M;
                 }
                 else if(0 != ( m_processorCapabilities & Capabilities.ARMv7R ))
                 {
-                    ver = InstructionSetVersion.PlatformVersion_7R;
+                    ver = InstructionSetVersion.Platform_Version__ARMv7R;
+                }
+                else if(0 != ( m_processorCapabilities & Capabilities.ARMv7A ))
+                {
+                    ver = InstructionSetVersion.Platform_Version__ARMv7A;
                 }
 
                 return ver;
             }
         }
 
-        public override string PlatformVFP
+        public override uint PlatformVFP
         {
             get 
             {
-                string vfp = InstructionSetVersion.PlatformVFP_NoVFP;
+                uint vfp = InstructionSetVersion.Platform_VFP__NoVFP;
 
                 if(0 != ( m_processorCapabilities & Capabilities.VFPv2 ))
                 {
-                    vfp = InstructionSetVersion.PlatformVFP_VFP;
+                    vfp = InstructionSetVersion.Platform_VFP__HardVFP;
                 }
 
                 return vfp;

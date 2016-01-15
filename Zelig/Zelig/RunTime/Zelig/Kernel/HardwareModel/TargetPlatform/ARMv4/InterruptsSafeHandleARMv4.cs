@@ -6,11 +6,10 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv4.SmartHandles
 {
     using System;
 
-    using TS = Microsoft.Zelig.Runtime.TypeSystem;
+    using ISA = TargetModel.ArmProcessor.InstructionSetVersion;
 
-    // Removed class extension as it interferes with InterruptState.
-    // BUGBUG: ColinA-MSFT: We should detect and report at compile-time when two extended methods collide.
-    //[ExtendClass( typeof(Runtime.SmartHandles.InterruptState) )]
+    
+    [ExtendClass( typeof(Runtime.SmartHandles.InterruptState), PlatformVersionFilter=(ISA.Platform_Version__ARMv4 | ISA.Platform_Version__ARMv5) )]
     public struct InterruptStateARMv4 : IDisposable
     {
         //

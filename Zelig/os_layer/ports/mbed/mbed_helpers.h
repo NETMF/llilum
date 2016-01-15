@@ -15,6 +15,8 @@
 #include "stm32f4xx.h"
 #elif TARGET_STM32F401RE
 #include "stm32f4xx.h"
+#elif TARGET_STM32F091RC
+#include "stm32f0xx.h"
 #else
 #error Undefined plaform
 #endif

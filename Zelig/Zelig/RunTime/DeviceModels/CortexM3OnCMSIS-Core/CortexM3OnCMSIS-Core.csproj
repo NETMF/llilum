@@ -98,6 +98,10 @@
       <Project>{a30eb003-94f8-4a85-8da1-006f6810a7a4}</Project>
       <Name>ModelForCortexM3</Name>
     </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\ModelForCortexM\ModelForCortexM.csproj">
+      <Project>{E4C618AF-1785-472E-A070-8068E20582EB}</Project>
+      <Name>ModelForCortexM</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

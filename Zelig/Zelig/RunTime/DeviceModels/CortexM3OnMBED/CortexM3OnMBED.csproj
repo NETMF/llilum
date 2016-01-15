@@ -50,14 +50,8 @@
   <ItemGroup>
     <Compile Include="HardwareModel\Board.cs" />
     <Compile Include="HardwareModel\Device.cs" />
-    <Compile Include="HardwareModel\Drivers\AdcChannel.cs" />
-    <Compile Include="HardwareModel\Drivers\GpioPin.cs" />
-    <Compile Include="HardwareModel\Drivers\I2cChannel.cs" />
     <Compile Include="HardwareModel\Drivers\InterruptController.cs" />
-    <Compile Include="HardwareModel\Drivers\PwmChannel.cs" />
     <Compile Include="HardwareModel\Drivers\SerialPortsManager.cs" />
-    <Compile Include="HardwareModel\Drivers\SpiChannel.cs" />
-    <Compile Include="HardwareModel\Drivers\StandardSerialPort.cs" />
     <Compile Include="HardwareModel\Drivers\SystemTimer.cs" />
     <Compile Include="HardwareModel\HardwareProvider.cs" />
     <Compile Include="HardwareModel\HardwareProviders\AdcProvider.cs" />
@@ -74,8 +68,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SystemServices\GarbageCollectionManager.cs" />
     <Compile Include="SystemServices\MemoryManager.cs" />
-    <Compile Include="SystemServices\SchedulerTimeImpl.cs" />
-    <Compile Include="SystemServices\SchedulerTimeSpanImpl.cs" />
     <Compile Include="SystemServices\ThreadManager.cs" />
     <Compile Include="SystemServices\TypeSystemManager.cs" />
   </ItemGroup>
@@ -132,6 +124,22 @@
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\lwIP\Microsoft.Llilum.Lwip.csproj">
       <Project>{e77ac86e-58ab-47b6-bc6d-3c1b4545cdfd}</Project>
       <Name>Microsoft.Llilum.Lwip</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\CortexM0OnCMSIS-Core\CortexM0OnCMSIS-Core.csproj">
+      <Project>{b8fe271a-cd41-435e-8766-4db7609c1007}</Project>
+      <Name>CortexM0OnCMSIS-Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\CortexM0OnMBED\CortexM0OnMBED.csproj">
+      <Project>{89ebdbb0-c81f-4611-b719-b385df215f8d}</Project>
+      <Name>CortexM0OnMBED</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\ModelForCortexM0\ModelForCortexM0.csproj">
+      <Project>{c3bfafad-a6c6-471d-a059-b3cb7e57a4ab}</Project>
+      <Name>ModelForCortexM0</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\ModelForCortexM\ModelForCortexM.csproj">
+      <Project>{e4c618af-1785-472e-a070-8068e20582eb}</Project>
+      <Name>ModelForCortexM</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

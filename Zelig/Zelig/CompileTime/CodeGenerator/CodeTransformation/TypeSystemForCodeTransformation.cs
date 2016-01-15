@@ -422,12 +422,12 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                     CustomAttributeRepresentation sfpf = tr.FindCustomAttribute( typeSystem.WellKnownTypes.Microsoft_Zelig_Runtime_SingletonFactoryPlatformFilterAttribute );
                     if(sfpf != null)
                     {
-                        object obj = sfpf.GetNamedArg( "PlatformFilter" );
+                        object obj = sfpf.GetNamedArg( "PlatformVersionFilter" );
                         if(obj != null)
                         {
-                            string platform = (string)obj;
+                            uint filter = (uint)obj;
 
-                            if(platform != typeSystem.PlatformAbstraction.PlatformName)
+                            if((filter & typeSystem.PlatformAbstraction.PlatformVersion) != typeSystem.PlatformAbstraction.PlatformVersion)
                             {
                                 // This type is not an allowed extension for the current platform
                                 return true;
@@ -2762,7 +2762,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                     // 
                     // Include all methods for LLVM flow only
                     //
-                    if(PlatformAbstraction.PlatformName == "LLVM")
+                    if(PlatformAbstraction.CodeGenerator == TargetModel.ArmProcessor.InstructionSetVersion.CodeGenerator_LLVM)
                     {
                         foreach(var td in this.Types)
                         {
@@ -2795,7 +2795,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 //--//
                                     
 #if ARMv7M_BUILD__LLVM_IR_ONLY
-                if( PlatformAbstraction.PlatformName != "LLVM" )
+                if( PlatformAbstraction.CodeGenerator != TargetModel.ArmProcessor.InstructionSetVersion.CodeGenerator_LLVM )
 #endif
                 {
                     if(m_imageBuilder.AssignAbsoluteAddressesToCode( ) == false)
@@ -2829,7 +2829,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
                                     
 #if ARMv7M_BUILD__LLVM_IR_ONLY
-                if( PlatformAbstraction.PlatformName != "LLVM" )
+                if( PlatformAbstraction.CodeGenerator != TargetModel.ArmProcessor.InstructionSetVersion.CodeGenerator_LLVM )
 #endif
                 {
                     m_imageBuilder.AssignAbsoluteAddressesToDataDescriptors( );
@@ -2839,7 +2839,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 //--//
                                     
 #if ARMv7M_BUILD__LLVM_IR_ONLY
-                if( PlatformAbstraction.PlatformName != "LLVM" )
+                if( PlatformAbstraction.CodeGenerator != TargetModel.ArmProcessor.InstructionSetVersion.CodeGenerator_LLVM )
 #endif
                 {
                     if(m_imageBuilder.ApplyRelocation( ) == false)
@@ -2855,7 +2855,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 }
                                                     
 #if ARMv7M_BUILD__LLVM_IR_ONLY
-                if( PlatformAbstraction.PlatformName != "LLVM" )
+                if( PlatformAbstraction.CodeGenerator != TargetModel.ArmProcessor.InstructionSetVersion.CodeGenerator_LLVM )
 #endif
                 {
                     if(m_imageBuilder.CreateCodeMaps( ) == false)
@@ -2869,7 +2869,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 }
                                                     
 #if ARMv7M_BUILD__LLVM_IR_ONLY
-                if( PlatformAbstraction.PlatformName != "LLVM" )
+                if( PlatformAbstraction.CodeGenerator != TargetModel.ArmProcessor.InstructionSetVersion.CodeGenerator_LLVM )
 #endif
                 {
                     if(m_imageBuilder.CreateExceptionHandlingTables( ) == false)
@@ -2883,7 +2883,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 }
                                                     
 #if ARMv7M_BUILD__LLVM_IR_ONLY
-                if( PlatformAbstraction.PlatformName != "LLVM" )
+                if( PlatformAbstraction.CodeGenerator != TargetModel.ArmProcessor.InstructionSetVersion.CodeGenerator_LLVM )
 #endif
                 {
                     if(m_imageBuilder.CreateAvailableMemoryTables( ) == false)
@@ -2897,7 +2897,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 }
                                                     
 #if ARMv7M_BUILD__LLVM_IR_ONLY
-                if( PlatformAbstraction.PlatformName != "LLVM" )
+                if( PlatformAbstraction.CodeGenerator != TargetModel.ArmProcessor.InstructionSetVersion.CodeGenerator_LLVM )
 #endif
                 {
                     if(m_imageBuilder.CreateImageRelocationData( ) == false)
@@ -2915,7 +2915,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             Debug_TimestampedWriteLine( "Done" );
 #endif
 
-            if( PlatformAbstraction.PlatformName == "LLVM" )
+            if( PlatformAbstraction.CodeGenerator == TargetModel.ArmProcessor.InstructionSetVersion.CodeGenerator_LLVM )
             {
                 Module.Compile( );
             }
@@ -2928,7 +2928,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             this.ReachabilitySet.ProhibitedSet.Clear( );
                                                 
 #if ARMv7M_BUILD__LLVM_IR_ONLY
-                if( PlatformAbstraction.PlatformName != "LLVM" )
+                if( PlatformAbstraction.CodeGenerator != TargetModel.ArmProcessor.InstructionSetVersion.CodeGenerator_LLVM )
 #endif
             {
                 if(m_imageBuilder != null)

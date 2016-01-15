@@ -4,11 +4,10 @@
 
 namespace Microsoft.CortexM3OnMBED
 {
-    using RT      = Zelig.Runtime;
-    using Chipset = Microsoft.CortexM3OnCMSISCore;
+    using ChipsetModel = Microsoft.CortexM0OnMBED;
 
-    
-    public class TypeSystemManager : Chipset.TypeSystemManager
+
+    public class TypeSystemManager : ChipsetModel.TypeSystemManager
     {
     }
 }

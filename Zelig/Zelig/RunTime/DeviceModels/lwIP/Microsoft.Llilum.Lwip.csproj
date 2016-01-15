@@ -99,7 +99,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\Zelig\LlilumCMSIS-RTOS\LlilumCMSIS-RTOS.csproj">
       <Project>{93219a45-914c-44b7-a6cb-66849879c8b1}</Project>
-      <Name>Microsoft.Zelig.LlilumCMSIS-RTOS</Name>
+      <Name>LlilumCMSIS-RTOS</Name>
     </ProjectReference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>

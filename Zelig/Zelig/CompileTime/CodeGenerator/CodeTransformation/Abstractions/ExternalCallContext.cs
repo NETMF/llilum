@@ -15,7 +15,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Abstractions
     {
         public static void Initialize(TypeSystemForCodeTransformation typeSystem)
         {
-            if (typeSystem.PlatformAbstraction.PlatformName == InstructionSetVersion.Platform_ARM)
+            if (typeSystem.PlatformAbstraction.CodeGenerator == InstructionSetVersion.CodeGenerator_Zelig)
             {
                 ArmElfExternalCallContext.Initialize(typeSystem);
             }

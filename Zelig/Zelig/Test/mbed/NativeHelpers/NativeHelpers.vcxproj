@@ -38,9 +38,6 @@
   <ItemGroup>
     <Xml Include="..\..\..\..\LLVM2IR_results\mbed\simple\DebugOptions.xml" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\..\LLVM2IR_results\mbed\simple\helpers.h" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6367CACE-0511-485D-9AE5-698F7E600839}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>

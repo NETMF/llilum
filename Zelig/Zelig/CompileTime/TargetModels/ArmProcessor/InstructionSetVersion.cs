@@ -10,66 +10,107 @@ namespace Microsoft.Zelig.TargetModel.ArmProcessor
         //
         // Platforms
         //
-        public const string Platform_ARM  = "ARM";
-        public const string Platform_LLVM = "LLVM";
+        public const string CodeGenerator_Zelig = "Zelig";
+        public const string CodeGenerator_LLVM  = "LLVM";
+
+        //
+        // Platform desriptors fields: fields in the same group are mutually exclusive
+        // 
+
+        //
+        // Platforms
+        //
+        public const uint Platform_Family__ARM      = 0x01000000;
+        public const uint Platform_Family__Cortex   = 0x02000000;
+        public const uint Platform_Family__Mask     = 0xFF000000;
 
         //
         // Platform Version
         //
-        public const string PlatformVersion_4  = "v4";
-        public const string PlatformVersion_5  = "v5";
-        public const string PlatformVersion_6M = "v6-M";
-        public const string PlatformVersion_7M = "v7-M";
-        public const string PlatformVersion_7R = "v7-R";
-        public const string PlatformVersion_7A = "v7-A";
+        public const uint Platform_Version__ARMv4   = 0x00000001;
+        public const uint Platform_Version__ARMv5   = 0x00000002;
+        public const uint Platform_Version__ARMv6M  = 0x00000004;
+        public const uint Platform_Version__ARMv7M  = 0x00000008;
+        public const uint Platform_Version__ARMv7R  = 0x00000010;
+        public const uint Platform_Version__ARMv7A  = 0x00000020;
+        public const uint Platform_Version__Mask    = 0x0000FFFF;
 
         //
-        // Platform Version
+        // Platform VFP Version
         //
-        public const string PlatformVFP_NoVFP   = "";
-        public const string PlatformVFP_VFP     = "vfp";
-        public const string PlatformVFP_SoftVFP = "softvfp";
+        public const uint Platform_VFP__NoVFP       = 0x00010000;
+        public const uint Platform_VFP__SoftVFP     = 0x00020000;
+        public const uint Platform_VFP__HardVFP     = 0x00040000;
+        public const uint Platform_VFP__Mask        = 0x00FF0000;
+        
+        //--//
 
         //
         // State
         //
 
-        private readonly string m_platformName;
-        private readonly string m_isaVersion;
-        private readonly string m_vfpVersion;
+        private uint m_platformDescriptor;
 
         //
         // Constructor Methods
         //
 
-        public InstructionSetVersion(string platformName, string isaVersion, string vfpVersion)
-        {
-            m_platformName = platformName;
-            m_isaVersion   = isaVersion;
-            m_vfpVersion   = vfpVersion;
-        }
-
-        public string PlatformName
+        public static InstructionSetVersion ARM
         {
             get
             {
-                return m_platformName;
+                return new InstructionSetVersion( Platform_Family__ARM );
             }
         }
 
-        public string ISAVersion
+        public static InstructionSetVersion Cortex
         {
             get
             {
-                return m_isaVersion;
+                return new InstructionSetVersion( Platform_Family__Cortex );
             }
         }
 
-        public string VFPVersion
+        public static InstructionSetVersion Build( uint descriptor )
+        {
+            return new InstructionSetVersion( descriptor );
+        }
+
+        public InstructionSetVersion With( uint descriptor )
+        {
+            ValidateDescriptor( descriptor );
+
+            m_platformDescriptor |= descriptor;
+
+            return this;
+        }
+
+        private InstructionSetVersion( uint descriptor )
+        {
+            m_platformDescriptor = descriptor;
+        }
+
+        public uint PlatformFamily
         {
             get
             {
-                return m_vfpVersion;
+                return m_platformDescriptor & Platform_Family__Mask;
+            }
+        }
+
+        public uint PlatformVersion
+        {
+            get
+            {
+                return m_platformDescriptor & Platform_Version__Mask;
+            }
+        }
+
+        public uint PlatformVFPSupport
+        {
+            get
+            {
+                return m_platformDescriptor & Platform_VFP__Mask;
             }
         }
 
@@ -82,14 +123,38 @@ namespace Microsoft.Zelig.TargetModel.ArmProcessor
             InstructionSetVersion match = obj as InstructionSetVersion;
             if(match != null)
             {
-                return ((m_platformName == match.m_platformName) && (m_isaVersion == match.m_isaVersion) && (m_vfpVersion == match.m_vfpVersion));
+                return m_platformDescriptor == match.m_platformDescriptor;
             }
+
             return false;
         }
 
         public override int GetHashCode()
         {
             return base.GetHashCode();
+        }
+
+        //--//
+        
+        private void ValidateDescriptor( uint descriptor )
+        {
+            //
+            // it is OK to set the same descriptor twice, but it is not OK to change fields
+            //
+            uint family  = descriptor & Platform_Family__Mask;
+            uint version = descriptor & Platform_Version__Mask;
+            uint vfp     = descriptor & Platform_VFP__Mask;
+            
+            uint familyCurrent  = m_platformDescriptor & Platform_Family__Mask;
+            uint versionCurrent = m_platformDescriptor & Platform_Version__Mask;
+            uint vfpCurrent     = m_platformDescriptor & Platform_VFP__Mask;
+
+            if( family  != 0 && family  != familyCurrent    ||
+                version != 0 && version != versionCurrent   ||
+                vfp     != 0 && vfp     != vfpCurrent        )
+            {
+                throw new ArgumentException( String.Format( "Descriptor {0} is incompatible with current values {1}", descriptor, m_platformDescriptor ) );
+            }
         }
     }
 }

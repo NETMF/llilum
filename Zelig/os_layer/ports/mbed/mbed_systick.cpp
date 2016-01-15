@@ -76,11 +76,19 @@ extern "C"
 
     __attribute__((naked)) void SysTick_Handler(void)
     {
+#if __CORTEX_M0
+        !IMPLEMENT!
+#else
         __ASM volatile ("STR       LR, [SP, #-4]!");                // Save LR to stack
+#endif
 
         ContextSwitchTimer_Handler_Zelig();
 
+#if __CORTEX_M0
+        !IMPLEMENT!
+#else
         __ASM volatile ("LDR       LR, [SP], #4");                  // Restore LR from stack
         __ASM volatile ("BX        LR");
+#endif
     }
 }

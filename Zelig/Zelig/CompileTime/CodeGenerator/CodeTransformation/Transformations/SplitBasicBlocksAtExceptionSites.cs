@@ -73,7 +73,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                 // Let's split them up!
                 //
                 // Note: LLVM allows phi operators in exception handling blocks, so we exclude this step.
-                if (cfg.TypeSystem.PlatformAbstraction.PlatformName != "LLVM")
+                if (cfg.TypeSystem.PlatformAbstraction.CodeGenerator != TargetModel.ArmProcessor.InstructionSetVersion.CodeGenerator_LLVM)
                 {
                     while (true)
                     {

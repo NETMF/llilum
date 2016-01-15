@@ -4,9 +4,9 @@
 
 namespace Microsoft.CortexM4OnMBED.HardwareModel
 {
-    using Chipset = Microsoft.CortexM3OnMBED;
+    using ChipsetModel = Microsoft.CortexM3OnMBED;
     
-    public abstract class SpiProvider : Chipset.HardwareModel.SpiProvider
+    public abstract class SpiProvider : ChipsetModel.HardwareModel.SpiProvider
     {
     }
 }

@@ -6,13 +6,10 @@ namespace Microsoft.CortexM3OnMBED
 {
     using System;
 
-    using RT      = Microsoft.Zelig.Runtime;
-    using Chipset = Microsoft.CortexM3OnCMSISCore;
+    using RT            = Microsoft.Zelig.Runtime;
+    using ChipsetModel  = Microsoft.CortexM0OnMBED;
 
-    public class Memory : Chipset.Memory
+    public class Memory : ChipsetModel.Memory
     {
-        public override void InitializeMemory( )
-        {
-        }
     }
 }

@@ -90,6 +90,21 @@
   <Choose>
     <When Condition="Exists('$(LlilumBuildRoot)\Target\bin\$(Configuration)\')">
       <ItemGroup>
+        <Reference Include="Microsoft.DeviceModels.ModelForCortexM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\Microsoft.DeviceModels.ModelForCortexM.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.DeviceModels.ModelForCortexM0, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\Microsoft.DeviceModels.ModelForCortexM0.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.CortexM0OnCMSISCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>           <HintPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\Microsoft.CortexM0OnCMSISCore.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.CortexM0OnMBED, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\Microsoft.CortexM0OnMBED.dll</HintPath>
+        </Reference>
         <Reference Include="Microsoft.CortexM3OnCMSISCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
           <HintPath>$(LlilumBuildRoot)\Target\bin\$(Configuration)\Microsoft.CortexM3OnCMSISCore.dll</HintPath>
@@ -145,6 +160,22 @@
     </When>
     <When Condition="!Exists('$(LlilumBuildRoot)\Target\bin\$(Configuration)\')">
       <ItemGroup>
+        <Reference Include="Microsoft.DeviceModels.ModelForCortexM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+		  <SpecificVersion>False</SpecificVersion>
+		  <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\$(Configuration)\Microsoft.DeviceModels.ModelForCortexM.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.DeviceModels.ModelForCortexM0, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\$(Configuration)\Microsoft.DeviceModels.ModelForCortexM0.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.CortexM0OnCMSISCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\$(Configuration)\Microsoft.CortexM0OnCMSISCore.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.CortexM0OnMBED, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\$(Configuration)\Microsoft.CortexM0OnMBED.dll</HintPath>
+        </Reference>
         <Reference Include="Microsoft.CortexM3OnCMSISCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
           <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\$(Configuration)\Microsoft.CortexM3OnCMSISCore.dll</HintPath>

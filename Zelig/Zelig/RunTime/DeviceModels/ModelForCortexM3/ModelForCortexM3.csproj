@@ -61,10 +61,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="HardwareModel\Board.cs" />
-    <Compile Include="HardwareModel\ChipSet\Peripherals\GPIO.cs" />
-    <Compile Include="HardwareModel\ChipSet\StandardPeripherals\NVIC.cs" />
-    <Compile Include="HardwareModel\ChipSet\StandardPeripherals\SysTick.cs" />
-    <Compile Include="HardwareModel\Drivers\GPIO.cs" />
     <Compile Include="HardwareModel\Drivers\InterruptController.cs" />
     <Compile Include="HardwareModel\Drivers\ContextSwitchTimer.cs" />
     <Compile Include="HardwareModel\Processor.cs" />
@@ -101,11 +97,18 @@
       <Project>{20DC2CF5-8EED-4231-9743-6BAB96BE465C}</Project>
       <Name>LlilumOSAbstraction</Name>
     </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\Runtime\DeviceModels\ModelForCortexM\ModelForCortexM.csproj">
+      <Project>{e4c618af-1785-472e-a070-8068e20582eb}</Project>
+      <Name>ModelForCortexM</Name>
+    </ProjectReference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="HardwareModel\ChipSet\Peripherals\" />
+    <Folder Include="HardwareModel\ChipSet\StandardPeripherals\" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

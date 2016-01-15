@@ -70,7 +70,4 @@
       <Filter>build&amp;debug</Filter>
     </Xml>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\..\LLVM2IR_results\mbed\simple\helpers.h" />
-  </ItemGroup>
 </Project>

@@ -5,11 +5,12 @@
 namespace Microsoft.CortexM3OnMBED.HardwareModel
 {
     using Zelig.LlilumOSAbstraction.API.IO;
-    using Runtime = Microsoft.Zelig.Runtime;
     using Microsoft.Llilum.Lwip;
-    using System;
 
-    public sealed class NetworkInterfaceProvider : Runtime.NetworkInterfaceProvider
+    using RT = Microsoft.Zelig.Runtime;
+
+
+    public sealed class NetworkInterfaceProvider : RT.NetworkInterfaceProvider
     {
         public override int Connect(uint timeout)
         {

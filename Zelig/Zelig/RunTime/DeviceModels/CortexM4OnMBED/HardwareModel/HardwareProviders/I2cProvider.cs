@@ -4,9 +4,9 @@
 
 namespace Microsoft.CortexM4OnMBED.HardwareModel
 {
-    using Chipset = Microsoft.CortexM3OnMBED;
+    using ChipsetModel = Microsoft.CortexM3OnMBED;
 
-    public abstract class I2cProvider : Chipset.HardwareModel.I2cProvider
+    public abstract class I2cProvider : ChipsetModel.HardwareModel.I2cProvider
     {
     }
 }

@@ -5,10 +5,10 @@
 
 namespace Microsoft.CortexM3OnCMSISCore.Drivers
 {
-    using Chipset = Microsoft.DeviceModels.Chipset.CortexM3.Drivers;
+    using ChipsetModel = Microsoft.DeviceModels.Chipset.CortexM3;
 
 
-    public abstract class InterruptController : Chipset.InterruptController
+    public abstract class InterruptController : ChipsetModel.Drivers.InterruptController
     {
     }
 }

@@ -122,9 +122,12 @@ extern "C"
         return __get_PRIMASK();
     }
 
-    /*__STATIC_INLINE*/ void CMSIS_STUB_SCB__set_PRIMASK(uint32_t priMask)
+    /*__STATIC_INLINE*/ uint32_t CMSIS_STUB_SCB__set_PRIMASK(uint32_t priMask)
     {
+        register uint32_t prev = __get_PRIMASK();
         __set_PRIMASK(priMask);
+        __ISB();
+        return prev;
     }
 
     /*__STATIC_INLINE*/ void CMSIS_STUB_SCB__Enable_Irq()
@@ -271,7 +274,7 @@ extern "C"
         *((uint32_t volatile *)0xE000ED10) = scr;
     }
 
-    /*__STATIC_INLINE*/ uint32_t CUSTOM_STUB_SCB_SCR_GetSystemControlRegister( )
+    /*__STATIC_INLINE*/ uint32_t CUSTOM_STUB_SCB_SCR_GetSystemControlRegister()
     {
         return *((uint32_t volatile *)0xE000ED10);
     }
@@ -290,10 +293,10 @@ extern "C"
     {
         __WFI();
     }
-    
-    /*__STATIC_INLINE*/ 
-    __attribute__((naked)) 
-    __ATTRIBUTE_ALIGNMENT__ 
+
+    /*__STATIC_INLINE*/
+    __attribute__((naked))
+    __ATTRIBUTE_ALIGNMENT__
     void CUSTOM_STUB_RaiseSupervisorCallForLongJump()
     {
         __ASM volatile ("svc #17");
@@ -307,7 +310,7 @@ extern "C"
         __ASM volatile ("svc #18");
     }
 
-    /*__STATIC_INLINE*/ 
+    /*__STATIC_INLINE*/
     __attribute__((naked))
     __ATTRIBUTE_ALIGNMENT__
     void CUSTOM_STUB_RaiseSupervisorCallForRetireThread()
@@ -319,7 +322,7 @@ extern "C"
     /*__STATIC_INLINE*/
     /*__attribute__((naked))*/
     __ATTRIBUTE_ALIGNMENT__
-        void CUSTOM_STUB_RaiseSupervisorCallForSnapshotProcessModeRegisters()
+    void CUSTOM_STUB_RaiseSupervisorCallForSnapshotProcessModeRegisters()
     {
         __ASM volatile ("svc #20");
     }
@@ -331,7 +334,7 @@ extern "C"
     //
     extern void SVC_Handler_Zelig_VFP_NoFPContext();
     extern void SVC_Handler_Zelig();
-    extern void CUSTOM_STUB_NotifySoftwareFrameSnapshot( void* frame, int size ); 
+    extern void CUSTOM_STUB_NotifySoftwareFrameSnapshot(void* frame, int size);
 
     //
     // A convenience storage space to signal what mode to return too
@@ -341,7 +344,7 @@ extern "C"
 
     void CUSTOM_STUB_SetExcReturn(uint32_t ret)
     {
-        svc_exc_return = ret; 
+        svc_exc_return = ret;
     }
 
     //--//
@@ -352,13 +355,13 @@ extern "C"
     // !!! KEEP IN SYNC WITH ProcessorARMv7M.Context.SoftwareFrame & HardwareFrame !!!
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    #define SW_FRAME_SIZE   10
-    #define HW_FRAME_SIZE   8     
-    #define FRAME_SIZE      SW_FRAME_SIZE + HW_FRAME_SIZE
+#define SW_FRAME_SIZE   10
+#define HW_FRAME_SIZE   8     
+#define FRAME_SIZE      SW_FRAME_SIZE + HW_FRAME_SIZE
 
-    //
-    // A convenience storage space to snapshot all registers for Mark & Sweep GC
-    //
+//
+// A convenience storage space to snapshot all registers for Mark & Sweep GC
+//
     uint32_t sw_hw__frame[FRAME_SIZE];
 
     //
@@ -366,7 +369,7 @@ extern "C"
     //
     /*__STATIC_INLINE*/
     __ATTRIBUTE_ALIGNMENT__
-    uint32_t* CUSTOM_STUB_FetchSoftwareFrameSnapshot()
+        uint32_t* CUSTOM_STUB_FetchSoftwareFrameSnapshot()
     {
         //
         // Return the snapshot from the storage area at sw_hw__frame
@@ -383,7 +386,7 @@ extern "C"
 
     /*__STATIC_INLINE*/
     __ATTRIBUTE_ALIGNMENT__
-    void NotifySoftwareFrameSnapshot()
+        void NotifySoftwareFrameSnapshot()
     {
         //
         // Grab the snapshot from the storage area at sw_hw__frame
@@ -391,7 +394,17 @@ extern "C"
         CUSTOM_STUB_NotifySoftwareFrameSnapshot(sw_hw__frame, FRAME_SIZE);
     }
 
-    
+#if __CORTEX_M0
+
+    __attribute__((naked))
+    //__ATTRIBUTE_ALIGNMENT__
+    void SVC_Handler(void)
+    {
+        !IMPLEMENT!
+    }
+
+#else
+
     __attribute__((naked)) 
     //__ATTRIBUTE_ALIGNMENT__
     void SVC_Handler(void)
@@ -479,6 +492,8 @@ extern "C"
         __ASM volatile ("BX     LR");
     }
 
+#endif
+
     //--//
     //--//
     //--//
@@ -493,6 +508,17 @@ extern "C"
     // A convenience storage space to signal when the floating
     // point context is active 
     //
+
+#if __CORTEX_M0
+
+    __attribute__((naked))
+    //__ATTRIBUTE_ALIGNMENT__
+    void PendSV_Handler(void)
+    {
+        !IMPLEMENT!
+    }
+
+#else
 
     __attribute__((naked))
     //__ATTRIBUTE_ALIGNMENT__
@@ -537,6 +563,8 @@ extern "C"
 
         __ASM volatile ("BX       LR");
     }
+
+#endif
 
     //--//
     //--//

@@ -539,7 +539,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             // All overridable exceptions for Ctx switch
             //
             
-            [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.PlatformVFP_SoftVFP )]
+            [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_VFP__SoftVFP )]
             [RT.HardwareExceptionHandler( RT.HardwareException.Service )]
             [RT.ExportedMethod]
             private static unsafe void SVC_Handler_Zelig( uint* args )
@@ -566,12 +566,12 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 }
             }
             
-            [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.PlatformVFP_SoftVFP )]
+            [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_VFP__SoftVFP )]
             [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
             [RT.ExportedMethod]
             private static UIntPtr PendSV_Handler_Zelig( UIntPtr stackPtr )
             {
-                using(SmartHandles.InterruptState.Disable( ))
+                using(SmartHandles.InterruptStateARMv7M.Disable( ))
                 {
                     unsafe
                     {
@@ -580,7 +580,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 }
             }
             
-            [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.PlatformVFP_SoftVFP )]
+            [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_VFP__SoftVFP )]
             [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
             [RT.ExportedMethod]
             private static void AnyInterrupt( )

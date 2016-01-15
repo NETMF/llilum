@@ -6,13 +6,16 @@
 //#define K64F
 //#define STM32F411
 //#define STM32F401
+//#define STM32F091
 //#define USE_I2C
 //#define USE_SPI
 #define USE_GPIO
 #define USE_THREADING
 
 #if !LPC1768
+#if !STM32F091
 #define USE_THREADING_TIMER
+#endif
 #endif
 
 //#define USE_ADC
@@ -63,6 +66,8 @@ namespace Microsoft.Zelig.Test.mbed.Simple
     using STM32F411 = Llilum.STM32F411;
 #elif (STM32F401)
     using STM32F401 = Llilum.STM32F401;
+#elif (STM32F091)
+    using STM32F091 = Llilum.STM32F091;
 #else
 #error No target board defined.
 #endif

@@ -56,38 +56,38 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ExternalMethodImporters
 
             switch(typeSystem.PlatformAbstraction.PlatformVersion)
             {
-                case InstructionSetVersion.PlatformVersion_4:
+                case InstructionSetVersion.Platform_Version__ARMv4:
                     arch = ElfObject.SystemArchitecture.ArmV4;
                     break;
 
-                case InstructionSetVersion.PlatformVersion_5:
+                case InstructionSetVersion.Platform_Version__ARMv5:
                     arch = ElfObject.SystemArchitecture.ArmV5;
                     break;
 
-                case InstructionSetVersion.PlatformVersion_7M:
+                case InstructionSetVersion.Platform_Version__ARMv7M:
                     arch = ElfObject.SystemArchitecture.Thumb2;
                     break;
 
                 default:
-                    throw new ArgumentException("Unknown platform version");
+                    throw new ArgumentException("Unknown or unsupported platform version");
             }
 
             switch(typeSystem.PlatformAbstraction.PlatformVFP)
             {
-                case InstructionSetVersion.PlatformVFP_NoVFP:
+                case InstructionSetVersion.Platform_VFP__NoVFP:
                     fpu = ElfObject.FloatingPointUnit.None;
                     break;
 
-                case InstructionSetVersion.PlatformVFP_SoftVFP:
+                case InstructionSetVersion.Platform_VFP__SoftVFP:
                     fpu = ElfObject.FloatingPointUnit.SoftVFP;
                     break;
 
-                case InstructionSetVersion.PlatformVFP_VFP:
+                case InstructionSetVersion.Platform_VFP__HardVFP:
                     fpu = ElfObject.FloatingPointUnit.VFP;
                     break;
 
                 default:
-                    throw new ArgumentException("Unknown VFP mode");
+                    throw new ArgumentException("Unknown or unsupported FP mode");
             }
 
             if(typeSystem.PlatformAbstraction.PlatformBigEndian)

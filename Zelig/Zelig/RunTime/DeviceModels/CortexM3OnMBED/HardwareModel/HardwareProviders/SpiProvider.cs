@@ -4,17 +4,10 @@
 
 namespace Microsoft.CortexM3OnMBED.HardwareModel
 {
-    using System;
-    using Chipset = Microsoft.CortexM3OnCMSISCore;
-    using ChipsetAbstration = Microsoft.DeviceModels.Chipset.CortexM3;
-    using Framework = Microsoft.Llilum.Devices.Spi;
-    using Runtime = Microsoft.Zelig.Runtime;
+    using ChipsetModel = Microsoft.CortexM0OnMBED;
 
-    public abstract class SpiProvider : Runtime.SpiProvider
+
+    public abstract class SpiProvider : ChipsetModel.HardwareModel.SpiProvider
     {
-        public sealed override Framework.SpiChannel CreateSpiChannel(Framework.ISpiChannelInfo channelInfo)
-        {
-            return new SpiChannel(channelInfo);
-        }
     }
 }

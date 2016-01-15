@@ -87,6 +87,24 @@
     <Compile Include="SystemServices\GarbageCollectionManager.cs" />
     <Compile Include="SystemServices\ThreadManager.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(LlilumBuildRoot)\..\Zelig\RunTime\DeviceModels\CortexM0OnCMSIS-Core\CortexM0OnCMSIS-Core.csproj">
+      <Project>{B8FE271A-CD41-435E-8766-4DB7609C1007}</Project>
+      <Name>CortexM0OnCMSIS-Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumBuildRoot)\..\Zelig\RunTime\DeviceModels\CortexM0OnMBED\CortexM0OnMBED.csproj">
+      <Project>{89EBDBB0-C81F-4611-B719-B385DF215F8D}</Project>
+      <Name>CortexM0OnMBED</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumBuildRoot)\..\Zelig\RunTime\DeviceModels\ModelForCortexM0\ModelForCortexM0.csproj">
+      <Project>{C3BFAFAD-A6C6-471D-A059-B3CB7E57A4AB}</Project>
+      <Name>ModelForCortexM0</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumBuildRoot)\..\Zelig\RunTime\DeviceModels\ModelForCortexM\ModelForCortexM.csproj">
+      <Project>{e4c618af-1785-472e-a070-8068e20582eb}</Project>
+      <Name>ModelForCortexM</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Choose>
     <When Condition="Exists('$(LlilumBuildRoot)\Target\bin\$(Configuration)\')">
       <ItemGroup>

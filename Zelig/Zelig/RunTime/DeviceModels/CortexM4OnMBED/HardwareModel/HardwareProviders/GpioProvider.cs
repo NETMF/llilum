@@ -4,9 +4,10 @@
 
 namespace Microsoft.CortexM4OnMBED.HardwareModel
 {
-    using M3 = CortexM3OnMBED.HardwareModel;
+    using ChipsetModel = Microsoft.CortexM3OnMBED;
 
-    public abstract class GpioProvider : M3.GpioProvider
+
+    public abstract class GpioProvider : ChipsetModel.HardwareModel.GpioProvider
     {
     }
 }

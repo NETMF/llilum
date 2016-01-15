@@ -4,6 +4,8 @@
 
 namespace Microsoft.DeviceModels.Chipset.CortexM4
 {
+    using Microsoft.DeviceModels.Chipset.CortexM;
+
     using RT           = Microsoft.Zelig.Runtime;
     using ChipsetModel = Microsoft.Zelig.Runtime.TargetPlatform.ARMv7;
 

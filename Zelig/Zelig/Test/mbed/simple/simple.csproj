@@ -44,14 +44,6 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(LlilumSourceRoot)\..\BoardConfigurations\K64F\Board\K64F.csproj">
-      <Project>{1705887b-e636-4fa3-ae40-2d431af1511c}</Project>
-      <Name>K64F</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(LlilumSourceRoot)\..\BoardConfigurations\LPC1768\Board\LPC1768.csproj">
-      <Project>{cee4d575-4b4b-42b0-b2f1-cc7198cb7306}</Project>
-      <Name>LPC1768</Name>
-    </ProjectReference>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\mbed\mbed.csproj">
       <Project>{d7f2bc4e-1406-47aa-90e1-07bc4ce9410f}</Project>
       <Name>mbed</Name>
@@ -76,13 +68,25 @@
       <Project>{186f31a3-ef89-4a25-b2d5-20060509aa01}</Project>
       <Name>Kernel</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\BoardConfigurations\STM32F401\Board\STM32F401.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\..\BoardConfigurations\LPC1768\Board\LPC1768.csproj">
+      <Project>{cee4d575-4b4b-42b0-b2f1-cc7198cb7306}</Project>
+      <Name>LPC1768</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\..\BoardConfigurations\K64F\Board\K64F.csproj">
+      <Project>{1705887b-e636-4fa3-ae40-2d431af1511c}</Project>
+      <Name>K64F</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\..\BoardConfigurations\STM32F401\Board\STM32F401.csproj">
       <Project>{6194144a-f8b1-4525-829f-061df4a5645a}</Project>
       <Name>STM32F401</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\BoardConfigurations\STM32F411\Board\STM32F411.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\..\BoardConfigurations\STM32F411\Board\STM32F411.csproj">
       <Project>{dd4371de-85a8-49aa-b939-10e03b7ed3c9}</Project>
       <Name>STM32F411</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\BoardConfigurations\STM32F091\Board\STM32F091.csproj">
+      <Project>{65E36DF8-5CB8-4582-851E-F5381AE4A1A7}</Project>
+      <Name>STM32F091</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

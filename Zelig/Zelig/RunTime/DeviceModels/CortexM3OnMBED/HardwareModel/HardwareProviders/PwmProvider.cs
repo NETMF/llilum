@@ -4,21 +4,10 @@
 
 namespace Microsoft.CortexM3OnMBED.HardwareModel
 {
-    using System;
-    using Chipset = Microsoft.CortexM3OnCMSISCore;
-    using ChipsetAbstration = Microsoft.DeviceModels.Chipset.CortexM3;
-    using Framework = Microsoft.Llilum.Devices.Pwm;
-    using Runtime = Microsoft.Zelig.Runtime;
+    using ChipsetModel = Microsoft.CortexM0OnMBED;
 
-    public sealed class PwmProvider : Runtime.PwmProvider
+
+    public sealed class PwmProvider : ChipsetModel.HardwareModel.PwmProvider
     {
-        public sealed override Framework.PwmChannel TryCreatePwmPin(int pinNumber)
-        {
-            if (!Runtime.HardwareProvider.Instance.TryReservePins(pinNumber))
-            {
-                return null;
-            }
-            return new PwmChannel(pinNumber);
-        }
     }
 }

@@ -6,11 +6,11 @@
 
 
 namespace Microsoft.CortexM3OnCMSISCore
-{
+{ 
     using Microsoft.Zelig.Runtime.TargetPlatform.ARMv7;
 
     using RT    = Microsoft.Zelig.Runtime;
-    using CMSIS = Microsoft.DeviceModels.Chipset.CortexM3;
+    using CMSIS = Microsoft.DeviceModels.Chipset.CortexM;
     using LLOS  = Zelig.LlilumOSAbstraction.HAL;
 
     public abstract class Peripherals : RT.Peripherals

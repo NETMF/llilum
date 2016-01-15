@@ -5,12 +5,10 @@
 
 namespace Microsoft.CortexM3OnCMSISCore
 {
-    using RT      = Microsoft.Zelig.Runtime;  
-    using Chipset = Microsoft.DeviceModels.Chipset.CortexM3;
+    using ChipsetModel = Microsoft.DeviceModels.Chipset.CortexM3;
 
-    
 
-    public abstract class ThreadManager : Chipset.Runtime.ThreadManager
+    public abstract class ThreadManager : ChipsetModel.Runtime.ThreadManager
     {
     }
 }

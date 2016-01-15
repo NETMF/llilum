@@ -5,10 +5,10 @@
 
 namespace Microsoft.Llilum.LPC1768
 {
-    using Chipset = Microsoft.CortexM3OnMBED;
-    using LLOS    = Zelig.LlilumOSAbstraction.API;
+    using ChipsetModel = Microsoft.CortexM3OnMBED;
+    using LLOS         = Zelig.LlilumOSAbstraction.API;
 
-    public sealed class ThreadManager : Chipset.ThreadManager
+    public sealed class ThreadManager : ChipsetModel.ThreadManager
     {
         private const int DefaultStackSizeLPC1768 = 2 * 1024;
 

@@ -452,7 +452,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             owner.BuildTimeFlags |=  MethodRepresentation.BuildTimeAttributes.NoInline;
             owner.BuildTimeFlags &= ~MethodRepresentation.BuildTimeAttributes.Inline;
             
-            if(this.PlatformAbstraction.PlatformVersion == TargetModel.ArmProcessor.InstructionSetVersion.PlatformVersion_7M)
+            if(this.PlatformAbstraction.PlatformVersion == TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv7M)
             {               
                 CustomAttributeRepresentation cf = owner.FindCustomAttribute( this.WellKnownTypes.Microsoft_Zelig_Runtime_CapabilitiesFilterAttribute );
                 if( cf != null )
@@ -460,7 +460,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                     object obj = cf.GetNamedArg( "RequiredCapabilities" );
                     if( obj != null )
                     {
-                        string capabilities = (string)obj;
+                        uint capabilities = (uint)obj;
 
                         if( capabilities != this.PlatformAbstraction.PlatformVFP )
                         {
