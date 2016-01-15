@@ -393,10 +393,10 @@ extern "C"
 
     
     __attribute__((naked)) 
-    __ATTRIBUTE_ALIGNMENT__
+    //__ATTRIBUTE_ALIGNMENT__
     void SVC_Handler(void)
     {
-        __DIRECTIVE_ALIGNMENT__;
+        //__DIRECTIVE_ALIGNMENT__;
 
         __ASM volatile ("TST    LR, #0x4");                 // Test bit 3 to use decide which stack pointer we are coming from 
         __ASM volatile ("ITE    EQ");        
@@ -495,10 +495,10 @@ extern "C"
     //
 
     __attribute__((naked))
-    __ATTRIBUTE_ALIGNMENT__
+    //__ATTRIBUTE_ALIGNMENT__
     void PendSV_Handler(void)
     {
-        __DIRECTIVE_ALIGNMENT__;                        // 8 bytes alignment
+        //__DIRECTIVE_ALIGNMENT__;                        // 8 bytes alignment
 
         __ASM volatile ("MRS      R0, PSP");                 // Save current process stack pointer value into R0
 

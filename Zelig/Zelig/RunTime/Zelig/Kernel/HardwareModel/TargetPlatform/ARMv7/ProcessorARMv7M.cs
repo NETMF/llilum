@@ -423,7 +423,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             
             // Enforce 8 bytes alignment
             //
-            Set_8_BytesAlignment( );
+            SetCCR( c_CCR_STD_CONFIG_4 );
 
             //
             // Enable system exceptions we intercept
@@ -434,12 +434,12 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             EnableSystemHandler( IRQn_Type.UsageFault_IRQn       ); 
         }
                 
-        internal static void Set_8_BytesAlignment( )
+        internal static void SetCCR( uint val )
         {
             // NOTE: LWIP uses memory functions on addresses which are not 8 byte aligned
             // This prevents faults from occurring from those memory accesses
 
-            CUSTOM_STUB_SCB_set_CCR( c_CCR_STD_CONFIG_8 );
+            CUSTOM_STUB_SCB_set_CCR( val );
         }
 
         internal static void RaiseSystemHandler( uint mask )

@@ -3,6 +3,7 @@
 //
 
 //#define DEBUG_CTX_SWITCH
+//#define DEBUG_CTX_FRAME_SNAPSHOT
 
 using System.Runtime.InteropServices;
 
@@ -614,6 +615,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
         protected static unsafe void UpdateFrame( ref Context.RegistersOnStack snapshot, uint* registers )
         {
+#if DEBUG_CTX_FRAME_SNAPSHOT
             BugCheck.Log( "[Last Active Frame] EXC=0x%08x, PSR=0x%08x, PC=0x%08x",
                     (int)registers[ 0 ],
                     (int)registers[ 17 ],
@@ -627,6 +629,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                     (int)registers[ 13 ],
                     (int)registers[ 14 ]
                     );
+#endif
 
             snapshot.SoftwareFrameRegisters.EXC_RETURN = registers[ 0 ];
             snapshot.SoftwareFrameRegisters.CONTROL = registers[ 1 ];
