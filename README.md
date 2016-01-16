@@ -30,7 +30,7 @@ Please see the following documents in our wiki:
 3. [Setup and build instruction](https://github.com/NETMF/llilum-pr/wiki/setup)
 4. [Build and run test demo](https://github.com/NETMF/llilum-pr/wiki/demo)
 5. [Performance considerations](https://github.com/NETMF/llilum-pr/wiki/perf)
-6. [Next steps](https://github.com/NETMF/llilum-pr/wiki/schedule) 
+6. [Next steps](https://github.com/NETMF/llilum-pr/wiki/roadmap) 
 
 
 # Acknowledgment
