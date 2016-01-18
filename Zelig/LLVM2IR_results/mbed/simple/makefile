@@ -274,7 +274,7 @@ endif
 	
     LIBRARY_PATHS += -L$(MBED_ROOT)/TARGET_NUCLEO_F091RC/TOOLCHAIN_GCC_ARM 
     
-	LINKER_SCRIPT = $(MBED_ROOT)/TTARGET_NUCLEO_F091RC/TOOLCHAIN_GCC_ARM/STM32F091XC.ld
+	LINKER_SCRIPT = $(MBED_ROOT)/TARGET_NUCLEO_F091RC/TOOLCHAIN_GCC_ARM/STM32F091XC.ld
     
 	CPU = -mcpu=cortex-m0 -mthumb
 	CC_FLAGS += $(CPU) -c -g -fno-common -fmessage-length=0 -Wall -Wextra -fno-exceptions -ffunction-sections -fdata-sections -fomit-frame-pointer -MMD -MP
