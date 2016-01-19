@@ -3,7 +3,7 @@
 //
 
 
-namespace Microsoft.Llilum.STM32F401
+namespace Microsoft.Llilum.STM32F091
 {
     using Chipset = Microsoft.CortexM0OnMBED;
     using LLOS    = Zelig.LlilumOSAbstraction.API;
