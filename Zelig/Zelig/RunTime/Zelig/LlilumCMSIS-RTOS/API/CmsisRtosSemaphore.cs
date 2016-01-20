@@ -6,14 +6,14 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
 {
     using System;
     using System.Threading;
-
+    
+    using RT   = Microsoft.Zelig.Runtime;
     using TS   = Microsoft.Zelig.Runtime.TypeSystem;
     using LLOS = Microsoft.Zelig.LlilumOSAbstraction;
 
 
     internal class CmsisRtosSemaphore : CmsisObject
     {
-        private readonly object         m_sync;
         private readonly AutoResetEvent m_free;
         private          int            m_count;
         
@@ -26,12 +26,27 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
 
         private CmsisRtosSemaphore( int count ) : base()
         {
-            m_sync  = new object( );
             m_count = count;
             m_free  = new AutoResetEvent( false );
         }
 
         //--//
+
+        protected override void Dispose( bool fDisposing )
+        {
+            base.Dispose( fDisposing );
+
+            //////if(m_count == 0)
+            //////{
+            //////    Release( );
+            //////}
+        }
+
+        //--//
+
+        //
+        // Helper methods
+        //
 
         public int Acquire( int timeout )
         {
@@ -49,7 +64,7 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
                     }
                 }
 
-                lock(m_sync)
+                using(RT.SmartHandles.InterruptState.DisableAll( )) 
                 {
                     //
                     // Some other thread may just have stolen this semaphore, and 
@@ -82,14 +97,14 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
         
         public void Release( )
         {
-            lock(m_sync)
+            using(RT.SmartHandles.InterruptState.DisableAll())
             {
                 ++m_count;
 
                 m_free.Set( );
             }
         }
-
+        
         //--//
 
         [TS.GenerateUnsafeCast]

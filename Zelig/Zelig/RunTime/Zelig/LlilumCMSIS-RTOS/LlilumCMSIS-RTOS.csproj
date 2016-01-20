@@ -63,7 +63,7 @@
     <Compile Include="API\CmsisObject.cs" />
     <Compile Include="API\CmsisRtos.cs" />
     <Compile Include="API\CmsisRtosThread.cs" />
-    <Compile Include="API\CmsisRtosMailbox.cs" />
+    <Compile Include="API\CmsisRtosMessageQueue.cs" />
     <Compile Include="API\CmsisRtosMutex.cs" />
     <Compile Include="API\CmsisRtosSemaphore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

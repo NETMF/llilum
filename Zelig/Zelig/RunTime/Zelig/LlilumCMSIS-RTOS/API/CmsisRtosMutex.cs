@@ -5,9 +5,9 @@
 namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
 {
     using System;
-    using System.Collections;
     using System.Threading;
-    using Microsoft.Zelig.Runtime.TypeSystem;
+
+    using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
 
     internal class CmsisRtosMutex : CmsisObject
@@ -27,6 +27,19 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
         }
 
         //--//
+
+        protected override void Dispose( bool fDisposing )
+        {
+            base.Dispose( fDisposing );
+
+            //////Unlock( ); 
+        }
+
+        //--//
+
+        //
+        // Helper methods
+        //
 
         public bool Lock( int millisec )
         {
@@ -54,11 +67,11 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
 
         //--//
 
-        [GenerateUnsafeCast]
+        [TS.GenerateUnsafeCast]
         internal extern UIntPtr ToPointer( );
 
 
-        [GenerateUnsafeCast]
+        [TS.GenerateUnsafeCast]
         internal extern static CmsisRtosMutex ToObject( UIntPtr mutex );
     }
 }

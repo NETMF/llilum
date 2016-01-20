@@ -5,14 +5,9 @@
 namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
 {
     using System;
-    using System.Collections.Generic;
-    using System.Runtime.InteropServices;
-    using System.Threading;
     using Microsoft.Zelig.Runtime;
-    
-    using RT   = Microsoft.Zelig.Runtime;
-    using TS   = Microsoft.Zelig.Runtime.TypeSystem;
-    using LLOS = Microsoft.Zelig.LlilumOSAbstraction;
+
+    using RT = Microsoft.Zelig.Runtime;
 
 
     internal class CmsisObject : IDisposable
@@ -23,7 +18,6 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
         //
 
         private static RT.KernelList<CmsisObject> s_objects = new RT.KernelList<CmsisObject>();
-        private static object                     s_sync    = new object();
 
         //--//
 
@@ -46,7 +40,7 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
 
         internal static void Register( CmsisObject obj )
         {
-            lock(s_sync)
+            using(RT.SmartHandles.InterruptState.DisableAll())
             {
                 s_objects.InsertAtTail( obj.RegistrationLink );
             }
@@ -54,15 +48,30 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
 
         internal static void Deregister( CmsisObject obj )
         {
-            lock(s_sync)
+            using(RT.SmartHandles.InterruptState.DisableAll())
             {
                 obj.RegistrationLink.RemoveFromList( ); 
             }
         }
 
-        public void Dispose( )
+        protected virtual void Dispose( bool disposing )
         {
-            Deregister( this );
+            if(disposing)
+            {
+                Deregister( this );
+            }
+        }
+
+        ~CmsisObject( )
+        {
+            Dispose( false );
+        }
+        
+        public void Dispose( )
+        { 
+            Dispose( true );
+
+            GC.SuppressFinalize(this);
         }
 
         //
@@ -71,23 +80,26 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
 
         public static CmsisObject GetObject( UIntPtr ptr )
         {
-            RT.KernelNode< CmsisObject > node = s_objects.StartOfForwardWalk;
-
-            while(node.IsValidForForwardMove)
+            using(RT.SmartHandles.InterruptState.DisableAll( ))
             {
-                var node2 = (ObjectImpl)(object)node.Target;
+                RT.KernelNode< CmsisObject > node = s_objects.StartOfForwardWalk;
 
-                if(node2.ToPointer( ) == ptr)
+                while(node.IsValidForForwardMove)
                 {
-                    break;
+                    var node2 = (ObjectImpl)(object)node.Target;
+
+                    if(node2.ToPointer( ) == ptr)
+                    {
+                        break;
+                    }
+
+                    node = node.Next;
                 }
 
-                node = node.Next;
-            }
-
-            if(node.IsValidForForwardMove)
-            {
-                return node.Target;
+                if(node.IsValidForForwardMove)
+                {
+                    return node.Target;
+                }
             }
 
             return null;
@@ -95,21 +107,24 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
 
         public static CmsisObject FindObject<T>( object cmp ) where T: CmsisObject
         {
-            RT.KernelNode< CmsisObject > node = s_objects.StartOfForwardWalk;
-
-            while(node.IsValidForForwardMove)
+            using(RT.SmartHandles.InterruptState.DisableAll( ))
             {
-                CmsisObject obj = (CmsisObject)node.Target;
+                RT.KernelNode< CmsisObject > node = s_objects.StartOfForwardWalk;
 
-                if(obj is T)
+                while(node.IsValidForForwardMove)
                 {
-                    if(((T)obj).SameObject( cmp ))
-                    {
-                        return obj;
-                    }
-                }
+                    CmsisObject obj = (CmsisObject)node.Target;
 
-                node = node.Next;
+                    if(obj is T)
+                    {
+                        if(( (T)obj ).SameObject( cmp ))
+                        {
+                            return obj;
+                        }
+                    }
+
+                    node = node.Next;
+                }
             }
 
             return null;

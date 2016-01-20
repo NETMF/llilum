@@ -74,7 +74,7 @@ namespace Microsoft.Zelig.Test
             int bytesReceived = 0;
             try
             {
-                var localEndPoint = new IPEndPoint( IPAddress.Parse("10.0.1.4"), 11000);
+                var localEndPoint = new IPEndPoint( ipv4Local, 11000);
 
                 listener.Bind( localEndPoint );
                 listener.Listen( 10 );

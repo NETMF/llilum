@@ -5,50 +5,58 @@
 namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
 {
     using System;
-    using System.Collections;
     using System.Runtime.InteropServices;
     using System.Threading;
 
-    using Microsoft.Zelig.Runtime;
-    using Microsoft.Zelig.Runtime.TypeSystem;
-    using LLOS = Microsoft.Zelig.LlilumOSAbstraction;
+    using RT = Microsoft.Zelig.Runtime;
+    using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
 
     internal class CmsisRtosThread : CmsisObject
     {        
-        private Thread  m_thread;
-        private UIntPtr m_codePtr;
-        private UIntPtr m_arg;
+        private RT.ThreadImpl   m_thread;
+        private UIntPtr         m_codePtr;
+        private UIntPtr         m_arg;
 
         //--//
-
-        //
-        // err_t sys_sem_new( sys_sem_t *sem, u8_t count )
-        //
-        public static unsafe CmsisRtosThread Create( UIntPtr codePtr, UIntPtr arg )
+        
+        public static unsafe CmsisRtosThread Create( UIntPtr codePtr, ThreadPriority priority, uint stackSize, UIntPtr arg )
         {
-            return new CmsisRtosThread( codePtr, arg );
+            return new CmsisRtosThread( codePtr, priority, stackSize, arg );
         }
 
-        private unsafe CmsisRtosThread( UIntPtr codePtr, UIntPtr arg ) : base()
-        {
-            //var code = new CodePointer();
-            //code.Target = (IntPtr)threadStart.ToPointer();
-
-            //DelegateImpl dlgImpl = new DelegateImpl( this, code );
-            
-            m_arg     = arg;
-            m_codePtr = codePtr;
-            m_thread  = new Thread( ThreadProcedure );
+        private unsafe CmsisRtosThread( UIntPtr codePtr, ThreadPriority priority, uint stackSize, UIntPtr arg ) : base()
+        {    
+            m_arg               = arg;
+            m_codePtr           = codePtr;
+            m_thread            = new RT.ThreadImpl( ThreadProcedure, new uint[ stackSize ] );
+            m_thread.Priority   = priority;
 
             m_thread.Start( );
         }
 
+        //--//
+
+        protected override void Dispose( bool fDisposing )
+        {
+            base.Dispose( fDisposing );
+
+            //////m_thread.Detach( );
+
+            //////if(m_thread != RT.ThreadImpl.CurrentThread)
+            //////{
+            //////    m_thread.Join( );
+            //////}
+        }
+
+        //--//
+
+        //
+        // Helper methods
+        //
+
         public void Terminate()
         {
-            m_thread.Abort( ); 
-            m_thread.Join ( ); 
-
             Dispose( ); 
         }
 
@@ -72,9 +80,11 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
             }
         }
 
-        protected void Start()
+        //--//
+        
+        protected override bool SameObject( object cmp )
         {
-            m_thread.Start( ); 
+            return m_thread == cmp;
         }
 
         //--//
@@ -85,25 +95,17 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
         }
 
         //--//
-
-        // This thread calls into a native method LLOS_lwIPTaskRun with a pointer
-        // to the thread, which has the function to run and args
+        
         [DllImport("C")]
         private static unsafe extern void LLOS_lwIPTaskRun( void* codePtr, void* arg );
 
         //--//
 
-        protected override bool SameObject( object cmp )
-        {
-            return m_thread == cmp;
-        }
-
-        [GenerateUnsafeCast]
+        [TS.GenerateUnsafeCast]
         internal extern UIntPtr ToPointer();
         
-        [GenerateUnsafeCast]
+        [TS.GenerateUnsafeCast]
         internal extern static CmsisRtosThread ToObject( UIntPtr thread );
-
     }
 
 }

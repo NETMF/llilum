@@ -5,12 +5,10 @@
 namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
 {
     using System;
-    using System.Collections.Generic;
     using System.Runtime.InteropServices;
     using System.Threading;
 
     using RT = Microsoft.Zelig.Runtime;
-    using CMSISRTOS = Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos;
 
 
     public static class CmsisRtos
@@ -272,7 +270,7 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
         [RT.ExportedMethod]
         public static unsafe os_messageQ_cb* osMessageCreate( osMessageQDef_t* queue_def, os_thread_cb* thread_id )
         {
-            var mailbox = CMSISRTOS.CmsisRtosMailbox.Create( queue_def->queue_sz );
+            var mailbox = CmsisRtosMessageQueue.Create( queue_def->queue_sz );
 
             return (os_messageQ_cb*)mailbox.ToPointer( );
         }
@@ -287,7 +285,7 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
                 return osStatus.osErrorParameter;
             }
 
-            var mailbox = CmsisRtosMailbox.ToObject( (UIntPtr)queue_id );
+            var mailbox = CmsisRtosMessageQueue.ToObject( (UIntPtr)queue_id );
 
             if(mailbox == null)
             {
@@ -325,7 +323,7 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
                 return osStatus.osErrorParameter;
             }
 
-            var mailbox = CmsisRtosMailbox.ToObject( (UIntPtr)queue_id );
+            var mailbox = CmsisRtosMessageQueue.ToObject( (UIntPtr)queue_id );
 
             if(mailbox == null)
             {
@@ -541,7 +539,10 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
         [RT.ExportedMethod]
         public static unsafe os_thread_cb* osThreadCreate( osThreadDef_t* thread_def, UIntPtr arg )
         {
-            var th = CmsisRtosThread.Create( thread_def->pthread, arg );
+            var th = CmsisRtosThread.Create(                    thread_def->pthread    , 
+                                            ConvertPriority(    thread_def->tpriority ),
+                                                                thread_def->stackSize  ,
+                                                                arg );
 
             return (os_thread_cb*)th.ToPointer( );
         }
