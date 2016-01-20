@@ -255,7 +255,7 @@ namespace Microsoft.Zelig.Runtime
 
                                 if(AddressMath.IsLessThan( interiorPtr, nextAddress ))
                                 {
-                                    return oh.ToPointer();
+                                    return oh.Pack( ).ToPointer( );
                                 }
 
                                 address = nextAddress;
