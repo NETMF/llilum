@@ -1,4 +1,4 @@
-﻿// This file was generated from LLVM 3.6.1 llvm-c API using ClangSharp
+// This file was generated from LLVM 3.6.1 llvm-c API using ClangSharp
 // it was further modified in the following ways:
 //  - removed most uses of the partial keyword except for LLVMNative static class and LLVMBool
 //  - added warning disable to avoid benign compiler warnings about fields only set by native code
@@ -2077,7 +2077,7 @@ namespace Llvm.NET
         internal static extern LLVMValueRef BuildInvoke(LLVMBuilderRef @param0, LLVMValueRef @Fn, out LLVMValueRef @Args, uint @NumArgs, LLVMBasicBlockRef @Then, LLVMBasicBlockRef @Catch, [MarshalAs(UnmanagedType.LPStr)] string @Name);
 
         [DllImport(libraryPath, EntryPoint = "LLVMBuildLandingPad", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern LLVMValueRef BuildLandingPad(LLVMBuilderRef @B, LLVMTypeRef @Ty, LLVMValueRef @PersFn, uint @NumClauses, [MarshalAs(UnmanagedType.LPStr)] string @Name);
+        internal static extern LLVMValueRef BuildLandingPad(LLVMBuilderRef @B, LLVMTypeRef @Ty, uint @NumClauses, [MarshalAs(UnmanagedType.LPStr)] string @Name);
 
         [DllImport(libraryPath, EntryPoint = "LLVMBuildResume", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern LLVMValueRef BuildResume(LLVMBuilderRef @B, LLVMValueRef @Exn);
@@ -3254,6 +3254,11 @@ namespace Llvm.NET
 
         [DllImport(libraryPath, EntryPoint = "LLVMAddSLPVectorizePass", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern void AddSLPVectorizePass(LLVMPassManagerRef @PM);
+
+        [DllImport(libraryPath, EntryPoint = "LLVMGetPersonalityFn", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern LLVMValueRef GetPersonalityFunction(LLVMValueRef function);
+
+        [DllImport(libraryPath, EntryPoint = "LLVMSetPersonalityFn", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern void SetPersonalityFunction(LLVMValueRef function, LLVMValueRef personalityFunction);
     }
 }
-

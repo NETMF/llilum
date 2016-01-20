@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -174,7 +174,6 @@ namespace Llvm.NET
         {
             LLVMValueRef landingPad = NativeMethods.BuildLandingPad( BuilderHandle
                                                                    , resultType.GetTypeRef()
-                                                                   , LLVMValueRef.Zero
                                                                    , 0
                                                                    , string.Empty
                                                                    );

@@ -569,6 +569,7 @@ LLVMGetParam
 LLVMGetParamParent
 LLVMGetParamTypes
 LLVMGetParams
+LLVMGetPersonalityFn
 LLVMGetPointerAddressSpace
 LLVMGetPreviousBasicBlock
 LLVMGetPreviousFunction
@@ -748,6 +749,7 @@ LLVMSetMetadata
 LLVMSetModuleInlineAsm
 LLVMSetOperand
 LLVMSetParamAlignment
+LLVMSetPersonalityFn
 LLVMSetSection
 LLVMSetSuccessor
 LLVMSetTailCall
