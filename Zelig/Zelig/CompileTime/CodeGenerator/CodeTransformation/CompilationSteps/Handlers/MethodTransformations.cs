@@ -322,6 +322,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                     var mdAddRef  = wkm.ObjectHeader_AddReference;
                     var mdRelease = wkm.ObjectHeader_ReleaseReference;
 
+                    var returnVariable = FindReturnVariable( cfg, defChains, useChains );
+
                     foreach(var arg in arguments)
                     {
                         var skipReferenceCounting = true;
@@ -351,7 +353,12 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
 
                                 modified = true;
 
-                                needRelease.Insert( arg );
+                                // Do not release the return variable because we need to pass the 
+                                // ref count back to the caller on return.
+                                if(arg != returnVariable)
+                                {
+                                    needRelease.Insert( arg );
+                                }
 
                                 skipReferenceCounting = false;
                             }
@@ -362,8 +369,6 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
                             arg.SkipReferenceCounting = true;
                         }
                     }
-
-                    var returnVariable = FindReturnVariable( cfg, defChains, useChains );
 
                     var skippables = FindSkippableVariables( cfg, variables, defChains, useChains );
 

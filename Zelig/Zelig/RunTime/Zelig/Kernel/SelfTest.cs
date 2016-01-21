@@ -502,6 +502,7 @@ namespace Microsoft.Zelig.Runtime
             SelfTest__Memory__RefCountGC9( );
             SelfTest__Memory__RefCountGC10( );
             SelfTest__Memory__RefCountGC11( );
+            SelfTest__Memory__RefCountGC12( );
 
             SelfTest__Interlocked__Add_int( );
             SelfTest__Interlocked__Add_long( );
@@ -2224,6 +2225,53 @@ namespace Microsoft.Zelig.Runtime
             BugCheck.Assert( availableMemoryBefore == availableMemoryAfter, BugCheck.StopCode.HeapCorruptionDetected );
 
             BugCheck.Log( "RefCountGC11 Succeeded." );
+        }
+
+        private static void RefCountGC12_Helper()
+        {
+            GCNode node = new GCNode(null, null);
+            UIntPtr nodeptr = ObjectHeader.Unpack(node).ToPointer();
+
+            Object result;
+
+            for(int i = 0; i < 10; i++)
+            {
+                result = RefCountGC12_Helper1(node);
+                BugCheck.Assert(MemoryManager.Instance.IsObjectAlive(nodeptr), BugCheck.StopCode.HeapCorruptionDetected);
+            }
+        }
+
+        [NoInline]
+        private static object RefCountGC12_Helper1(object obj)
+        {
+            if (obj != null)
+            {
+                obj = RefCountGC12_Helper2(obj);
+            }
+
+            return obj;
+        }
+
+        [NoInline]
+        public static object RefCountGC12_Helper2(object obj)
+        {
+            return obj;
+        }
+
+        private static void SelfTest__Memory__RefCountGC12( )
+        {
+            BugCheck.Log( "RefCountGC12 Started..." );
+
+            uint availableMemoryBefore = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory before = %d", (int)availableMemoryBefore );
+
+            RefCountGC12_Helper( );
+
+            uint availableMemoryAfter = MemoryManager.Instance.AvailableMemory;
+            BugCheck.Log( "Available memory after = %d", (int)availableMemoryAfter );
+            BugCheck.Assert( availableMemoryBefore == availableMemoryAfter, BugCheck.StopCode.HeapCorruptionDetected );
+
+            BugCheck.Log( "RefCountGC12 Succeeded." );
         }
 
         #endregion RefCount GC Tests
