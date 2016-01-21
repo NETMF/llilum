@@ -125,9 +125,9 @@ namespace Microsoft.Zelig.Runtime
         [ExportedMethod]
         public static UIntPtr AllocateFromManagedHeap( uint size )
         {
-            // Force all heap allocations to be multiples of 4-bytes so that we guarantee 
-            // 4-byte alignment for all allocations.
-            size = AddressMath.AlignToWordBoundary( size + ObjectHeader.HeaderSize );
+            // Force all heap allocations to be multiples of 8-bytes so that we guarantee 
+            // 8-byte alignment for all allocations.
+            size = AddressMath.AlignToDWordBoundary( size + ObjectHeader.HeaderSize );
 
             UIntPtr ptr;
 
@@ -143,7 +143,7 @@ namespace Microsoft.Zelig.Runtime
 
                     if(ptr == UIntPtr.Zero)
                     {
-                        throw new OutOfMemoryException( );
+                        GarbageCollectionManager.Instance.ThrowOutOfMemory( null );
                     }
                 }
             }

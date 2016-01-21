@@ -120,11 +120,8 @@ namespace Microsoft.Zelig.Runtime
         {
             get
             {
-                ObjectImpl obj = this.Pack();
-                TS.VTable vTable = this.VirtualTable;
-                ArrayImpl array = ArrayImpl.CastAsArray(obj);
-                uint size = vTable.BaseSize + vTable.ElementSize * (uint)array.Length;
-                return AddressMath.AlignToWordBoundary(size);
+                uint arrayLength = (uint)ArrayImpl.CastAsArray((Object)this.Pack()).Length;
+                return ComputeObjectSize(this.VirtualTable, arrayLength);
             }
         }
 
@@ -145,6 +142,19 @@ namespace Microsoft.Zelig.Runtime
 
                 return size;
             }
+        }
+
+        public static uint ComputeObjectSize(TS.VTable vTable, uint arrayLength)
+        {
+            uint size = vTable.BaseSize + vTable.ElementSize * arrayLength;
+
+            // Every object should have a payload
+            if (size == 0)
+            {
+                size = 1;
+            }
+
+            return AddressMath.AlignToDWordBoundary(size);
         }
 
         [TS.WellKnownMethod("DebugGC_ObjectHeader_InsertPlug")]

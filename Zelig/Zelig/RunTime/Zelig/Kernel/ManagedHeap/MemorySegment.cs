@@ -32,12 +32,12 @@ namespace Microsoft.Zelig.Runtime
         [TS.WellKnownMethod("DebugGC_MemorySegment_Initialize")]
         public void Initialize()
         {
-            fixed(MemorySegment* seg = &this)
+            fixed (MemorySegment* seg = &this)
             {
-                byte* firstBlockPtr =        (byte*)&seg[1];
-                uint  size          = (uint)((byte*) seg->End.ToPointer() - firstBlockPtr);
+                UIntPtr firstBlockPtr = this.FirstBlock;
+                uint size = AddressMath.RangeSize(firstBlockPtr, seg->End);
 
-                MemoryFreeBlock* firstBlock = MemoryFreeBlock.InitializeFromRawMemory( new UIntPtr( firstBlockPtr ), size );
+                MemoryFreeBlock* firstBlock = MemoryFreeBlock.InitializeFromRawMemory(firstBlockPtr, size);
 
                 seg->FirstFreeBlock  = firstBlock;
                 seg->LastFreeBlock   = firstBlock;
@@ -577,9 +577,9 @@ namespace Microsoft.Zelig.Runtime
         {
             get
             {
-                fixed(MemorySegment* seg = &this)
+                fixed (MemorySegment* seg = &this)
                 {
-                    return new UIntPtr( &seg[1] );
+                    return AddressMath.AlignToDWordBoundary(new UIntPtr(&seg[1]));
                 }
             }
         }

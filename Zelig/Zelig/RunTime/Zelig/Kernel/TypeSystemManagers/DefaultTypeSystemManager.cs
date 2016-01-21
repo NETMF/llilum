@@ -202,29 +202,14 @@ namespace Microsoft.Zelig.Runtime
 
         //--//
 
-        public static uint ComputeObjectSize( TS.VTable vTable )
+        public static uint ComputeObjectSize(TS.VTable vTable)
         {
-            uint size = (uint)System.Runtime.InteropServices.Marshal.SizeOf( typeof(ObjectHeader) );
-
-            size += vTable.BaseSize;
-
-            //
-            // Align to word boundary.
-            //
-            size = (size + (sizeof(uint)-1)) & ~(uint)(sizeof(uint)-1);
-
-            return size;
+            return ObjectHeader.HeaderSize + ObjectHeader.ComputeObjectSize(vTable, arrayLength: 0);
         }
 
-        public static uint ComputeArraySize( TS.VTable vTable ,
-                                             uint      length )
+        public static uint ComputeArraySize(TS.VTable vTable, uint length)
         {
-            uint size = (uint)System.Runtime.InteropServices.Marshal.SizeOf( typeof(ObjectHeader) );
-
-            size += vTable.BaseSize;
-            size += vTable.ElementSize * length;
-
-            return Microsoft.Zelig.AddressMath.AlignToWordBoundary( size );
+            return ObjectHeader.HeaderSize + ObjectHeader.ComputeObjectSize(vTable, length);
         }
 
         //--//

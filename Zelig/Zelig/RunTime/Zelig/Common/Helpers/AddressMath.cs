@@ -111,6 +111,18 @@ namespace Microsoft.Zelig
             return (value + (sizeof(uint)-1)) & ~(uint)(sizeof(uint)-1);
         }
 
+        [RT.Inline]
+        public static uint AlignToDWordBoundary(uint value)
+        {
+            return (value + (sizeof(ulong) - 1)) & ~(uint)(sizeof(ulong) - 1);
+        }
+
+        [RT.Inline]
+        public static UIntPtr AlignToDWordBoundary(UIntPtr value)
+        {
+            return new UIntPtr(AlignToDWordBoundary(value.ToUInt32()));
+        }
+
         public static uint AlignToBoundary( uint value     ,
                                             uint alignment )
         {
