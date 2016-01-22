@@ -43,7 +43,7 @@ namespace Microsoft.DeviceModels.Chipset.PXA27x
                     return 0;
                 }
             }
-            
+
             public static uint DefaultThreadPoolThreads
             {
                 [RT.ConfigurationOption( "System__Runtime_DefaultThreadPoolThreads" )]
