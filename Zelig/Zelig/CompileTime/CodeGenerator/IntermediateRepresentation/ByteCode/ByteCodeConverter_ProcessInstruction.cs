@@ -559,22 +559,23 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                     {
                         VariableExpression exRes = CreateNewTemporary( tdVal );
                         Expression         exObj = GetArgumentFromStack( 0, 1 );
-                        TypeRepresentation tdObj = exObj.Type;
 
-                        if(tdObj.GetInstantiationFlavor( m_typeSystem ) == TypeRepresentation.InstantiationFlavor.Delayed)
+                        if(exObj.Type.GetInstantiationFlavor( m_typeSystem ) == TypeRepresentation.InstantiationFlavor.Delayed)
                         {
-                            throw TypeConsistencyErrorException.Create( "Cannot access the fields of delayed type {0}", tdObj );
+                            throw TypeConsistencyErrorException.Create( "Cannot access the fields of delayed type {0}", exObj.Type );
                         }
 
                         ModifyStackModel( 1, exRes );
+
+                        exObj = EnsurePointerType(exObj, fdVal.OwnerType, instr.DebugInfo);
 
                         //
                         // This happens when we reference a value type on the evaluation stack.
                         // Normally it's the result of a previous operation that is not stored in a local variable.
                         //
-                        if(tdObj is ValueTypeRepresentation)
+                        if (exObj.Type is ValueTypeRepresentation)
                         {
-                            VariableExpression exResPtr = CreateNewTemporary( m_typeSystem.CreateManagedPointerToType( tdObj ) );
+                            VariableExpression exResPtr = CreateNewTemporary( m_typeSystem.CreateManagedPointerToType( exObj.Type ) );
 
                             AddOperator( AddressAssignmentOperator.New( instr.DebugInfo, exResPtr, exObj ) );
 
@@ -694,6 +695,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
                         ModifyStackModel( 1, exRes );
 
+                        exObj = EnsurePointerType(exObj, fdVal.OwnerType, instr.DebugInfo);
                         AddOperator( LoadInstanceFieldAddressOperator.New( instr.DebugInfo, fdVal, exRes, (VariableExpression)exObj, true ) );
                     }
                     break;
@@ -841,6 +843,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
                         PopStackModel( 2 );
 
+                        exObj = EnsurePointerType(exObj, fdTarget.OwnerType, instr.DebugInfo);
                         AddOperator( StoreInstanceFieldOperator.New( instr.DebugInfo, fdTarget, exObj, exVal, true ) );
                     }
                     break;
@@ -1034,6 +1037,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
                             if(m_mod_constrained != null)
                             {
+                                exActual[0] = EnsurePointerType(exActual[0], m_mod_constrained, instr.DebugInfo);
+
                                 ManagedPointerTypeRepresentation tdActual2 = exActual[0].Type as ManagedPointerTypeRepresentation;
 
                                 if(tdActual2 == null || tdActual2.ContainedType != m_mod_constrained)

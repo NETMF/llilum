@@ -47,7 +47,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
             Operator[][] defChains = cfg.DataFlow_DefinitionChains;
             bool fModified = false;
 
-            cfg.ResetCacheCheckpoint( );
+            cfg.ResetCacheCheckpoint();
 
             // Search for the following pattern:
             //    ScalarType::.ctor(&local, value)
@@ -55,41 +55,36 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
             //    local = value
             foreach (var callOp in cfg.FilterOperators<InstanceCallOperator>())
             {
-                var thisPtr = callOp.FirstArgument as VariableExpression;
-                if (!IsScalarPointer(thisPtr))
+                var targetMethod = callOp.TargetMethod as ConstructorMethodRepresentation;
+                var thisType = callOp.TargetMethod.OwnerType as ScalarTypeRepresentation;
+
+                if ((targetMethod == null) || (thisType == null))
                 {
                     continue;
                 }
 
-                var thisType = thisPtr.Type.UnderlyingType as ScalarTypeRepresentation;
-                var targetMethod = callOp.TargetMethod as ConstructorMethodRepresentation;
+                Debug.Assert(callOp.Arguments.Length == 2, "Scalar constructors should always have exactly two arguments: 'this' and the value to initialize with.");
 
-                // Determine whether this is a scalar constructor.
-                if ((thisType != null) && (targetMethod != null))
+                // Skip inlining if the source value can't be safely cast to the constructing type.
+                if (!thisType.CanBeAssignedFrom(targetMethod.ThisPlusArguments[1], null))
                 {
-                    Debug.Assert(callOp.Arguments.Length == 2, "Scalar constructors should always have exactly two arguments: 'this' and the value to initialize with.");
-
-                    // Skip inlining if the source value can't be safely cast to the constructing type.
-                    if (!thisType.CanBeAssignedFrom(targetMethod.ThisPlusArguments[1], null))
-                    {
-                        continue;
-                    }
-
-                    // We can only replace constructors on values that exist on the stack. If thisPtr is an argument
-                    // or field, we should be assigning rather than constructing the value.
-                    AddressAssignmentOperator addressOp = ControlFlowGraphState.CheckSingleDefinition(defChains, thisPtr) as AddressAssignmentOperator;
-                    Debug.Assert(addressOp != null, "Couldn't find the constructing value.");
-
-                    Expression initValue = callOp.SecondArgument;
-                    var constructing = (VariableExpression)addressOp.FirstArgument;
-                    var assignOp = SingleAssignmentOperator.New(callOp.DebugInfo, constructing, initValue);
-                    callOp.SubstituteWithOperator(assignOp, Operator.SubstitutionFlags.Default);
-
-                    fModified = true;
+                    continue;
                 }
+
+                // We can only replace constructors on values that exist on the stack. If thisPtr is an argument
+                // or field, we should be assigning rather than constructing the value.
+                var thisPtr = (VariableExpression)callOp.FirstArgument;
+                var addressOp = (AddressAssignmentOperator)ControlFlowGraphState.CheckSingleDefinition(defChains, thisPtr);
+
+                Expression initValue = callOp.SecondArgument;
+                var constructing = (VariableExpression)addressOp.FirstArgument;
+                var assignOp = SingleAssignmentOperator.New(callOp.DebugInfo, constructing, initValue);
+                callOp.SubstituteWithOperator(assignOp, Operator.SubstitutionFlags.Default);
+
+                fModified = true;
             }
 
-            cfg.AssertNoCacheRefreshSinceCheckpoint( );
+            cfg.AssertNoCacheRefreshSinceCheckpoint();
 
             return fModified;
         }
@@ -99,21 +94,22 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
             Operator[][] defChains = cfg.DataFlow_DefinitionChains;
             bool fModified = false;
 
-            cfg.ResetCacheCheckpoint( );
+            cfg.ResetCacheCheckpoint();
 
             // Patterns:
             // - Replace (scalar.Equals(scalar)) with (scalar == scalar)
-            // - Replace (op_Equality(scalar, scalr)) with (scalar == scalar)
+            // - Replace (op_Equality(scalar, scalar)) with (scalar == scalar)
             // - Replace (op_Inequality(scalar, scalar)) with (scalar != scalar)
             foreach (var callOp in cfg.FilterOperators<CallOperator>())
             {
-                var thisPtr = callOp.FirstArgument as VariableExpression;
-                if (!IsScalarPointer(thisPtr))
+                var targetMethod = callOp.TargetMethod;
+                var thisType = targetMethod.OwnerType as ScalarTypeRepresentation;
+
+                if ((targetMethod == null) || (thisType == null))
                 {
                     continue;
                 }
 
-                var targetMethod = callOp.TargetMethod;
                 bool isStatic = targetMethod is StaticMethodRepresentation;
 
                 CompareAndSetOperator.ActionCondition condition;
@@ -153,6 +149,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                         continue;
                     }
 
+                    var thisPtr = (VariableExpression)callOp.FirstArgument;
                     left = LoadScalarAddress(cfg, defChains, thisPtr, callOp, true);
                 }
 
@@ -161,7 +158,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                 fModified = true;
             }
 
-            cfg.AssertNoCacheRefreshSinceCheckpoint( );
+            cfg.AssertNoCacheRefreshSinceCheckpoint();
 
             return fModified;
         }
@@ -172,17 +169,17 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
             Operator[][] defChains = cfg.DataFlow_DefinitionChains;
             bool fModified = false;
 
-            cfg.ResetCacheCheckpoint( );
+            cfg.ResetCacheCheckpoint();
 
             // Pattern: Replace (scalarPtr->m_value) with (*scalarPtr)
             foreach (var loadFieldOp in cfg.FilterOperators<LoadInstanceFieldOperator>())
             {
-                var thisPtr = loadFieldOp.FirstArgument as VariableExpression;
-                if (!IsScalarPointer(thisPtr))
+                if (!(loadFieldOp.Field.OwnerType is ScalarTypeRepresentation))
                 {
                     continue;
                 }
 
+                var thisPtr = (VariableExpression)loadFieldOp.FirstArgument;
                 Expression loadedValue = LoadScalarAddress(cfg, defChains, thisPtr, loadFieldOp, loadFieldOp.MayThrow);
 
                 VariableExpression field = loadFieldOp.FirstResult;
@@ -198,19 +195,18 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
             // If modified, we need to refresh useChains in case variables were changed. If we don't do this, FilterOperators
             // below will refresh the operators, and SpanningTreeIndex and other info between variables and our stale useChains
             // may be mismatched.
-            if(fModified)
+            if (fModified)
             {
-                cfg.AssertNoCacheRefreshSinceCheckpoint( );
+                cfg.AssertNoCacheRefreshSinceCheckpoint();
 
                 useChains = cfg.DataFlow_UseChains;
-                cfg.ResetCacheCheckpoint( );
+                cfg.ResetCacheCheckpoint();
             }
 
             // Pattern: Replace (&scalarPtr->m_value) with (scalarPtr)
             foreach (var loadFieldOp in cfg.FilterOperators<LoadInstanceFieldAddressOperator>())
             {
-                var thisPtr = loadFieldOp.FirstArgument as VariableExpression;
-                if (!IsScalarPointer(thisPtr))
+                if (!(loadFieldOp.Field.OwnerType is ScalarTypeRepresentation))
                 {
                     continue;
                 }
@@ -218,38 +214,16 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                 VariableExpression fieldPtr = loadFieldOp.FirstResult;
                 foreach (Operator useOp in useChains[fieldPtr.SpanningTreeIndex])
                 {
-                    useOp.SubstituteUsage(fieldPtr, thisPtr);
+                    useOp.SubstituteUsage(fieldPtr, loadFieldOp.FirstArgument);
                 }
 
                 loadFieldOp.SubstituteWithOperator(NopOperator.New(loadFieldOp.DebugInfo), Operator.SubstitutionFlags.Default);
                 fModified = true;
             }
 
-            cfg.AssertNoCacheRefreshSinceCheckpoint( );
+            cfg.AssertNoCacheRefreshSinceCheckpoint();
 
             return fModified;
-        }
-
-        private static bool IsScalarPointer(VariableExpression pointer)
-        {
-            if (pointer == null)
-            {
-                return false;
-            }
-
-            var pointerType = pointer.Type as PointerTypeRepresentation;
-            if (pointerType == null)
-            {
-                return false;
-            }
-
-            TypeRepresentation thisType = pointerType.UnderlyingType as ScalarTypeRepresentation;
-            if (thisType == null)
-            {
-                return false;
-            }
-
-            return true;
         }
 
         private static Expression LoadScalarAddress(
@@ -263,7 +237,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
             // the original expression without creating a new temporary and load operation.
             if (!(pointer is ArgumentVariableExpression))
             {
-                var defOp = ControlFlowGraphState.CheckSingleDefinition( defChains, pointer );
+                var defOp = ControlFlowGraphState.CheckSingleDefinition(defChains, pointer);
                 Debug.Assert(defOp != null, "Could not find source of scalar address.");
 
                 if (defOp is AddressAssignmentOperator)
@@ -283,7 +257,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
         private static bool RemoveUnnecessaryAddressLoads(ControlFlowGraphStateForCodeTransformation cfg)
         {
             Operator[][] useChains = cfg.DataFlow_UseChains;
-            cfg.ResetCacheCheckpoint( );
+            cfg.ResetCacheCheckpoint();
             bool fModified = false;
 
             // Search for the following pattern where LoadIndirect is the only use of address:
@@ -326,12 +300,12 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
             // If modified, we need to refresh useChains in case variables were changed. If we don't do this, FilterOperators
             // below will refresh the operators, and SpanningTreeIndex and other info between variables and our stale useChains
             // may be mismatched
-            if(fModified)
+            if (fModified)
             {
-                cfg.AssertNoCacheRefreshSinceCheckpoint( );
+                cfg.AssertNoCacheRefreshSinceCheckpoint();
 
                 useChains = cfg.DataFlow_UseChains;
-                cfg.ResetCacheCheckpoint( );
+                cfg.ResetCacheCheckpoint();
             }
 
             // Pattern: Replace (*&obj.Field) with (obj.Field)
@@ -364,12 +338,12 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
             // If modified, we need to refresh useChains in case variables were changed. If we don't do this, FilterOperators
             // below will refresh the operators, and SpanningTreeIndex and other info between variables and our stale useChains
             // may be mismatched
-            if(fModified)
+            if (fModified)
             {
-                cfg.AssertNoCacheRefreshSinceCheckpoint( );
+                cfg.AssertNoCacheRefreshSinceCheckpoint();
 
                 useChains = cfg.DataFlow_UseChains;
-                cfg.ResetCacheCheckpoint( );
+                cfg.ResetCacheCheckpoint();
             }
 
             // Pattern: Replace (*&array[index]) with (array[index])
@@ -392,7 +366,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                 }
             }
 
-            cfg.AssertNoCacheRefreshSinceCheckpoint( );
+            cfg.AssertNoCacheRefreshSinceCheckpoint();
 
             return fModified;
         }

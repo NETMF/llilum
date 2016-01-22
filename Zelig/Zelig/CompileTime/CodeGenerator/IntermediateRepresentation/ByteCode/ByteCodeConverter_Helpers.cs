@@ -428,5 +428,30 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         {
             m_currentBasicBlock.FlowControl = op;
         }
+
+        /// <summary>
+        /// Ensure a given pointer expression is a pointer to the correct type. This can be necessary when an IntPtr is
+        /// passed as a managed or unmanaged pointer in an unsafe context.
+        /// </summary>
+        /// <param name="pointer">Expression containing the pointer to coerce.</param>
+        /// <param name="objectType">The desired underlying object type.</param>
+        /// <param name="debugInfo">Debug info to assign to any added instructions</param>
+        /// <returns>Canonicalized pointer with the desired type.</returns>
+        private Expression EnsurePointerType(
+            Expression pointer,
+            TypeRepresentation objectType,
+            Debugging.DebugInfo debugInfo)
+        {
+            if ((pointer.Type is ScalarTypeRepresentation) && (objectType != pointer.Type))
+            {
+                TypeRepresentation objPointerType = m_typeSystem.CreateManagedPointerToType(objectType);
+                VariableExpression objPointer = CreateNewTemporary(objPointerType);
+                AddOperator(SingleAssignmentOperator.New(debugInfo, objPointer, pointer));
+
+                pointer = objPointer;
+            }
+
+            return pointer;
+        }
     }
 }
