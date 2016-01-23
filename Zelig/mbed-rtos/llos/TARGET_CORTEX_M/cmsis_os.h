@@ -637,6 +637,16 @@ osStatus osMessagePut (osMessageQId queue_id, uint32_t info, uint32_t millisec);
 /// \note MUST REMAIN UNCHANGED: \b osMessageGet shall be consistent in every CMSIS-RTOS.
 osEvent osMessageGet (osMessageQId queue_id, uint32_t millisec);
 
+// 
+// !!!! CMSIS-RTOS does not definte any way to delete a Message Queue. !!!!
+// !!!! We will add one of our own.                                    !!!!
+//
+/// Get a Message or Wait for a Message from a Queue.
+/// \param[in]     queue_id      message queue ID obtained with \ref osMessageCreate.
+/// \return event information that includes status code.
+/// \note MUST REMAIN UNCHANGED: \b osMessageGet shall be consistent in every CMSIS-RTOS.
+osStatus osMessageDelete(osMessageQId queue_id);
+
 //
 // Thunk to enable returning osEvent
 //

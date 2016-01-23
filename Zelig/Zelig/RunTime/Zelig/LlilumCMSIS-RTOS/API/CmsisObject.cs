@@ -56,10 +56,7 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
 
         protected virtual void Dispose( bool disposing )
         {
-            if(disposing)
-            {
-                Deregister( this );
-            }
+            Deregister( this );
         }
 
         ~CmsisObject( )

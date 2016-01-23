@@ -73,8 +73,8 @@ u32_t sys_now(void) {
 
 /* CMSIS-RTOS implementation of the lwip operating system abstraction */
 #include "arch/sys_arch.h"
-////#include "sys_arch.h"/*
-////#include "sys.h"*/
+////#include "sys_arch.h"
+////#include "sys.h"
 
 #include "llos_system_timer.h"
 #include "llos_clock.h"
@@ -82,7 +82,7 @@ u32_t sys_now(void) {
 
 
 uint32_t sys_uSeconds() {
-    uint64_t frequency = LLOS_SYSTEM_TIMER_GetTimerFrequency();
+    uint64_t frequency = LLOS_SYSTEM_TIMER_GetTimerFrequency( NULL );
 
     uint64_t ticks = LLOS_SYSTEM_TIMER_GetTicks(NULL);
 
@@ -127,6 +127,13 @@ void sys_mbox_free(sys_mbox_t *mbox) {
     osEvent event = osMessageGet(mbox->id, 0);
     if (event.status == osEventMessage)
         error("sys_mbox_free error\n");
+
+    //
+    // The lwIP port for K64F seems to never delete the message queue and 
+    // CMSIS-RTOS does not definte any way to delete a Message Queue either 
+    // We will add one of our own.
+    //
+    osMessageDelete(mbox->id); 
 }
 
 /*---------------------------------------------------------------------------*

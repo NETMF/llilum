@@ -264,15 +264,15 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
         // o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o~~o //
 
         //
-        // Mailbox
+        // Message Queue
         //
 
         [RT.ExportedMethod]
         public static unsafe os_messageQ_cb* osMessageCreate( osMessageQDef_t* queue_def, os_thread_cb* thread_id )
         {
-            var mailbox = CmsisRtosMessageQueue.Create( queue_def->queue_sz );
+            var msgQueue = CmsisRtosMessageQueue.Create( queue_def->queue_sz );
 
-            return (os_messageQ_cb*)mailbox.ToPointer( );
+            return (os_messageQ_cb*)msgQueue.ToPointer( );
         }
 
         [RT.ExportedMethod]
@@ -285,9 +285,9 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
                 return osStatus.osErrorParameter;
             }
 
-            var mailbox = CmsisRtosMessageQueue.ToObject( (UIntPtr)queue_id );
+            var msgQueue = CmsisRtosMessageQueue.ToObject( (UIntPtr)queue_id );
 
-            if(mailbox == null)
+            if(msgQueue == null)
             {
                 ev.status = osStatus.osErrorParameter;
 
@@ -295,7 +295,7 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
             }
 
             UIntPtr message;
-            if(mailbox.TryGetMessage( (int)millisec, out message ) == false)
+            if(msgQueue.TryGetMessage( (int)millisec, out message ) == false)
             {
                 if(millisec == 0)
                 {
@@ -323,14 +323,14 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
                 return osStatus.osErrorParameter;
             }
 
-            var mailbox = CmsisRtosMessageQueue.ToObject( (UIntPtr)queue_id );
+            var msgQueue = CmsisRtosMessageQueue.ToObject( (UIntPtr)queue_id );
 
-            if(mailbox == null)
+            if(msgQueue == null)
             {
                 return osStatus.osErrorParameter;
             }
 
-            if(mailbox.TryPutMessage( new UIntPtr( info ), (int)millisec ) == false)
+            if(msgQueue.TryPutMessage( new UIntPtr( info ), (int)millisec ) == false)
             {
                 if(millisec == 0)
                 {
@@ -339,6 +339,26 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
 
                 return osStatus.osErrorTimeoutResource;
             }
+
+            return osStatus.osOK;
+        }
+        
+        [RT.ExportedMethod]
+        public static unsafe osStatus osMessageDelete( os_messageQ_cb* queue_id )
+        {
+            if(queue_id == null)
+            {
+                return osStatus.osErrorParameter;
+            }
+
+            var msgQueue = CmsisRtosMessageQueue.ToObject( (UIntPtr)queue_id );
+
+            if(msgQueue == null)
+            {
+                return osStatus.osErrorParameter;
+            }
+
+            msgQueue.Dispose( ); 
 
             return osStatus.osOK;
         }

@@ -26,7 +26,7 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
         {
             m_messages = new KernelCircularBuffer<UIntPtr>( (int)queueSize );
         }
-
+        
         //--//
 
         protected override void Dispose( bool fDisposing )
