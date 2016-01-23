@@ -298,6 +298,12 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 ThreadImpl nextThread    = tm.NextThread;
                 Context    ctx;
 
+#if DEBUG_CTX_SWITCH
+                BugCheck.Log( "ContextSwitch from thread 0x%x to 0x%x",
+                    (int)ObjectHeader.Unpack( currentThread )?.ToPointer( ),
+                    (int)ObjectHeader.Unpack( nextThread ).ToPointer( ) );
+#endif
+
                 if(currentThread != null)
                 {
                     ctx = (Context)currentThread.SwappedOutContext;
@@ -633,6 +639,20 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                     (int)registers[ 12 ],
                     (int)registers[ 13 ],
                     (int)registers[ 14 ]
+                    );
+
+            BugCheck.Log( "[Last Active Frame] R4=0x%08x, R5=0x%08x, R6=0x%08x, R7=0x%08x",
+                    (int)registers[ 2 ],
+                    (int)registers[ 3 ],
+                    (int)registers[ 4 ],
+                    (int)registers[ 5 ]
+                    );
+
+            BugCheck.Log( "[Last Active Frame] R8=0x%08x, R9=0x%08x, R10=0x%08x, R11=0x%08x",
+                    (int)registers[ 6 ],
+                    (int)registers[ 7 ],
+                    (int)registers[ 8 ],
+                    (int)registers[ 9 ]
                     );
 #endif
 

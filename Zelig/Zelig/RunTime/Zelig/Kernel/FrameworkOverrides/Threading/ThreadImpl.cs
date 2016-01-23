@@ -87,7 +87,21 @@ namespace Microsoft.Zelig.Runtime
             ThreadStart entrypoint = Entrypoint;
             
             m_swappedOutContext.PopulateFromDelegate( entrypoint, m_stack );
+
+#if DEBUG_CTX_SWITCH
+            unsafe
+            {
+                BugCheck.Log(
+                    "Thread 0x%x, ctx 0x%x: stack 0x%x (0x%x -> 0x%x)",
+                    (int)ObjectHeader.Unpack( this ).ToPointer( ),
+                    (int)ObjectHeader.Unpack( m_swappedOutContext ).ToPointer( ),
+                    (int)m_swappedOutContext.StackPointer,
+                    (int)ArrayImpl.CastAsArray( stack ).GetDataPointer( ),
+                    (int)m_swappedOutContext.BaseStackPointer );
+            }
+#endif
         }
+
 
         [TS.WellKnownMethod( "ThreadImpl_AllocateReleaseReferenceHelper" )]
         private void AllocateReleaseReferenceHelper()
