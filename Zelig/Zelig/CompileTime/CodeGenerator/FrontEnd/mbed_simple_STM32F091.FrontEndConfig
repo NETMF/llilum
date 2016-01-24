@@ -105,4 +105,4 @@
 # path to find the LLVM binaries.
 # note: Environment variabes (i.e %MY_VAR%) are supported and expanded as with all
 # options in the FrontendConfig files so you can specify a custom variable if needed
--LlvmBinPath c:\src\llvm\llvm-3.7.0.src\build\x64\Release\bin
+#-LlvmBinPath c:\src\llvm\llvm-3.7.0.src\build\x64\Release\bin

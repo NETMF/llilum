@@ -103,7 +103,7 @@ namespace Microsoft.Llilum.BoardConfigurations
     //--//
 
     [DisplayName("LLVM Hosted Compilation for STM32F091")]
-    [Defaults("Platform", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV7M))]
+    [Defaults("Platform", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV6M))]
     [Defaults("CallingConvention", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV7MCallingConvention))]
     [Defaults("Product", typeof(STM32F091MBEDHosted))]
     [Defaults("MemoryMap", typeof(STM32F091MemoryMap))]

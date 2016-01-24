@@ -4,7 +4,7 @@
 
 //#define TIMERS_SELF_TEST
 
-namespace Microsoft.Llilum.STM32F401.Drivers
+namespace Microsoft.Llilum.STM32F091.Drivers
 {
     using System.Runtime.CompilerServices;
 
