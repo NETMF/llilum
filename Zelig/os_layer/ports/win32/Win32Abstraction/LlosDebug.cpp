@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "LlosWin32.h"
 #include <llos_debug.h>
 
 VOID LLOS_DEBUG_Break(uint32_t code)

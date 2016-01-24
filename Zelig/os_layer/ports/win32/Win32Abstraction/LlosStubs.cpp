@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "LlosWin32.h"
 
 extern "C"
 {
@@ -103,6 +103,16 @@ extern "C"
 
     uint32_t CMSIS_STUB_SCB__set_PRIMASK(uint32_t priMask)
     {
+        return 0;
+    }
+
+    uint32_t us_ticker_read()
+    {
+        // This function will only be included and called if the test application was
+        // compiledfor a board other than Win32. You should verify that program.cs in
+        // the directory: zelig\zelig\test\mbed\simple\ defines WIN32 at the top of the
+        // file.
+        DebugBreak();
         return 0;
     }
 }

@@ -1,12 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//#define TEST_EXCEPTIONS // https://github.com/NETMF/llilum/issues/130
+
 using System;
 using System.IO;
 using System.Text;
-
-//#define TEST_EXCEPTIONS // https://github.com/NETMF/llilum/issues/130
-//#define BUG_GITHUB_153_UTF8_DECODE // https://github.com/NETMF/llilum/issues/153
 
 namespace Microsoft.Zelig.Test
 {
@@ -214,15 +214,13 @@ namespace Microsoft.Zelig.Test
                     ms.Flush();
                     ms.Seek(0, SeekOrigin.Begin);
                     byte[] readbuff = new byte[20];
-                    ms.Read(readbuff, 0, readbuff.Length);
-                    string testResult = new string(Encoding.UTF8.GetChars(readbuff));
-#if BUG_GITHUB_153_UTF8_DECODE
+                    int read = ms.Read(readbuff, 0, readbuff.Length);
+                    string testResult = new string(Encoding.UTF8.GetChars(readbuff, 0, read));
                     if (test != testResult)
                     {
                         result = TestResult.Fail;
                         Log.Comment("Exepected: " + test + ", but got: " + testResult);
                     }
-#endif
                 }
 
             }
@@ -291,15 +289,13 @@ namespace Microsoft.Zelig.Test
                     ms.Flush();
                     ms.Seek(0, SeekOrigin.Begin);
                     byte[] readbuff = new byte[20];
-                    ms.Read(readbuff, 0, readbuff.Length);
-                    string testResult = new string(Encoding.UTF8.GetChars(readbuff));
-#if BUG_GITHUB_153_UTF8_DECODE
+                    int read = ms.Read(readbuff, 0, readbuff.Length);
+                    string testResult = new string(Encoding.UTF8.GetChars(readbuff, 0, read));
                     if (test != testResult)
                     {
                         result = TestResult.Fail;
                         Log.Comment("Exepected: " + test + ", but got: " + testResult);
                     }
-#endif
                 }
 
             }

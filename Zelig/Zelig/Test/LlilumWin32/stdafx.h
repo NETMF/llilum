@@ -9,4 +9,3 @@
 
 #include <stdio.h>
 #include <tchar.h>
-#include "LlilumWin32.h"

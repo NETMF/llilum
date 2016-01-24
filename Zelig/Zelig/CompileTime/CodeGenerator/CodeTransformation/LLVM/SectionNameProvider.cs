@@ -11,7 +11,7 @@ namespace Microsoft.Zelig.LLVM
     /// to where Llilum supports multiple target platforms/ABIs there can be multiple implementations
     /// of this interface keyed by the LLVM Target "triple" for the target.
     /// </remarks>
-    internal interface ISectionNameProvider
+    public interface ISectionNameProvider
     {
         /// <summary>LLVM target triple this provider applies to</summary>
         string TargetTriple { get; }
@@ -27,8 +27,68 @@ namespace Microsoft.Zelig.LLVM
         string GetSectionNameFor( MethodRepresentation md );
     }
 
+    /// <summary>Section name provider for unknown or underspecified target</summary>
+    public class EmptySectionNameProvider
+        : ISectionNameProvider
+    {
+        /// <summary>Constructs a new provider</summary>
+        /// <param name="typeSystem">Type system information to use when looking up well known types</param>
+        /// <remarks>
+        /// The <paramref name="typeSystem"/> parameter is used to construct a section name suffix for
+        /// some special types (i.e. VTable, String ).
+        /// </remarks>
+        public EmptySectionNameProvider(TypeSystem typeSystem)
+        {
+        }
+
+        /// <inheritdoc/>
+        public string TargetTriple => Target.UnknownEabiTriple;
+
+        /// <inheritdoc/>
+        public string GetSectionNameFor(MethodRepresentation md)
+        {
+            return string.Empty;
+        }
+
+        /// <inheritdoc/>
+        public string GetSectionNameFor(DataManager.DataDescriptor dd)
+        {
+            return string.Empty;
+        }
+    }
+    
+    /// <summary>Section name provider for unknown or underspecified target</summary>
+    public class Win32SectionNameProvider
+        : ISectionNameProvider
+    {
+        /// <summary>Constructs a new provider</summary>
+        /// <param name="typeSystem">Type system information to use when looking up well known types</param>
+        /// <remarks>
+        /// The <paramref name="typeSystem"/> parameter is used to construct a section name suffix for
+        /// some special types (i.e. VTable, String ).
+        /// </remarks>
+        public Win32SectionNameProvider(TypeSystem typeSystem)
+        {
+        }
+
+        /// <inheritdoc/>
+        public string TargetTriple => Target.Win32EabiTriple;
+
+        /// <inheritdoc/>
+        public string GetSectionNameFor(MethodRepresentation md)
+        {
+            return string.Empty;
+        }
+
+        /// <inheritdoc/>
+        public string GetSectionNameFor(DataManager.DataDescriptor dd)
+        {
+            return string.Empty;
+        }
+    }
+
     /// <summary>Section name provider for the ARMv7m Thumb2 EABI target</summary>
-    internal class Thumb2EabiSectionNameProvider
+    public class Thumb2EabiSectionNameProvider
         : ISectionNameProvider
     {
         /// <summary>Constructs a new provider</summary>

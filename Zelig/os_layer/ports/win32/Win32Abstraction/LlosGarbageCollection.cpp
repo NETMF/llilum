@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "LlosWin32.h"
 #include <llos_mutex.h>
 
 extern "C"

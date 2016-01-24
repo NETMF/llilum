@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "LlosWin32.h"
 #include <llos_memory.h>
 
 HRESULT LLOS_MEMORY_GetMaxHeapSize(uint32_t* pMaxHeapSize)
@@ -8,7 +8,7 @@ HRESULT LLOS_MEMORY_GetMaxHeapSize(uint32_t* pMaxHeapSize)
         return E_INVALIDARG;
     }
 
-    *pMaxHeapSize = 1024 * 1024;
+    *pMaxHeapSize = 2 * 1024 * 1024;
 
     return S_OK;
 }

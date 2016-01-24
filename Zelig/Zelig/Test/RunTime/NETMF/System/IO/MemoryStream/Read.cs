@@ -2,8 +2,6 @@
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//#define BUG_GITHUB_153_UTF8_DECODE // https://github.com/NETMF/llilum/issues/153
-
 using System;
 using System.IO;
 using System.Text;
@@ -205,17 +203,13 @@ namespace Microsoft.Zelig.Test
                     ms.Flush();
                     ms.Seek(0, SeekOrigin.Begin);
                     byte[] readbuff = new byte[20];
-                    ms.Read(readbuff, 0, readbuff.Length);
-                    string testResult = new string(Encoding.UTF8.GetChars(readbuff));
-
-#if BUG_GITHUB_153_UTF8_DECODE
-
+                    int read = ms.Read(readbuff, 0, readbuff.Length);
+                    string testResult = new string(Encoding.UTF8.GetChars(readbuff, 0, read));
                     if (test != testResult)
                     {
                         result = TestResult.Fail;
                         Log.Comment("Exepected: " + test + ", but got: " + testResult);
                     }
-#endif
                 }
             }
             catch (Exception ex)

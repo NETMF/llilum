@@ -7,8 +7,10 @@ namespace Llvm.NET
     /// <summary>LLVM Target Instruction Set Architecture</summary>
     public class Target
     {
-        // TODO: add constants for all the known "triple" values
+        // TODO: add constants for all the known "triple" values 
+        public const string UnknownEabiTriple = "UnknownArch-none-eabi";
         public const string ThumbV7mEabiTriple = "thumbv7m-none-eabi";
+        public const string Win32EabiTriple    = "x86_64-pc-windows-msvc"; 
 
         /// <summary>Name of this target</summary>
         public string Name => Marshal.PtrToStringAnsi( NativeMethods.GetTargetName( TargetHandle ) );

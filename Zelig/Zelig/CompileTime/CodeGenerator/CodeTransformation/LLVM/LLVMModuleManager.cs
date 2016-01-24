@@ -22,7 +22,7 @@ namespace Microsoft.Zelig.LLVM
     using Llvm.NET.DebugInfo;
     public partial class LLVMModuleManager
     {
-        private readonly ISectionNameProvider               m_SectionNameProvider;
+        private          ISectionNameProvider               m_SectionNameProvider;
         private readonly Debugging.DebugInfo                m_dummyDebugInfo;
         private _Module                                     m_module;
         private readonly string                             m_imageName;
@@ -49,11 +49,21 @@ namespace Microsoft.Zelig.LLVM
 
             m_module = new _Module( m_imageName, m_typeSystem );
             m_dummyDebugInfo = new Debugging.DebugInfo( m_imageName, 0, 0, 0, 0 );
-            
-            // hard code the section name provider for the one and only target currently supported.
-            // In the future, when more targets are supported this can be injected via any normal
-            // means of dependency injection without requiring any additional changes in this class.
-            m_SectionNameProvider = new Thumb2EabiSectionNameProvider( m_typeSystem );
+
+            // Initialize to safe default value, will be changed later before the manager is used
+            m_SectionNameProvider = new EmptySectionNameProvider( m_typeSystem );
+        }
+
+        public ISectionNameProvider SectionNameProvider
+        {
+            get
+            {
+                return m_SectionNameProvider;
+            }
+            set
+            {
+                m_SectionNameProvider = value;
+            }
         }
 
         public void Compile()

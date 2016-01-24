@@ -1,4 +1,7 @@
 #include <Windows.h>
+#include <stdio.h>
+#include <tchar.h>
+
 #include <llos_types.h>
 
 #pragma once

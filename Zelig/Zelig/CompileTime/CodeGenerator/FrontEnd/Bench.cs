@@ -119,7 +119,7 @@ namespace Microsoft.Zelig.FrontEnd
         const string DefaultOptArgs_target_m0  = "-march=thumb -mcpu=cortex-m0";
         const string DefaultOptArgs_target_m3  = "-march=thumb -mcpu=cortex-m3";
         //const string DefaultOptArgs_target_m4 = "-march=thumb -mcpu=cortex-m4"; https://github.com/NETMF/llilum/issues/136
-        const string DefaultOptArgs_target_m4 = "-march=thumb -mcpu=cortex-m3";
+        const string DefaultOptArgs_target_m4  = "-march=thumb -mcpu=cortex-m3";
         const string DefaultOptArgs_target_m7  = "-march=thumb -mcpu=cortex-m7";
         const string DefaultOptArgs_target_x86 = "-march=x86 -mcpu=x86-64";
         const string DefaultOptArgs_target_df  = DefaultOptArgs_target_m3;

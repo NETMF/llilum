@@ -1,11 +1,11 @@
-#include "stdafx.h"
+#include "LlosWin32.h"
 #include <llos_mutex.h>
 
 HANDLE g_globalMutex = INVALID_HANDLE_VALUE;
 
 HRESULT LLOS_MUTEX_Create(LLOS_Context attributes, LLOS_Context name, LLOS_Handle* mutexHandle)
 {
-    *mutexHandle = CreateMutex((LPSECURITY_ATTRIBUTES)attributes, false, (LPCWSTR)name);
+    *mutexHandle = CreateMutexW((LPSECURITY_ATTRIBUTES)attributes, false, (LPCWSTR)name);
 
     g_globalMutex = *mutexHandle;
 

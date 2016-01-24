@@ -29,11 +29,28 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                                          ZeligIR.ControlFlowGraphStateForCodeTransformation cfg )
             : base( owner, cfg )
         {
-            m_method = cfg.Method;
-            m_wkf = cfg.TypeSystem.WellKnownFields;
-            m_wkt = cfg.TypeSystem.WellKnownTypes;
-            m_localValues = HashTableFactory.New<ZeligIR.Expression, ValueCache>();
-            m_blocks = HashTableFactory.New<ZeligIR.BasicBlock, _BasicBlock>();
+            var typeSystem = owner.TypeSystem;
+
+            m_manager       = typeSystem.Module;
+            m_method        = cfg.Method;
+            m_wkf           = typeSystem.WellKnownFields;
+            m_wkt           = typeSystem.WellKnownTypes;
+            m_localValues   = HashTableFactory.New<ZeligIR.Expression, ValueCache>();
+            m_blocks        = HashTableFactory.New<ZeligIR.BasicBlock, _BasicBlock>();
+            
+            //
+            // HACK!!! Support Windows on its own compilation abstraction
+            //
+            //m_manager.SectionNameProvider = new Thumb2EabiSectionNameProvider( typeSystem );
+
+            if (typeSystem.PlatformAbstraction.PlatformFamily == TargetModel.Win32.InstructionSetVersion.Platform_Family__Win32)
+            {
+                m_manager.SectionNameProvider = new Win32SectionNameProvider(typeSystem);
+            }
+            else
+            {
+                m_manager.SectionNameProvider = new Thumb2EabiSectionNameProvider(typeSystem);
+            }
         }
 
         //
@@ -54,8 +71,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         protected override void PrepareDataStructures( )
         {
             base.PrepareDataStructures( );
-
-            m_manager  = Owner.TypeSystem.Module;
+            
             m_function = m_manager.GetOrInsertFunction( m_method );
             m_function.SetInternalLinkage( );
             m_manager .ConvertTypeLayoutsToLLVM( );

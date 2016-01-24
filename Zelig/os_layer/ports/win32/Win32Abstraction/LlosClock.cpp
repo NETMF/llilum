@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "LlosWin32.h"
 #include <llos_clock.h>
 
 uint64_t LLOS_CLOCK_GetClockTicks()
