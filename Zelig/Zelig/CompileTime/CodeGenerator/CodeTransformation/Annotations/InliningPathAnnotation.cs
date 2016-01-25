@@ -11,6 +11,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
     public sealed class InliningPathAnnotation 
         : Annotation
+        , IInliningPathAnnotation
     {
         //
         // State

@@ -186,6 +186,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         //
         // Access Methods
         //
+        public IInliningPathAnnotation InliningPath { get; set; }
 
         public DebugInfo DebugName
         {

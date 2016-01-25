@@ -1654,6 +1654,12 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
                             break;
                         }
                     }
+                    
+                    // ensure that at least the scope information is valid
+                    if( retVal.DebugInfo == null )
+                    {
+                        retVal.DebugInfo = new Debugging.DebugInfo(string.Empty, 0, 0, 0, 0) { Scope = md };
+                    }
                 }
                 return retVal;
             }

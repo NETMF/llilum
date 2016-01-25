@@ -56,6 +56,7 @@
     <Compile Include="Annotations\BlockCopyPropagationAnnotation.cs" />
     <Compile Include="Annotations\DontRemoveAnnotation.cs" />
     <Compile Include="Annotations\ExternalCallArgumentAnnotation.cs" />
+    <Compile Include="Annotations\IInliningPathAnnotation.cs" />
     <Compile Include="Annotations\InvalidationAnnotation.cs" />
     <Compile Include="Annotations\PostInvalidationAnnotation.cs" />
     <Compile Include="Annotations\PreInvalidationAnnotation.cs" />

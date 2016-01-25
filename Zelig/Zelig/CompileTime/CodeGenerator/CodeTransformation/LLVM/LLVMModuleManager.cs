@@ -20,6 +20,7 @@ namespace Microsoft.Zelig.LLVM
     using Llvm.NET.Values;
     using System.Diagnostics;
     using Llvm.NET.DebugInfo;
+
     public partial class LLVMModuleManager
     {
         private          ISectionNameProvider               m_SectionNameProvider;
