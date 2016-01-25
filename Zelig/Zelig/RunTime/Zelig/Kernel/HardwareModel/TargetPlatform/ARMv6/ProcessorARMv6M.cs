@@ -519,6 +519,25 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
         }
 
         //--//
+        
+        [Inline]
+        protected static unsafe UIntPtr GetMainStackPointerAtReset()
+        {
+            return new UIntPtr(CMSIS_STUB_SCB__get_MSP_ResetValue());
+        }
+
+        internal static UIntPtr GetMainStackPointerBottom()
+        {
+            UIntPtr stackBottom = AddressMath.Decrement(GetMainStackPointerAtReset(), GetMainStackSize());
+
+            return stackBottom;
+        }
+
+        [Inline]
+        protected static uint GetMainStackSize()
+        {
+            return CMSIS_STUB_SCB__get_MSP_StackSize();
+        }
 
         [Inline]
         protected static UIntPtr GetMainStackPointer( )
@@ -695,6 +714,12 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
 
         [DllImport( "C" )]
         internal static extern void CMSIS_STUB_SCB__set_PSP( uint topOfProcStack );
+
+        [DllImport("C")]
+        internal static unsafe extern void* CMSIS_STUB_SCB__get_MSP_ResetValue();
+
+        [DllImport("C")]
+        internal static extern uint CMSIS_STUB_SCB__get_MSP_StackSize();
 
         [DllImport( "C" )]
         internal static extern uint CMSIS_STUB_SCB__get_MSP( );

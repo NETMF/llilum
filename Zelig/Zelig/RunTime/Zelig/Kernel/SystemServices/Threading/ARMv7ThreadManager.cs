@@ -2,7 +2,6 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-using System;
 
 namespace Microsoft.Zelig.Runtime
 {
@@ -19,15 +18,8 @@ namespace Microsoft.Zelig.Runtime
         //
         // State 
         //
-
-        //protected ThreadImpl m_NMI;
-        //protected ThreadImpl m_MemManage;
-        //protected ThreadImpl m_BusFault;
-        protected ThreadImpl m_UsageFault;
-        protected ThreadImpl m_SVCCall;
-        protected ThreadImpl m_PendSV;
-        protected ThreadImpl m_SysTick;
-        protected ThreadImpl m_interruptThread;
+        
+        protected ThreadImpl m_exceptionThread;
 
         //--//
 
@@ -39,37 +31,20 @@ namespace Microsoft.Zelig.Runtime
         {
             base.InitializeAfterStaticConstructors( systemStack );
 
-            //m_NMI         = new ThreadImpl( null, new uint[ 128 ] );
-            //m_MemManage   = new ThreadImpl( null, new uint[ 128 ] );
-            //m_BusFault    = new ThreadImpl( null, new uint[ 128 ] );
-            //m_UsageFault        = new ThreadImpl( null, new uint[ 128 ] );
-            //m_SVCCall           = new ThreadImpl( null, new uint[ 128 ] );
-            //m_PendSV            = new ThreadImpl( null, new uint[ 128 ] );
-            //m_SysTick           = new ThreadImpl( null, new uint[ 256 ] );
-            //m_interruptThread   = new ThreadImpl( null, new uint[ 512 ] );
+            //
+            // Make the stack the frame size + 1, so that we can fit the frame and be aligned to 8 bytes (array as a length member). 
+            // Currently hardcoded to 128, see https://github.com/NETMF/llilum/issues/160
+            //
+            m_exceptionThread = new ThreadImpl( Bootstrap.Initialization, new uint[ 128 ] );
 
-            ////
-            //// These threads are never started, so we have to manually register them, to enable the debugger to see them.
-            ////
-            //RegisterThread( m_NMI        );
-            //RegisterThread( m_MemManage  );
-            //RegisterThread( m_BusFault   );
-            //RegisterThread( m_UsageFault );
-            //RegisterThread( m_SVCCall         );
-            //RegisterThread( m_PendSV          );
-            //RegisterThread( m_SysTick         );
-            //RegisterThread( m_interruptThread );
+            //
+            // The msp thread is never started, so we have to manually register them, to enable the debugger to see them.
+            //
+            RegisterThread(m_exceptionThread);
 
-            ////--//
+            //--//
 
-            //m_NMI       .SetupForExceptionHandling( unchecked((uint)TargetPlatform.ARMv7.ProcessorARMv7M.IRQn_Type.NonMaskableInt_IRQn  ) );
-            //m_MemManage .SetupForExceptionHandling( unchecked((uint)TargetPlatform.ARMv7.ProcessorARMv7M.IRQn_Type.MemoryManagement_IRQn) );
-            //m_BusFault  .SetupForExceptionHandling( unchecked((uint)TargetPlatform.ARMv7.ProcessorARMv7M.IRQn_Type.BusFault_IRQn        ) );
-            //m_UsageFault.SetupForExceptionHandling( unchecked((uint)TargetPlatform.ARMv7.ProcessorARMv7M.IRQn_Type.UsageFault_IRQn      ) );
-            //m_SVCCall        .SetupForExceptionHandling( unchecked((uint)TargetPlatform.ARMv7.ProcessorARMv7M.IRQn_Type.SVCall_IRQn    ) ); 
-            //m_PendSV         .SetupForExceptionHandling( unchecked((uint)TargetPlatform.ARMv7.ProcessorARMv7M.IRQn_Type.PendSV_IRQn    ) );
-            //m_SysTick        .SetupForExceptionHandling( unchecked((uint)TargetPlatform.ARMv7.ProcessorARMv7M.IRQn_Type.SysTick_IRQn   ) );
-            //m_interruptThread.SetupForExceptionHandling( unchecked((uint)TargetPlatform.ARMv7.ProcessorARMv7M.IRQn_Type.AnyInterrupt16 ) );
+            m_exceptionThread.SetupForExceptionHandling( unchecked((uint)ProcessorARMv7M.IRQn_Type.Reset_IRQn) );
         }
 
         public override unsafe void StartThreads( )
@@ -136,7 +111,7 @@ namespace Microsoft.Zelig.Runtime
         {
             get
             {
-                return m_interruptThread;
+                return m_exceptionThread;
             }
         }
 
@@ -144,8 +119,7 @@ namespace Microsoft.Zelig.Runtime
         {
             get
             {
-                BugCheck.Assert( false, BugCheck.StopCode.IllegalSchedule );
-                return null;
+                return m_exceptionThread;
             }
         }
 
@@ -153,7 +127,7 @@ namespace Microsoft.Zelig.Runtime
         {
             get
             {
-                return m_UsageFault;
+                return m_exceptionThread;
             }
         }
 

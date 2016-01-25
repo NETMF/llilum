@@ -59,6 +59,8 @@
     <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\deploySTM32F411.bat">
       <Filter>build&amp;debug</Filter>
     </None>
+    <None Include="..\..\..\..\os_layer\ARMv7M\Vectors\startup_stm32f401xe.S" />
+    <None Include="..\..\..\..\os_layer\ARMv7M\Vectors\startup_stm32f091xc.S" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="build&amp;debug">

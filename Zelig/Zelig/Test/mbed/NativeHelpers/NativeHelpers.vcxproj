@@ -33,6 +33,8 @@
     <None Include="$(LlilumSourceRoot)\..\os_layer\ARMv7M\Vectors\startup_LPC17xx.S" />
     <None Include="$(LlilumSourceRoot)\..\os_layer\ARMv7M\Vectors\startup_MK64F12.S" />
     <None Include="$(LlilumSourceRoot)\..\os_layer\ARMv7M\Vectors\startup_stm32l152xe.S" />
+    <None Include="..\..\..\..\os_layer\ARMv7M\Vectors\startup_stm32f091xc.S" />
+    <None Include="..\..\..\..\os_layer\ARMv7M\Vectors\startup_stm32f401xe.S" />
     <None Include="..\..\..\..\os_layer\ARMv7M\Vectors\startup_stm32f411xe.S" />
   </ItemGroup>
   <ItemGroup>

@@ -301,11 +301,9 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 this.EXC_RETURN = c_MODE_RETURN__THREAD_PSP;
 
                 //
-                // Initial offset from start of stack storage must be at least as large as a frame
+                // Initial SP must still be within the stack array 
                 //
-                RT.BugCheck.Assert(
-                    ((int)stackImpl.GetEndDataPointer() - this.SP.ToUInt32()) >= RegistersOnStackNoFPContext.TotalFrameSize,
-                    BugCheck.StopCode.StackCorruptionDetected);
+                RT.BugCheck.Assert( stackImpl.GetDataPointer( ) <= this.SP.ToPointer( ), BugCheck.StopCode.StackCorruptionDetected ); 
 
                 //
                 // build the first stack frame
@@ -336,18 +334,18 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 #endif
             }
 
-            public override void SetupForExceptionHandling( uint mode )
+            public override void SetupForExceptionHandling(uint mode)
             {
                 //
                 // Stop any exception from happening
                 //
-                using(Runtime.SmartHandles.InterruptState.DisableAll())
+                using (Runtime.SmartHandles.InterruptState.DisableAll())
                 {
                     //
                     // Retrieve the MSP< which we will use to handle exceptions
                     //
-                    UIntPtr stack = ProcessorARMv7M.GetMainStackPointer();
-                    
+                    UIntPtr stack = GetMainStackPointer();
+
                     ////
                     //// Enter target mode, with interrupts disabled.
                     ////                    
@@ -356,16 +354,18 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                     //
                     // Set the stack pointer in the context to be the current MSP
                     //
-                    this.StackPointer = stack;
-                    
+                    this.BaseSP     = GetMainStackPointerAtReset();
+                    this.SP         = stack;
+                    this.EXC_RETURN = c_MODE_RETURN__THREAD_MSP;
+
                     ////
                     //// Switch back to original mode
                     ////                    
                     //SwitchToThreadUnprivilegedMode( ); 
                 }
             }
-            
-#region Tracking Collector and Exceptions  
+
+            #region Tracking Collector and Exceptions  
 
             public override bool Unwind( )
             {

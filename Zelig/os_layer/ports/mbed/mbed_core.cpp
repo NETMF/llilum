@@ -106,10 +106,40 @@ extern "C"
         __ISB(); // always emit a barrier 
     }
 
-    /*__STATIC_INLINE*/ uint32_t CMSIS_STUB_SCB__get_MSP()
-    {
-        return __get_MSP();
-    }
+	/*__STATIC_INLINE*/ uint32_t CMSIS_STUB_SCB__get_MSP()
+	{
+		return __get_MSP();
+	}
+
+	extern uint32_t* __StackTop;
+	extern uint32_t* __StackLimit;
+
+	/*__STATIC_INLINE*/ void* CMSIS_STUB_SCB__get_MSP_ResetValue()
+	{
+		//
+		// Ignore first full frame
+		//
+#if defined(TARGET_LPC1768)
+		return (void*)0x10007FFC;
+#elif defined(TARGET_K64F)
+		return (void*)0x2002FFFC;
+#elif defined(TARGET_STM32F411RE)
+		return (void*)0x2001FFFC;
+#elif defined(TARGET_STM32F401RE)
+		return (void*)0x20017FFC;
+#elif defined(TARGET_STM32L152RE)
+		return (void*)0x20013FFC;
+#elif defined(TARGET_STM32F091RC)
+		return (void*)0x????????;
+#else
+		!ERROR
+#endif
+	}
+
+	/*__STATIC_INLINE*/ uint32_t CMSIS_STUB_SCB__get_MSP_StackSize()
+	{
+		return __StackTop - __StackLimit;
+	}
 
     /*__STATIC_INLINE*/ void CMSIS_STUB_SCB__set_MSP(uint32_t topOfMainStack)
     {

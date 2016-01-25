@@ -206,13 +206,11 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 this.BaseSP     = AddressMath.AlignToLowerBoundary( new UIntPtr( stackImpl.GetEndDataPointer( ) ), 8 );
                 this.SP         = AddressMath.Decrement( this.BaseSP, RegistersOnStack.TotalFrameSize );
                 this.EXC_RETURN = c_MODE_RETURN__THREAD_PSP;
-
+                
                 //
-                // Initial offset from start of stack storage must be at least as large as a frame
+                // Initial SP must still be within the stack array 
                 //
-                RT.BugCheck.Assert((((int)stackImpl.GetEndDataPointer() - this.SP.ToUInt32()) >= RegistersOnStack.TotalFrameSize),
-                    BugCheck.StopCode.StackCorruptionDetected
-                    );
+                RT.BugCheck.Assert( stackImpl.GetDataPointer( ) <= this.SP.ToPointer( ), BugCheck.StopCode.StackCorruptionDetected ); 
 
                 RegistersOnStack* firstFrame = GetFrame(this.SP);
 
@@ -254,7 +252,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                     // Retrieve the MSP< which we will use to handle exceptions
                     //
                     UIntPtr stack = GetMainStackPointer();
-                    
+
                     ////
                     //// Enter target mode, with interrupts disabled.
                     ////                    
@@ -263,8 +261,10 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                     //
                     // Set the stack pointer in the context to be the current MSP
                     //
-                    this.StackPointer = stack;
-                    
+                    this.BaseSP     = GetMainStackPointerAtReset();
+                    this.SP         = stack;
+                    this.EXC_RETURN = c_MODE_RETURN__THREAD_MSP;
+
                     ////
                     //// Switch back to original mode
                     ////                    
