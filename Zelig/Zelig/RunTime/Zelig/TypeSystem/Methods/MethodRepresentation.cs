@@ -957,120 +957,166 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         // Debug Methods
         //
 
-        public String ToShortString( )
+        public String ToShortString()
         {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder( );
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
 
-            PrettyToString( sb, true, true );
+            PrettyToString(sb, includePrefix:true, includeReturnValue:true);
 
-            return sb.ToString( );
+            return sb.ToString();
         }
 
-        public String ToShortStringNoReturnValue( )
+        public String ToShortStringNoReturnValue()
         {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder( );
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
 
-            PrettyToString( sb, true, false );
+            PrettyToString(sb, includePrefix: true, includeReturnValue:false);
 
-            return sb.ToString( );
+            return sb.ToString();
         }
 
-        protected void PrettyToString( System.Text.StringBuilder sb,
-                                       bool fPrefix,
-                                       bool fIncludeReturnValue )
+        protected void PrettyToString(System.Text.StringBuilder sb)
         {
-            if( fPrefix )
+            PrettyToString(sb, includePrefix: true, includeReturnValue:true);
+        }
+
+        private void PrettyToString(
+            System.Text.StringBuilder sb,
+            bool includePrefix,
+            bool includeReturnValue)
+        {
+            if (includePrefix)
             {
-                if( this.IsOpenMethod )
+                if (this.IsOpenMethod)
                 {
-                    sb.Append( "generic " );
+                    sb.Append("generic ");
                 }
             }
 
-            if( fIncludeReturnValue )
+            if (includeReturnValue)
             {
-                if( m_returnType != null )
+                if (m_returnType != null)
                 {
-                    m_returnType.PrettyToString( sb, fPrefix, true );
-                    sb.Append( " " );
+                    m_returnType.PrettyToString(sb, includePrefix, true);
+                    sb.Append(" ");
                 }
             }
 
-            m_ownerType.PrettyToString( sb, fPrefix, false );
-            sb.Append( "::" );
-            sb.Append( m_name );
+            m_ownerType.PrettyToString(sb, includePrefix, false);
+            sb.Append("::");
+            sb.Append(m_name);
 
-            if( m_genericContext != null )
+            if (m_genericContext != null)
             {
-                sb.Append( "<" );
+                sb.Append("<");
 
                 TypeRepresentation[] parameters = m_genericContext.Parameters;
-                if( parameters.Length > 0 )
+                if (parameters.Length > 0)
                 {
-                    for( int i = 0; i < parameters.Length; i++ )
+                    for (int i = 0; i < parameters.Length; i++)
                     {
-                        if( i != 0 ) sb.Append( "," );
+                        if (i != 0)
+                            sb.Append(",");
 
-                        parameters[ i ].PrettyToString( sb, fPrefix, true );
+                        parameters[i].PrettyToString(sb, includePrefix, true);
                     }
                 }
                 else
                 {
                     GenericParameterDefinition[] defs = m_genericContext.ParametersDefinition;
-                    if( defs != null )
+                    if (defs != null)
                     {
-                        for( int i = 0; i < defs.Length; i++ )
+                        for (int i = 0; i < defs.Length; i++)
                         {
-                            if( i != 0 ) sb.Append( ", " );
+                            if (i != 0)
+                                sb.Append(", ");
 
-                            TypeRepresentation[] genericParamConstraints = defs[ i ].Constraints;
-                            if( genericParamConstraints.Length > 0 )
+                            TypeRepresentation[] genericParamConstraints = defs[i].Constraints;
+                            if (genericParamConstraints.Length > 0)
                             {
-                                sb.Append( "(" );
+                                sb.Append("(");
 
-                                for( int j = 0; j < genericParamConstraints.Length; j++ )
+                                for (int j = 0; j < genericParamConstraints.Length; j++)
                                 {
-                                    TypeRepresentation td = genericParamConstraints[ j ];
+                                    TypeRepresentation td = genericParamConstraints[j];
 
-                                    if( j != 0 )
+                                    if (j != 0)
                                     {
-                                        sb.Append( ", " );
+                                        sb.Append(", ");
                                     }
 
-                                    td.PrettyToString( sb, false, true );
+                                    td.PrettyToString(sb, false, true);
                                 }
 
-                                sb.Append( ")" );
+                                sb.Append(")");
                             }
 
-                            sb.Append( defs[ i ].Name );
+                            sb.Append(defs[i].Name);
                         }
                     }
                 }
 
-                sb.Append( ">" );
+                sb.Append(">");
             }
 
-            sb.Append( "(" );
-            if( m_thisPlusArguments != null )
+            sb.Append("(");
+            if (m_thisPlusArguments != null)
             {
-                for( int i = 1; i < m_thisPlusArguments.Length; i++ )
+                for (int i = 1; i < m_thisPlusArguments.Length; i++)
                 {
-                    if( i != 1 ) sb.Append( "," );
+                    if (i != 1)
+                        sb.Append(",");
 
-                    TypeRepresentation arg = m_thisPlusArguments[ i ];
-                    if( arg != null )
+                    TypeRepresentation arg = m_thisPlusArguments[i];
+                    if (arg != null)
                     {
-                        arg.PrettyToString( sb, fPrefix, true );
+                        arg.PrettyToString(sb, includePrefix, true);
                     }
                 }
             }
             else
             {
-                sb.Append( "...pending..." );
+                sb.Append("...pending...");
             }
 
-            sb.Append( ")" );
+            sb.Append(")");
+        }
+
+        public String ToSignatureString()
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+            if (m_returnType != null)
+            {
+                m_returnType.PrettyToString(sb, fPrefix: false, fWithAbbreviations: true);
+                sb.Append(" ");
+            }
+
+            sb.Append("(");
+
+            if (m_thisPlusArguments != null)
+            {
+                int start = (this is StaticMethodRepresentation) ? 1 : 0;
+                for (int i = start; i < m_thisPlusArguments.Length; i++)
+                {
+                    if (i != start)
+                        sb.Append(",");
+
+                    TypeRepresentation arg = m_thisPlusArguments[i];
+                    if (arg != null)
+                    {
+                        arg.PrettyToString(sb, fPrefix: false, fWithAbbreviations: true);
+                    }
+                }
+            }
+            else
+            {
+                sb.Append("...pending...");
+            }
+
+            sb.Append(")");
+
+            return sb.ToString();
         }
     }
 }

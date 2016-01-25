@@ -45,7 +45,7 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder( "NonVirtualMethodRepresentation(" );
 
-            PrettyToString( sb, true, true );
+            PrettyToString( sb );
 
             sb.Append( ")" );
 

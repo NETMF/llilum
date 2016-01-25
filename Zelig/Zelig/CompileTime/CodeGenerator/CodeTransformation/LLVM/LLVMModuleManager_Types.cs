@@ -250,7 +250,7 @@ namespace Microsoft.Zelig.LLVM
             if( mr.Flags.HasFlag( TS.MethodRepresentation.Attributes.PinvokeImpl ) )
                 sigName = mr.Name;
             else
-                sigName = mr.ToShortStringNoReturnValue( );
+                sigName = mr.ToSignatureString( );
 
             return m_module.GetOrInsertFunctionType( sigName, retType, args );
         }
