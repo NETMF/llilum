@@ -115,6 +115,7 @@ namespace Microsoft.DeviceModels.Win32
                 // For Win32 builds we need to keep the entry-point thread alive since it is the main process thread.
                 while(true)
                 {
+                    LLOS.HAL.Thread.LLOS_THREAD_Sleep(Timeout.Infinite);
                 }
             }
 

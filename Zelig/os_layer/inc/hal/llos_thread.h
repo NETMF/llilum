@@ -30,6 +30,7 @@ extern "C" {
     HRESULT LLOS_THREAD_DeleteThread(LLOS_Handle threadHandle);
     HRESULT LLOS_THREAD_SetPriority(LLOS_Handle threadHandle, LLOS_ThreadPriority  threadPriority);
     HRESULT LLOS_THREAD_GetPriority(LLOS_Handle threadHandle, LLOS_ThreadPriority* threadPriority);
+    VOID    LLOS_THREAD_Sleep(int32_t timeoutMilliseconds);
 
 #ifdef __cplusplus
 }

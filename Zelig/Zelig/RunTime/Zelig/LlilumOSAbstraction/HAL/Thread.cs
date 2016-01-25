@@ -59,5 +59,8 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.HAL
 
         [DllImport( "C" )]
         public static unsafe extern uint LLOS_THREAD_GetPriority( UIntPtr threadHandle, out ThreadPriority threadPriority );
+
+        [DllImport( "C" )]
+        public static unsafe extern void LLOS_THREAD_Sleep( int timeoutMs );
     }
 }

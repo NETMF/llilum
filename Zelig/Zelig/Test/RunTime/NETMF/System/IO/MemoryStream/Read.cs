@@ -208,7 +208,7 @@ namespace Microsoft.Zelig.Test
                     if (test != testResult)
                     {
                         result = TestResult.Fail;
-                        Log.Comment("Exepected: " + test + ", but got: " + testResult);
+                        Log.Comment("Expected: " + test + ", but got: " + testResult);
                     }
                 }
             }

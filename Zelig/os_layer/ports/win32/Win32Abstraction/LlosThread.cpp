@@ -242,3 +242,8 @@ HRESULT LLOS_THREAD_DeleteThread(LLOS_Handle threadHandle)
 
     return S_OK;
 }
+
+void LLOS_THREAD_Sleep(int32_t timeoutMilliseconds)
+{
+    Sleep(timeoutMilliseconds);
+}

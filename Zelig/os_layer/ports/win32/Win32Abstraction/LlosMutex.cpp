@@ -3,11 +3,23 @@
 
 HANDLE g_globalMutex = INVALID_HANDLE_VALUE;
 
+HRESULT LLOS_MUTEX_CreateGlobalLock(LLOS_Handle* mutexHandle)
+{
+    HRESULT hr = LLOS_MUTEX_Create(nullptr, nullptr, mutexHandle);
+
+    // The first mutex created will be the global mutex for handling thread synchronization.
+    // It is saved to g_globalMutex so that the native Win32 code can use the global lock.
+    if (SUCCEEDED(hr) && *mutexHandle != INVALID_HANDLE_VALUE)
+    {
+        g_globalMutex = *mutexHandle;
+    }
+
+    return hr;
+}
+
 HRESULT LLOS_MUTEX_Create(LLOS_Context attributes, LLOS_Context name, LLOS_Handle* mutexHandle)
 {
     *mutexHandle = CreateMutexW((LPSECURITY_ATTRIBUTES)attributes, false, (LPCWSTR)name);
-
-    g_globalMutex = *mutexHandle;
 
     return *mutexHandle != INVALID_HANDLE_VALUE ? S_OK : E_FAIL;
 }

@@ -11,6 +11,7 @@ extern "C" {
 
 #include "llos_types.h"
 
+HRESULT  LLOS_MUTEX_CreateGlobalLock(LLOS_Handle* mutexHandle);
 HRESULT  LLOS_MUTEX_Create(LLOS_Context attributes, LLOS_Context name, LLOS_Handle* mutexHandle);
 HRESULT  LLOS_MUTEX_Acquire(LLOS_Handle mutexHandle, int32_t timeout);
 HRESULT  LLOS_MUTEX_Release(LLOS_Handle mutexHandle);

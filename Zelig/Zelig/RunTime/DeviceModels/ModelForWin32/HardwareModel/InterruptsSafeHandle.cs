@@ -55,13 +55,13 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.Win32.SmartHandles
         {
             if(s_globalMutex == UIntPtr.Zero)
             {
-                LLOS.LlilumErrors.ThrowOnError( LLOS.HAL.Mutex.LLOS_MUTEX_Create( UIntPtr.Zero, UIntPtr.Zero, ref s_globalMutex ), false );
+                LLOS.LlilumErrors.ThrowOnError(LLOS.HAL.Mutex.LLOS_MUTEX_CreateGlobalLock(ref s_globalMutex), false);
             }
         }
 
         public static bool AreInterruptsDisabled()
         {
-            return ( s_globalMutex == UIntPtr.Zero ) || ( 1 == LLOS.HAL.Mutex.LLOS_MUTEX_CurrentThreadHasLock( s_globalMutex ) );
+            return ( s_globalMutex == UIntPtr.Zero ) || ( 1 == LLOS.HAL.Mutex.LLOS_MUTEX_CurrentThreadHasLock(s_globalMutex) );
         }
 
         [Inline]
