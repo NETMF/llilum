@@ -103,7 +103,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
             
                 //--//
 
-                internal UIntPtr GetRegisterValue( uint idx ) 
+                public UIntPtr GetRegisterValue( uint idx ) 
                 {
                     switch(idx)
                     {
@@ -543,7 +543,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
             // All overridable exceptions for Ctx switch
             //
             
-            [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_VFP__NoVFP )]
+            [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv6M)]
             [RT.HardwareExceptionHandler( RT.HardwareException.Service )]
             [RT.ExportedMethod]
             private static unsafe void SVC_Handler_Zelig( uint* args )
@@ -570,7 +570,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
                 }
             }
             
-            [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_VFP__NoVFP )]
+            [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv6M)]
             [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
             [RT.ExportedMethod]
             private static UIntPtr PendSV_Handler_Zelig( UIntPtr stackPtr )
@@ -584,7 +584,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
                 }
             }
             
-            [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_VFP__NoVFP )]
+            [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv6M)]
             [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
             [RT.ExportedMethod]
             private static void AnyInterrupt( )
@@ -599,14 +599,15 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
         // State
         //
 
-        internal static Context.RegistersOnStack Snapshot;
+        public static Context.RegistersOnStack Snapshot;
 
         //
         // Helper methods
         //
 
         //--//
-        
+
+        [RT.CapabilitiesFilter(RequiredCapabilities = TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv6M)]
         [ExportedMethod]
         private static unsafe void CUSTOM_STUB_NotifySoftwareFrameSnapshot( void* frame, int size )
         {

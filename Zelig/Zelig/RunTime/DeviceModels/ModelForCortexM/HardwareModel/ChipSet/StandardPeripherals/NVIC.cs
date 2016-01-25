@@ -4,11 +4,7 @@
 
 namespace Microsoft.DeviceModels.Chipset.CortexM
 {
-    using System;
-    using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
-
-    using Microsoft.Zelig.Runtime.TargetPlatform.ARMv7;
 
     using RT = Microsoft.Zelig.Runtime;
 
@@ -82,26 +78,26 @@ namespace Microsoft.DeviceModels.Chipset.CortexM
 
         //--//
         
-        public static void EnableInterrupt( ProcessorARMv7M.IRQn_Type irq )
+        public static void EnableInterrupt( int irq )
         {
             RT.BugCheck.Assert( irq >= 0, RT.BugCheck.StopCode.IncorrectArgument );
             
             CMSIS_STUB_NVIC_EnableIRQ( irq );
         }
 
-        public static void DisableInterrupt( ProcessorARMv7M.IRQn_Type irq )
+        public static void DisableInterrupt( int irq )
         {
             RT.BugCheck.Assert( irq >= 0, RT.BugCheck.StopCode.IncorrectArgument );
             
             CMSIS_STUB_NVIC_DisableIRQ( irq );
         }
 
-        public static void SetPriority( ProcessorARMv7M.IRQn_Type irq, uint pri )
+        public static void SetPriority( int irq, uint pri )
         {
             CMSIS_STUB_NVIC_SetPriority( irq, pri );
         }
 
-        public static uint GetPriority( ProcessorARMv7M.IRQn_Type irq )
+        public static uint GetPriority( int irq )
         {
             return CMSIS_STUB_NVIC_GetPriority( irq );
         }
@@ -111,17 +107,17 @@ namespace Microsoft.DeviceModels.Chipset.CortexM
             CMSIS_STUB_NVIC_SetPriorityGrouping( split );
         }
 
-        public static void SetPending( ProcessorARMv7M.IRQn_Type irq )
+        public static void SetPending( int irq )
         {
             CMSIS_STUB_NVIC_SetPendingIRQ( irq );
         }
         
-        public static void ClearPending( ProcessorARMv7M.IRQn_Type irq )
+        public static void ClearPending( int irq )
         {
             CMSIS_STUB_NVIC_ClearPendingIRQ( irq );
         }
         
-        public static uint GetActive( ProcessorARMv7M.IRQn_Type irq )
+        public static uint GetActive( int irq )
         {
             return CMSIS_STUB_NVIC_GetActive( irq ); 
         }
@@ -139,28 +135,28 @@ namespace Microsoft.DeviceModels.Chipset.CortexM
         private static extern uint CMSIS_STUB_NVIC_GetPriorityGrouping();
         
         [DllImport( "C" )]
-        private static extern void CMSIS_STUB_NVIC_EnableIRQ( ProcessorARMv7M.IRQn_Type IRQn );
+        private static extern void CMSIS_STUB_NVIC_EnableIRQ( int IRQn );
         
         [DllImport( "C" )]
-        private static extern void CMSIS_STUB_NVIC_DisableIRQ( ProcessorARMv7M.IRQn_Type IRQn );
+        private static extern void CMSIS_STUB_NVIC_DisableIRQ( int IRQn );
         
         [DllImport( "C" )]
-        private static extern uint CMSIS_STUB_NVIC_GetPendingIRQ( ProcessorARMv7M.IRQn_Type IRQn );
+        private static extern uint CMSIS_STUB_NVIC_GetPendingIRQ( int IRQn );
         
         [DllImport( "C" )]
-        private static extern void CMSIS_STUB_NVIC_SetPendingIRQ( ProcessorARMv7M.IRQn_Type IRQn );
+        private static extern void CMSIS_STUB_NVIC_SetPendingIRQ( int IRQn );
         
         [DllImport( "C" )]
-        private static extern void CMSIS_STUB_NVIC_ClearPendingIRQ( ProcessorARMv7M.IRQn_Type IRQn );
+        private static extern void CMSIS_STUB_NVIC_ClearPendingIRQ( int IRQn );
         
         [DllImport( "C" )]
-        private static extern uint CMSIS_STUB_NVIC_GetActive( ProcessorARMv7M.IRQn_Type IRQn );
+        private static extern uint CMSIS_STUB_NVIC_GetActive( int IRQn );
         
         [DllImport( "C" )]
-        private static extern void CMSIS_STUB_NVIC_SetPriority( ProcessorARMv7M.IRQn_Type IRQn, uint priority );
+        private static extern void CMSIS_STUB_NVIC_SetPriority( int IRQn, uint priority );
         
         [DllImport( "C" )]
-        private static extern uint CMSIS_STUB_NVIC_GetPriority( ProcessorARMv7M.IRQn_Type IRQn );
+        private static extern uint CMSIS_STUB_NVIC_GetPriority( int IRQn );
         
         [DllImport( "C" )]
         private static extern uint CMSIS_STUB_NVIC_EncodePriority( uint PriorityGroup, uint PreemptPriority, uint SubPriority );

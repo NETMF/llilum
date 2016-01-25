@@ -101,7 +101,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             //////    {
             //////        td = td.UnderlyingType;
 
-            //////        if(td == m_typeSystem.GetWellKnownType( "Microsoft_Zelig_ProcessorARMv7M_RegistersOnStack" ))
+            //////        if(td == m_typeSystem.GetWellKnownType( "Microsoft_Zelig_ProcessorARMv6M_RegistersOnStack" ))
             //////        {
             //////            return true;
             //////        }

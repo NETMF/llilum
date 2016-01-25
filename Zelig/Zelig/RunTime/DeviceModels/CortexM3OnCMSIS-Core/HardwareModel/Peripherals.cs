@@ -31,17 +31,17 @@ namespace Microsoft.CortexM3OnCMSISCore
             //
             // Faults, never disabled
             //
-            CMSIS.NVIC.SetPriority( ProcessorARMv7M.IRQn_Type.HardFault_IRQn       , ProcessorARMv7M.c_Priority__NeverDisabled ); 
-            CMSIS.NVIC.SetPriority( ProcessorARMv7M.IRQn_Type.MemoryManagement_IRQn, ProcessorARMv7M.c_Priority__NeverDisabled ); 
-            CMSIS.NVIC.SetPriority( ProcessorARMv7M.IRQn_Type.BusFault_IRQn        , ProcessorARMv7M.c_Priority__NeverDisabled ); 
-            CMSIS.NVIC.SetPriority( ProcessorARMv7M.IRQn_Type.UsageFault_IRQn      , ProcessorARMv7M.c_Priority__NeverDisabled ); 
+            CMSIS.NVIC.SetPriority( (int)ProcessorARMv7M.IRQn_Type.HardFault_IRQn       , ProcessorARMv7M.c_Priority__NeverDisabled ); 
+            CMSIS.NVIC.SetPriority( (int)ProcessorARMv7M.IRQn_Type.MemoryManagement_IRQn, ProcessorARMv7M.c_Priority__NeverDisabled ); 
+            CMSIS.NVIC.SetPriority( (int)ProcessorARMv7M.IRQn_Type.BusFault_IRQn        , ProcessorARMv7M.c_Priority__NeverDisabled ); 
+            CMSIS.NVIC.SetPriority( (int)ProcessorARMv7M.IRQn_Type.UsageFault_IRQn      , ProcessorARMv7M.c_Priority__NeverDisabled ); 
             
             //
             // System exceptions 
             //
-            CMSIS.NVIC.SetPriority( ProcessorARMv7M.IRQn_Type.SVCall_IRQn , ProcessorARMv7M.c_Priority__SVCCall ); 
-            CMSIS.NVIC.SetPriority( ProcessorARMv7M.IRQn_Type.SysTick_IRQn, ProcessorARMv7M.c_Priority__SysTick ); 
-            CMSIS.NVIC.SetPriority( ProcessorARMv7M.IRQn_Type.PendSV_IRQn , ProcessorARMv7M.c_Priority__PendSV ); 
+            CMSIS.NVIC.SetPriority( (int)ProcessorARMv7M.IRQn_Type.SVCall_IRQn , ProcessorARMv7M.c_Priority__SVCCall ); 
+            CMSIS.NVIC.SetPriority( (int)ProcessorARMv7M.IRQn_Type.SysTick_IRQn, ProcessorARMv7M.c_Priority__SysTick ); 
+            CMSIS.NVIC.SetPriority( (int)ProcessorARMv7M.IRQn_Type.PendSV_IRQn , ProcessorARMv7M.c_Priority__PendSV ); 
         }
         
         public override void Activate()

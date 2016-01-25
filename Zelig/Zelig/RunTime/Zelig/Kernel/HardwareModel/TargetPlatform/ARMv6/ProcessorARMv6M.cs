@@ -647,7 +647,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
         {
             return (StandardFrame*)SP.ToPointer( );
         }
-        
+
         //
         // All overridable exceptions
         //
@@ -663,11 +663,12 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
 
         //////    EnableFaults( );
         //////}
-        
+
         /// <summary>
         /// Hard Fault is caused by Bus Fault, Memory Management Fault, or Usage Fault if their handler 
         /// cannot be executed.
         /// </summary>
+        [RT.CapabilitiesFilter(RequiredCapabilities = TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv6M)]
         [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
         [RT.ExportedMethod]
         private static void HardFault_Handler_Zelig( uint sp )

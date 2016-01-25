@@ -199,6 +199,7 @@
     <Compile Include="SystemServices\GarbageCollectionManager.cs" />
     <Compile Include="SystemServices\MemoryManager.cs" />
     <Compile Include="SystemServices\Threading\ARMv5ThreadManager.cs" />
+    <Compile Include="SystemServices\Threading\ARMv6ThreadManager.cs" />
     <Compile Include="SystemServices\Threading\ARMv7ThreadManager.cs" />
     <Compile Include="SystemServices\Threading\ThreadManager.cs" />
     <Compile Include="SystemServices\TypeSystemManager.cs" />

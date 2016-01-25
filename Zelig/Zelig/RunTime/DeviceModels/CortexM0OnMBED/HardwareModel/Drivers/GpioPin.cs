@@ -38,7 +38,7 @@ namespace Microsoft.CortexM0OnMBED.HardwareModel
             }
 
             m_handler = M0.Drivers.InterruptController.Handler.Create(
-                (RT.TargetPlatform.ARMv7.ProcessorARMv7M.IRQn_Type)RT.GpioProvider.Instance.GetGpioPinIRQNumber(m_pinNumber),
+                RT.GpioProvider.Instance.GetGpioPinIRQNumber(m_pinNumber),
                 M.Drivers.InterruptPriority.Normal,
                 M.Drivers.InterruptSettings.RisingEdge,
                 ProcessGpioInterrupt);

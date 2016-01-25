@@ -31,6 +31,7 @@ namespace Microsoft.CortexM0OnMBED
             base.Activate( ); 
 
             m_timerForWaits = Drivers.SystemTimer.Instance.CreateTimer( WaitExpired );
+
             DeviceModels.Chipset.CortexM0.Drivers.InterruptController.Instance.Activate();
         }
 

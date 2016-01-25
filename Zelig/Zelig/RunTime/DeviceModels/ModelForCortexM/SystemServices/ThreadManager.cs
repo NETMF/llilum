@@ -2,14 +2,13 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-using Microsoft.Zelig.Runtime.TargetPlatform.ARMv7;
 
 namespace Microsoft.DeviceModels.Chipset.CortexM.Runtime
 {
     using System;
 
+    using Microsoft.Zelig.Runtime.TargetPlatform.ARMv7;
     using RT = Microsoft.Zelig.Runtime;
-
 
     public abstract class ThreadManager : RT.ARMv7ThreadManager
     {

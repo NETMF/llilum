@@ -7,7 +7,7 @@
 
 namespace Microsoft.CortexM0OnCMSISCore
 {
-    using Microsoft.Zelig.Runtime.TargetPlatform.ARMv7;
+    using Microsoft.Zelig.Runtime.TargetPlatform.ARMv6;
 
     using RT    = Microsoft.Zelig.Runtime;
     using CMSIS = Microsoft.DeviceModels.Chipset.CortexM;
@@ -31,17 +31,14 @@ namespace Microsoft.CortexM0OnCMSISCore
             //
             // Faults, never disabled
             //
-            CMSIS.NVIC.SetPriority( ProcessorARMv7M.IRQn_Type.HardFault_IRQn       , ProcessorARMv7M.c_Priority__NeverDisabled ); 
-            CMSIS.NVIC.SetPriority( ProcessorARMv7M.IRQn_Type.MemoryManagement_IRQn, ProcessorARMv7M.c_Priority__NeverDisabled ); 
-            CMSIS.NVIC.SetPriority( ProcessorARMv7M.IRQn_Type.BusFault_IRQn        , ProcessorARMv7M.c_Priority__NeverDisabled ); 
-            CMSIS.NVIC.SetPriority( ProcessorARMv7M.IRQn_Type.UsageFault_IRQn      , ProcessorARMv7M.c_Priority__NeverDisabled ); 
+            // nothing to do, on an M0/1 faults are always enabled
             
             //
             // System exceptions 
             //
-            CMSIS.NVIC.SetPriority( ProcessorARMv7M.IRQn_Type.SVCall_IRQn , ProcessorARMv7M.c_Priority__SVCCall ); 
-            CMSIS.NVIC.SetPriority( ProcessorARMv7M.IRQn_Type.SysTick_IRQn, ProcessorARMv7M.c_Priority__SysTick ); 
-            CMSIS.NVIC.SetPriority( ProcessorARMv7M.IRQn_Type.PendSV_IRQn , ProcessorARMv7M.c_Priority__PendSV ); 
+            CMSIS.NVIC.SetPriority( (int)ProcessorARMv6M.IRQn_Type.SVCall_IRQn          , ProcessorARMv6M.c_Priority__SVCCall ); 
+            CMSIS.NVIC.SetPriority( (int)ProcessorARMv6M.IRQn_Type.SysTick_IRQn_Optional, ProcessorARMv6M.c_Priority__SysTick ); 
+            CMSIS.NVIC.SetPriority( (int)ProcessorARMv6M.IRQn_Type.PendSV_IRQn          , ProcessorARMv6M.c_Priority__PendSV ); 
         }
         
         public override void Activate()
@@ -60,7 +57,7 @@ namespace Microsoft.CortexM0OnCMSISCore
 
         public override void CauseInterrupt()
         {
-            ProcessorARMv7M.CompleteContextSwitch( ); 
+            ProcessorARMv6M.CompleteContextSwitch( ); 
             //Drivers.InterruptController.Instance.CauseInterrupt( ); 
         }
 
@@ -74,11 +71,8 @@ namespace Microsoft.CortexM0OnCMSISCore
 
             while (true)
             {
-                ProcessorARMv7M.WaitForEvent( );
+                ProcessorARMv6M.WaitForEvent( );
             }
-            
-            //ProcessorARMv7M.InitiateContextSwitch( ); 
-            //while(true) ;
         }
 
         public override void ProcessInterrupt()

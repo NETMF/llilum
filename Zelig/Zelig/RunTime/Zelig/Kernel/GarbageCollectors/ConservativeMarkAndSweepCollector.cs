@@ -5,7 +5,7 @@
 namespace Microsoft.Zelig.Runtime
 {
     using System;
-    using PROC = Microsoft.Zelig.Runtime.TargetPlatform.ARMv7;
+
 
     public abstract class ConservativeMarkAndSweepCollector : MarkAndSweepCollector
     {
@@ -49,35 +49,11 @@ namespace Microsoft.Zelig.Runtime
             return new ConservativeStackWalker( this );
         }
 
-        public override uint Collect( )
-        {
-            // Snapshot the registers on the current thread
-            PROC.ProcessorARMv7M.RaiseSupervisorCall( PROC.ProcessorARMv7M.SVC_Code.SupervisorCall__SnapshotProcessModeRegisters );
-
-            return base.Collect( );
-        }
-
         //--//
 
         protected override bool IsThisAGoodPlaceToStopTheWorld( )
         {
             return true;
-        }
-
-        protected override void WalkStackFrames( )
-        {
-            // Mark the registers from the snapshot
-            for(uint regNum = 0; regNum < 13; regNum++)
-            {
-                UIntPtr ptr = PROC.ProcessorARMv7M.Snapshot.GetRegisterValue( regNum );
-
-                if(ptr != UIntPtr.Zero)
-                {
-                    VisitInternalPointer( ptr );
-                }
-            }
-
-            base.WalkStackFrames( );
         }
     }
 }

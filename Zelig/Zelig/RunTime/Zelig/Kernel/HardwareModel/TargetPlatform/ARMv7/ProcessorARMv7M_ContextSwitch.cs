@@ -103,7 +103,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             
                 //--//
 
-                internal UIntPtr GetRegisterValue( uint idx ) 
+                public UIntPtr GetRegisterValue( uint idx ) 
                 {
                     switch(idx)
                     {
@@ -605,7 +605,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         // State
         //
 
-        internal static Context.RegistersOnStack Snapshot;
+        public static Context.RegistersOnStack Snapshot;
 
         //
         // Helper methods

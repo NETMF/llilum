@@ -12,7 +12,7 @@ namespace Microsoft.CortexM0OnCMSISCore
 
     public abstract class Processor : ChipsetModel.Processor
     {
-        public abstract new class Context : RT.TargetPlatform.ARMv7.ProcessorARMv7M.Context
+        public abstract new class Context : RT.TargetPlatform.ARMv6.ProcessorARMv6M.Context
         {
             //
             // Constructor Methods

@@ -492,7 +492,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             owner.BuildTimeFlags &= ~MethodRepresentation.BuildTimeAttributes.Inline;
 
             if(this.PlatformAbstraction.PlatformVersion == TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv7M ||
-               this.PlatformAbstraction.PlatformVersion == TargetModel.Win32.InstructionSetVersion.Platform_Version__x86)
+               this.PlatformAbstraction.PlatformVersion == TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv6M ||
+               this.PlatformAbstraction.PlatformVersion == TargetModel.Win32.InstructionSetVersion.Platform_Version__x86            )
             {
                 CustomAttributeRepresentation cf = owner.FindCustomAttribute( this.WellKnownTypes.Microsoft_Zelig_Runtime_CapabilitiesFilterAttribute );
                 if(cf != null)

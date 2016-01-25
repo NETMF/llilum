@@ -8,8 +8,6 @@ namespace Microsoft.DeviceModels.Chipset.CortexM.Drivers
     using System;
     using System.Runtime.CompilerServices;
 
-    using Microsoft.Zelig.Runtime.TargetPlatform.ARMv7;
-
     using RT = Microsoft.Zelig.Runtime;
 
     [Flags]
@@ -60,7 +58,7 @@ namespace Microsoft.DeviceModels.Chipset.CortexM.Drivers
             // State
             //
 
-            private  readonly ProcessorARMv7M.IRQn_Type m_index;
+            private  readonly int                       m_index;
             internal readonly InterruptPriority         m_priority;
             private  readonly InterruptSettings         m_settings;
             private  readonly Callback                  m_callback;
@@ -70,10 +68,10 @@ namespace Microsoft.DeviceModels.Chipset.CortexM.Drivers
             // Constructor Methods
             //
 
-            private Handler( ProcessorARMv7M.IRQn_Type index    ,
-                             InterruptPriority         priority ,
-                             InterruptSettings         settings ,
-                             Callback                  callback )
+            private Handler( int               index    ,
+                             InterruptPriority priority ,
+                             InterruptSettings settings ,
+                             Callback          callback )
             {
                 m_index    = index;
                 m_priority = priority;
@@ -87,10 +85,10 @@ namespace Microsoft.DeviceModels.Chipset.CortexM.Drivers
             // Helper Methods
             //
 
-            public static Handler Create( ProcessorARMv7M.IRQn_Type index    ,
-                                          InterruptPriority         priority ,
-                                          InterruptSettings         settings ,
-                                          Callback                  callback )
+            public static Handler Create( int               index    ,
+                                          InterruptPriority priority ,
+                                          InterruptSettings settings ,
+                                          Callback          callback )
             {
                 return new Handler( index, priority, settings, callback );
             }
@@ -115,7 +113,7 @@ namespace Microsoft.DeviceModels.Chipset.CortexM.Drivers
             //
 
 
-            public ProcessorARMv7M.IRQn_Type Index
+            public int Index
             {
                 get
                 {
@@ -150,6 +148,10 @@ namespace Microsoft.DeviceModels.Chipset.CortexM.Drivers
                 }
             }
         }
+
+        //--//
+
+        static private readonly int c_Invalid = 0xFFFF; // ProcessorARMv[7|6]M.IRQn_Type.Invalid
 
         //
         // State
@@ -253,12 +255,12 @@ namespace Microsoft.DeviceModels.Chipset.CortexM.Drivers
         public void ProcessInterrupt( bool fFastOnly )
         {
             InterruptData data;
-            ProcessorARMv7M.IRQn_Type activeInterrupt = GetNextActiveInterupt();
+            int activeInterrupt = GetNextActiveInterupt();
 
             data.Context    = 0;
             data.Subcontext = 0;
 
-            while (activeInterrupt != ProcessorARMv7M.IRQn_Type.Invalid)
+            while (activeInterrupt != c_Invalid)
             {
                 RT.KernelNode<Handler> node = m_handlers.StartOfForwardWalk;
 
@@ -293,18 +295,18 @@ namespace Microsoft.DeviceModels.Chipset.CortexM.Drivers
             }
         }
     
-        public virtual ProcessorARMv7M.IRQn_Type GetNextActiveInterupt()
+        public virtual int GetNextActiveInterupt()
         {
-            return ProcessorARMv7M.IRQn_Type.Invalid;
+            return c_Invalid; 
         }
 
-        public virtual void ClearInterrupt( ProcessorARMv7M.IRQn_Type interrupt )
+        public virtual void ClearInterrupt( int interrupt )
         {
         }
 
         public void CauseInterrupt()
         {
-            NVIC.SetPending( (ProcessorARMv7M.IRQn_Type)Board.Instance.GetSystemTimerIRQNumber() ); 
+            NVIC.SetPending( Board.Instance.GetSystemTimerIRQNumber() ); 
         }
 
         public void ContinueUnderNormalInterrupt( RT.Peripherals.Continuation dlg )

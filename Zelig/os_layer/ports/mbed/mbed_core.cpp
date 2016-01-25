@@ -132,7 +132,7 @@ extern "C"
 #elif defined(TARGET_STM32F091RC)
 		return (void*)0x20017FFC;
 #else
-		!ERROR
+		!ERROR not supported platform
 #endif
 	}
 
@@ -512,6 +512,27 @@ extern "C"
 
         // __ASM volatile ("BX     LR");
     }
+
+	//
+	// Eliminate methods below eventually
+	// 
+
+	extern void BreakWithTrap();
+
+	/*__STATIC_INLINE*/ uint32_t  CMSIS_STUB_SCB__get_BASEPRI()
+	{
+		BreakWithTrap(); 
+	}
+
+	/*__STATIC_INLINE*/ uint32_t CMSIS_STUB_SCB__set_BASEPRI(uint32_t basePri)
+	{
+		BreakWithTrap();
+	}
+
+	/*__STATIC_INLINE*/ uint32_t CMSIS_STUB_SCB__get_FAULTMASK()
+	{
+		BreakWithTrap();
+	}
 
 #else
 

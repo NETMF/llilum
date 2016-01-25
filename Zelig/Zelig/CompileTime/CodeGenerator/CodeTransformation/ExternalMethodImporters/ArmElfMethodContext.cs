@@ -64,6 +64,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ExternalMethodImporters
                     arch = ElfObject.SystemArchitecture.ArmV5;
                     break;
 
+                case InstructionSetVersion.Platform_Version__ARMv6M:
+                    arch = ElfObject.SystemArchitecture.Thumb1;
+                    break;
+
                 case InstructionSetVersion.Platform_Version__ARMv7M:
                     arch = ElfObject.SystemArchitecture.Thumb2;
                     break;

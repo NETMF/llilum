@@ -144,7 +144,7 @@ namespace Microsoft.CortexM0OnMBED.Drivers
                 }
             }
             
-            ChipsetModel.NVIC.SetPriority( (RT.TargetPlatform.ARMv7.ProcessorARMv7M.IRQn_Type)ChipsetModel.Board.Instance.GetSystemTimerIRQNumber(), RT.TargetPlatform.ARMv7.ProcessorARMv7M.c_Priority__SystemTimer );
+            ChipsetModel.NVIC.SetPriority( ChipsetModel.Board.Instance.GetSystemTimerIRQNumber(), RT.TargetPlatform.ARMv6.ProcessorARMv6M.c_Priority__SystemTimer );
 
             //
             // Set up a guard to never suffer from shutting down the underlying circuitry
