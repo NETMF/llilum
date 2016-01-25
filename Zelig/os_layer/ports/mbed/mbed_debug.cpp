@@ -255,7 +255,13 @@ extern "C"
 
 #if __CORTEX_M0
 
-    !IMPLEMENT!
+#define DEFAULT_FAULT_HANDLER(handler)  \
+    __ASM volatile ("TST    LR, #0x4"); \
+    __ASM volatile ("ITE    EQ");       \
+    __ASM volatile ("MRSEQ  R0, msp");  \
+    __ASM volatile ("MRSNE  R0, psp");  \
+    handler();                          \
+    __ASM volatile ("BX     LR");       \
 
 #define DEFAULT_FAULT_HANDLER(handler)  
 

@@ -184,6 +184,9 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 #elif (WIN32)
 #elif STM32F401
         static int pwmPinNumber = (int)STM32F401.PinName.D3;
+#elif STM32F091
+        static int threadPin = (int)STM32F091.PinName.LED4;
+        static int pwmPinNumber = (int)STM32F091.PinName.PB_0;
 #else
 #error No target board defined.
 #endif
@@ -209,6 +212,10 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             (int)STM32F401.PinName.D13,
             (int)STM32F401.PinName.D12,
             (int)STM32F401.PinName.D11,
+#elif (STM32F091)
+            (int)STM32F091.PinName.LED1,
+            (int)STM32F091.PinName.LED2,
+            (int)STM32F091.PinName.LED3,
 #else
 #error No target board defined.
 #endif
