@@ -1,6 +1,4 @@
-﻿using System;
-
-// This file maps the lower level internal LLVM enumeration names to something
+﻿// This file maps the lower level internal LLVM enumeration names to something
 // more compatible with the styles, patterns and conventions familiar to .NET Developers
 // and also keeping the lower level interop namespace internal to prevent mis-use or
 // violations of uniqueness rules
@@ -472,7 +470,7 @@ namespace Llvm.NET
     /// <summary>Function index for attributes</summary>
     /// <remarks>
     /// Attributes on functions apply to the function itself, the return type
-    /// or one of the funtion's parameters. This enumeration is used to 
+    /// or one of the function's parameters. This enumeration is used to 
     /// identify where the attribute applies.
     /// </remarks>
     public enum FunctionAttributeIndex
@@ -481,7 +479,7 @@ namespace Llvm.NET
         Function = -1,
         /// <summary>The attribute applies to the return type of the function</summary>
         ReturnType = 0,
-        /// <summary>The attribute applies to the first paramter of the function</summary>
+        /// <summary>The attribute applies to the first parameter of the function</summary>
         /// <remarks>
         /// Additional parameters can identified by simply adding an integer value to
         /// this value. (i.e. FunctionAttributeIndex.Parameter0 + 1 )

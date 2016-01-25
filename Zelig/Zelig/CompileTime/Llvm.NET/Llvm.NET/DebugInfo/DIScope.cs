@@ -16,7 +16,7 @@
                 if( handle == LLVMMetadataRef.Zero )
                     return null;
 
-                return DINode.FromHandle<DIFile>( handle );
+                return MDNode.FromHandle<DIFile>( handle );
             }
         }
     }

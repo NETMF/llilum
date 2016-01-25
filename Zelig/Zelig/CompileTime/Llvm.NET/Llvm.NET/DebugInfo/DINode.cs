@@ -21,12 +21,5 @@ namespace Llvm.NET.DebugInfo
             : base( handle )
         {
         }
-
-        internal static T FromHandle<T>( LLVMMetadataRef handle )
-            where T : DINode
-        {
-            var context = Context.GetContextFor( handle );
-            return FromHandle<T>( context, handle );
-        }
     }
 }

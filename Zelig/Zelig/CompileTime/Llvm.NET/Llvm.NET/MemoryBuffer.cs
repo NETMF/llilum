@@ -40,7 +40,7 @@ namespace Llvm.NET
 
         internal LLVMMemoryBufferRef BufferHandle => BufferHandle_;
         
-        // keep as a private field so this is usable as an out param in constructor
+        // keep as a private field so this is usable as an out parameter in constructor
         private LLVMMemoryBufferRef BufferHandle_;
     }
 }

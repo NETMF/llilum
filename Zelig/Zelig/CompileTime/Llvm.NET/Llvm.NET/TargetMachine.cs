@@ -23,7 +23,7 @@ namespace Llvm.NET
         /// Though it is unclear what the replacement will be as there is no other way to get
         /// the layout information if it isn't already known.</note>
         /// </remarks>
-        public TargetData TargetData
+        public DataLayout TargetData
         {
             get
             {
@@ -31,7 +31,7 @@ namespace Llvm.NET
                 if( handle.Pointer == IntPtr.Zero )
                     return null;
 
-                return TargetData.FromHandle( Context, handle, isDisposable: false );
+                return DataLayout.FromHandle( Context, handle, isDisposable: false );
             }
         }
 

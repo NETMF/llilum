@@ -1,4 +1,5 @@
 ﻿using System;
+using Llvm.NET.DebugInfo;
 using Llvm.NET.Values;
 
 namespace Llvm.NET.Instructions
@@ -11,7 +12,7 @@ namespace Llvm.NET.Instructions
         public BasicBlock ContainingBlock => BasicBlock.FromHandle( NativeMethods.GetInstructionParent( ValueHandle ) );
 
         /// <summary>Gets the LLVM opcode for the instruction</summary>
-        public OpCode Opcode => (OpCode)NativeMethods.GetInstructionOpcode( ValueHandle );
+        public OpCode Opcode => ( OpCode )NativeMethods.GetInstructionOpcode( ValueHandle );
 
         /// <summary>FLag to indicate if the opcode is for a memory access <see cref="Alloca"/>, <see cref="Load"/>, <see cref="Store"/></summary>
         public bool IsMemoryAccess
@@ -48,7 +49,7 @@ namespace Llvm.NET.Instructions
 
         internal Instruction( LLVMValueRef valueRef )
             : base( ValidateConversion( valueRef, NativeMethods.IsAInstruction ) )
-        { 
+        {
         }
     }
 

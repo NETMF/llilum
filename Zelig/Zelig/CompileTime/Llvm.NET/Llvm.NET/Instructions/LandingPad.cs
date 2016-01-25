@@ -1,4 +1,5 @@
 ﻿using Llvm.NET.Values;
+using System;
 
 namespace Llvm.NET.Instructions
 {
@@ -10,7 +11,13 @@ namespace Llvm.NET.Instructions
         {
         }
 
-        public void AddClause( Value clause ) => NativeMethods.AddClause( ValueHandle, clause.ValueHandle );
+        public void AddClause(Value clause)
+        {
+            if( clause == null )
+                throw new ArgumentNullException( nameof( clause ) );
+
+            NativeMethods.AddClause(ValueHandle, clause.ValueHandle);
+        }
 
         public void SetCleanup( bool value ) => NativeMethods.SetCleanup( ValueHandle, value );
     }

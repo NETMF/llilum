@@ -77,7 +77,7 @@ namespace Llvm.NET.DebugInfo
         /// <summary>Resolves a temporary metadata node for the array if full size information wasn't available at creation time</summary>
         /// <param name="layout">Type layout information</param>
         /// <param name="diBuilder">Debug information builder for creating the new debug information</param>
-        public void ResolveTemporary( TargetData layout, DebugInfoBuilder diBuilder )
+        public void ResolveTemporary( DataLayout layout, DebugInfoBuilder diBuilder )
         {
             if( layout == null )
                 throw new ArgumentNullException( nameof( layout ) );

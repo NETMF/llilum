@@ -53,9 +53,10 @@ namespace Microsoft.Zelig.LLVM
                         };
 
             LlvmModule.AddModuleFlag( ModuleFlagBehavior.Override, NativeModule.DebugVersionValue, NativeModule.DebugMetadataVersion );
-
             TypeSystem = typeSystem;
         }
+
+        internal LLVMModuleManager Manager => TypeSystem.Module;
 
         internal TypeSystemForCodeTransformation TypeSystem { get; }
 
@@ -178,13 +179,13 @@ namespace Microsoft.Zelig.LLVM
             return ucv;
         }
 
-        public _Function GetOrInsertFunction( LLVMModuleManager manager, MethodRepresentation method )
+        public _Function GetOrInsertFunction( MethodRepresentation method )
         {
             _Function retVal;
             if( m_FunctionMap.TryGetValue( method.m_identity, out retVal ) )
                 return retVal;
 
-            retVal = new _Function( this, manager, method );
+            retVal = new _Function( this, method );
             m_FunctionMap.Add( method.m_identity, retVal );
             return retVal;
         }
@@ -457,11 +458,11 @@ namespace Microsoft.Zelig.LLVM
             return retVal;
         }
 
-        private Function CreateLLvmFunctionWithDebugInfo( LLVMModuleManager manager, MethodRepresentation method )
+        private Function CreateLLvmFunctionWithDebugInfo( MethodRepresentation method )
         {
             string mangledName = LLVMModuleManager.GetFullMethodName( method );
-            _Type functionType = manager.GetOrInsertType( method );
-            DebugInfo loc = method.DebugInfo ?? manager.GetDebugInfoFor( method );
+            _Type functionType = Manager.GetOrInsertType( method );
+            DebugInfo loc = method.DebugInfo ?? Manager.GetDebugInfoFor( method );
             Debug.Assert( loc != null );
 
             // Create the DISupprogram info

@@ -93,7 +93,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                 foreach(CallOperator call in m_inlinedCalls)
                 {
                     var anInner = call.GetAnnotation< InliningPathAnnotation >();
-                    var anNew   = InliningPathAnnotation.Create( this.TypeSystem, anOuter, md, anInner );
+                    var anNew   = InliningPathAnnotation.Create( this.TypeSystem, anOuter, md, call.DebugInfo, anInner );
 
                     call.RemoveAnnotation( anInner );
                     call.AddAnnotation   ( anNew   );

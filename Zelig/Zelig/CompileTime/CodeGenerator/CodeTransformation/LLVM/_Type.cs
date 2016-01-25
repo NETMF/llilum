@@ -115,8 +115,8 @@ namespace Microsoft.Zelig.LLVM
                 break;
 
             default:
-                // All other types are created as structures the Debug type is a temporary.
-                // Creation of concrete DIType deferred until SetupFields when full field
+                // All other types are created as structures with the Debug type as a temporary.
+                // Creation of concrete DIType is deferred until SetupFields when full field
                 // layout information is known.
                 DebugType = new DebugStructType( LlvmModule, tr.FullName, (DIScope)diNamespace ?? LlvmModule.DICompileUnit, tr.FullName );
                 break;
@@ -124,6 +124,7 @@ namespace Microsoft.Zelig.LLVM
         }
 
         internal TypeRepresentation TypeRepresentation { get; }
+
         public bool IsDouble => DebugType.IsDouble;
 
         public bool IsFloat => DebugType.IsFloat;

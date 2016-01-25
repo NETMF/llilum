@@ -30,9 +30,10 @@ LLVMGetGlobalAlias
 LLVMGetAliasee
 LLVMMDNodeResolveCycles
 LLVMGetArgumentIndex
-LLVMDIScopeGetFile
 
 ; Debug info functions not part of standard LLVM-C API
+LLVMDIScopeGetFile
+LLVMDISubProgramGetFunction
 LLVMGetMetadataID
 LLVMGetNodeContext
 LLVMGetDIFileName
@@ -41,6 +42,7 @@ LLVMGetDILocationScope
 LLVMGetDILocationLine
 LLVMGetDILocationColumn
 LLVMGetDILocationInlinedAt
+LLVMDILocationGetInlinedAtScope
 LLVMSetDILocation
 LLVMSetDebugLoc
 LLVMNewDIBuilder
@@ -92,6 +94,7 @@ LLVMDITypeGetName
 LLVMMDNodeGetNumOperands
 LLVMMDNodeGetOperand
 LLVMGetOperandNode
+LLVMDILocalScopeGetSubProgram
 
 ; AttributeSet manipulation
 LLVMCreateEmptyAttributeSet
@@ -182,7 +185,7 @@ LLVMAddThreadSanitizerPass
 LLVMAddMemorySanitizerPass
 LLVMAddDataFlowSanitizerPass
 
-; Redirecting to noninlined functions for inlined LLVM-C APIs
+; Redirecting to non-inlined functions for inlined LLVM-C APIs
 LLVMInitializeAllAsmParsers    = LLVMInitializeAllAsmParsersExport
 LLVMInitializeAllAsmPrinters   = LLVMInitializeAllAsmPrintersExport
 LLVMInitializeAllTargets       = LLVMInitializeAllTargetsExport

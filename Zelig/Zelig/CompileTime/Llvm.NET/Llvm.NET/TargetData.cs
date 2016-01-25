@@ -37,13 +37,13 @@ namespace Llvm.NET
     /// The values in the example table are for x86-32-linux.
     /// </note>
     /// </remarks>
-    public class TargetData
+    public class DataLayout
         : IDisposable
     {
         /// <summary>Context used for this data (in particular, for retrieving pointer types)</summary>
         public Context Context { get; }
 
-        /// <summary>Retrives the byte ordering for this target</summary>
+        /// <summary>Retrieves the byte ordering for this target</summary>
         public ByteOrdering Endianess => ( ByteOrdering )NativeMethods.ByteOrder( OpaqueHandle );
 
         /// <summary>Retrieves the size of a pointer for the default address space of the target</summary>
@@ -55,13 +55,13 @@ namespace Llvm.NET
         /// <returns>Size of a pointer</returns>
         public uint PointerSize( uint addressSpace ) => NativeMethods.PointerSizeForAS( OpaqueHandle, addressSpace );
 
-        /// <summary>Retrives an LLVM integer type with the same bit width as
-        /// a pointer for the default address sapce of the target</summary>
+        /// <summary>Retrieves an LLVM integer type with the same bit width as
+        /// a pointer for the default address space of the target</summary>
         /// <returns>Integer type matching the bit width of a native pointer in the target's default address space</returns>
         public ITypeRef IntPtrType( ) => TypeRef.FromHandle( NativeMethods.IntPtrTypeInContext( Context.ContextHandle, OpaqueHandle ) );
 
-        /// <summary>Retrives an LLVM integer type with the same bit width as
-        /// a pointer for the given address sapce of the target</summary>
+        /// <summary>Retrieves an LLVM integer type with the same bit width as
+        /// a pointer for the given address space of the target</summary>
         /// <returns>Integer type matching the bit width of a native pointer in the target's address space</returns>
         public ITypeRef IntPtrType( uint addressSpace )
         {
@@ -83,10 +83,10 @@ namespace Llvm.NET
         }
 
         /// <summary>Retrieves the number of bits required to store a value of the given type</summary>
-        /// <param name="typeRef">Type to retrive the storage size of</param>
+        /// <param name="typeRef">Type to retrieve the storage size of</param>
         /// <returns>Number of bits required to store a value of the given type in the target</returns>
-        /// <remarks>This method retrives the storage size in bits of a given type. The storage size
-        /// includes any trailing padding bits that may be needed if the target requres reading a wider
+        /// <remarks>This method retrieves the storage size in bits of a given type. The storage size
+        /// includes any trailing padding bits that may be needed if the target requires reading a wider
         /// word size. (e.g. most systems can't write a single bit value for an LLVM i1, thus the
         /// storage size is whatever the minimum number of bits that the target requires to store a value
         /// of the given type)
@@ -98,7 +98,7 @@ namespace Llvm.NET
         }
 
         /// <summary>Retrieves the ABI specified size of the given type</summary>
-        /// <param name="typeRef">Type to ge the size from</param>
+        /// <param name="typeRef">Type to get the size from</param>
         /// <returns>Size of the type</returns>
         public ulong AbiSizeOf( ITypeRef typeRef )
         {
@@ -168,11 +168,11 @@ namespace Llvm.NET
         public ulong BitOffsetOfElement( IStructType llvmType, uint element ) => OffsetOfElement( llvmType, element ) * 8;
 
         /// <summary>Parses an LLVM target layout string</summary>
-        /// <param name="context"><see cref="Context"/> for types created by the ne <see cref="TargetData"/></param>
+        /// <param name="context"><see cref="Context"/> for types created by the new <see cref="DataLayout"/></param>
         /// <param name="layout">string to parse</param>
         /// <returns>Parsed target data</returns>
         /// <remarks>For full details on the syntax of the string see <a href="http://llvm.org/releases/3.7.0/docs/LangRef.html#data-layout">http://llvm.org/releases/3.7.0/docs/LangRef.html#data-layout</a></remarks>
-        public static TargetData Parse( Context context, string layout )
+        public static DataLayout Parse( Context context, string layout )
         {
             var handle = NativeMethods.CreateTargetData( layout );
             return FromHandle( context, handle, true );
@@ -190,7 +190,7 @@ namespace Llvm.NET
             }
         }
 
-        ~TargetData( )
+        ~DataLayout( )
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose( false );
@@ -205,22 +205,22 @@ namespace Llvm.NET
         }
         #endregion
 
-        internal TargetData( Context context, LLVMTargetDataRef targetDataHandle, bool isDisposable )
+        internal DataLayout( Context context, LLVMTargetDataRef targetDataHandle, bool isDisposable )
         {
             OpaqueHandle = targetDataHandle;
             IsDisposable = isDisposable;
             Context = context;
         }
 
-        internal static TargetData FromHandle( Context context, LLVMTargetDataRef targetDataRef, bool isDisposable )
+        internal static DataLayout FromHandle( Context context, LLVMTargetDataRef targetDataRef, bool isDisposable )
         {
             lock ( TargetDataMap )
             {
-                TargetData retVal;
+                DataLayout retVal;
                 if( TargetDataMap.TryGetValue( targetDataRef.Pointer, out retVal ) )
                     return retVal;
 
-                retVal = new TargetData( context, targetDataRef, isDisposable );
+                retVal = new DataLayout( context, targetDataRef, isDisposable );
                 TargetDataMap.Add( targetDataRef.Pointer, retVal );
                 return retVal;
             }
@@ -234,6 +234,6 @@ namespace Llvm.NET
                 throw new ArgumentException( "Type must be sized to get target size information", name );
         }
 
-        private static readonly Dictionary<IntPtr, TargetData> TargetDataMap = new Dictionary<IntPtr, TargetData>( );
+        private static readonly Dictionary<IntPtr, DataLayout> TargetDataMap = new Dictionary<IntPtr, DataLayout>( );
     }
 }

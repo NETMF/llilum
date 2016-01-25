@@ -7,5 +7,7 @@
             : base( handle )
         {
         }
+
+        public new DILocalScope Scope => base.Scope as DILocalScope;
     }
 }

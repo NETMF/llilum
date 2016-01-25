@@ -75,7 +75,7 @@ namespace Llvm.NET.DebugInfo
                                                                  , compilationFlags
                                                                  , runtimeVersion
                                                                  );
-            var retVal = DINode.FromHandle<DICompileUnit>( handle );
+            var retVal = MDNode.FromHandle<DICompileUnit>( handle );
             OwningModule.DICompileUnit = retVal;
             return retVal;
         }
@@ -98,7 +98,7 @@ namespace Llvm.NET.DebugInfo
                                                                , file?.MetadataHandle ?? LLVMMetadataRef.Zero
                                                                , line
                                                                );
-            return DINode.FromHandle<DINamespace>( handle );
+            return MDNode.FromHandle<DINamespace>( handle );
         }
 
         /// <summary>Creates a <see cref="DIFile"/></summary>
@@ -128,7 +128,7 @@ namespace Llvm.NET.DebugInfo
                 return null;
 
             var handle = NativeMethods.DIBuilderCreateFile( BuilderHandle, fileName, directory ?? string.Empty );
-            return DINode.FromHandle<DIFile>( handle );
+            return MDNode.FromHandle<DIFile>( handle );
         }
 
         /// <summary>Creates a new <see cref="DILexicalBlock"/></summary>
@@ -151,7 +151,7 @@ namespace Llvm.NET.DebugInfo
                                                                   , line
                                                                   , column
                                                                   );
-            return DINode.FromHandle<DILexicalBlock>( handle );
+            return MDNode.FromHandle<DILexicalBlock>( handle );
         }
 
         /// <summary>Creates a <see cref="DILexicalBlockFile"/></summary>
@@ -171,7 +171,7 @@ namespace Llvm.NET.DebugInfo
                 throw new ArgumentNullException( nameof( file ) );
 
             var handle = NativeMethods.DIBuilderCreateLexicalBlockFile( BuilderHandle, scope.MetadataHandle, file.MetadataHandle, discriminator );
-            return DINode.FromHandle<DILexicalBlockFile>( handle );
+            return MDNode.FromHandle<DILexicalBlockFile>( handle );
         }
 
         /// <summary>Create a <see cref="DISubProgram"/> with debug information</summary>
@@ -237,7 +237,7 @@ namespace Llvm.NET.DebugInfo
                                                               , typeParameter?.MetadataHandle ?? LLVMMetadataRef.Zero
                                                               , declaration?.MetadataHandle ?? LLVMMetadataRef.Zero
                                                               );
-            return DINode.FromHandle<DISubProgram>( handle );
+            return MDNode.FromHandle<DISubProgram>( handle );
         }
 
         /// <summary>Creates a new forward declaration to a function</summary>
@@ -295,7 +295,7 @@ namespace Llvm.NET.DebugInfo
                                                                          , LLVMMetadataRef.Zero
                                                                          , LLVMMetadataRef.Zero
                                                                          );
-            return DINode.FromHandle<DISubProgram>( handle );
+            return MDNode.FromHandle<DISubProgram>( handle );
         }
 
         public DILocalVariable CreateLocalVariable( DIScope scope
@@ -305,10 +305,9 @@ namespace Llvm.NET.DebugInfo
                                                   , DIType type
                                                   , bool alwaysPreserve
                                                   , DebugInfoFlags debugFlags
-                                                  , uint argNo
                                                   )
         {
-            return CreateLocalVariable( Tag.AutoVariable, scope, name, file, line, type, alwaysPreserve, ( uint )debugFlags, argNo );
+            return CreateLocalVariable( Tag.AutoVariable, scope, name, file, line, type, alwaysPreserve, ( uint )debugFlags, 0 );
         }
 
         /// <summary>Creates an argument for a function as a <see cref="DILocalVariable"/></summary>
@@ -317,7 +316,7 @@ namespace Llvm.NET.DebugInfo
         /// <param name="file"><see cref="DIFile"/> containing the function this argument is declared in</param>
         /// <param name="line">Line number fort his argument</param>
         /// <param name="type">Debug type for this argument</param>
-        /// <param name="alwaysPreserve">FLag to indicate if this argument is always preserved for debug view even if optimization would remove it</param>
+        /// <param name="alwaysPreserve">Flag to indicate if this argument is always preserved for debug view even if optimization would remove it</param>
         /// <param name="debugFlags"><see cref="DebugInfoFlags"/> for this argument</param>
         /// <param name="argNo">One based argument index on the method (e.g the first argument is 1 not 0 )</param>
         /// <returns><see cref="DILocalVariable"/> representing the function argument</returns>
@@ -331,6 +330,9 @@ namespace Llvm.NET.DebugInfo
                                              , uint argNo
                                              )
         {
+            if (argNo > UInt16.MaxValue)
+                throw new ArgumentOutOfRangeException(nameof(argNo), "Argument index must fit in 16bit unsigned value");
+
             return CreateLocalVariable( Tag.ArgVariable, scope, name, file, line, type, alwaysPreserve, ( uint )debugFlags, argNo );
         }
 
@@ -343,7 +345,7 @@ namespace Llvm.NET.DebugInfo
         public DIBasicType CreateBasicType( string name, ulong bitSize, ulong bitAlign, DiTypeKind encoding )
         {
             var handle = NativeMethods.DIBuilderCreateBasicType( BuilderHandle, name, bitSize, bitAlign, ( uint )encoding );
-            return DINode.FromHandle<DIBasicType>( handle );
+            return MDNode.FromHandle<DIBasicType>( handle );
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "Specific type required by interop call" )]
@@ -355,7 +357,7 @@ namespace Llvm.NET.DebugInfo
                                                                  , bitAlign
                                                                  , name ?? string.Empty
                                                                  );
-            return DINode.FromHandle<DIDerivedType>( handle );
+            return MDNode.FromHandle<DIDerivedType>( handle );
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "Specific type required by interop call" )]
@@ -365,7 +367,7 @@ namespace Llvm.NET.DebugInfo
                 throw new ArgumentNullException( nameof( baseType ) );
 
             var handle = NativeMethods.DIBuilderCreateQualifiedType( BuilderHandle, ( uint )tag, baseType.MetadataHandle );
-            return DINode.FromHandle<DIDerivedType>( handle );
+            return MDNode.FromHandle<DIDerivedType>( handle );
         }
 
         public DITypeArray CreateTypeArray( params DIType[ ] types ) => CreateTypeArray( ( IEnumerable<DIType> )types );
@@ -396,7 +398,7 @@ namespace Llvm.NET.DebugInfo
                                                                     , types.MetadataHandle
                                                                     , ( uint )debugFlags
                                                                     );
-            return DINode.FromHandle<DISubroutineType>( handle );
+            return MDNode.FromHandle<DISubroutineType>( handle );
         }
 
         public DISubroutineType CreateSubroutineType( DebugInfoFlags debugFlags )
@@ -440,7 +442,7 @@ namespace Llvm.NET.DebugInfo
                                                                 , derivedFrom?.MetadataHandle ?? LLVMMetadataRef.Zero
                                                                 , elements.Tuple.MetadataHandle
                                                                 );
-            return DINode.FromHandle<DICompositeType>( handle );
+            return MDNode.FromHandle<DICompositeType>( handle );
         }
 
         public DICompositeType CreateStructType( DIScope scope
@@ -500,7 +502,7 @@ namespace Llvm.NET.DebugInfo
                                                                 , ( uint )debugFlags
                                                                 , type.MetadataHandle
                                                                 );
-            return DINode.FromHandle<DIDerivedType>( handle );
+            return MDNode.FromHandle<DIDerivedType>( handle );
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "Specific type required by interop call" )]
@@ -513,7 +515,7 @@ namespace Llvm.NET.DebugInfo
                 throw new ArgumentNullException( nameof( subscripts ) );
 
             var handle = NativeMethods.DIBuilderCreateArrayType( BuilderHandle, bitSize, bitAlign, elementType.MetadataHandle, subscripts.Tuple.MetadataHandle );
-            return DINode.FromHandle<DICompositeType>( handle );
+            return MDNode.FromHandle<DICompositeType>( handle );
         }
 
         public DICompositeType CreateArrayType( ulong bitSize, ulong bitAlign, DIType elementType, params DINode[ ] subscripts )
@@ -531,13 +533,13 @@ namespace Llvm.NET.DebugInfo
                                                              , line
                                                              , context?.MetadataHandle ?? LLVMMetadataRef.Zero
                                                              );
-            return DINode.FromHandle<DIDerivedType>( handle );
+            return MDNode.FromHandle<DIDerivedType>( handle );
         }
 
         public DISubRange CreateSubRange( long lo, long count )
         {
             var handle = NativeMethods.DIBuilderGetOrCreateSubrange( BuilderHandle, lo, count );
-            return DINode.FromHandle<DISubRange>( handle );
+            return MDNode.FromHandle<DISubRange>( handle );
         }
 
         public DINodeArray GetOrCreateArray( IEnumerable<DINode> elements )
@@ -563,7 +565,7 @@ namespace Llvm.NET.DebugInfo
         public DIEnumerator CreateEnumeratorValue( string name, long value )
         {
             var handle = NativeMethods.DIBuilderCreateEnumeratorValue( BuilderHandle, name, value );
-            return DINode.FromHandle<DIEnumerator>( handle );
+            return MDNode.FromHandle<DIEnumerator>( handle );
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "Specific type required by interop call" )]
@@ -597,7 +599,7 @@ namespace Llvm.NET.DebugInfo
                                                                      , underlyingType.MetadataHandle
                                                                      , uniqueId
                                                                      );
-            return DINode.FromHandle<DICompositeType>( handle );
+            return MDNode.FromHandle<DICompositeType>( handle );
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "Specific type required by interop call" )]
@@ -632,7 +634,7 @@ namespace Llvm.NET.DebugInfo
                                                                     , value.ValueHandle
                                                                     , declaration?.MetadataHandle ?? LLVMMetadataRef.Zero
                                                                     );
-            return DINode.FromHandle<DIGlobalVariable>( handle );
+            return MDNode.FromHandle<DIGlobalVariable>( handle );
         }
 
         public void Finish( )
@@ -690,7 +692,7 @@ namespace Llvm.NET.DebugInfo
             return Value.FromHandle<Instruction>( handle );
         }
 
-        public Instruction InsertDeclare( Value storage, DILocalVariable varInfo, DILocation location, BasicBlock insertAtEnd )
+        public CallInstruction InsertDeclare( Value storage, DILocalVariable varInfo, DILocation location, BasicBlock insertAtEnd )
         {
             return InsertDeclare( storage, varInfo, CreateExpression( ), location, insertAtEnd );
         }
@@ -712,6 +714,9 @@ namespace Llvm.NET.DebugInfo
 
             if( insertAtEnd == null )
                 throw new ArgumentNullException( nameof( insertAtEnd ) );
+
+            if (location.Scope.SubProgram != varInfo.Scope.SubProgram)
+                throw new ArgumentException("Mismatched scopes for location and variable");
 
             var handle = NativeMethods.DIBuilderInsertDeclareAtEnd( BuilderHandle
                                                                   , storage.ValueHandle
@@ -780,6 +785,17 @@ namespace Llvm.NET.DebugInfo
             return InsertValue( value, offset, varInfo, null, location, insertAtEnd );
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
+        public CallInstruction InsertValue( Value value
+                                          , DILocalVariable varInfo
+                                          , DIExpression expression
+                                          , DILocation location
+                                          , BasicBlock insertAtEnd
+                                          )
+        {
+            return InsertValue(value, 0, varInfo, expression, location, insertAtEnd);
+        }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters" )]
         public CallInstruction InsertValue( Value value
                                           , UInt64 offset
@@ -806,6 +822,9 @@ namespace Llvm.NET.DebugInfo
 
             if( location.Scope != varInfo.Scope )
                 throw new ArgumentException( "mismatched scopes" );
+
+            if( !location.Describes(insertAtEnd.ContainingFunction ) )
+                throw new ArgumentException( "location does not describe the specified block's containing function" );
 
             var handle = NativeMethods.DIBuilderInsertValueAtEnd( BuilderHandle
                                                                  , value.ValueHandle
@@ -859,7 +878,7 @@ namespace Llvm.NET.DebugInfo
                                                                               , alignBits
                                                                               , (uint)flags
                                                                               );
-            return DINode.FromHandle<DICompositeType>( handle );
+            return MDNode.FromHandle<DICompositeType>( handle );
         }
 
         public void Dispose( )
@@ -909,7 +928,7 @@ namespace Llvm.NET.DebugInfo
                                                                    , flags
                                                                    , argNo
                                                                    );
-            return DINode.FromHandle<DILocalVariable>( handle );
+            return MDNode.FromHandle<DILocalVariable>( handle );
         }
 
         private readonly NativeModule OwningModule;

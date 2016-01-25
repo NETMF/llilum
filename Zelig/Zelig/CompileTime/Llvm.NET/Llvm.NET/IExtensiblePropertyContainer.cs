@@ -6,8 +6,8 @@ namespace Llvm.NET
     /// <summary>Interface to allow adding arbitrary named data items to an object</summary>
     /// <remarks>
     /// It is sometimes useful for code generation applications to attach some tool specific
-    /// data to the LLVM objects created but that don't need representation as LLVM MetadataNodes.
-    /// This interface provides such a facility.
+    /// data to the LLVM objects created but that don't need representation as LLVM Metadata
+    /// nodes. This interface provides such a facility.
     /// </remarks>
     public interface IExtensiblePropertyContainer
     {
@@ -25,19 +25,28 @@ namespace Llvm.NET
         /// <param name="value">value to add</param>
         /// <remarks>
         /// Adds the value with the specified id. If a value with the same id
-        /// already exists and its type is the same as vlaue it is replaced. If
-        /// the existing value is of a different type, then an ArgumentException
-        /// is thrown.
+        /// already exists and its type is the same as <paramref name="value"/>
+        /// it is replaced. If the existing value is of a different type, then
+        /// an ArgumentException is thrown.
         /// </remarks>
         void AddExtendedPropertyValue( string id, object value );
     }
 
     /// <summary>Provides consistent accessors for an extended property</summary>
     /// <typeparam name="T">Type of values stored in the property</typeparam>
+    /// <remarks>
+    /// This class is used to describe a property stored in a class implementing
+    /// <see cref="IExtensiblePropertyContainer"/>. Using a single, typically
+    /// <see langword="static"/>, instance of this class to describe and access 
+    /// an extended property helps to encapsulate the type casting and property
+    /// ID into a single place. Making calling code easier to comprehend and
+    /// less prone to typographical errors that a compiler can't catch ahead of
+    /// time.
+    /// </remarks>
     public class ExtensiblePropertyDescriptor<T>
     {
         /// <summary>Creates a new instance of a property descriptor</summary>
-        /// <param name="name">Name of the pextended property</param>
+        /// <param name="name">Name of the extended property</param>
         public ExtensiblePropertyDescriptor( string name )
         {
             Name = name;

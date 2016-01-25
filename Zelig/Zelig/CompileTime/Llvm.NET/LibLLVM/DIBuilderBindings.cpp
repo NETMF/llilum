@@ -57,6 +57,12 @@ extern "C"
         return wrap( loc->getInlinedAt() );
     }
 
+    LLVMMetadataRef /*DILocalScope*/ LLVMDILocationGetInlinedAtScope( LLVMMetadataRef /*DILocation*/ location )
+    {
+        DILocation* loc = unwrap<DILocation>( location );
+        return wrap( loc->getInlinedAtScope( ) );
+    }
+
     char const* LLVMGetDIFileName( LLVMMetadataRef /*DIFile*/ file )
     {
         DIFile* pFile = unwrap<DIFile>( file );
@@ -642,13 +648,16 @@ extern "C"
 
     LLVMMetadataRef LLVMDILocation( LLVMContextRef context, unsigned Line, unsigned Column, LLVMMetadataRef scope, LLVMMetadataRef InlinedAt )
     {
-        DILocation* pLoc = DILocation::get( *unwrap( context )
-                                          , Line
-                                          , Column
-                                          , unwrap<DILocalScope>( scope )
-                                          , InlinedAt ? unwrap<DILocation>( InlinedAt ) : nullptr
-                                          );
-        return wrap( pLoc );
+        DILocation* inlinedAtLocation = InlinedAt ? unwrap<DILocation>( InlinedAt ) : nullptr;
+        DILocation* pRetVal;
+        pRetVal = DILocation::get( *unwrap( context )
+                                    , Line
+                                    , Column
+                                    , unwrap<DILocalScope>( scope )
+                                    , inlinedAtLocation
+                                    );
+
+        return wrap( pRetVal );
     }
 
     LLVMBool LLVMSubProgramDescribes( LLVMMetadataRef subProgram, LLVMValueRef /*const Function **/F )
@@ -698,9 +707,9 @@ extern "C"
         return wrap( pScope->getSubprogram( ) );
     }
 
-    /*DIScope*/ LLVMMetadataRef LLVMDIVariableGetScope( LLVMMetadataRef /*DIVariable*/ variable )
+    /*Function*/ LLVMValueRef LLVMDISubProgramGetFunction( LLVMMetadataRef /*DISubProgram*/ subProgram )
     {
-        DIVariable* pVariable = unwrap<DIVariable>( variable );
-        return wrap( pVariable->getScope( ) );
+        DISubprogram* pSub = unwrap<DISubprogram>( subProgram );
+        return wrap( pSub->getFunction( ) );
     }
 }

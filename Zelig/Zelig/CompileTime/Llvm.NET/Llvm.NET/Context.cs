@@ -70,6 +70,7 @@ namespace Llvm.NET
         /// <summary>Get's the LLVM double precision floating point type for this context</summary>
         public ITypeRef DoubleType => TypeRef.FromHandle( NativeMethods.DoubleTypeInContext( ContextHandle ) );
 
+        /// <summary>Gets an enumerable collection of all the metadata created in this context</summary>
         public IEnumerable<LlvmMetadata> Metadata => MetadataCache.Values;
 
         /// <summary>Get a type that is a pointer to a value of a given type</summary>

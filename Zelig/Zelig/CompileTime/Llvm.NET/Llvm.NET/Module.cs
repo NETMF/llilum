@@ -198,7 +198,7 @@ namespace Llvm.NET
             }
             set
             {
-                Layout = TargetData.Parse( Context, value );
+                Layout = DataLayout.Parse( Context, value );
             }
         }
 
@@ -209,7 +209,7 @@ namespace Llvm.NET
         /// In other words, Layout and <see cref="DataLayoutString"/> are two different views
         /// of the same information and setting either one updates the other. 
         /// </remarks>
-        public TargetData Layout
+        public DataLayout Layout
         {
             get { return Layout_; }
             set
@@ -221,7 +221,7 @@ namespace Llvm.NET
                 NativeMethods.SetDataLayout( ModuleHandle, value?.ToString( ) ?? string.Empty );
             }
         }
-        private TargetData Layout_;
+        private DataLayout Layout_;
 
         /// <summary>Target Triple describing the target, ABI and OS</summary>
         public string TargetTriple
@@ -563,7 +563,6 @@ namespace Llvm.NET
         {
             PropertyBag.AddExtendedPropertyValue( id, value );
         }
-
 
         internal static NativeModule FromHandle( LLVMModuleRef nativeHandle )
         {

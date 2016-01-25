@@ -51,11 +51,13 @@ namespace Microsoft.Zelig.LLVM
     // on the Llvm.NET.Values.Function class. 
     public class _Function
     {
-        internal _Function(_Module module, LLVMModuleManager manager, TS.MethodRepresentation method)
+        internal _Function(_Module module, TS.MethodRepresentation method)
         {
             Module = module;
-            LlvmValue = CreateLLvmFunctionWithDebugInfo(module, manager, method);
-            LlvmValue.SetDebugType(manager.GetOrInsertType(method));
+            Method = method;
+
+            LlvmValue = CreateLLvmFunctionWithDebugInfo(module, method);
+            LlvmValue.SetDebugType(module.Manager.GetOrInsertType(method));
 
             var function = ( Function )LlvmValue;
             if( function.BasicBlocks.Count == 0 )
@@ -63,8 +65,7 @@ namespace Microsoft.Zelig.LLVM
 
             if (method.HasBuildTimeFlag(TS.MethodRepresentation.BuildTimeAttributes.Inline))
             {
-                // BUGBUG: Should this be AlwaysInline?
-                AddAttribute(FunctionAttribute.InlineHint);
+                AddAttribute(FunctionAttribute.AlwaysInline);
             }
 
             if (method.HasBuildTimeFlag(TS.MethodRepresentation.BuildTimeAttributes.NoInline))
@@ -91,8 +92,10 @@ namespace Microsoft.Zelig.LLVM
             }
         }
 
+        public TS.MethodRepresentation Method { get; }
+
         // In LLVM, the context owns the value. However, a _Module here is a container for the
-        // context, a module, and a DiBuilder with assorted other state info.
+        // context, a NativeModule, and a DiBuilder with assorted other state info.
         public _Module Module
         {
             get;
@@ -165,7 +168,7 @@ namespace Microsoft.Zelig.LLVM
                                                           , block.CurDILocation.Line
                                                           , valType.DIType
                                                           , true
-                                                          , 0
+                                                          , DebugInfoFlags.None
                                                           , index
                                                           );
             }
@@ -177,8 +180,7 @@ namespace Microsoft.Zelig.LLVM
                                                                , block.CurDILocation.Line 
                                                                , valType.DIType
                                                                , true
-                                                               , 0
-                                                               , 0
+                                                               , DebugInfoFlags.None
                                                                );
             }
 
@@ -203,11 +205,11 @@ namespace Microsoft.Zelig.LLVM
             LlvmFunction.Linkage = Linkage.Internal;
         }
 
-        private static Function CreateLLvmFunctionWithDebugInfo( _Module module, LLVMModuleManager manager, TS.MethodRepresentation method )
+        private static Function CreateLLvmFunctionWithDebugInfo( _Module module, TS.MethodRepresentation method )
         {
             string mangledName = LLVMModuleManager.GetFullMethodName( method );
-            _Type functionType = manager.GetOrInsertType( method );
-            Debugging.DebugInfo loc = manager.GetDebugInfoFor( method );
+            _Type functionType = module.Manager.GetOrInsertType( method );
+            Debugging.DebugInfo loc = module.Manager.GetDebugInfoFor( method );
             Debug.Assert( loc != null );
 
             var containingType = module.GetOrInsertType( method.OwnerType );

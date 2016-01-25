@@ -151,6 +151,11 @@ namespace Llvm.NET.Values
         /// <summary>Adds a Target specific named attribute with value</summary>
         /// <param name="name">Name of the attribute</param>
         /// <param name="value">Value of the attribute</param>
+        /// <remarks>Since a valid <see cref="Context"/> is required to create an attribute value
+        /// this requires that <see cref="Context.CurrentContext"/> is not <see langword="null"/>.
+        /// In other words a Context must have already been created for the current thread by the
+        /// time this is called so it cannot be used to initialize static instances.
+        /// </remarks>
         public AttributeValue( string name, string value )
             : this( Context.CurrentContext, name, value )
         {

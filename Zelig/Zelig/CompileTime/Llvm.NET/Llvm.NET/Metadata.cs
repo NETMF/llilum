@@ -288,6 +288,16 @@ namespace Llvm.NET
             Context.RemoveDeletedNode( this );
             MetadataHandle = LLVMMetadataRef.Zero;
         }
+
+        internal static T FromHandle<T>( LLVMMetadataRef handle )
+            where T : MDNode
+        {
+            if( handle.Pointer.IsNull( ) )
+                return null;
+
+            var context = Context.GetContextFor( handle );
+            return FromHandle<T>( context, handle );
+        }
     }
 
     public class MDTuple : MDNode

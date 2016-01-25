@@ -11,6 +11,8 @@ namespace Llvm.NET.DebugInfo
         {
         }
 
+        public Function Function => Value.FromHandle<Function>( NativeMethods.DISubProgramGetFunction( MetadataHandle ) );
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "Specific type required by interop call" )]
         public bool Describes( Function function ) => NativeMethods.SubProgramDescribes( MetadataHandle, function.VerifyArgNotNull( nameof( function )).ValueHandle );
     }

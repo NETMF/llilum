@@ -20,10 +20,12 @@ namespace Microsoft.Zelig.LLVM
         internal _BasicBlock( _Function owner, BasicBlock block )
         {
             Owner = owner;
-            Module = Owner.Module;
             LlvmBasicBlock = block;
             IrBuilder = new InstructionBuilder( block );
         }
+
+        public _Module Module => Owner.Module;
+        public _Function Owner { get; }
 
         public void InsertASMString( string ASM )
         {
@@ -714,8 +716,5 @@ namespace Microsoft.Zelig.LLVM
         internal DISubProgram CurDISubProgram => CurDILocation?.Scope as DISubProgram;
 
         internal DILocation CurDILocation;
-
-        private readonly _Module Module;
-        private readonly _Function Owner;
-    }
+   }
 }
