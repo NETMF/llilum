@@ -3,6 +3,7 @@
 //
 
 //#define GENERATE_ONLY_TYPESYSTEM_AND_FUNCTION_DEFINITIONS
+#define ENABLE_INLINE_DEBUG_INFO
 
 namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 {
@@ -27,7 +28,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                 return llvmBlock;
             }
 
-            llvmBlock = m_function.GetOrInsertBasicBlock( block.ToShortString( ) );
+            llvmBlock = m_function.GetOrInsertBasicBlock( block );
             m_blocks.Add( block, llvmBlock );
             return llvmBlock;
         }
@@ -104,7 +105,8 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                 ValueCache valueCache;
                 if (RequiresAddress(expr, defChains, useChains))
                 {
-                    Value address = m_function.GetLocalStackValue(m_method, m_basicBlock, expr, m_manager);
+                    Debug.Assert(m_basicBlock.Owner.Method == m_method);
+                    Value address = m_function.GetLocalStackValue(m_basicBlock, expr);
                     valueCache = new ValueCache(expr, address);
                 }
                 else
@@ -290,13 +292,18 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                 return;
             }
 
+#if ENABLE_INLINE_DEBUG_INFO
+            m_basicBlock.BeginOperator(op);
+            try
+            { 
+#else
             // Load Debug metadata
             // Miguel: (Hack to remove processor.cs epilogue/prologue debug data)
-            if( op.DebugInfo != null && !op.DebugInfo.SrcFileName.EndsWith( "ProcessorARMv7M.cs" ) )
+            if ( op.DebugInfo != null && !op.DebugInfo.SrcFileName.EndsWith( "ProcessorARMv7M.cs" ) )
             {
                 m_basicBlock.SetDebugInfo( m_manager, m_method, op );
             }
-
+#endif
             OutputStringInline( op.ToString( ) );
 
             //ALU
@@ -410,6 +417,14 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             {
                 WarnUnimplemented( op.ToString( ) );
             }
+#if ENABLE_INLINE_DEBUG_INFO
+            }
+            finally
+            {
+                m_basicBlock.EndOperator();
+            }
+#endif
+
         }
 
         private static bool ShouldSkipOperator( IR.Operator op )

@@ -1,3 +1,4 @@
+#define ENABLE_INLINE_DEBUG_INFO
 //
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
@@ -161,7 +162,6 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
             context.Transform( ref m_number    );
             context.Transform( ref m_debugInfo );
-
             context.Pop();
         }
 

@@ -1,9 +1,8 @@
-﻿using Llvm.NET;
+﻿#define ENABLE_INLINE_DEBUG_INFO
+using Llvm.NET;
 using Llvm.NET.DebugInfo;
 using Llvm.NET.Values;
-using System;
 using System.Diagnostics;
-using Llvm.NET.Types;
 using IR = Microsoft.Zelig.CodeGeneration.IR;
 using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
@@ -123,31 +122,34 @@ namespace Microsoft.Zelig.LLVM
             LlvmFunction.RemoveAttribute((AttributeKind)kind);
         }
 
-        public _BasicBlock GetOrInsertBasicBlock(string blockName)
+        public _BasicBlock GetOrInsertBasicBlock(IR.BasicBlock block)
         {
-            return new _BasicBlock(this, LlvmFunction.FindOrCreateNamedBlock(blockName));
+           return new _BasicBlock(this, block);
         }
 
-        public Value GetLocalStackValue(
-            TS.MethodRepresentation method,
-            _BasicBlock block,
-            IR.VariableExpression val,
-            LLVMModuleManager manager)
+        public Value GetLocalStackValue( _BasicBlock block,  IR.VariableExpression val )
         {
-            block.EnsureDebugInfo( manager, method );
-
+            Debug.Assert(block.Owner == this);
+            var owningFunction = block.Owner;
+            var manager = block.Owner.Module.Manager;
+#if !ENABLE_INLINE_DEBUG_INFO
+            block.EnsureDebugInfo( manager, owningFunction.Method );
+#endif
             bool hasDebugName = !string.IsNullOrWhiteSpace( val.DebugName?.Name );
 
             Value retVal = block.InsertAlloca(
                 hasDebugName ? val.DebugName.Name : val.ToString( ),
-                manager.GetOrInsertType( val.Type ) );
+                Module.Manager.GetOrInsertType(val.Type));
 
-            // If the local had a valid symbolic name in the source code, generate debug info for it.
-            if( !hasDebugName )
+            // If the local did not have a valid symbolic name in the source code
+            // then don't generate LLVM debug info either
+            if (!hasDebugName)
             {
                 return retVal;
             }
-
+#if ENABLE_INLINE_DEBUG_INFO
+            block.GenerateDebugInfoForVariableValue( val, retVal);
+#else
             DILocalVariable localSym;
 
             _Type valType = manager.GetOrInsertType( val.Type );
@@ -157,7 +159,7 @@ namespace Microsoft.Zelig.LLVM
                 // Adjust index since IR form keeps slot = 0 as the "this" param for static methods it just sets that to
                 // null. LLVM doesn't have any notion of that and only has a slot for an actual arg.
                 uint index = ( uint )argExpression.Number;
-                if( method is TS.StaticMethodRepresentation )
+                if(owningFunction.Method is TS.StaticMethodRepresentation )
                 {
                     index--;
                 }
@@ -192,6 +194,7 @@ namespace Microsoft.Zelig.LLVM
             }
 
             Module.DIBuilder.InsertDeclare( retVal, localSym, expr, block.CurDILocation, block.LlvmBasicBlock );
+#endif
             return retVal;
         }
 
@@ -227,7 +230,9 @@ namespace Microsoft.Zelig.LLVM
                                                          , DebugInfoFlags.None // TODO: Map Zelig accesibility info etc... to flags
                                                          , false
                                                          );
+
             bool isStatic = method is TS.StaticMethodRepresentation;
+
             // "this" is always at index 0, for static functions the name for "this" is null
             int paramBase = isStatic ? 1 : 0;
             

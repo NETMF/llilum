@@ -1,3 +1,4 @@
+#define ENABLE_INLINE_DEBUG_INFO
 //
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
@@ -85,6 +86,43 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                     }
                 }
             }
+
+#if ENABLE_INLINE_DEBUG_INFO
+            internal void UpdateInliningPaths(InliningPathAnnotation anOuter, Debugging.DebugInfo callSiteDebugInfo, GrowOnlyList<VariableExpression> clonedVars)
+            {
+                MethodRepresentation md = m_cfgSource.Method;
+
+                // update the inline path for every cloned local and arg
+                foreach (var local in clonedVars)
+                {
+                    if (local.DebugName == null)
+                        continue;
+
+                    var anInner = local.InliningPath as InliningPathAnnotation;
+                    // for local/args that were inlined the innermost scope comes from
+                    // the debugName.Context so build the annotation for that
+                    if (anInner == null)
+                        anInner = InliningPathAnnotation.Create(TypeSystem, null, local.DebugName.Context, null, null);
+
+                    var anNew = InliningPathAnnotation.Create(TypeSystem, anOuter, md, callSiteDebugInfo, anInner);
+
+                    local.InliningPath = anNew;
+                }
+
+                // update the inlining path information for every operator in every block
+                foreach (BasicBlock block in m_inlinedBasicBlocks)
+                {
+                    foreach(Operator op in block.Operators )
+                    {
+                        var anInner = op.GetAnnotation<InliningPathAnnotation>();
+                        var anNew = InliningPathAnnotation.Create(TypeSystem, anOuter, md, callSiteDebugInfo, anInner);
+
+                        op.RemoveAnnotation(anInner);
+                        op.AddAnnotation(anNew);
+                    }
+                }
+            }
+#endif
 
             internal void UpdateInliningPath( InliningPathAnnotation anOuter )
             {
@@ -191,18 +229,19 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
             BasicBlock                current    = call.BasicBlock;
             VariableExpression[]      lhs        = call.Results;
             Expression[]              rhs        = call.Arguments;
-                            
+
             BasicBlock                otherEntry = otherCFG.NormalizedEntryBasicBlock;
             BasicBlock                otherExit  = otherCFG.NormalizedExitBasicBlock;
-                                        
+
             CloningContextForInlining context    = new CloningContextForInlining( otherCFG, m_cfg, callback );
+            GrowOnlyList<VariableExpression> clonedVars = new GrowOnlyList<VariableExpression>();
 
             //
             // Enumerate all the variables in the target method, create a proper copy (either a local or a temporary variable).
             //
             foreach(VariableExpression var in otherCFG.DataFlow_SpanningTree_Variables)
             {
-                CloneVariable( context, otherCFG, call, rhs, var, false );
+                clonedVars.Add( CloneVariable( context, otherCFG, call, rhs, var, false ) );
             }
 
             //
@@ -308,7 +347,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                 }
 
                 //--//
-                
+
                 MethodRepresentation.BuildTimeAttributes bta        = call.TargetMethod.BuildTimeFlags;
                 CompilationConstraints[]                 ccCallExit = ccCall;
 
@@ -345,8 +384,11 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
 
             context.ApplyProtection( current.ProtectedBy );
 
+#if ENABLE_INLINE_DEBUG_INFO
+            context.UpdateInliningPaths(call.GetAnnotation<InliningPathAnnotation>(), call.DebugInfo, clonedVars);
+#else
             context.UpdateInliningPath( call.GetAnnotation< InliningPathAnnotation >() );
-
+#endif
             context.ResetBasicBlockAnnotations();
 
             //

@@ -1,6 +1,7 @@
 //
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //
+#define ENABLE_INLINE_DEBUG_INFO
 
 using System;
 using Llvm.NET.Values;
@@ -53,6 +54,13 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
         public void SetValueForBlock(_BasicBlock block, Value value)
         {
+#if ENABLE_INLINE_DEBUG_INFO
+            var expressionScope = Expression?.DebugName?.Context;
+            if ( expressionScope != null && block.Owner.Method != expressionScope )
+            {
+                block.GenerateDebugInfoForVariableValue(Expression, value);
+            }
+#endif
             m_loadedValues[block] = value;
         }
     }
