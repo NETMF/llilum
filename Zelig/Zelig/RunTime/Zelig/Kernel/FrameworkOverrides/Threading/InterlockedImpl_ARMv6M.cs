@@ -2,7 +2,7 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-#define USE_LLVM_INTRINSICS
+#define LLVM
 
 namespace Microsoft.Zelig.Runtime
 {
@@ -13,8 +13,8 @@ namespace Microsoft.Zelig.Runtime
     using ISA = TargetModel.ArmProcessor.InstructionSetVersion;
 
 
-    [ExtendClass(typeof(System.Threading.Interlocked), NoConstructors=true, PlatformVersionFilter=ISA.Platform_Version__ARMv7_all)]
-    public static class InterlockedImpl
+    [ExtendClass(typeof(System.Threading.Interlocked), NoConstructors=true, PlatformVersionFilter=(ISA.Platform_Version__ARMv6M | ISA.Platform_Version__ARM_legacy))]
+    public static class InterlockedImpl_ARMv6M
     {
         //
         // Helper Methods
@@ -194,20 +194,12 @@ namespace Microsoft.Zelig.Runtime
         }
 
         //--//
-
-#if USE_LLVM_INTRINSICS
-        [NoInline] // Disable inlining so we always have a chance to replace the method.
-#else
+        
         [Inline]
-#endif
         [TS.WellKnownMethod( "InterlockedImpl_InternalExchange_int" )]
         internal static int InternalExchange( ref int location1,
                                                   int value )
         {
-#if USE_LLVM_INTRINSICS
-            BugCheck.Assert( false, BugCheck.StopCode.InvalidOperation );
-            return 0;
-#else
             using(SmartHandles.InterruptState.DisableAll( ))
             {
                 int oldValue = location1;
@@ -216,22 +208,13 @@ namespace Microsoft.Zelig.Runtime
 
                 return oldValue;
             }
-#endif
         }
 
-#if USE_LLVM_INTRINSICS
-        [NoInline] // Disable inlining so we always have a chance to replace the method.
-#else
         [Inline]
-#endif
         [TS.WellKnownMethod( "InterlockedImpl_InternalExchange_float" )]
         internal static float InternalExchange( ref float location1,
                                                     float value )
         {
-#if USE_LLVM_INTRINSICS
-            BugCheck.Assert( false, BugCheck.StopCode.InvalidOperation );
-            return 0.0f;
-#else
             using(SmartHandles.InterruptState.DisableAll( ))
             {
                 float oldValue = location1;
@@ -240,22 +223,13 @@ namespace Microsoft.Zelig.Runtime
 
                 return oldValue;
             }
-#endif
         }
-
-#if USE_LLVM_INTRINSICS
-        [NoInline] // Disable inlining so we always have a chance to replace the method.
-#else
+        
         [Inline]
-#endif
         [TS.WellKnownMethod( "InterlockedImpl_InternalExchange_IntPtr" )]
         internal static IntPtr InternalExchange( ref IntPtr location1,
                                                      IntPtr value )
         {
-#if USE_LLVM_INTRINSICS
-            BugCheck.Assert( false, BugCheck.StopCode.InvalidOperation );
-            return IntPtr.Zero;
-#else
             using(SmartHandles.InterruptState.DisableAll( ))
             {
                 IntPtr oldValue = location1;
@@ -264,23 +238,14 @@ namespace Microsoft.Zelig.Runtime
 
                 return oldValue;
             }
-#endif
         }
-
-#if USE_LLVM_INTRINSICS
-        [NoInline] // Disable inlining so we always have a chance to replace the method.
-#else
+        
         [Inline]
-#endif
         [TS.WellKnownMethod( "InterlockedImpl_InternalExchange_Template" )]
         [TS.DisableAutomaticReferenceCounting]
         internal static T InternalExchange<T>( ref T location1,
                                                    T value ) where T : class
         {
-#if USE_LLVM_INTRINSICS
-            BugCheck.Assert( false, BugCheck.StopCode.InvalidOperation );
-            return null;
-#else
             using(SmartHandles.InterruptState.DisableAll( ))
             {
                 T oldValue = location1;
@@ -289,23 +254,14 @@ namespace Microsoft.Zelig.Runtime
 
                 return oldValue;
             }
-#endif
         }
-
-#if USE_LLVM_INTRINSICS
-        [NoInline] // Disable inlining so we always have a chance to replace the method.
-#else
+        
         [Inline]
-#endif
         [TS.WellKnownMethod( "InterlockedImpl_InternalCompareExchange_int" )]
         internal static int InternalCompareExchange( ref int location1,
                                                          int value,
                                                          int comparand )
         {
-#if USE_LLVM_INTRINSICS
-            BugCheck.Assert( false, BugCheck.StopCode.InvalidOperation );
-            return 0;
-#else
             using(SmartHandles.InterruptState.DisableAll( ))
             {
                 int oldValue = location1;
@@ -317,23 +273,14 @@ namespace Microsoft.Zelig.Runtime
 
                 return oldValue;
             }
-#endif
         }
         
-#if USE_LLVM_INTRINSICS
-        [NoInline] // Disable inlining so we always have a chance to replace the method.
-#else
         [Inline]
-#endif
         [TS.WellKnownMethod( "InterlockedImpl_InternalCompareExchange_float" )]
         internal static float InternalCompareExchange( ref float location1,
                                                            float value,
                                                            float comparand )
         {
-#if USE_LLVM_INTRINSICS
-            BugCheck.Assert( false, BugCheck.StopCode.InvalidOperation );
-            return 0.0f;
-#else
             using(SmartHandles.InterruptState.DisableAll( ))
             {
                 float oldValue = location1;
@@ -345,23 +292,14 @@ namespace Microsoft.Zelig.Runtime
 
                 return oldValue;
             }
-#endif
         }
-
-#if USE_LLVM_INTRINSICS
-        [NoInline] // Disable inlining so we always have a chance to replace the method.
-#else
+        
         [Inline]
-#endif
         [TS.WellKnownMethod( "InterlockedImpl_InternalCompareExchange_IntPtr" )]
         internal static IntPtr InternalCompareExchange( ref IntPtr location1,
                                                             IntPtr value,
                                                             IntPtr comparand )
         {
-#if USE_LLVM_INTRINSICS
-            BugCheck.Assert( false, BugCheck.StopCode.InvalidOperation );
-            return IntPtr.Zero;
-#else
             using(SmartHandles.InterruptState.DisableAll( ))
             {
                 IntPtr oldValue = location1;
@@ -373,24 +311,15 @@ namespace Microsoft.Zelig.Runtime
 
                 return oldValue;
             }
-#endif
         }
-
-#if USE_LLVM_INTRINSICS
-        [NoInline] // Disable inlining so we always have a chance to replace the method.
-#else
+        
         [Inline]
-#endif
         [TS.WellKnownMethod( "InterlockedImpl_InternalCompareExchange_Template" )]
         [TS.DisableAutomaticReferenceCounting]
         internal static T InternalCompareExchange<T>( ref T location1,
                                                           T value,
                                                           T comparand ) where T : class
         {
-#if USE_LLVM_INTRINSICS
-            BugCheck.Assert( false, BugCheck.StopCode.InvalidOperation );
-            return null;
-#else
             using(SmartHandles.InterruptState.DisableAll( ))
             {
                 T oldValue = location1;
@@ -402,22 +331,13 @@ namespace Microsoft.Zelig.Runtime
 
                 return oldValue;
             }
-#endif
         }
 
-#if USE_LLVM_INTRINSICS
-        [NoInline] // Disable inlining so we always have a chance to replace the method.
-#else
         [Inline]
-#endif
         [TS.WellKnownMethod( "InterlockedImpl_InternalAdd_int" )]
         internal static int InternalAdd( ref int location1,
                                              int value )
         {
-#if USE_LLVM_INTRINSICS
-            BugCheck.Assert( false, BugCheck.StopCode.InvalidOperation );
-            return 0;
-#else
             using(SmartHandles.InterruptState.DisableAll( ))
             {
                 int res = location1 + value;
@@ -426,7 +346,6 @@ namespace Microsoft.Zelig.Runtime
 
                 return res;
             }
-#endif
         }
     }
 }

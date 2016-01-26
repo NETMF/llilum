@@ -229,6 +229,25 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                                                          FieldRepresentation           owner )
         {
             fKeep = false;
+            
+            //
+            // Filter methods that belong to types that do not belong to the platform compiled
+            //            
+            CustomAttributeRepresentation sfpf = owner.OwnerType.FindCustomAttribute( this.WellKnownTypes.Microsoft_Zelig_Runtime_ExtendClassAttribute );
+            if(sfpf != null)
+            {
+                object obj = sfpf.GetNamedArg( "PlatformVersionFilter" );
+                if(obj != null)
+                {
+                    uint filter = (uint)obj;
+
+                    if((filter & this.PlatformAbstraction.PlatformVersion) != this.PlatformAbstraction.PlatformVersion)
+                    {
+                        // This type is not an allowed extension for the current platform
+                        return;
+                    }
+                }
+            }
 
             string              fieldName = (string)ca.FixedArgsValues[0];
             FieldRepresentation fdOld     = this.GetWellKnownFieldNoThrow( fieldName );
@@ -237,6 +256,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             {
                 throw TypeConsistencyErrorException.Create( "Found the well-known field '{0}' defined more than once: {1} and {2}", fieldName, fdOld, owner );
             }
+
 
             this.SetWellKnownField( fieldName, owner );
         }
@@ -252,6 +272,25 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             if(owner.IsGenericInstantiation)
             {
                 owner = owner.GenericTemplate;
+            }
+            
+            //
+            // Filter methods that belong to types that do not belong to the platform compiled
+            //            
+            CustomAttributeRepresentation sfpf = owner.OwnerType.FindCustomAttribute( this.WellKnownTypes.Microsoft_Zelig_Runtime_ExtendClassAttribute );
+            if(sfpf != null)
+            {
+                object obj = sfpf.GetNamedArg( "PlatformVersionFilter" );
+                if(obj != null)
+                {
+                    uint filter = (uint)obj;
+
+                    if((filter & this.PlatformAbstraction.PlatformVersion) != this.PlatformAbstraction.PlatformVersion)
+                    {
+                        // This type is not an allowed extension for the current platform
+                        return;
+                    }
+                }
             }
 
             string               methodName = (string)ca.FixedArgsValues[0];

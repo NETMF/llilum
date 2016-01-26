@@ -27,13 +27,15 @@ namespace Microsoft.Zelig.TargetModel.ArmProcessor
         //
         // Platform Version
         //
-        public const uint Platform_Version__ARMv4   = 0x00000001;
-        public const uint Platform_Version__ARMv5   = 0x00000002;
-        public const uint Platform_Version__ARMv6M  = 0x00000004;
-        public const uint Platform_Version__ARMv7M  = 0x00000008;
-        public const uint Platform_Version__ARMv7R  = 0x00000010;
-        public const uint Platform_Version__ARMv7A  = 0x00000020;
-        public const uint Platform_Version__Mask    = 0x0000FFFF;
+        public const uint Platform_Version__ARMv4       = 0x00000001;
+        public const uint Platform_Version__ARMv5       = 0x00000002;
+        public const uint Platform_Version__ARMv6M      = 0x00000004;
+        public const uint Platform_Version__ARMv7M      = 0x00000008;
+        public const uint Platform_Version__ARMv7R      = 0x00000010;
+        public const uint Platform_Version__ARMv7A      = 0x00000020;
+        public const uint Platform_Version__ARMv7_all   = 0x00000038;
+        public const uint Platform_Version__ARM_legacy  = 0x00000003;
+        public const uint Platform_Version__Mask        = 0x0000FFFF;
 
         //
         // Platform VFP Version

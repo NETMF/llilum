@@ -67,6 +67,7 @@
     <Compile Include="FrameworkOverrides\BufferImpl.cs" />
     <Compile Include="FrameworkOverrides\Globalization\CompareInfoImpl.cs" />
     <Compile Include="FrameworkOverrides\NumberImpl.cs" />
+    <Compile Include="FrameworkOverrides\Threading\InterlockedImpl_ARMv6M.cs" />
     <Compile Include="FrameworkOverrides\WeakReferenceImpl.cs" />
     <Compile Include="FrameworkOverrides\Diagnostics\DebuggerImpl.cs" />
     <Compile Include="FrameworkOverrides\EnvironmentImpl.cs" />

@@ -9,7 +9,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv4.SmartHandles
     using ISA = TargetModel.ArmProcessor.InstructionSetVersion;
 
     
-    [ExtendClass( typeof(Runtime.SmartHandles.InterruptState), PlatformVersionFilter=(ISA.Platform_Version__ARMv4 | ISA.Platform_Version__ARMv5) )]
+    [ExtendClass( typeof(Runtime.SmartHandles.InterruptState), PlatformVersionFilter=ISA.Platform_Version__ARM_legacy )]
     public struct InterruptStateARMv4 : IDisposable
     {
         //
