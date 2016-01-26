@@ -4,9 +4,11 @@
 
 #if DEBUG
 #define TRACK_BASICBLOCK_IDENTITY
+#define ENABLE_INLINE_DEBUG_INFO
 #else
 //#define TRACK_BASICBLOCK_IDENTITY
 #endif
+
 
 namespace Microsoft.Zelig.CodeGeneration.IR
 {
@@ -14,7 +16,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
     using System.Collections.Generic;
 
     using Microsoft.Zelig.Runtime.TypeSystem;
-
+    using System.Diagnostics;
 
     public abstract class BasicBlock
     {
@@ -365,9 +367,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
         public void AddOperator( Operator oper )
         {
-            CHECKS.ASSERT( !(oper is ControlOperator) || this.FlowControl == null, "Cannot add two control operators to a basic block"     );
-            CHECKS.ASSERT( oper.BasicBlock == null                               , "Adding operator already part of another code sequence" );
-            CHECKS.ASSERT( oper.GetBasicBlockIndex() < 0                         , "Adding operator already present in code sequence"      );
+            CheckInliningAssert(oper);
+            CHECKS.ASSERT(!(oper is ControlOperator) || this.FlowControl == null, "Cannot add two control operators to a basic block");
+            CHECKS.ASSERT(oper.BasicBlock == null, "Adding operator already part of another code sequence");
+            CHECKS.ASSERT(oper.GetBasicBlockIndex() < 0, "Adding operator already present in code sequence");
 
             BumpVersion();
 
@@ -375,17 +378,17 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
             int pos = m_operators.Length;
 
-            if(oper is ControlOperator)
+            if (oper is ControlOperator)
             {
                 //
                 // Make sure the ControlOperator is always the last one in the basic block.
                 //
             }
-            else if(pos > 0)
+            else if (pos > 0)
             {
-                Operator ctrl = m_operators[pos-1];
+                Operator ctrl = m_operators[pos - 1];
 
-                if(ctrl is ControlOperator)
+                if (ctrl is ControlOperator)
                 {
                     //
                     // Insert before the control operator.
@@ -394,7 +397,44 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 }
             }
 
-            m_operators = ArrayUtility.InsertAtPositionOfNotNullArray( m_operators, pos, oper );
+            m_operators = ArrayUtility.InsertAtPositionOfNotNullArray(m_operators, pos, oper);
+        }
+
+        [Conditional("ENABLE_INLINE_DEBUG_INFO")]
+        private void CheckInliningAssert(Operator oper)
+        {
+            // The reason for this set of checks is to catch cases where the scope, stored in
+            // the DebugInfo for an operator doesn't match the method that owns the block 
+            // when an operator is added to the block. This is a case of effective inlining
+            // but the InliningPathAnnotation isn't updated to reflect that occured. Once
+            // all the cases where that can occur is known, a proper plan for dealing with
+            // them can be defined and implemented.
+            //
+            // This rather contrived set of reflection magic is due to the fact that the
+            // annotation system is based on concrete types rather than interfaces. This
+            // assembly cannot reference the InliningPathAnnotation without creating a
+            // circular dependency. Operator.GetAnnotation<T>() has the constraint:
+            //     where T: Annotation
+            // so IInliningPathAnnotation can't be used as T...
+            //
+            // REVIEW: consider adding IAnnotation interface and using that in the constraint
+            // for the GetAnnotation method while adding the interface to Annotation class.
+            // The IAnnotation would simple mirror the existing public API surface of the
+            // existing Annotation class. Doing so involves minor updates to all of the 
+            // classes derived from Annotation along with the TranformationContextForIR
+            // abstract class (and thus all derived types) so they handle transforming
+            // IAnnotation and IAnnotation[] instead of the abstract type Annotation.
+            var annotationsField = oper.GetType().GetField("m_annotations", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var annotations = (Annotation[])annotationsField.GetValue(oper);
+            var inliningPath = System.Linq.Enumerable.SingleOrDefault(System.Linq.Enumerable.OfType<IInliningPathAnnotation>(annotations));
+
+            // test conditions on the annotation
+            // check operator state first as inliningpath is irrelevant if this doesn't match
+            if (oper.DebugInfo != null && oper.DebugInfo.Scope != null)
+                Debug.Assert(Owner.Method.Equals(oper.DebugInfo.Scope));
+
+            if (inliningPath != null)
+                Debug.Assert(inliningPath.DebugInfoPath[inliningPath.DebugInfoPath.Length - 1].Scope.Equals(Owner.Method));
         }
 
         internal void AddAsFirstOperator( Operator oper )
@@ -405,6 +445,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         internal void AddOperatorBefore( Operator oper       ,
                                          Operator operTarget )
         {
+            CheckInliningAssert(oper);
             CHECKS.ASSERT( oper       != null                  , "Missing source operator"                                        );
             CHECKS.ASSERT( operTarget != null                  , "Missing target operator"                                        );
             CHECKS.ASSERT( oper is ControlOperator == false    , "Control operator can only be added at the end of a basic block" );
