@@ -154,7 +154,7 @@ namespace Microsoft.Zelig.Runtime
 
                 if(referenceAddress != UIntPtr.Zero && pointer.Kind == TS.GCInfo.Kind.Heap)
                 {
-                    DecrementRefCount( ObjectHeader.CastAsObjectHeader( referenceAddress ) );
+                    DecrementRefCount( ObjectHeader.Unpack( ObjectImpl.FromPointer( referenceAddress ) ) );
                 }
             }
         }
@@ -201,7 +201,7 @@ namespace Microsoft.Zelig.Runtime
                 UIntPtr obj = *(UIntPtr*)address.ToPointer();
                 if(obj != UIntPtr.Zero)
                 {
-                    DecrementRefCount( ObjectHeader.CastAsObjectHeader( obj ) );
+                    DecrementRefCount( ObjectHeader.Unpack( ObjectImpl.FromPointer( obj ) ) );
                 }
             }
 
