@@ -324,6 +324,16 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
             // Disable interrupts, but not faults 
             //
             DisableInterrupts( );
+            
+            //
+            // Ensure privileged Handler mode to boot
+            //
+            
+            if(!VerifyHandlerMode())
+            {
+                RT.BugCheck.Log( "Cannot bootstrap in Thread mode" );
+                RT.BugCheck.Assert( false, RT.BugCheck.StopCode.FailedBootstrap );
+            }
 
             //
             // Enforce reset behavior: 

@@ -19,25 +19,6 @@ namespace Microsoft.DeviceModels.Chipset.CortexM4
         public override void InitializeProcessor()
         {
             base.InitializeProcessor();
-            
-            //
-            // Ensure privileged Handler mode
-            //
-            
-            if(!ChipsetModel.ProcessorARMv7M.VerifyHandlerMode())
-            {
-                RT.BugCheck.Log( "Cannot bootstrap in Thread mode" );
-                RT.BugCheck.Assert( false, RT.BugCheck.StopCode.FailedBootstrap );
-            }
-
-            //
-            // For a Cortex-M with caches or MPU, we could initialize it here
-            //
-
-            //
-            // Reset the priority grouping that we assume not used
-            //
-            NVIC.SetPriorityGrouping( 0 ); 
         }
     }
 }

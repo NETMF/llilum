@@ -502,8 +502,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                     {
                         uint capabilities = (uint)obj;
 
-                        uint reqFamily = capabilities & TargetModel.ArmProcessor.InstructionSetVersion.Platform_Family__Mask;
-                        uint reqVFP = capabilities & TargetModel.ArmProcessor.InstructionSetVersion.Platform_VFP__Mask;
+                        uint reqFamily          = capabilities & TargetModel.ArmProcessor.InstructionSetVersion.Platform_Family__Mask;
+                        uint reqVFP             = capabilities & TargetModel.ArmProcessor.InstructionSetVersion.Platform_VFP__Mask;
                         uint reqPlatformVersion = capabilities & TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__Mask;
 
                         if(reqFamily != 0 && reqFamily != this.PlatformAbstraction.PlatformFamily)

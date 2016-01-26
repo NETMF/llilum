@@ -12,7 +12,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
     using RT = Microsoft.Zelig.Runtime;
 
 
-    public abstract partial class ProcessorARMv7M : Runtime.Processor
+    public abstract partial class ProcessorARMv7M : RT.Processor
     {
         public enum IRQn_Type : int
         {
@@ -409,6 +409,16 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             // Disable interrupts, but not faults 
             //
             DisableInterrupts( );
+            
+            //
+            // Ensure privileged Handler mode to boot
+            //
+            
+            if(!VerifyHandlerMode())
+            {
+                RT.BugCheck.Log( "Cannot bootstrap in Thread mode" );
+                RT.BugCheck.Assert( false, RT.BugCheck.StopCode.FailedBootstrap );
+            }
 
             //
             // Enforce reset behavior: 

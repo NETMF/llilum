@@ -12,6 +12,7 @@ namespace Microsoft.CortexM3OnMBED
     using RT           = Microsoft.Zelig.Runtime;
     using ChipsetModel = Microsoft.CortexM3OnCMSISCore;
     using RTOS         = Microsoft.Zelig.Support.mbed;
+
     
     public abstract class Processor : ChipsetModel.Processor 
     {

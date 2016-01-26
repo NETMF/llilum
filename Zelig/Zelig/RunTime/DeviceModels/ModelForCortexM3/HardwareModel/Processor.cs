@@ -4,10 +4,19 @@
 
 namespace Microsoft.DeviceModels.Chipset.CortexM3
 {
-    using ChipsetModel = Microsoft.DeviceModels.Chipset.CortexM;
+    using RT           = Microsoft.Zelig.Runtime; 
+    using ChipsetModel = Microsoft.Zelig.Runtime.TargetPlatform.ARMv7;
 
 
-    public abstract class Processor : ChipsetModel.Processor
+    public abstract class Processor : ChipsetModel.ProcessorARMv7M
     {
+        //
+        // Helper Methods
+        //
+
+        public override void InitializeProcessor()
+        {
+            base.InitializeProcessor();
+        }
     }
 }

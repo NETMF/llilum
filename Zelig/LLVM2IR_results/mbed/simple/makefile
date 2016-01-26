@@ -278,7 +278,7 @@ endif
 	CC_FLAGS += $(CPU) -c -g -fno-common -fmessage-length=0 -Wall -Wextra -fno-exceptions -ffunction-sections -fdata-sections -fomit-frame-pointer -MMD -MP
 	CC_SYMBOLS = -D__CORTEX_M0 -DMBED_BUILD_TIMESTAMP=1452888922.57 -DTARGET_FF_ARDUINO -DTOOLCHAIN_GCC_ARM -DTOOLCHAIN_GCC -DTARGET_FF_MORPHO -DTARGET_CORTEX_M -DARM_MATH_CM0 -DTARGET_STM -DTARGET_STM32F0 -DTARGET_M0 -DTARGET_NUCLEO_F091RC -DTARGET_STM32F091RC -D__MBED__=1 
 
-	LD_FLAGS = $(CPU) -Wl,--gc-sections --specs=nano.specs -Wl,--wrap,main -Wl,-Map=$(PROJECT).map,--cref
+	LD_FLAGS = $(CPU) -Wl,--gc-sections --specs=nano.specs -Wl,--wrap,main -Wl,-Map=$(TARGET)\$(PROJECT).map,--cref
     
 else
 	$(error TARGET is not recognized. Please check the value passed in)

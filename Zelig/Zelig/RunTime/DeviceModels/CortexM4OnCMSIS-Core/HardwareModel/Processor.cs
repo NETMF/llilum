@@ -8,6 +8,7 @@ namespace Microsoft.CortexM4OnCMSISCore
 
     using RT           = Microsoft.Zelig.Runtime;
     using ChipsetModel = Microsoft.DeviceModels.Chipset.CortexM4;
+    using CortexM      =  Microsoft.DeviceModels.Chipset.CortexM;
     using LLOS         = Zelig.LlilumOSAbstraction.HAL;
 
     public abstract class Processor : ChipsetModel.Processor
@@ -50,12 +51,25 @@ namespace Microsoft.CortexM4OnCMSISCore
             // Access Methods
             //
         }
-
-
+        
         //
-        // Access methods
+        // Helper Methods
         //
+
+        public override void InitializeProcessor()
+        {
+            base.InitializeProcessor();
+            
+            //
+            // Reset the priority grouping that we assume not used
+            //
+            CortexM.NVIC.SetPriorityGrouping( 0 ); 
+        }
     }
+    
+    //--//
+    //--//
+    //--//
 
     [RT.ExtendClass( typeof( Microsoft.Zelig.Runtime.Processor ) )]
     internal class ProcessorImpl

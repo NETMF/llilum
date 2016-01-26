@@ -50,12 +50,21 @@ namespace Microsoft.CortexM0OnCMSISCore
             // Access Methods
             //
         }
-
+        
 
         //
-        // Access methods
+        // Helper Methods
         //
+
+        public override void InitializeProcessor()
+        {
+            base.InitializeProcessor();
+        }
     }
+    
+    //--//
+    //--//
+    //--//
 
     [RT.ExtendClass( typeof( Microsoft.Zelig.Runtime.Processor ) )]
     internal class ProcessorImpl
