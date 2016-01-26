@@ -9,11 +9,11 @@ namespace Microsoft.Zelig.Runtime
     using System;
     using System.Runtime.CompilerServices;
 
-    using TS  = Microsoft.Zelig.Runtime.TypeSystem;
-    using ISA = TargetModel.ArmProcessor.InstructionSetVersion;
+    using TS    = Microsoft.Zelig.Runtime.TypeSystem;
+    using ISA   = TargetModel.ArmProcessor.InstructionSetVersion;
 
 
-    [ExtendClass(typeof(System.Threading.Interlocked), NoConstructors=true, PlatformVersionFilter=ISA.Platform_Version__ARMv7_all)]
+    [ExtendClass(typeof(System.Threading.Interlocked), NoConstructors=true, PlatformVersionFilter=(ISA.Platform_Version__ARMv7_all | ISA.Platform_Version__x86))]
     public static class InterlockedImpl
     {
         //
