@@ -21,8 +21,6 @@
 ###
 ### Add compilation phases, in order
 ###
--CompilationPhaseDisabled InitializeReferenceCountingGarbageCollection
--CompilationPhaseDisabled EnableStrictReferenceCountingGarbageCollection
 #-CompilationPhaseDisabled ReduceNumberOfTemporaries
 #-CompilationPhaseDisabled TransformFinallyBlocksIntoTryBlocks
 #-CompilationPhaseDisabled ApplyClassExtensions
@@ -55,6 +53,8 @@
 -CompilationPhaseDisabled AllocateRegisters
 #-CompilationPhaseDisabled GenerateImage
 #-CompilationPhaseDisabled Done
+
+-CompilationOption System.String GarbageCollectionManager ConservativeMarkAndSweepCollector
 
 ###
 ### The program to compile.

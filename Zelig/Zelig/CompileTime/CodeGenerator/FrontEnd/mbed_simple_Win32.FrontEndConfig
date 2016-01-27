@@ -20,8 +20,6 @@
 ###
 ### Add compilation phases, in order
 ###
--CompilationPhaseDisabled InitializeReferenceCountingGarbageCollection
--CompilationPhaseDisabled EnableStrictReferenceCountingGarbageCollection
 #-CompilationPhaseDisabled ReduceNumberOfTemporaries
 #-CompilationPhaseDisabled TransformFinallyBlocksIntoTryBlocks
 #-CompilationPhaseDisabled ApplyClassExtensions

@@ -1219,9 +1219,18 @@ namespace Microsoft.Zelig.FrontEnd
 
                         try
                         {
-                            object res = t.InvokeMember( "Parse",
-                                System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Static |
-                                System.Reflection.BindingFlags.Public, null, null, new object[ ] { value } );
+                            object res;
+
+                            if(t == typeof( String ))
+                            {
+                                res = value;
+                            }
+                            else
+                            {
+                                res = t.InvokeMember( "Parse",
+                                    System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Static |
+                                    System.Reflection.BindingFlags.Public, null, null, new object[] { value } );
+                            }
 
                             m_configurationOptions[ name ] = res;
                         }

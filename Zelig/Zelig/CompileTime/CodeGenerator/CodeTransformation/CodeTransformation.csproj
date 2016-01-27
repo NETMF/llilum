@@ -121,9 +121,7 @@
     <Compile Include="CompilationSteps\Phases\ComputeCallsClosure.cs" />
     <Compile Include="CompilationSteps\Phases\ConvertToSSA.cs" />
     <Compile Include="CompilationSteps\Phases\ConvertUnsupportedOperatorsToMethodCalls.cs" />
-    <Compile Include="CompilationSteps\Phases\EnableStrictReferenceCountingGarbageCollection.cs" />
     <Compile Include="CompilationSteps\Phases\FuseOperators.cs" />
-    <Compile Include="CompilationSteps\Phases\InitializeReferenceCountingGarbageCollection.cs" />
     <Compile Include="CompilationSteps\Phases\PrepareExternalMethods.cs" />
     <Compile Include="CompilationSteps\Phases\ReferenceCountingGarbageCollection.cs" />
     <Compile Include="CompilationSteps\Phases\ResourceManagerOptimizations.cs" />
@@ -166,7 +164,6 @@
     <Compile Include="ImageBuilders\CompilationState_Scheduling.cs" />
     <Compile Include="ImageBuilders\ImageAnnotations\ExternalDataRelocation.cs" />
     <Compile Include="ImageBuilders\ImageAnnotations\ExternMethodCallRelocation.cs" />
-    
     <Compile Include="LLVM\DebugInfoExtensions.cs" />
     <Compile Include="LLVM\InliningPathAnnotationExtensions.cs" />
     <Compile Include="LLVM\LLVMModuleManager.cs" />

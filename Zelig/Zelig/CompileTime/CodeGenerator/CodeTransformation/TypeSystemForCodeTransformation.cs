@@ -1069,6 +1069,30 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 {
                     lst.Remove( tdFallback );
                 }
+
+                // If there are still multiple implementations, we look in the configuration provider
+                // to see if one is specified using CompilationOption
+                if (lst.Count > 1)
+                {
+                    var cfgProv = GetEnvironmentService<IConfigurationProvider>( );
+
+                    object match;
+                    if(cfgProv.GetValue( td.Name, out match ) && match is string)
+                    {
+                        string target = (string)match;
+                        var newList = new List<TypeRepresentation>( );
+
+                        foreach(var tdCandidate in lst)
+                        {
+                            if(tdCandidate.Name == target)
+                            {
+                                newList.Add( tdCandidate );
+                            }
+                        }
+
+                        lst = newList;
+                    }
+                }
             }
 
             return lst;

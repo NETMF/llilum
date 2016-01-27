@@ -11,6 +11,7 @@ namespace Microsoft.Zelig.Runtime
 
     [ImplicitInstance]
     [ForceDevirtualization]
+    [TS.WellKnownType("Microsoft_Zelig_Runtime_GarbageCollectionManager")]
     public abstract class GarbageCollectionManager
     {
         public static class Configuration

@@ -567,19 +567,11 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
                 //
                 if(td.HasBuildTimeFlag( TypeRepresentation.BuildTimeAttributes.ForceDevirtualization ))
                 {
-                    foreach(TypeRepresentation td2 in m_owner.m_typeSystem.Types)
+                    var list = m_owner.m_typeSystem.CollectConcreteImplementations(td);
+
+                    foreach (var td2 in list)
                     {
-                        if(td2.IsAbstract == false)
-                        {
-                            for(TypeRepresentation td3 = td2; td3 != null; td3 = td3.Extends)
-                            {
-                                if(td3 == td)
-                                {
-                                    CoverType( td2 );
-                                    break;
-                                }
-                            }
-                        }
+                        CoverType(td2);
                     }
                 }
 

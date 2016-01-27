@@ -119,6 +119,9 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         //--//
 
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_ThreadManager;
+        public readonly TypeRepresentation Microsoft_Zelig_Runtime_GarbageCollectionManager;
+        public readonly TypeRepresentation Microsoft_Zelig_Runtime_ReferenceCountingCollector;
+        public readonly TypeRepresentation Microsoft_Zelig_Runtime_StrictReferenceCountingCollector;
 
         //--//
 
