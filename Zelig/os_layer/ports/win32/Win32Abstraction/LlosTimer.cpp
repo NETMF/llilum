@@ -32,7 +32,6 @@ DWORD WINAPI LlosTimerThreadProc( LPVOID lpThreadParameter )
     }
 
     *ppvData = (LlosThread*)&ppvData[1];
-    (*ppvData)->param = (LLOS_Context)1;
     TlsSetValue(g_dwTlsIndex, ppvData);
 
     while (!pTimer->fExit)

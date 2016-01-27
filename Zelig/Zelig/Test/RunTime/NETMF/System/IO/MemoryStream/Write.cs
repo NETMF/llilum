@@ -81,7 +81,7 @@ namespace Microsoft.Zelig.Test
             if (ExpectedLength < ms.Length)
             {
                 result = false;
-                Log.Exception("Expeceted final length of " + ExpectedLength + " bytes, but got " + ms.Length + " bytes");
+                Log.Exception("Expected final length of " + ExpectedLength + " bytes, but got " + ms.Length + " bytes");
             }
             return result;
         }

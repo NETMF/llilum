@@ -69,7 +69,7 @@ namespace Microsoft.Zelig.Runtime
         {
             m_holder = new Synchronization.WaitingRecord.Holder();
 
-            m_managedThreadId   = (int)0x12340000 | s_managedThreadId++;
+            m_managedThreadId   = (int)0x12340000 | Interlocked.Increment( ref s_managedThreadId );
 
             m_start             = start;
             m_stack             = stack;
@@ -682,12 +682,14 @@ namespace Microsoft.Zelig.Runtime
             {
                 ThreadImpl curThread = ThreadManager.Instance.CurrentThread;
 
-                if( curThread != null )
+                if(curThread != null)
                 {
-                    s_currentThread = curThread;
+                    return curThread;
                 }
-
-                return s_currentThread;
+                else
+                {
+                    return s_currentThread;
+                }
             }
 
             [Inline]

@@ -467,6 +467,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                     Thread.Sleep(500);
                 }
             } );
+
             Thread th2 = new Thread( ( ) =>
             {
                 int i=0;

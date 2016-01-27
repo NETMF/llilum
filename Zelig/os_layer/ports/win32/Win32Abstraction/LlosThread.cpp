@@ -14,7 +14,7 @@ static DWORD WINAPI LlosThreadEntryWrapper(LPVOID lpThreadParameter)
     try
     {
         ppvData = (LlosThread**)LocalAlloc(LPTR, sizeof(LlosThread*));
-        
+
         if (ppvData == nullptr)
         {
             return 1;

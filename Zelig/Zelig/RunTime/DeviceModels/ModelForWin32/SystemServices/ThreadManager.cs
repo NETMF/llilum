@@ -13,10 +13,11 @@ namespace Microsoft.DeviceModels.Runtime.Win32
 
     public sealed class ThreadManager : RT.ThreadManager
     {
-        private static object s_deadThreadLock = new object();
+        private static object                 s_deadThreadLock = new object();
         private unsafe LLOS.HAL.TimerContext* m_timer;
-        private List<RT.Processor.Context> m_deadThreads;
-        private AutoResetEvent m_evtThreadExit;
+        private List<RT.Processor.Context>    m_deadThreads;
+        private AutoResetEvent                m_evtThreadExit;
+        private RT.ThreadImpl                 m_interruptThread;
 
         public override RT.ThreadImpl InterruptThread
         {
@@ -61,6 +62,8 @@ namespace Microsoft.DeviceModels.Runtime.Win32
 
             m_deadThreads = new List<RT.Processor.Context>();
             m_evtThreadExit = new AutoResetEvent(false);
+
+            m_interruptThread = new RT.ThreadImpl(null, new uint[ 128 ]);
         }
 
         //--//
@@ -249,9 +252,9 @@ namespace Microsoft.DeviceModels.Runtime.Win32
             {
                 RT.ThreadImpl currentThread = ( (DeviceModels.Win32.Processor)RT.Processor.Instance ).CurrentThread;
 
-                if(currentThread == null)
+                if(currentThread == null && m_interruptThread != null)
                 {
-                    currentThread = m_idleThread;
+                    currentThread = m_interruptThread;
                 }
 
                 return currentThread;

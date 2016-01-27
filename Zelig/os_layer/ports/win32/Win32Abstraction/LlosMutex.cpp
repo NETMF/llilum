@@ -64,7 +64,7 @@ BOOL LLOS_MUTEX_CurrentThreadHasLock(LLOS_Handle mutexHandle)
 
     if (mutexHandle == INVALID_HANDLE_VALUE)
     {
-        return FALSE;
+        return ownsMutex;
     }
 
     switch(WaitForSingleObject(mutexHandle, 0))
@@ -72,7 +72,7 @@ BOOL LLOS_MUTEX_CurrentThreadHasLock(LLOS_Handle mutexHandle)
         case WAIT_OBJECT_0:
             {
                 volatile LlosThread *tlsThread = GetThreadLocalStorage();
-                ownsMutex = tlsThread == nullptr || tlsThread->globalLockRefCount > 0;
+                ownsMutex = (tlsThread == nullptr) || (tlsThread->globalLockRefCount > 0);
                 ReleaseMutex(mutexHandle);
             }
             break;
