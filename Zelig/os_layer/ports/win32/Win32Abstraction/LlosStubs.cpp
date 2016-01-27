@@ -2,6 +2,11 @@
 
 extern "C"
 {
+    uint32_t CMSIS_STUB_SCB__get_CONTROL()
+    {
+        return 0;
+    }
+
     uint32_t CMSIS_STUB_SCB__get_BASEPRI()
     {
         return 0;
