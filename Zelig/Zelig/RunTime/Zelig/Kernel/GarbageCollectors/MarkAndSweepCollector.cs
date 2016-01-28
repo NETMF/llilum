@@ -3,7 +3,7 @@
 //
 
 //#define GC_PRECISE_PROFILING
-
+//#define DEBUG_MARK_SWEEP
 
 namespace Microsoft.Zelig.Runtime
 {
@@ -274,6 +274,10 @@ namespace Microsoft.Zelig.Runtime
 
         public override uint Collect()
         {
+#if DEBUG_MARK_SWEEP
+            BugCheck.Log( "Collecting on Thread 0x%x", (int)ObjectHeader.Unpack( ThreadManager.Instance.CurrentThread ).ToPointer( ) );
+#endif
+
             if(Configuration.CollectPerformanceStatistics)
             {
                 m_perf_stat_calls++;
@@ -525,6 +529,14 @@ namespace Microsoft.Zelig.Runtime
                     ctx.Populate( thread.SwappedOutContext );
                 }
 
+#if DEBUG_MARK_SWEEP
+                BugCheck.Log(
+                    "Walking thread stack 0x%x, 0x%x -> 0x%x",
+                    (int)ObjectHeader.Unpack( thread ).ToPointer( ),
+                    (int)ctx.StackPointer,
+                    (int)ctx.BaseStackPointer );
+#endif
+
                 m_stackWalker.Process( ctx );
             }
         }
@@ -608,6 +620,31 @@ namespace Microsoft.Zelig.Runtime
                             {
                                 m_perf_deadCount++;
                             }
+
+#if DEBUG_MARK_SWEEP
+                            BugCheck.Log( "Object swept up: 0x%08x, size: %d", (int)oh.ToPointer( ), (int)oh.TotalSize );
+                            String name;
+                            if(flags == ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes)
+                            {
+                                name = "<raw bytes>";
+                            }
+                            else
+                            {
+                                var type = oh.VirtualTable.TypeInfo;
+
+                                if(type is TS.SzArrayReferenceTypeRepresentation)
+                                {
+                                    var arrayType = (TS.SzArrayReferenceTypeRepresentation)type;
+                                    BugCheck.Log( "Array of:" );
+                                    name = arrayType.UnderlyingType.Name ?? "<unknown>";
+                                }
+                                else
+                                {
+                                    name = type?.Name ?? "<unknown>";
+                                }
+                            }
+                            BugCheck.Log( name );
+#endif
 
                             addressNext = oh.GetNextObjectPointer();
                             break;
