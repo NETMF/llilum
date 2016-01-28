@@ -113,14 +113,11 @@ namespace Microsoft.Zelig.Runtime
 
         //--//
 
-        static readonly System.Text.StringBuilder s_sb = new System.Text.StringBuilder();
-
         [NoInline]
         [TS.WellKnownMethod( "BugCheck_WriteLine" )]
         public static void WriteLine( string text )
         {
-            s_sb.Append( text );
-            s_sb.AppendLine();
+            BugCheck.Log( text );
         }
 
         public static void WriteLineFormat(        string   fmt   ,
