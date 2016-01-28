@@ -180,7 +180,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 Processor.Context ctx        = thisThread.SwappedOutContext; 
                 
                 this.BaseSP     = ctx.BaseStackPointer;
-                this.SP         = ctx.StackPointer;
+                this.SP         = GetProcessStackPointer();
                 this.EXC_RETURN = ctx.ExcReturn;
             }
 
@@ -225,10 +225,10 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
 #if DEBUG_CTX_SWITCH
                 RT.BugCheck.Log( "[PFD-ctx] EXC=0x%08x, PSR=0x%08x, PC=0x%08x, R0=0x%08x, SP(aligned)=0x%08x",
-                    (int)registers.EXC_RETURN,
-                    (int)registers.PSR.ToUInt32( ),
-                    (int)registers.PC.ToUInt32( ),
-                    (int)registers.R0.ToUInt32( ),
+                    (int)firstFrame->SoftwareFrameRegisters.EXC_RETURN,
+                    (int)firstFrame->HardwareFrameRegisters.PSR.ToUInt32( ),
+                    (int)firstFrame->HardwareFrameRegisters.PC.ToUInt32( ),
+                    (int)firstFrame->HardwareFrameRegisters.R0.ToUInt32( ),
                     (int)this.SP.ToUInt32( )
                     );
 

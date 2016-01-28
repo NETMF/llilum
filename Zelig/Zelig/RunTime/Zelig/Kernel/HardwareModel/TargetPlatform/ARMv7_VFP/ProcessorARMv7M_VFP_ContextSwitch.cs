@@ -273,7 +273,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 Processor.Context ctx        = thisThread.SwappedOutContext;
 
                 this.BaseSP     = ctx.BaseStackPointer;
-                this.SP         = ctx.StackPointer;
+                this.SP         = GetProcessStackPointer();
                 this.EXC_RETURN = ctx.ExcReturn;
             }
 
