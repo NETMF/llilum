@@ -109,6 +109,10 @@ namespace Microsoft.Zelig.Runtime
         {
         }
 
+        internal virtual void DumpMemory()
+        {
+        }
+
         internal virtual bool IsObjectAlive( UIntPtr ptr )
         {
             throw new NotImplementedException( );

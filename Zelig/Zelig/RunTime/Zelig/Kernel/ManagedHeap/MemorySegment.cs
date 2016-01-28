@@ -369,10 +369,13 @@ namespace Microsoft.Zelig.Runtime
             return (uint)size;
         }
         
-        internal void ConsistencyCheck()
+        internal void ConsistencyCheck(bool dumpMemory)
         {
-            Log("MemorySegment 0x%x -> 0x%x", (int)this.Beginning.ToUInt32(), (int)this.End.ToUInt32());
-            Log("FirstFreeBlock: 0x%x / LastFreeBlock: 0x%x", (int)this.FirstFreeBlock, (int)this.LastFreeBlock);
+            if (dumpMemory)
+            {
+                BugCheck.Log("MemorySegment 0x%x -> 0x%x", (int)this.Beginning.ToUInt32(), (int)this.End.ToUInt32());
+                BugCheck.Log("FirstFreeBlock: 0x%x / LastFreeBlock: 0x%x", (int)this.FirstFreeBlock, (int)this.LastFreeBlock);
+            }
 
             if (this.FirstFreeBlock == null)
             {
@@ -388,12 +391,19 @@ namespace Microsoft.Zelig.Runtime
                 // A generous estimation of how many free blocks are possible given the size of this memory segment
                 uint maxFreeBlocksPossible = (AddressMath.RangeSize(this.FirstBlock, this.End) / MemoryFreeBlock.MinimumSpaceRequired()) + 1;
 
-                Log("Walking MemoryFreeBlock...");
+                if (dumpMemory)
+                {
+                    BugCheck.Log("Walking MemoryFreeBlock...");
+                }
 
                 uint freeBlockCount = 0;
                 for (MemoryFreeBlock* current = this.FirstFreeBlock; current != null; current = current->Next)
                 {
-                    Log("FreeBlock: 0x%x, prev:0x%x, next: 0x%x, size:%d", (int)current, (int)current->Previous, (int)current->Next, (int)current->Size());
+                    if (dumpMemory)
+                    {
+                        BugCheck.Log("FreeBlock: 0x%x, prev:0x%x, next: 0x%x, size:%d", (int)current, (int)current->Previous, (int)current->Next, (int)current->Size());
+                    }
+
                     BugCheck.Assert(AddressMath.IsInRange(current->ToObjectHeaderPointer(), this.Beginning, this.End), BugCheck.StopCode.HeapCorruptionDetected);
 
                     if (current->Next == null)
@@ -416,7 +426,10 @@ namespace Microsoft.Zelig.Runtime
                 }
             }
 
-            Log("Walking object pointers...");
+            if (dumpMemory)
+            {
+                BugCheck.Log("Walking object pointers...");
+            }
 
             UIntPtr objectPointer = this.FirstBlock;
             MemoryFreeBlock* nextExpectedFreeBlock = this.FirstFreeBlock;
@@ -432,17 +445,39 @@ namespace Microsoft.Zelig.Runtime
                 bool isGapPlug = gcFlags == ObjectHeader.GarbageCollectorFlags.GapPlug;
                 bool isAllocatedRawBytes = gcFlags == ObjectHeader.GarbageCollectorFlags.AllocatedRawBytes;
 
-                int fga = 0;
+                if (dumpMemory)
+                {
+                    int fga = 0;
 
-                if(isFreeBlock) fga += 100;
-                if(isGapPlug) fga += 10;
-                if(isAllocatedRawBytes) fga += 1;
+                    if (isFreeBlock)
+                        fga += 100;
+                    if (isGapPlug)
+                        fga += 10;
+                    if (isAllocatedRawBytes)
+                        fga += 1;
 
-                Log("oh:0x%x, gcFlags:%x(fb/gp/arp:%03d), size %d",
-                    (int)objectPointer.ToUInt32(),
-                    (int)gcFlags,
-                    fga,
-                    isGapPlug ? sizeof(uint) : (int)oh.TotalSize);
+                    BugCheck.Log("oh:0x%x, gcFlags:%x(fb/gp/arp:%03d), size %d",
+                        (int)objectPointer.ToUInt32(),
+                        (int)gcFlags,
+                        fga,
+                        isGapPlug ? sizeof(uint) : (int)oh.TotalSize);
+
+                    if (!isAllocatedRawBytes && !isFreeBlock && !isGapPlug)
+                    {
+                        var type = oh.VirtualTable.TypeInfo;
+
+                        if (type is TS.SzArrayReferenceTypeRepresentation)
+                        {
+                            var arrayType = (TS.SzArrayReferenceTypeRepresentation)type;
+                            BugCheck.Log("Array of:");
+                            BugCheck.Log(arrayType.UnderlyingType.Name ?? "<unknown>");
+                        }
+                        else
+                        {
+                            BugCheck.Log(type?.Name ?? "<unknown>");
+                        }
+                    }
+                }
 
                 if (isFreeBlock)
                 {
@@ -482,7 +517,10 @@ namespace Microsoft.Zelig.Runtime
             BugCheck.Assert(objectPointer == this.End, BugCheck.StopCode.HeapCorruptionDetected);
             BugCheck.Assert(nextExpectedFreeBlock == null, BugCheck.StopCode.HeapCorruptionDetected);
 
-            Log("MemorySegment Done");
+            if (dumpMemory)
+            {
+                BugCheck.Log("MemorySegment Done");
+            }
         }
 
         internal bool IsObjectAlive( UIntPtr ptr )

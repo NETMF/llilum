@@ -111,11 +111,21 @@ namespace Microsoft.Zelig.Runtime
             return false;
         }
 
-        internal override unsafe void ConsistencyCheck()
+        internal override void ConsistencyCheck()
+        {
+            ConsistencyCheck(dumpMemory:false);
+        }
+
+        internal override void DumpMemory()
+        {
+            ConsistencyCheck(dumpMemory:true);
+        }
+
+        private unsafe void ConsistencyCheck(bool dumpMemory)
         {
             for (MemorySegment* heap = m_heapHead; heap != null; heap = heap->Next)
             {
-                heap->ConsistencyCheck();
+                heap->ConsistencyCheck(dumpMemory);
             }
         }
 
