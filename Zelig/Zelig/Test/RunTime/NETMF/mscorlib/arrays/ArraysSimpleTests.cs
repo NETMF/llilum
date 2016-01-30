@@ -2,7 +2,7 @@
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//#define TEST_EXCEPTIONS  // https://github.com/NETMF/llilum/issues/130
+#define TEST_EXCEPTIONS  
 
 using System;
 
@@ -33,7 +33,7 @@ namespace Microsoft.Zelig.Test
             result |= Assert.CheckFailed( Simple_decl_decl_04_Test( ) );
             result |= Assert.CheckFailed( Simple_decl_decl_05_Test( ) );
             result |= Assert.CheckFailed( Simple_decl_decl_06_Test( ) );
-            //result |= Assert.CheckFailed( Simple_decl_decl_07_Test( ) ); // github issue #55
+            result |= Assert.CheckFailed( Simple_decl_decl_07_Test( ) );
             result |= Assert.CheckFailed( Simple_decl_decl_08_Test( ) );
             result |= Assert.CheckFailed( Simple_decl_decl_09_Test( ) );
             result |= Assert.CheckFailed( Simple_decl_decl_10_Test( ) );
@@ -60,13 +60,13 @@ namespace Microsoft.Zelig.Test
             result |= Assert.CheckFailed( Simple_init_init_a_02_Test( ) );
             result |= Assert.CheckFailed( Simple_init_init_a_03_Test( ) );
             result |= Assert.CheckFailed( Simple_init_init_a_04_Test( ) );
-            //result |= Assert.CheckFailed( Simple_init_init_a_05_Test( ) ); // github issue #55
-            //result |= Assert.CheckFailed( Simple_init_init_a_06_Test( ) ); // github issue #55
+            result |= Assert.CheckFailed( Simple_init_init_a_05_Test( ) );
+            result |= Assert.CheckFailed( Simple_init_init_a_06_Test( ) );
             result |= Assert.CheckFailed( Simple_init_init_b_02_Test( ) );
             result |= Assert.CheckFailed( Simple_init_init_b_03_Test( ) );
             result |= Assert.CheckFailed( Simple_init_init_b_04_Test( ) );
-            //result |= Assert.CheckFailed( Simple_init_init_b_05_Test( ) );
-            //result |= Assert.CheckFailed( Simple_init_init_b_06_Test( ) ); github issue #55
+            result |= Assert.CheckFailed( Simple_init_init_b_05_Test( ) );
+            result |= Assert.CheckFailed( Simple_init_init_b_06_Test( ) ); 
             result |= Assert.CheckFailed( Simple_init_init_b_08_Test( ) );
             result |= Assert.CheckFailed( Simple_init_init_b_09_Test( ) );
             result |= Assert.CheckFailed( Simple_init_init_b_10_Test( ) );
@@ -74,8 +74,8 @@ namespace Microsoft.Zelig.Test
             result |= Assert.CheckFailed( Simple_init_init_c_02_Test( ) );
             result |= Assert.CheckFailed( Simple_init_init_c_03_Test( ) );
             result |= Assert.CheckFailed( Simple_init_init_c_04_Test( ) );
-            //result |= Assert.CheckFailed( Simple_init_init_c_05_Test( ) ); github issue #55
-            //result |= Assert.CheckFailed( Simple_init_init_c_06_Test( ) ); github issue #55
+            result |= Assert.CheckFailed( Simple_init_init_c_05_Test( ) );
+            result |= Assert.CheckFailed( Simple_init_init_c_06_Test( ) );
             result |= Assert.CheckFailed( Simple_init_init_c_08_Test( ) );
             result |= Assert.CheckFailed( Simple_init_init_c_09_Test( ) );
             result |= Assert.CheckFailed( Simple_init_init_c_10_Test( ) );
@@ -83,8 +83,8 @@ namespace Microsoft.Zelig.Test
             result |= Assert.CheckFailed( Simple_init_init_d_02_Test( ) );
             result |= Assert.CheckFailed( Simple_init_init_d_03_Test( ) );
             result |= Assert.CheckFailed( Simple_init_init_d_04_Test( ) );
-            //result |= Assert.CheckFailed( Simple_init_init_d_05_Test( ) ); github issue #55
-            //result |= Assert.CheckFailed( Simple_init_init_d_06_Test( ) ); github issue #55
+            result |= Assert.CheckFailed( Simple_init_init_d_05_Test( ) );
+            result |= Assert.CheckFailed( Simple_init_init_d_06_Test( ) );
             result |= Assert.CheckFailed( Simple_init_init_d_08_Test( ) );
             result |= Assert.CheckFailed( Simple_init_init_d_09_Test( ) );
             result |= Assert.CheckFailed( Simple_init_init_d_10_Test( ) );
@@ -92,8 +92,8 @@ namespace Microsoft.Zelig.Test
             result |= Assert.CheckFailed( Simple_init_init_e_02_Test( ) );
             result |= Assert.CheckFailed( Simple_init_init_e_03_Test( ) );
             result |= Assert.CheckFailed( Simple_init_init_e_04_Test( ) );
-            //result |= Assert.CheckFailed( Simple_init_init_e_05_Test( ) ); github issue #55
-            //result |= Assert.CheckFailed( Simple_init_init_e_06_Test( ) ); github issue #55
+            result |= Assert.CheckFailed( Simple_init_init_e_05_Test( ) );
+            result |= Assert.CheckFailed( Simple_init_init_e_06_Test( ) );
             result |= Assert.CheckFailed( Simple_init_init_e_08_Test( ) );
             result |= Assert.CheckFailed( Simple_init_init_e_09_Test( ) );
             result |= Assert.CheckFailed( Simple_init_init_e_10_Test( ) );
@@ -108,7 +108,7 @@ namespace Microsoft.Zelig.Test
             result |= Assert.CheckFailed( Simple_init_constinit_01_Test( ) );
             result |= Assert.CheckFailed( Simple_init_constinit_02_Test( ) );
             result |= Assert.CheckFailed( Simple_init_constinit_03_Test( ) );
-            //result |= Assert.CheckFailed( Simple_acc_iter_length_01_Test( ) ); github issue #55
+            result |= Assert.CheckFailed( Simple_acc_iter_length_01_Test( ) );
             result |= Assert.CheckFailed( Simple_acc_iter_bounds_01_Test( ) );
             result |= Assert.CheckFailed( Simple_acc_iter_bounds_02_Test( ) );
             result |= Assert.CheckFailed( Simple_acc_iter_bounds_03_Test( ) );
@@ -131,19 +131,19 @@ namespace Microsoft.Zelig.Test
             result |= Assert.CheckFailed( Simple_assign_smpass_a_04_Test( ) );
             result |= Assert.CheckFailed( Simple_assign_smpass_a_05_Test( ) );
             result |= Assert.CheckFailed( Simple_assign_smpass_a_06_Test( ) );
-            //result |= Assert.CheckFailed( Simple_assign_smpass_a_07_Test( ) ); github issue #55
-            //result |= Assert.CheckFailed( Simple_assign_smpass_a_08_Test( ) ); github issue #55
+            result |= Assert.CheckFailed( Simple_assign_smpass_a_07_Test( ) );
+            result |= Assert.CheckFailed( Simple_assign_smpass_a_08_Test( ) );
             result |= Assert.CheckFailed( Simple_assign_smpass_a_09_Test( ) );
             result |= Assert.CheckFailed( Simple_assign_smpass_b_01_Test( ) );
             result |= Assert.CheckFailed( Simple_assign_smpass_b_02_Test( ) );
             result |= Assert.CheckFailed( Simple_assign_smpass_b_03_Test( ) );
             result |= Assert.CheckFailed( Simple_assign_smpass_b_04_Test( ) );
             result |= Assert.CheckFailed( Simple_assign_smpass_b_05_Test( ) );
-            //result |= Assert.CheckFailed( Simple_assign_smpass_b_06_Test( ) ); github issue #55
-            //result |= Assert.CheckFailed( Simple_assign_smpass_b_07_Test( ) ); github issue #55
-            //result |= Assert.CheckFailed( Simple_assign_smpass_b_08_Test( ) ); github issue #55
+            result |= Assert.CheckFailed( Simple_assign_smpass_b_06_Test( ) );
+            result |= Assert.CheckFailed( Simple_assign_smpass_b_07_Test( ) ); 
+            result |= Assert.CheckFailed( Simple_assign_smpass_b_08_Test( ) ); 
             result |= Assert.CheckFailed( Simple_assign_smpass_b_09_Test( ) );
-            //result |= Assert.CheckFailed( Simple_assign_badcode_01_Test( ) ); github issue #56
+            result |= Assert.CheckFailed( Simple_assign_badcode_01_Test( ) ); 
             result |= Assert.CheckFailed( Simple_assign_badcode_03_Test( ) );
             result |= Assert.CheckFailed( Simple_assign_badcode_04_Test( ) );
             result |= Assert.CheckFailed( Simple_assign_element_01_Test( ) );

@@ -22,9 +22,14 @@ namespace Microsoft.Zelig.Test
             bool testResults = true;
 
             //
+            // System.Exception
+            //
+            tests.Add( new ExceptionTests( ) ); 
+
+            //
             // System.Text.StringBuilder
             //
-            //////tests.Add( new StringBuilderTests( ) ); // https://github.com/NETMF/llilum/issues/109, https://github.com/NETMF/llilum/issues/108
+            tests.Add( new StringBuilderTests( ) ); // https://github.com/NETMF/llilum/issues/109, https://github.com/NETMF/llilum/issues/108
 
             ////////
             //////// System.IO.MemoryStream

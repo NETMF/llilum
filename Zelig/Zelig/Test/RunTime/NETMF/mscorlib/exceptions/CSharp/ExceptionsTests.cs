@@ -3,12 +3,11 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+
+namespace Microsoft.Zelig.Test
 {
-    public class ExceptionTests : IMFTestInterface
+    public class ExceptionTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -25,308 +24,349 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("Cleaning up after the tests");
         }
 
+        public override TestResult Run(string[] args)
+        {
+            TestResult result = TestResult.Pass;
+
+            result |= Assert.CheckFailed(Exc_excep01_Test());
+            result |= Assert.CheckFailed(Exc_excep01_Test());
+            result |= Assert.CheckFailed(Exc_excep02_Test());
+            result |= Assert.CheckFailed(Exc_excep04_Test());
+            result |= Assert.CheckFailed(Exc_excep05_Test());
+            result |= Assert.CheckFailed(Exc_excep06_Test());
+            result |= Assert.CheckFailed(Exc_excep07_Test());
+            result |= Assert.CheckFailed(Exc_excep09_Test());
+            result |= Assert.CheckFailed(Exc_excep10_Test());
+            result |= Assert.CheckFailed(Exc_excep11_Test());
+            result |= Assert.CheckFailed(Exc_excep27_Test());
+            result |= Assert.CheckFailed(Exc_excep28_Test());
+            result |= Assert.CheckFailed(Exc_excep30_Test());
+            result |= Assert.CheckFailed(Exc_excep31_Test());
+            result |= Assert.CheckFailed(Exc_excep33_Test());
+            result |= Assert.CheckFailed(Exc_excep34_Test());
+            result |= Assert.CheckFailed(Exc_excep35_Test());
+            result |= Assert.CheckFailed(Exc_excep40_Test());
+            result |= Assert.CheckFailed(Exc_excep41_Test());
+            //////result |= Assert.CheckFailed(Exc_excep42_Test());
+            result |= Assert.CheckFailed(Exc_excep42b_Test());
+            //////result |= Assert.CheckFailed(Exc_excep43_Test());
+            result |= Assert.CheckFailed(Exc_excep56_Test());
+            result |= Assert.CheckFailed(Exc_excep57_Test());
+            result |= Assert.CheckFailed(Exc_excep58_Test());
+            result |= Assert.CheckFailed(Exc_excep59_Test());
+            result |= Assert.CheckFailed(Exc_excep60_Test());
+            result |= Assert.CheckFailed(Exc_excep61_Test());
+            result |= Assert.CheckFailed(Exc_excep62_Test());
+            result |= Assert.CheckFailed(Exc_excep63_Test());
+            result |= Assert.CheckFailed(Exc_excep64_Test());
+            //////result |= Assert.CheckFailed(Exc_excep65_Test());
+
+            return result;
+        }
+
+
         //Exception Test methods
         //The following tests were ported from folder current\test\cases\client\CLR\Conformance\10_classes\Exception
         //excep01,excep02,excep04,excep05,excep06,excep07,excep09,excep10,excep11,excep27,excep28,excep30,excep31,excep33,excep34,excep35,excep40,excep41,excep42,excep42b,excep43,excep56,excep57,excep58,excep59,excep60,excep61,excep62,excep63,excep64,excep65,
 
-        //Test Case Calls 
+            //Test Case Calls 
         [TestMethod]
-        public MFTestResults Exc_excep01_Test()
+        public TestResult Exc_excep01_Test()
         {
             Log.Comment("This test will confirm that the the thrown exception is caught by the matching catch");
             if (Exc_TestClass_excep01.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Exc_excep02_Test()
+        public TestResult Exc_excep02_Test()
         {
             Log.Comment("This test will confirm that the the thrown exception is caught by the matching catch, not the base class catch blocks");
             if (Exc_TestClass_excep02.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Exc_excep04_Test()
+        public TestResult Exc_excep04_Test()
         {
             Log.Comment("This test will confirm that the the thrown exception is caught and the error code can be set");
             if (Exc_TestClass_excep04.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Exc_excep05_Test()
+        public TestResult Exc_excep05_Test()
         {
             Log.Comment("This test will confirm that the the thrown exception is caught by the matching catch, not the base class catch");
             if (Exc_TestClass_excep05.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Exc_excep06_Test()
+        public TestResult Exc_excep06_Test()
         {
             Log.Comment("This test will confirm that the the thrown exception is caught by the base class catch");
             if (Exc_TestClass_excep06.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Exc_excep07_Test()
+        public TestResult Exc_excep07_Test()
         {
             Log.Comment("This test will confirm that the the thrown exception is caught by the base class catch()");
             if (Exc_TestClass_excep07.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Exc_excep09_Test()
+        public TestResult Exc_excep09_Test()
         {
             Log.Comment("This test will confirm that the catch() functions.");
             if (Exc_TestClass_excep09.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Exc_excep10_Test()
+        public TestResult Exc_excep10_Test()
         {
             Log.Comment("This test will confirm that the thrown exception is handled in the catch()");
             Log.Comment("when no matching catch is available.");
             if (Exc_TestClass_excep10.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Exc_excep11_Test()
+        public TestResult Exc_excep11_Test()
         {
             Log.Comment("This test will confirm that the the thrown exception is caught by the matching catch, not the catch()");
             if (Exc_TestClass_excep11.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Exc_excep27_Test()
+        public TestResult Exc_excep27_Test()
         {
             Log.Comment("Throwing an exception transfers control to a handler.");
             if (Exc_TestClass_excep27.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Exc_excep28_Test()
+        public TestResult Exc_excep28_Test()
         {
             Log.Comment("When an exception is thrown, control is transferred to a handler");
             if (Exc_TestClass_excep28.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Exc_excep30_Test()
+        public TestResult Exc_excep30_Test()
         {
             Log.Comment("A throw-expression with no operand rethrows the exception being handled.");
             if (Exc_TestClass_excep30.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Exc_excep31_Test()
+        public TestResult Exc_excep31_Test()
         {
             Log.Comment("A throw-expression with no operand does not copy the exception being handled.");
             if (Exc_TestClass_excep31.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Exc_excep33_Test()
+        public TestResult Exc_excep33_Test()
         {
             Log.Comment("The exception thrown by a rethrow is the one most recently caught and not finished.");
             if (Exc_TestClass_excep33.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Exc_excep34_Test()
+        public TestResult Exc_excep34_Test()
         {
             Log.Comment("When initialization is complete for the formal parameter of a catch clause, an exception is considered caught.");
             if (Exc_TestClass_excep34.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Exc_excep35_Test()
+        public TestResult Exc_excep35_Test()
         {
             Log.Comment("A handler is not allowed to catch an expression thrown outside");
             Log.Comment("its function-try-block and any function called from its function-");
             Log.Comment("try-block.");
             if (Exc_TestClass_excep35.testMethod())
             {   
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Exc_excep40_Test()
+        public TestResult Exc_excep40_Test()
         {
             Log.Comment("If no match is found among the handlers for a try-block, the");
             Log.Comment("search for a matching handler continues in a dynamically");
             Log.Comment("surrounding try-block.");
             if (Exc_TestClass_excep40.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Exc_excep41_Test()
+        public TestResult Exc_excep41_Test()
         {
             Log.Comment("If no match is found among the handlers for a try-block, the");
             Log.Comment("search for a matching handler continues in a dynamically");
             Log.Comment("surrounding try-block.");
             if (Exc_TestClass_excep41.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         /*
          * This test is excluded because it causes a Metadata processor crash, it failed in the baseline
          * 
         [TestMethod]
-        public MFTestResults Exc_excep42_Test()
+        public TestResult Exc_excep42_Test()
         {
             Log.Comment("Handle throws up to 255 levels deep.");
             if (Exc_TestClass_excep42.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
           */ 
         [TestMethod]
-        public MFTestResults Exc_excep42b_Test()
+        public TestResult Exc_excep42b_Test()
         {
             Log.Comment("Handle throws up to 33 levels deep.");
             if (Exc_TestClass_excep42b.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         /*
          * This test is excluded because it causes a Metadata processor crash, it failed in the baseline
          * 
         [TestMethod]
-        public MFTestResults Exc_excep43_Test()
+        public TestResult Exc_excep43_Test()
         {
             Log.Comment("Handle throws up to 255 levels deep, but don't catch.  VM should not die.");
             if (Exc_TestClass_excep43.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
          */ 
         [TestMethod]
-        public MFTestResults Exc_excep56_Test()
+        public TestResult Exc_excep56_Test()
         {
             Log.Comment("Should get unreachable code warning, but nothing more.");
             if (Exc_TestClass_excep56.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Exc_excep57_Test()
+        public TestResult Exc_excep57_Test()
         {
             Log.Comment("Should get unreachable code warning, but nothing more.");
             if (Exc_TestClass_excep57.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Exc_excep58_Test()
+        public TestResult Exc_excep58_Test()
         {
             Log.Comment("Any finally clauses associated with try statements will be executed before catch clause execution");
             if (Exc_TestClass_excep58.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Exc_excep59_Test()
+        public TestResult Exc_excep59_Test()
         {
             Log.Comment("Any finally clauses associated with try statements will be executed before catch clause execution");
             if (Exc_TestClass_excep59.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Exc_excep60_Test()
+        public TestResult Exc_excep60_Test()
         {
             Log.Comment("Inner exceptions can be chained");
             if (Exc_TestClass_excep60.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Exc_excep61_Test()
+        public TestResult Exc_excep61_Test()
         {
             Log.Comment("Inner exceptions can be chained to arbitrary length");
             if (Exc_TestClass_excep61.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Exc_excep62_Test()
+        public TestResult Exc_excep62_Test()
         {
             Log.Comment("Any finally clauses associated with try statements will be executed before catch clause execution");
             if (Exc_TestClass_excep62.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Exc_excep63_Test()
+        public TestResult Exc_excep63_Test()
         {
             Log.Comment("If a catch search reaches a static ctor then a Exception is thrown,");
             Log.Comment("at the point of static ctor invocation. The inner exception is the original exception.");
@@ -339,12 +379,12 @@ namespace Microsoft.SPOT.Platform.Tests
                 Log.Comment("This is bug number: 21724	Resolved By Design.");
                 Log.Comment("This is bug number: 21724	If a catch search reaches a static ctor then a Exception is thrown at the point of static ctor invocation. The inner exception is the original exception. ");
                 Log.Comment("When this bug is fixed change this back to pass and chang eht known failure to fail");
-                return MFTestResults.Fail;
+                return TestResult.Fail;
             }
-            return MFTestResults.Pass;
+            return TestResult.Pass;
         }
         [TestMethod]
-        public MFTestResults Exc_excep64_Test()
+        public TestResult Exc_excep64_Test()
         {
             Log.Comment("If a catch search reaches a static field initializer then a Exception is thrown,");
             Log.Comment("at the point of static ctor invocation. The inner exception is the original exception.");
@@ -357,9 +397,9 @@ namespace Microsoft.SPOT.Platform.Tests
                 Log.Comment("This is bug number: 21724	Resolved By Design.");
                 Log.Comment("This is bug number: 21724	If a catch search reaches a static ctor then a Exception is thrown at the point of static ctor invocation. The inner exception is the original exception. ");
                 Log.Comment("When this bug is fixed change this back to pass and chang eht known failure to fail");
-                return MFTestResults.Fail;
+                return TestResult.Fail;
             }
-            return MFTestResults.Pass;
+            return TestResult.Pass;
         }
         /*
          * This test is excluded because it throws an exception, it succeeded in the baseline
@@ -367,16 +407,16 @@ namespace Microsoft.SPOT.Platform.Tests
          * and when GC is called, the dtor does not exit or call its base class' dtor when it throws an exception.
          * 
         [TestMethod]
-        public MFTestResults Exc_excep65_Test()
+        public TestResult Exc_excep65_Test()
         {
             Log.Comment("If a catch search reaches a static ctor then a Exception is thrown,");
             Log.Comment("at the point of static ctor invocation. The inner exception is the original exception.");
 
             if (Exc_TestClass_excep65.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
          */ 
 

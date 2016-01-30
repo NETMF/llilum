@@ -99,9 +99,9 @@ namespace Microsoft.Zelig.Test
             result |= Assert.CheckFailed(Methods149_Test(), testName, 149);
             result |= Assert.CheckFailed(Methods150_Test(), testName, 150);
             result |= Assert.CheckFailed(Methods154_Test(), testName, 154);
-            //result |= Assert.CheckFailed(Methods159_Test(), testName, 159); https://github.com/NETMF/llilum/issues/130
-            //result |= Assert.CheckFailed(Methods160_Test(), testName, 160); https://github.com/NETMF/llilum/issues/130
-            //result |= Assert.CheckFailed(Methods161_Test(), testName, 161); https://github.com/NETMF/llilum/issues/130
+            result |= Assert.CheckFailed(Methods159_Test(), testName, 159); 
+            result |= Assert.CheckFailed(Methods160_Test(), testName, 160); 
+            result |= Assert.CheckFailed(Methods161_Test(), testName, 161); 
             result |= Assert.CheckFailed(Methods163_Test(), testName, 163);
             result |= Assert.CheckFailed(Methods164_Test(), testName, 164);
             result |= Assert.CheckFailed(Methods169_Test(), testName, 169);

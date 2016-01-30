@@ -51,6 +51,7 @@
     <Compile Include="classes\classes3\MembersTests.cs" />
     <Compile Include="classes\classes3\MethodsTests.cs" />
     <Compile Include="enums\EnumTests.cs" />
+    <Compile Include="exceptions\CSharp\ExceptionsTests.cs" />
     <Compile Include="interfaces\InterfaceTests.cs" />
     <Compile Include="structs\StructsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -1,10 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#define TEST_EXCEPTIONS 
+
 using System;
 using System.IO;
 
-//#define TEST_EXCEPTIONS // https://github.com/NETMF/llilum/issues/130
 
 namespace Microsoft.Zelig.Test
 {
@@ -32,7 +34,7 @@ namespace Microsoft.Zelig.Test
             TestResult result = TestResult.Pass;
             
             result |= Assert.CheckFailed( ExtendBuffer( ) );
-            //result |= Assert.CheckFailed( InvalidRange( ) );
+            result |= Assert.CheckFailed( InvalidRange( ) );
             result |= Assert.CheckFailed( VanillaWrite( ) );
             result |= Assert.CheckFailed( BoundaryCheck( ) );
 

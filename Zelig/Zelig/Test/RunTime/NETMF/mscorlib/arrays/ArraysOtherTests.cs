@@ -343,21 +343,22 @@ namespace Microsoft.Zelig.Test
         class Other_TestClass_covariance_exception_02
         {
             public static int Main_old()
-    {
-        string[] stringArr = new string[10];
-        object[] objectArr = stringArr;
-        objectArr[0] = "hello";
+            {
+                string[] stringArr = new string[10];
+                object[] objectArr = stringArr;
+                objectArr[0] = "hello";
 
-        try
-        {
-            objectArr[1] = new Queue( );
-        }
-        catch (System.Exception)
-        {
-            return 0;
-        }
-        return 1;
-    }
+                try
+                {
+                    objectArr[1] = new Queue();
+                }
+                catch (System.Exception)
+                {
+                    return 0;
+                }
+                return 1;
+            }
+
             public static bool testMethod()
             {
                 return (Main_old() == 0);

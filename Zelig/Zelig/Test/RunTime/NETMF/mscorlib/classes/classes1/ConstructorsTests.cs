@@ -25,6 +25,52 @@ namespace Microsoft.Zelig.Test
             Log.Comment("Cleaning up after the tests");
         }
 
+        public override TestResult Run(string[] args)
+        {
+            TestResult result = TestResult.Pass;
+
+            string testName = "Constructors";
+            result |= Assert.CheckFailed(Constructors1_Test(), testName, 1);
+            result |= Assert.CheckFailed(Constructors2_Test(), testName, 2);
+            result |= Assert.CheckFailed(Constructors3_Test(), testName, 3);
+            result |= Assert.CheckFailed(Constructors5_Test(), testName, 5);
+            result |= Assert.CheckFailed(Constructors6_Test(), testName, 6);
+            result |= Assert.CheckFailed(Constructors8_Test(), testName, 8);
+            result |= Assert.CheckFailed(Constructors10_Test(), testName, 10);
+            result |= Assert.CheckFailed(Constructors11_Test(), testName, 11);
+            result |= Assert.CheckFailed(Constructors13_Test(), testName, 13);
+            result |= Assert.CheckFailed(Constructors16_Test(), testName, 16);
+            result |= Assert.CheckFailed(Constructors17_Test(), testName, 17);
+            result |= Assert.CheckFailed(Constructors20_Test(), testName, 20);
+            result |= Assert.CheckFailed(Constructors21_Test(), testName, 21);
+            result |= Assert.CheckFailed(Constructors22_Test(), testName, 22);
+            result |= Assert.CheckFailed(Constructors23_Test(), testName, 23);
+            result |= Assert.CheckFailed(Constructors24_Test(), testName, 24);
+            result |= Assert.CheckFailed(Constructors25_Test(), testName, 25);
+            result |= Assert.CheckFailed(Constructors26_Test(), testName, 26);
+            result |= Assert.CheckFailed(Constructors27_Test(), testName, 27);
+            result |= Assert.CheckFailed(Constructors28_Test(), testName, 28);
+            result |= Assert.CheckFailed(Constructors31_Test(), testName, 31);
+            result |= Assert.CheckFailed(Constructors32_Test(), testName, 32);
+            result |= Assert.CheckFailed(Constructors33_Test(), testName, 33);
+            result |= Assert.CheckFailed(Constructors34_Test(), testName, 34);
+            result |= Assert.CheckFailed(Constructors35_Test(), testName, 35); 
+            result |= Assert.CheckFailed(Constructors44_Test(), testName, 44);
+            result |= Assert.CheckFailed(Constructors45_Test(), testName, 45);
+            result |= Assert.CheckFailed(Constructors46_Test(), testName, 46);
+            result |= Assert.CheckFailed(Constructors47_Test(), testName, 47);
+            result |= Assert.CheckFailed(Constructors50_Test(), testName, 50);
+            result |= Assert.CheckFailed(Constructors51_Test(), testName, 51);
+            result |= Assert.CheckFailed(Constructors52_Test(), testName, 52);
+            result |= Assert.CheckFailed(Constructors54_Test(), testName, 54);
+            result |= Assert.CheckFailed(Constructors55_Test(), testName, 55);
+            result |= Assert.CheckFailed(Constructors56_Test(), testName, 56);
+            result |= Assert.CheckFailed(Constructors57_Test(), testName, 57);
+            result |= Assert.CheckFailed(Constructors64_Test(), testName, 64);
+
+            return result;
+        }
+
         //Constructors Tests
         //All test methods ported from folder current\test\cases\client\CLR\Conformance\10_classes\constructors
         //The following tests were removed because they were build failure tests:
@@ -528,52 +574,6 @@ namespace Microsoft.Zelig.Test
             //////return TestResult.Fail;
 
             return TestResult.Pass;
-        }
-
-        public override TestResult Run( string[] args )
-        {
-            TestResult result = TestResult.Pass;
-
-            string testName = "Constructors";
-            result |= Assert.CheckFailed(Constructors1_Test(), testName, 1);
-            result |= Assert.CheckFailed(Constructors2_Test(), testName, 2);
-            result |= Assert.CheckFailed(Constructors3_Test(), testName, 3);
-            result |= Assert.CheckFailed(Constructors5_Test(), testName, 5);
-            result |= Assert.CheckFailed(Constructors6_Test(), testName, 6);
-            result |= Assert.CheckFailed(Constructors8_Test(), testName, 8);
-            result |= Assert.CheckFailed(Constructors10_Test(), testName, 10);
-            result |= Assert.CheckFailed(Constructors11_Test(), testName, 11);
-            result |= Assert.CheckFailed(Constructors13_Test(), testName, 13);
-            result |= Assert.CheckFailed(Constructors16_Test(), testName, 16);
-            result |= Assert.CheckFailed(Constructors17_Test(), testName, 17);
-            result |= Assert.CheckFailed(Constructors20_Test(), testName, 20);
-            result |= Assert.CheckFailed(Constructors21_Test(), testName, 21);
-            result |= Assert.CheckFailed(Constructors22_Test(), testName, 22);
-            result |= Assert.CheckFailed(Constructors23_Test(), testName, 23);
-            result |= Assert.CheckFailed(Constructors24_Test(), testName, 24);
-            result |= Assert.CheckFailed(Constructors25_Test(), testName, 25);
-            result |= Assert.CheckFailed(Constructors26_Test(), testName, 26);
-            result |= Assert.CheckFailed(Constructors27_Test(), testName, 27);
-            result |= Assert.CheckFailed(Constructors28_Test(), testName, 28);
-            result |= Assert.CheckFailed(Constructors31_Test(), testName, 31);
-            result |= Assert.CheckFailed(Constructors32_Test(), testName, 32);
-            result |= Assert.CheckFailed(Constructors33_Test(), testName, 33);
-            result |= Assert.CheckFailed(Constructors34_Test(), testName, 34);
-            //result |= Assert.CheckFailed(Constructors35_Test(), testName, 35); https://github.com/NETMF/llilum/issues/130
-            result |= Assert.CheckFailed(Constructors44_Test(), testName, 44);
-            result |= Assert.CheckFailed(Constructors45_Test(), testName, 45);
-            result |= Assert.CheckFailed(Constructors46_Test(), testName, 46);
-            result |= Assert.CheckFailed(Constructors47_Test(), testName, 47);
-            result |= Assert.CheckFailed(Constructors50_Test(), testName, 50);
-            result |= Assert.CheckFailed(Constructors51_Test(), testName, 51);
-            result |= Assert.CheckFailed(Constructors52_Test(), testName, 52);
-            result |= Assert.CheckFailed(Constructors54_Test(), testName, 54);
-            result |= Assert.CheckFailed(Constructors55_Test(), testName, 55);
-            result |= Assert.CheckFailed(Constructors56_Test(), testName, 56);
-            result |= Assert.CheckFailed(Constructors57_Test(), testName, 57);
-            result |= Assert.CheckFailed(Constructors64_Test(), testName, 64);
-
-            return result;
         }
 
         //Constructors Test Classes

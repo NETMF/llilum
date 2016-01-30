@@ -29,7 +29,7 @@ namespace Microsoft.Zelig.Test
         {
             TestResult result = TestResult.Pass;
             
-            //////result |= Assert.CheckFailed( Events1_Test( ) );
+            result |= Assert.CheckFailed( Events1_Test( ) );
 
             return result;
         }

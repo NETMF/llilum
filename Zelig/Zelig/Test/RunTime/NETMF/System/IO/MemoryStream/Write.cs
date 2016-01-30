@@ -2,7 +2,7 @@
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//#define TEST_EXCEPTIONS // https://github.com/NETMF/llilum/issues/130
+#define TEST_EXCEPTIONS
 
 using System;
 using System.IO;
@@ -35,7 +35,7 @@ namespace Microsoft.Zelig.Test
         {
             TestResult result = TestResult.Pass;
             
-            //result |= Assert.CheckFailed( InvalidCases( ) );
+            result |= Assert.CheckFailed( InvalidCases( ) );
             result |= Assert.CheckFailed( VanillaWrite_Dynamic_Ctor( ) );
             result |= Assert.CheckFailed( VanillaWrite_Static_Ctor( ) );
             result |= Assert.CheckFailed( ShiftBuffer( ) );
