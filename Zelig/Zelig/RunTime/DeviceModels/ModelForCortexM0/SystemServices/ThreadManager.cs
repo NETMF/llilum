@@ -52,6 +52,7 @@ namespace Microsoft.DeviceModels.Chipset.CortexM0.Runtime
             RT.BugCheck.AssertInterruptsOff();
 
             m_contextSwitchTimer = Drivers.ContextSwitchTimer.Instance;
+
             m_contextSwitchTimer.Reset();
         }
 
