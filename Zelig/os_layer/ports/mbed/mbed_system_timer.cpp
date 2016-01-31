@@ -36,16 +36,22 @@ extern "C"
 
     HRESULT LLOS_SYSTEM_TIMER_SetTicks(uint64_t value)
     {
+        LLOS__UNREFERENCED_PARAMETER(value);
+
         return LLOS_E_NOT_SUPPORTED;
     }
 
     uint64_t LLOS_SYSTEM_TIMER_GetTicks(LLOS_Context timerContext)
     {
+        LLOS__UNREFERENCED_PARAMETER(timerContext);
+
         return us_ticker_read();
     }
 
     uint64_t LLOS_SYSTEM_TIMER_GetTimerFrequency(LLOS_Context timerContext)
     {
+        LLOS__UNREFERENCED_PARAMETER(timerContext);
+
         return 1000000; // 1us tick timer = 1MHz
     }
 
@@ -102,8 +108,12 @@ extern "C"
             microsecondsFromNow = 2;
         }
 
+        LLOS__PRESERVE_PRIMASK_STATE_M0_1__SAVE();
+
         ticker_remove_event(s_pTickerData, &pCtx->TickerEvent);
         ticker_insert_event(s_pTickerData, &pCtx->TickerEvent, us_ticker_read() + (uint32_t)microsecondsFromNow, (uint32_t)pTimer);
+
+        LLOS__PRESERVE_PRIMASK_STATE_M0_1__RESTORE();
 
         return S_OK;
     }

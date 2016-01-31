@@ -34,4 +34,43 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+//--//
+
+#ifndef LLOS__UNREFERENCED_PARAMETER
+#define LLOS__UNREFERENCED_PARAMETER(P) (P)
+#endif
+
+//--//
+
+
+#define LLOS__PRESERVE_PRIMASK_STATE__SAVE()        \
+    { uint32_t __primask = __get_PRIMASK(); {       \
+
+#define LLOS__PRESERVE_PRIMASK_STATE__RESTORE()     \
+    } __set_PRIMASK(__primask); }                   \
+
+//--//
+
+#if (__CORTEX_M >= 0x03) || (__CORTEX_SC >= 300)
+#define LLOS__PRESERVE_PRIMASK_STATE_M0_1__SAVE       __NOP
+#else
+#define LLOS__PRESERVE_PRIMASK_STATE_M0_1__SAVE       LLOS__PRESERVE_PRIMASK_STATE__SAVE
+#endif
+
+#if (__CORTEX_M >= 0x03) || (__CORTEX_SC >= 300)
+#define LLOS__PRESERVE_PRIMASK_STATE_M0_1__RESTORE    __NOP 
+#else
+#define LLOS__PRESERVE_PRIMASK_STATE_M0_1__RESTORE    LLOS__PRESERVE_PRIMASK_STATE__RESTORE
+#endif
+
+//--//
+
+#define LLOS__PRESERVE_PRIMASK_STATE__FUNC(f)   \
+    LLOS__PRESERVE_PRIMASK_STATE__SAVE();       \
+    f;                                          \
+    LLOS__PRESERVE_PRIMASK_STATE__RESTORE();    \
+
+//--//
+
 int32_t WStringToCharBuffer(char* output, uint32_t outputBufferLength, const uint16_t* input, const uint32_t length);
+
