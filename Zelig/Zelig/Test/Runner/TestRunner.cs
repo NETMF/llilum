@@ -6,34 +6,28 @@ namespace Microsoft.Zelig.Test
     public class TestRunner
     {
         private int m_timeOut = 900000; // 15 minutes default time out.
-        
+
         /// <summary>
         /// An overloaded constructor that takes the test objects in its arguments.
         /// </summary>
         /// <param name="args">A list of test objects.</param>
-        public TestRunner(int timeout) 
+        public TestRunner(int timeout)
         {
             m_timeOut = timeout; 
         }
 
         public void Run()
         {
-            var tests = new List<TestBase>( );
+            var tests = new List<TestBase>();
             bool testResults = true;
 
-            //
             // System.Exception
-            //
-            tests.Add( new ExceptionTests( ) ); 
+            tests.Add(new ExceptionTests());
 
-            //
             // System.Text.StringBuilder
-            //
-            tests.Add( new StringBuilderTests( ) ); // https://github.com/NETMF/llilum/issues/109, https://github.com/NETMF/llilum/issues/108
+            tests.Add(new StringBuilderTests());
 
-            ////////
-            //////// System.IO.MemoryStream
-            ////////
+            // System.IO.MemoryStream
             tests.Add(new CanRead());
             tests.Add(new CanSeek());
             tests.Add(new CanWrite());
@@ -51,9 +45,7 @@ namespace Microsoft.Zelig.Test
             tests.Add(new WriteByte());
             tests.Add(new WriteTo());
 
-            ////////
-            //////// mscorlib
-            ////////
+            // mscorlib
             tests.Add(new ArraysSimpleTests());
             tests.Add(new ArraysOtherTests());
             tests.Add(new BasicConceptTests());
@@ -106,9 +98,9 @@ namespace Microsoft.Zelig.Test
             TestConsole.WriteLine("*************************");
         }
 
-        public static void Main( string[] args)
+        public static void Main(string[] args)
         {
-            new TestRunner( 0 ).Run( ); 
+            new TestRunner(0).Run();
         }
     }
 }

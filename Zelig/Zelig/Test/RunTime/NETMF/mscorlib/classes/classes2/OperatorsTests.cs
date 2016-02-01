@@ -24,50 +24,51 @@ namespace Microsoft.Zelig.Test
             Log.Comment("Cleaning up after the tests");
         }
         
-        public override TestResult Run( string[] args )
+        public override TestResult Run(string[] args)
         {
             TestResult result = TestResult.Pass;
-            
-            result |= Assert.CheckFailed( Operators1_Test( ) );
-            result |= Assert.CheckFailed( Operators2_Test( ) );
-            result |= Assert.CheckFailed( Operators3_Test( ) );
-            result |= Assert.CheckFailed( Operators4_Test( ) );
-            result |= Assert.CheckFailed( Operators5_Test( ) );
-            result |= Assert.CheckFailed( Operators6_Test( ) );
-            result |= Assert.CheckFailed( Operators7_Test( ) );
-            result |= Assert.CheckFailed( Operators13_Test( ) );
-            result |= Assert.CheckFailed( Operators14_Test( ) );
-            result |= Assert.CheckFailed( Operators15_Test( ) );
-            result |= Assert.CheckFailed( Operators16_Test( ) );
-            result |= Assert.CheckFailed( Operators17_Test( ) );
-            result |= Assert.CheckFailed( Operators18_Test( ) );
-            result |= Assert.CheckFailed( Operators19_Test( ) );
-            result |= Assert.CheckFailed( Operators20_Test( ) );
-            result |= Assert.CheckFailed( Operators21_Test( ) );
-            result |= Assert.CheckFailed( Operators22_Test( ) );
-            result |= Assert.CheckFailed( Operators23_Test( ) );
-            result |= Assert.CheckFailed( Operators24_Test( ) );
-            result |= Assert.CheckFailed( Operators38_Test( ) );
-            result |= Assert.CheckFailed( Operators39_Test( ) );
-            result |= Assert.CheckFailed( Operators40_Test( ) );
-            result |= Assert.CheckFailed( Operators41_Test( ) );
-            result |= Assert.CheckFailed( Operators42_Test( ) );
-            result |= Assert.CheckFailed( Operators43_Test( ) );
-            result |= Assert.CheckFailed( Operators44_Test( ) );
-            result |= Assert.CheckFailed( Operators45_Test( ) );
-            result |= Assert.CheckFailed( Operators46_Test( ) );
-            result |= Assert.CheckFailed( Operators67_Test( ) );
-            result |= Assert.CheckFailed( Operators68_Test( ) );
-            result |= Assert.CheckFailed( Operators69_Test( ) );
-            result |= Assert.CheckFailed( Operators88_Test( ) );
-            result |= Assert.CheckFailed( Operators89_Test( ) );
-            result |= Assert.CheckFailed( Operators90_Test( ) );
-            result |= Assert.CheckFailed( Operators91_Test( ) );
-            result |= Assert.CheckFailed( Operators92_Test( ) );
-            result |= Assert.CheckFailed( Operators93_Test( ) );
-            result |= Assert.CheckFailed( Operators94_Test( ) );
-            result |= Assert.CheckFailed( Operators95_Test( ) );
-            result |= Assert.CheckFailed( Operators96_Test( ) );
+
+            string testName = "Operators";
+            result |= Assert.CheckFailed(Operators1_Test(), testName, 1);
+            result |= Assert.CheckFailed(Operators2_Test(), testName, 2);
+            result |= Assert.CheckFailed(Operators3_Test(), testName, 3);
+            result |= Assert.CheckFailed(Operators4_Test(), testName, 4);
+            result |= Assert.CheckFailed(Operators5_Test(), testName, 5);
+            result |= Assert.CheckFailed(Operators6_Test(), testName, 6);
+            result |= Assert.CheckFailed(Operators7_Test(), testName, 7);
+            result |= Assert.CheckFailed(Operators13_Test(), testName, 13);
+            result |= Assert.CheckFailed(Operators14_Test(), testName, 14);
+            result |= Assert.CheckFailed(Operators15_Test(), testName, 15);
+            result |= Assert.CheckFailed(Operators16_Test(), testName, 16);
+            result |= Assert.CheckFailed(Operators17_Test(), testName, 17);
+            result |= Assert.CheckFailed(Operators18_Test(), testName, 18);
+            result |= Assert.CheckFailed(Operators19_Test(), testName, 19);
+            result |= Assert.CheckFailed(Operators20_Test(), testName, 20);
+            result |= Assert.CheckFailed(Operators21_Test(), testName, 21);
+            result |= Assert.CheckFailed(Operators22_Test(), testName, 22);
+            result |= Assert.CheckFailed(Operators23_Test(), testName, 23);
+            result |= Assert.CheckFailed(Operators24_Test(), testName, 24);
+            result |= Assert.CheckFailed(Operators38_Test(), testName, 38);
+            result |= Assert.CheckFailed(Operators39_Test(), testName, 39);
+            result |= Assert.CheckFailed(Operators40_Test(), testName, 40);
+            result |= Assert.CheckFailed(Operators41_Test(), testName, 41);
+            result |= Assert.CheckFailed(Operators42_Test(), testName, 42);
+            result |= Assert.CheckFailed(Operators43_Test(), testName, 43);
+            result |= Assert.CheckFailed(Operators44_Test(), testName, 44);
+            result |= Assert.CheckFailed(Operators45_Test(), testName, 45);
+            result |= Assert.CheckFailed(Operators46_Test(), testName, 46);
+            result |= Assert.CheckFailed(Operators67_Test(), testName, 67);
+            result |= Assert.CheckFailed(Operators68_Test(), testName, 68);
+            result |= Assert.CheckFailed(Operators69_Test(), testName, 69);
+            result |= Assert.CheckFailed(Operators88_Test(), testName, 88);
+            result |= Assert.CheckFailed(Operators89_Test(), testName, 89);
+            result |= Assert.CheckFailed(Operators90_Test(), testName, 90);
+            result |= Assert.CheckFailed(Operators91_Test(), testName, 91);
+            result |= Assert.CheckFailed(Operators92_Test(), testName, 92);
+            result |= Assert.CheckFailed(Operators93_Test(), testName, 93);
+            result |= Assert.CheckFailed(Operators94_Test(), testName, 94);
+            result |= Assert.CheckFailed(Operators95_Test(), testName, 95);
+            result |= Assert.CheckFailed(Operators96_Test(), testName, 96);
 
             return result;
         }

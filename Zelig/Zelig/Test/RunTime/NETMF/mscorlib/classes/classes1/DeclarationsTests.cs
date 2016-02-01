@@ -25,36 +25,40 @@ namespace Microsoft.Zelig.Test
         {
             Log.Comment("Cleaning up after the tests");
         }
-        
-        public override TestResult Run( string[] args )
+
+        public override TestResult Run(string[] args)
         {
             TestResult result = TestResult.Pass;
-            
-            result |= Assert.CheckFailed( Meta_Test( ) );
-            result |= Assert.CheckFailed( BaseClass1_Test( ) );
-            result |= Assert.CheckFailed( BaseClass2_Test( ) );
-            result |= Assert.CheckFailed( BaseClass3_Test( ) );
-            result |= Assert.CheckFailed( BaseClass4_Test( ) );
-            result |= Assert.CheckFailed( BaseClass10_Test( ) );
-            result |= Assert.CheckFailed( BaseClass13_Test( ) );
-            result |= Assert.CheckFailed( BaseClass25_Test( ) );
-            result |= Assert.CheckFailed( BaseClass29_Test( ) );
-            result |= Assert.CheckFailed( Modifiers2_Test( ) );
-            result |= Assert.CheckFailed( Modifiers3_Test( ) );
-            result |= Assert.CheckFailed( Modifiers4_Test( ) );
-            result |= Assert.CheckFailed( Modifiers6_Test( ) );
-            result |= Assert.CheckFailed( Modifiers7_Test( ) );
-            result |= Assert.CheckFailed( Modifiers8_Test( ) );
-            result |= Assert.CheckFailed( Modifiers10_Test( ) );
-            result |= Assert.CheckFailed( Modifiers11_Test( ) );
-            result |= Assert.CheckFailed( Modifiers12_Test( ) );
-            result |= Assert.CheckFailed( Modifiers13_Test( ) );
-            result |= Assert.CheckFailed( Modifiers14_Test( ) );
-            result |= Assert.CheckFailed( Modifiers23_Test( ) );
-            result |= Assert.CheckFailed( Modifiers24_Test( ) );
-            result |= Assert.CheckFailed( Modifiers25_Test( ) );
-            result |= Assert.CheckFailed( Modifiers26_Test( ) );
-            result |= Assert.CheckFailed( Modifiers31_Test( ) );
+
+            result |= Assert.CheckFailed(Meta_Test(), "Meta", 0);
+
+            string testName = "BaseClass";
+            result |= Assert.CheckFailed(BaseClass1_Test(), testName, 1);
+            result |= Assert.CheckFailed(BaseClass2_Test(), testName, 2);
+            result |= Assert.CheckFailed(BaseClass3_Test(), testName, 3);
+            result |= Assert.CheckFailed(BaseClass4_Test(), testName, 4);
+            result |= Assert.CheckFailed(BaseClass10_Test(), testName, 10);
+            result |= Assert.CheckFailed(BaseClass13_Test(), testName, 13);
+            result |= Assert.CheckFailed(BaseClass25_Test(), testName, 25);
+            result |= Assert.CheckFailed(BaseClass29_Test(), testName, 29);
+
+            testName = "Modifiers";
+            result |= Assert.CheckFailed(Modifiers2_Test(), testName, 2);
+            result |= Assert.CheckFailed(Modifiers3_Test(), testName, 3);
+            result |= Assert.CheckFailed(Modifiers4_Test(), testName, 4);
+            result |= Assert.CheckFailed(Modifiers6_Test(), testName, 6);
+            result |= Assert.CheckFailed(Modifiers7_Test(), testName, 7);
+            result |= Assert.CheckFailed(Modifiers8_Test(), testName, 8);
+            result |= Assert.CheckFailed(Modifiers10_Test(), testName, 10);
+            result |= Assert.CheckFailed(Modifiers11_Test(), testName, 11);
+            result |= Assert.CheckFailed(Modifiers12_Test(), testName, 12);
+            result |= Assert.CheckFailed(Modifiers13_Test(), testName, 13);
+            result |= Assert.CheckFailed(Modifiers14_Test(), testName, 14);
+            result |= Assert.CheckFailed(Modifiers23_Test(), testName, 23);
+            result |= Assert.CheckFailed(Modifiers24_Test(), testName, 24);
+            result |= Assert.CheckFailed(Modifiers25_Test(), testName, 25);
+            result |= Assert.CheckFailed(Modifiers26_Test(), testName, 26);
+            result |= Assert.CheckFailed(Modifiers31_Test(), testName, 31);
 
             return result;
         }

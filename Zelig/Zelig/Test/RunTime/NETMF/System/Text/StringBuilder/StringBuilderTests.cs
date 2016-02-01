@@ -28,23 +28,28 @@ namespace Microsoft.Zelig.Test
         public override TestResult Run( string[] args )
         {
             TestResult result = TestResult.Pass;
-            
-            result |= Assert.CheckFailed( Test_0_AppendTest_0( ) );
 
-            result |= Assert.CheckFailed( Test_1_RemoveTest_0( ) );
+            string testName = "Test_0_AppendTest_";
+            result |= Assert.CheckFailed(Test_0_AppendTest_0(), testName, 0);
 
-            //////result |= Assert.CheckFailed( Test_2_InsertTest_0( ) ); // https://github.com/NETMF/llilum/issues/109, https://github.com/NETMF/llilum/issues/108
+            testName = "Test_1_RemoveTest_";
+            result |= Assert.CheckFailed(Test_1_RemoveTest_0(), testName, 0);
 
-            result |= Assert.CheckFailed( Test_3_ReplaceTest_0( ) );
-            result |= Assert.CheckFailed( Test_3_ReplaceTest_1( ) );
-            result |= Assert.CheckFailed( Test_3_ReplaceTest_2( ) );
-            result |= Assert.CheckFailed( Test_3_ReplaceTest_3( ) );
-            result |= Assert.CheckFailed( Test_3_ReplaceTest_4( ) );
-            result |= Assert.CheckFailed( Test_3_ReplaceTest_5( ) );
-            result |= Assert.CheckFailed( Test_3_ReplaceTest_6( ) );
-            result |= Assert.CheckFailed( Test_3_ReplaceTest_7( ) );
+            testName = "Test_2_InsertTest_";
+            //result |= Assert.CheckFailed(Test_2_InsertTest_0(), testName, 0); // https://github.com/NETMF/llilum/issues/109, https://github.com/NETMF/llilum/issues/108
 
-            result |= Assert.CheckFailed( Test_4_CapacityTest_0( ) );
+            testName = "Test_3_ReplaceTest_";
+            result |= Assert.CheckFailed(Test_3_ReplaceTest_0(), testName, 0);
+            result |= Assert.CheckFailed(Test_3_ReplaceTest_1(), testName, 1);
+            result |= Assert.CheckFailed(Test_3_ReplaceTest_2(), testName, 2);
+            result |= Assert.CheckFailed(Test_3_ReplaceTest_3(), testName, 3);
+            result |= Assert.CheckFailed(Test_3_ReplaceTest_4(), testName, 4);
+            result |= Assert.CheckFailed(Test_3_ReplaceTest_5(), testName, 5);
+            result |= Assert.CheckFailed(Test_3_ReplaceTest_6(), testName, 6);
+            result |= Assert.CheckFailed(Test_3_ReplaceTest_7(), testName, 7);
+
+            testName = "Test_4_CapacityTest_";
+            result |= Assert.CheckFailed(Test_4_CapacityTest_0(), testName, 0);
 
             return result;
         }

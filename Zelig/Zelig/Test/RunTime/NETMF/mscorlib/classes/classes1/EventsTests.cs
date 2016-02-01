@@ -25,11 +25,11 @@ namespace Microsoft.Zelig.Test
             Log.Comment("Cleaning up after the tests");
         }
         
-        public override TestResult Run( string[] args )
+        public override TestResult Run(string[] args)
         {
             TestResult result = TestResult.Pass;
-            
-            result |= Assert.CheckFailed( Events1_Test( ) );
+
+            result |= Assert.CheckFailed(Events1_Test(), "Events", 1);
 
             return result;
         }

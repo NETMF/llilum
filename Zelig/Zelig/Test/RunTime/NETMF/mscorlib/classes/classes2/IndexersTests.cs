@@ -23,41 +23,42 @@ namespace Microsoft.Zelig.Test
         {
             Log.Comment("Cleaning up after the tests");
         }
-        
-        public override TestResult Run( string[] args )
+
+        public override TestResult Run(string[] args)
         {
             TestResult result = TestResult.Pass;
-            
-            result |= Assert.CheckFailed( Indexers1_Test( ) );
-            result |= Assert.CheckFailed( Indexers2_Test( ) );
-            result |= Assert.CheckFailed( Indexers3_Test( ) );
-            result |= Assert.CheckFailed( Indexers4_Test( ) );
-            result |= Assert.CheckFailed( Indexers5_Test( ) );
-            result |= Assert.CheckFailed( Indexers6_Test( ) );
-            result |= Assert.CheckFailed( Indexers10_Test( ) );
-            result |= Assert.CheckFailed( Indexers11_Test( ) );
-            result |= Assert.CheckFailed( Indexers12_Test( ) );
-            result |= Assert.CheckFailed( Indexers14_Test( ) );
-            result |= Assert.CheckFailed( Indexers18_Test( ) );
-            result |= Assert.CheckFailed( Indexers23_Test( ) );
-            result |= Assert.CheckFailed( Indexers29_Test( ) );
-            result |= Assert.CheckFailed( Indexers32_Test( ) );
-            result |= Assert.CheckFailed( Indexers33_Test( ) );
-            result |= Assert.CheckFailed( Indexers37_Test( ) );
-            result |= Assert.CheckFailed( Indexers38_Test( ) );
-            result |= Assert.CheckFailed( Indexers39_Test( ) );
-            result |= Assert.CheckFailed( Indexers42_Test( ) );
-            result |= Assert.CheckFailed( Indexers43_Test( ) );
-            result |= Assert.CheckFailed( Indexers46_Test( ) );
-            result |= Assert.CheckFailed( Indexers47_Test( ) );
-            result |= Assert.CheckFailed( Indexers48_Test( ) );
-            result |= Assert.CheckFailed( Indexers49_Test( ) );
-            result |= Assert.CheckFailed( Indexers50_Test( ) );
-            result |= Assert.CheckFailed( Indexers51_Test( ) );
-            result |= Assert.CheckFailed( Indexers52_Test( ) );
-            result |= Assert.CheckFailed( Indexers53_Test( ) );
-            result |= Assert.CheckFailed( Indexers55_Test( ) );
-            result |= Assert.CheckFailed( Indexers56_Test( ) );
+
+            string testName = "Indexers";
+            result |= Assert.CheckFailed(Indexers1_Test(), testName, 1);
+            result |= Assert.CheckFailed(Indexers2_Test(), testName, 2);
+            result |= Assert.CheckFailed(Indexers3_Test(), testName, 3);
+            result |= Assert.CheckFailed(Indexers4_Test(), testName, 4);
+            result |= Assert.CheckFailed(Indexers5_Test(), testName, 5);
+            result |= Assert.CheckFailed(Indexers6_Test(), testName, 6);
+            result |= Assert.CheckFailed(Indexers10_Test(), testName, 10);
+            result |= Assert.CheckFailed(Indexers11_Test(), testName, 11);
+            result |= Assert.CheckFailed(Indexers12_Test(), testName, 12);
+            result |= Assert.CheckFailed(Indexers14_Test(), testName, 14);
+            result |= Assert.CheckFailed(Indexers18_Test(), testName, 18);
+            result |= Assert.CheckFailed(Indexers23_Test(), testName, 23);
+            result |= Assert.CheckFailed(Indexers29_Test(), testName, 29);
+            result |= Assert.CheckFailed(Indexers32_Test(), testName, 32);
+            result |= Assert.CheckFailed(Indexers33_Test(), testName, 33);
+            result |= Assert.CheckFailed(Indexers37_Test(), testName, 37);
+            result |= Assert.CheckFailed(Indexers38_Test(), testName, 38);
+            result |= Assert.CheckFailed(Indexers39_Test(), testName, 39);
+            result |= Assert.CheckFailed(Indexers42_Test(), testName, 42);
+            result |= Assert.CheckFailed(Indexers43_Test(), testName, 43);
+            result |= Assert.CheckFailed(Indexers46_Test(), testName, 46);
+            result |= Assert.CheckFailed(Indexers47_Test(), testName, 47);
+            result |= Assert.CheckFailed(Indexers48_Test(), testName, 48);
+            result |= Assert.CheckFailed(Indexers49_Test(), testName, 49);
+            result |= Assert.CheckFailed(Indexers50_Test(), testName, 50);
+            result |= Assert.CheckFailed(Indexers51_Test(), testName, 51);
+            result |= Assert.CheckFailed(Indexers52_Test(), testName, 52);
+            result |= Assert.CheckFailed(Indexers53_Test(), testName, 53);
+            result |= Assert.CheckFailed(Indexers55_Test(), testName, 55);
+            result |= Assert.CheckFailed(Indexers56_Test(), testName, 56);
 
             return result;
         }

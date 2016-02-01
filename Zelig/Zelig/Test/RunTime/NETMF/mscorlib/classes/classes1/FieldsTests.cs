@@ -28,43 +28,44 @@ namespace Microsoft.Zelig.Test
             Log.Comment("Cleaning up after the tests");
         }
         
-        public override TestResult Run( string[] args )
+        public override TestResult Run(string[] args)
         {
             TestResult result = TestResult.Pass;
-            
-            result |= Assert.CheckFailed( Fields1_testMethod( ) );
-            result |= Assert.CheckFailed( Fields2_testMethod( ) );
-            result |= Assert.CheckFailed( Fields3_testMethod( ) );
-            result |= Assert.CheckFailed( Fields4_testMethod( ) );
-            result |= Assert.CheckFailed( Fields5_testMethod( ) );
-            result |= Assert.CheckFailed( Fields6_testMethod( ) );
-            result |= Assert.CheckFailed( Fields7_testMethod( ) );
-            result |= Assert.CheckFailed( Fields8_testMethod( ) );
-            result |= Assert.CheckFailed( Fields13_testMethod( ) );
-            result |= Assert.CheckFailed( Fields14_testMethod( ) );
-            result |= Assert.CheckFailed( Fields15_testMethod( ) );
-            result |= Assert.CheckFailed( Fields16_testMethod( ) );
-            result |= Assert.CheckFailed( Fields17_testMethod( ) );
-            result |= Assert.CheckFailed( Fields18_testMethod( ) );
-            result |= Assert.CheckFailed( Fields20_testMethod( ) );
-            result |= Assert.CheckFailed( Fields22_testMethod( ) );
-            result |= Assert.CheckFailed( Fields23_testMethod( ) );
-            result |= Assert.CheckFailed( Fields24_testMethod( ) );
-            result |= Assert.CheckFailed( Fields41_testMethod( ) );
-            //////result |= Assert.CheckFailed( Fields42_testMethod( ) );
-            result |= Assert.CheckFailed( Fields43_testMethod( ) );
-            result |= Assert.CheckFailed( Fields44_testMethod( ) );
-            result |= Assert.CheckFailed( Fields45_testMethod( ) );
-            result |= Assert.CheckFailed( Fields46_testMethod( ) );
-            result |= Assert.CheckFailed( Fields49_testMethod( ) );
-            result |= Assert.CheckFailed( Fields51_testMethod( ) );
-            result |= Assert.CheckFailed( Fields52_testMethod( ) );
-            result |= Assert.CheckFailed( Fields53_testMethod( ) );
-            result |= Assert.CheckFailed( Fields54_testMethod( ) );
-            result |= Assert.CheckFailed( Fields55_testMethod( ) );
-            result |= Assert.CheckFailed( Fields56_testMethod( ) );
-            result |= Assert.CheckFailed( Fields57_testMethod( ) );
-            result |= Assert.CheckFailed( Fields58_testMethod( ) );
+
+            string testName = "Fields";
+            result |= Assert.CheckFailed(Fields1_testMethod(), testName, 1);
+            result |= Assert.CheckFailed(Fields2_testMethod(), testName, 2);
+            result |= Assert.CheckFailed(Fields3_testMethod(), testName, 3);
+            result |= Assert.CheckFailed(Fields4_testMethod(), testName, 4);
+            result |= Assert.CheckFailed(Fields5_testMethod(), testName, 5);
+            result |= Assert.CheckFailed(Fields6_testMethod(), testName, 6);
+            result |= Assert.CheckFailed(Fields7_testMethod(), testName, 7);
+            result |= Assert.CheckFailed(Fields8_testMethod(), testName, 8);
+            result |= Assert.CheckFailed(Fields13_testMethod(), testName, 13);
+            result |= Assert.CheckFailed(Fields14_testMethod(), testName, 14);
+            result |= Assert.CheckFailed(Fields15_testMethod(), testName, 15);
+            result |= Assert.CheckFailed(Fields16_testMethod(), testName, 16);
+            result |= Assert.CheckFailed(Fields17_testMethod(), testName, 17);
+            result |= Assert.CheckFailed(Fields18_testMethod(), testName, 18);
+            result |= Assert.CheckFailed(Fields20_testMethod(), testName, 20);
+            result |= Assert.CheckFailed(Fields22_testMethod(), testName, 22);
+            result |= Assert.CheckFailed(Fields23_testMethod(), testName, 23);
+            result |= Assert.CheckFailed(Fields24_testMethod(), testName, 24);
+            result |= Assert.CheckFailed(Fields41_testMethod(), testName, 41);
+            //result |= Assert.CheckFailed(Fields42_testMethod(), testName, 42); https://github.com/NETMF/llilum/issues/127
+            result |= Assert.CheckFailed(Fields43_testMethod(), testName, 43);
+            result |= Assert.CheckFailed(Fields44_testMethod(), testName, 44);
+            result |= Assert.CheckFailed(Fields45_testMethod(), testName, 45);
+            result |= Assert.CheckFailed(Fields46_testMethod(), testName, 46);
+            result |= Assert.CheckFailed(Fields49_testMethod(), testName, 49);
+            result |= Assert.CheckFailed(Fields51_testMethod(), testName, 51);
+            result |= Assert.CheckFailed(Fields52_testMethod(), testName, 52);
+            result |= Assert.CheckFailed(Fields53_testMethod(), testName, 53);
+            result |= Assert.CheckFailed(Fields54_testMethod(), testName, 54);
+            result |= Assert.CheckFailed(Fields55_testMethod(), testName, 55);
+            result |= Assert.CheckFailed(Fields56_testMethod(), testName, 56);
+            result |= Assert.CheckFailed(Fields57_testMethod(), testName, 57);
+            result |= Assert.CheckFailed(Fields58_testMethod(), testName, 58);
 
             return result;
         }
@@ -397,26 +398,26 @@ namespace Microsoft.Zelig.Test
             }
             return TestResult.Fail;
         }
-        
-        //////[TestMethod]
-        //////public TestResult Fields42_testMethod()
-        //////{
-        //////    Log.Comment(" Section 10.4");
-        //////    Log.Comment(" Field declarations may include variable-initializers.");
-        //////    Log.Comment(" For static fields, varaible initializers correspond to");
-        //////    Log.Comment(" assignment statements that are executed when the class");
-        //////    Log.Comment(" is loaded. For instance fields, variable initializers");
-        //////    Log.Comment(" correspond to assignment statements that are executed");
-        //////    Log.Comment(" when an instance of the class is created.");
-        //////    Log.Comment("This test has been rewritten to avoid use of the Math.Abs function which the MF does not support");
-        //////    if (FieldsTestClass42.testMethod())
-        //////    {
-        //////        return TestResult.Pass;
-        //////    }
-        //////    return TestResult.Fail;
-        //////}
-        
+
         [TestMethod]
+        public TestResult Fields42_testMethod()
+        {
+            Log.Comment(" Section 10.4");
+            Log.Comment(" Field declarations may include variable-initializers.");
+            Log.Comment(" For static fields, varaible initializers correspond to");
+            Log.Comment(" assignment statements that are executed when the class");
+            Log.Comment(" is loaded. For instance fields, variable initializers");
+            Log.Comment(" correspond to assignment statements that are executed");
+            Log.Comment(" when an instance of the class is created.");
+            Log.Comment("This test has been rewritten to avoid use of the Math.Abs function which the MF does not support");
+            if (FieldsTestClass42.testMethod())
+            {
+                return TestResult.Pass;
+            }
+            return TestResult.Fail;
+        }
+
+    [TestMethod]
         public TestResult Fields43_testMethod()
         {
             Log.Comment(" Section 10.4");
@@ -1141,33 +1142,32 @@ namespace Microsoft.Zelig.Test
             }
         }
 
-        //////https://github.com/NETMF/llilum/issues/127
-        //////public class FieldsTestClass42
-        //////{
-        //////    static int x = (int)Math.Cos(4-2) * 100;
-        //////    int i = 100;
-        //////    string s = "Hello";
+        public class FieldsTestClass42
+        {
+            static int x = (int)Math.Cos(4 - 2) * 100;
+            int i = 100;
+            string s = "Hello";
 
-        //////    public static bool testMethod()
-        //////    {
-        //////        try
-        //////        {
-        //////            FieldsTestClass42 t = new FieldsTestClass42();
-        //////            if ((x == Math.Cos(2)) && (t.i == 100) && (t.s.Equals("Hello")))
-        //////            {
-        //////                return true;
-        //////            }
-        //////            else
-        //////            {
-        //////                return false;
-        //////            }
-        //////        }
-        //////        catch 
-        //////        {
-        //////            return false;
-        //////        }
-        //////    }
-        //////}
+            public static bool testMethod()
+            {
+                try
+                {
+                    FieldsTestClass42 t = new FieldsTestClass42();
+                    if ((x == Math.Cos(2)) && (t.i == 100) && (t.s.Equals("Hello")))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
 
         public class FieldsTestClass43
         {

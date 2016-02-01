@@ -4,7 +4,6 @@
 
 using System;
 
-
 namespace Microsoft.Zelig.Test
 {
     public class ExceptionTests : TestBase, ITestInterface
@@ -13,8 +12,6 @@ namespace Microsoft.Zelig.Test
         public InitializeResult Initialize()
         {
             Log.Comment("Adding set up for the tests.");
-            // Add your functionality here.                
-
             return InitializeResult.ReadyToGo;
         }
 
@@ -28,38 +25,38 @@ namespace Microsoft.Zelig.Test
         {
             TestResult result = TestResult.Pass;
 
-            result |= Assert.CheckFailed(Exc_excep01_Test());
-            result |= Assert.CheckFailed(Exc_excep01_Test());
-            result |= Assert.CheckFailed(Exc_excep02_Test());
-            result |= Assert.CheckFailed(Exc_excep04_Test());
-            result |= Assert.CheckFailed(Exc_excep05_Test());
-            result |= Assert.CheckFailed(Exc_excep06_Test());
-            result |= Assert.CheckFailed(Exc_excep07_Test());
-            result |= Assert.CheckFailed(Exc_excep09_Test());
-            result |= Assert.CheckFailed(Exc_excep10_Test());
-            result |= Assert.CheckFailed(Exc_excep11_Test());
-            result |= Assert.CheckFailed(Exc_excep27_Test());
-            result |= Assert.CheckFailed(Exc_excep28_Test());
-            result |= Assert.CheckFailed(Exc_excep30_Test());
-            result |= Assert.CheckFailed(Exc_excep31_Test());
-            result |= Assert.CheckFailed(Exc_excep33_Test());
-            result |= Assert.CheckFailed(Exc_excep34_Test());
-            result |= Assert.CheckFailed(Exc_excep35_Test());
-            result |= Assert.CheckFailed(Exc_excep40_Test());
-            result |= Assert.CheckFailed(Exc_excep41_Test());
-            //////result |= Assert.CheckFailed(Exc_excep42_Test());
-            result |= Assert.CheckFailed(Exc_excep42b_Test());
-            //////result |= Assert.CheckFailed(Exc_excep43_Test());
-            result |= Assert.CheckFailed(Exc_excep56_Test());
-            result |= Assert.CheckFailed(Exc_excep57_Test());
-            result |= Assert.CheckFailed(Exc_excep58_Test());
-            result |= Assert.CheckFailed(Exc_excep59_Test());
-            result |= Assert.CheckFailed(Exc_excep60_Test());
-            result |= Assert.CheckFailed(Exc_excep61_Test());
-            result |= Assert.CheckFailed(Exc_excep62_Test());
-            result |= Assert.CheckFailed(Exc_excep63_Test());
-            result |= Assert.CheckFailed(Exc_excep64_Test());
-            //////result |= Assert.CheckFailed(Exc_excep65_Test());
+            string testName = "Exc_excep";
+            result |= Assert.CheckFailed(Exc_excep01_Test(), testName, 1);
+            result |= Assert.CheckFailed(Exc_excep02_Test(), testName, 2);
+            result |= Assert.CheckFailed(Exc_excep04_Test(), testName, 4);
+            result |= Assert.CheckFailed(Exc_excep05_Test(), testName, 5);
+            result |= Assert.CheckFailed(Exc_excep06_Test(), testName, 6);
+            result |= Assert.CheckFailed(Exc_excep07_Test(), testName, 7);
+            result |= Assert.CheckFailed(Exc_excep09_Test(), testName, 9);
+            result |= Assert.CheckFailed(Exc_excep10_Test(), testName, 10);
+            result |= Assert.CheckFailed(Exc_excep11_Test(), testName, 11);
+            result |= Assert.CheckFailed(Exc_excep27_Test(), testName, 27);
+            result |= Assert.CheckFailed(Exc_excep28_Test(), testName, 28);
+            //result |= Assert.CheckFailed(Exc_excep30_Test(), testName, 30); https://github.com/NETMF/llilum/issues/165
+            //result |= Assert.CheckFailed(Exc_excep31_Test(), testName, 31); https://github.com/NETMF/llilum/issues/165
+            //result |= Assert.CheckFailed(Exc_excep33_Test(), testName, 33); https://github.com/NETMF/llilum/issues/165
+            //result |= Assert.CheckFailed(Exc_excep34_Test(), testName, 34); https://github.com/NETMF/llilum/issues/165
+            result |= Assert.CheckFailed(Exc_excep35_Test(), testName, 35);
+            //result |= Assert.CheckFailed(Exc_excep40_Test(), testName, 40); https://github.com/NETMF/llilum/issues/165
+            result |= Assert.CheckFailed(Exc_excep41_Test(), testName, 41);
+            //result |= Assert.CheckFailed(Exc_excep42_Test(), testName, 42);
+            //result |= Assert.CheckFailed(Exc_excep42b_Test(), testName, 42); https://github.com/NETMF/llilum/issues/165
+            //result |= Assert.CheckFailed(Exc_excep43_Test(), testName, 43);
+            result |= Assert.CheckFailed(Exc_excep56_Test(), testName, 56);
+            result |= Assert.CheckFailed(Exc_excep57_Test(), testName, 57);
+            result |= Assert.CheckFailed(Exc_excep58_Test(), testName, 58);
+            result |= Assert.CheckFailed(Exc_excep59_Test(), testName, 59);
+            result |= Assert.CheckFailed(Exc_excep60_Test(), testName, 60);
+            result |= Assert.CheckFailed(Exc_excep61_Test(), testName, 61);
+            result |= Assert.CheckFailed(Exc_excep62_Test(), testName, 62);
+            result |= Assert.CheckFailed(Exc_excep63_Test(), testName, 63);
+            result |= Assert.CheckFailed(Exc_excep64_Test(), testName, 64);
+            //result |= Assert.CheckFailed(Exc_excep65_Test(), testName, 65);
 
             return result;
         }
@@ -257,6 +254,7 @@ namespace Microsoft.Zelig.Test
             }
             return TestResult.Fail;
         }
+
         /*
          * This test is excluded because it causes a Metadata processor crash, it failed in the baseline
          * 
@@ -270,7 +268,8 @@ namespace Microsoft.Zelig.Test
             }
             return TestResult.Fail;
         }
-          */ 
+        */
+
         [TestMethod]
         public TestResult Exc_excep42b_Test()
         {
@@ -281,6 +280,7 @@ namespace Microsoft.Zelig.Test
             }
             return TestResult.Fail;
         }
+
         /*
          * This test is excluded because it causes a Metadata processor crash, it failed in the baseline
          * 
@@ -294,7 +294,7 @@ namespace Microsoft.Zelig.Test
             }
             return TestResult.Fail;
         }
-         */ 
+        */
         [TestMethod]
         public TestResult Exc_excep56_Test()
         {
@@ -401,6 +401,7 @@ namespace Microsoft.Zelig.Test
             }
             return TestResult.Pass;
         }
+
         /*
          * This test is excluded because it throws an exception, it succeeded in the baseline
          * It however currently fails in the desktop environment, in both cases the sleep is not sufficient to provoke GC
@@ -418,10 +419,7 @@ namespace Microsoft.Zelig.Test
             }
             return TestResult.Fail;
         }
-         */ 
-
-
-
+        */
 
 
         //Compiled Test Cases 
@@ -814,6 +812,7 @@ namespace Microsoft.Zelig.Test
                 return (Main_old() == 0);
             }
         }
+
         public class Exc_TestClass_excep30_C1
         {
             static int s = 1;

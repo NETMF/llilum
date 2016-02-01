@@ -30,14 +30,14 @@ namespace Microsoft.Zelig.Test
             // TODO: Add your clean up steps here.
         }
         
-        public override TestResult Run( string[] args )
+        public override TestResult Run(string[] args)
         {
             TestResult result = TestResult.Pass;
-            
-            //result |= Assert.CheckFailed( ObjectDisposed( ) );
-            //result |= Assert.CheckFailed( InvalidRange( ) );
-            result |= Assert.CheckFailed( GetSetStaticBuffer( ) );
-            result |= Assert.CheckFailed( GetSetDynamicBuffer( ) );
+
+            //result |= Assert.CheckFailed(ObjectDisposed(), "ObjectDisposed", 0);
+            //result |= Assert.CheckFailed(InvalidRange(), "InvalidRange", 0);
+            //result |= Assert.CheckFailed(GetSetStaticBuffer(), "GetSetStaticBuffer", 0);
+            //result |= Assert.CheckFailed(GetSetDynamicBuffer(), "GetSetDynamicBuffer", 0);
 
             return result;
         }

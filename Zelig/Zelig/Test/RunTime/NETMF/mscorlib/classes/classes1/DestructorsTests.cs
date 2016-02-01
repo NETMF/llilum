@@ -31,9 +31,10 @@ namespace Microsoft.Zelig.Test
 
             if(GC.GetTotalMemory(false) != 0)
             {
-                result |= Assert.CheckFailed(Destructors3_Test());
-                result |= Assert.CheckFailed(Destructors4_Test());
-                result |= Assert.CheckFailed(Destructors7_Test());
+                string testName = "Destructors";
+                result |= Assert.CheckFailed(Destructors3_Test(), testName, 3);
+                result |= Assert.CheckFailed(Destructors4_Test(), testName, 4);
+                result |= Assert.CheckFailed(Destructors7_Test(), testName, 7);
             }
             else
             {

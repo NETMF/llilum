@@ -25,46 +25,47 @@ namespace Microsoft.Zelig.Test
         {
             Log.Comment("Cleaning up after the tests");
         }
-        
-        public override TestResult Run( string[] args )
+
+        public override TestResult Run(string[] args)
         {
             TestResult result = TestResult.Pass;
-            
-            result |= Assert.CheckFailed( Const1_Test( ) );
-            result |= Assert.CheckFailed( Const2_Test( ) );
-            result |= Assert.CheckFailed( Const3_Test( ) );
-            result |= Assert.CheckFailed( Const4_Test( ) );
-            result |= Assert.CheckFailed( Const5_Test( ) );
-            result |= Assert.CheckFailed( Const6_Test( ) );
-            result |= Assert.CheckFailed( Const9_Test( ) );
-            result |= Assert.CheckFailed( Const11_Test( ) );
-            result |= Assert.CheckFailed( Const12_Test( ) );
-            result |= Assert.CheckFailed( Const13_Test( ) );
-            result |= Assert.CheckFailed( Const14_Test( ) );
-            result |= Assert.CheckFailed( Const15_Test( ) );
-            result |= Assert.CheckFailed( Const16_Test( ) );
-            result |= Assert.CheckFailed( Const17_Test( ) );
-            result |= Assert.CheckFailed( Const18_Test( ) );
-            result |= Assert.CheckFailed( Const19_Test( ) );
-            result |= Assert.CheckFailed( Const20_Test( ) );
-            result |= Assert.CheckFailed( Const21_Test( ) );
-            result |= Assert.CheckFailed( Const24_Test( ) );
-            result |= Assert.CheckFailed( Const25_Test( ) );
-            result |= Assert.CheckFailed( Const26_Test( ) );
-            result |= Assert.CheckFailed( Const27_Test( ) );
-            result |= Assert.CheckFailed( Const28_Test( ) );
-            result |= Assert.CheckFailed( Const30_Test( ) );
-            result |= Assert.CheckFailed( Const32_Test( ) );
-            result |= Assert.CheckFailed( Const33_Test( ) );
-            result |= Assert.CheckFailed( Const34_Test( ) );
-            result |= Assert.CheckFailed( Const35_Test( ) );
+
+            string testName = "Const";
+            result |= Assert.CheckFailed(Const1_Test(), testName, 1);
+            result |= Assert.CheckFailed(Const2_Test(), testName, 2);
+            result |= Assert.CheckFailed(Const3_Test(), testName, 3);
+            result |= Assert.CheckFailed(Const4_Test(), testName, 4);
+            result |= Assert.CheckFailed(Const5_Test(), testName, 5);
+            result |= Assert.CheckFailed(Const6_Test(), testName, 6);
+            result |= Assert.CheckFailed(Const9_Test(), testName, 9);
+            result |= Assert.CheckFailed(Const11_Test(), testName, 11);
+            result |= Assert.CheckFailed(Const12_Test(), testName, 12);
+            result |= Assert.CheckFailed(Const13_Test(), testName, 13);
+            result |= Assert.CheckFailed(Const14_Test(), testName, 14);
+            result |= Assert.CheckFailed(Const15_Test(), testName, 15);
+            result |= Assert.CheckFailed(Const16_Test(), testName, 16);
+            result |= Assert.CheckFailed(Const17_Test(), testName, 17);
+            result |= Assert.CheckFailed(Const18_Test(), testName, 18);
+            result |= Assert.CheckFailed(Const19_Test(), testName, 19);
+            result |= Assert.CheckFailed(Const20_Test(), testName, 20);
+            result |= Assert.CheckFailed(Const21_Test(), testName, 21);
+            result |= Assert.CheckFailed(Const24_Test(), testName, 24);
+            result |= Assert.CheckFailed(Const25_Test(), testName, 25);
+            result |= Assert.CheckFailed(Const26_Test(), testName, 26);
+            result |= Assert.CheckFailed(Const27_Test(), testName, 27);
+            result |= Assert.CheckFailed(Const28_Test(), testName, 28);
+            result |= Assert.CheckFailed(Const30_Test(), testName, 30);
+            result |= Assert.CheckFailed(Const32_Test(), testName, 32);
+            result |= Assert.CheckFailed(Const33_Test(), testName, 33);
+            result |= Assert.CheckFailed(Const34_Test(), testName, 34);
+            result |= Assert.CheckFailed(Const35_Test(), testName, 35);
 #if GET_FIELD_WITH_BINDING_FLAGS_IMPLEMENTED
-            result |= Assert.CheckFailed( Const42_Test( ) );
-            result |= Assert.CheckFailed( Const43_Test( ) );
+            result |= Assert.CheckFailed(Const42_Test(), testName, 42);
+            result |= Assert.CheckFailed(Const43_Test(), testName, 43);
 #endif
-            result |= Assert.CheckFailed( Const44_Test( ) );
-            result |= Assert.CheckFailed( Const56_Test( ) );
-            result |= Assert.CheckFailed( Const57_Test( ) );
+            result |= Assert.CheckFailed(Const44_Test(), testName, 44);
+            result |= Assert.CheckFailed(Const56_Test(), testName, 56);
+            result |= Assert.CheckFailed(Const57_Test(), testName, 57);
 
             return result;
         }
