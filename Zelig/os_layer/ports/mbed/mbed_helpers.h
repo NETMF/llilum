@@ -37,7 +37,7 @@
 //--//
 
 #ifndef LLOS__UNREFERENCED_PARAMETER
-#define LLOS__UNREFERENCED_PARAMETER(P) (P)
+#define LLOS__UNREFERENCED_PARAMETER(P) ((void)P)
 #endif
 
 //--//
