@@ -1,9 +1,11 @@
-﻿namespace Llvm.NET.Instructions
+﻿using Llvm.NET.Native;
+
+namespace Llvm.NET.Instructions
 {
     class UIToFP : Cast
     {
-        internal UIToFP( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsABranchInst ) )
+        internal UIToFP( LLVMValueRef valueRef )
+            : base( valueRef )
         {
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Llvm.NET.DebugInfo;
+using Llvm.NET.Native;
 using Llvm.NET.Types;
 using Llvm.NET.Values;
 

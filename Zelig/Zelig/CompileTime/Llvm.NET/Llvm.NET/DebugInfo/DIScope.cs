@@ -1,4 +1,6 @@
-﻿namespace Llvm.NET.DebugInfo
+﻿using Llvm.NET.Native;
+
+namespace Llvm.NET.DebugInfo
 {
     /// <summary>Base class for all Debug info scopes</summary>
     public class DIScope : DINode

@@ -1,9 +1,11 @@
-﻿namespace Llvm.NET.Values
+﻿using Llvm.NET.Native;
+
+namespace Llvm.NET.Values
 {
     public class UndefValue : Constant
     {
-        internal UndefValue( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAUndefValue ) )
+        internal UndefValue( LLVMValueRef valueRef )
+            : base( valueRef )
         {
         }
     }

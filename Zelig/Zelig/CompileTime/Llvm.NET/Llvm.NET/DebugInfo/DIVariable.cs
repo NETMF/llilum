@@ -1,3 +1,5 @@
+using Llvm.NET.Native;
+
 namespace Llvm.NET.DebugInfo
 {
     public class DIVariable : DINode

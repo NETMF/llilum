@@ -1,4 +1,6 @@
-﻿namespace Llvm.NET.Instructions
+﻿using Llvm.NET.Native;
+
+namespace Llvm.NET.Instructions
 {
     public class Load
         : UnaryInstruction
@@ -9,8 +11,8 @@
             set { NativeMethods.SetVolatile( ValueHandle, value ); }
         }
 
-        internal Load( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsALoadInst ) )
+        internal Load( LLVMValueRef valueRef )
+            : base( valueRef )
         {
         }
     }

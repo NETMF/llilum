@@ -1,9 +1,11 @@
-﻿namespace Llvm.NET.Values
+﻿using Llvm.NET.Native;
+
+namespace Llvm.NET.Values
 {
     public class ConstantVector : Constant
     {
-        internal ConstantVector( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAConstantVector ) )
+        internal ConstantVector( LLVMValueRef valueRef )
+            : base( valueRef )
         {
         }
     }

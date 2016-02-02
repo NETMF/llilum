@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Llvm.NET.Native;
 
 namespace Llvm.NET.Types
 {

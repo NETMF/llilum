@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Llvm.NET.Native;
 
 namespace Llvm.NET.Values
 {
@@ -34,8 +35,8 @@ namespace Llvm.NET.Values
             }
         }
 
-        internal Argument( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAArgument ) )
+        internal Argument( LLVMValueRef valueRef )
+            : base( valueRef )
         {
         }
     }

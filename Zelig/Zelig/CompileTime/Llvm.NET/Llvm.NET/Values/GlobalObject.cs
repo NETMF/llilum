@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using Llvm.NET.Native;
 
 namespace Llvm.NET.Values
 {
@@ -6,7 +7,7 @@ namespace Llvm.NET.Values
         : GlobalValue
     {
         internal GlobalObject( LLVMValueRef valueRef )
-            : base( ValidateConversion( valueRef, NativeMethods.IsAGlobalObject ) )
+            : base( valueRef )
         {
         }
 

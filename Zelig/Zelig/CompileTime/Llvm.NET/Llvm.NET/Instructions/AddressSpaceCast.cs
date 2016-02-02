@@ -1,9 +1,11 @@
-﻿namespace Llvm.NET.Instructions
+﻿using Llvm.NET.Native;
+
+namespace Llvm.NET.Instructions
 {
     class AddressSpaceCast : Cast
     {
-        internal AddressSpaceCast( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsABranchInst ) )
+        internal AddressSpaceCast( LLVMValueRef valueRef )
+            : base( valueRef )
         {
         }
     }

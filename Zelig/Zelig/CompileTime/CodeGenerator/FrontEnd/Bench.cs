@@ -123,7 +123,9 @@ namespace Microsoft.Zelig.FrontEnd
         const string DefaultOptArgs_target_m7  = "-march=thumb -mcpu=cortex-m7";
         const string DefaultOptArgs_target_x86 = "-march=x86 -mcpu=x86-64";
         const string DefaultOptArgs_target_df  = DefaultOptArgs_target_m3;
-         
+
+        const string LlvmRegSoftwareBinPath    = @"SOFTWARE\LLVM\3.8.0";
+
         //--//
 
         //
@@ -1500,17 +1502,17 @@ namespace Microsoft.Zelig.FrontEnd
 
             if(string.IsNullOrWhiteSpace( m_LlvmBinPath ))
             {
-                m_LlvmBinPath = GetRegValueString( RegistryHive.CurrentUser, @"SOFTWARE\LLVM\3.7.0", "ToolsBin" );
+                m_LlvmBinPath = GetRegValueString( RegistryHive.CurrentUser, LlvmRegSoftwareBinPath, "ToolsBin" );
             }
 
             if(string.IsNullOrWhiteSpace( m_LlvmBinPath ))
             {
-                m_LlvmBinPath = GetRegValueString( RegistryHive.LocalMachine, @"SOFTWARE\LLVM\3.7.0", "ToolsBin" );
+                m_LlvmBinPath = GetRegValueString( RegistryHive.LocalMachine, LlvmRegSoftwareBinPath, "ToolsBin" );
             }
 
             if(string.IsNullOrWhiteSpace( m_LlvmBinPath ))
             {
-                var srcRootDir = GetRegValueString( RegistryHive.CurrentUser, @"SOFTWARE\LLVM\3.7.0", "SrcRoot" );
+                var srcRootDir = GetRegValueString( RegistryHive.CurrentUser, LlvmRegSoftwareBinPath, "SrcRoot" );
                 if(!string.IsNullOrWhiteSpace( srcRootDir ))
                 {
                     m_LlvmBinPath = Path.Combine( srcRootDir, "build", "Win32", "Release", "bin" );
@@ -1523,7 +1525,7 @@ namespace Microsoft.Zelig.FrontEnd
 
             if(string.IsNullOrWhiteSpace( m_LlvmBinPath ))
             {
-                var srcRootDir = GetRegValueString( RegistryHive.LocalMachine, @"SOFTWARE\LLVM\3.7.0", "SrcRoot" );
+                var srcRootDir = GetRegValueString( RegistryHive.LocalMachine, LlvmRegSoftwareBinPath, "SrcRoot" );
                 if(!string.IsNullOrWhiteSpace( srcRootDir ))
                 {
                     m_LlvmBinPath = Path.Combine( srcRootDir, "build", "Win32", "Release", "bin" );

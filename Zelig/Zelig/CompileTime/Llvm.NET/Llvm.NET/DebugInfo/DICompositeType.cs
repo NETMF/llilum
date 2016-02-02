@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Llvm.NET.Native;
 
 namespace Llvm.NET.DebugInfo
 {

@@ -17,6 +17,7 @@ namespace Llvm.NET.Values
         Parameter = 4
     }
 
+    /// <summary>Utility class to provide extension methods for validating usage of attribute kinds</summary>
     public static class AttributeKindExtensions
     {
         public static bool RequiresIntValue( this AttributeKind kind )

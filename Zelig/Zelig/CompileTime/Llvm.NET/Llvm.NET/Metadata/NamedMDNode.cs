@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Llvm.NET.Native;
 
 namespace Llvm.NET
 {
@@ -21,6 +22,7 @@ namespace Llvm.NET
 
         private LLVMNamedMDNodeRef NativeHandle;
 
+        // internal iterator for Metadata operands
         private class OperandIterator
             : IReadOnlyList<MDNode>
         {

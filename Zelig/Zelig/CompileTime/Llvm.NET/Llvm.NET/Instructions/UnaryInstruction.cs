@@ -1,10 +1,12 @@
-﻿namespace Llvm.NET.Instructions
+﻿using Llvm.NET.Native;
+
+namespace Llvm.NET.Instructions
 {
     public class UnaryInstruction
         : Instruction
     {
         internal UnaryInstruction( LLVMValueRef valueRef )
-            : base( ValidateConversion( valueRef, NativeMethods.IsAUnaryInstruction ) )
+            : base( valueRef )
         {
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using Llvm.NET.Native;
 
 namespace Llvm.NET.Values
 {
@@ -17,8 +18,8 @@ namespace Llvm.NET.Values
         /// <summary>Sign extends the value to a 64 bit value</summary>
         public Int64 SignExtendedValue => NativeMethods.ConstIntGetSExtValue( ValueHandle );
 
-        internal ConstantInt( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAConstantInt ) )
+        internal ConstantInt( LLVMValueRef valueRef )
+            : base( valueRef )
         {
         }
     }

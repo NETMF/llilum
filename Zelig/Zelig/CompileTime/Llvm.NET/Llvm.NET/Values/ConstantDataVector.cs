@@ -1,9 +1,11 @@
-﻿namespace Llvm.NET.Values
+﻿using Llvm.NET.Native;
+
+namespace Llvm.NET.Values
 {
     public class ConstantDataVector : ConstantDataSequential
     {
-        internal ConstantDataVector( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAConstantDataVector ) )
+        internal ConstantDataVector( LLVMValueRef valueRef )
+            : base( valueRef )
         {
         }
     }

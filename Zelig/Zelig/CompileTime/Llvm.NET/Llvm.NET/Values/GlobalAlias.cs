@@ -1,4 +1,5 @@
 ﻿using System;
+using Llvm.NET.Native;
 
 namespace Llvm.NET.Values
 {
@@ -21,8 +22,8 @@ namespace Llvm.NET.Values
             }
         }
 
-        internal GlobalAlias( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAGlobalAlias ) )
+        internal GlobalAlias( LLVMValueRef valueRef )
+            : base( valueRef )
         {
         }
     }

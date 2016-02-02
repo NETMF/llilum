@@ -1,10 +1,12 @@
-﻿namespace Llvm.NET.Instructions
+﻿using Llvm.NET.Native;
+
+namespace Llvm.NET.Instructions
 {
     public class IntCmp
         : Cmp
     {
-        internal IntCmp( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAICmpInst ) )
+        internal IntCmp( LLVMValueRef valueRef )
+            : base( valueRef )
         {
         }
     }

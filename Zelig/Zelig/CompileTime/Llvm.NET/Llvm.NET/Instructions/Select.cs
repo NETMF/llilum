@@ -1,9 +1,11 @@
-﻿namespace Llvm.NET.Instructions
+﻿using Llvm.NET.Native;
+
+namespace Llvm.NET.Instructions
 {
     public class Select : Instruction
     {
-        internal Select( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsABranchInst ) )
+        internal Select( LLVMValueRef valueRef )
+            : base( valueRef )
         {
         }
     }

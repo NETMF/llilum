@@ -1,10 +1,12 @@
-﻿namespace Llvm.NET.Instructions
+﻿using Llvm.NET.Native;
+
+namespace Llvm.NET.Instructions
 {
     public class InsertElement
         : Instruction
     {
-        internal InsertElement( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAExtractElementInst ) )
+        internal InsertElement( LLVMValueRef valueRef )
+            : base( valueRef )
         {
         }
     }

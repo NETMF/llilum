@@ -1,9 +1,11 @@
-﻿namespace Llvm.NET.Values
+﻿using Llvm.NET.Native;
+
+namespace Llvm.NET.Values
 {
     public class ConstantDataArray : ConstantDataSequential
     {
-        internal ConstantDataArray( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAConstantDataArray ) )
+        internal ConstantDataArray( LLVMValueRef valueRef )
+            : base( valueRef )
         {
         }
     }

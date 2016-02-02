@@ -1,4 +1,6 @@
-﻿namespace Llvm.NET.DebugInfo
+﻿using Llvm.NET.Native;
+
+namespace Llvm.NET.DebugInfo
 {
     public class GenericDINode : DINode
     {

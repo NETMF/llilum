@@ -20,12 +20,18 @@
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/CallSite.h"
+#include "llvm/IR/DebugInfoMetadata.h"
 #include <type_traits>
 
 using namespace llvm;
 
 extern "C"
 {
+    void LLVMGetVersionInfo( LLVMVersionInfo* pVersionInfo )
+    {
+        *pVersionInfo = { LLVM_VERSION_MAJOR, LLVM_VERSION_MINOR, LLVM_VERSION_PATCH, LLVM_VERSION_STRING };
+    }
+
     LLVMMetadataRef LLVMConstantAsMetadata( LLVMValueRef C )
     {
         return wrap( ConstantAsMetadata::get( unwrap<Constant>( C ) ) );
@@ -141,6 +147,18 @@ extern "C"
         pNode->resolveCycles( );
     }
 
+    LLVMMetadataRef LLVMFunctionGetSubprogram( LLVMValueRef function )
+    {
+        Function* pFunction = unwrap<Function>( function );
+        return wrap( pFunction->getSubprogram( ) );
+    }
+
+    void LLVMFunctionSetSubprogram( LLVMValueRef function, LLVMMetadataRef subprogram )
+    {
+        Function* pFunction = unwrap<Function>( function );
+        pFunction->setSubprogram( unwrap<DISubprogram>( subprogram ) );
+    }
+
     static AtomicOrdering mapFromLLVMOrdering( LLVMAtomicOrdering Ordering )
     {
         switch( Ordering )
@@ -186,4 +204,9 @@ extern "C"
         return wrap( cmpxchg );
     }
 
+    LLVMBool LLVMFunctionHasPersonalityFunction( LLVMValueRef function )
+    {
+        Function* pFunc = unwrap<Function>( function );
+        return pFunc->hasPersonalityFn( );
+    }
 }

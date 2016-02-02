@@ -1,9 +1,11 @@
-﻿namespace Llvm.NET.Instructions
+﻿using Llvm.NET.Native;
+
+namespace Llvm.NET.Instructions
 {
     class FPToSI : Cast
     {
-        internal FPToSI( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsABranchInst ) )
+        internal FPToSI( LLVMValueRef valueRef )
+            : base( valueRef )
         {
         }
     }

@@ -1,4 +1,6 @@
-﻿namespace Llvm.NET.Instructions
+﻿using Llvm.NET.Native;
+
+namespace Llvm.NET.Instructions
 {
     public class Store
         : Instruction
@@ -9,8 +11,8 @@
             set { NativeMethods.SetVolatile( ValueHandle, value ); }
         }
 
-        internal Store( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAStoreInst ) )
+        internal Store( LLVMValueRef valueRef )
+            : base( valueRef )
         {
         }
     }

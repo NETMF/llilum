@@ -1,4 +1,6 @@
-﻿namespace Llvm.NET.Values
+﻿using Llvm.NET.Native;
+
+namespace Llvm.NET.Values
 {
     public enum AsmDialect
     {
@@ -8,8 +10,8 @@
 
     public class InlineAsm : Value
     {
-        internal InlineAsm( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAInlineAsm ) )
+        internal InlineAsm( LLVMValueRef valueRef )
+            : base( valueRef )
         {
         }
 

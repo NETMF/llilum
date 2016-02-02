@@ -1,10 +1,12 @@
-﻿namespace Llvm.NET.Instructions
+﻿using Llvm.NET.Native;
+
+namespace Llvm.NET.Instructions
 {
     public class Cmp
         : Instruction
     {
         internal Cmp( LLVMValueRef valueRef )
-            : base( ValidateConversion( valueRef, NativeMethods.IsACmpInst ) )
+            : base( valueRef )
         {
         }
 

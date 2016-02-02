@@ -1,10 +1,12 @@
-﻿namespace Llvm.NET.Instructions
+﻿using Llvm.NET.Native;
+
+namespace Llvm.NET.Instructions
 {
     public class IndirectBranch
         : Terminator
     {
-        internal IndirectBranch( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsABranchInst ) )
+        internal IndirectBranch( LLVMValueRef valueRef )
+            : base( valueRef )
         {
         }
     }

@@ -1,12 +1,12 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Llvm.NET.Instructions;
+using Llvm.NET.Native;
 using Llvm.NET.Types;
 using Llvm.NET.Values;
 
-namespace Llvm.NET
+namespace Llvm.NET.Instructions
 {
     ///<summary>LLVM Instruction builder allowing managed code to generate IR instructions</summary>
     public class InstructionBuilder
@@ -174,6 +174,7 @@ namespace Llvm.NET
         {
             LLVMValueRef landingPad = NativeMethods.BuildLandingPad( BuilderHandle
                                                                    , resultType.GetTypeRef()
+                                                                   , LLVMValueRef.Zero // personality function no longer part of instruction
                                                                    , 0
                                                                    , string.Empty
                                                                    );

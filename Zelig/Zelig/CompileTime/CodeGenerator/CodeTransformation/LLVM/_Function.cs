@@ -169,7 +169,7 @@ namespace Microsoft.Zelig.LLVM
                                                           , valType.DIType
                                                           , true
                                                           , DebugInfoFlags.None
-                                                          , index
+                                                          , index + 1 // LLVM debug arg index is one based
                                                           );
             }
             else

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Llvm.NET.Native;
 
 namespace Llvm.NET.Values
 {
@@ -29,12 +30,7 @@ namespace Llvm.NET.Values
         }
 
         internal ConstantDataSequential( LLVMValueRef valueRef )
-            : this( valueRef, false )
-        {
-        }
-
-        internal ConstantDataSequential( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAConstantDataSequential ) )
+            : base( valueRef )
         {
         }
     }

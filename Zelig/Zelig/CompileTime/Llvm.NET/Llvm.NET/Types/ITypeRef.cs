@@ -1,5 +1,6 @@
 ﻿using Llvm.NET.Values;
 using System;
+using Llvm.NET.Native;
 
 namespace Llvm.NET.Types
 {

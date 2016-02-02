@@ -26,6 +26,16 @@
 extern "C" {
 #endif
 
+typedef struct LLVMVersionInfo
+{
+    int Major;
+    int Minor;
+    int Patch;
+    char const* VersionString;
+}LLVMVersionInfo;
+
+void LLVMGetVersionInfo( LLVMVersionInfo* pVersionInfo );
+
 typedef struct LLVMOpaqueMetadata* LLVMMetadataRef;
 typedef struct LLVMOpaqueMDOperand* LLVMMDOperandRef;
 
@@ -52,6 +62,10 @@ char const* LLVMGetDIFileName( LLVMMetadataRef /*DIFile*/ file );
 char const* LLVMGetDIFileDirectory( LLVMMetadataRef /*DIFile*/ file );
 
 LLVMValueRef LLVMBuildAtomicCmpXchg( LLVMBuilderRef B, LLVMValueRef Ptr, LLVMValueRef Cmp, LLVMValueRef New, LLVMAtomicOrdering successOrdering, LLVMAtomicOrdering failureOrdering, LLVMBool singleThread );
+
+LLVMMetadataRef LLVMFunctionGetSubprogram( LLVMValueRef function );
+void LLVMFunctionSetSubprogram( LLVMValueRef function, LLVMMetadataRef subprogram );
+LLVMBool LLVMFunctionHasPersonalityFunction( LLVMValueRef function );
 
 #ifdef __cplusplus
 }

@@ -1,4 +1,6 @@
-﻿namespace Llvm.NET.Values
+﻿using Llvm.NET.Native;
+
+namespace Llvm.NET.Values
 {
     /// <summary>Floating point constant value in LLVM</summary>
     public class ConstantFP : Constant
@@ -21,8 +23,8 @@
             return retVal;
         }
 
-        internal ConstantFP( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAConstantFP ) )
+        internal ConstantFP( LLVMValueRef valueRef )
+            : base( valueRef )
         {
         }
     }

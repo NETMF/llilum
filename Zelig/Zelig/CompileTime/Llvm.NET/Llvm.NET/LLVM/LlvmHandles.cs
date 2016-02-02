@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
 
-namespace Llvm.NET
+namespace Llvm.NET.Native
 {
     internal static class IntPtrExtensions
     {

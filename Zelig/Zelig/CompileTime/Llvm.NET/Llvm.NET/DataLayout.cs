@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Llvm.NET.Native;
 using Llvm.NET.Types;
 using Llvm.NET.Values;
 

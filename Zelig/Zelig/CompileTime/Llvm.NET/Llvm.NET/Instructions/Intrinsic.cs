@@ -1,10 +1,12 @@
-﻿namespace Llvm.NET.Instructions
+﻿using Llvm.NET.Native;
+
+namespace Llvm.NET.Instructions
 {
     public class Intrinsic
         : CallInstruction
     {
         internal Intrinsic( LLVMValueRef valueRef )
-            : base( ValidateConversion( valueRef, NativeMethods.IsAIntrinsicInst ) )
+            : base( valueRef )
         { 
         }
 

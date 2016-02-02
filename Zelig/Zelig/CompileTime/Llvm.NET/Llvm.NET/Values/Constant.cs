@@ -1,4 +1,5 @@
 ﻿using System;
+using Llvm.NET.Native;
 using Llvm.NET.Types;
 
 namespace Llvm.NET.Values
@@ -40,16 +41,11 @@ namespace Llvm.NET.Values
 
         /// <summary>Create a constant NULL pointer for a given type</summary>
         /// <param name="typeRef">Type of pointer to create a null value for</param>
-        /// <returns>Constnat NULL pointer of the specified type</returns>
+        /// <returns>Constant NULL pointer of the specified type</returns>
         public static Constant ConstPointerToNullFor( ITypeRef typeRef ) => FromHandle<Constant>( NativeMethods.ConstPointerNull( typeRef.GetTypeRef( ) ) );
 
         internal Constant( LLVMValueRef valueRef )
-            : this( valueRef, false )
-        {
-        }
-
-        internal Constant( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAConstant ) )
+            : base( valueRef )
         {
         }
     }

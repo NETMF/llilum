@@ -1,4 +1,5 @@
-﻿using Llvm.NET.Values;
+﻿using Llvm.NET.Native;
+using Llvm.NET.Values;
 
 namespace Llvm.NET.DebugInfo
 {
@@ -10,8 +11,6 @@ namespace Llvm.NET.DebugInfo
             : base( handle )
         {
         }
-
-        public Function Function => Value.FromHandle<Function>( NativeMethods.DISubProgramGetFunction( MetadataHandle ) );
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "Specific type required by interop call" )]
         public bool Describes( Function function ) => NativeMethods.SubProgramDescribes( MetadataHandle, function.VerifyArgNotNull( nameof( function )).ValueHandle );

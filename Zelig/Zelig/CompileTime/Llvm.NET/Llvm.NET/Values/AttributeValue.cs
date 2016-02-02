@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using Llvm.NET.Native;
 
 namespace Llvm.NET.Values
 {

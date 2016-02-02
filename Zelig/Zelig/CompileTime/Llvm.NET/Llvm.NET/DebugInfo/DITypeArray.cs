@@ -1,4 +1,6 @@
-﻿namespace Llvm.NET.DebugInfo
+﻿using Llvm.NET.Native;
+
+namespace Llvm.NET.DebugInfo
 {
     /// <summary>Array of see <a href="Type"/> nodes for use with see <a href="DebugInfoBuilder"/> methods</summary>
     public class DITypeArray

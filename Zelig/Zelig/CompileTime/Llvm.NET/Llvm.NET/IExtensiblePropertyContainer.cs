@@ -107,9 +107,15 @@ namespace Llvm.NET
         public string Name { get; }
     }
 
-    internal class ExtensiblePropertyContainer
+    /// <summary>Common implementation of <see cref="IExtensiblePropertyContainer"/></summary>
+    /// <remarks>
+    /// This class implements <see cref="IExtensiblePropertyContainer"/> through an 
+    /// internal <see cref="Dictionary{TKey, TValue}"/>
+    /// </remarks>
+    public class ExtensiblePropertyContainer
         : IExtensiblePropertyContainer
     {
+        /// <inheritdoc/>
         public void AddExtendedPropertyValue( string id, object value )
         {
             lock ( Items )
@@ -124,6 +130,7 @@ namespace Llvm.NET
             }
         }
 
+        /// <inheritdoc/>
         public bool TryGetExtendedPropertyValue<T>( string id, out T value )
         {
             value = default( T );

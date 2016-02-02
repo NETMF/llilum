@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Llvm.NET.Native;
 
 namespace Llvm.NET.Values
 {
-    /// <summary>Support class to provide readonly list semantics to the parameters of a method</summary>
+    /// <summary>Support class to provide read-only list semantics to the operands of a <see cref="User"/> of a method</summary>
     internal class UserOperandList
         : IReadOnlyList<Value>
     {
@@ -40,10 +41,6 @@ namespace Llvm.NET.Values
                 if( val.Pointer == IntPtr.Zero )
                     yield break;
 
-                // REVIEW: This won't create a properly down castable Value instance
-                // it can only create a Value instance. (Although if Value.FromHandle())
-                // were to get smarter it could figure out the tproper type and create
-                // the instance (TypeRef does this for its derived types already)
                 yield return Value.FromHandle( val );
             }
         }

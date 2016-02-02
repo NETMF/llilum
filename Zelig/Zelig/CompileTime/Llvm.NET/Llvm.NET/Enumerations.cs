@@ -1,7 +1,9 @@
 ﻿// This file maps the lower level internal LLVM enumeration names to something
-// more compatible with the styles, patterns and conventions familiar to .NET Developers
-// and also keeping the lower level interop namespace internal to prevent mis-use or
+// more compatible with the styles, patterns and conventions familiar to .NET Developers.
+// This also keeping the lower level interop namespace internal to prevent mis-use or
 // violations of uniqueness rules
+
+using Llvm.NET.Native;
 
 namespace Llvm.NET
 {
@@ -20,6 +22,9 @@ namespace Llvm.NET
     };
 
     /// <summary>LLVM Instruction opcodes</summary>
+    /// <remarks>
+    /// These are based on the "C" API and therefore more stable as changes in the underlying instruction ids are remapped in the C API layer
+    /// </remarks>
     [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1028:EnumStorageShouldBeInt32" )]
     [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1027:MarkEnumsWithFlags", Justification = "Not actually flags" )]
     public enum OpCode : uint
@@ -98,7 +103,12 @@ namespace Llvm.NET
 
         /* Exception Handling Operators */
         Resume = LLVMOpcode.LLVMResume,
-        LandingPad = LLVMOpcode.LLVMLandingPad
+        LandingPad = LLVMOpcode.LLVMLandingPad,
+        CleanupRet = LLVMOpcode.LLVMCleanupRet,
+        CatchRet = LLVMOpcode.LLVMCatchRet,
+        CatchPad = LLVMOpcode.LLVMCatchPad,
+        CleanupPad = LLVMOpcode.LLVMCleandupPad,
+        CatchSwitch = LLVMOpcode.LLVMCatchSwitch
     }
 
     /// <summary>Basic kind of a type</summary>
@@ -120,7 +130,8 @@ namespace Llvm.NET
         Pointer = LLVMTypeKind.LLVMPointerTypeKind,     // Pointers
         Vector = LLVMTypeKind.LLVMVectorTypeKind,       // SIMD 'packed' format, or other vector type
         Metadata = LLVMTypeKind.LLVMMetadataTypeKind,   // Metadata
-        X86MMX = LLVMTypeKind.LLVMX86_MMXTypeKind       // X86 MMX
+        X86MMX = LLVMTypeKind.LLVMX86_MMXTypeKind,      // X86 MMX
+        Token = LLVMTypeKind.LLVMTokenTypeKind          // Exception handler Tokens 
     }
 
     /// <summary>Calling Convention for functions</summary>
@@ -309,162 +320,69 @@ namespace Llvm.NET
         PreserveSource = LLVMLinkerMode.LLVMLinkerPreserveSource
     }
 
-    internal enum ValueKind : uint
-    {
-        Argument              = LLVMValueKind.LLVMValueKindArgumentVal,             // This is an instance of Argument
-        BasicBlock            = LLVMValueKind.LLVMValueKindBasicBlockVal,           // This is an instance of BasicBlock
-        Function              = LLVMValueKind.LLVMValueKindFunctionVal,             // This is an instance of Function
-        GlobalAlias           = LLVMValueKind.LLVMValueKindGlobalAliasVal,          // This is an instance of GlobalAlias
-        GlobalVariable        = LLVMValueKind.LLVMValueKindGlobalVariableVal,       // This is an instance of GlobalVariable
-        UndefValue            = LLVMValueKind.LLVMValueKindUndefValueVal,           // This is an instance of UndefValue
-        BlockAddress          = LLVMValueKind.LLVMValueKindBlockAddressVal,         // This is an instance of BlockAddress
-        ConstantExpr          = LLVMValueKind.LLVMValueKindConstantExprVal,         // This is an instance of ConstantExpr
-        ConstantAggregateZero = LLVMValueKind.LLVMValueKindConstantAggregateZeroVal,// This is an instance of ConstantAggregateZero
-        ConstantDataArray     = LLVMValueKind.LLVMValueKindConstantDataArrayVal,    // This is an instance of ConstantDataArray
-        ConstantDataVector    = LLVMValueKind.LLVMValueKindConstantDataVectorVal,   // This is an instance of ConstantDataVector
-        ConstantInt           = LLVMValueKind.LLVMValueKindConstantIntVal,          // This is an instance of ConstantInt
-        ConstantFP            = LLVMValueKind.LLVMValueKindConstantFPVal,           // This is an instance of ConstantFP
-        ConstantArray         = LLVMValueKind.LLVMValueKindConstantArrayVal,        // This is an instance of ConstantArray
-        ConstantStruct        = LLVMValueKind.LLVMValueKindConstantStructVal,       // This is an instance of ConstantStruct
-        ConstantVector        = LLVMValueKind.LLVMValueKindConstantVectorVal,       // This is an instance of ConstantVector
-        ConstantPointerNull   = LLVMValueKind.LLVMValueKindConstantPointerNullVal,  // This is an instance of ConstantPointerNull
-        MetadataAsValue       = LLVMValueKind.LLVMValueKindMetadataAsValueVal,      // This is an instance of MetadataAsValue
-        InlineAsm             = LLVMValueKind.LLVMValueKindInlineAsmVal,            // This is an instance of InlineAsm
-        Instruction           = LLVMValueKind.LLVMValueKindInstructionVal,          // This is an instance of Instruction
-                                                                                    // Enum values starting at InstructionVal are used for Instructions;
-
-        // instruction values come directly from LLVM Instruction.def which is different from the "stable"
-        // LLVM-C API, therefore they are less "stable" and bound to the C++ implementation version and
-        // subject to change from version to version.
-        Return         = 1 + Instruction,
-        Branch         = 2 + Instruction,
-        Switch         = 3 + Instruction,
-        IndirectBranch = 4 + Instruction,
-        Invoke         = 5 + Instruction,
-        Resume         = 6 + Instruction,
-        Unreachable    = 7 + Instruction,
-
-        Add            = 8 + Instruction,
-        FAdd           = 9 + Instruction,
-        Sub            = 10 + Instruction,
-        FSub           = 11 + Instruction,
-        Mul            = 12 + Instruction,
-        FMul           = 13 + Instruction,
-        UDiv           = 14 + Instruction,
-        SDiv           = 15 + Instruction,
-        FDiv           = 16 + Instruction,
-        URem           = 17 + Instruction,
-        SRem           = 18 + Instruction,
-        FRem           = 19 + Instruction,
-
-        Shl            = 20 + Instruction,
-        LShr           = 21 + Instruction,
-        AShr           = 22 + Instruction,
-        And            = 23 + Instruction,
-        Or             = 24 + Instruction,
-        Xor            = 25 + Instruction,
-
-        Alloca         = 26 + Instruction,
-        Load           = 27 + Instruction,
-        Store          = 28 + Instruction,
-        GetElementPtr  = 29 + Instruction,
-        Fence          = 30 + Instruction,
-        AtomicCmpXchg  = 31 + Instruction,
-        AtomicRMW      = 32 + Instruction,
-
-        Trunc          = 33 + Instruction,
-        ZeroExtend     = 34 + Instruction,
-        SignExtend     = 35 + Instruction,
-        FPToUI         = 36 + Instruction,
-        FPToSI         = 37 + Instruction,
-        UIToFP         = 38 + Instruction,
-        SIToFP         = 39 + Instruction,
-        FPTrunc        = 40 + Instruction,
-        FPExt          = 41 + Instruction,
-        PtrToInt       = 42 + Instruction,
-        IntToPtr       = 43 + Instruction,
-        BitCast        = 44 + Instruction,
-        AddrSpaceCast  = 45 + Instruction,
-
-        ICmp           = 46 + Instruction,
-        FCmp           = 47 + Instruction,
-        Phi            = 48 + Instruction,
-        Call           = 49 + Instruction,
-        Select         = 50 + Instruction,
-        UserOp1        = 51 + Instruction,
-        UserOp2        = 52 + Instruction,
-        VaArg          = 53 + Instruction,
-        ExtractElement = 54 + Instruction,
-        InsertElement  = 55 + Instruction,
-        ShuffleVector  = 56 + Instruction,
-        ExtractValue   = 57 + Instruction,
-        InsertValue    = 58 + Instruction,
-        LandingPad     = 59 + Instruction,
-
-        // Markers:
-        ConstantFirstVal = Function,
-        ConstantLastVal = ConstantPointerNull
-    }
-
+    /// <summary>Enumeration for well known attribute kinds</summary>
+    /// <remarks>
+    /// The numeric value of the members of this enumeration are subject
+    /// to change from version to version. Therefore code must never
+    /// rely on the actual underlying value and use only the symbolic name
+    /// </remarks>
+    /// <Implementation>
+    /// For details on what the values should be see attributes.def in 
+    /// the LLVM source. This was added in v3.8.0 along with a change in
+    /// the numerical values.
+    /// </Implementation>
     public enum AttributeKind
     {
-        // IR-Level Attributes
-        None,                  // No attributes have been set
-        Alignment,             // Alignment of parameter (5 bits)
-                               // stored as log2 of alignment with +1 bias
-                               // 0 means unaligned (different from align(1))
-        AlwaysInline,          // inline=always
-        Builtin,               // Callee is recognized as a builtin, despite
-                               // nobuiltin attribute on its declaration.
-        ByVal,                 // Pass structure by value
-        InAlloca,              // Pass structure in an alloca
-        Cold,                  // Marks function as being in a cold path.
-        Convergent,            // Can only be moved to control-equivalent blocks
-        InlineHint,            // Source said inlining was desirable
-        InReg,                 // Force argument to be passed in register
-        JumpTable,             // Build jump-instruction tables and replace refs.
-        MinSize,               // Function must be optimized for size first
-        Naked,                 // Naked function
-        Nest,                  // Nested function static chain
-        NoAlias,               // Considered to not alias after call
-        NoBuiltin,             // Callee isn't recognized as a builtin
-        NoCapture,             // Function creates no aliases of pointer
-        NoDuplicate,           // Call cannot be duplicated
-        NoImplicitFloat,       // Disable implicit floating point insts
-        NoInline,              // inline=never
-        NonLazyBind,           // Function is called early and/or
-                               // often, so lazy binding isn't worthwhile
-        NonNull,               // Pointer is known to be not null
-        Dereferenceable,       // Pointer is known to be dereferenceable
-        DereferenceableOrNull, // Pointer is either null or dereferenceable
-        NoRedZone,             // Disable redzone
-        NoReturn,              // Mark the function as not returning
-        NoUnwind,              // Function doesn't unwind stack
-        OptimizeForSize,       // opt_size
-        OptimizeNone,          // Function must not be optimized.
-        ReadNone,              // Function does not access memory
-        ReadOnly,              // Function only reads from memory
-        ArgMemOnly,            // Funciton can access memory only using pointers
-                               // based on its arguments.
-        Returned,              // Return value is always equal to this argument
-        ReturnsTwice,          // Function can return twice
-        SExt,                  // Sign extended before/after call
-        StackAlignment,        // Alignment of stack for function (3 bits)
-                               // stored as log2 of alignment with +1 bias 0
-                               // means unaligned (different from
-                               // alignstack=(1))
-        StackProtect,          // Stack protection.
-        StackProtectReq,       // Stack protection required.
-        StackProtectStrong,    // Strong Stack protection.
-        SafeStack,             // Safe Stack protection.
-        StructRet,             // Hidden pointer to structure to return
-        SanitizeAddress,       // AddressSanitizer is on.
-        SanitizeThread,        // ThreadSanitizer is on.
-        SanitizeMemory,        // MemorySanitizer is on.
-        UWTable,               // Function must be in a unwind table
-        ZExt,                  // Zero extended before/after call
-
-        EndAttrKinds           // Sentinal value useful for loops
+        None                        = LLVMAttrKind.None,
+        Alignment                   = LLVMAttrKind.Alignment,
+        AlwaysInline                = LLVMAttrKind.AlwaysInline,
+        ArgMemOnly                  = LLVMAttrKind.ArgMemOnly,
+        Builtin                     = LLVMAttrKind.Builtin,
+        ByVal                       = LLVMAttrKind.ByVal,
+        Cold                        = LLVMAttrKind.Cold,
+        Convergent                  = LLVMAttrKind.Convergent,
+        Dereferenceable             = LLVMAttrKind.Dereferenceable,
+        DereferenceableOrNull       = LLVMAttrKind.DereferenceableOrNull,
+        InAlloca                    = LLVMAttrKind.InAlloca,
+        InReg                       = LLVMAttrKind.InReg,
+        InaccessibleMemOnly         = LLVMAttrKind.InaccessibleMemOnly,
+        InaccessibleMemOrArgMemOnly = LLVMAttrKind.InaccessibleMemOrArgMemOnly,
+        InlineHint                  = LLVMAttrKind.InlineHint,
+        JumpTable                   = LLVMAttrKind.JumpTable,
+        MinSize                     = LLVMAttrKind.MinSize,
+        Naked                       = LLVMAttrKind.Naked,
+        Nest                        = LLVMAttrKind.Nest,
+        NoAlias                     = LLVMAttrKind.NoAlias,
+        NoBuiltin                   = LLVMAttrKind.NoBuiltin,
+        NoCapture                   = LLVMAttrKind.NoCapture,
+        NoDuplicate                 = LLVMAttrKind.NoDuplicate,
+        NoImplicitFloat             = LLVMAttrKind.NoImplicitFloat,
+        NoInline                    = LLVMAttrKind.NoInline,
+        NoRecurse                   = LLVMAttrKind.NoRecurse,
+        NoRedZone                   = LLVMAttrKind.NoRedZone,
+        NoReturn                    = LLVMAttrKind.NoReturn,
+        NoUnwind                    = LLVMAttrKind.NoUnwind,
+        NonLazyBind                 = LLVMAttrKind.NonLazyBind,
+        NonNull                     = LLVMAttrKind.NonNull,
+        OptimizeForSize             = LLVMAttrKind.OptimizeForSize,
+        OptimizeNone                = LLVMAttrKind.OptimizeNone,
+        ReadNone                    = LLVMAttrKind.ReadNone,
+        ReadOnly                    = LLVMAttrKind.ReadOnly,
+        Returned                    = LLVMAttrKind.Returned,
+        ReturnsTwice                = LLVMAttrKind.ReturnsTwice,
+        SExt                        = LLVMAttrKind.SExt,
+        SafeStack                   = LLVMAttrKind.SafeStack,
+        SanitizeAddress             = LLVMAttrKind.SanitizeAddress,
+        SanitizeMemory              = LLVMAttrKind.SanitizeMemory,
+        SanitizeThread              = LLVMAttrKind.SanitizeThread,
+        StackAlignment              = LLVMAttrKind.StackAlignment,
+        StackProtect                = LLVMAttrKind.StackProtect,
+        StackProtectReq             = LLVMAttrKind.StackProtectReq,
+        StackProtectStrong          = LLVMAttrKind.StackProtectStrong,
+        StructRet                   = LLVMAttrKind.StructRet,
+        UWTable                     = LLVMAttrKind.UWTable,
+        ZExt                        = LLVMAttrKind.ZExt,
+        EndAttrKinds           // Sentinel value useful for loops
     };
 
     /// <summary>Function index for attributes</summary>

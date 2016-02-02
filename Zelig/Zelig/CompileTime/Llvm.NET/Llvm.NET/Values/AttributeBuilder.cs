@@ -1,7 +1,9 @@
 ﻿using System;
+using Llvm.NET.Native;
 
 namespace Llvm.NET.Values
 {
+    /// <summary>Factory for building AttributeSets, which are otherwise immutable</summary>
     public sealed class AttributeBuilder
         : IDisposable
     {

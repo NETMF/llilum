@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System;
 using Llvm.NET.Types;
+using Llvm.NET.Native;
 
 namespace Llvm.NET.Values
 {
@@ -57,8 +58,8 @@ namespace Llvm.NET.Values
             return FromHandle<Constant>( handle );
         }
 
-        internal ConstantArray( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAConstantArray ) )
+        internal ConstantArray( LLVMValueRef valueRef )
+            : base( valueRef )
         {
         }
 

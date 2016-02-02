@@ -1,9 +1,11 @@
-﻿namespace Llvm.NET.Values
+﻿using Llvm.NET.Native;
+
+namespace Llvm.NET.Values
 {
     public class BlockAddress : Constant
     {
-        internal BlockAddress( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsABlockAddress ) )
+        internal BlockAddress( LLVMValueRef valueRef )
+            : base( valueRef )
         {
         }
     }

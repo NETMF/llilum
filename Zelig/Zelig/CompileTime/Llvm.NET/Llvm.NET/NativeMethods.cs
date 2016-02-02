@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace Llvm.NET
+namespace Llvm.NET.Native
 {
     internal static partial class NativeMethods
     {

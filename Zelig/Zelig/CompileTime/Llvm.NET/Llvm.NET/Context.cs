@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using Llvm.NET.DebugInfo;
+using Llvm.NET.Native;
 using Llvm.NET.Types;
 using Llvm.NET.Values;
 
@@ -519,7 +519,7 @@ namespace Llvm.NET
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Language", "CSE0003:Use expression-bodied members", Justification = "Readability" )]
         public Constant CreateConstant( UInt16 constValue )
         {
-            var handle = NativeMethods.ConstInt( Int16Type.GetTypeRef( ), ( ulong )constValue, new LLVMBool( 0 ) );
+            var handle = NativeMethods.ConstInt( Int16Type.GetTypeRef( ), constValue, new LLVMBool( 0 ) );
             return Value.FromHandle<Constant>( handle );
         }
 
@@ -843,16 +843,5 @@ namespace Llvm.NET
         private readonly Dictionary< LLVMMDOperandRef, MDOperand > MDOperandCache = new Dictionary< LLVMMDOperandRef, MDOperand >( );
 
         private static Dictionary<LLVMContextRef, Context> ContextCache = new Dictionary<LLVMContextRef, Context>( );
-
-        // TODO: move fatal error handling to a static method of NativeMethods as it is not really tied to the context
-        static void FatalErrorHandler( string Reason )
-        {
-            Trace.TraceError( Reason );
-            throw new InternalCodeGeneratorException( Reason );
-        }
-
-        // lazy initialized singleton unmanaged delegate so it is never collected
-        //private static Lazy<LLVMFatalErrorHandler> FatalErrorHandlerDelegate 
-        //    = new Lazy<LLVMFatalErrorHandler>( ( ) => FatalErrorHandler, LazyThreadSafetyMode.PublicationOnly );
     }
 }

@@ -1,10 +1,12 @@
-﻿namespace Llvm.NET.Instructions
+﻿using Llvm.NET.Native;
+
+namespace Llvm.NET.Instructions
 {
     public class Terminator
         : Instruction
     {
         internal Terminator( LLVMValueRef valueRef )
-            : base( ValidateConversion( valueRef, NativeMethods.IsATerminatorInst ) )
+            : base( valueRef )
         {
         }
     }

@@ -1,4 +1,5 @@
-﻿using Llvm.NET.Values;
+﻿using Llvm.NET.Native;
+using Llvm.NET.Values;
 
 namespace Llvm.NET.Instructions
 {
@@ -22,8 +23,8 @@ namespace Llvm.NET.Instructions
             NativeMethods.AddCase( ValueHandle, onVal.ValueHandle, destination.BlockHandle );
         }
 
-        internal Switch( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsASwitchInst ) )
+        internal Switch( LLVMValueRef valueRef )
+            : base( valueRef )
         {
         }
 

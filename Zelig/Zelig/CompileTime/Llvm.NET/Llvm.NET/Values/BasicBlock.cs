@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Llvm.NET.Instructions;
+using Llvm.NET.Native;
 
 namespace Llvm.NET.Values
 {
@@ -101,8 +102,8 @@ namespace Llvm.NET.Values
             return hInst.Pointer == IntPtr.Zero ? null : Value.FromHandle<Instruction>( hInst );
         }
 
-        internal BasicBlock( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsABasicBlock ) )
+        internal BasicBlock( LLVMValueRef valueRef )
+            : base( valueRef )
         {
         }
 

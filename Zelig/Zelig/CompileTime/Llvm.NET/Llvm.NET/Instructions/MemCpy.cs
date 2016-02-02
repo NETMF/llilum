@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Llvm.NET.Native;
 using Llvm.NET.Types;
 
 namespace Llvm.NET.Instructions

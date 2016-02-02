@@ -1,4 +1,6 @@
-﻿namespace Llvm.NET.DebugInfo
+﻿using Llvm.NET.Native;
+
+namespace Llvm.NET.DebugInfo
 {
     /// <summary>Legal scope for lexical blocks, local variables, and debug info locations</summary>
     public class DILocalScope : DIScope

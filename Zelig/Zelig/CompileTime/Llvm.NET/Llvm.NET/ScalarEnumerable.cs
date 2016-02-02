@@ -2,7 +2,7 @@
 
 namespace Llvm.NET
 {
-    /// <summary>Static utility class for construction enumerable sequences using single values</summary>
+    /// <summary>Static utility class for constructing enumerable sequences using single values</summary>
     public static class ScalarEnumerable
     {
         /// <summary>Create an enumerator that provides a single value</summary>

@@ -1,5 +1,5 @@
 ﻿using System;
-using Llvm.NET.DebugInfo;
+using Llvm.NET.Native;
 using Llvm.NET.Values;
 
 namespace Llvm.NET.Instructions
@@ -48,7 +48,7 @@ namespace Llvm.NET.Instructions
         }
 
         internal Instruction( LLVMValueRef valueRef )
-            : base( ValidateConversion( valueRef, NativeMethods.IsAInstruction ) )
+            : base( valueRef )
         {
         }
     }

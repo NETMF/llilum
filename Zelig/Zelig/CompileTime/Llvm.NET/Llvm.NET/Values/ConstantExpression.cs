@@ -1,6 +1,8 @@
 ﻿using System;
 using Llvm.NET.Types;
 using System.Collections.Generic;
+using Llvm.NET.Instructions;
+using Llvm.NET.Native;
 
 namespace Llvm.NET.Values
 {
@@ -43,8 +45,8 @@ namespace Llvm.NET.Values
             return FromHandle<Constant>(handle);
         }
 
-        internal ConstantExpression( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAConstantExpr ) )
+        internal ConstantExpression( LLVMValueRef valueRef )
+            : base( valueRef )
         {
         }
     }

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Llvm.NET.Types;
 using Llvm.NET.DebugInfo;
+using Llvm.NET.Native;
 
 namespace Llvm.NET.Values
 {
@@ -73,12 +74,15 @@ namespace Llvm.NET.Values
         {
             get
             {
+                if( !NativeMethods.FunctionHasPersonalityFunction( ValueHandle ) )
+                    return null;
+
                 return FromHandle<Function>( NativeMethods.GetPersonalityFunction( ValueHandle ) );
             }
 
             set
             {
-                NativeMethods.SetPersonalityFunction( ValueHandle, value.ValueHandle );
+                NativeMethods.SetPersonalityFunction( ValueHandle, value?.ValueHandle ?? LLVMValueRef.Zero );
             }
         }
 
@@ -87,17 +91,16 @@ namespace Llvm.NET.Values
         {
             get
             {
-                return DISubProgram_;
+                return MDNode.FromHandle<DISubProgram>( NativeMethods.FunctionGetSubprogram( ValueHandle ) );
             }
             set
             {
                 if( ( value != null ) && !value.Describes( this ) )
                     throw new ArgumentException( "Subprogram does not describe this Function" );
 
-                DISubProgram_ = value;
+                NativeMethods.FunctionSetSubprogram( ValueHandle, value?.MetadataHandle ?? LLVMMetadataRef.Zero );
             }
         }
-        private DISubProgram DISubProgram_;
 
         /// <summary>Garbage collection engine name that this function is generated to work with</summary>
         /// <remarks>For details on GC support in LLVM see: http://llvm.org/docs/GarbageCollection.html </remarks>
@@ -182,8 +185,8 @@ namespace Llvm.NET.Values
             return retVal;
         }
 
-        internal Function( LLVMValueRef valueRef, bool preValidated )
-            : base( preValidated ? valueRef : ValidateConversion( valueRef, NativeMethods.IsAFunction ) )
+        internal Function( LLVMValueRef valueRef )
+            : base( valueRef )
         {
         }
     }

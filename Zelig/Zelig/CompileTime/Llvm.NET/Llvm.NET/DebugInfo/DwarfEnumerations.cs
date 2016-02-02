@@ -1,5 +1,6 @@
 ﻿
 using System;
+using Llvm.NET.Native;
 
 namespace Llvm.NET.DebugInfo
 {

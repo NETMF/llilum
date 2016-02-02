@@ -145,7 +145,7 @@ extern "C" {
 
     void LLVMSetDILocation( LLVMValueRef inst, LLVMMetadataRef location );
     void LLVMSetDebugLoc( LLVMValueRef inst, unsigned line, unsigned column, LLVMMetadataRef scope );
-    
+
     LLVMMetadataRef /*DILocalScope*/ LLVMGetDILocationScope( LLVMMetadataRef /*DILocation*/ location );
     unsigned LLVMGetDILocationLine( LLVMMetadataRef /*DILocation*/ location );
     unsigned LLVMGetDILocationColumn( LLVMMetadataRef /*DILocation*/ location );
@@ -158,198 +158,204 @@ extern "C" {
     void LLVMDIBuilderFinalize( LLVMDIBuilderRef d );
 
     LLVMMetadataRef LLVMDIBuilderCreateCompileUnit( LLVMDIBuilderRef D
-                                                  , unsigned Language
-                                                  , const char *File
-                                                  , const char *Dir
-                                                  , const char *Producer
-                                                  , int Optimized
-                                                  , const char *Flags
-                                                  , unsigned RuntimeVersion
-                                                  );
+                                                    , unsigned Language
+                                                    , const char *File
+                                                    , const char *Dir
+                                                    , const char *Producer
+                                                    , int Optimized
+                                                    , const char *Flags
+                                                    , unsigned RuntimeVersion
+                                                    );
 
     LLVMMetadataRef LLVMDIBuilderCreateFile( LLVMDIBuilderRef D
-                                           , const char *File
-                                           , const char *Dir
-                                           );
+                                             , const char *File
+                                             , const char *Dir
+                                             );
 
     LLVMMetadataRef LLVMDIBuilderCreateLexicalBlock( LLVMDIBuilderRef D
-                                                   , LLVMMetadataRef Scope
-                                                   , LLVMMetadataRef File
-                                                   , unsigned Line
-                                                   , unsigned Column
-                                                   );
+                                                     , LLVMMetadataRef Scope
+                                                     , LLVMMetadataRef File
+                                                     , unsigned Line
+                                                     , unsigned Column
+                                                     );
 
     LLVMMetadataRef LLVMDIBuilderCreateLexicalBlockFile( LLVMDIBuilderRef D
-                                                       , LLVMMetadataRef Scope
-                                                       , LLVMMetadataRef File
-                                                       , unsigned Discriminator
-                                                       );
+                                                         , LLVMMetadataRef Scope
+                                                         , LLVMMetadataRef File
+                                                         , unsigned Discriminator
+                                                         );
 
     LLVMMetadataRef LLVMDIBuilderCreateFunction( LLVMDIBuilderRef D
-                                               , LLVMMetadataRef Scope
-                                               , const char *Name
-                                               , const char *LinkageName
-                                               , LLVMMetadataRef File
-                                               , unsigned Line
-                                               , LLVMMetadataRef CompositeType
-                                               , int IsLocalToUnit
-                                               , int IsDefinition
-                                               , unsigned ScopeLine
-                                               , unsigned Flags
-                                               , int IsOptimized
-                                               , LLVMValueRef Function
-                                               , LLVMMetadataRef /*MDNode* */ TParam /*= nullptr*/
-                                               , LLVMMetadataRef /*MDNode* */ Decl /*= nullptr*/
-                                               );
+                                                 , LLVMMetadataRef Scope
+                                                 , const char *Name
+                                                 , const char *LinkageName
+                                                 , LLVMMetadataRef File
+                                                 , unsigned Line
+                                                 , LLVMMetadataRef CompositeType
+                                                 , int IsLocalToUnit
+                                                 , int IsDefinition
+                                                 , unsigned ScopeLine
+                                                 , unsigned Flags
+                                                 , int IsOptimized
+                                                 , LLVMMetadataRef /*DITemplateParameterArray*/ TParams /*= nullptr*/
+                                                 , LLVMMetadataRef /*DISubProgram */ Decl /*= nullptr*/
+                                                 );
 
     LLVMMetadataRef LLVMDIBuilderCreateTempFunctionFwdDecl( LLVMDIBuilderRef D
-                                                           , LLVMMetadataRef /*DIScope* */Scope
-                                                           , char const* Name
-                                                           , char const* LinkageName
-                                                           , LLVMMetadataRef /*DIFile* */ File
-                                                           , unsigned LineNo
-                                                           , LLVMMetadataRef /*DISubroutineType* */ Ty
-                                                           , bool isLocalToUnit
-                                                           , bool isDefinition
-                                                           , unsigned ScopeLine
-                                                           , unsigned Flags /*= 0*/
-                                                           , bool isOptimized /*= false*/
-                                                           , LLVMValueRef /*Function* */ Fn /*= nullptr*/
-                                                           , LLVMMetadataRef /*MDNode* */ TParam /*= nullptr*/
-                                                           , LLVMMetadataRef /*MDNode* */ Decl /*= nullptr*/
-                                                           );
+                                                            , LLVMMetadataRef /*DIScope* */Scope
+                                                            , char const* Name
+                                                            , char const* LinkageName
+                                                            , LLVMMetadataRef /*DIFile* */ File
+                                                            , unsigned LineNo
+                                                            , LLVMMetadataRef /*DISubroutineType* */ Ty
+                                                            , bool isLocalToUnit
+                                                            , bool isDefinition
+                                                            , unsigned ScopeLine
+                                                            , unsigned Flags /*= 0*/
+                                                            , bool isOptimized /*= false*/
+                                                            , LLVMMetadataRef /*DITemplateParameterArray*/ TParams /*= nullptr*/
+                                                            , LLVMMetadataRef /*DISubProgram */ Decl /*= nullptr*/
+                                                            );
 
-    LLVMMetadataRef LLVMDIBuilderCreateLocalVariable( LLVMDIBuilderRef D
-                                                    , unsigned Tag
-                                                    , LLVMMetadataRef Scope
-                                                    , const char *Name
-                                                    , LLVMMetadataRef File
-                                                    , unsigned Line
-                                                    , LLVMMetadataRef Ty
-                                                    , int AlwaysPreserve
-                                                    , unsigned Flags
-                                                    , unsigned ArgNo
-                                                    );
-
-    LLVMMetadataRef LLVMDIBuilderCreateBasicType( LLVMDIBuilderRef D
-                                                , const char *Name
-                                                , uint64_t SizeInBits
-                                                , uint64_t AlignInBits
-                                                , unsigned Encoding
-                                                );
-
-    LLVMMetadataRef LLVMDIBuilderCreatePointerType( LLVMDIBuilderRef D
-                                                  , LLVMMetadataRef PointeeType
-                                                  , uint64_t SizeInBits
-                                                  , uint64_t AlignInBits
-                                                  , const char *Name
-                                                  );
-
-    LLVMMetadataRef LLVMDIBuilderCreateQualifiedType( LLVMDIBuilderRef D
-                                                    , uint32_t Tag
-                                                    , LLVMMetadataRef BaseType
-                                                    );
-
-    LLVMMetadataRef LLVMDIBuilderCreateSubroutineType( LLVMDIBuilderRef D
+    LLVMMetadataRef LLVMDIBuilderCreateAutoVariable( LLVMDIBuilderRef D
+                                                     , LLVMMetadataRef Scope
+                                                     , const char *Name
                                                      , LLVMMetadataRef File
-                                                     , LLVMMetadataRef ParameterTypes
+                                                     , unsigned Line
+                                                     , LLVMMetadataRef Ty
+                                                     , int AlwaysPreserve
                                                      , unsigned Flags
                                                      );
 
+    LLVMMetadataRef LLVMDIBuilderCreateParameterVariable( LLVMDIBuilderRef D
+                                                          , LLVMMetadataRef Scope
+                                                          , const char *Name
+                                                          , unsigned ArgNo
+                                                          , LLVMMetadataRef File
+                                                          , unsigned Line
+                                                          , LLVMMetadataRef Ty
+                                                          , int AlwaysPreserve
+                                                          , unsigned Flags
+                                                          );
+
+    LLVMMetadataRef LLVMDIBuilderCreateBasicType( LLVMDIBuilderRef D
+                                                  , const char *Name
+                                                  , uint64_t SizeInBits
+                                                  , uint64_t AlignInBits
+                                                  , unsigned Encoding
+                                                  );
+
+    LLVMMetadataRef LLVMDIBuilderCreatePointerType( LLVMDIBuilderRef D
+                                                    , LLVMMetadataRef PointeeType
+                                                    , uint64_t SizeInBits
+                                                    , uint64_t AlignInBits
+                                                    , const char *Name
+                                                    );
+
+    LLVMMetadataRef LLVMDIBuilderCreateQualifiedType( LLVMDIBuilderRef D
+                                                      , uint32_t Tag
+                                                      , LLVMMetadataRef BaseType
+                                                      );
+
+    LLVMMetadataRef LLVMDIBuilderCreateSubroutineType( LLVMDIBuilderRef D
+                                                       , LLVMMetadataRef ParameterTypes
+                                                       , unsigned Flags
+                                                       );
+
     LLVMMetadataRef LLVMDIBuilderCreateStructType( LLVMDIBuilderRef D
-                                                 , LLVMMetadataRef Scope
-                                                 , const char *Name
-                                                 , LLVMMetadataRef File
-                                                 , unsigned Line
-                                                 , uint64_t SizeInBits
-                                                 , uint64_t AlignInBits
-                                                 , unsigned Flags
-                                                 , LLVMMetadataRef DerivedFrom
-                                                 , LLVMMetadataRef ElementTypes
-                                                 );
-                                                 
+                                                   , LLVMMetadataRef Scope
+                                                   , const char *Name
+                                                   , LLVMMetadataRef File
+                                                   , unsigned Line
+                                                   , uint64_t SizeInBits
+                                                   , uint64_t AlignInBits
+                                                   , unsigned Flags
+                                                   , LLVMMetadataRef DerivedFrom
+                                                   , LLVMMetadataRef ElementTypes
+                                                   );
+
     LLVMMetadataRef LLVMDIBuilderCreateReplaceableCompositeType( LLVMDIBuilderRef D
-                                                               , unsigned Tag
-                                                               , const char *Name
-                                                               , LLVMMetadataRef Scope
-                                                               , LLVMMetadataRef File
-                                                               , unsigned Line
-                                                               , unsigned RuntimeLang
-                                                               , uint64_t SizeInBits
-                                                               , uint64_t AlignInBits
-                                                               , unsigned Flags
-                                                               );
-                                                           
+                                                                 , unsigned Tag
+                                                                 , const char *Name
+                                                                 , LLVMMetadataRef Scope
+                                                                 , LLVMMetadataRef File
+                                                                 , unsigned Line
+                                                                 , unsigned RuntimeLang
+                                                                 , uint64_t SizeInBits
+                                                                 , uint64_t AlignInBits
+                                                                 , unsigned Flags
+                                                                 );
+
     LLVMMetadataRef LLVMDIBuilderCreateMemberType( LLVMDIBuilderRef D
-                                                 , LLVMMetadataRef Scope
-                                                 , const char *Name
-                                                 , LLVMMetadataRef File
-                                                 , unsigned Line
-                                                 , uint64_t SizeInBits
-                                                 , uint64_t AlignInBits
-                                                 , uint64_t OffsetInBits
-                                                 , unsigned Flags
-                                                 , LLVMMetadataRef Ty
-                                                 );
+                                                   , LLVMMetadataRef Scope
+                                                   , const char *Name
+                                                   , LLVMMetadataRef File
+                                                   , unsigned Line
+                                                   , uint64_t SizeInBits
+                                                   , uint64_t AlignInBits
+                                                   , uint64_t OffsetInBits
+                                                   , unsigned Flags
+                                                   , LLVMMetadataRef Ty
+                                                   );
 
     LLVMMetadataRef LLVMDIBuilderCreateArrayType( LLVMDIBuilderRef D
-                                                , uint64_t SizeInBits
-                                                , uint64_t AlignInBits
-                                                , LLVMMetadataRef ElementType
-                                                , LLVMMetadataRef Subscripts
-                                                );
-
-    LLVMMetadataRef LLVMDIBuilderCreateVectorType( LLVMDIBuilderRef D
                                                   , uint64_t SizeInBits
                                                   , uint64_t AlignInBits
                                                   , LLVMMetadataRef ElementType
                                                   , LLVMMetadataRef Subscripts
                                                   );
 
+    LLVMMetadataRef LLVMDIBuilderCreateVectorType( LLVMDIBuilderRef D
+                                                   , uint64_t SizeInBits
+                                                   , uint64_t AlignInBits
+                                                   , LLVMMetadataRef ElementType
+                                                   , LLVMMetadataRef Subscripts
+                                                   );
+
     LLVMMetadataRef LLVMDIBuilderCreateTypedef( LLVMDIBuilderRef D
-                                              , LLVMMetadataRef Ty
-                                              , const char *Name
-                                              , LLVMMetadataRef File
-                                              , unsigned Line
-                                              , LLVMMetadataRef Context
-                                              );
+                                                , LLVMMetadataRef Ty
+                                                , const char *Name
+                                                , LLVMMetadataRef File
+                                                , unsigned Line
+                                                , LLVMMetadataRef Context
+                                                );
 
     LLVMMetadataRef LLVMDIBuilderGetOrCreateSubrange( LLVMDIBuilderRef D
-                                                    , int64_t Lo
-                                                    , int64_t Count
-                                                    );
+                                                      , int64_t Lo
+                                                      , int64_t Count
+                                                      );
 
     LLVMMetadataRef LLVMDIBuilderGetOrCreateArray( LLVMDIBuilderRef D
-                                                 , LLVMMetadataRef *Data
-                                                 , size_t Length
-                                                 );
+                                                   , LLVMMetadataRef *Data
+                                                   , size_t Length
+                                                   );
 
     LLVMMetadataRef LLVMDIBuilderGetOrCreateTypeArray( LLVMDIBuilderRef D
-                                                     , LLVMMetadataRef *Data
-                                                     , size_t Length
-                                                     );
+                                                       , LLVMMetadataRef *Data
+                                                       , size_t Length
+                                                       );
 
     LLVMMetadataRef LLVMDIBuilderCreateExpression( LLVMDIBuilderRef Dref
-                                                 , int64_t *Addr
-                                                 , size_t Length
-                                                 );
+                                                   , int64_t *Addr
+                                                   , size_t Length
+                                                   );
 
     LLVMValueRef LLVMDIBuilderInsertDeclareAtEnd( LLVMDIBuilderRef D
-                                                , LLVMValueRef Storage
+                                                  , LLVMValueRef Storage
+                                                  , LLVMMetadataRef VarInfo
+                                                  , LLVMMetadataRef Expr
+                                                  , LLVMMetadataRef diLocation
+                                                  , LLVMBasicBlockRef Block
+                                                  );
+
+    LLVMValueRef LLVMDIBuilderInsertValueAtEnd( LLVMDIBuilderRef D
+                                                , LLVMValueRef Val
+                                                , uint64_t Offset
                                                 , LLVMMetadataRef VarInfo
                                                 , LLVMMetadataRef Expr
                                                 , LLVMMetadataRef diLocation
                                                 , LLVMBasicBlockRef Block
                                                 );
-
-    LLVMValueRef LLVMDIBuilderInsertValueAtEnd( LLVMDIBuilderRef D
-                                              , LLVMValueRef Val
-                                              , uint64_t Offset
-                                              , LLVMMetadataRef VarInfo
-                                              , LLVMMetadataRef Expr
-                                              , LLVMMetadataRef diLocation
-                                              , LLVMBasicBlockRef Block
-                                              );
 
     /// createEnumerationType - Create debugging information entry for an
     /// enumeration.
@@ -363,16 +369,16 @@ extern "C" {
     /// @param UnderlyingType Underlying type of a C++11/ObjC fixed enum.
     /// @param UniqueIdentifier A unique identifier for the enum.
     LLVMMetadataRef LLVMDIBuilderCreateEnumerationType( LLVMDIBuilderRef D
-                                                      , LLVMMetadataRef Scope          // DIScope
-                                                      , char const* Name
-                                                      , LLVMMetadataRef File           // DIFile
-                                                      , unsigned LineNumber
-                                                      , uint64_t SizeInBits
-                                                      , uint64_t AlignInBits
-                                                      , LLVMMetadataRef Elements       // DIArray
-                                                      , LLVMMetadataRef UnderlyingType // DIType
-                                                      , char const*
-                                                      );
+                                                        , LLVMMetadataRef Scope          // DIScope
+                                                        , char const* Name
+                                                        , LLVMMetadataRef File           // DIFile
+                                                        , unsigned LineNumber
+                                                        , uint64_t SizeInBits
+                                                        , uint64_t AlignInBits
+                                                        , LLVMMetadataRef Elements       // DIArray
+                                                        , LLVMMetadataRef UnderlyingType // DIType
+                                                        , char const*
+                                                        );
 
     /// createEnumerator - Create a single enumerator value.
     //DIEnumerator createEnumerator( StringRef Name, int64_t Val );
@@ -392,16 +398,16 @@ extern "C" {
     /// @param Decl        Reference to the corresponding declaration.
     /*DIGlobalVariable*/
     LLVMMetadataRef LLVMDIBuilderCreateGlobalVariable( LLVMDIBuilderRef D
-                                                      , LLVMMetadataRef Context
-                                                      , char const* Name
-                                                      , char const* LinkageName
-                                                      , LLVMMetadataRef File  // DIFile
-                                                      , unsigned LineNo
-                                                      , LLVMMetadataRef Ty    //DITypeRef
-                                                      , LLVMBool isLocalToUnit
-                                                      , LLVMValueRef Val
-                                                      , LLVMMetadataRef Decl // = nullptr
-                                                      );
+                                                       , LLVMMetadataRef Context
+                                                       , char const* Name
+                                                       , char const* LinkageName
+                                                       , LLVMMetadataRef File  // DIFile
+                                                       , unsigned LineNo
+                                                       , LLVMMetadataRef Ty    //DITypeRef
+                                                       , LLVMBool isLocalToUnit
+                                                       , LLVMValueRef Val
+                                                       , LLVMMetadataRef Decl // = nullptr
+                                                       );
 
     LLVMDwarfTag LLVMDIDescriptorGetTag( LLVMMetadataRef descriptor );
 
@@ -418,7 +424,7 @@ extern "C" {
                                                    , LLVMMetadataRef diLocation
                                                    , LLVMValueRef InsertBefore // Instruction
                                                    );
-    
+
     /// Insert a new llvm.dbg.value intrinsic call.
     /// \param Val          llvm::Value of the variable
     /// \param Offset       Offset
@@ -451,7 +457,6 @@ extern "C" {
     LLVMMDOperandRef LLVMMDNodeGetOperand( LLVMMetadataRef /*MDNode*/ node, uint32_t index );
     LLVMMetadataRef LLVMGetOperandNode( LLVMMDOperandRef operand );
     /*DISubProgram*/ LLVMMetadataRef LLVMDILocalScopeGetSubProgram( LLVMMetadataRef /*DILocalScope*/ localScope );
-    /*Function*/ LLVMValueRef LLVMDISubProgramGetFunction( LLVMMetadataRef /*DISubProgram*/ subProgram );
 
 #ifdef __cplusplus
 } // extern "C"
