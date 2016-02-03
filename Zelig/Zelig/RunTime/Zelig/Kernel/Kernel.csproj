@@ -189,6 +189,7 @@
     <Compile Include="Support\KernelCircularBuffer.cs" />
     <Compile Include="Support\KernelList.cs" />
     <Compile Include="Support\KernelNode.cs" />
+    <Compile Include="Support\LandingPadResult.cs" />
     <Compile Include="Synchronization\YieldLock.cs" />
     <Compile Include="Synchronization\CriticalSection.cs" />
     <Compile Include="Synchronization\WaitableObject.cs" />
@@ -203,6 +204,7 @@
     <Compile Include="SystemServices\Threading\ARMv7ThreadManager.cs" />
     <Compile Include="SystemServices\Threading\ThreadManager.cs" />
     <Compile Include="SystemServices\TypeSystemManager.cs" />
+    <Compile Include="SystemServices\Unwind.cs" />
     <Compile Include="TypeSystemManagers\DefaultTypeSystemManager.cs" />
   </ItemGroup>
   <ItemGroup>

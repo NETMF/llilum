@@ -109,6 +109,7 @@
     <Compile Include="Operators\Control\EndFinallyControlOperator.cs" />
     <Compile Include="Operators\Control\LeaveControlOperator.cs" />
     <Compile Include="Operators\Control\MultiWayConditionalControlOperator.cs" />
+    <Compile Include="Operators\Control\ResumeUnwindOperator.cs" />
     <Compile Include="Operators\Control\RethrowControlOperator.cs" />
     <Compile Include="Operators\Control\ReturnControlOperator.cs" />
     <Compile Include="Operators\Control\ThrowControlOperator.cs" />
@@ -118,6 +119,7 @@
     <Compile Include="Operators\AbstractAssignmentOperator.cs" />
     <Compile Include="Operators\AbstractBinaryOperator.cs" />
     <Compile Include="Operators\AbstractUnaryOperator.cs" />
+    <Compile Include="Operators\LandingPadOperator.cs" />
     <Compile Include="Operators\LongBinaryOperator.cs" />
     <Compile Include="Operators\SingleAssignmentOperator.cs" />
     <Compile Include="Operators\PartialAssignmentOperator.cs" />

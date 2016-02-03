@@ -36,6 +36,7 @@ OBJECTS += \
 	$(TARGET)\mbed_system_timer.o \
 	$(TARGET)\mbed_SysTick.o \
 	$(TARGET)\mbed_threading.o \
+	$(TARGET)\mbed_unwind.o \
 
 endif
 
@@ -135,7 +136,7 @@ endif
 	
 	# Build flags
 	CPU = -mcpu=cortex-m3 -mthumb
-	CC_FLAGS += $(CPU) -c -g3 -gdwarf-4 -fvar-tracking-assignments -fno-common -fmessage-length=0 -Wall -fno-exceptions -ffunction-sections -fdata-sections -fomit-frame-pointer -MMD -MP
+	CC_FLAGS += $(CPU) -c -g3 -gdwarf-4 -fvar-tracking-assignments -fno-common -fmessage-length=0 -Wall -fexceptions -ffunction-sections -fdata-sections -fomit-frame-pointer -MMD -MP
 	CC_SYMBOLS = -DTARGET_LPC1768 -DTARGET_M3 -DTARGET_CORTEX_M -DTARGET_NXP -DTARGET_LPC176X -DTARGET_MBED_LPC1768 -DTOOLCHAIN_GCC_ARM -DTOOLCHAIN_GCC -D__CORTEX_M3 -DARM_MATH_CM3 -DMBED_BUILD_TIMESTAMP=1435185689.48 -D__MBED__=1
 	LD_FLAGS = $(CPU) -Wl,--gc-sections --specs=nano.specs -u _printf_float -u _scanf_float -Wl,--wrap,main -Wl,-Map=$(TARGET)\$(PROJECT).map,--cref
 
@@ -164,7 +165,7 @@ endif
 
 	# Build flags
 	CPU = -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=$(FLOAT_ABI) 
-	CC_FLAGS += $(CPU) -c -g3 -gdwarf-4 -fvar-tracking-assignments -fno-common -fmessage-length=0 -Wall -fno-exceptions -ffunction-sections -fdata-sections -fomit-frame-pointer -MMD -MP
+	CC_FLAGS += $(CPU) -c -g3 -gdwarf-4 -fvar-tracking-assignments -fno-common -fmessage-length=0 -Wall -fexceptions -ffunction-sections -fdata-sections -fomit-frame-pointer -MMD -MP
 	CC_SYMBOLS = -DTARGET_K64F -DTARGET_M4 -DTARGET_CORTEX_M -DTARGET_Freescale -DTARGET_KPSDK_MCUS -DTARGET_KPSDK_CODE -DTARGET_MCU_K64F -DTARGET_FRDM -DTOOLCHAIN_GCC_ARM -DTOOLCHAIN_GCC -D__CORTEX_M4 -DARM_MATH_CM4 -D__FPU_PRESENT=1 -DMBED_BUILD_TIMESTAMP=1435855534.71 -D__MBED__=1 -DCPU_MK64FN1M0VMD12 -DFSL_RTOS_MBED -DTARGET_FF_ARDUINO 
 	LD_FLAGS = $(CPU) -Wl,--gc-sections --specs=nano.specs -u _printf_float -u _scanf_float -Wl,--wrap,main -Wl,-Map=$(TARGET)\$(PROJECT).map,--cref
 
@@ -192,7 +193,7 @@ endif
 
 	# Build flags
 	CPU = -mcpu=cortex-m3 -mthumb 
-	CC_FLAGS += $(CPU) -c -g -fno-common -fmessage-length=0 -Wall -Wextra -fno-exceptions -ffunction-sections -fdata-sections -fomit-frame-pointer -MMD -MP
+	CC_FLAGS += $(CPU) -c -g -fno-common -fmessage-length=0 -Wall -Wextra -fexceptions -ffunction-sections -fdata-sections -fomit-frame-pointer -MMD -MP
 	CC_SYMBOLS = -DMBED_BUILD_TIMESTAMP=1445629897.99 -DTARGET_FF_ARDUINO -DTOOLCHAIN_GCC_ARM -DTOOLCHAIN_GCC -DTARGET_FF_MORPHO -DTARGET_CORTEX_M -DARM_MATH_CM3 -DTARGET_STM32L1 -DTARGET_STM -D__CORTEX_M3 -DTARGET_NUCLEO_L152RE -DTARGET_M3 -DTARGET_STM32L152RE -D__MBED__=1 
 	LD_FLAGS = $(CPU) -Wl,--gc-sections --specs=nano.specs -u _printf_float -u _scanf_float -Wl,--wrap,main -Wl,-Map=$(TARGET)\$(PROJECT).map,--cref
 
@@ -220,7 +221,7 @@ ifeq ($(USE_LWIP), 1)
 endif
 
 	CPU = -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=$(FLOAT_ABI) 
-	CC_FLAGS += $(CPU) -c -g -fno-common -fmessage-length=0 -Wall -Wextra -fno-exceptions -ffunction-sections -fdata-sections -fomit-frame-pointer -MMD -MP
+	CC_FLAGS += $(CPU) -c -g -fno-common -fmessage-length=0 -Wall -Wextra -fexceptions -ffunction-sections -fdata-sections -fomit-frame-pointer -MMD -MP
 	CC_SYMBOLS = -DTARGET_FF_ARDUINO -DTOOLCHAIN_GCC_ARM -DTARGET_NUCLEO_F411RE -D__CORTEX_M4 -DTARGET_CORTEX_M -D__FPU_PRESENT=1 -D__MBED__=1 -DTARGET_M4 -DTARGET_FF_MORPHO -DTARGET_STM -DTARGET_STM32F4 -DTOOLCHAIN_GCC -DTARGET_STM32F411RE -DARM_MATH_CM4 -DMBED_BUILD_TIMESTAMP=1450373147.1 
 
 	LD_FLAGS = $(CPU) -Wl,--gc-sections --specs=nano.specs -u _printf_float -u _scanf_float -Wl,--wrap,main -Wl,-Map=$(TARGET)\$(PROJECT).map,--cref
@@ -249,7 +250,7 @@ ifeq ($(USE_LWIP), 1)
 endif
 
 	CPU = -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=$(FLOAT_ABI) 
-	CC_FLAGS += $(CPU) -c -g -fno-common -fmessage-length=0 -Wall -Wextra -fno-exceptions -ffunction-sections -fdata-sections -fomit-frame-pointer -MMD -MP
+	CC_FLAGS += $(CPU) -c -g -fno-common -fmessage-length=0 -Wall -Wextra -fexceptions -ffunction-sections -fdata-sections -fomit-frame-pointer -MMD -MP
 	CC_SYMBOLS = -DTARGET_FF_ARDUINO -DTOOLCHAIN_GCC_ARM -DTARGET_NUCLEO_F401RE -D__CORTEX_M4 -DTARGET_CORTEX_M -D__FPU_PRESENT=1 -D__MBED__=1 -DTARGET_M4 -DTARGET_FF_MORPHO -DTARGET_STM -DTARGET_STM32F4 -DTOOLCHAIN_GCC -DTARGET_STM32F401RE -DARM_MATH_CM4 -DMBED_BUILD_TIMESTAMP=1450373147.1 
 
 	LD_FLAGS = $(CPU) -Wl,--gc-sections --specs=nano.specs -u _printf_float -u _scanf_float -Wl,--wrap,main -Wl,-Map=$(TARGET)\$(PROJECT).map,--cref
@@ -275,7 +276,7 @@ endif
 	LINKER_SCRIPT = $(MBED_ROOT)/TARGET_NUCLEO_F091RC/TOOLCHAIN_GCC_ARM/STM32F091XC.ld
     
 	CPU = -mcpu=cortex-m0 -mthumb
-	CC_FLAGS += $(CPU) -c -g -fno-common -fmessage-length=0 -Wall -Wextra -fno-exceptions -ffunction-sections -fdata-sections -fomit-frame-pointer -MMD -MP
+	CC_FLAGS += $(CPU) -c -g -fno-common -fmessage-length=0 -Wall -Wextra -fexceptions -ffunction-sections -fdata-sections -fomit-frame-pointer -MMD -MP
 	CC_SYMBOLS = -D__CORTEX_M0 -DMBED_BUILD_TIMESTAMP=1452888922.57 -DTARGET_FF_ARDUINO -DTOOLCHAIN_GCC_ARM -DTOOLCHAIN_GCC -DTARGET_FF_MORPHO -DTARGET_CORTEX_M -DARM_MATH_CM0 -DTARGET_STM -DTARGET_STM32F0 -DTARGET_M0 -DTARGET_NUCLEO_F091RC -DTARGET_STM32F091RC -D__MBED__=1 
 
 	LD_FLAGS = $(CPU) -Wl,--gc-sections --specs=nano.specs -Wl,--wrap,main -Wl,-Map=$(TARGET)\$(PROJECT).map,--cref

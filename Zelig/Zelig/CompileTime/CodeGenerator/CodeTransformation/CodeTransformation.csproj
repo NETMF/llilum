@@ -227,6 +227,7 @@
     <Compile Include="TransformationContextForCodeTransformation.cs" />
     <Compile Include="Transformations\CommonMethodRedundancyElimination.cs" />
     <Compile Include="Transformations\ConstraintSystemCollector.cs" />
+    <Compile Include="Transformations\ConvertToLandingPads.cs" />
     <Compile Include="Transformations\GlobalCopyPropagation.cs" />
     <Compile Include="Transformations\GlobalRegisterAllocation.cs" />
     <Compile Include="Transformations\InlineCall.cs" />

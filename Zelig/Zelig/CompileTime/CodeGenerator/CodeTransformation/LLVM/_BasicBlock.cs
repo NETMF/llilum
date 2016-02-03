@@ -27,6 +27,14 @@ namespace Microsoft.Zelig.LLVM
         public _Module Module => Owner.Module;
         public _Function Owner { get; }
 
+        public string Name
+        {
+            get
+            {
+                return LlvmBasicBlock.Name;
+            }
+        }
+
         public void InsertASMString( string ASM )
         {
 #if DUMP_INLINED_COMMENTS_AS_ASM_CALLS
@@ -522,36 +530,49 @@ namespace Microsoft.Zelig.LLVM
 
         public Value InsertCall(Value func, _Type returnType, List<Value> args, bool isIndirect)
         {
-            List<Value> parameters = args.Select((Value value) => { return (Value)value; }).ToList();
-
-            Value pointer = func;
             if (isIndirect)
             {
-                // Manufacture a function prototype.
-                var paramTypes = parameters.Select((Value value) => { return value.NativeType; });
-                ITypeRef llvmFuncType = Module.LlvmContext.GetFunctionType(returnType.DebugType.NativeType, paramTypes);
-                ITypeRef funcPointerType = llvmFuncType.CreatePointerType();
-
-                // Bitcast the given pointer to the prototype we just created.
-                Value extracted = IrBuilder.ExtractValue(func, 0)
-                                           .SetDebugLocation(CurDILocation);
-                pointer = IrBuilder.BitCast(extracted, funcPointerType)
-                                   .SetDebugLocation(CurDILocation);
+                func = CastFunctionPointer(func, returnType, args);
             }
 
-            Value retVal = IrBuilder.Call(pointer, parameters)
-                                    .SetDebugLocation(CurDILocation);
-
-            // Don't bother wrapping the return if we won't use it.
-            if (returnType.DebugType.IsVoid)
-            {
-                return null;
-            }
-
+            Value retVal = IrBuilder.Call(func, args);
+            retVal.SetDebugLocation(CurDILocation);
             retVal.SetDebugType(returnType);
             return retVal;
         }
 
+        public Value InsertInvoke(
+            Value func,
+            _Type returnType,
+            List<Value> args,
+            bool isIndirect,
+            _BasicBlock nextBlock,
+            _BasicBlock catchBlock)
+        {
+            if (isIndirect)
+            {
+                func = CastFunctionPointer(func, returnType, args);
+            }
+
+            Value retVal = IrBuilder.Invoke(func, args, nextBlock.LlvmBasicBlock, catchBlock.LlvmBasicBlock);
+            retVal.SetDebugLocation(CurDILocation);
+            retVal.SetDebugType(returnType);
+            return retVal;
+        }
+
+        private Value CastFunctionPointer(Value pointer, _Type returnType, List<Value> args)
+        {
+            // Manufacture a function prototype.
+            var paramTypes = args.Select((Value value) => { return value.NativeType; });
+            ITypeRef llvmFuncType = Module.LlvmContext.GetFunctionType(returnType.DebugType.NativeType, paramTypes);
+            ITypeRef funcPointerType = llvmFuncType.CreatePointerType();
+
+            // Bitcast the given pointer to the prototype we just created.
+            Value extracted = IrBuilder.ExtractValue(pointer, 0)
+                                       .SetDebugLocation(CurDILocation);
+            return IrBuilder.BitCast(extracted, funcPointerType)
+                            .SetDebugLocation(CurDILocation);
+        }
 
         static _Type SetValuesForByteOffsetAccess( _Type ty, List<uint> values, int offset, out string fieldName )
         {
@@ -698,6 +719,25 @@ namespace Microsoft.Zelig.LLVM
             oldVal.SetDebugLocation(CurDILocation);
             oldVal.SetDebugType(val.GetDebugType());
             return oldVal;
+        }
+
+        public LandingPad InsertLandingPad(_Type resultType, Value[] vtables, bool cleanup)
+        {
+            LandingPad landingPad = IrBuilder.LandingPad(resultType.DebugType);
+            landingPad.SetCleanup(cleanup);
+
+            foreach (Value vtable in vtables)
+            {
+                landingPad.AddClause(vtable);
+            }
+
+            landingPad.SetDebugType(resultType);
+            return landingPad;
+        }
+
+        public void InsertResume(Value exception)
+        {
+            IrBuilder.Resume(exception);
         }
 
         public void SetVariableName(Value value, VariableExpression expression)

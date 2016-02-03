@@ -429,6 +429,19 @@ namespace Microsoft.Zelig.LLVM
             }
         }
 
+        // REVIEW: This can be generalized to creating any function by prototype.
+        public Function GetPersonalityFunction(string functionName)
+        {
+            Function function = LlvmModule.GetFunction(functionName);
+            if (function == null)
+            {
+                _Type intType = _Type.GetOrInsertTypeImpl(this, TypeSystem.WellKnownTypes.System_Int32);
+                function = LlvmModule.CreateFunction(functionName, true, intType.DebugType);
+            }
+
+            return function;
+        }
+
         internal uint NativeIntSize => LlvmModule.Layout.IntPtrType( ).IntegerBitWidth;
 
         internal uint PointerSize => LlvmModule.Layout.IntPtrType( ).IntegerBitWidth;

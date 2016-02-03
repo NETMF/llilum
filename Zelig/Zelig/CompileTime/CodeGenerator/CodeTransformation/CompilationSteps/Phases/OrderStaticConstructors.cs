@@ -182,9 +182,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
                 return false;
             }
 
-            if(SameMethodOrOverride( mdNext, wkm.TypeSystemManager_Throw              ) ||
-               SameMethodOrOverride( mdNext, wkm.TypeSystemManager_Rethrow            ) ||
-               SameMethodOrOverride( mdNext, wkm.TypeSystemManager_Rethrow__Exception )  )
+            if (SameMethodOrOverride(mdNext, wkm.TypeSystemManager_Throw) ||
+                SameMethodOrOverride(mdNext, wkm.TypeSystemManager_Rethrow))
             {
                 //
                 // If a class constructor throws an exception, bad things are going to happen, so no need to expand the closure any further.
