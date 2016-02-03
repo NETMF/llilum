@@ -1676,9 +1676,60 @@ namespace System.Text
             return Replace( oldValue, newValue, 0, Length );
         }
 
-////    [ResourceExposure( ResourceScope.None )]
-        [MethodImplAttribute( MethodImplOptions.InternalCall )]
-        public extern StringBuilder Replace( String oldValue, String newValue, int startIndex, int count );
+        ////    [ResourceExposure( ResourceScope.None )]
+        //////[MethodImplAttribute( MethodImplOptions.InternalCall )]
+        //////public extern StringBuilder Replace( String oldValue, String newValue, int startIndex, int count );
+        public StringBuilder Replace( String oldValue, String newValue, int startIndex, int count )
+        {
+            Thread th = null;
+            var srcString = GetThreadSafeString( out th ); 
+            
+            var srcLength      = srcString.Length;
+            var oldValueLength = oldValue .Length;
+            var newValueLength = newValue .Length;
+
+            var indexes = String.FindAllOccurrences( srcString, oldValue, startIndex, count ); 
+
+            int occurrences = indexes.Count;
+
+            //
+            // Allocate a string to contain the final result and fill it in place
+            //
+            if(occurrences > 0)
+            {
+                //
+                // Allocate the new string, with the exact size needed
+                //
+                int requiredLength = srcLength - (occurrences * (oldValueLength - newValueLength));
+
+                //
+                // Create a new string if the new value is longer than the old or we have not enough storage
+                //
+                if(NeedsAllocation( srcString, requiredLength ) || oldValueLength < newValueLength)
+                {
+                    String newString = GetNewString( srcString, requiredLength );
+                    
+                    String.ReplaceStringInPlace( srcString, newString, newValue, indexes, oldValueLength, newValueLength );
+                    
+                    newString.SetLength( requiredLength ); 
+                    newString.NullTerminate( ); 
+
+                    ReplaceString( th, newString );
+                }
+                else
+                {
+                    String.ReplaceStringInPlace( srcString, srcString, newValue, indexes, oldValueLength, newValueLength );
+                    
+                    srcString.SetLength( requiredLength ); 
+                    srcString.NullTerminate( ); 
+
+                    ReplaceString( th, srcString );
+                }
+
+            }
+
+            return this;
+        }
 
         public bool Equals( StringBuilder sb )
         {
@@ -1694,7 +1745,7 @@ namespace System.Text
         //
         public StringBuilder Replace( char oldChar, char newChar )
         {
-            return Replace( oldChar, newChar, 0, Length );
+            return Replace( oldChar, newChar, 0, this.Length );
         }
 
         public StringBuilder Replace( char oldChar, char newChar, int startIndex, int count )
@@ -1703,7 +1754,7 @@ namespace System.Text
             String currentString = GetThreadSafeString( out th );
             int currentLength = currentString.Length;
 
-            if((uint)startIndex > (uint)currentLength)
+            if(startIndex > currentLength)
             {
 #if EXCEPTION_STRINGS
                 throw new ArgumentOutOfRangeException( "startIndex", Environment.GetResourceString( "ArgumentOutOfRange_Index" ) );

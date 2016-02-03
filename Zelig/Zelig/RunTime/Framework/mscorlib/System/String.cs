@@ -2660,35 +2660,135 @@ namespace System
 
             return sb.ToString();
         }
-    
-////    // This method contains the same functionality as StringBuilder Replace. The only difference is that
-////    // a new String has to be allocated since Strings are immutable
-////    [ResourceExposure( ResourceScope.None )]
-////    [MethodImpl( MethodImplOptions.InternalCall )]
-////    public extern String Replace( String oldValue, String newValue );
-////
-////    //
-////    //
-////    [ResourceExposure( ResourceScope.None )]
-////    [MethodImpl( MethodImplOptions.InternalCall )]
-////    public extern String Remove( int startIndex, int count );
-////
-////
-////    // a remove that just takes a startindex.
-////    public string Remove( int startIndex )
-////    {
-////        if(startIndex < 0)
-////        {
-////            throw new ArgumentOutOfRangeException( "startIndex", Environment.GetResourceString( "ArgumentOutOfRange_StartIndex" ) );
-////        }
-////
-////        if(startIndex >= Length)
-////        {
-////            throw new ArgumentOutOfRangeException( "startIndex", Environment.GetResourceString( "ArgumentOutOfRange_StartIndexLessThanLength" ) );
-////        }
-////
-////        return Substring( 0, startIndex );
-////    }
+
+        // This method contains the same functionality as StringBuilder Replace. The only difference is that
+        // a new String has to be allocated since Strings are immutable
+        ////[ResourceExposure( ResourceScope.None )]
+        ////[MethodImpl( MethodImplOptions.InternalCall )]
+        
+        public String Replace( String oldValue, String newValue )
+        {
+            var srcString = this; 
+            
+            var srcLength      = srcString.Length;
+            var oldValueLength = oldValue .Length;
+            var newValueLength = newValue .Length;
+
+            var indexes = FindAllOccurrences( srcString, oldValue, 0, srcLength ); 
+
+            int occurrences = indexes.Count;
+
+            //
+            // Allocate a string to contain the final result and fill it in place
+            //
+            if(occurrences > 0)
+            {
+                //
+                // Allocate the new string, with the exact size needed
+                //
+                var dstString = new String( '\0', srcLength - (occurrences * (oldValueLength - newValueLength)) + 1 );
+
+                ReplaceStringInPlace( srcString, dstString, newValue, indexes, oldValueLength, newValueLength );
+
+                dstString.NullTerminate( ); 
+
+                return dstString;
+            }
+
+            return this;
+        }
+
+        internal static List<int> FindAllOccurrences( String srcString, String value, int startIndex, int count )
+        {
+            var srcLength      = srcString.Length;
+            var oldValueLength = value    .Length;
+            
+            var indexes = new List<int>();
+
+            if(count >= oldValueLength && startIndex < srcLength)
+            {
+                //
+                //  Find all occurences of the string to be replaced
+                //
+                int charIdx = startIndex;
+                int endIdx  = startIndex + count - oldValueLength;
+
+                while(charIdx <= endIdx && count >= oldValueLength)
+                {
+                    var charIdx2 = srcString.IndexOf( value, charIdx, count );
+
+                    if(charIdx2 == -1)
+                    {
+                        break;
+                    }
+
+                    indexes.Add( charIdx2 );
+
+                    count   -= ( charIdx2 - charIdx + oldValueLength );
+                    charIdx  = charIdx2 + oldValueLength;
+                }
+            }
+
+            return indexes;
+        }
+
+        internal static unsafe void ReplaceStringInPlace( String srcString, String dstString, String newValue, List<int> indexes, int oldValueLength, int newValueLength )
+        {
+            int occurrences = indexes.Count;
+
+            if(occurrences > 0)
+            {
+                fixed (char* srcStringPtr = &srcString.m_firstChar) fixed (char* dstStringPtr = &dstString.m_firstChar) fixed (char* newValuePtr = &newValue.m_firstChar)
+                {
+                    var currentIdx = 0;
+                    var srcCharIdx = 0;
+                    var dstCharIdx = 0;
+
+                    do
+                    {
+                        int charIdx   = indexes[ currentIdx ];
+                        var charCount = charIdx - srcCharIdx;
+
+                        Buffer.InternalMemoryCopy( srcStringPtr + srcCharIdx, dstStringPtr + dstCharIdx, charCount );
+                        srcCharIdx += charCount;
+                        dstCharIdx += charCount;
+
+                        Buffer.InternalMemoryCopy( newValuePtr, dstStringPtr + dstCharIdx, newValueLength );
+                        srcCharIdx += oldValueLength;
+                        dstCharIdx += newValueLength;
+
+                        ++currentIdx;
+
+                    } while(currentIdx < occurrences);
+
+                    Buffer.InternalMemoryCopy( srcStringPtr + srcCharIdx, dstStringPtr + dstCharIdx, srcString.Length - srcCharIdx );
+                }
+            }
+        }       
+        
+        ////
+        ////    //
+        ////    //
+        ////    [ResourceExposure( ResourceScope.None )]
+        ////    [MethodImpl( MethodImplOptions.InternalCall )]
+        ////    public extern String Remove( int startIndex, int count );
+        ////
+        ////
+        ////    // a remove that just takes a startindex.
+        ////    public string Remove( int startIndex )
+        ////    {
+        ////        if(startIndex < 0)
+        ////        {
+        ////            throw new ArgumentOutOfRangeException( "startIndex", Environment.GetResourceString( "ArgumentOutOfRange_StartIndex" ) );
+        ////        }
+        ////
+        ////        if(startIndex >= Length)
+        ////        {
+        ////            throw new ArgumentOutOfRangeException( "startIndex", Environment.GetResourceString( "ArgumentOutOfRange_StartIndexLessThanLength" ) );
+        ////        }
+        ////
+        ////        return Substring( 0, startIndex );
+        ////    }
 
         public static String Format( String format, Object arg0 )
         {
@@ -3401,7 +3501,7 @@ namespace System
         }
 
         ///<internalonly/>
-        private unsafe void NullTerminate()
+        internal unsafe void NullTerminate()
         {
             fixed(char* p = &this.m_firstChar)
             {
