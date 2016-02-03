@@ -92,7 +92,7 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         public readonly MethodRepresentation ObjectHeader_ReleaseReference;
 
         public readonly MethodRepresentation System_Buffer_InternalMemoryCopy;
-        public readonly MethodRepresentation System_Buffer_InternalBackwardMemoryCopy;
+        //public readonly MethodRepresentation System_Buffer_InternalBackwardMemoryCopy;
 
         public readonly MethodRepresentation Helpers_BinaryOperations_IntDiv;
         public readonly MethodRepresentation Helpers_BinaryOperations_IntRem;
