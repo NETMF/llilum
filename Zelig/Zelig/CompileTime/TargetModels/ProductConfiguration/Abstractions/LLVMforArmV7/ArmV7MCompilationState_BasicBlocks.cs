@@ -857,8 +857,10 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
             // System.Buffer.InternalMemoryCopy(byte*, byte*, int) => llvm.memcpy
             // System.Buffer.InternalBackwardMemoryCopy(byte*, byte*, int) => llvm.memmove
-            if ((method == wkm.System_Buffer_InternalMemoryCopy) ||
-                (method == wkm.System_Buffer_InternalBackwardMemoryCopy))
+            if (
+                    method == wkm.System_Buffer_InternalMemoryCopy 
+                //////||  method == wkm.System_Buffer_InternalBackwardMemoryCopy
+                )
             {
                 bool overlapping = method != wkm.System_Buffer_InternalMemoryCopy;
 
