@@ -32,7 +32,6 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         public readonly MethodRepresentation TypeSystemManager_CastToInterfaceNoThrow;
         public readonly MethodRepresentation TypeSystemManager_Throw;
         public readonly MethodRepresentation TypeSystemManager_Rethrow;
-        public readonly MethodRepresentation TypeSystemManager_Rethrow__Exception;
         public readonly MethodRepresentation TypeSystemManager_get_Instance;
 
         public readonly MethodRepresentation VTable_Get;

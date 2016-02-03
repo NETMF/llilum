@@ -19,7 +19,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
     {
         private _BasicBlock m_basicBlock;
 
-        private LLVM._BasicBlock GetOrInsertBasicBlock( IR.BasicBlock block )
+        private _BasicBlock GetOrInsertBasicBlock(IR.BasicBlock block)
         {
             _BasicBlock llvmBlock;
             if( m_blocks.TryGetValue( block, out llvmBlock ) )
@@ -30,6 +30,13 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             llvmBlock = m_function.GetOrInsertBasicBlock( block.ToShortString( ) );
             m_blocks.Add( block, llvmBlock );
             return llvmBlock;
+        }
+
+        private _BasicBlock SplitCurrentBlock()
+        {
+            // REVIEW: This can result in chains of ".next.next.next...". In the future it may be
+            // better to name these in a prettier fashion ".next1", ".next2", ...
+            return m_function.GetOrInsertBasicBlock(m_basicBlock.Name + ".next");
         }
 
         public override void EmitCodeForBasicBlock( IR.BasicBlock bb )
@@ -173,7 +180,6 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
             if( exp is IR.VariableExpression )
             {
-                _BasicBlock llvmBlock = GetOrInsertBasicBlock( block );
                 ValueCache valueCache = m_localValues[ exp ];
 
                 // If we don't need to load the value, just return the address.
@@ -191,7 +197,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                 }
 
                 // If we already have a cached value for this expression there's no need to load it again.
-                Value value = valueCache.GetValueFromBlock(llvmBlock);
+                Value value = valueCache.GetValueFromBlock(block);
                 if (value != null)
                 {
                     return value;
@@ -205,8 +211,8 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                     throw new InvalidOperationException( $"Encountered use of expression with no definition. Expression {exp} in {block.Owner.Method}" );
                 }
 
-                value = GetValue( idom, exp, wantImmediate, allowLoad );
-                valueCache.SetValueForBlock( llvmBlock, value );
+                value = GetValue(idom, exp, wantImmediate, allowLoad);
+                valueCache.SetValueForBlock(block, value);
                 return value;
             }
 
@@ -406,6 +412,14 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                 Translate_IndirectCallOperator( ( IR.IndirectCallOperator )op );
             }
             //Other
+            else if (op is IR.LandingPadOperator)
+            {
+                Translate_LandingPadOperator((IR.LandingPadOperator)op);
+            }
+            else if (op is IR.ResumeUnwindOperator)
+            {
+                Translate_ResumeUnwindOperator((IR.ResumeUnwindOperator)op);
+            }
             else
             {
                 WarnUnimplemented( op.ToString( ) );
@@ -565,7 +579,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             throw new InvalidOperationException("Invalid type cast.");
         }
 
-        private void StoreValue(ValueCache dst, Value src)
+        private void StoreValue(ValueCache dst, Value src, IR.BasicBlock block)
         {
             Value convertedSrc = ConvertValueToStoreToTarget(src, dst.Type);
             m_basicBlock.SetVariableName( convertedSrc, dst.Expression );
@@ -576,7 +590,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             }
             else
             {
-                dst.SetValueForBlock( m_basicBlock, convertedSrc );
+                dst.SetValueForBlock(block, convertedSrc);
             }
         }
 
@@ -600,7 +614,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             // TODO: Add support for overflow exceptions.
             EnsureSameType(ref valA, ref valB);
             Value result = m_basicBlock.InsertBinaryOp((int)op.Alu, valA, valB, op.Signed);
-            StoreValue(m_localValues[op.FirstResult], result);
+            StoreValue(m_localValues[op.FirstResult], result, op.BasicBlock);
         }
 
         private void Translate_AbstractUnaryOperator(IR.AbstractUnaryOperator op)
@@ -614,7 +628,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             Value argument = GetImmediate(op.BasicBlock, op.FirstArgument);
             Value value = ConvertValueToALUOperableType(argument);
             Value result = m_basicBlock.InsertUnaryOp((int)op.Alu, value, op.Signed);
-            StoreValue(m_localValues[op.FirstResult], result);
+            StoreValue(m_localValues[op.FirstResult], result, op.BasicBlock);
         }
 
         private void Translate_ConversionOperator( IR.ConversionOperator op )
@@ -648,26 +662,26 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                 throw new Exception( "Unimplemented Conversion Operator: " + op.ToString( ) );
             }
 
-            StoreValue( m_localValues[ op.FirstResult ], value );
+            StoreValue(m_localValues[ op.FirstResult ], value, op.BasicBlock);
         }
 
         private void Translate_ConvertOperator(IR.ConvertOperator op)
         {
             // TODO: Add support for overflow exceptions
             Value argument = GetImmediate(op.BasicBlock, op.FirstArgument);
-            StoreValue(m_localValues[op.FirstResult], argument);
+            StoreValue(m_localValues[op.FirstResult], argument, op.BasicBlock);
         }
 
         private void Translate_SingleAssignmentOperator(IR.SingleAssignmentOperator op)
         {
             Value value = GetImmediate(op.BasicBlock, op.FirstArgument);
-            StoreValue(m_localValues[op.FirstResult], value);
+            StoreValue(m_localValues[op.FirstResult], value, op.BasicBlock);
         }
 
         private void Translate_AddressAssignmentOperator(IR.AddressAssignmentOperator op)
         {
             Value address = GetAddress(op.BasicBlock, op.FirstArgument);
-            StoreValue(m_localValues[op.FirstResult], address);
+            StoreValue(m_localValues[op.FirstResult], address, op.BasicBlock);
         }
 
         private void Translate_InitialValueOperator( IR.InitialValueOperator op )
@@ -680,7 +694,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
             _Type type = m_manager.GetOrInsertType( op.FirstResult.Type );
             Value argument = m_basicBlock.GetMethodArgument(index, type);
-            StoreValue( m_localValues[ op.FirstResult ], argument );
+            StoreValue(m_localValues[ op.FirstResult ], argument, op.BasicBlock);
         }
 
         private void Translate_CompareAndSetOperator(IR.CompareAndSetOperator op)
@@ -690,7 +704,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             EnsureSameType(ref left, ref right);
 
             Value value = m_basicBlock.InsertCmp((int)op.Condition, op.Signed, left, right);
-            StoreValue(m_localValues[op.FirstResult], value);
+            StoreValue(m_localValues[op.FirstResult], value, op.BasicBlock);
         }
 
         private void Translate_LoadIndirectOperator(IR.LoadIndirectOperator op)
@@ -698,7 +712,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             Value argument = GetImmediate(op.BasicBlock, op.FirstArgument);
             Value address = m_basicBlock.LoadIndirect(argument, m_manager.GetOrInsertType(op.Type));
             Value value = m_basicBlock.InsertLoad(address);
-            StoreValue(m_localValues[op.FirstResult], value);
+            StoreValue(m_localValues[op.FirstResult], value, op.BasicBlock);
         }
 
         private void Translate_StoreIndirectOperator(IR.StoreIndirectOperator op)
@@ -737,7 +751,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             _Type fieldType = m_manager.GetOrInsertType(op.Field.FieldType);
             Value fieldAddress = m_basicBlock.GetFieldAddress(objAddress, op.Field.Offset, fieldType);
             Value value = m_basicBlock.InsertLoad(fieldAddress);
-            StoreValue(m_localValues[op.FirstResult], value);
+            StoreValue(m_localValues[op.FirstResult], value, op.BasicBlock);
         }
 
         private void Translate_LoadInstanceFieldAddressOperator(IR.LoadInstanceFieldAddressOperator op)
@@ -745,7 +759,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             Value objAddress = GetInstanceAddress(op);
             _Type fieldType = m_manager.GetOrInsertType(op.Field.FieldType);
             Value fieldAddress = m_basicBlock.GetFieldAddress(objAddress, op.Field.Offset, fieldType);
-            StoreValue(m_localValues[op.FirstResult], fieldAddress);
+            StoreValue(m_localValues[op.FirstResult], fieldAddress, op.BasicBlock);
         }
 
         private Value GetElementAddress(IR.ElementOperator op)
@@ -764,13 +778,13 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         {
             Value elementAddress = GetElementAddress(op);
             Value value = m_basicBlock.InsertLoad(elementAddress);
-            StoreValue(m_localValues[op.FirstResult], value);
+            StoreValue(m_localValues[op.FirstResult], value, op.BasicBlock);
         }
 
         private void Translate_LoadElementAddressOperator(IR.LoadElementAddressOperator op)
         {
             Value elementAddress = GetElementAddress(op);
-            StoreValue(m_localValues[op.FirstResult], elementAddress);
+            StoreValue(m_localValues[op.FirstResult], elementAddress, op.BasicBlock);
         }
 
         private void Translate_StoreElementOperator(IR.StoreElementOperator op)
@@ -810,7 +824,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         private void Translate_MultiWayConditionalControlOperator( IR.MultiWayConditionalControlOperator op )
         {
             List<int> caseValues = new List<int>();
-            List<_BasicBlock> caseBBs = new List<LLVM._BasicBlock>();
+            List<_BasicBlock> caseBBs = new List<_BasicBlock>();
 
             for( int i = 0; i < op.Targets.Length; ++i )
             {
@@ -1041,12 +1055,25 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
                     callAddress = targetFunc.LlvmFunction;
                 }
 
-                result = m_basicBlock.InsertCall(callAddress, returnType, args, callIndirect);
+                // If this call is protected by a landing pad, replace it with an invoke instruction.
+                if ((op.BasicBlock.ProtectedBy.Length > 0) && op.MayThrow)
+                {
+                    _BasicBlock nextBlock = SplitCurrentBlock();
+                    _BasicBlock catchBlock = GetOrInsertBasicBlock(op.BasicBlock.ProtectedBy[0]);
+                    result = m_basicBlock.InsertInvoke(callAddress, returnType, args, callIndirect, nextBlock, catchBlock);
+                    m_basicBlock = nextBlock;
+
+                    EnsurePersonalityFunction();
+                }
+                else
+                {
+                    result = m_basicBlock.InsertCall(callAddress, returnType, args, callIndirect);
+                }
             }
 
             if (op.Results.Length == 1)
             {
-                StoreValue(m_localValues[op.FirstResult], result);
+                StoreValue(m_localValues[op.FirstResult], result, op.BasicBlock);
             }
             else if (op.Results.Length > 1)
             {
@@ -1067,6 +1094,45 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         private void Translate_IndirectCallOperator(IR.IndirectCallOperator op)
         {
             BuildMethodCallInstructions(op);
+        }
+
+        private void Translate_LandingPadOperator(IR.LandingPadOperator op)
+        {
+            EnsurePersonalityFunction();
+
+            var vtables = new Value[op.Arguments.Length];
+            for (int i = 0; i < op.Arguments.Length; ++i)
+            {
+                var vtable = GetImmediate(op.BasicBlock, op.Arguments[i]);
+
+                // BUGBUG: LLVM appears to have an issue with  type-info pointers where GEP constant
+                // expressions resolve to null. To work around this problem, we emit the "wrapped"
+                // global with the object header and adjust to the real VTable pointer in the
+                // personality routine.
+                var vtableAsConst = (Constant)vtable;
+                if (vtableAsConst.Operands.Count != 0)
+                {
+                    vtable = vtableAsConst.Operands[0];
+                }
+
+                vtables[i] = vtable;
+            }
+
+            _Type resultType = m_manager.GetOrInsertType(op.FirstResult.Type);
+            Value result = m_basicBlock.InsertLandingPad(resultType, vtables, op.HasCleanupClause);
+            StoreValue(m_localValues[op.FirstResult], result, op.BasicBlock);
+        }
+
+        private void Translate_ResumeUnwindOperator(IR.ResumeUnwindOperator op)
+        {
+            Value exception = GetImmediate(op.BasicBlock, op.FirstArgument);
+            m_basicBlock.InsertResume(exception);
+        }
+
+        // Ensure that the currently emitting function has a personality function attached.
+        private void EnsurePersonalityFunction()
+        {
+            m_function.LlvmFunction.PersonalityFunction = m_manager.Module.GetPersonalityFunction("LLOS_Personality");
         }
     }
 }

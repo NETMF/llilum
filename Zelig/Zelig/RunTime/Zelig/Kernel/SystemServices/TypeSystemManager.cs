@@ -6,9 +6,9 @@ namespace Microsoft.Zelig.Runtime
 {
     using System;
     using System.Runtime.CompilerServices;
+    using System.Runtime.InteropServices;
 
     using TS = Microsoft.Zelig.Runtime.TypeSystem;
-
 
     [ImplicitInstance]
     [ForceDevirtualization]
@@ -171,27 +171,22 @@ namespace Microsoft.Zelig.Runtime
 
         [TS.WellKnownMethod("TypeSystemManager_AllocateArray")]
         [TS.DisableAutomaticReferenceCounting]
-        public abstract Array AllocateArray(TS.VTable vTable,
-                                             uint length);
+        public abstract Array AllocateArray(TS.VTable vTable, uint length);
 
         [TS.WellKnownMethod("TypeSystemManager_AllocateReferenceCountingArray")]
         [TS.DisableAutomaticReferenceCounting]
-        public abstract Array AllocateReferenceCountingArray(TS.VTable vTable,
-                                                              uint length);
+        public abstract Array AllocateReferenceCountingArray(TS.VTable vTable, uint length);
 
         [TS.WellKnownMethod("TypeSystemManager_AllocateArrayNoClear")]
         [TS.DisableAutomaticReferenceCounting]
-        public abstract Array AllocateArrayNoClear(TS.VTable vTable,
-                                                    uint length);
+        public abstract Array AllocateArrayNoClear(TS.VTable vTable, uint length);
 
         [TS.WellKnownMethod("TypeSystemManager_AllocateString")]
         [TS.DisableAutomaticReferenceCounting]
-        public abstract String AllocateString(TS.VTable vTable,
-                                               int length);
+        public abstract String AllocateString(TS.VTable vTable, int length);
 
         [TS.DisableAutomaticReferenceCounting]
-        public abstract String AllocateReferenceCountingString(TS.VTable vTable,
-                                                                int length);
+        public abstract String AllocateReferenceCountingString(TS.VTable vTable, int length);
 
         //--//
 
@@ -244,8 +239,7 @@ namespace Microsoft.Zelig.Runtime
         }
 
         [TS.WellKnownMethod("TypeSystemManager_CastToType")]
-        public static object CastToType(object obj,
-                                         TS.VTable expected)
+        public static object CastToType(object obj, TS.VTable expected)
         {
             if (obj != null)
             {
@@ -260,8 +254,7 @@ namespace Microsoft.Zelig.Runtime
         }
 
         [TS.WellKnownMethod("TypeSystemManager_CastToTypeNoThrow")]
-        public static object CastToTypeNoThrow(object obj,
-                                                TS.VTable expected)
+        public static object CastToTypeNoThrow(object obj, TS.VTable expected)
         {
             if (obj != null)
             {
@@ -279,8 +272,7 @@ namespace Microsoft.Zelig.Runtime
         //--//
 
         [TS.WellKnownMethod("TypeSystemManager_CastToSealedType")]
-        public static object CastToSealedType(object obj,
-                                               TS.VTable expected)
+        public static object CastToSealedType(object obj, TS.VTable expected)
         {
             if (obj != null)
             {
@@ -295,8 +287,7 @@ namespace Microsoft.Zelig.Runtime
         }
 
         [TS.WellKnownMethod("TypeSystemManager_CastToSealedTypeNoThrow")]
-        public static object CastToSealedTypeNoThrow(object obj,
-                                                      TS.VTable expected)
+        public static object CastToSealedTypeNoThrow(object obj, TS.VTable expected)
         {
             if (obj != null)
             {
@@ -314,8 +305,7 @@ namespace Microsoft.Zelig.Runtime
         //--//
 
         [TS.WellKnownMethod("TypeSystemManager_CastToInterface")]
-        public static object CastToInterface(object obj,
-                                              TS.VTable expected)
+        public static object CastToInterface(object obj, TS.VTable expected)
         {
             if (obj != null)
             {
@@ -330,8 +320,7 @@ namespace Microsoft.Zelig.Runtime
         }
 
         [TS.WellKnownMethod("TypeSystemManager_CastToInterfaceNoThrow")]
-        public static object CastToInterfaceNoThrow(object obj,
-                                                     TS.VTable expected)
+        public static object CastToInterfaceNoThrow(object obj, TS.VTable expected)
         {
             if (obj != null)
             {
@@ -353,21 +342,9 @@ namespace Microsoft.Zelig.Runtime
         [TS.WellKnownMethod("TypeSystemManager_Throw")]
         public virtual void Throw(Exception obj)
         {
-            //
-            // TODO: Capture stack dump.
-            //
-
-            //
-            // Our LLVM port does not yet support throwing exceptions
-            //
-
-            BugCheck.Log("!!!                       WARNING                             !!!");
-            BugCheck.Log("!!! Throwing Exceptions is not yet supported for LLVM CodeGen !!!");
-            BugCheck.Log("!!!                       WARNING                             !!!");
-
-            BugCheck.Raise(BugCheck.StopCode.InvalidOperation);
-
-            DeliverException(obj);
+            ThreadImpl.CurrentThread.CurrentException = obj;
+            UIntPtr exception = Unwind.LLOS_AllocateException(obj, Unwind.ExceptionClass);
+            Unwind.LLOS_Unwind_RaiseException(exception);
         }
 
         [NoReturn]
@@ -375,57 +352,7 @@ namespace Microsoft.Zelig.Runtime
         [TS.WellKnownMethod("TypeSystemManager_Rethrow")]
         public virtual void Rethrow()
         {
-            DeliverException(ThreadImpl.GetCurrentException());
-        }
-
-        [NoReturn]
-        [NoInline]
-        [TS.WellKnownMethod("TypeSystemManager_Rethrow__Exception")]
-        public virtual void Rethrow(Exception obj)
-        {
-            DeliverException(obj);
-        }
-
-        //--//
-
-        private void DeliverException(Exception obj)
-        {
-            //
-            // TODO: LT72: Only RT.ThreadManager can implement this method correctly
-            //
-            ThreadImpl thread     = ThreadManager.Instance.CurrentThread;
-            Processor.Context ctx = thread.ThrowContext;
-
-            thread.CurrentException = obj;
-
-            ctx.Populate();
-
-            while (true)
-            {
-                //
-                // The PC points to the instruction AFTER the call, but the ExceptionMap could not cover it.
-                //
-                UIntPtr pc = AddressMath.Decrement(ctx.ProgramCounter, sizeof(uint));
-                TS.CodeMap cm = TS.CodeMap.ResolveAddressToCodeMap(pc);
-
-                if (cm != null && cm.ExceptionMap != null)
-                {
-                    TS.CodePointer cp = cm.ExceptionMap.ResolveAddressToHandler(pc, TS.VTable.Get(obj));
-
-                    if (cp.IsValid)
-                    {
-                        ctx.ProgramCounter = new UIntPtr((uint)cp.Target.ToInt32());
-                        ctx.SwitchTo();
-                    }
-                }
-
-                if (ctx.Unwind() == false)
-                {
-                    break;
-                }
-            }
-
-            BugCheck.Raise(BugCheck.StopCode.UnwindFailure);
+            Throw(ThreadImpl.CurrentThread.CurrentException);
         }
 
         //

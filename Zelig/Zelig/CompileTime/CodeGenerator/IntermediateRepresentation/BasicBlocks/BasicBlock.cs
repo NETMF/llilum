@@ -329,6 +329,15 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             return false;
         }
 
+        public void ClearProtectedBy()
+        {
+            if (m_protectedBy.Length != 0)
+            {
+                m_protectedBy = ExceptionHandlerBasicBlock.SharedEmptyArray;
+                BumpVersion();
+            }
+        }
+
         //--//
 
         public bool IsDominatedBy( BasicBlock  bbTarget  ,

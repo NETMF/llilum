@@ -122,6 +122,23 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Handlers
             }
         }
 
+        [CompilationSteps.CallClosureHandler(typeof(CallOperator))]
+        private static void Protect_ExceptionOperators(ComputeCallsClosure.Context host, Operator target)
+        {
+            // Don't cover unprotected calls.
+            if (target.BasicBlock.ProtectedBy.Length == 0)
+            {
+                return;
+            }
+
+            TypeRepresentation resultType = host.TypeSystem.WellKnownTypes.Microsoft_Zelig_Runtime_LandingPadResult;
+            host.CoverObject(resultType);
+            foreach (var field in resultType.Fields)
+            {
+                host.CoverObject(field);
+            }
+        }
+
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
         //--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//

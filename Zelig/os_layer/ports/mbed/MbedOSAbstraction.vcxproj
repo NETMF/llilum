@@ -191,6 +191,7 @@
     <ClCompile Include="mbed_system_timer.cpp" />
     <ClCompile Include="mbed_systick.cpp" />
     <ClCompile Include="mbed_threading.cpp" />
+    <ClCompile Include="mbed_unwind.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mbed_helpers.h" />

@@ -86,14 +86,12 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         
                                                               public readonly TypeRepresentation System_Resources_ResourceManager;
 
-        //--//                                             
-
-        public readonly TypeRepresentation Microsoft_Zelig_Runtime_SZArrayHelper;
-
+        // TypeSystem attributes
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_TypeSystem_AssumeReferencedAttribute;
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_TypeSystem_DisableAutomaticReferenceCountingAttribute;
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_TypeSystem_DisableReferenceCountingAttribute;
 
+        // Runtime attributes
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_AliasForBaseFieldAttribute;
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_AliasForBaseMethodAttribute;
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_AliasForSuperMethodAttribute;
@@ -108,10 +106,11 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_ProductFilterAttribute;
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_CapabilitiesFilterAttribute;
 
-        //--//                                             
-                                                           
+        // Helper types
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_ObjectHeader;
+        public readonly TypeRepresentation Microsoft_Zelig_Runtime_LandingPadResult;
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_RuntimeTypeImpl;
+        public readonly TypeRepresentation Microsoft_Zelig_Runtime_SZArrayHelper;
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_TypeSystem_CodePointer;
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_TypeSystem_VTable;
         public readonly TypeRepresentation Microsoft_Zelig_Runtime_TypeSystem_GlobalRoot;
