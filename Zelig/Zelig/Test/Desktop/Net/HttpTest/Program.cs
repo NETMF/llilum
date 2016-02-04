@@ -18,6 +18,7 @@ namespace HttpTest
     using System.Diagnostics;
     using System.Threading.Tasks;
     using System.Net.Sockets;
+    using System.Collections.Generic;
 
     public class WebServer
     {
@@ -73,6 +74,17 @@ namespace HttpTest
                                 Console.WriteLine("Headers: {0}\n", context.Request.Headers);
                                 Console.WriteLine("Raw URL: {0}\n", context.Request.RawUrl);
 
+                                // See what data we received
+                                using (System.IO.Stream data = context.Request.InputStream)
+                                {
+                                    using (System.IO.StreamReader reader = new System.IO.StreamReader(data, context.Request.ContentEncoding))
+                                    {
+                                        Console.WriteLine("Data from request:\n");
+                                        Console.WriteLine(reader.ReadToEnd());
+                                    }
+                                }
+
+                                // Send back a response using our custom function based on request data
                                 string response = _responderMethod(context.Request);
                                 Console.WriteLine("Sending Response: {0}\n", response);
 
@@ -123,29 +135,36 @@ namespace HttpTest
             //
             // Pick 1st IPv4 address in the list. 
             //
-            IPAddress ipv4Local = null;
+            List<IPAddress> ipv4Locals = new List<IPAddress>();
             foreach (var addr in ipHostInfo.AddressList)
             {
                 if (addr.AddressFamily == AddressFamily.InterNetwork)
                 {
-                    ipv4Local = addr;
-
-                    break;
+                    ipv4Locals.Add(addr);
                 }
             }
 
             try
             {
                 Console.WriteLine("Starting the web server...");
-                
 
                 server = new WebServer(SendResponse, "http://localhost:8080/", "http://*:8080/");
                 server.Run();
 
                 Console.WriteLine("Web server started.");
-                Console.WriteLine("Accepting requests at: http://{0}:8080", ipv4Local.ToString());
-                Console.WriteLine("Press a key to quit.");
-                Console.ReadKey();
+                Console.WriteLine("Your possible IPv4 addresses. Use in SimpleHTTP Test Program:");
+
+                foreach (var addr in ipv4Locals)
+                {
+                    Console.WriteLine("http://{0}:8080", addr.ToString());
+                }
+                
+                Console.WriteLine("Press the Q key to quit.");
+
+                while (Console.ReadKey().KeyChar != 'q' && Console.ReadKey().KeyChar != 'Q')
+                {
+                    // Block until user wants to quit
+                }
 
                 server.Stop();
             }
@@ -168,13 +187,26 @@ namespace HttpTest
         public static string SendResponse(HttpListenerRequest request)
         {
             StringBuilder builder = new StringBuilder();
+            string color = string.Empty;
 
             foreach(var key in request.QueryString.AllKeys)
             {
                 builder.Append(string.Format("<br/>Key: {0} - Value: {1}", key, request.QueryString.Get(key)));
             }
-            
-            return string.Format("<HTML><BODY>Query string:{0}</BODY></HTML>", builder.ToString());
+
+            // Return a random color so the board will toggle the appropriate LED
+            int random = new Random().Next(0, 2);
+            if(random > 0)
+            {
+                color = "blue";
+            }
+            else
+            {
+                color = "green";
+            }
+            Console.WriteLine(string.Format("Web server is telling the board to turn on the {0} light.", color));
+
+            return string.Format("<HTML><BODY>Query string:{0}<br />{1}</BODY></HTML>", builder.ToString(), color);
         }
     }
 }

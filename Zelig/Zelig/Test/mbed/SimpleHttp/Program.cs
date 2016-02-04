@@ -15,6 +15,8 @@ namespace Microsoft.Zelig.Test.mbed.SimpleNet
     using System;
     using System.IO;
     using System.Text;
+    using Llilum.Devices.Gpio;
+
 
     class Program
     {
@@ -23,46 +25,88 @@ namespace Microsoft.Zelig.Test.mbed.SimpleNet
             NetworkInterface netif = NetworkInterface.GetAllNetworkInterfaces()[0];
             netif.EnableDhcp( );
 
-            HttpWebRequest webReq = (HttpWebRequest)WebRequest.Create(@"http://httpbin.org/get");
-            //webReq.Method = "POST";
+            GpioPin redPin = GpioPin.TryCreateGpioPin((int)Llilum.K64F.PinName.LED_RED);
+            GpioPin greenPin = GpioPin.TryCreateGpioPin((int)Llilum.K64F.PinName.LED_GREEN);
+            GpioPin bluePin = GpioPin.TryCreateGpioPin((int)Llilum.K64F.PinName.LED_BLUE);
 
-            //UTF8Encoding enc = new UTF8Encoding();
-            //var data = UTF8Encoding.UTF8.GetBytes("Hello, World!"); 
+            redPin.Direction = PinDirection.Output;
+            greenPin.Direction = PinDirection.Output;
+            bluePin.Direction = PinDirection.Output;
 
-            //webReq.ContentType = "application/text";
-            //webReq.ContentLength = data.Length;
-            
-            //var dataStream = webReq.GetRequestStream();
+            // Complete 10 HTTP requests
+            for(int i = 0; i < 10; i++)
+            {
+                // LED is active low on K64F
+                // Red means we have not gotten our request back
+                redPin.Write(0);
+                greenPin.Write(1);
+                bluePin.Write(1);
 
-            //dataStream.Write( data, 0, data.Length );
-            //dataStream.Close( );
-            
-            BugCheck.Log( "------ start ------" );
+                // Create the HTTP request
+                // NOTE: Users need to replace this with their server IP address!
+                HttpWebRequest webReq = (HttpWebRequest)WebRequest.Create(@"http://10.91.68.176:8080");
+                webReq.Method = "POST";
 
-            var response = webReq.GetResponse();
-           
-            BugCheck.Log( "====================" );
-            BugCheck.Log( (((HttpWebResponse)response).StatusDescription) );
-            BugCheck.Log( "====================" );
-            BugCheck.Log( response.ContentLength.ToString() );
-            BugCheck.Log( "====================" );
-            BugCheck.Log( response.ContentType );
-            BugCheck.Log( "====================" );
-            BugCheck.Log( response.ToString() );
-            BugCheck.Log( "====================" );
+                var data = UTF8Encoding.UTF8.GetBytes(string.Format("I am K64F. Request number: {0}", i));
+                webReq.ContentType = "application/text";
+                webReq.ContentLength = data.Length;
 
-            var respData = response.GetResponseStream();
-            var reader = new StreamReader(respData);
+                // Write the request
+                var dataStream = webReq.GetRequestStream();
+                dataStream.Write(data, 0, data.Length);
+                dataStream.Close();
 
-            string responseFromServer = reader.ReadToEnd();
+                BugCheck.Log("------ start ------");
 
-            // Display the content.
-            BugCheck.Log( responseFromServer );
+                // Receive the response
+                var response = webReq.GetResponse();
 
-            // Clean up the streams.
-            reader.Close( );
-            //dataStream.Close( );
-            response.Close( );
+                BugCheck.Log("====================");
+                BugCheck.Log((((HttpWebResponse)response).StatusDescription));
+                BugCheck.Log("====================");
+                BugCheck.Log(response.ContentLength.ToString());
+                BugCheck.Log("====================");
+                BugCheck.Log(response.ContentType);
+                BugCheck.Log("====================");
+
+                // Getting data from POST request is not standard, but is still allowed
+                var respData = response.GetResponseStream();
+
+                // Turn off the red LED once the request comes back
+                redPin.Write(1);
+
+                var reader = new StreamReader(respData);
+                string responseFromServer = reader.ReadToEnd();
+
+                // Check to see if the result contains a color
+                if (responseFromServer.Contains("green"))
+                {
+                    greenPin.Write(0);
+                }
+                else if (responseFromServer.Contains("blue"))
+                {
+                    bluePin.Write(0);
+                }
+                else
+                {
+                    // No color in result? Make the LED show white
+                    redPin.Write(0);
+                    greenPin.Write(0);
+                    bluePin.Write(0);
+                }
+
+                // Display the content.
+                BugCheck.Log(responseFromServer);
+
+                // Clean up the streams.
+                reader.Close();
+                response.Close();
+
+                webReq.Dispose();
+
+                // Wait 2 seconds until the next transaction
+                Thread.Sleep(2000);
+            }
         }
     }
 }
