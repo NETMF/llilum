@@ -307,10 +307,10 @@ void sys_sem_signal(sys_sem_t *data) {
  * Inputs:
  *      sys_sem_t sem           -- Semaphore to free
  *---------------------------------------------------------------------------*/
-void sys_sem_free(sys_sem_t *sem) {}
-//////{
-//////    osSemaphoreDelete(sem->id);
-//////}
+void sys_sem_free(sys_sem_t *sem)
+{
+    osSemaphoreDelete(sem->id);
+}
 
 /** Create a new mutex
  * @param mutex pointer to the mutex to create
