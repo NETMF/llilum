@@ -3,12 +3,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class ImpenumTests : IMFTestInterface
+    public class ImpenumTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -26,6 +24,15 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("Cleaning up after the tests");
         }
 
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+
+            result |= Assert.CheckFailed( Impenum_zero_Test( ) );
+
+            return result;
+        }
+
         //Impenum Test methods
         //The following test was ported from folder current\test\cases\client\CLR\Conformance\10_classes\Impenum
         //zero
@@ -36,14 +43,14 @@ namespace Microsoft.SPOT.Platform.Tests
 
  
         [TestMethod]
-        public MFTestResults Impenum_zero_Test()
+        public TestResult Impenum_zero_Test()
         {
             Log.Comment("Tests whether 0 can be converted to various enum types...");
             if (ImpenumTestClass_zero.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         

@@ -3,12 +3,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class ValueFloatTests : IMFTestInterface
+    public class ValueFloatTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -24,6 +22,41 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("Cleaning up after the tests");
         }
 
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+
+            result |= Assert.CheckFailed( ValueFloat04_Test( ) );
+            result |= Assert.CheckFailed( ValueFloat05_Test( ) );
+            result |= Assert.CheckFailed( ValueFloat06_Test( ) );
+            result |= Assert.CheckFailed( ValueFloat07_Test( ) );
+            result |= Assert.CheckFailed( ValueFloat08_Test( ) );
+            result |= Assert.CheckFailed( ValueFloat09_Test( ) );
+            result |= Assert.CheckFailed( ValueFloat10_Test( ) );
+            result |= Assert.CheckFailed( ValueFloat11_Test( ) );
+            //////result |= Assert.CheckFailed( ValueFloat12_Test( ) );
+            //////result |= Assert.CheckFailed( ValueFloat13_Test( ) );
+            result |= Assert.CheckFailed( ValueFloat14_Test( ) );
+            result |= Assert.CheckFailed( ValueFloat15_Test( ) );
+            result |= Assert.CheckFailed( ValueFloat16_Test( ) );
+            result |= Assert.CheckFailed( ValueFloat17_Test( ) );
+            result |= Assert.CheckFailed( ValueFloat18_Test( ) );
+            result |= Assert.CheckFailed( ValueFloat19_Test( ) );
+            result |= Assert.CheckFailed( ValueFloat20_Test( ) );
+            result |= Assert.CheckFailed( ValueFloat21_Test( ) );
+            result |= Assert.CheckFailed( ValueFloat22_Test( ) );
+            result |= Assert.CheckFailed( ValueFloat23_Test( ) );
+            result |= Assert.CheckFailed( ValueFloat24_Test( ) );
+            result |= Assert.CheckFailed( ValueFloat25_Test( ) );
+            result |= Assert.CheckFailed( ValueFloat26_Test( ) );
+            result |= Assert.CheckFailed( ValueFloat27_Test( ) );
+            result |= Assert.CheckFailed( ValueFloat28_Test( ) );
+            result |= Assert.CheckFailed( ValueFloat29_Test( ) );
+            result |= Assert.CheckFailed( ValueFloat30_Test( ) );
+
+            return result;
+        }
+
         //ValueFloat Test methods
         //The following tests were ported from folder current\test\cases\client\CLR\Conformance\4_values\Value\Float
         //01,03,04,05,06,07,08,09,10,11,12,13,14,
@@ -36,275 +69,275 @@ namespace Microsoft.SPOT.Platform.Tests
         //Test Case Calls 
 
         [TestMethod]
-        public MFTestResults ValueFloat04_Test()
+        public TestResult ValueFloat04_Test()
         {
             Log.Comment("Testing float type is kept after addition with other types");
 
             if (ValueFloatTestClass04.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueFloat05_Test()
+        public TestResult ValueFloat05_Test()
         {
             Log.Comment("Testing double type is kept after addition with other types");
             if (ValueFloatTestClass05.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueFloat06_Test()
+        public TestResult ValueFloat06_Test()
         {
             Log.Comment("Testing float type is kept after subtraction with other types");
             if (ValueFloatTestClass06.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueFloat07_Test()
+        public TestResult ValueFloat07_Test()
         {
             Log.Comment("Testing double type is kept after subtraction with other types");
             if (ValueFloatTestClass07.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueFloat08_Test()
+        public TestResult ValueFloat08_Test()
         {
             Log.Comment("Testing float type is kept after multiplication with other types");
             if (ValueFloatTestClass08.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueFloat09_Test()
+        public TestResult ValueFloat09_Test()
         {
             Log.Comment("Testing double type is kept after maultiplication with other types");
             if (ValueFloatTestClass09.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueFloat10_Test()
+        public TestResult ValueFloat10_Test()
         {
             Log.Comment("Testing float type is kept after division with other types");
             if (ValueFloatTestClass10.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueFloat11_Test()
+        public TestResult ValueFloat11_Test()
         {
             Log.Comment("Testing double type is kept after division with other types");
             if (ValueFloatTestClass11.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
+        //////[TestMethod]
+        //////public TestResult ValueFloat12_Test()
+        //////{
+        //////    Log.Comment("Testing float type is kept after modulus with other types");
+        //////    if (ValueFloatTestClass12.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult ValueFloat13_Test()
+        //////{
+        //////    Log.Comment("Testing double type is kept after modulus with other types");
+        //////    if (ValueFloatTestClass13.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
         [TestMethod]
-        public MFTestResults ValueFloat12_Test()
-        {
-            Log.Comment("Testing float type is kept after modulus with other types");
-            if (ValueFloatTestClass12.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults ValueFloat13_Test()
-        {
-            Log.Comment("Testing double type is kept after modulus with other types");
-            if (ValueFloatTestClass13.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults ValueFloat14_Test()
+        public TestResult ValueFloat14_Test()
         {
             Log.Comment("Testing that equality operations return bool type objects");
             if (ValueFloatTestClass14.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueFloat15_Test()
+        public TestResult ValueFloat15_Test()
         {
             Log.Comment("Testing that equality operations return bool type objects");
             if (ValueFloatTestClass15.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueFloat16_Test()
+        public TestResult ValueFloat16_Test()
         {
             Log.Comment("Testing that non-equality operations return bool type objects");
             if (ValueFloatTestClass16.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueFloat17_Test()
+        public TestResult ValueFloat17_Test()
         {
             Log.Comment("Testing that non-equality operations return bool type objects");
             if (ValueFloatTestClass17.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueFloat18_Test()
+        public TestResult ValueFloat18_Test()
         {
             Log.Comment("Testing that greater than operations return bool type objects");
             if (ValueFloatTestClass18.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueFloat19_Test()
+        public TestResult ValueFloat19_Test()
         {
             Log.Comment("Testing that greater than operations return bool type objects");
             if (ValueFloatTestClass19.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueFloat20_Test()
+        public TestResult ValueFloat20_Test()
         {
             Log.Comment("Testing that less than operations return bool type objects");
             if (ValueFloatTestClass20.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueFloat21_Test()
+        public TestResult ValueFloat21_Test()
         {
             Log.Comment("Testing that less than operations return bool type objects");
             if (ValueFloatTestClass21.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueFloat22_Test()
+        public TestResult ValueFloat22_Test()
         {
             Log.Comment("Testing that greater than or equal operations return bool type objects");
             if (ValueFloatTestClass22.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueFloat23_Test()
+        public TestResult ValueFloat23_Test()
         {
             Log.Comment("Testing that greater than or equal operations return bool type objects");
             if (ValueFloatTestClass23.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueFloat24_Test()
+        public TestResult ValueFloat24_Test()
         {
             Log.Comment("Testing that less than or equal operations return bool type objects");
             if (ValueFloatTestClass24.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueFloat25_Test()
+        public TestResult ValueFloat25_Test()
         {
             Log.Comment("Testing that less than or equal operations return bool type objects");
             if (ValueFloatTestClass25.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueFloat26_Test()
+        public TestResult ValueFloat26_Test()
         {
             Log.Comment("Testing that double keeps its type in all operations with float");
             if (ValueFloatTestClass26.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueFloat27_Test()
+        public TestResult ValueFloat27_Test()
         {
             Log.Comment("Testing that comparisons between floats and doubles return bools");
             if (ValueFloatTestClass27.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueFloat28_Test()
+        public TestResult ValueFloat28_Test()
         {
             Log.Comment("Testing that float keeps its type after any operation with a float");
             if (ValueFloatTestClass28.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueFloat29_Test()
+        public TestResult ValueFloat29_Test()
         {
             Log.Comment("Testing that comparisons between floats return bools");
             if (ValueFloatTestClass29.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueFloat30_Test()
+        public TestResult ValueFloat30_Test()
         {
             Log.Comment("Testing float and double .epsilon values");
             if (ValueFloatTestClass30.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
 
@@ -749,116 +782,116 @@ namespace Microsoft.SPOT.Platform.Tests
                 return (intRet == 0);
             }
         }
-        public class ValueFloatTestClass12
-        {
-            public static bool testMethod()
-            {
-                int intRet = 0;
-                float f1 = 11.0f;
-                short s1 = 2;
-                byte b1 = 3;
-                int i1 = 4;
-                long l1 = 5L;
-                char c1 = (char)6;
+        //////public class ValueFloatTestClass12
+        //////{
+        //////    public static bool testMethod()
+        //////    {
+        //////        int intRet = 0;
+        //////        float f1 = 11.0f;
+        //////        short s1 = 2;
+        //////        byte b1 = 3;
+        //////        int i1 = 4;
+        //////        long l1 = 5L;
+        //////        char c1 = (char)6;
 
-                if ((f1 % s1).GetType() != f1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s1 % f1).GetType() != f1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((f1 % b1).GetType() != f1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((b1 % f1).GetType() != f1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((f1 % i1).GetType() != f1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((i1 % f1).GetType() != f1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((f1 % l1).GetType() != f1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((l1 % f1).GetType() != f1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((f1 % c1).GetType() != f1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((c1 % f1).GetType() != f1.GetType())
-                {
-                    intRet = 1;
-                }
-                return (intRet == 0);
-            }
-        }
-        public class ValueFloatTestClass13
-        {
-            public static bool testMethod()
-            {
-                int intRet = 0;
-                double d1 = 11.0d;
-                short s1 = 2;
-                byte b1 = 3;
-                int i1 = 4;
-                long l1 = 5L;
-                char c1 = (char)6;
+        //////        if ((f1 % s1).GetType() != f1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s1 % f1).GetType() != f1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((f1 % b1).GetType() != f1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((b1 % f1).GetType() != f1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((f1 % i1).GetType() != f1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((i1 % f1).GetType() != f1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((f1 % l1).GetType() != f1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((l1 % f1).GetType() != f1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((f1 % c1).GetType() != f1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((c1 % f1).GetType() != f1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        return (intRet == 0);
+        //////    }
+        //////}
+        //////public class ValueFloatTestClass13
+        //////{
+        //////    public static bool testMethod()
+        //////    {
+        //////        int intRet = 0;
+        //////        double d1 = 11.0d;
+        //////        short s1 = 2;
+        //////        byte b1 = 3;
+        //////        int i1 = 4;
+        //////        long l1 = 5L;
+        //////        char c1 = (char)6;
 
-                if ((d1 % s1).GetType() != d1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s1 % d1).GetType() != d1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((d1 % b1).GetType() != d1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((b1 % d1).GetType() != d1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((d1 % i1).GetType() != d1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((i1 % d1).GetType() != d1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((d1 % l1).GetType() != d1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((l1 % d1).GetType() != d1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((d1 % c1).GetType() != d1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((c1 % d1).GetType() != d1.GetType())
-                {
-                    intRet = 1;
-                }
-                return (intRet == 0);
-            }
-        }
+        //////        if ((d1 % s1).GetType() != d1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s1 % d1).GetType() != d1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((d1 % b1).GetType() != d1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((b1 % d1).GetType() != d1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((d1 % i1).GetType() != d1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((i1 % d1).GetType() != d1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((d1 % l1).GetType() != d1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((l1 % d1).GetType() != d1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((d1 % c1).GetType() != d1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((c1 % d1).GetType() != d1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        return (intRet == 0);
+        //////    }
+        //////}
         public class ValueFloatTestClass14
         {
             public static bool testMethod()

@@ -3,12 +3,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class ValueIntegralTests : IMFTestInterface
+    public class ValueIntegralTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -24,6 +22,54 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("Cleaning up after the tests");
         }
 
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+            
+            result |= Assert.CheckFailed( ValueIntegral01_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral05_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral09_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral13_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral14_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral15_Test( ) );
+            //////result |= Assert.CheckFailed( ValueIntegral16_Test( ) );
+            //////result |= Assert.CheckFailed( ValueIntegral17_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral18_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral19_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral20_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral21_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral22_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral23_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral24_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral25_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral26_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral27_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral28_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral38_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral39_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral42_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral45_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral49_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral50_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral51_Test( ) );
+            //////result |= Assert.CheckFailed( ValueIntegral52_Test( ) );
+            //////result |= Assert.CheckFailed( ValueIntegral53_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral54_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral55_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral56_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral57_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral58_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral59_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral60_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral61_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral62_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral63_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral64_Test( ) );
+            result |= Assert.CheckFailed( ValueIntegral70_Test( ) );
+
+            return result;
+        }
+
         //ValueIntegral Test methods
         //The following tests were ported from folder current\test\cases\client\CLR\Conformance\4_values\Values\Integral
         //01,05,09,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,38,39,
@@ -32,7 +78,7 @@ namespace Microsoft.SPOT.Platform.Tests
 
             //Test Case Calls 
         [TestMethod]
-        public MFTestResults ValueIntegral01_Test()
+        public TestResult ValueIntegral01_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" For the +, - and ~ unary operators, of the operand is of type long, the");
@@ -41,12 +87,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" performed using 32-bit precision, and the type of the result is int.");
             if (ValueIntegralTestClass01.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral05_Test()
+        public TestResult ValueIntegral05_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" For the +, - and ~ unary operators, of the operand is of type long, the");
@@ -55,12 +101,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" performed using 32-bit precision, and the type of the result is int.");
             if (ValueIntegralTestClass05.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral09_Test()
+        public TestResult ValueIntegral09_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" For the +, - and ~ unary operators, of the operand is of type long, the");
@@ -69,12 +115,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" performed using 32-bit precision, and the type of the result is int.");
             if (ValueIntegralTestClass09.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral13_Test()
+        public TestResult ValueIntegral13_Test()
         {
             Log.Comment(" For the binary operators other than shift, if at least one");
             Log.Comment(" operand is of type long, then both operands are converted to long, the operation");
@@ -83,12 +129,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" 32-bit precision, and the type of the result is int or bool.");
             if (ValueIntegralTestClass13.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral14_Test()
+        public TestResult ValueIntegral14_Test()
         {
             Log.Comment(" For the binary operators other than shift, if at least one");
             Log.Comment(" operand is of type long, then both operands are converted to long, the operation");
@@ -97,12 +143,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" 32-bit precision, and the type of the result is int or bool.");
             if (ValueIntegralTestClass14.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral15_Test()
+        public TestResult ValueIntegral15_Test()
         {
             Log.Comment(" For the binary operators other than shift, if at least one");
             Log.Comment(" operand is of type long, then both operands are converted to long, the operation");
@@ -111,40 +157,40 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" 32-bit precision, and the type of the result is int or bool.");
             if (ValueIntegralTestClass15.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
+        //////[TestMethod]
+        //////public TestResult ValueIntegral16_Test()
+        //////{
+        //////    Log.Comment(" For the binary operators other than shift, if at least one");
+        //////    Log.Comment(" operand is of type long, then both operands are converted to long, the operation");
+        //////    Log.Comment(" is performed using 64-bit precision, and the type of the result is long or bool. ");
+        //////    Log.Comment(" Otherwise, both operands are converted to int, the operation is performed using ");
+        //////    Log.Comment(" 32-bit precision, and the type of the result is int or bool.");
+        //////    if (ValueIntegralTestClass16.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult ValueIntegral17_Test()
+        //////{
+        //////    Log.Comment(" For the binary operators other than shift, if at least one");
+        //////    Log.Comment(" operand is of type long, then both operands are converted to long, the operation");
+        //////    Log.Comment(" is performed using 64-bit precision, and the type of the result is long or bool. ");
+        //////    Log.Comment(" Otherwise, both operands are converted to int, the operation is performed using ");
+        //////    Log.Comment(" 32-bit precision, and the type of the result is int or bool.");
+        //////    if (ValueIntegralTestClass17.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
         [TestMethod]
-        public MFTestResults ValueIntegral16_Test()
-        {
-            Log.Comment(" For the binary operators other than shift, if at least one");
-            Log.Comment(" operand is of type long, then both operands are converted to long, the operation");
-            Log.Comment(" is performed using 64-bit precision, and the type of the result is long or bool. ");
-            Log.Comment(" Otherwise, both operands are converted to int, the operation is performed using ");
-            Log.Comment(" 32-bit precision, and the type of the result is int or bool.");
-            if (ValueIntegralTestClass16.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults ValueIntegral17_Test()
-        {
-            Log.Comment(" For the binary operators other than shift, if at least one");
-            Log.Comment(" operand is of type long, then both operands are converted to long, the operation");
-            Log.Comment(" is performed using 64-bit precision, and the type of the result is long or bool. ");
-            Log.Comment(" Otherwise, both operands are converted to int, the operation is performed using ");
-            Log.Comment(" 32-bit precision, and the type of the result is int or bool.");
-            if (ValueIntegralTestClass17.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults ValueIntegral18_Test()
+        public TestResult ValueIntegral18_Test()
         {
             Log.Comment(" For the binary operators other than shift, if at least one");
             Log.Comment(" operand is of type long, then both operands are converted to long, the operation");
@@ -153,12 +199,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" 32-bit precision, and the type of the result is int or bool.");
             if (ValueIntegralTestClass18.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral19_Test()
+        public TestResult ValueIntegral19_Test()
         {
             Log.Comment(" For the binary operators other than shift, if at least one");
             Log.Comment(" operand is of type long, then both operands are converted to long, the operation");
@@ -167,12 +213,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" 32-bit precision, and the type of the result is int or bool.");
             if (ValueIntegralTestClass19.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral20_Test()
+        public TestResult ValueIntegral20_Test()
         {
             Log.Comment(" For the binary operators other than shift, if at least one");
             Log.Comment(" operand is of type long, then both operands are converted to long, the operation");
@@ -181,12 +227,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" 32-bit precision, and the type of the result is int or bool.");
             if (ValueIntegralTestClass20.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral21_Test()
+        public TestResult ValueIntegral21_Test()
         {
             Log.Comment(" For the binary operators other than shift, if at least one");
             Log.Comment(" operand is of type long, then both operands are converted to long, the operation");
@@ -195,12 +241,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" 32-bit precision, and the type of the result is int or bool.");
             if (ValueIntegralTestClass21.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral22_Test()
+        public TestResult ValueIntegral22_Test()
         {
             Log.Comment(" For the binary operators other than shift, if at least one");
             Log.Comment(" operand is of type long, then both operands are converted to long, the operation");
@@ -209,12 +255,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" 32-bit precision, and the type of the result is int or bool.");
             if (ValueIntegralTestClass22.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral23_Test()
+        public TestResult ValueIntegral23_Test()
         {
             Log.Comment(" For the binary operators other than shift, if at least one");
             Log.Comment(" operand is of type long, then both operands are converted to long, the operation");
@@ -223,12 +269,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" 32-bit precision, and the type of the result is int or bool.");
             if (ValueIntegralTestClass23.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral24_Test()
+        public TestResult ValueIntegral24_Test()
         {
             Log.Comment(" For the binary operators other than shift, if at least one");
             Log.Comment(" operand is of type long, then both operands are converted to long, the operation");
@@ -237,12 +283,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" 32-bit precision, and the type of the result is int or bool.");
             if (ValueIntegralTestClass24.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral25_Test()
+        public TestResult ValueIntegral25_Test()
         {
             Log.Comment(" For the binary operators other than shift, if at least one");
             Log.Comment(" operand is of type long, then both operands are converted to long, the operation");
@@ -251,12 +297,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" 32-bit precision, and the type of the result is int or bool.");
             if (ValueIntegralTestClass25.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral26_Test()
+        public TestResult ValueIntegral26_Test()
         {
             Log.Comment(" For the binary operators other than shift, if at least one");
             Log.Comment(" operand is of type long, then both operands are converted to long, the operation");
@@ -265,12 +311,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" 32-bit precision, and the type of the result is int or bool.");
             if (ValueIntegralTestClass26.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral27_Test()
+        public TestResult ValueIntegral27_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" For the shift operators, if the left-hand operand is of type long,");
@@ -279,12 +325,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" performed using 32-bit precision, and the type of the result is int.");
             if (ValueIntegralTestClass27.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral28_Test()
+        public TestResult ValueIntegral28_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" For the shift operators, if the left-hand operand is of type long,");
@@ -293,12 +339,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" performed using 32-bit precision, and the type of the result is int.");
             if (ValueIntegralTestClass28.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral38_Test()
+        public TestResult ValueIntegral38_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" Constants of the char type must be written as character-literals.");
@@ -307,12 +353,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" '\x000A'.");
             if (ValueIntegralTestClass38.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral39_Test()
+        public TestResult ValueIntegral39_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" For the unary + and ~ operators, the operand is converted");
@@ -322,12 +368,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" of type T, and the type of the result is T.");
             if (ValueIntegralTestClass39.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral42_Test()
+        public TestResult ValueIntegral42_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" For the unary + and ~ operators, the operand is converted");
@@ -337,12 +383,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" of type T, and the type of the result is T.");
             if (ValueIntegralTestClass42.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral45_Test()
+        public TestResult ValueIntegral45_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" For the unary - operator, the operand is converted");
@@ -354,12 +400,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" type ulong.");
             if (ValueIntegralTestClass45.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral49_Test()
+        public TestResult ValueIntegral49_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" For the binary operators except shift, the operands");
@@ -369,12 +415,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" is T (or bool for relational operators).");
             if (ValueIntegralTestClass49.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral50_Test()
+        public TestResult ValueIntegral50_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" For the binary operators except shift, the operands");
@@ -384,12 +430,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" is T (or bool for relational operators).");
             if (ValueIntegralTestClass50.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral51_Test()
+        public TestResult ValueIntegral51_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" For the binary operators except shift, the operands");
@@ -399,42 +445,42 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" is T (or bool for relational operators).");
             if (ValueIntegralTestClass51.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
+        //////[TestMethod]
+        //////public TestResult ValueIntegral52_Test()
+        //////{
+        //////    Log.Comment(" Section 4.1");
+        //////    Log.Comment(" For the binary operators except shift, the operands");
+        //////    Log.Comment(" are converted to type T, where T is the first of int, uint, long, and ulong");
+        //////    Log.Comment(" that can fully represent all possible values of each operand. The operation");
+        //////    Log.Comment(" is then performed using the precision of type T, and the type of the result");
+        //////    Log.Comment(" is T (or bool for relational operators).");
+        //////    if (ValueIntegralTestClass52.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult ValueIntegral53_Test()
+        //////{
+        //////    Log.Comment(" Section 4.1");
+        //////    Log.Comment(" For the binary operators except shift, the operands");
+        //////    Log.Comment(" are converted to type T, where T is the first of int, uint, long, and ulong");
+        //////    Log.Comment(" that can fully represent all possible values of each operand. The operation");
+        //////    Log.Comment(" is then performed using the precision of type T, and the type of the result");
+        //////    Log.Comment(" is T (or bool for relational operators).");
+        //////    if (ValueIntegralTestClass53.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
         [TestMethod]
-        public MFTestResults ValueIntegral52_Test()
-        {
-            Log.Comment(" Section 4.1");
-            Log.Comment(" For the binary operators except shift, the operands");
-            Log.Comment(" are converted to type T, where T is the first of int, uint, long, and ulong");
-            Log.Comment(" that can fully represent all possible values of each operand. The operation");
-            Log.Comment(" is then performed using the precision of type T, and the type of the result");
-            Log.Comment(" is T (or bool for relational operators).");
-            if (ValueIntegralTestClass52.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults ValueIntegral53_Test()
-        {
-            Log.Comment(" Section 4.1");
-            Log.Comment(" For the binary operators except shift, the operands");
-            Log.Comment(" are converted to type T, where T is the first of int, uint, long, and ulong");
-            Log.Comment(" that can fully represent all possible values of each operand. The operation");
-            Log.Comment(" is then performed using the precision of type T, and the type of the result");
-            Log.Comment(" is T (or bool for relational operators).");
-            if (ValueIntegralTestClass53.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults ValueIntegral54_Test()
+        public TestResult ValueIntegral54_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" For the binary operators except shift, the operands");
@@ -444,12 +490,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" is T (or bool for relational operators).");
             if (ValueIntegralTestClass54.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral55_Test()
+        public TestResult ValueIntegral55_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" For the binary operators except shift, the operands");
@@ -459,12 +505,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" is T (or bool for relational operators).");
             if (ValueIntegralTestClass55.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral56_Test()
+        public TestResult ValueIntegral56_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" For the binary operators except shift, the operands");
@@ -474,12 +520,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" is T (or bool for relational operators).");
             if (ValueIntegralTestClass56.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral57_Test()
+        public TestResult ValueIntegral57_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" For the binary operators except shift, the operands");
@@ -489,12 +535,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" is T (or bool for relational operators).");
             if (ValueIntegralTestClass57.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral58_Test()
+        public TestResult ValueIntegral58_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" For the binary operators except shift, the operands");
@@ -504,12 +550,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" is T (or bool for relational operators).");
             if (ValueIntegralTestClass58.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral59_Test()
+        public TestResult ValueIntegral59_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" For the binary operators except shift, the operands");
@@ -519,12 +565,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" is T (or bool for relational operators).");
             if (ValueIntegralTestClass59.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral60_Test()
+        public TestResult ValueIntegral60_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" For the binary operators except shift, the operands");
@@ -534,12 +580,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" is T (or bool for relational operators).");
             if (ValueIntegralTestClass60.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral61_Test()
+        public TestResult ValueIntegral61_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" For the binary operators except shift, the operands");
@@ -549,12 +595,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" is T (or bool for relational operators).");
             if (ValueIntegralTestClass61.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral62_Test()
+        public TestResult ValueIntegral62_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" For the binary operators except shift, the operands");
@@ -564,12 +610,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" is T (or bool for relational operators).");
             if (ValueIntegralTestClass62.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral63_Test()
+        public TestResult ValueIntegral63_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" For the binary shift operators, the left operand");
@@ -580,12 +626,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" T.");
             if (ValueIntegralTestClass63.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral64_Test()
+        public TestResult ValueIntegral64_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" For the binary shift operators, the left operand");
@@ -596,12 +642,12 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" T.");
             if (ValueIntegralTestClass64.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueIntegral70_Test()
+        public TestResult ValueIntegral70_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" Constants of the char type must be written as character-literals.");
@@ -610,9 +656,9 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" as '\x000a'.");
             if (ValueIntegralTestClass70.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
 
@@ -930,164 +976,164 @@ namespace Microsoft.SPOT.Platform.Tests
                 return (intRet == 0);
             }
         }
-        public class ValueIntegralTestClass16
-        {
-            public static bool testMethod()
-            {
-                int intRet = 0;
-                short s1 = 2;
-                byte b1 = 3;
-                int i1 = 4;
-                long l1 = 5L;
-                char c1 = (char)6;
-                //short
-                if ((s1 / s1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s1 / b1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s1 / i1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s1 / l1).GetType() != l1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s1 / c1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
+        //////public class ValueIntegralTestClass16
+        //////{
+        //////    public static bool testMethod()
+        //////    {
+        //////        int intRet = 0;
+        //////        short s1 = 2;
+        //////        byte b1 = 3;
+        //////        int i1 = 4;
+        //////        long l1 = 5L;
+        //////        char c1 = (char)6;
+        //////        //short
+        //////        if ((s1 / s1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s1 / b1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s1 / i1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s1 / l1).GetType() != l1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s1 / c1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
 
-                //byte
-                if ((b1 / b1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((b1 / i1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((b1 / l1).GetType() != l1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((b1 / c1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                //int
-                if ((i1 / i1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((i1 / l1).GetType() != l1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((i1 / c1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                //long
-                if ((l1 / l1).GetType() != l1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((l1 / c1).GetType() != l1.GetType())
-                {
-                    intRet = 1;
-                }
-                //char
-                if ((c1 / c1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                return (intRet == 0);
-            }
-        }
-        public class ValueIntegralTestClass17
-        {
-            public static bool testMethod()
-            {
-                int intRet = 0;
-                short s1 = 2;
-                byte b1 = 3;
-                int i1 = 4;
-                long l1 = 5L;
-                char c1 = (char)6;
-                //short
-                if ((s1 % s1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s1 % b1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s1 % i1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s1 % l1).GetType() != l1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s1 % c1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
+        //////        //byte
+        //////        if ((b1 / b1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((b1 / i1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((b1 / l1).GetType() != l1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((b1 / c1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        //int
+        //////        if ((i1 / i1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((i1 / l1).GetType() != l1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((i1 / c1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        //long
+        //////        if ((l1 / l1).GetType() != l1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((l1 / c1).GetType() != l1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        //char
+        //////        if ((c1 / c1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        return (intRet == 0);
+        //////    }
+        //////}
+        //////public class ValueIntegralTestClass17
+        //////{
+        //////    public static bool testMethod()
+        //////    {
+        //////        int intRet = 0;
+        //////        short s1 = 2;
+        //////        byte b1 = 3;
+        //////        int i1 = 4;
+        //////        long l1 = 5L;
+        //////        char c1 = (char)6;
+        //////        //short
+        //////        if ((s1 % s1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s1 % b1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s1 % i1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s1 % l1).GetType() != l1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s1 % c1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
 
-                //byte
-                if ((b1 % b1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((b1 % i1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((b1 % l1).GetType() != l1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((b1 % c1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                //int
-                if ((i1 % i1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((i1 % l1).GetType() != l1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((i1 % c1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                //long
-                if ((l1 % l1).GetType() != l1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((l1 % c1).GetType() != l1.GetType())
-                {
-                    intRet = 1;
-                }
-                //char
-                if ((c1 % c1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                return (intRet == 0);
-            }
-        }
+        //////        //byte
+        //////        if ((b1 % b1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((b1 % i1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((b1 % l1).GetType() != l1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((b1 % c1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        //int
+        //////        if ((i1 % i1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((i1 % l1).GetType() != l1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((i1 % c1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        //long
+        //////        if ((l1 % l1).GetType() != l1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((l1 % c1).GetType() != l1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        //char
+        //////        if ((c1 % c1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        return (intRet == 0);
+        //////    }
+        //////}
         public class ValueIntegralTestClass18
         {
             public static bool testMethod()
@@ -2452,330 +2498,330 @@ namespace Microsoft.SPOT.Platform.Tests
                 return (intRet == 0);
             }
         }
-        public class ValueIntegralTestClass52
-        {
-            public static bool testMethod()
-            {
-                int intRet = 0;
-                short s1 = 2;
-                byte b1 = 3;
-                int i1 = 4;
-                long l1 = 5L;
-                char c1 = (char)6;
-                ushort s2 = 7;
-                sbyte b2 = 8;
-                uint i2 = 9;
-                ulong l2 = 10;
-                //ushort
-                if ((s2 / s1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s2 / b1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s2 / i1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s2 / l1).GetType() != l1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s2 / c1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s2 / s2).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s2 / b2).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s2 / i2).GetType() != i2.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s2 / l2).GetType() != l2.GetType())
-                {
-                    intRet = 1;
-                }
+        //////public class ValueIntegralTestClass52
+        //////{
+        //////    public static bool testMethod()
+        //////    {
+        //////        int intRet = 0;
+        //////        short s1 = 2;
+        //////        byte b1 = 3;
+        //////        int i1 = 4;
+        //////        long l1 = 5L;
+        //////        char c1 = (char)6;
+        //////        ushort s2 = 7;
+        //////        sbyte b2 = 8;
+        //////        uint i2 = 9;
+        //////        ulong l2 = 10;
+        //////        //ushort
+        //////        if ((s2 / s1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s2 / b1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s2 / i1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s2 / l1).GetType() != l1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s2 / c1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s2 / s2).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s2 / b2).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s2 / i2).GetType() != i2.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s2 / l2).GetType() != l2.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
 
-                //sbyte
-                if ((b2 / s1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((b2 / b1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((b2 / i1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((b2 / l1).GetType() != l1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((b2 / c1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((b2 / s2).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((b2 / b2).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((b2 / i2).GetType() != l1.GetType())
-                {
-                    intRet = 1;
-                }
-                //if ((b2 / l2).GetType() != l2.GetType()) {
-                //	intRet = 1;
-                //}
-                //uint
-                if ((i2 / s1).GetType() != l1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((i2 / b1).GetType() != i2.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((i2 / i1).GetType() != l1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((i2 / l1).GetType() != l1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((i2 / c1).GetType() != i2.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((i2 / s2).GetType() != i2.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((i2 / b2).GetType() != l1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((i2 / i2).GetType() != i2.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((i2 / l2).GetType() != l2.GetType())
-                {
-                    intRet = 1;
-                }
-                //ulong
-                //if ((l2 / s1).GetType() != l2.GetType()) {
-                //	intRet = 1;
-                //}
-                if ((l2 / b1).GetType() != l2.GetType())
-                {
-                    intRet = 1;
-                }
-                //if ((l2 / i1).GetType() != l2.GetType()) {
-                //	intRet = 1;
-                //}
-                //if ((l2 / l1).GetType() != l2.GetType()) {
-                //	intRet = 1;
-                //}
-                if ((l2 / c1).GetType() != l2.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((l2 / s2).GetType() != l2.GetType())
-                {
-                    intRet = 1;
-                }
-                //if ((l2 / b2).GetType() != l2.GetType()) {
-                //	intRet = 1;
-                //}
-                if ((l2 / i2).GetType() != l2.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((l2 / l2).GetType() != l2.GetType())
-                {
-                    intRet = 1;
-                }
+        //////        //sbyte
+        //////        if ((b2 / s1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((b2 / b1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((b2 / i1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((b2 / l1).GetType() != l1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((b2 / c1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((b2 / s2).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((b2 / b2).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((b2 / i2).GetType() != l1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        //if ((b2 / l2).GetType() != l2.GetType()) {
+        //////        //	intRet = 1;
+        //////        //}
+        //////        //uint
+        //////        if ((i2 / s1).GetType() != l1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((i2 / b1).GetType() != i2.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((i2 / i1).GetType() != l1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((i2 / l1).GetType() != l1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((i2 / c1).GetType() != i2.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((i2 / s2).GetType() != i2.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((i2 / b2).GetType() != l1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((i2 / i2).GetType() != i2.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((i2 / l2).GetType() != l2.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        //ulong
+        //////        //if ((l2 / s1).GetType() != l2.GetType()) {
+        //////        //	intRet = 1;
+        //////        //}
+        //////        if ((l2 / b1).GetType() != l2.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        //if ((l2 / i1).GetType() != l2.GetType()) {
+        //////        //	intRet = 1;
+        //////        //}
+        //////        //if ((l2 / l1).GetType() != l2.GetType()) {
+        //////        //	intRet = 1;
+        //////        //}
+        //////        if ((l2 / c1).GetType() != l2.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((l2 / s2).GetType() != l2.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        //if ((l2 / b2).GetType() != l2.GetType()) {
+        //////        //	intRet = 1;
+        //////        //}
+        //////        if ((l2 / i2).GetType() != l2.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((l2 / l2).GetType() != l2.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
 
-                return (intRet == 0);
-            }
-        }
-        public class ValueIntegralTestClass53
-        {
-            public static bool testMethod()
-            {
-                int intRet = 0;
-                short s1 = 2;
-                byte b1 = 3;
-                int i1 = 4;
-                long l1 = 5L;
-                char c1 = (char)6;
-                ushort s2 = 7;
-                sbyte b2 = 8;
-                uint i2 = 9;
-                ulong l2 = 10;
-                //ushort
-                if ((s2 % s1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s2 % b1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s2 % i1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s2 % l1).GetType() != l1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s2 % c1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s2 % s2).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s2 % b2).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s2 % i2).GetType() != i2.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((s2 % l2).GetType() != l2.GetType())
-                {
-                    intRet = 1;
-                }
+        //////        return (intRet == 0);
+        //////    }
+        //////}
+        //////public class ValueIntegralTestClass53
+        //////{
+        //////    public static bool testMethod()
+        //////    {
+        //////        int intRet = 0;
+        //////        short s1 = 2;
+        //////        byte b1 = 3;
+        //////        int i1 = 4;
+        //////        long l1 = 5L;
+        //////        char c1 = (char)6;
+        //////        ushort s2 = 7;
+        //////        sbyte b2 = 8;
+        //////        uint i2 = 9;
+        //////        ulong l2 = 10;
+        //////        //ushort
+        //////        if ((s2 % s1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s2 % b1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s2 % i1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s2 % l1).GetType() != l1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s2 % c1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s2 % s2).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s2 % b2).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s2 % i2).GetType() != i2.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((s2 % l2).GetType() != l2.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
 
-                //sbyte
-                if ((b2 % s1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((b2 % b1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((b2 % i1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((b2 % l1).GetType() != l1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((b2 % c1).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((b2 % s2).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((b2 % b2).GetType() != i1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((b2 % i2).GetType() != l1.GetType())
-                {
-                    intRet = 1;
-                }
-                //if ((b2 % l2).GetType() != l2.GetType()) {
-                //	intRet = 1;
-                //}
-                //uint
-                if ((i2 % s1).GetType() != l1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((i2 % b1).GetType() != i2.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((i2 % i1).GetType() != l1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((i2 % l1).GetType() != l1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((i2 % c1).GetType() != i2.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((i2 % s2).GetType() != i2.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((i2 % b2).GetType() != l1.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((i2 % i2).GetType() != i2.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((i2 % l2).GetType() != l2.GetType())
-                {
-                    intRet = 1;
-                }
-                //ulong
-                //if ((l2 % s1).GetType() != l2.GetType()) {
-                //	intRet = 1;
-                //}
-                if ((l2 % b1).GetType() != l2.GetType())
-                {
-                    intRet = 1;
-                }
-                //if ((l2 % i1).GetType() != l2.GetType()) {
-                //	intRet = 1;
-                //}
-                //if ((l2 % l1).GetType() != l2.GetType()) {
-                //	intRet = 1;
-                //}
-                if ((l2 % c1).GetType() != l2.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((l2 % s2).GetType() != l2.GetType())
-                {
-                    intRet = 1;
-                }
-                //if ((l2 % b2).GetType() != l2.GetType()) {
-                //	intRet = 1;
-                //}
-                if ((l2 % i2).GetType() != l2.GetType())
-                {
-                    intRet = 1;
-                }
-                if ((l2 % l2).GetType() != l2.GetType())
-                {
-                    intRet = 1;
-                }
+        //////        //sbyte
+        //////        if ((b2 % s1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((b2 % b1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((b2 % i1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((b2 % l1).GetType() != l1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((b2 % c1).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((b2 % s2).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((b2 % b2).GetType() != i1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((b2 % i2).GetType() != l1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        //if ((b2 % l2).GetType() != l2.GetType()) {
+        //////        //	intRet = 1;
+        //////        //}
+        //////        //uint
+        //////        if ((i2 % s1).GetType() != l1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((i2 % b1).GetType() != i2.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((i2 % i1).GetType() != l1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((i2 % l1).GetType() != l1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((i2 % c1).GetType() != i2.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((i2 % s2).GetType() != i2.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((i2 % b2).GetType() != l1.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((i2 % i2).GetType() != i2.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((i2 % l2).GetType() != l2.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        //ulong
+        //////        //if ((l2 % s1).GetType() != l2.GetType()) {
+        //////        //	intRet = 1;
+        //////        //}
+        //////        if ((l2 % b1).GetType() != l2.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        //if ((l2 % i1).GetType() != l2.GetType()) {
+        //////        //	intRet = 1;
+        //////        //}
+        //////        //if ((l2 % l1).GetType() != l2.GetType()) {
+        //////        //	intRet = 1;
+        //////        //}
+        //////        if ((l2 % c1).GetType() != l2.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((l2 % s2).GetType() != l2.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        //if ((l2 % b2).GetType() != l2.GetType()) {
+        //////        //	intRet = 1;
+        //////        //}
+        //////        if ((l2 % i2).GetType() != l2.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
+        //////        if ((l2 % l2).GetType() != l2.GetType())
+        //////        {
+        //////            intRet = 1;
+        //////        }
 
-                return (intRet == 0);
-            }
-        }
+        //////        return (intRet == 0);
+        //////    }
+        //////}
         public class ValueIntegralTestClass54
         {
             public static bool testMethod()

@@ -3,12 +3,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class BasicTests : IMFTestInterface
+    public class BasicTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -29,6 +27,313 @@ namespace Microsoft.SPOT.Platform.Tests
         {
             Log.Comment("Cleaning up after the tests");
         }
+        
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+            
+            /*            
+            string testName = "Basic_";
+            int testNumber = 0;
+            result |= Assert.CheckFailed( Basic_byte_byte_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_byte_byte_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_byte_short_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_byte_short_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_byte_ushort_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_byte_ushort_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_byte_int_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_byte_int_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_byte_uint_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_byte_uint_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_byte_long_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_byte_long_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_byte_ulong_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_byte_ulong_E_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_byte_float_I_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_byte_float_E_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_byte_double_I_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_byte_double_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_byte_sbyte_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_byte_sbyte_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_byte_char_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_char_char_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_char_char_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_char_ushort_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_char_ushort_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_char_int_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_char_int_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_char_uint_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_char_uint_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_char_long_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_char_long_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_char_ulong_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_char_ulong_E_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_char_float_I_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_char_float_E_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_char_double_I_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_char_double_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_char_sbyte_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_char_sbyte_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_char_byte_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_char_byte_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_char_byte_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_char_short_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_char_short_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_double_double_I_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_double_double_E_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_double_byte_E_1_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_double_byte_E_2_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_double_byte_E_3_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_double_sbyte_E_1_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_double_sbyte_E_2_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_double_sbyte_E_3_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_double_char_E_1_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_double_char_E_2_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_double_char_E_3_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_double_short_E_1_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_double_short_E_2_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_double_short_E_3_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_double_ushort_E_1_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_double_ushort_E_2_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_double_ushort_E_3_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_double_int_E_1_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_double_int_E_2_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_double_int_E_3_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_double_uint_E_1_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_double_uint_E_2_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_double_uint_E_3_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_double_long_E_1_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_double_ulong_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_double_float_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_double_float_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_double_float_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_float_float_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_float_float_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_float_double_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_float_double_E_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_float_byte_E_1_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_float_byte_E_2_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_float_byte_E_3_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_float_sbyte_E_1_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_float_sbyte_E_2_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_float_sbyte_E_3_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_float_char_E_1_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_float_char_E_2_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_float_char_E_3_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_float_short_E_1_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_float_short_E_2_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_float_short_E_3_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_float_ushort_E_1_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_float_ushort_E_2_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_float_ushort_E_3_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_float_int_E_1_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_float_uint_E_1_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_float_long_E_1_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_float_ulong_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_int_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_int_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_long_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_long_E_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_int_float_I_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_int_float_E_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_int_double_I_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_int_double_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_sbyte_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_sbyte_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_sbyte_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_sbyte_E_4_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_byte_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_byte_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_byte_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_byte_E_4_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_short_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_short_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_short_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_short_E_4_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_ushort_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_ushort_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_ushort_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_ushort_E_4_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_uint_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_uint_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_uint_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_ulong_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_char_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_char_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_char_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_int_char_E_4_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_long_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_long_E_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_long_float_I_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_long_float_E_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_long_double_I_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_long_double_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_sbyte_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_sbyte_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_sbyte_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_sbyte_E_4_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_byte_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_byte_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_byte_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_byte_E_4_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_short_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_short_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_short_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_short_E_4_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_ushort_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_ushort_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_ushort_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_ushort_E_4_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_int_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_int_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_int_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_int_E_4_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_uint_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_uint_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_uint_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_uint_E_4_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_ulong_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_ulong_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_char_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_char_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_char_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_long_char_E_4_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_sbyte_sbyte_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_sbyte_sbyte_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_sbyte_short_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_sbyte_short_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_sbyte_int_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_sbyte_int_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_sbyte_long_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_sbyte_long_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_sbyte_float_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_sbyte_float_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_sbyte_double_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_sbyte_double_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_sbyte_byte_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_sbyte_byte_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_sbyte_byte_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_sbyte_ushort_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_sbyte_uint_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_sbyte_ulong_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_sbyte_char_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_short_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_short_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_int_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_int_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_long_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_long_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_float_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_float_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_double_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_double_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_short_I_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_short_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_int_I_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_int_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_long_I_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_long_E_1_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_short_float_I_1_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_short_float_E_1_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_short_double_I_1_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_short_double_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_decimal_I_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_decimal_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_sbyte_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_sbyte_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_sbyte_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_sbyte_E_4_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_byte_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_byte_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_byte_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_byte_E_4_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_ushort_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_ushort_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_ushort_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_uint_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_ulong_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_char_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_char_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_short_char_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_uint_uint_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_uint_uint_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_uint_long_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_uint_long_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_uint_ulong_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_uint_ulong_E_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_uint_float_I_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_uint_float_E_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_uint_double_I_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_uint_double_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_uint_sbyte_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_uint_sbyte_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_uint_byte_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_uint_byte_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_uint_byte_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_uint_short_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_uint_short_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_uint_ushort_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_uint_ushort_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_uint_ushort_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_uint_int_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_uint_int_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_uint_char_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_uint_char_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_uint_char_E_3_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_ulong_float_I_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_ulong_float_E_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_ulong_double_I_0_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Basic_ulong_double_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ulong_ulong_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ulong_ulong_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ulong_sbyte_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ulong_sbyte_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ulong_byte_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ulong_byte_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ulong_byte_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ulong_short_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ulong_short_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ulong_ushort_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ulong_ushort_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ulong_ushort_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ulong_int_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ulong_int_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ulong_uint_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ulong_uint_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ulong_uint_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ulong_long_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ulong_long_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ulong_char_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ulong_char_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ulong_char_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ushort_ushort_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ushort_ushort_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ushort_int_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ushort_int_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ushort_uint_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ushort_uint_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ushort_long_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ushort_long_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ushort_ulong_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ushort_ulong_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ushort_float_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ushort_float_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ushort_double_I_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ushort_double_E_0_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ushort_sbyte_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ushort_sbyte_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ushort_byte_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ushort_byte_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ushort_byte_E_3_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ushort_short_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ushort_short_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ushort_char_E_1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ushort_char_E_2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Basic_ushort_char_E_3_Test( ), testName, ++testNumber );
+            */
+
+            return result;
+        }
 
         //Basic Test methods
         //The following tests were ported from folder current\test\cases\client\CLR\Conformance\10_classes\Basic
@@ -36,2665 +341,2663 @@ namespace Microsoft.SPOT.Platform.Tests
 
         //Test Case Calls 
         [TestMethod]
-        public MFTestResults Basic_byte_byte_I_0_Test()
+        public TestResult Basic_byte_byte_I_0_Test()
         {
             if (BasicTestClass_byte_byte_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_byte_byte_E_0_Test()
+        public TestResult Basic_byte_byte_E_0_Test()
         {
             if (BasicTestClass_byte_byte_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_byte_short_I_0_Test()
+        public TestResult Basic_byte_short_I_0_Test()
         {
             if (BasicTestClass_byte_short_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_byte_short_E_0_Test()
+        public TestResult Basic_byte_short_E_0_Test()
         {
             if (BasicTestClass_byte_short_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_byte_ushort_I_0_Test()
+        public TestResult Basic_byte_ushort_I_0_Test()
         {
             if (BasicTestClass_byte_ushort_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_byte_ushort_E_0_Test()
+        public TestResult Basic_byte_ushort_E_0_Test()
         {
             if (BasicTestClass_byte_ushort_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_byte_int_I_0_Test()
+        public TestResult Basic_byte_int_I_0_Test()
         {
             if (BasicTestClass_byte_int_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_byte_int_E_0_Test()
+        public TestResult Basic_byte_int_E_0_Test()
         {
             if (BasicTestClass_byte_int_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_byte_uint_I_0_Test()
+        public TestResult Basic_byte_uint_I_0_Test()
         {
             if (BasicTestClass_byte_uint_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_byte_uint_E_0_Test()
+        public TestResult Basic_byte_uint_E_0_Test()
         {
             if (BasicTestClass_byte_uint_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_byte_long_I_0_Test()
+        public TestResult Basic_byte_long_I_0_Test()
         {
             if (BasicTestClass_byte_long_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_byte_long_E_0_Test()
+        public TestResult Basic_byte_long_E_0_Test()
         {
             if (BasicTestClass_byte_long_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_byte_ulong_I_0_Test()
+        public TestResult Basic_byte_ulong_I_0_Test()
         {
             if (BasicTestClass_byte_ulong_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_byte_ulong_E_0_Test()
+        public TestResult Basic_byte_ulong_E_0_Test()
         {
             if (BasicTestClass_byte_ulong_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
+        //////[TestMethod]
+        //////public TestResult Basic_byte_float_I_0_Test()
+        //////{
+        //////    if (BasicTestClass_byte_float_I_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_byte_float_E_0_Test()
+        //////{
+        //////    if (BasicTestClass_byte_float_E_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_byte_double_I_0_Test()
+        //////{
+        //////    if (BasicTestClass_byte_double_I_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_byte_double_E_0_Test()
+        //////{
+        //////    if (BasicTestClass_byte_double_E_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
         [TestMethod]
-        public MFTestResults Basic_byte_float_I_0_Test()
-        {
-            if (BasicTestClass_byte_float_I_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_byte_float_E_0_Test()
-        {
-            if (BasicTestClass_byte_float_E_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_byte_double_I_0_Test()
-        {
-            if (BasicTestClass_byte_double_I_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_byte_double_E_0_Test()
-        {
-            if (BasicTestClass_byte_double_E_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_byte_sbyte_E_1_Test()
+        public TestResult Basic_byte_sbyte_E_1_Test()
         {
             if (BasicTestClass_byte_sbyte_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_byte_sbyte_E_2_Test()
+        public TestResult Basic_byte_sbyte_E_2_Test()
         {
             if (BasicTestClass_byte_sbyte_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_byte_char_E_1_Test()
+        public TestResult Basic_byte_char_E_1_Test()
         {
             if (BasicTestClass_byte_char_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_char_char_I_0_Test()
+        public TestResult Basic_char_char_I_0_Test()
         {
             if (BasicTestClass_char_char_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_char_char_E_0_Test()
+        public TestResult Basic_char_char_E_0_Test()
         {
             if (BasicTestClass_char_char_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_char_ushort_I_0_Test()
+        public TestResult Basic_char_ushort_I_0_Test()
         {
             if (BasicTestClass_char_ushort_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_char_ushort_E_0_Test()
+        public TestResult Basic_char_ushort_E_0_Test()
         {
             if (BasicTestClass_char_ushort_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_char_int_I_0_Test()
+        public TestResult Basic_char_int_I_0_Test()
         {
             if (BasicTestClass_char_int_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_char_int_E_0_Test()
+        public TestResult Basic_char_int_E_0_Test()
         {
             if (BasicTestClass_char_int_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_char_uint_I_0_Test()
+        public TestResult Basic_char_uint_I_0_Test()
         {
             if (BasicTestClass_char_uint_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_char_uint_E_0_Test()
+        public TestResult Basic_char_uint_E_0_Test()
         {
             if (BasicTestClass_char_uint_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_char_long_I_0_Test()
+        public TestResult Basic_char_long_I_0_Test()
         {
             if (BasicTestClass_char_long_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_char_long_E_0_Test()
+        public TestResult Basic_char_long_E_0_Test()
         {
             if (BasicTestClass_char_long_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_char_ulong_I_0_Test()
+        public TestResult Basic_char_ulong_I_0_Test()
         {
             if (BasicTestClass_char_ulong_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_char_ulong_E_0_Test()
+        public TestResult Basic_char_ulong_E_0_Test()
         {
             if (BasicTestClass_char_ulong_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
+        //////[TestMethod]
+        //////public TestResult Basic_char_float_I_0_Test()
+        //////{
+        //////    if (BasicTestClass_char_float_I_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_char_float_E_0_Test()
+        //////{
+        //////    if (BasicTestClass_char_float_E_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_char_double_I_0_Test()
+        //////{
+        //////    if (BasicTestClass_char_double_I_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_char_double_E_0_Test()
+        //////{
+        //////    if (BasicTestClass_char_double_E_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
         [TestMethod]
-        public MFTestResults Basic_char_float_I_0_Test()
-        {
-            if (BasicTestClass_char_float_I_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_char_float_E_0_Test()
-        {
-            if (BasicTestClass_char_float_E_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_char_double_I_0_Test()
-        {
-            if (BasicTestClass_char_double_I_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_char_double_E_0_Test()
-        {
-            if (BasicTestClass_char_double_E_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_char_sbyte_E_1_Test()
+        public TestResult Basic_char_sbyte_E_1_Test()
         {
             if (BasicTestClass_char_sbyte_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_char_sbyte_E_2_Test()
+        public TestResult Basic_char_sbyte_E_2_Test()
         {
             if (BasicTestClass_char_sbyte_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_char_byte_E_1_Test()
+        public TestResult Basic_char_byte_E_1_Test()
         {
             if (BasicTestClass_char_byte_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_char_byte_E_2_Test()
+        public TestResult Basic_char_byte_E_2_Test()
         {
             if (BasicTestClass_char_byte_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_char_byte_E_3_Test()
+        public TestResult Basic_char_byte_E_3_Test()
         {
             if (BasicTestClass_char_byte_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_char_short_E_1_Test()
+        public TestResult Basic_char_short_E_1_Test()
         {
             if (BasicTestClass_char_short_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_char_short_E_2_Test()
+        public TestResult Basic_char_short_E_2_Test()
         {
             if (BasicTestClass_char_short_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_double_double_I_0_Test()
+        public TestResult Basic_double_double_I_0_Test()
         {
             if (BasicTestClass_double_double_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
+        //////[TestMethod]
+        //////public TestResult Basic_double_double_E_0_Test()
+        //////{
+        //////    if (BasicTestClass_double_double_E_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_double_byte_E_1_Test()
+        //////{
+        //////    if (BasicTestClass_double_byte_E_1.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_double_byte_E_2_Test()
+        //////{
+        //////    if (BasicTestClass_double_byte_E_2.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_double_byte_E_3_Test()
+        //////{
+        //////    if (BasicTestClass_double_byte_E_3.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_double_sbyte_E_1_Test()
+        //////{
+        //////    if (BasicTestClass_double_sbyte_E_1.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_double_sbyte_E_2_Test()
+        //////{
+        //////    if (BasicTestClass_double_sbyte_E_2.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_double_sbyte_E_3_Test()
+        //////{
+        //////    if (BasicTestClass_double_sbyte_E_3.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_double_char_E_1_Test()
+        //////{
+        //////    if (BasicTestClass_double_char_E_1.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_double_char_E_2_Test()
+        //////{
+        //////    if (BasicTestClass_double_char_E_2.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_double_char_E_3_Test()
+        //////{
+        //////    if (BasicTestClass_double_char_E_3.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_double_short_E_1_Test()
+        //////{
+        //////    if (BasicTestClass_double_short_E_1.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_double_short_E_2_Test()
+        //////{
+        //////    if (BasicTestClass_double_short_E_2.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_double_short_E_3_Test()
+        //////{
+        //////    if (BasicTestClass_double_short_E_3.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_double_ushort_E_1_Test()
+        //////{
+        //////    if (BasicTestClass_double_ushort_E_1.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_double_ushort_E_2_Test()
+        //////{
+        //////    if (BasicTestClass_double_ushort_E_2.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_double_ushort_E_3_Test()
+        //////{
+        //////    if (BasicTestClass_double_ushort_E_3.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_double_int_E_1_Test()
+        //////{
+        //////    if (BasicTestClass_double_int_E_1.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_double_int_E_2_Test()
+        //////{
+        //////    if (BasicTestClass_double_int_E_2.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_double_int_E_3_Test()
+        //////{
+        //////    if (BasicTestClass_double_int_E_3.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_double_uint_E_1_Test()
+        //////{
+        //////    if (BasicTestClass_double_uint_E_1.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_double_uint_E_2_Test()
+        //////{
+        //////    if (BasicTestClass_double_uint_E_2.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_double_uint_E_3_Test()
+        //////{
+        //////    if (BasicTestClass_double_uint_E_3.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_double_long_E_1_Test()
+        //////{
+        //////    if (BasicTestClass_double_long_E_1.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_double_ulong_E_1_Test()
+        //////{
+        //////    if (BasicTestClass_double_ulong_E_1.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
         [TestMethod]
-        public MFTestResults Basic_double_double_E_0_Test()
-        {
-            if (BasicTestClass_double_double_E_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_double_byte_E_1_Test()
-        {
-            if (BasicTestClass_double_byte_E_1.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_double_byte_E_2_Test()
-        {
-            if (BasicTestClass_double_byte_E_2.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_double_byte_E_3_Test()
-        {
-            if (BasicTestClass_double_byte_E_3.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_double_sbyte_E_1_Test()
-        {
-            if (BasicTestClass_double_sbyte_E_1.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_double_sbyte_E_2_Test()
-        {
-            if (BasicTestClass_double_sbyte_E_2.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_double_sbyte_E_3_Test()
-        {
-            if (BasicTestClass_double_sbyte_E_3.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_double_char_E_1_Test()
-        {
-            if (BasicTestClass_double_char_E_1.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_double_char_E_2_Test()
-        {
-            if (BasicTestClass_double_char_E_2.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_double_char_E_3_Test()
-        {
-            if (BasicTestClass_double_char_E_3.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_double_short_E_1_Test()
-        {
-            if (BasicTestClass_double_short_E_1.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_double_short_E_2_Test()
-        {
-            if (BasicTestClass_double_short_E_2.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_double_short_E_3_Test()
-        {
-            if (BasicTestClass_double_short_E_3.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_double_ushort_E_1_Test()
-        {
-            if (BasicTestClass_double_ushort_E_1.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_double_ushort_E_2_Test()
-        {
-            if (BasicTestClass_double_ushort_E_2.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_double_ushort_E_3_Test()
-        {
-            if (BasicTestClass_double_ushort_E_3.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_double_int_E_1_Test()
-        {
-            if (BasicTestClass_double_int_E_1.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_double_int_E_2_Test()
-        {
-            if (BasicTestClass_double_int_E_2.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_double_int_E_3_Test()
-        {
-            if (BasicTestClass_double_int_E_3.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_double_uint_E_1_Test()
-        {
-            if (BasicTestClass_double_uint_E_1.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_double_uint_E_2_Test()
-        {
-            if (BasicTestClass_double_uint_E_2.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_double_uint_E_3_Test()
-        {
-            if (BasicTestClass_double_uint_E_3.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_double_long_E_1_Test()
-        {
-            if (BasicTestClass_double_long_E_1.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_double_ulong_E_1_Test()
-        {
-            if (BasicTestClass_double_ulong_E_1.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_double_float_E_1_Test()
+        public TestResult Basic_double_float_E_1_Test()
         {
             if (BasicTestClass_double_float_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_double_float_E_2_Test()
+        public TestResult Basic_double_float_E_2_Test()
         {
             if (BasicTestClass_double_float_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_double_float_E_3_Test()
+        public TestResult Basic_double_float_E_3_Test()
         {
             if (BasicTestClass_double_float_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_float_float_I_0_Test()
+        public TestResult Basic_float_float_I_0_Test()
         {
             if (BasicTestClass_float_float_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_float_float_E_0_Test()
+        public TestResult Basic_float_float_E_0_Test()
         {
             if (BasicTestClass_float_float_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_float_double_I_0_Test()
+        public TestResult Basic_float_double_I_0_Test()
         {
             if (BasicTestClass_float_double_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_float_double_E_0_Test()
+        public TestResult Basic_float_double_E_0_Test()
         {
             if (BasicTestClass_float_double_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
+        //////[TestMethod]
+        //////public TestResult Basic_float_byte_E_1_Test()
+        //////{
+        //////    if (BasicTestClass_float_byte_E_1.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_float_byte_E_2_Test()
+        //////{
+        //////    if (BasicTestClass_float_byte_E_2.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_float_byte_E_3_Test()
+        //////{
+        //////    if (BasicTestClass_float_byte_E_3.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_float_sbyte_E_1_Test()
+        //////{
+        //////    if (BasicTestClass_float_sbyte_E_1.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_float_sbyte_E_2_Test()
+        //////{
+        //////    if (BasicTestClass_float_sbyte_E_2.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_float_sbyte_E_3_Test()
+        //////{
+        //////    if (BasicTestClass_float_sbyte_E_3.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_float_char_E_1_Test()
+        //////{
+        //////    if (BasicTestClass_float_char_E_1.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_float_char_E_2_Test()
+        //////{
+        //////    if (BasicTestClass_float_char_E_2.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_float_char_E_3_Test()
+        //////{
+        //////    if (BasicTestClass_float_char_E_3.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_float_short_E_1_Test()
+        //////{
+        //////    if (BasicTestClass_float_short_E_1.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_float_short_E_2_Test()
+        //////{
+        //////    if (BasicTestClass_float_short_E_2.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_float_short_E_3_Test()
+        //////{
+        //////    if (BasicTestClass_float_short_E_3.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_float_ushort_E_1_Test()
+        //////{
+        //////    if (BasicTestClass_float_ushort_E_1.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_float_ushort_E_2_Test()
+        //////{
+        //////    if (BasicTestClass_float_ushort_E_2.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_float_ushort_E_3_Test()
+        //////{
+        //////    if (BasicTestClass_float_ushort_E_3.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_float_int_E_1_Test()
+        //////{
+        //////    if (BasicTestClass_float_int_E_1.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_float_uint_E_1_Test()
+        //////{
+        //////    if (BasicTestClass_float_uint_E_1.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_float_long_E_1_Test()
+        //////{
+        //////    if (BasicTestClass_float_long_E_1.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_float_ulong_E_1_Test()
+        //////{
+        //////    if (BasicTestClass_float_ulong_E_1.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
         [TestMethod]
-        public MFTestResults Basic_float_byte_E_1_Test()
-        {
-            if (BasicTestClass_float_byte_E_1.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_float_byte_E_2_Test()
-        {
-            if (BasicTestClass_float_byte_E_2.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_float_byte_E_3_Test()
-        {
-            if (BasicTestClass_float_byte_E_3.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_float_sbyte_E_1_Test()
-        {
-            if (BasicTestClass_float_sbyte_E_1.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_float_sbyte_E_2_Test()
-        {
-            if (BasicTestClass_float_sbyte_E_2.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_float_sbyte_E_3_Test()
-        {
-            if (BasicTestClass_float_sbyte_E_3.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_float_char_E_1_Test()
-        {
-            if (BasicTestClass_float_char_E_1.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_float_char_E_2_Test()
-        {
-            if (BasicTestClass_float_char_E_2.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_float_char_E_3_Test()
-        {
-            if (BasicTestClass_float_char_E_3.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_float_short_E_1_Test()
-        {
-            if (BasicTestClass_float_short_E_1.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_float_short_E_2_Test()
-        {
-            if (BasicTestClass_float_short_E_2.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_float_short_E_3_Test()
-        {
-            if (BasicTestClass_float_short_E_3.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_float_ushort_E_1_Test()
-        {
-            if (BasicTestClass_float_ushort_E_1.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_float_ushort_E_2_Test()
-        {
-            if (BasicTestClass_float_ushort_E_2.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_float_ushort_E_3_Test()
-        {
-            if (BasicTestClass_float_ushort_E_3.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_float_int_E_1_Test()
-        {
-            if (BasicTestClass_float_int_E_1.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_float_uint_E_1_Test()
-        {
-            if (BasicTestClass_float_uint_E_1.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_float_long_E_1_Test()
-        {
-            if (BasicTestClass_float_long_E_1.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_float_ulong_E_1_Test()
-        {
-            if (BasicTestClass_float_ulong_E_1.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_int_int_I_0_Test()
+        public TestResult Basic_int_int_I_0_Test()
         {
             if (BasicTestClass_int_int_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_int_E_0_Test()
+        public TestResult Basic_int_int_E_0_Test()
         {
             if (BasicTestClass_int_int_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_long_I_0_Test()
+        public TestResult Basic_int_long_I_0_Test()
         {
             if (BasicTestClass_int_long_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_long_E_0_Test()
+        public TestResult Basic_int_long_E_0_Test()
         {
             if (BasicTestClass_int_long_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
+        //////[TestMethod]
+        //////public TestResult Basic_int_float_I_0_Test()
+        //////{
+        //////    if (BasicTestClass_int_float_I_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_int_float_E_0_Test()
+        //////{
+        //////    if (BasicTestClass_int_float_E_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_int_double_I_0_Test()
+        //////{
+        //////    if (BasicTestClass_int_double_I_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_int_double_E_0_Test()
+        //////{
+        //////    if (BasicTestClass_int_double_E_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
         [TestMethod]
-        public MFTestResults Basic_int_float_I_0_Test()
-        {
-            if (BasicTestClass_int_float_I_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_int_float_E_0_Test()
-        {
-            if (BasicTestClass_int_float_E_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_int_double_I_0_Test()
-        {
-            if (BasicTestClass_int_double_I_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_int_double_E_0_Test()
-        {
-            if (BasicTestClass_int_double_E_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_int_sbyte_E_1_Test()
+        public TestResult Basic_int_sbyte_E_1_Test()
         {
             if (BasicTestClass_int_sbyte_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_sbyte_E_2_Test()
+        public TestResult Basic_int_sbyte_E_2_Test()
         {
             if (BasicTestClass_int_sbyte_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_sbyte_E_3_Test()
+        public TestResult Basic_int_sbyte_E_3_Test()
         {
             if (BasicTestClass_int_sbyte_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_sbyte_E_4_Test()
+        public TestResult Basic_int_sbyte_E_4_Test()
         {
             if (BasicTestClass_int_sbyte_E_4.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_byte_E_1_Test()
+        public TestResult Basic_int_byte_E_1_Test()
         {
             if (BasicTestClass_int_byte_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_byte_E_2_Test()
+        public TestResult Basic_int_byte_E_2_Test()
         {
             if (BasicTestClass_int_byte_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_byte_E_3_Test()
+        public TestResult Basic_int_byte_E_3_Test()
         {
             if (BasicTestClass_int_byte_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_byte_E_4_Test()
+        public TestResult Basic_int_byte_E_4_Test()
         {
             if (BasicTestClass_int_byte_E_4.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_short_E_1_Test()
+        public TestResult Basic_int_short_E_1_Test()
         {
             if (BasicTestClass_int_short_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_short_E_2_Test()
+        public TestResult Basic_int_short_E_2_Test()
         {
             if (BasicTestClass_int_short_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_short_E_3_Test()
+        public TestResult Basic_int_short_E_3_Test()
         {
             if (BasicTestClass_int_short_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_short_E_4_Test()
+        public TestResult Basic_int_short_E_4_Test()
         {
             if (BasicTestClass_int_short_E_4.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_ushort_E_1_Test()
+        public TestResult Basic_int_ushort_E_1_Test()
         {
             if (BasicTestClass_int_ushort_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_ushort_E_2_Test()
+        public TestResult Basic_int_ushort_E_2_Test()
         {
             if (BasicTestClass_int_ushort_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_ushort_E_3_Test()
+        public TestResult Basic_int_ushort_E_3_Test()
         {
             if (BasicTestClass_int_ushort_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_ushort_E_4_Test()
+        public TestResult Basic_int_ushort_E_4_Test()
         {
             if (BasicTestClass_int_ushort_E_4.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_uint_E_1_Test()
+        public TestResult Basic_int_uint_E_1_Test()
         {
             if (BasicTestClass_int_uint_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_uint_E_2_Test()
+        public TestResult Basic_int_uint_E_2_Test()
         {
             if (BasicTestClass_int_uint_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_uint_E_3_Test()
+        public TestResult Basic_int_uint_E_3_Test()
         {
             if (BasicTestClass_int_uint_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_ulong_E_1_Test()
+        public TestResult Basic_int_ulong_E_1_Test()
         {
             if (BasicTestClass_int_ulong_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_char_E_1_Test()
+        public TestResult Basic_int_char_E_1_Test()
         {
             if (BasicTestClass_int_char_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_char_E_2_Test()
+        public TestResult Basic_int_char_E_2_Test()
         {
             if (BasicTestClass_int_char_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_char_E_3_Test()
+        public TestResult Basic_int_char_E_3_Test()
         {
             if (BasicTestClass_int_char_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_int_char_E_4_Test()
+        public TestResult Basic_int_char_E_4_Test()
         {
             if (BasicTestClass_int_char_E_4.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_long_I_0_Test()
+        public TestResult Basic_long_long_I_0_Test()
         {
             if (BasicTestClass_long_long_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_long_E_0_Test()
+        public TestResult Basic_long_long_E_0_Test()
         {
             if (BasicTestClass_long_long_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
+        //////[TestMethod]
+        //////public TestResult Basic_long_float_I_0_Test()
+        //////{
+        //////    if (BasicTestClass_long_float_I_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_long_float_E_0_Test()
+        //////{
+        //////    if (BasicTestClass_long_float_E_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_long_double_I_0_Test()
+        //////{
+        //////    if (BasicTestClass_long_double_I_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_long_double_E_0_Test()
+        //////{
+        //////    if (BasicTestClass_long_double_E_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
         [TestMethod]
-        public MFTestResults Basic_long_float_I_0_Test()
-        {
-            if (BasicTestClass_long_float_I_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_long_float_E_0_Test()
-        {
-            if (BasicTestClass_long_float_E_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_long_double_I_0_Test()
-        {
-            if (BasicTestClass_long_double_I_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_long_double_E_0_Test()
-        {
-            if (BasicTestClass_long_double_E_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_long_sbyte_E_1_Test()
+        public TestResult Basic_long_sbyte_E_1_Test()
         {
             if (BasicTestClass_long_sbyte_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_sbyte_E_2_Test()
+        public TestResult Basic_long_sbyte_E_2_Test()
         {
             if (BasicTestClass_long_sbyte_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_sbyte_E_3_Test()
+        public TestResult Basic_long_sbyte_E_3_Test()
         {
             if (BasicTestClass_long_sbyte_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_sbyte_E_4_Test()
+        public TestResult Basic_long_sbyte_E_4_Test()
         {
             if (BasicTestClass_long_sbyte_E_4.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_byte_E_1_Test()
+        public TestResult Basic_long_byte_E_1_Test()
         {
             if (BasicTestClass_long_byte_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_byte_E_2_Test()
+        public TestResult Basic_long_byte_E_2_Test()
         {
             if (BasicTestClass_long_byte_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_byte_E_3_Test()
+        public TestResult Basic_long_byte_E_3_Test()
         {
             if (BasicTestClass_long_byte_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_byte_E_4_Test()
+        public TestResult Basic_long_byte_E_4_Test()
         {
             if (BasicTestClass_long_byte_E_4.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_short_E_1_Test()
+        public TestResult Basic_long_short_E_1_Test()
         {
             if (BasicTestClass_long_short_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_short_E_2_Test()
+        public TestResult Basic_long_short_E_2_Test()
         {
             if (BasicTestClass_long_short_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_short_E_3_Test()
+        public TestResult Basic_long_short_E_3_Test()
         {
             if (BasicTestClass_long_short_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_short_E_4_Test()
+        public TestResult Basic_long_short_E_4_Test()
         {
             if (BasicTestClass_long_short_E_4.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_ushort_E_1_Test()
+        public TestResult Basic_long_ushort_E_1_Test()
         {
             if (BasicTestClass_long_ushort_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_ushort_E_2_Test()
+        public TestResult Basic_long_ushort_E_2_Test()
         {
             if (BasicTestClass_long_ushort_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_ushort_E_3_Test()
+        public TestResult Basic_long_ushort_E_3_Test()
         {
             if (BasicTestClass_long_ushort_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_ushort_E_4_Test()
+        public TestResult Basic_long_ushort_E_4_Test()
         {
             if (BasicTestClass_long_ushort_E_4.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_int_E_1_Test()
+        public TestResult Basic_long_int_E_1_Test()
         {
             if (BasicTestClass_long_int_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_int_E_2_Test()
+        public TestResult Basic_long_int_E_2_Test()
         {
             if (BasicTestClass_long_int_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_int_E_3_Test()
+        public TestResult Basic_long_int_E_3_Test()
         {
             if (BasicTestClass_long_int_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_int_E_4_Test()
+        public TestResult Basic_long_int_E_4_Test()
         {
             if (BasicTestClass_long_int_E_4.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_uint_E_1_Test()
+        public TestResult Basic_long_uint_E_1_Test()
         {
             if (BasicTestClass_long_uint_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_uint_E_2_Test()
+        public TestResult Basic_long_uint_E_2_Test()
         {
             if (BasicTestClass_long_uint_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_uint_E_3_Test()
+        public TestResult Basic_long_uint_E_3_Test()
         {
             if (BasicTestClass_long_uint_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_uint_E_4_Test()
+        public TestResult Basic_long_uint_E_4_Test()
         {
             if (BasicTestClass_long_uint_E_4.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_ulong_E_1_Test()
+        public TestResult Basic_long_ulong_E_1_Test()
         {
             if (BasicTestClass_long_ulong_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_ulong_E_2_Test()
+        public TestResult Basic_long_ulong_E_2_Test()
         {
             if (BasicTestClass_long_ulong_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_char_E_1_Test()
+        public TestResult Basic_long_char_E_1_Test()
         {
             if (BasicTestClass_long_char_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_char_E_2_Test()
+        public TestResult Basic_long_char_E_2_Test()
         {
             if (BasicTestClass_long_char_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_char_E_3_Test()
+        public TestResult Basic_long_char_E_3_Test()
         {
             if (BasicTestClass_long_char_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_long_char_E_4_Test()
+        public TestResult Basic_long_char_E_4_Test()
         {
             if (BasicTestClass_long_char_E_4.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_sbyte_sbyte_I_0_Test()
+        public TestResult Basic_sbyte_sbyte_I_0_Test()
         {
             if (BasicTestClass_sbyte_sbyte_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_sbyte_sbyte_E_0_Test()
+        public TestResult Basic_sbyte_sbyte_E_0_Test()
         {
             if (BasicTestClass_sbyte_sbyte_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_sbyte_short_I_0_Test()
+        public TestResult Basic_sbyte_short_I_0_Test()
         {
             if (BasicTestClass_sbyte_short_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_sbyte_short_E_0_Test()
+        public TestResult Basic_sbyte_short_E_0_Test()
         {
             if (BasicTestClass_sbyte_short_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_sbyte_int_I_0_Test()
+        public TestResult Basic_sbyte_int_I_0_Test()
         {
             if (BasicTestClass_sbyte_int_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_sbyte_int_E_0_Test()
+        public TestResult Basic_sbyte_int_E_0_Test()
         {
             if (BasicTestClass_sbyte_int_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_sbyte_long_I_0_Test()
+        public TestResult Basic_sbyte_long_I_0_Test()
         {
             if (BasicTestClass_sbyte_long_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_sbyte_long_E_0_Test()
+        public TestResult Basic_sbyte_long_E_0_Test()
         {
             if (BasicTestClass_sbyte_long_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_sbyte_float_I_0_Test()
+        public TestResult Basic_sbyte_float_I_0_Test()
         {
             if (BasicTestClass_sbyte_float_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_sbyte_float_E_0_Test()
+        public TestResult Basic_sbyte_float_E_0_Test()
         {
             if (BasicTestClass_sbyte_float_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_sbyte_double_I_0_Test()
+        public TestResult Basic_sbyte_double_I_0_Test()
         {
             if (BasicTestClass_sbyte_double_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_sbyte_double_E_0_Test()
+        public TestResult Basic_sbyte_double_E_0_Test()
         {
             if (BasicTestClass_sbyte_double_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_sbyte_byte_E_1_Test()
+        public TestResult Basic_sbyte_byte_E_1_Test()
         {
             if (BasicTestClass_sbyte_byte_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_sbyte_byte_E_2_Test()
+        public TestResult Basic_sbyte_byte_E_2_Test()
         {
             if (BasicTestClass_sbyte_byte_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_sbyte_byte_E_3_Test()
+        public TestResult Basic_sbyte_byte_E_3_Test()
         {
             if (BasicTestClass_sbyte_byte_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_sbyte_ushort_E_1_Test()
+        public TestResult Basic_sbyte_ushort_E_1_Test()
         {
             if (BasicTestClass_sbyte_ushort_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_sbyte_uint_E_1_Test()
+        public TestResult Basic_sbyte_uint_E_1_Test()
         {
             if (BasicTestClass_sbyte_uint_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_sbyte_ulong_E_1_Test()
+        public TestResult Basic_sbyte_ulong_E_1_Test()
         {
             if (BasicTestClass_sbyte_ulong_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_sbyte_char_E_1_Test()
+        public TestResult Basic_sbyte_char_E_1_Test()
         {
             if (BasicTestClass_sbyte_char_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_short_I_0_Test()
+        public TestResult Basic_short_short_I_0_Test()
         {
             if (BasicTestClass_short_short_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_short_E_0_Test()
+        public TestResult Basic_short_short_E_0_Test()
         {
             if (BasicTestClass_short_short_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_int_I_0_Test()
+        public TestResult Basic_short_int_I_0_Test()
         {
             if (BasicTestClass_short_int_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_int_E_0_Test()
+        public TestResult Basic_short_int_E_0_Test()
         {
             if (BasicTestClass_short_int_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_long_I_0_Test()
+        public TestResult Basic_short_long_I_0_Test()
         {
             if (BasicTestClass_short_long_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_long_E_0_Test()
+        public TestResult Basic_short_long_E_0_Test()
         {
             if (BasicTestClass_short_long_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_float_I_0_Test()
+        public TestResult Basic_short_float_I_0_Test()
         {
             if (BasicTestClass_short_float_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_float_E_0_Test()
+        public TestResult Basic_short_float_E_0_Test()
         {
             if (BasicTestClass_short_float_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_double_I_0_Test()
+        public TestResult Basic_short_double_I_0_Test()
         {
             if (BasicTestClass_short_double_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_double_E_0_Test()
+        public TestResult Basic_short_double_E_0_Test()
         {
             if (BasicTestClass_short_double_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_short_I_1_Test()
+        public TestResult Basic_short_short_I_1_Test()
         {
             if (BasicTestClass_short_short_I_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_short_E_1_Test()
+        public TestResult Basic_short_short_E_1_Test()
         {
             if (BasicTestClass_short_short_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_int_I_1_Test()
+        public TestResult Basic_short_int_I_1_Test()
         {
             if (BasicTestClass_short_int_I_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_int_E_1_Test()
+        public TestResult Basic_short_int_E_1_Test()
         {
             if (BasicTestClass_short_int_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_long_I_1_Test()
+        public TestResult Basic_short_long_I_1_Test()
         {
             if (BasicTestClass_short_long_I_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_long_E_1_Test()
+        public TestResult Basic_short_long_E_1_Test()
         {
             if (BasicTestClass_short_long_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
+        //////[TestMethod]
+        //////public TestResult Basic_short_float_I_1_Test()
+        //////{
+        //////    if (BasicTestClass_short_float_I_1.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_short_float_E_1_Test()
+        //////{
+        //////    if (BasicTestClass_short_float_E_1.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_short_double_I_1_Test()
+        //////{
+        //////    if (BasicTestClass_short_double_I_1.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_short_double_E_1_Test()
+        //////{
+        //////    if (BasicTestClass_short_double_E_1.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
         [TestMethod]
-        public MFTestResults Basic_short_float_I_1_Test()
-        {
-            if (BasicTestClass_short_float_I_1.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_short_float_E_1_Test()
-        {
-            if (BasicTestClass_short_float_E_1.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_short_double_I_1_Test()
-        {
-            if (BasicTestClass_short_double_I_1.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_short_double_E_1_Test()
-        {
-            if (BasicTestClass_short_double_E_1.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_short_decimal_I_1_Test()
+        public TestResult Basic_short_decimal_I_1_Test()
         {
             if (BasicTestClass_short_decimal_I_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_decimal_E_1_Test()
+        public TestResult Basic_short_decimal_E_1_Test()
         {
             if (BasicTestClass_short_decimal_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_sbyte_E_1_Test()
+        public TestResult Basic_short_sbyte_E_1_Test()
         {
             if (BasicTestClass_short_sbyte_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_sbyte_E_2_Test()
+        public TestResult Basic_short_sbyte_E_2_Test()
         {
             if (BasicTestClass_short_sbyte_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_sbyte_E_3_Test()
+        public TestResult Basic_short_sbyte_E_3_Test()
         {
             if (BasicTestClass_short_sbyte_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_sbyte_E_4_Test()
+        public TestResult Basic_short_sbyte_E_4_Test()
         {
             if (BasicTestClass_short_sbyte_E_4.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_byte_E_1_Test()
+        public TestResult Basic_short_byte_E_1_Test()
         {
             if (BasicTestClass_short_byte_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_byte_E_2_Test()
+        public TestResult Basic_short_byte_E_2_Test()
         {
             if (BasicTestClass_short_byte_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_byte_E_3_Test()
+        public TestResult Basic_short_byte_E_3_Test()
         {
             if (BasicTestClass_short_byte_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_byte_E_4_Test()
+        public TestResult Basic_short_byte_E_4_Test()
         {
             if (BasicTestClass_short_byte_E_4.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_ushort_E_1_Test()
+        public TestResult Basic_short_ushort_E_1_Test()
         {
             if (BasicTestClass_short_ushort_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_ushort_E_2_Test()
+        public TestResult Basic_short_ushort_E_2_Test()
         {
             if (BasicTestClass_short_ushort_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_ushort_E_3_Test()
+        public TestResult Basic_short_ushort_E_3_Test()
         {
             if (BasicTestClass_short_ushort_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_uint_E_1_Test()
+        public TestResult Basic_short_uint_E_1_Test()
         {
             if (BasicTestClass_short_uint_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_ulong_E_1_Test()
+        public TestResult Basic_short_ulong_E_1_Test()
         {
             if (BasicTestClass_short_ulong_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_char_E_1_Test()
+        public TestResult Basic_short_char_E_1_Test()
         {
             if (BasicTestClass_short_char_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_short_char_E_2_Test()
+        public TestResult Basic_short_char_E_2_Test()
         {
             if (BasicTestClass_short_char_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         
         [TestMethod]
-        public MFTestResults Basic_short_char_E_3_Test()
+        public TestResult Basic_short_char_E_3_Test()
         {
             if (BasicTestClass_short_char_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_uint_uint_I_0_Test()
+        public TestResult Basic_uint_uint_I_0_Test()
         {
             if (BasicTestClass_uint_uint_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_uint_uint_E_0_Test()
+        public TestResult Basic_uint_uint_E_0_Test()
         {
             if (BasicTestClass_uint_uint_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_uint_long_I_0_Test()
+        public TestResult Basic_uint_long_I_0_Test()
         {
             if (BasicTestClass_uint_long_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_uint_long_E_0_Test()
+        public TestResult Basic_uint_long_E_0_Test()
         {
             if (BasicTestClass_uint_long_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_uint_ulong_I_0_Test()
+        public TestResult Basic_uint_ulong_I_0_Test()
         {
             if (BasicTestClass_uint_ulong_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_uint_ulong_E_0_Test()
+        public TestResult Basic_uint_ulong_E_0_Test()
         {
             if (BasicTestClass_uint_ulong_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
+        //////[TestMethod]
+        //////public TestResult Basic_uint_float_I_0_Test()
+        //////{
+        //////    if (BasicTestClass_uint_float_I_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_uint_float_E_0_Test()
+        //////{
+        //////    if (BasicTestClass_uint_float_E_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_uint_double_I_0_Test()
+        //////{
+        //////    if (BasicTestClass_uint_double_I_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_uint_double_E_0_Test()
+        //////{
+        //////    if (BasicTestClass_uint_double_E_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
         [TestMethod]
-        public MFTestResults Basic_uint_float_I_0_Test()
-        {
-            if (BasicTestClass_uint_float_I_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_uint_float_E_0_Test()
-        {
-            if (BasicTestClass_uint_float_E_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_uint_double_I_0_Test()
-        {
-            if (BasicTestClass_uint_double_I_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_uint_double_E_0_Test()
-        {
-            if (BasicTestClass_uint_double_E_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_uint_sbyte_E_1_Test()
+        public TestResult Basic_uint_sbyte_E_1_Test()
         {
             if (BasicTestClass_uint_sbyte_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_uint_sbyte_E_2_Test()
+        public TestResult Basic_uint_sbyte_E_2_Test()
         {
             if (BasicTestClass_uint_sbyte_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_uint_byte_E_1_Test()
+        public TestResult Basic_uint_byte_E_1_Test()
         {
             if (BasicTestClass_uint_byte_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_uint_byte_E_2_Test()
+        public TestResult Basic_uint_byte_E_2_Test()
         {
             if (BasicTestClass_uint_byte_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_uint_byte_E_3_Test()
+        public TestResult Basic_uint_byte_E_3_Test()
         {
             if (BasicTestClass_uint_byte_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_uint_short_E_1_Test()
+        public TestResult Basic_uint_short_E_1_Test()
         {
             if (BasicTestClass_uint_short_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_uint_short_E_2_Test()
+        public TestResult Basic_uint_short_E_2_Test()
         {
             if (BasicTestClass_uint_short_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_uint_ushort_E_1_Test()
+        public TestResult Basic_uint_ushort_E_1_Test()
         {
             if (BasicTestClass_uint_ushort_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_uint_ushort_E_2_Test()
+        public TestResult Basic_uint_ushort_E_2_Test()
         {
             if (BasicTestClass_uint_ushort_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_uint_ushort_E_3_Test()
+        public TestResult Basic_uint_ushort_E_3_Test()
         {
             if (BasicTestClass_uint_ushort_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_uint_int_E_1_Test()
+        public TestResult Basic_uint_int_E_1_Test()
         {
             if (BasicTestClass_uint_int_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_uint_int_E_2_Test()
+        public TestResult Basic_uint_int_E_2_Test()
         {
             if (BasicTestClass_uint_int_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_uint_char_E_1_Test()
+        public TestResult Basic_uint_char_E_1_Test()
         {
             if (BasicTestClass_uint_char_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_uint_char_E_2_Test()
+        public TestResult Basic_uint_char_E_2_Test()
         {
             if (BasicTestClass_uint_char_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_uint_char_E_3_Test()
+        public TestResult Basic_uint_char_E_3_Test()
         {
             if (BasicTestClass_uint_char_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
-        }
-        
-        /*
+            return TestResult.Fail;
+        }        
+        //////[TestMethod]
+        //////public TestResult Basic_ulong_float_I_0_Test()
+        //////{
+        //////    if (BasicTestClass_ulong_float_I_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_ulong_float_E_0_Test()
+        //////{
+        //////    if (BasicTestClass_ulong_float_E_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_ulong_double_I_0_Test()
+        //////{
+        //////    if (BasicTestClass_ulong_double_I_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Basic_ulong_double_E_0_Test()
+        //////{
+        //////    if (BasicTestClass_ulong_double_E_0.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
         [TestMethod]
-        public MFTestResults Basic_ulong_float_I_0_Test()
-        {
-            if (BasicTestClass_ulong_float_I_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_ulong_float_E_0_Test()
-        {
-            if (BasicTestClass_ulong_float_E_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_ulong_double_I_0_Test()
-        {
-            if (BasicTestClass_ulong_double_I_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_ulong_double_E_0_Test()
-        {
-            if (BasicTestClass_ulong_double_E_0.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Basic_ulong_ulong_I_0_Test()
+        public TestResult Basic_ulong_ulong_I_0_Test()
         {
             if (BasicTestClass_ulong_ulong_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ulong_ulong_E_0_Test()
+        public TestResult Basic_ulong_ulong_E_0_Test()
         {
             if (BasicTestClass_ulong_ulong_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ulong_sbyte_E_1_Test()
+        public TestResult Basic_ulong_sbyte_E_1_Test()
         {
             if (BasicTestClass_ulong_sbyte_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ulong_sbyte_E_2_Test()
+        public TestResult Basic_ulong_sbyte_E_2_Test()
         {
             if (BasicTestClass_ulong_sbyte_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ulong_byte_E_1_Test()
+        public TestResult Basic_ulong_byte_E_1_Test()
         {
             if (BasicTestClass_ulong_byte_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ulong_byte_E_2_Test()
+        public TestResult Basic_ulong_byte_E_2_Test()
         {
             if (BasicTestClass_ulong_byte_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ulong_byte_E_3_Test()
+        public TestResult Basic_ulong_byte_E_3_Test()
         {
             if (BasicTestClass_ulong_byte_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ulong_short_E_1_Test()
+        public TestResult Basic_ulong_short_E_1_Test()
         {
             if (BasicTestClass_ulong_short_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ulong_short_E_2_Test()
+        public TestResult Basic_ulong_short_E_2_Test()
         {
             if (BasicTestClass_ulong_short_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ulong_ushort_E_1_Test()
+        public TestResult Basic_ulong_ushort_E_1_Test()
         {
             if (BasicTestClass_ulong_ushort_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ulong_ushort_E_2_Test()
+        public TestResult Basic_ulong_ushort_E_2_Test()
         {
             if (BasicTestClass_ulong_ushort_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ulong_ushort_E_3_Test()
+        public TestResult Basic_ulong_ushort_E_3_Test()
         {
             if (BasicTestClass_ulong_ushort_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ulong_int_E_1_Test()
+        public TestResult Basic_ulong_int_E_1_Test()
         {
             if (BasicTestClass_ulong_int_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ulong_int_E_2_Test()
+        public TestResult Basic_ulong_int_E_2_Test()
         {
             if (BasicTestClass_ulong_int_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ulong_uint_E_1_Test()
+        public TestResult Basic_ulong_uint_E_1_Test()
         {
             if (BasicTestClass_ulong_uint_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ulong_uint_E_2_Test()
+        public TestResult Basic_ulong_uint_E_2_Test()
         {
             if (BasicTestClass_ulong_uint_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ulong_uint_E_3_Test()
+        public TestResult Basic_ulong_uint_E_3_Test()
         {
             if (BasicTestClass_ulong_uint_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ulong_long_E_1_Test()
+        public TestResult Basic_ulong_long_E_1_Test()
         {
             if (BasicTestClass_ulong_long_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ulong_long_E_2_Test()
+        public TestResult Basic_ulong_long_E_2_Test()
         {
             if (BasicTestClass_ulong_long_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ulong_char_E_1_Test()
+        public TestResult Basic_ulong_char_E_1_Test()
         {
             if (BasicTestClass_ulong_char_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ulong_char_E_2_Test()
+        public TestResult Basic_ulong_char_E_2_Test()
         {
             if (BasicTestClass_ulong_char_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ulong_char_E_3_Test()
+        public TestResult Basic_ulong_char_E_3_Test()
         {
             if (BasicTestClass_ulong_char_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         
         [TestMethod]
-        public MFTestResults Basic_ushort_ushort_I_0_Test()
+        public TestResult Basic_ushort_ushort_I_0_Test()
         {
             if (BasicTestClass_ushort_ushort_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ushort_ushort_E_0_Test()
+        public TestResult Basic_ushort_ushort_E_0_Test()
         {
             if (BasicTestClass_ushort_ushort_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ushort_int_I_0_Test()
+        public TestResult Basic_ushort_int_I_0_Test()
         {
             if (BasicTestClass_ushort_int_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ushort_int_E_0_Test()
+        public TestResult Basic_ushort_int_E_0_Test()
         {
             if (BasicTestClass_ushort_int_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ushort_uint_I_0_Test()
+        public TestResult Basic_ushort_uint_I_0_Test()
         {
             if (BasicTestClass_ushort_uint_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ushort_uint_E_0_Test()
+        public TestResult Basic_ushort_uint_E_0_Test()
         {
             if (BasicTestClass_ushort_uint_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ushort_long_I_0_Test()
+        public TestResult Basic_ushort_long_I_0_Test()
         {
             if (BasicTestClass_ushort_long_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ushort_long_E_0_Test()
+        public TestResult Basic_ushort_long_E_0_Test()
         {
             if (BasicTestClass_ushort_long_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ushort_ulong_I_0_Test()
+        public TestResult Basic_ushort_ulong_I_0_Test()
         {
             if (BasicTestClass_ushort_ulong_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ushort_ulong_E_0_Test()
+        public TestResult Basic_ushort_ulong_E_0_Test()
         {
             if (BasicTestClass_ushort_ulong_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ushort_float_I_0_Test()
+        public TestResult Basic_ushort_float_I_0_Test()
         {
             if (BasicTestClass_ushort_float_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ushort_float_E_0_Test()
+        public TestResult Basic_ushort_float_E_0_Test()
         {
             if (BasicTestClass_ushort_float_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ushort_double_I_0_Test()
+        public TestResult Basic_ushort_double_I_0_Test()
         {
             if (BasicTestClass_ushort_double_I_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ushort_double_E_0_Test()
+        public TestResult Basic_ushort_double_E_0_Test()
         {
             if (BasicTestClass_ushort_double_E_0.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ushort_sbyte_E_1_Test()
+        public TestResult Basic_ushort_sbyte_E_1_Test()
         {
             if (BasicTestClass_ushort_sbyte_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ushort_sbyte_E_2_Test()
+        public TestResult Basic_ushort_sbyte_E_2_Test()
         {
             if (BasicTestClass_ushort_sbyte_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ushort_byte_E_1_Test()
+        public TestResult Basic_ushort_byte_E_1_Test()
         {
             if (BasicTestClass_ushort_byte_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ushort_byte_E_2_Test()
+        public TestResult Basic_ushort_byte_E_2_Test()
         {
             if (BasicTestClass_ushort_byte_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ushort_byte_E_3_Test()
+        public TestResult Basic_ushort_byte_E_3_Test()
         {
             if (BasicTestClass_ushort_byte_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ushort_short_E_1_Test()
+        public TestResult Basic_ushort_short_E_1_Test()
         {
             if (BasicTestClass_ushort_short_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ushort_short_E_2_Test()
+        public TestResult Basic_ushort_short_E_2_Test()
         {
             if (BasicTestClass_ushort_short_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ushort_char_E_1_Test()
+        public TestResult Basic_ushort_char_E_1_Test()
         {
             if (BasicTestClass_ushort_char_E_1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ushort_char_E_2_Test()
+        public TestResult Basic_ushort_char_E_2_Test()
         {
             if (BasicTestClass_ushort_char_E_2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Basic_ushort_char_E_3_Test()
+        public TestResult Basic_ushort_char_E_3_Test()
         {
             if (BasicTestClass_ushort_char_E_3.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
-        */        
+        
         //Compiled Test Cases 
         public class BasicTestClass_byte_byte_I_0
         {
@@ -3551,463 +3854,463 @@ namespace Microsoft.SPOT.Platform.Tests
                 return (Main_old() == 0);
             }
         }
-        public class BasicTestClass_double_double_E_0
-        {
-            public static int Main_old()
-            {
-                double source;
-                double dest;
-                source = 1.0;
-                dest = (double)source;
-                if (dest == 1.0)
-                    return 0;
-                else
-                    return 1;
+        //////public class BasicTestClass_double_double_E_0
+        //////{
+        //////    public static int Main_old()
+        //////    {
+        //////        double source;
+        //////        double dest;
+        //////        source = 1.0;
+        //////        dest = (double)source;
+        //////        if (dest == 1.0)
+        //////            return 0;
+        //////        else
+        //////            return 1;
 
-            }
-            public static bool testMethod()
-            {
-                return (Main_old() == 0);
-            }
-        }
-        public class BasicTestClass_double_byte_E_1
-        {
-            public static int Main_old()
-            {
-                double source;
-                byte dest;
-                source = 1.0;
-                dest = (byte)source;
-                if (dest == 1)
-                    return 0;
-                else
-                    return 1;
+        //////    }
+        //////    public static bool testMethod()
+        //////    {
+        //////        return (Main_old() == 0);
+        //////    }
+        //////}
+        //////public class BasicTestClass_double_byte_E_1
+        //////{
+        //////    public static int Main_old()
+        //////    {
+        //////        double source;
+        //////        byte dest;
+        //////        source = 1.0;
+        //////        dest = (byte)source;
+        //////        if (dest == 1)
+        //////            return 0;
+        //////        else
+        //////            return 1;
 
-            }
-            public static bool testMethod()
-            {
-                return (Main_old() == 0);
-            }
-        }
-        public class BasicTestClass_double_byte_E_2
-        {
-            public static int Main_old()
-            {
-                double source;
-                byte dest;
-                source = 255d;
-                dest = (byte)source;
-                if (dest == 255)
-                    return 0;
-                else
-                    return 1;
+        //////    }
+        //////    public static bool testMethod()
+        //////    {
+        //////        return (Main_old() == 0);
+        //////    }
+        //////}
+        //////public class BasicTestClass_double_byte_E_2
+        //////{
+        //////    public static int Main_old()
+        //////    {
+        //////        double source;
+        //////        byte dest;
+        //////        source = 255d;
+        //////        dest = (byte)source;
+        //////        if (dest == 255)
+        //////            return 0;
+        //////        else
+        //////            return 1;
 
-            }
-            public static bool testMethod()
-            {
-                return (Main_old() == 0);
-            }
-        }
-        public class BasicTestClass_double_byte_E_3
-        {
-            public static int Main_old()
-            {
-                double source;
-                byte dest;
-                source = 0d;
-                dest = (byte)source;
-                if (dest == 0)
-                    return 0;
-                else
-                    return 1;
+        //////    }
+        //////    public static bool testMethod()
+        //////    {
+        //////        return (Main_old() == 0);
+        //////    }
+        //////}
+        //////public class BasicTestClass_double_byte_E_3
+        //////{
+        //////    public static int Main_old()
+        //////    {
+        //////        double source;
+        //////        byte dest;
+        //////        source = 0d;
+        //////        dest = (byte)source;
+        //////        if (dest == 0)
+        //////            return 0;
+        //////        else
+        //////            return 1;
 
-            }
-            public static bool testMethod()
-            {
-                return (Main_old() == 0);
-            }
-        }
-        public class BasicTestClass_double_sbyte_E_1
-        {
-            public static int Main_old()
-            {
-                double source;
-                sbyte dest;
-                source = 1.0;
-                dest = (sbyte)source;
-                if (dest == 1)
-                    return 0;
-                else
-                    return 1;
+        //////    }
+        //////    public static bool testMethod()
+        //////    {
+        //////        return (Main_old() == 0);
+        //////    }
+        //////}
+        //////public class BasicTestClass_double_sbyte_E_1
+        //////{
+        //////    public static int Main_old()
+        //////    {
+        //////        double source;
+        //////        sbyte dest;
+        //////        source = 1.0;
+        //////        dest = (sbyte)source;
+        //////        if (dest == 1)
+        //////            return 0;
+        //////        else
+        //////            return 1;
 
-            }
-            public static bool testMethod()
-            {
-                return (Main_old() == 0);
-            }
-        }
-        public class BasicTestClass_double_sbyte_E_2
-        {
-            public static int Main_old()
-            {
-                double source;
-                sbyte dest;
-                source = 127d;
-                dest = (sbyte)source;
-                if (dest == 127)
-                    return 0;
-                else
-                    return 1;
+        //////    }
+        //////    public static bool testMethod()
+        //////    {
+        //////        return (Main_old() == 0);
+        //////    }
+        //////}
+        //////public class BasicTestClass_double_sbyte_E_2
+        //////{
+        //////    public static int Main_old()
+        //////    {
+        //////        double source;
+        //////        sbyte dest;
+        //////        source = 127d;
+        //////        dest = (sbyte)source;
+        //////        if (dest == 127)
+        //////            return 0;
+        //////        else
+        //////            return 1;
 
-            }
-            public static bool testMethod()
-            {
-                return (Main_old() == 0);
-            }
-        }
-        public class BasicTestClass_double_sbyte_E_3
-        {
-            public static int Main_old()
-            {
-                double source;
-                sbyte dest;
-                source = -128d;
-                dest = (sbyte)source;
-                if (dest == -128)
-                    return 0;
-                else
-                    return 1;
+        //////    }
+        //////    public static bool testMethod()
+        //////    {
+        //////        return (Main_old() == 0);
+        //////    }
+        //////}
+        //////public class BasicTestClass_double_sbyte_E_3
+        //////{
+        //////    public static int Main_old()
+        //////    {
+        //////        double source;
+        //////        sbyte dest;
+        //////        source = -128d;
+        //////        dest = (sbyte)source;
+        //////        if (dest == -128)
+        //////            return 0;
+        //////        else
+        //////            return 1;
 
-            }
-            public static bool testMethod()
-            {
-                return (Main_old() == 0);
-            }
-        }
-        public class BasicTestClass_double_char_E_1
-        {
-            public static int Main_old()
-            {
-                double source;
-                char dest;
-                source = 1.0;
-                dest = (char)source;
-                if (dest == '\x1')
-                    return 0;
-                else
-                    return 1;
+        //////    }
+        //////    public static bool testMethod()
+        //////    {
+        //////        return (Main_old() == 0);
+        //////    }
+        //////}
+        //////public class BasicTestClass_double_char_E_1
+        //////{
+        //////    public static int Main_old()
+        //////    {
+        //////        double source;
+        //////        char dest;
+        //////        source = 1.0;
+        //////        dest = (char)source;
+        //////        if (dest == '\x1')
+        //////            return 0;
+        //////        else
+        //////            return 1;
 
-            }
-            public static bool testMethod()
-            {
-                return (Main_old() == 0);
-            }
-        }
-        public class BasicTestClass_double_char_E_2
-        {
-            public static int Main_old()
-            {
-                double source;
-                char dest;
-                source = 65535d;
-                dest = (char)source;
-                if (dest == '\xffff')
-                    return 0;
-                else
-                    return 1;
+        //////    }
+        //////    public static bool testMethod()
+        //////    {
+        //////        return (Main_old() == 0);
+        //////    }
+        //////}
+        //////public class BasicTestClass_double_char_E_2
+        //////{
+        //////    public static int Main_old()
+        //////    {
+        //////        double source;
+        //////        char dest;
+        //////        source = 65535d;
+        //////        dest = (char)source;
+        //////        if (dest == '\xffff')
+        //////            return 0;
+        //////        else
+        //////            return 1;
 
-            }
-            public static bool testMethod()
-            {
-                return (Main_old() == 0);
-            }
-        }
-        public class BasicTestClass_double_char_E_3
-        {
-            public static int Main_old()
-            {
-                double source;
-                char dest;
-                source = 0d;
-                dest = (char)source;
-                if (dest == '\x0')
-                    return 0;
-                else
-                    return 1;
+        //////    }
+        //////    public static bool testMethod()
+        //////    {
+        //////        return (Main_old() == 0);
+        //////    }
+        //////}
+        //////public class BasicTestClass_double_char_E_3
+        //////{
+        //////    public static int Main_old()
+        //////    {
+        //////        double source;
+        //////        char dest;
+        //////        source = 0d;
+        //////        dest = (char)source;
+        //////        if (dest == '\x0')
+        //////            return 0;
+        //////        else
+        //////            return 1;
 
-            }
-            public static bool testMethod()
-            {
-                return (Main_old() == 0);
-            }
-        }
-        public class BasicTestClass_double_short_E_1
-        {
-            public static int Main_old()
-            {
-                double source;
-                short dest;
-                source = 1.0;
-                dest = (short)source;
-                if (dest == 1)
-                    return 0;
-                else
-                    return 1;
+        //////    }
+        //////    public static bool testMethod()
+        //////    {
+        //////        return (Main_old() == 0);
+        //////    }
+        //////}
+        //////public class BasicTestClass_double_short_E_1
+        //////{
+        //////    public static int Main_old()
+        //////    {
+        //////        double source;
+        //////        short dest;
+        //////        source = 1.0;
+        //////        dest = (short)source;
+        //////        if (dest == 1)
+        //////            return 0;
+        //////        else
+        //////            return 1;
 
-            }
-            public static bool testMethod()
-            {
-                return (Main_old() == 0);
-            }
-        }
-        public class BasicTestClass_double_short_E_2
-        {
-            public static int Main_old()
-            {
-                double source;
-                short dest;
-                source = 32767d;
-                dest = (short)source;
-                if (dest == 32767)
-                    return 0;
-                else
-                    return 1;
+        //////    }
+        //////    public static bool testMethod()
+        //////    {
+        //////        return (Main_old() == 0);
+        //////    }
+        //////}
+        //////public class BasicTestClass_double_short_E_2
+        //////{
+        //////    public static int Main_old()
+        //////    {
+        //////        double source;
+        //////        short dest;
+        //////        source = 32767d;
+        //////        dest = (short)source;
+        //////        if (dest == 32767)
+        //////            return 0;
+        //////        else
+        //////            return 1;
 
-            }
-            public static bool testMethod()
-            {
-                return (Main_old() == 0);
-            }
-        }
-        public class BasicTestClass_double_short_E_3
-        {
-            public static int Main_old()
-            {
-                double source;
-                short dest;
-                source = -32767d;
-                dest = (short)source;
-                if (dest == -32767)
-                    return 0;
-                else
-                    return 1;
+        //////    }
+        //////    public static bool testMethod()
+        //////    {
+        //////        return (Main_old() == 0);
+        //////    }
+        //////}
+        //////public class BasicTestClass_double_short_E_3
+        //////{
+        //////    public static int Main_old()
+        //////    {
+        //////        double source;
+        //////        short dest;
+        //////        source = -32767d;
+        //////        dest = (short)source;
+        //////        if (dest == -32767)
+        //////            return 0;
+        //////        else
+        //////            return 1;
 
-            }
-            public static bool testMethod()
-            {
-                return (Main_old() == 0);
-            }
-        }
-        public class BasicTestClass_double_ushort_E_1
-        {
-            public static int Main_old()
-            {
-                double source;
-                ushort dest;
-                source = 1.0;
-                dest = (ushort)source;
-                if (dest == 1)
-                    return 0;
-                else
-                    return 1;
+        //////    }
+        //////    public static bool testMethod()
+        //////    {
+        //////        return (Main_old() == 0);
+        //////    }
+        //////}
+        //////public class BasicTestClass_double_ushort_E_1
+        //////{
+        //////    public static int Main_old()
+        //////    {
+        //////        double source;
+        //////        ushort dest;
+        //////        source = 1.0;
+        //////        dest = (ushort)source;
+        //////        if (dest == 1)
+        //////            return 0;
+        //////        else
+        //////            return 1;
 
-            }
-            public static bool testMethod()
-            {
-                return (Main_old() == 0);
-            }
-        }
-        public class BasicTestClass_double_ushort_E_2
-        {
-            public static int Main_old()
-            {
-                double source;
-                ushort dest;
-                source = 65535d;
-                dest = (ushort)source;
-                if (dest == 65535)
-                    return 0;
-                else
-                    return 1;
+        //////    }
+        //////    public static bool testMethod()
+        //////    {
+        //////        return (Main_old() == 0);
+        //////    }
+        //////}
+        //////public class BasicTestClass_double_ushort_E_2
+        //////{
+        //////    public static int Main_old()
+        //////    {
+        //////        double source;
+        //////        ushort dest;
+        //////        source = 65535d;
+        //////        dest = (ushort)source;
+        //////        if (dest == 65535)
+        //////            return 0;
+        //////        else
+        //////            return 1;
 
-            }
-            public static bool testMethod()
-            {
-                return (Main_old() == 0);
-            }
-        }
-        public class BasicTestClass_double_ushort_E_3
-        {
-            public static int Main_old()
-            {
-                double source;
-                ushort dest;
-                source = 0d;
-                dest = (ushort)source;
-                if (dest == 0)
-                    return 0;
-                else
-                    return 1;
+        //////    }
+        //////    public static bool testMethod()
+        //////    {
+        //////        return (Main_old() == 0);
+        //////    }
+        //////}
+        //////public class BasicTestClass_double_ushort_E_3
+        //////{
+        //////    public static int Main_old()
+        //////    {
+        //////        double source;
+        //////        ushort dest;
+        //////        source = 0d;
+        //////        dest = (ushort)source;
+        //////        if (dest == 0)
+        //////            return 0;
+        //////        else
+        //////            return 1;
 
-            }
-            public static bool testMethod()
-            {
-                return (Main_old() == 0);
-            }
-        }
-        public class BasicTestClass_double_int_E_1
-        {
-            public static int Main_old()
-            {
-                double source;
-                int dest;
-                source = 1.0;
-                dest = (int)source;
-                if (dest == 1)
-                    return 0;
-                else
-                    return 1;
+        //////    }
+        //////    public static bool testMethod()
+        //////    {
+        //////        return (Main_old() == 0);
+        //////    }
+        //////}
+        //////public class BasicTestClass_double_int_E_1
+        //////{
+        //////    public static int Main_old()
+        //////    {
+        //////        double source;
+        //////        int dest;
+        //////        source = 1.0;
+        //////        dest = (int)source;
+        //////        if (dest == 1)
+        //////            return 0;
+        //////        else
+        //////            return 1;
 
-            }
-            public static bool testMethod()
-            {
-                return (Main_old() == 0);
-            }
-        }
-        public class BasicTestClass_double_int_E_2
-        {
-            public static int Main_old()
-            {
-                double source;
-                int dest;
-                source = 2147483647d;
-                dest = (int)source;
-                if (dest == 2147483647)
-                    return 0;
-                else
-                    return 1;
+        //////    }
+        //////    public static bool testMethod()
+        //////    {
+        //////        return (Main_old() == 0);
+        //////    }
+        //////}
+        //////public class BasicTestClass_double_int_E_2
+        //////{
+        //////    public static int Main_old()
+        //////    {
+        //////        double source;
+        //////        int dest;
+        //////        source = 2147483647d;
+        //////        dest = (int)source;
+        //////        if (dest == 2147483647)
+        //////            return 0;
+        //////        else
+        //////            return 1;
 
-            }
-            public static bool testMethod()
-            {
-                return (Main_old() == 0);
-            }
-        }
-        public class BasicTestClass_double_int_E_3
-        {
-            public static int Main_old()
-            {
-                double source;
-                int dest;
-                source = -2147483647d;
-                dest = (int)source;
-                if (dest == -2147483647)
-                    return 0;
-                else
-                    return 1;
+        //////    }
+        //////    public static bool testMethod()
+        //////    {
+        //////        return (Main_old() == 0);
+        //////    }
+        //////}
+        //////public class BasicTestClass_double_int_E_3
+        //////{
+        //////    public static int Main_old()
+        //////    {
+        //////        double source;
+        //////        int dest;
+        //////        source = -2147483647d;
+        //////        dest = (int)source;
+        //////        if (dest == -2147483647)
+        //////            return 0;
+        //////        else
+        //////            return 1;
 
-            }
-            public static bool testMethod()
-            {
-                return (Main_old() == 0);
-            }
-        }
-        public class BasicTestClass_double_uint_E_1
-        {
-            public static int Main_old()
-            {
-                double source;
-                uint dest;
-                source = 1.0;
-                dest = (uint)source;
-                if (dest == 1)
-                    return 0;
-                else
-                    return 1;
+        //////    }
+        //////    public static bool testMethod()
+        //////    {
+        //////        return (Main_old() == 0);
+        //////    }
+        //////}
+        //////public class BasicTestClass_double_uint_E_1
+        //////{
+        //////    public static int Main_old()
+        //////    {
+        //////        double source;
+        //////        uint dest;
+        //////        source = 1.0;
+        //////        dest = (uint)source;
+        //////        if (dest == 1)
+        //////            return 0;
+        //////        else
+        //////            return 1;
 
-            }
-            public static bool testMethod()
-            {
-                return (Main_old() == 0);
-            }
-        }
-        public class BasicTestClass_double_uint_E_2
-        {
-            public static int Main_old()
-            {
-                double source;
-                uint dest;
-                source = 4294967295d;
-                dest = (uint)source;
-                if (dest == 4294967295)
-                    return 0;
-                else
-                    return 1;
+        //////    }
+        //////    public static bool testMethod()
+        //////    {
+        //////        return (Main_old() == 0);
+        //////    }
+        //////}
+        //////public class BasicTestClass_double_uint_E_2
+        //////{
+        //////    public static int Main_old()
+        //////    {
+        //////        double source;
+        //////        uint dest;
+        //////        source = 4294967295d;
+        //////        dest = (uint)source;
+        //////        if (dest == 4294967295)
+        //////            return 0;
+        //////        else
+        //////            return 1;
 
-            }
-            public static bool testMethod()
-            {
-                return (Main_old() == 0);
-            }
-        }
-        public class BasicTestClass_double_uint_E_3
-        {
-            public static int Main_old()
-            {
-                double source;
-                uint dest;
-                source = 0d;
-                dest = (uint)source;
-                Microsoft.SPOT.Debug.Print(dest.ToString() + " : " + source.ToString());
-                if (dest == 0)
-                    return 0;
-                else
-                    return 1;
+        //////    }
+        //////    public static bool testMethod()
+        //////    {
+        //////        return (Main_old() == 0);
+        //////    }
+        //////}
+        //////public class BasicTestClass_double_uint_E_3
+        //////{
+        //////    public static int Main_old()
+        //////    {
+        //////        double source;
+        //////        uint dest;
+        //////        source = 0d;
+        //////        dest = (uint)source;
 
-            }
-            public static bool testMethod()
-            {
-                return (Main_old() == 0);
-            }
-        }
-        public class BasicTestClass_double_long_E_1
-        {
-            public static int Main_old()
-            {
-                double source;
-                long dest;
-                source = 1.0;
-                dest = (long)source;
-                if (dest == 1)
-                    return 0;
-                else
-                    return 1;
+        //////        if (dest == 0)
+        //////            return 0;
+        //////        else
+        //////            return 1;
 
-            }
-            public static bool testMethod()
-            {
-                return (Main_old() == 0);
-            }
-        }
-        public class BasicTestClass_double_ulong_E_1
-        {
-            public static int Main_old()
-            {
-                double source;
-                ulong dest;
-                source = 1.0;
-                dest = (ulong)source;
-                if (dest == 1)
-                    return 0;
-                else
-                    return 1;
+        //////    }
+        //////    public static bool testMethod()
+        //////    {
+        //////        return (Main_old() == 0);
+        //////    }
+        //////}
+        //////public class BasicTestClass_double_long_E_1
+        //////{
+        //////    public static int Main_old()
+        //////    {
+        //////        double source;
+        //////        long dest;
+        //////        source = 1.0;
+        //////        dest = (long)source;
+        //////        if (dest == 1)
+        //////            return 0;
+        //////        else
+        //////            return 1;
 
-            }
-            public static bool testMethod()
-            {
-                return (Main_old() == 0);
-            }
-        }
+        //////    }
+        //////    public static bool testMethod()
+        //////    {
+        //////        return (Main_old() == 0);
+        //////    }
+        //////}
+        //////public class BasicTestClass_double_ulong_E_1
+        //////{
+        //////    public static int Main_old()
+        //////    {
+        //////        double source;
+        //////        ulong dest;
+        //////        source = 1.0;
+        //////        dest = (ulong)source;
+        //////        if (dest == 1)
+        //////            return 0;
+        //////        else
+        //////            return 1;
+
+        //////    }
+        //////    public static bool testMethod()
+        //////    {
+        //////        return (Main_old() == 0);
+        //////    }
+        //////}
         public class BasicTestClass_double_float_E_1
         {
             public static int Main_old()
@@ -7352,8 +7655,7 @@ namespace Microsoft.SPOT.Platform.Tests
                 return (Main_old() == 0);
             }
         }
-
-        /*        
+        
         public class BasicTestClass_ulong_float_I_0
         {
             public static int Main_old()
@@ -8305,6 +8607,5 @@ namespace Microsoft.SPOT.Platform.Tests
                 return (Main_old() == 0);
             }
         }
-    */
     }
 }

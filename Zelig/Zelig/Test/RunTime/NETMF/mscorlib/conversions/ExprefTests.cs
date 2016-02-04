@@ -3,26 +3,48 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class ExprefTests : IMFTestInterface
+    public class ExprefTests : TestBase, ITestInterface
     {
         [SetUp]
-        public InitializeResult Initialize()
+        public InitializeResult Initialize( )
         {
-            Log.Comment("Adding set up for the tests.");
+            Log.Comment( "Adding set up for the tests." );
             // Add your functionality here.   
-            
+
             return InitializeResult.ReadyToGo;
         }
 
         [TearDown]
-        public void CleanUp()
+        public void CleanUp( )
         {
-            Log.Comment("Cleaning up after the tests");
+            Log.Comment( "Cleaning up after the tests" );
+        }
+
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+
+            result |= Assert.CheckFailed( Expref_obj_ref_Test( ) );
+            result |= Assert.CheckFailed( Expref_obj_ref_exc_Test( ) );
+            result |= Assert.CheckFailed( Expref_class_class_Test( ) );
+            result |= Assert.CheckFailed( Expref_class_class_exc_Test( ) );
+            result |= Assert.CheckFailed( Expref_inter_struct_exc_Test( ) );
+            result |= Assert.CheckFailed( Expref_class_inter_Test( ) );
+            result |= Assert.CheckFailed( Expref_class_inter_exc_Test( ) );
+            result |= Assert.CheckFailed( Expref_inter_class_Test( ) );
+            result |= Assert.CheckFailed( Expref_inter_class2_Test( ) );
+            result |= Assert.CheckFailed( Expref_inter_class2_exc1_Test( ) );
+            result |= Assert.CheckFailed( Expref_inter_class2_exc2_Test( ) );
+            result |= Assert.CheckFailed( Expref_inter_class_exc_Test( ) );
+            result |= Assert.CheckFailed( Expref_inter_class_sealed_Test( ) );
+            result |= Assert.CheckFailed( Expref_inter_class_sealed_exc_Test( ) );
+            result |= Assert.CheckFailed( Expref_inter_inter_Test( ) );
+            result |= Assert.CheckFailed( Expref_inter_inter_exc_Test( ) );
+
+            return result;
         }
 
         //Expref Test methods
@@ -32,174 +54,174 @@ namespace Microsoft.SPOT.Platform.Tests
 
         //Test Case Calls 
         [TestMethod]
-        public MFTestResults Expref_obj_ref_Test()
+        public TestResult Expref_obj_ref_Test()
         {   
             
             Log.Comment(" Converting from 'object' to a reference object. ");
             if (ExprefTestClass_obj_ref.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expref_obj_ref_exc_Test()
+        public TestResult Expref_obj_ref_exc_Test()
         {
             
             Log.Comment(" Converting from 'object' to a reference object. ");
             if (ExprefTestClass_obj_ref_exc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expref_class_class_Test()
+        public TestResult Expref_class_class_Test()
         {
             
             Log.Comment(" Tests that you can convert from a base class to a derived class");
             if (ExprefTestClass_class_class.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expref_class_class_exc_Test()
+        public TestResult Expref_class_class_exc_Test()
         {
             
             Log.Comment(" Tests that you can convert from a base class to a derived class");
             if (ExprefTestClass_class_class_exc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults Expref_inter_struct_exc_Test()
+        public TestResult Expref_inter_struct_exc_Test()
         {
             
             Log.Comment(" Tests that you can convert from an interface to a struct that implements it.");
             if (ExprefTestClass_inter_struct_exc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expref_class_inter_Test()
+        public TestResult Expref_class_inter_Test()
         {
             Log.Comment(" Tests converting from a class to an interface that the class does not implement (but a derived class might).");
             if (ExprefTestClass_class_inter.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expref_class_inter_exc_Test()
+        public TestResult Expref_class_inter_exc_Test()
         {
             Log.Comment(" Tests converting from a class to an interface that the class does not implement (but a derived class might).");
             if (ExprefTestClass_class_inter_exc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expref_inter_class_Test()
+        public TestResult Expref_inter_class_Test()
         {
             Log.Comment(" Tests converting from an interface to a class");
             Log.Comment("From any interface-type S to any class-type T, provided T is not sealed, or provided T implements S.");
             Log.Comment("If T implements S:");
             if (ExprefTestClass_inter_class.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expref_inter_class2_Test()
+        public TestResult Expref_inter_class2_Test()
         {
             Log.Comment(" Tests converting from an interface to a class");
             if (ExprefTestClass_inter_class2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expref_inter_class2_exc1_Test()
+        public TestResult Expref_inter_class2_exc1_Test()
         {
             Log.Comment(" Tests converting from an interface to a class");
             if (ExprefTestClass_inter_class2_exc1.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expref_inter_class2_exc2_Test()
+        public TestResult Expref_inter_class2_exc2_Test()
         {
 
             Log.Comment(" Tests converting from an interface to a class");
             if (ExprefTestClass_inter_class2_exc2.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expref_inter_class_exc_Test()
+        public TestResult Expref_inter_class_exc_Test()
         {
 
             Log.Comment(" Tests converting from an interface to a class");
             if (ExprefTestClass_inter_class_exc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expref_inter_class_sealed_Test()
+        public TestResult Expref_inter_class_sealed_Test()
         {
             Log.Comment(" Tests converting from an interface to a class");
             if (ExprefTestClass_inter_class_sealed.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expref_inter_class_sealed_exc_Test()
+        public TestResult Expref_inter_class_sealed_exc_Test()
         {
             Log.Comment(" Tests converting from an interface to a class");
             if (ExprefTestClass_inter_class_sealed_exc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expref_inter_inter_Test()
+        public TestResult Expref_inter_inter_Test()
         {
             Log.Comment(" Tests converting from an interface to an interface");
             if (ExprefTestClass_inter_inter.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expref_inter_inter_exc_Test()
+        public TestResult Expref_inter_inter_exc_Test()
         {
             Log.Comment(" Tests converting from an interface to an interface");
             if (ExprefTestClass_inter_inter_exc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         //Compiled Test Cases 
