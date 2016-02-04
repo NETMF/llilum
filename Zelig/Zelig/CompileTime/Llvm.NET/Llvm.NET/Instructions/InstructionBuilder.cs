@@ -72,6 +72,8 @@ namespace Llvm.NET.Instructions
 
         public Value FDiv( Value lhs, Value rhs ) => BuildBinOp( NativeMethods.BuildFDiv, lhs, rhs );
 
+        public Value FRem( Value lhs, Value rhs ) => BuildBinOp( NativeMethods.BuildFRem, lhs, rhs );
+
         public Value Neg( Value value ) => BuildUnaryOp( NativeMethods.BuildNeg, value );
 
         public Value Not( Value value ) => BuildUnaryOp( NativeMethods.BuildNot, value );
