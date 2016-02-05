@@ -257,6 +257,9 @@ namespace Microsoft.Zelig.LLVM
                 case BinaryOperator.DIV:
                     retVal = bldr.FDiv(left, right);
                     break;
+                case BinaryOperator.REM:
+                    retVal = bldr.FRem(left, right);
+                    break;
                 default:
                     throw new NotSupportedException($"Parameters combination not supported for Binary Operator: {binOp}");
                 }

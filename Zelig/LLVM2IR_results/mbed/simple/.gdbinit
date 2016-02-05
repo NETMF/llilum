@@ -9,6 +9,7 @@ set print address  off
 set print pretty on
 set print symbol off 
 set print symbol-filename off
+set pagination off
 set  disassemble-next-line on
 br DebugLogPrint
 commands

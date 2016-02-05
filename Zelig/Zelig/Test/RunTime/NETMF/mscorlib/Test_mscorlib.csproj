@@ -22,7 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <NoWarn>CS0108; CS0162; CS0219; ; CS0164; CS0219; CS0649; CS0414; CS0169; CS0114; CS0251</NoWarn>
+    <NoWarn>CS0618; CS0661; CS0660; CS0628; CS1058; CS0067; CS0108; CS0168; CS0109; CS0414; CS0626; CS1718; CS0675; 0CS0108; CS0162; CS0219; ; CS0164; CS0219; CS0649; CS0414; CS0169; CS0114; CS0251</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -50,11 +50,33 @@
     <Compile Include="classes\classes2\Static_InstTests.cs" />
     <Compile Include="classes\classes3\MembersTests.cs" />
     <Compile Include="classes\classes3\MethodsTests.cs" />
+    <Compile Include="conversions\basic2\BasicTests2.cs" />
+    <Compile Include="conversions\basic\BasicTests.cs" />
+    <Compile Include="conversions\expenum\Expenum1Tests.cs" />
+    <Compile Include="conversions\expenum\Expenum2Tests.cs" />
+    <Compile Include="conversions\expenum2\Expenum3Tests.cs" />
+    <Compile Include="conversions\user\selection\BasicSelectionTests.cs" />
+    <Compile Include="conversions\user\ClassClassTests.cs" />
+    <Compile Include="conversions\user\ClassStructTests.cs" />
+    <Compile Include="conversions\user\StructClassTests.cs" />
+    <Compile Include="conversions\user\StructStructTests.cs" />
+    <Compile Include="conversions\BoxingTests.cs" />
+    <Compile Include="conversions\Convert.cs" />
+    <Compile Include="conversions\ExprefTests.cs" />
+    <Compile Include="conversions\ImpenumTests.cs" />
+    <Compile Include="conversions\ImprefTests.cs" />
     <Compile Include="enums\EnumTests.cs" />
     <Compile Include="exceptions\CSharp\ExceptionsTests.cs" />
     <Compile Include="interfaces\InterfaceTests.cs" />
     <Compile Include="structs\StructsTests.cs" />
+    <Compile Include="types\ReferenceBoxingTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="types\ValueArrayTests.cs" />
+    <Compile Include="types\ValueDefault_ConstTests.cs" />
+    <Compile Include="types\ValueFloatTests.cs" />
+    <Compile Include="types\ValueIntegralTests.cs" />
+    <Compile Include="types\ValueSimpleTests.cs" />
+    <Compile Include="types\ValueTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\RunTime\Framework\system\system.csproj">
@@ -70,6 +92,7 @@
       <Name>Test_Common</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

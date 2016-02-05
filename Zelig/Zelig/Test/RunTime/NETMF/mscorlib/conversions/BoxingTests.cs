@@ -3,12 +3,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class BoxingTests : IMFTestInterface
+    public class BoxingTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -28,6 +26,27 @@ namespace Microsoft.SPOT.Platform.Tests
         {
             Log.Comment("Cleaning up after the tests");
         }
+        
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+
+            result |= Assert.CheckFailed( Boxingbyte_Test( ) );
+            result |= Assert.CheckFailed( Boxingchar_Test( ) );
+            result |= Assert.CheckFailed( Boxingdouble_Test( ) );
+            result |= Assert.CheckFailed( Boxingfloat_Test( ) );
+            result |= Assert.CheckFailed( Boxingint_Test( ) );
+            result |= Assert.CheckFailed( Boxinglong_Test( ) );
+            result |= Assert.CheckFailed( Boxingsbyte_Test( ) );
+            result |= Assert.CheckFailed( Boxingshort_Test( ) );
+            result |= Assert.CheckFailed( Boxinguint_Test( ) );
+            result |= Assert.CheckFailed( Boxingulong_Test( ) );
+            result |= Assert.CheckFailed( Boxingushort_Test( ) );
+            result |= Assert.CheckFailed( Boxingstruct_to_ValType_Test( ) );
+            result |= Assert.CheckFailed( BoxingValType_to_struct_Test( ) );
+
+            return result;
+        }
 
         //Boxing Test methods
         //The following tests were ported from folder current\test\cases\client\CLR\Conformance\10_classes\Boxing
@@ -35,121 +54,121 @@ namespace Microsoft.SPOT.Platform.Tests
 
         //Test Case Calls 
         [TestMethod]
-        public MFTestResults Boxingbyte_Test()
+        public TestResult Boxingbyte_Test()
         {
             if (BoxingTestClassbyte.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Boxingchar_Test()
+        public TestResult Boxingchar_Test()
         {
             if (BoxingTestClasschar.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Boxingdouble_Test()
+        public TestResult Boxingdouble_Test()
         {
             if (BoxingTestClassdouble.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Boxingfloat_Test()
+        public TestResult Boxingfloat_Test()
         {
             if (BoxingTestClassfloat.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Boxingint_Test()
+        public TestResult Boxingint_Test()
         {
             if (BoxingTestClassint.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Boxinglong_Test()
+        public TestResult Boxinglong_Test()
         {
             if (BoxingTestClasslong.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Boxingsbyte_Test()
+        public TestResult Boxingsbyte_Test()
         {
             if (BoxingTestClasssbyte.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Boxingshort_Test()
+        public TestResult Boxingshort_Test()
         {
             if (BoxingTestClassshort.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Boxinguint_Test()
+        public TestResult Boxinguint_Test()
         {
             if (BoxingTestClassuint.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Boxingulong_Test()
+        public TestResult Boxingulong_Test()
         {
             if (BoxingTestClassulong.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Boxingushort_Test()
+        public TestResult Boxingushort_Test()
         {
             if (BoxingTestClassushort.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Boxingstruct_to_ValType_Test()
+        public TestResult Boxingstruct_to_ValType_Test()
         {
             if (BoxingTestClassStruct_to_ValType.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BoxingValType_to_struct_Test()
+        public TestResult BoxingValType_to_struct_Test()
         {
             if (BoxingTestClassValType_to_struct.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
 

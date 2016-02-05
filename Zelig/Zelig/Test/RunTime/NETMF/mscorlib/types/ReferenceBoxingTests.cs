@@ -3,12 +3,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class ReferenceBoxingTests : IMFTestInterface
+    public class ReferenceBoxingTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -24,6 +22,32 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("Cleaning up after the tests");
         }
 
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+            
+            string testName = " ReferenceBoxingXX_";
+            int testNumber = 0;
+            result |= Assert.CheckFailed( ReferenceBoxing01_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing02_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing03_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing04_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing05_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing06_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing07_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing09_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing11_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing12_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing13_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing15_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing16_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing17_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing18_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing19_Test( ), testName, ++testNumber );
+
+            return result;
+        }
+
         //ReferenceBoxing Test methods
         //The following tests were ported from folder current\test\cases\client\CLR\Conformance\4_values\Reference\Boxing
         //01,02,03,04,05,06,07,09,11,12,13,15,16,17,18,19
@@ -31,175 +55,175 @@ namespace Microsoft.SPOT.Platform.Tests
 
         //Test Case Calls 
         [TestMethod]
-        public MFTestResults ReferenceBoxing01_Test()
+        public TestResult ReferenceBoxing01_Test()
         {
             Log.Comment("Testing byte");
             if (ReferenceBoxingTestClass01.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ReferenceBoxing02_Test()
+        public TestResult ReferenceBoxing02_Test()
         {
             Log.Comment("Testing short");
 
             if (ReferenceBoxingTestClass02.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ReferenceBoxing03_Test()
+        public TestResult ReferenceBoxing03_Test()
         {
             Log.Comment("Testing int");
 
             if (ReferenceBoxingTestClass03.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ReferenceBoxing04_Test()
+        public TestResult ReferenceBoxing04_Test()
         {
             Log.Comment("Testing long");
 
             if (ReferenceBoxingTestClass04.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ReferenceBoxing05_Test()
+        public TestResult ReferenceBoxing05_Test()
         {
             Log.Comment("Testing char");
 
             if (ReferenceBoxingTestClass05.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ReferenceBoxing06_Test()
+        public TestResult ReferenceBoxing06_Test()
         {
             Log.Comment("Testing float");
 
             if (ReferenceBoxingTestClass06.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ReferenceBoxing07_Test()
+        public TestResult ReferenceBoxing07_Test()
         {
             Log.Comment("Testing double");
 
             if (ReferenceBoxingTestClass07.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ReferenceBoxing09_Test()
+        public TestResult ReferenceBoxing09_Test()
         {
             Log.Comment("Testing bool");
 
             if (ReferenceBoxingTestClass09.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ReferenceBoxing11_Test()
+        public TestResult ReferenceBoxing11_Test()
         {
             Log.Comment("Testing enum");
 
             if (ReferenceBoxingTestClass11.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ReferenceBoxing12_Test()
+        public TestResult ReferenceBoxing12_Test()
         {
             Log.Comment("Testing struct");
 
             if (ReferenceBoxingTestClass12.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ReferenceBoxing13_Test()
+        public TestResult ReferenceBoxing13_Test()
         {
             Log.Comment("Testing class, boxed by interface");
 
             if (ReferenceBoxingTestClass13.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ReferenceBoxing15_Test()
+        public TestResult ReferenceBoxing15_Test()
         {
             Log.Comment("Testing sbyte");
 
             if (ReferenceBoxingTestClass15.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ReferenceBoxing16_Test()
+        public TestResult ReferenceBoxing16_Test()
         {
             Log.Comment("Testing ushort");
             if (ReferenceBoxingTestClass16.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ReferenceBoxing17_Test()
+        public TestResult ReferenceBoxing17_Test()
         {
             Log.Comment("Testing uint");
             if (ReferenceBoxingTestClass17.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ReferenceBoxing18_Test()
+        public TestResult ReferenceBoxing18_Test()
         {
             Log.Comment("Testing ulong");
             if (ReferenceBoxingTestClass18.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ReferenceBoxing19_Test()
+        public TestResult ReferenceBoxing19_Test()
         {
             Log.Comment("Testing that sbyte, ushort, uint, ulong keep typing info");
             if (ReferenceBoxingTestClass19.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         //Compiled Test Cases 

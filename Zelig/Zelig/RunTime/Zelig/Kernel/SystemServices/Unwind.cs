@@ -214,7 +214,7 @@ namespace Microsoft.Zelig.Runtime
 
                         if ((actions & UnwindActions.HandlerFrame) != 0)
                         {
-                            SetRegisters(context, landingPad, exceptionObject, (UIntPtr)(i + 1));
+                            LLOS_Unwind_SetRegisters(context, landingPad, exceptionObject, (UIntPtr)(i + 1));
                             return UnwindReasonCode.InstallContext;
                         }
 
@@ -232,7 +232,7 @@ namespace Microsoft.Zelig.Runtime
                     if (((actions & UnwindActions.CleanupPhase) != 0) &&
                         ((actions & UnwindActions.HandlerFrame) == 0))
                     {
-                        SetRegisters(context, landingPad, exceptionObject, UIntPtr.Zero);
+                        LLOS_Unwind_SetRegisters(context, landingPad, exceptionObject, UIntPtr.Zero);
                         return UnwindReasonCode.InstallContext;
                     }
                 }
@@ -277,16 +277,6 @@ namespace Microsoft.Zelig.Runtime
             // in Translate_LandingPadOperator. When this issue is resolved we can remove the adjustment.
             return (VTable)(object)ObjectHeader.CastAsObjectHeader(vtablePointer).Pack();
         }
-
-        private static unsafe void SetRegisters(
-            UIntPtr context,
-            UIntPtr landingPad,
-            UIntPtr exceptionObject,
-            UIntPtr handlerIndex)
-        {
-            LLOS_Unwind_SetRegisters(context, landingPad, exceptionObject, handlerIndex);
-        }
-
 
         // Decode an unsigned leb128 value and advance the data pointer.
         // See (7.6) Variable Length Data in: http://dwarfstd.org/doc/DWARF4.pdf

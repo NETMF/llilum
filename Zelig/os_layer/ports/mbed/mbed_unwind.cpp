@@ -25,8 +25,8 @@ struct ExceptionWrapper
 };
 
 // Note: These function parameters are inconsistent with the Itanium ABI detailed at
-// (http://mentorembedded.github.io/cxx-abi/abi-eh.html). The prototype detailed here is based on
-// the types defined in unwind.h above and the values set in registers on entry.
+// (http://mentorembedded.github.io/cxx-abi/abi-eh.html). The prototype defined here must match
+// the personality_routine type defined in unwind.h.
 extern "C" LLOS_Unwind_Reason_Code LLOS_Personality(
     _Unwind_State state,
     _Unwind_Exception* exceptionObject,
@@ -55,11 +55,20 @@ extern "C" LLOS_Unwind_Reason_Code LLOS_Personality(
     // first scratch register. This is a departure from the Itanium ABI.
     _Unwind_SetGR(context, 12, (uintptr_t)exceptionObject);
 
-    return LLOS_Unwind_Personality(
+    LLOS_Unwind_Reason_Code result = LLOS_Unwind_Personality(
         static_cast<LLOS_Unwind_Actions>(actions),
         *(uint64_t*)exceptionObject->exception_class,
         (uintptr_t)exceptionObject,
         (uintptr_t)context);
+
+    // The GNU unwinder appears to assume the personality function will unwind the stack. If we're
+    // to continue unwinding, reset the context to the next frame up the stack.
+    if (result == LLOS_URC_CONTINUE_UNWIND)
+    {
+        __gnu_unwind_frame(exceptionObject, context);
+    }
+
+    return result;
 }
 
 uintptr_t LLOS_AllocateException(LLOS_Opaque exception, uint64_t exceptionClass)

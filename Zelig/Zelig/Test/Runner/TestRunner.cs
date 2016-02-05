@@ -23,6 +23,35 @@ namespace Microsoft.Zelig.Test
 
             // System.Exception
             tests.Add(new ExceptionTests());
+            
+            // Conversions
+            //////tests.Add( new BasicTests() ); 
+            //////tests.Add( new BasicTests2() ); 
+            tests.Add( new BoxingTests() ); 
+            tests.Add( new Expenum1Tests() ); 
+            tests.Add( new Expenum2Tests() ); 
+            tests.Add( new Expenum3Tests() ); 
+            tests.Add( new ExprefTests() ); 
+            tests.Add( new ImpenumTests() ); 
+            tests.Add( new ImprefTests() ); 
+            tests.Add( new ClassClassTests() ); 
+            tests.Add( new ClassStructTests() ); 
+            tests.Add( new StructClassTests() ); 
+            tests.Add( new StructStructTests() ); 
+
+            // selection
+            tests.Add( new BasicSelectionTests() ); 
+
+            // types
+            tests.Add( new ReferenceBoxingTests() ); 
+            tests.Add( new ValueArrayTests() ); 
+            tests.Add( new ValueDefault_ConstTests() ); 
+            tests.Add( new ValueFloatTests() ); 
+            tests.Add( new ValueIntegralTests() ); 
+            tests.Add( new ValueSimpleTests() ); 
+            tests.Add( new ValueTests() ); 
+            tests.Add( new ValueIntegralTests() ); 
+            tests.Add( new ValueIntegralTests() ); 
 
             // System.Text.StringBuilder
             tests.Add(new StringBuilderTests());

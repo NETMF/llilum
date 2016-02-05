@@ -3,12 +3,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class ImprefTests : IMFTestInterface
+    public class ImprefTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -24,6 +22,24 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("Cleaning up after the tests");
         }
 
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+            
+            string testName = " Impref__";
+            int testNumber = 0;
+            result |= Assert.CheckFailed( Impref_ref_obj_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Impref_class_class_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Impref_class_inter_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Impref_struct_inter_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Impref_array_array_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Impref_array_cloneable_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Impref_null_ref_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Impref_delegate_to_SystemDotDelegate_Test( ), testName, ++testNumber );
+
+            return result;
+        }
+
         //Impref Test methods
         //The following tests were ported from folder current\test\cases\client\CLR\Conformance\10_classes\Impref
         //ref_obj,class_class,class_inter,struct_inter,array_array,array_cloneable,null_ref,delegate_to_System,Delegate
@@ -32,84 +48,84 @@ namespace Microsoft.SPOT.Platform.Tests
 
         //Test Case Calls 
         [TestMethod]
-        public MFTestResults Impref_ref_obj_Test()
+        public TestResult Impref_ref_obj_Test()
         {
             Log.Comment(" Converting from a reference object to 'object'");
             if (ImprefTestClass_ref_obj.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Impref_class_class_Test()
+        public TestResult Impref_class_class_Test()
         {
             Log.Comment(" Tests that you can convert from a class to a base class. ");
             if (ImprefTestClass_class_class.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Impref_class_inter_Test()
+        public TestResult Impref_class_inter_Test()
         {
             Log.Comment(" Tests that you can convert from a class to an interface that it implements. ");
             if (ImprefTestClass_class_inter.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Impref_struct_inter_Test()
+        public TestResult Impref_struct_inter_Test()
         {
             Log.Comment(" Tests that you can convert from a struct to an interface that it implements. ");
             if (ImprefTestClass_struct_inter.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Impref_array_array_Test()
+        public TestResult Impref_array_array_Test()
         {
             Log.Comment(" Tests that you can convert from an array of one class to an array of another class...");
             if (ImprefTestClass_array_array.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Impref_array_cloneable_Test()
+        public TestResult Impref_array_cloneable_Test()
         {
             Log.Comment(" Tests that you can convert from an array to System.ICloneable;");
             if (ImprefTestClass_array_cloneable.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Impref_null_ref_Test()
+        public TestResult Impref_null_ref_Test()
         {
             Log.Comment(" Tests that you can convert from null to several reference types");
             if (ImprefTestClass_null_ref.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Impref_delegate_to_SystemDotDelegate_Test()
+        public TestResult Impref_delegate_to_SystemDotDelegate_Test()
         {
             Log.Comment(" Tests that you can convert from a delegate type to System.Delegate");
             if (ImprefTestClass_delegate_to_SystemDotDelegate.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
 

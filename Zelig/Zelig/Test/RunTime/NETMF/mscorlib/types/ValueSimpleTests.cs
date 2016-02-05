@@ -3,12 +3,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class ValueSimpleTests : IMFTestInterface
+    public class ValueSimpleTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -24,102 +22,127 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("Cleaning up after the tests");
         }
 
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+
+            
+            string testName = "ValueSimpleXX_";
+            int testNumber = 0;
+            //////result |= Assert.CheckFailed( ValueSimple01_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueSimple02_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueSimple03_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueSimple04_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueSimple05_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueSimple06_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueSimple07_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueSimple09_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueSimple11_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueSimple12_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueSimple13_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueSimple14_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueSimple15_Test( ), testName, ++testNumber );
+
+            return result;
+        }
+
         //ValueSimple Test methods
         //The following tests were ported from folder current\test\cases\client\CLR\Conformance\4_values\ValueSimple
         //01,02,03,04,05,06,07,09,11,12,13,14,15
         //12 Failed
 
         //Test Case Calls 
+        //////[TestMethod]
+        //////public TestResult ValueSimple01_Test()
+        //////{
+        //////    Log.Comment(" Section 4.1");
+        //////    Log.Comment(" byte is an alias for System.Byte");
+        //////    if (ValueSimpleTestClass01.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult ValueSimple02_Test()
+        //////{
+        //////    Log.Comment(" Section 4.1");
+        //////    Log.Comment(" char is an alias for System.Char");
+        //////    if (ValueSimpleTestClass02.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult ValueSimple03_Test()
+        //////{
+        //////    Log.Comment(" Section 4.1");
+        //////    Log.Comment(" short is an alias for System.Int16");
+        //////    if (ValueSimpleTestClass03.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult ValueSimple04_Test()
+        //////{
+        //////    Log.Comment(" Section 4.1");
+        //////    Log.Comment(" int is an alias for System.Int32");
+        //////    if (ValueSimpleTestClass04.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult ValueSimple05_Test()
+        //////{
+        //////    Log.Comment(" Section 4.1");
+        //////    Log.Comment(" long is an alias for System.Int64");
+        //////    if (ValueSimpleTestClass05.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult ValueSimple06_Test()
+        //////{
+        //////    Log.Comment(" Section 4.1");
+        //////    Log.Comment(" float is an alias for System.Single");
+        //////    if (ValueSimpleTestClass06.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult ValueSimple07_Test()
+        //////{
+        //////    Log.Comment(" Section 4.1");
+        //////    Log.Comment(" double is an alias for System.Double");
+        //////    if (ValueSimpleTestClass07.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult ValueSimple09_Test()
+        //////{
+        //////    Log.Comment(" Section 4.1");
+        //////    Log.Comment(" bool is an alias for System.Boolean");
+        //////    if (ValueSimpleTestClass09.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+
         [TestMethod]
-        public MFTestResults ValueSimple01_Test()
-        {
-            Log.Comment(" Section 4.1");
-            Log.Comment(" byte is an alias for System.Byte");
-            if (ValueSimpleTestClass01.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults ValueSimple02_Test()
-        {
-            Log.Comment(" Section 4.1");
-            Log.Comment(" char is an alias for System.Char");
-            if (ValueSimpleTestClass02.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults ValueSimple03_Test()
-                    {
-            Log.Comment(" Section 4.1");
-            Log.Comment(" short is an alias for System.Int16");
-            if (ValueSimpleTestClass03.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults ValueSimple04_Test()
-        {
-            Log.Comment(" Section 4.1");
-            Log.Comment(" int is an alias for System.Int32");
-            if (ValueSimpleTestClass04.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults ValueSimple05_Test()
-        {
-            Log.Comment(" Section 4.1");
-            Log.Comment(" long is an alias for System.Int64");
-            if (ValueSimpleTestClass05.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults ValueSimple06_Test()
-        {
-            Log.Comment(" Section 4.1");
-            Log.Comment(" float is an alias for System.Single");
-            if (ValueSimpleTestClass06.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults ValueSimple07_Test()
-        {
-            Log.Comment(" Section 4.1");
-            Log.Comment(" double is an alias for System.Double");
-            if (ValueSimpleTestClass07.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults ValueSimple09_Test()
-        {
-            Log.Comment(" Section 4.1");
-            Log.Comment(" bool is an alias for System.Boolean");
-            if (ValueSimpleTestClass09.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults ValueSimple11_Test()
+        public TestResult ValueSimple11_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" A simple type and the structure type it aliases are completely indistinguishable.");
@@ -128,177 +151,179 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment(" word int.");
             if (ValueSimpleTestClass11.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueSimple12_Test()
+        public TestResult ValueSimple12_Test()
         {
             Log.Comment(" Section 4.1");
             Log.Comment(" Because a simple type aliases a struct type, every simple type has members.");
             if (ValueSimpleTestClass12.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
-        [TestMethod]
-        public MFTestResults ValueSimple13_Test()
-        {
-            Log.Comment(" Section 4.1");
-            Log.Comment(" sbyte is an alias for System.SByte");
-            if (ValueSimpleTestClass13.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults ValueSimple14_Test()
-        {
-            Log.Comment(" Section 4.1");
-            Log.Comment(" ushort is an alias for System.UInt16");
-            if (ValueSimpleTestClass14.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults ValueSimple15_Test()
-        {
-            Log.Comment(" Section 4.1");
-            Log.Comment(" uint is an alias for System.UInt32");
-            if (ValueSimpleTestClass15.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
+
+        //////[TestMethod]
+        //////public TestResult ValueSimple13_Test()
+        //////{
+        //////    Log.Comment(" Section 4.1");
+        //////    Log.Comment(" sbyte is an alias for System.SByte");
+        //////    if (ValueSimpleTestClass13.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult ValueSimple14_Test()
+        //////{
+        //////    Log.Comment(" Section 4.1");
+        //////    Log.Comment(" ushort is an alias for System.UInt16");
+        //////    if (ValueSimpleTestClass14.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult ValueSimple15_Test()
+        //////{
+        //////    Log.Comment(" Section 4.1");
+        //////    Log.Comment(" uint is an alias for System.UInt32");
+        //////    if (ValueSimpleTestClass15.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
 
 
         //Compiled Test Cases 
-        public class ValueSimpleTestClass01
-        {
-            public static bool testMethod()
-            {
-                byte b = 0;
-                if (b.GetType() == Type.GetType("System.Byte"))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-        public class ValueSimpleTestClass02
-        {
-            public static bool testMethod()
-            {
-                char c = 'a';
-                if (c.GetType() == Type.GetType("System.Char"))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-        public class ValueSimpleTestClass03
-        {
-            public static bool testMethod()
-            {
-                short s = 0;
-                if (s.GetType() == Type.GetType("System.Int16"))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-        public class ValueSimpleTestClass04
-        {
-            public static bool testMethod()
-            {
-                int i = 0;
-                if (i.GetType() == Type.GetType("System.Int32"))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-        public class ValueSimpleTestClass05
-        {
-            public static bool testMethod()
-            {
-                long l = 0L;
-                if (l.GetType() == Type.GetType("System.Int64"))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-        public class ValueSimpleTestClass06
-        {
-            public static bool testMethod()
-            {
-                float f = 0.0f;
-                if (f.GetType() == Type.GetType("System.Single"))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-        public class ValueSimpleTestClass07
-        {
-            public static bool testMethod()
-            {
-                double d = 0.0d;
-                if (d.GetType() == Type.GetType("System.Double"))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-        public class ValueSimpleTestClass09
-        {
-            public static bool testMethod()
-            {
-                bool b = true;
-                if (b.GetType() == Type.GetType("System.Boolean"))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
+        //////public class ValueSimpleTestClass01
+        //////{
+        //////    public static bool testMethod()
+        //////    {
+        //////        byte b = 0;
+        //////        if (b.GetType() == Type.GetType("System.Byte"))
+        //////        {
+        //////            return true;
+        //////        }
+        //////        else
+        //////        {
+        //////            return false;
+        //////        }
+        //////    }
+        //////}
+        //////public class ValueSimpleTestClass02
+        //////{
+        //////    public static bool testMethod()
+        //////    {
+        //////        char c = 'a';
+        //////        if (c.GetType() == Type.GetType("System.Char"))
+        //////        {
+        //////            return true;
+        //////        }
+        //////        else
+        //////        {
+        //////            return false;
+        //////        }
+        //////    }
+        //////}
+        //////public class ValueSimpleTestClass03
+        //////{
+        //////    public static bool testMethod()
+        //////    {
+        //////        short s = 0;
+        //////        if (s.GetType() == Type.GetType("System.Int16"))
+        //////        {
+        //////            return true;
+        //////        }
+        //////        else
+        //////        {
+        //////            return false;
+        //////        }
+        //////    }
+        //////}
+        //////public class ValueSimpleTestClass04
+        //////{
+        //////    public static bool testMethod()
+        //////    {
+        //////        int i = 0;
+        //////        if (i.GetType() == Type.GetType("System.Int32"))
+        //////        {
+        //////            return true;
+        //////        }
+        //////        else
+        //////        {
+        //////            return false;
+        //////        }
+        //////    }
+        //////}
+        //////public class ValueSimpleTestClass05
+        //////{
+        //////    public static bool testMethod()
+        //////    {
+        //////        long l = 0L;
+        //////        if (l.GetType() == Type.GetType("System.Int64"))
+        //////        {
+        //////            return true;
+        //////        }
+        //////        else
+        //////        {
+        //////            return false;
+        //////        }
+        //////    }
+        //////}
+        //////public class ValueSimpleTestClass06
+        //////{
+        //////    public static bool testMethod()
+        //////    {
+        //////        float f = 0.0f;
+        //////        if (f.GetType() == Type.GetType("System.Single"))
+        //////        {
+        //////            return true;
+        //////        }
+        //////        else
+        //////        {
+        //////            return false;
+        //////        }
+        //////    }
+        //////}
+        //////public class ValueSimpleTestClass07
+        //////{
+        //////    public static bool testMethod()
+        //////    {
+        //////        double d = 0.0d;
+        //////        if (d.GetType() == Type.GetType("System.Double"))
+        //////        {
+        //////            return true;
+        //////        }
+        //////        else
+        //////        {
+        //////            return false;
+        //////        }
+        //////    }
+        //////}
+        //////public class ValueSimpleTestClass09
+        //////{
+        //////    public static bool testMethod()
+        //////    {
+        //////        bool b = true;
+        //////        if (b.GetType() == Type.GetType("System.Boolean"))
+        //////        {
+        //////            return true;
+        //////        }
+        //////        else
+        //////        {
+        //////            return false;
+        //////        }
+        //////    }
+        //////}
+
         public class ValueSimpleTestClass11
         {
             public static bool testMethod()
@@ -339,51 +364,52 @@ namespace Microsoft.SPOT.Platform.Tests
                 return RetVal;
             }
         }
-        public class ValueSimpleTestClass13
-        {
-            public static bool testMethod()
-            {
-                sbyte b = 0;
-                if (b.GetType() == Type.GetType("System.SByte"))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-        public class ValueSimpleTestClass14
-        {
-            public static bool testMethod()
-            {
-                ushort s = 0;
-                if (s.GetType() == Type.GetType("System.UInt16"))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-        public class ValueSimpleTestClass15
-        {
-            public static bool testMethod()
-            {
-                uint i = 0;
-                if (i.GetType() == Type.GetType("System.UInt32"))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
+
+        //////public class ValueSimpleTestClass13
+        //////{
+        //////    public static bool testMethod()
+        //////    {
+        //////        sbyte b = 0;
+        //////        if (b.GetType() == Type.GetType("System.SByte"))
+        //////        {
+        //////            return true;
+        //////        }
+        //////        else
+        //////        {
+        //////            return false;
+        //////        }
+        //////    }
+        //////}
+        //////public class ValueSimpleTestClass14
+        //////{
+        //////    public static bool testMethod()
+        //////    {
+        //////        ushort s = 0;
+        //////        if (s.GetType() == Type.GetType("System.UInt16"))
+        //////        {
+        //////            return true;
+        //////        }
+        //////        else
+        //////        {
+        //////            return false;
+        //////        }
+        //////    }
+        //////}
+        //////public class ValueSimpleTestClass15
+        //////{
+        //////    public static bool testMethod()
+        //////    {
+        //////        uint i = 0;
+        //////        if (i.GetType() == Type.GetType("System.UInt32"))
+        //////        {
+        //////            return true;
+        //////        }
+        //////        else
+        //////        {
+        //////            return false;
+        //////        }
+        //////    }
+        //////}
 
     }
 }

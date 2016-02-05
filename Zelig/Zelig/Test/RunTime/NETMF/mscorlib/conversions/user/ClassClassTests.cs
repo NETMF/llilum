@@ -3,12 +3,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class ClassClassTests : IMFTestInterface
+    public class ClassClassTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -34,6 +32,47 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("Cleaning up after the tests");
         }
 
+
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+            
+            string testName = "ClassClass_";
+            int testNumber = 0;
+            result |= Assert.CheckFailed( ClassClass_SBase_TBase_Source_i_e_Test(), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_SBase_TBase_Source_e_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_SBase_TBase_Dest_i_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_SBase_TBase_Dest_e_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_SBase_T_Source_i_i_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_SBase_T_Source_i_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_SBase_T_Source_e_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_SBase_T_Dest_i_i_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_SBase_T_Dest_i_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_SBase_T_Dest_e_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_SBase_TDer_Source_i_i_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_SBase_TDer_Source_i_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_SBase_TDer_Source_e_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_S_TBase_Source_i_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_S_TBase_Source_e_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_S_TBase_Dest_i_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_S_TBase_Dest_e_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_S_T_Source_i_i_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_S_T_Source_i_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_S_T_Source_e_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_S_T_Dest_i_i_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_S_T_Dest_i_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_S_T_Dest_e_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_S_TDer_Source_i_i_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_S_TDer_Source_i_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_S_TDer_Source_e_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_SDer_TBase_Dest_i_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_SDer_TBase_Dest_e_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_SDer_T_Dest_i_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ClassClass_SDer_T_Dest_e_e_Test( ), testName, ++testNumber );
+
+            return result;
+        }
+
         //ClassClass Test methods
         //The following tests were ported from folder current\test\cases\client\CLR\Conformance\10_classes\ClassClass
         //SBase_TBase_Source_i_e,SBase_TBase_Source_e_e,SBase_TBase_Dest_i_e,SBase_TBase_Dest_e_e,SBase_T_Source_i_i,SBase_T_Source_i_e,SBase_T_Source_e_e,SBase_T_Dest_i_i,SBase_T_Dest_i_e,SBase_T_Dest_e_e,SBase_TDer_Source_i_i,SBase_TDer_Source_i_e,SBase_TDer_Source_e_e,S_TBase_Source_i_e,S_TBase_Source_e_e,S_TBase_Dest_i_e,S_TBase_Dest_e_e,S_T_Source_i_i,S_T_Source_i_e,S_T_Source_e_e,S_T_Dest_i_i,S_T_Dest_i_e,S_T_Dest_e_e,S_TDer_Source_i_i,S_TDer_Source_i_e,S_TDer_Source_e_e,SDer_TBase_Dest_i_e,SDer_TBase_Dest_e_e,SDer_T_Dest_i_e,SDer_T_Dest_e_e
@@ -42,274 +81,274 @@ namespace Microsoft.SPOT.Platform.Tests
 
         //Test Case Calls 
         [TestMethod]
-        public MFTestResults ClassClass_SBase_TBase_Source_i_e_Test()
+        public TestResult ClassClass_SBase_TBase_Source_i_e_Test()
         {
             if (ClassClassTestClass_SBase_TBase_Source_i_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_SBase_TBase_Source_e_e_Test()
+        public TestResult ClassClass_SBase_TBase_Source_e_e_Test()
         {
             if (ClassClassTestClass_SBase_TBase_Source_e_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_SBase_TBase_Dest_i_e_Test()
+        public TestResult ClassClass_SBase_TBase_Dest_i_e_Test()
         {
             if (ClassClassTestClass_SBase_TBase_Dest_i_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_SBase_TBase_Dest_e_e_Test()
+        public TestResult ClassClass_SBase_TBase_Dest_e_e_Test()
         {
             if (ClassClassTestClass_SBase_TBase_Dest_e_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_SBase_T_Source_i_i_Test()
+        public TestResult ClassClass_SBase_T_Source_i_i_Test()
         {
             if (ClassClassTestClass_SBase_T_Source_i_i.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_SBase_T_Source_i_e_Test()
+        public TestResult ClassClass_SBase_T_Source_i_e_Test()
         {
             if (ClassClassTestClass_SBase_T_Source_i_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_SBase_T_Source_e_e_Test()
+        public TestResult ClassClass_SBase_T_Source_e_e_Test()
         {
             if (ClassClassTestClass_SBase_T_Source_e_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_SBase_T_Dest_i_i_Test()
+        public TestResult ClassClass_SBase_T_Dest_i_i_Test()
         {
             if (ClassClassTestClass_SBase_T_Dest_i_i.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_SBase_T_Dest_i_e_Test()
+        public TestResult ClassClass_SBase_T_Dest_i_e_Test()
         {
             if (ClassClassTestClass_SBase_T_Dest_i_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_SBase_T_Dest_e_e_Test()
+        public TestResult ClassClass_SBase_T_Dest_e_e_Test()
         {
             if (ClassClassTestClass_SBase_T_Dest_e_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_SBase_TDer_Source_i_i_Test()
+        public TestResult ClassClass_SBase_TDer_Source_i_i_Test()
         {
             if (ClassClassTestClass_SBase_TDer_Source_i_i.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_SBase_TDer_Source_i_e_Test()
+        public TestResult ClassClass_SBase_TDer_Source_i_e_Test()
         {
             if (ClassClassTestClass_SBase_TDer_Source_i_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_SBase_TDer_Source_e_e_Test()
+        public TestResult ClassClass_SBase_TDer_Source_e_e_Test()
         {
             if (ClassClassTestClass_SBase_TDer_Source_e_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_S_TBase_Source_i_e_Test()
+        public TestResult ClassClass_S_TBase_Source_i_e_Test()
         {
             if (ClassClassTestClass_S_TBase_Source_i_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_S_TBase_Source_e_e_Test()
+        public TestResult ClassClass_S_TBase_Source_e_e_Test()
         {
             if (ClassClassTestClass_S_TBase_Source_e_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_S_TBase_Dest_i_e_Test()
+        public TestResult ClassClass_S_TBase_Dest_i_e_Test()
         {
             if (ClassClassTestClass_S_TBase_Dest_i_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_S_TBase_Dest_e_e_Test()
+        public TestResult ClassClass_S_TBase_Dest_e_e_Test()
         {
             if (ClassClassTestClass_S_TBase_Dest_e_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_S_T_Source_i_i_Test()
+        public TestResult ClassClass_S_T_Source_i_i_Test()
         {
             if (ClassClassTestClass_S_T_Source_i_i.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_S_T_Source_i_e_Test()
+        public TestResult ClassClass_S_T_Source_i_e_Test()
         {
             if (ClassClassTestClass_S_T_Source_i_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_S_T_Source_e_e_Test()
+        public TestResult ClassClass_S_T_Source_e_e_Test()
         {
             if (ClassClassTestClass_S_T_Source_e_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_S_T_Dest_i_i_Test()
+        public TestResult ClassClass_S_T_Dest_i_i_Test()
         {
             if (ClassClassTestClass_S_T_Dest_i_i.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_S_T_Dest_i_e_Test()
+        public TestResult ClassClass_S_T_Dest_i_e_Test()
         {
             if (ClassClassTestClass_S_T_Dest_i_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_S_T_Dest_e_e_Test()
+        public TestResult ClassClass_S_T_Dest_e_e_Test()
         {
             if (ClassClassTestClass_S_T_Dest_e_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_S_TDer_Source_i_i_Test()
+        public TestResult ClassClass_S_TDer_Source_i_i_Test()
         {
             if (ClassClassTestClass_S_TDer_Source_i_i.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_S_TDer_Source_i_e_Test()
+        public TestResult ClassClass_S_TDer_Source_i_e_Test()
         {
             if (ClassClassTestClass_S_TDer_Source_i_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_S_TDer_Source_e_e_Test()
+        public TestResult ClassClass_S_TDer_Source_e_e_Test()
         {
             if (ClassClassTestClass_S_TDer_Source_e_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_SDer_TBase_Dest_i_e_Test()
+        public TestResult ClassClass_SDer_TBase_Dest_i_e_Test()
         {
             if (ClassClassTestClass_SDer_TBase_Dest_i_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_SDer_TBase_Dest_e_e_Test()
+        public TestResult ClassClass_SDer_TBase_Dest_e_e_Test()
         {
             if (ClassClassTestClass_SDer_TBase_Dest_e_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_SDer_T_Dest_i_e_Test()
+        public TestResult ClassClass_SDer_T_Dest_i_e_Test()
         {
             if (ClassClassTestClass_SDer_T_Dest_i_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ClassClass_SDer_T_Dest_e_e_Test()
+        public TestResult ClassClass_SDer_T_Dest_e_e_Test()
         {
             if (ClassClassTestClass_SDer_T_Dest_e_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         //Compiled Test Cases 

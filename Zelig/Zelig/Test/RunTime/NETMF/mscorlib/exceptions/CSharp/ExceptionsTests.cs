@@ -37,16 +37,16 @@ namespace Microsoft.Zelig.Test
             result |= Assert.CheckFailed(Exc_excep11_Test(), testName, 11);
             result |= Assert.CheckFailed(Exc_excep27_Test(), testName, 27);
             result |= Assert.CheckFailed(Exc_excep28_Test(), testName, 28);
-            //result |= Assert.CheckFailed(Exc_excep30_Test(), testName, 30); https://github.com/NETMF/llilum/issues/165
-            //result |= Assert.CheckFailed(Exc_excep31_Test(), testName, 31); https://github.com/NETMF/llilum/issues/165
-            //result |= Assert.CheckFailed(Exc_excep33_Test(), testName, 33); https://github.com/NETMF/llilum/issues/165
-            //result |= Assert.CheckFailed(Exc_excep34_Test(), testName, 34); https://github.com/NETMF/llilum/issues/165
+            result |= Assert.CheckFailed(Exc_excep30_Test(), testName, 30);
+            result |= Assert.CheckFailed(Exc_excep31_Test(), testName, 31);
+            result |= Assert.CheckFailed(Exc_excep33_Test(), testName, 33);
+            result |= Assert.CheckFailed(Exc_excep34_Test(), testName, 34);
             result |= Assert.CheckFailed(Exc_excep35_Test(), testName, 35);
-            //result |= Assert.CheckFailed(Exc_excep40_Test(), testName, 40); https://github.com/NETMF/llilum/issues/165
+            result |= Assert.CheckFailed(Exc_excep40_Test(), testName, 40);
             result |= Assert.CheckFailed(Exc_excep41_Test(), testName, 41);
-            //result |= Assert.CheckFailed(Exc_excep42_Test(), testName, 42);
-            //result |= Assert.CheckFailed(Exc_excep42b_Test(), testName, 42); https://github.com/NETMF/llilum/issues/165
-            //result |= Assert.CheckFailed(Exc_excep43_Test(), testName, 43);
+            result |= Assert.CheckFailed(Exc_excep42_Test(), testName, 42);
+            result |= Assert.CheckFailed(Exc_excep42b_Test(), testName, 42);
+            result |= Assert.CheckFailed(Exc_excep43_Test(), testName, 43);
             result |= Assert.CheckFailed(Exc_excep56_Test(), testName, 56);
             result |= Assert.CheckFailed(Exc_excep57_Test(), testName, 57);
             result |= Assert.CheckFailed(Exc_excep58_Test(), testName, 58);
@@ -255,9 +255,6 @@ namespace Microsoft.Zelig.Test
             return TestResult.Fail;
         }
 
-        /*
-         * This test is excluded because it causes a Metadata processor crash, it failed in the baseline
-         * 
         [TestMethod]
         public TestResult Exc_excep42_Test()
         {
@@ -268,7 +265,6 @@ namespace Microsoft.Zelig.Test
             }
             return TestResult.Fail;
         }
-        */
 
         [TestMethod]
         public TestResult Exc_excep42b_Test()
@@ -281,9 +277,6 @@ namespace Microsoft.Zelig.Test
             return TestResult.Fail;
         }
 
-        /*
-         * This test is excluded because it causes a Metadata processor crash, it failed in the baseline
-         * 
         [TestMethod]
         public TestResult Exc_excep43_Test()
         {
@@ -294,7 +287,7 @@ namespace Microsoft.Zelig.Test
             }
             return TestResult.Fail;
         }
-        */
+
         [TestMethod]
         public TestResult Exc_excep56_Test()
         {
@@ -1233,7 +1226,7 @@ namespace Microsoft.Zelig.Test
                     return (Main_old() == 0);
                 }
             }
-        /*
+
         public class Exc_TestClass_excep42_E1 : Exception
         {
 
@@ -1546,7 +1539,7 @@ namespace Microsoft.Zelig.Test
                     return (Main_old() == 0);
                 }
             }
-        */
+
         public class Exc_TestClass_excep42b_E1 : Exception
         {
 
@@ -1637,7 +1630,7 @@ namespace Microsoft.Zelig.Test
                     return (Main_old() == 0);
                 }
             }
-        /*
+
         public class Exc_TestClass_excep43_E1 : Exception
         {
         }
@@ -1942,8 +1935,7 @@ namespace Microsoft.Zelig.Test
                     return (Main_old() == 0);
                 }
             }
-         */ 
-        
+
         public class Exc_TestClass_excep56
         {
             private static int retval = 2;

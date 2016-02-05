@@ -3,23 +3,21 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class BasicSelectionTests : IMFTestInterface
+    public class BasicSelectionTests : TestBase, ITestInterface
     {
         [SetUp]
-        public InitializeResult Initialize()
+        public InitializeResult Initialize( )
         {
-            Log.Comment("Adding set up for the tests");
-            Log.Comment("The Basic Selection tests examine casting a basic type as a user class");
-            Log.Comment("And then extracting the value.");
-            Log.Comment("They are named for the type they convert from, along with Is and Es");
-            Log.Comment("For whether each cast is Implicit or Explicit, and with FC or TC");
-            Log.Comment("Which indicates whether the Conversion From, or the Conversion back To");
-            Log.Comment("the listed type is performed with a function call rather than a simple assignment");
+            Log.Comment( "Adding set up for the tests" );
+            Log.Comment( "The Basic Selection tests examine casting a basic type as a user class" );
+            Log.Comment( "And then extracting the value." );
+            Log.Comment( "They are named for the type they convert from, along with Is and Es" );
+            Log.Comment( "For whether each cast is Implicit or Explicit, and with FC or TC" );
+            Log.Comment( "Which indicates whether the Conversion From, or the Conversion back To" );
+            Log.Comment( "the listed type is performed with a function call rather than a simple assignment" );
 
             // Add your functionality here.                
 
@@ -27,624 +25,701 @@ namespace Microsoft.SPOT.Platform.Tests
         }
 
         [TearDown]
-        public void CleanUp()
+        public void CleanUp( )
         {
-            Log.Comment("Cleaning up after the tests");
+            Log.Comment( "Cleaning up after the tests" );
         }
 
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+            
+            string testName = "BasicSelection_";
+            int testNumber = 0;
+            result |= Assert.CheckFailed( BasicSelection_byte_i_i_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_byte_i_e_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_byte_e_e_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_byte_i_i_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_byte_i_e_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_byte_e_e_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_char_i_i_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_char_i_e_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_char_e_e_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_char_i_i_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_char_i_e_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_char_e_e_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_double_i_i_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_double_i_e_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_double_e_e_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_double_i_i_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_double_i_e_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_double_e_e_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_float_i_i_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_float_i_e_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_float_e_e_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_float_i_i_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_float_i_e_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_float_e_e_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_int_i_i_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_long_i_i_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_long_i_e_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_long_e_e_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_sbyte_i_i_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_int_i_e_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_int_e_e_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_int_i_i_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_int_i_e_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_int_e_e_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_long_i_i_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_long_i_e_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_long_e_e_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_sbyte_i_e_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_sbyte_e_e_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_sbyte_i_i_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_sbyte_i_e_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_sbyte_e_e_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_short_i_i_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_short_i_e_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_short_e_e_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_short_i_i_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_short_i_e_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_short_e_e_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_uint_i_i_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_uint_i_e_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_uint_e_e_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_uint_i_i_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_uint_i_e_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_uint_e_e_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_ulong_i_i_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_ulong_i_e_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_ulong_e_e_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_ulong_i_i_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_ulong_i_e_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_ulong_e_e_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_ushort_i_i_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_ushort_i_e_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_ushort_e_e_tc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_ushort_i_i_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_ushort_i_e_fc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( BasicSelection_ushort_e_e_fc_Test( ), testName, ++testNumber );
+
+            return result;
+        }
+
+            
         //BasicSelection Test methods
         //The following tests were ported from folder current\test\cases\client\CLR\Conformance\10_classes\BasicSelection
         //byte_i_i_tc,byte_i_e_tc,byte_e_e_tc,byte_i_i_fc,byte_i_e_fc,byte_e_e_fc,char_i_i_tc,char_i_e_tc,char_e_e_tc,char_i_i_fc,char_i_e_fc,char_e_e_fc,double_i_i_tc,double_i_e_tc,double_e_e_tc,double_i_i_fc,double_i_e_fc,double_e_e_fc,float_i_i_tc,float_i_e_tc,float_e_e_tc,float_i_i_fc,float_i_e_fc,float_e_e_fc,int_i_i_tc,int_i_e_tc,int_e_e_tc,int_i_i_fc,int_i_e_fc,int_e_e_fc,long_i_i_tc,long_i_e_tc,long_e_e_tc,long_i_i_fc,long_i_e_fc,long_e_e_fc,sbyte_i_i_tc,sbyte_i_e_tc,sbyte_e_e_tc,sbyte_i_i_fc,sbyte_i_e_fc,sbyte_e_e_fc,short_i_i_tc,short_i_e_tc,short_e_e_tc,short_i_i_fc,short_i_e_fc,short_e_e_fc,uint_i_i_tc,uint_i_e_tc,uint_e_e_tc,uint_i_i_fc,uint_i_e_fc,uint_e_e_fc,ulong_i_i_tc,ulong_i_e_tc,ulong_e_e_tc,ulong_i_i_fc,ulong_i_e_fc,ulong_e_e_fc,ushort_i_i_tc,ushort_i_e_tc,ushort_e_e_tc,ushort_i_i_fc,ushort_i_e_fc,ushort_e_e_fc
 
         //Test Case Calls 
         [TestMethod]
-        public MFTestResults BasicSelection_byte_i_i_tc_Test()
+        public TestResult BasicSelection_byte_i_i_tc_Test()
         {
             if (BasicSelectionTestClass_byte_i_i_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         
         [TestMethod]
-        public MFTestResults BasicSelection_byte_i_e_tc_Test()
+        public TestResult BasicSelection_byte_i_e_tc_Test()
         {
             if (BasicSelectionTestClass_byte_i_e_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_byte_e_e_tc_Test()
+        public TestResult BasicSelection_byte_e_e_tc_Test()
         {
             if (BasicSelectionTestClass_byte_e_e_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         
         [TestMethod]
-        public MFTestResults BasicSelection_byte_i_i_fc_Test()
+        public TestResult BasicSelection_byte_i_i_fc_Test()
         {
             if (BasicSelectionTestClass_byte_i_i_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_byte_i_e_fc_Test()
+        public TestResult BasicSelection_byte_i_e_fc_Test()
         {
             if (BasicSelectionTestClass_byte_i_e_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         
         [TestMethod]
-        public MFTestResults BasicSelection_byte_e_e_fc_Test()
+        public TestResult BasicSelection_byte_e_e_fc_Test()
         {
             if (BasicSelectionTestClass_byte_e_e_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_char_i_i_tc_Test()
+        public TestResult BasicSelection_char_i_i_tc_Test()
         {
             if (BasicSelectionTestClass_char_i_i_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_char_i_e_tc_Test()
+        public TestResult BasicSelection_char_i_e_tc_Test()
         {
             if (BasicSelectionTestClass_char_i_e_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_char_e_e_tc_Test()
+        public TestResult BasicSelection_char_e_e_tc_Test()
         {
             if (BasicSelectionTestClass_char_e_e_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         
         [TestMethod]
-        public MFTestResults BasicSelection_char_i_i_fc_Test()
+        public TestResult BasicSelection_char_i_i_fc_Test()
         {
             if (BasicSelectionTestClass_char_i_i_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_char_i_e_fc_Test()
+        public TestResult BasicSelection_char_i_e_fc_Test()
         {
             if (BasicSelectionTestClass_char_i_e_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_char_e_e_fc_Test()
+        public TestResult BasicSelection_char_e_e_fc_Test()
         {
             if (BasicSelectionTestClass_char_e_e_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_double_i_i_tc_Test()
+        public TestResult BasicSelection_double_i_i_tc_Test()
         {
             if (BasicSelectionTestClass_double_i_i_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         
         [TestMethod]
-        public MFTestResults BasicSelection_double_i_e_tc_Test()
+        public TestResult BasicSelection_double_i_e_tc_Test()
         {
             if (BasicSelectionTestClass_double_i_e_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_double_e_e_tc_Test()
+        public TestResult BasicSelection_double_e_e_tc_Test()
         {
             if (BasicSelectionTestClass_double_e_e_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_double_i_i_fc_Test()
+        public TestResult BasicSelection_double_i_i_fc_Test()
         {
             if (BasicSelectionTestClass_double_i_i_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_double_i_e_fc_Test()
+        public TestResult BasicSelection_double_i_e_fc_Test()
         {
             if (BasicSelectionTestClass_double_i_e_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         
         [TestMethod]
-        public MFTestResults BasicSelection_double_e_e_fc_Test()
+        public TestResult BasicSelection_double_e_e_fc_Test()
         {
             if (BasicSelectionTestClass_double_e_e_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_float_i_i_tc_Test()
+        public TestResult BasicSelection_float_i_i_tc_Test()
         {
             if (BasicSelectionTestClass_float_i_i_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_float_i_e_tc_Test()
+        public TestResult BasicSelection_float_i_e_tc_Test()
         {
             if (BasicSelectionTestClass_float_i_e_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_float_e_e_tc_Test()
+        public TestResult BasicSelection_float_e_e_tc_Test()
         {
             if (BasicSelectionTestClass_float_e_e_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         
         [TestMethod]
-        public MFTestResults BasicSelection_float_i_i_fc_Test()
+        public TestResult BasicSelection_float_i_i_fc_Test()
         {
             if (BasicSelectionTestClass_float_i_i_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_float_i_e_fc_Test()
+        public TestResult BasicSelection_float_i_e_fc_Test()
         {
             if (BasicSelectionTestClass_float_i_e_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_float_e_e_fc_Test()
+        public TestResult BasicSelection_float_e_e_fc_Test()
         {
             if (BasicSelectionTestClass_float_e_e_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_int_i_i_tc_Test()
+        public TestResult BasicSelection_int_i_i_tc_Test()
         {
             if (BasicSelectionTestClass_int_i_i_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         
         
         [TestMethod]
-        public MFTestResults BasicSelection_long_i_i_fc_Test()
+        public TestResult BasicSelection_long_i_i_fc_Test()
         {
             if (BasicSelectionTestClass_long_i_i_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_long_i_e_fc_Test()
+        public TestResult BasicSelection_long_i_e_fc_Test()
         {
             if (BasicSelectionTestClass_long_i_e_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_long_e_e_fc_Test()
+        public TestResult BasicSelection_long_e_e_fc_Test()
         {
             if (BasicSelectionTestClass_long_e_e_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_sbyte_i_i_tc_Test()
+        public TestResult BasicSelection_sbyte_i_i_tc_Test()
         {
             if (BasicSelectionTestClass_sbyte_i_i_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
 
 
         [TestMethod]
-        public MFTestResults BasicSelection_int_i_e_tc_Test()
+        public TestResult BasicSelection_int_i_e_tc_Test()
         {
             if (BasicSelectionTestClass_int_i_e_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_int_e_e_tc_Test()
+        public TestResult BasicSelection_int_e_e_tc_Test()
         {
             if (BasicSelectionTestClass_int_e_e_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_int_i_i_fc_Test()
+        public TestResult BasicSelection_int_i_i_fc_Test()
         {
             if (BasicSelectionTestClass_int_i_i_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_int_i_e_fc_Test()
+        public TestResult BasicSelection_int_i_e_fc_Test()
         {
             if (BasicSelectionTestClass_int_i_e_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults BasicSelection_int_e_e_fc_Test()
+        public TestResult BasicSelection_int_e_e_fc_Test()
         {
             if (BasicSelectionTestClass_int_e_e_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_long_i_i_tc_Test()
+        public TestResult BasicSelection_long_i_i_tc_Test()
         {
             if (BasicSelectionTestClass_long_i_i_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_long_i_e_tc_Test()
+        public TestResult BasicSelection_long_i_e_tc_Test()
         {
             if (BasicSelectionTestClass_long_i_e_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults BasicSelection_long_e_e_tc_Test()
+        public TestResult BasicSelection_long_e_e_tc_Test()
         {
             if (BasicSelectionTestClass_long_e_e_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         [TestMethod]
-        public MFTestResults BasicSelection_sbyte_i_e_tc_Test()
+        public TestResult BasicSelection_sbyte_i_e_tc_Test()
         {
             if (BasicSelectionTestClass_sbyte_i_e_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_sbyte_e_e_tc_Test()
+        public TestResult BasicSelection_sbyte_e_e_tc_Test()
         {
             if (BasicSelectionTestClass_sbyte_e_e_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_sbyte_i_i_fc_Test()
+        public TestResult BasicSelection_sbyte_i_i_fc_Test()
         {
             if (BasicSelectionTestClass_sbyte_i_i_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_sbyte_i_e_fc_Test()
+        public TestResult BasicSelection_sbyte_i_e_fc_Test()
         {
             if (BasicSelectionTestClass_sbyte_i_e_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_sbyte_e_e_fc_Test()
+        public TestResult BasicSelection_sbyte_e_e_fc_Test()
         {
             if (BasicSelectionTestClass_sbyte_e_e_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_short_i_i_tc_Test()
+        public TestResult BasicSelection_short_i_i_tc_Test()
         {
             if (BasicSelectionTestClass_short_i_i_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_short_i_e_tc_Test()
+        public TestResult BasicSelection_short_i_e_tc_Test()
         {
             if (BasicSelectionTestClass_short_i_e_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_short_e_e_tc_Test()
+        public TestResult BasicSelection_short_e_e_tc_Test()
         {
             if (BasicSelectionTestClass_short_e_e_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_short_i_i_fc_Test()
+        public TestResult BasicSelection_short_i_i_fc_Test()
         {
             if (BasicSelectionTestClass_short_i_i_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_short_i_e_fc_Test()
+        public TestResult BasicSelection_short_i_e_fc_Test()
         {
             if (BasicSelectionTestClass_short_i_e_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_short_e_e_fc_Test()
+        public TestResult BasicSelection_short_e_e_fc_Test()
         {
             if (BasicSelectionTestClass_short_e_e_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_uint_i_i_tc_Test()
+        public TestResult BasicSelection_uint_i_i_tc_Test()
         {
             if (BasicSelectionTestClass_uint_i_i_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_uint_i_e_tc_Test()
+        public TestResult BasicSelection_uint_i_e_tc_Test()
         {
             if (BasicSelectionTestClass_uint_i_e_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_uint_e_e_tc_Test()
+        public TestResult BasicSelection_uint_e_e_tc_Test()
         {
             if (BasicSelectionTestClass_uint_e_e_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_uint_i_i_fc_Test()
+        public TestResult BasicSelection_uint_i_i_fc_Test()
         {
             if (BasicSelectionTestClass_uint_i_i_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_uint_i_e_fc_Test()
+        public TestResult BasicSelection_uint_i_e_fc_Test()
         {
             if (BasicSelectionTestClass_uint_i_e_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_uint_e_e_fc_Test()
+        public TestResult BasicSelection_uint_e_e_fc_Test()
         {
             if (BasicSelectionTestClass_uint_e_e_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_ulong_i_i_tc_Test()
+        public TestResult BasicSelection_ulong_i_i_tc_Test()
         {
             if (BasicSelectionTestClass_ulong_i_i_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_ulong_i_e_tc_Test()
+        public TestResult BasicSelection_ulong_i_e_tc_Test()
         {
             if (BasicSelectionTestClass_ulong_i_e_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_ulong_e_e_tc_Test()
+        public TestResult BasicSelection_ulong_e_e_tc_Test()
         {
             if (BasicSelectionTestClass_ulong_e_e_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_ulong_i_i_fc_Test()
+        public TestResult BasicSelection_ulong_i_i_fc_Test()
         {
             if (BasicSelectionTestClass_ulong_i_i_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_ulong_i_e_fc_Test()
+        public TestResult BasicSelection_ulong_i_e_fc_Test()
         {
             if (BasicSelectionTestClass_ulong_i_e_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_ulong_e_e_fc_Test()
+        public TestResult BasicSelection_ulong_e_e_fc_Test()
         {
             if (BasicSelectionTestClass_ulong_e_e_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_ushort_i_i_tc_Test()
+        public TestResult BasicSelection_ushort_i_i_tc_Test()
         {
             if (BasicSelectionTestClass_ushort_i_i_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_ushort_i_e_tc_Test()
+        public TestResult BasicSelection_ushort_i_e_tc_Test()
         {
             if (BasicSelectionTestClass_ushort_i_e_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_ushort_e_e_tc_Test()
+        public TestResult BasicSelection_ushort_e_e_tc_Test()
         {
             if (BasicSelectionTestClass_ushort_e_e_tc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_ushort_i_i_fc_Test()
+        public TestResult BasicSelection_ushort_i_i_fc_Test()
         {
             if (BasicSelectionTestClass_ushort_i_i_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_ushort_i_e_fc_Test()
+        public TestResult BasicSelection_ushort_i_e_fc_Test()
         {
             if (BasicSelectionTestClass_ushort_i_e_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults BasicSelection_ushort_e_e_fc_Test()
+        public TestResult BasicSelection_ushort_e_e_fc_Test()
         {
             if (BasicSelectionTestClass_ushort_e_e_fc.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         
 

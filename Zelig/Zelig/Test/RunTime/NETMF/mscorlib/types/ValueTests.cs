@@ -3,12 +3,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class ValueTests : IMFTestInterface
+    public class ValueTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -29,37 +27,50 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("Cleaning up after the tests");
         }
 
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+            
+            string testName = "Value*_";
+            int testNumber = 0;
+            result |= Assert.CheckFailed( Value7_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Value8_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Value9_Test( ), testName, ++testNumber );
+
+            return result;
+        }
+
         //Value Test methods
         //The following tests were ported from folder current\test\cases\client\CLR\Conformance\4_values\Value
         //7,8,9
 
         //Test Case Calls 
         [TestMethod]
-        public MFTestResults Value7_Test()
+        public TestResult Value7_Test()
         {
             if (ValueTestClass7.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Value8_Test()
+        public TestResult Value8_Test()
         {
             if (ValueTestClass8.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Value9_Test()
+        public TestResult Value9_Test()
         {
             if (ValueTestClass9.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         //Compiled Test Cases 

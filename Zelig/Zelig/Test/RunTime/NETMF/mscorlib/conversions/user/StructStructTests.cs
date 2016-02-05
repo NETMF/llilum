@@ -3,12 +3,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class StructStructTests : IMFTestInterface
+    public class StructStructTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -32,64 +30,80 @@ namespace Microsoft.SPOT.Platform.Tests
         {
             Log.Comment("Cleaning up after the tests");
         }
+        
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+            
+            string testName = "StructStruct_";
+            int testNumber = 0;
+            result |= Assert.CheckFailed( StructStruct_S_T_Source_i_i_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( StructStruct_S_T_Source_i_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( StructStruct_S_T_Source_e_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( StructStruct_S_T_Dest_i_i_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( StructStruct_S_T_Dest_i_e_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( StructStruct_S_T_Dest_e_e_Test( ), testName, ++testNumber );
+
+            return result;
+        }
 
         //StructStruct Test methods
         //The following tests were ported from folder current\test\cases\client\CLR\Conformance\10_classes\StructStruct
 
         //Test Case Calls 
         [TestMethod]
-        public MFTestResults StructStruct_S_T_Source_i_i_Test()
+        public TestResult StructStruct_S_T_Source_i_i_Test()
         {
             if (StructStructTestClass_S_T_Source_i_i.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults StructStruct_S_T_Source_i_e_Test()
+        public TestResult StructStruct_S_T_Source_i_e_Test()
         {
             if (StructStructTestClass_S_T_Source_i_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults StructStruct_S_T_Source_e_e_Test()
+        public TestResult StructStruct_S_T_Source_e_e_Test()
         {
             if (StructStructTestClass_S_T_Source_e_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults StructStruct_S_T_Dest_i_i_Test()
+        public TestResult StructStruct_S_T_Dest_i_i_Test()
         {
             if (StructStructTestClass_S_T_Dest_i_i.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults StructStruct_S_T_Dest_i_e_Test()
+        public TestResult StructStruct_S_T_Dest_i_e_Test()
         {
             if (StructStructTestClass_S_T_Dest_i_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults StructStruct_S_T_Dest_e_e_Test()
+        public TestResult StructStruct_S_T_Dest_e_e_Test()
         {
             if (StructStructTestClass_S_T_Dest_e_e.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
 

@@ -3,12 +3,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class Expenum2Tests : IMFTestInterface
+    public class Expenum2Tests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -23,6 +21,105 @@ namespace Microsoft.SPOT.Platform.Tests
         public void CleanUp()
         {
             Log.Comment("Cleaning up after the tests");
+        }
+
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+            
+            string testName = "Expenum2_";
+            int testNumber = 0;
+
+            result |= Assert.CheckFailed( Expenum_sbyte_enum_to_int_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_sbyte_enum_to_long_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_sbyte_enum_to_sbyte_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_sbyte_enum_to_short_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_sbyte_enum_to_uint_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_sbyte_enum_to_ulong_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_sbyte_enum_to_ushort_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_short_enum_to_byte_rtime_s_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Expenum_short_enum_to_double_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_short_enum_to_long_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_short_enum_to_sbyte_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_short_enum_to_short_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_short_enum_to_uint_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_short_enum_to_ulong_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_short_enum_to_ushort_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_uint_enum_to_byte_rtime_s_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Expenum_uint_enum_to_double_rtime_s_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Expenum_uint_enum_to_float_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_uint_enum_to_int_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_uint_enum_to_long_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_uint_enum_to_sbyte_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_uint_enum_to_short_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_uint_enum_to_uint_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_uint_enum_to_ulong_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_uint_enum_to_ushort_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_ulong_enum_to_byte_rtime_s_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Expenum_ulong_enum_to_double_rtime_s_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Expenum_ulong_enum_to_float_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_ulong_enum_to_int_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_ulong_enum_to_long_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_ulong_enum_to_sbyte_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_ulong_enum_to_short_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_ulong_enum_to_uint_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_ulong_enum_to_ulong_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_ulong_enum_to_ushort_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_ushort_enum_to_byte_rtime_s_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Expenum_ushort_enum_to_double_rtime_s_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Expenum_ushort_enum_to_float_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_ushort_enum_to_int_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_ushort_enum_to_long_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_ushort_enum_to_sbyte_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_ushort_enum_to_short_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_ushort_enum_to_uint_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_ushort_enum_to_ulong_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_ushort_enum_to_ushort_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_byte_enum_to_byte_rtime_s_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Expenum_byte_enum_to_double_rtime_s_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Expenum_byte_enum_to_float_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_byte_enum_to_int_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_byte_enum_to_long_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_byte_enum_to_sbyte_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_byte_enum_to_short_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_byte_enum_to_uint_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_byte_enum_to_ulong_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_byte_enum_to_ushort_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_int_enum_to_byte_rtime_s_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Expenum_int_enum_to_double_rtime_s_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( Expenum_int_enum_to_float_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_int_enum_to_int_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_int_enum_to_long_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_int_enum_to_sbyte_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_int_enum_to_short_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_int_enum_to_uint_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_int_enum_to_ulong_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_int_enum_to_ulong_enum_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_int_enum_to_ushort_enum_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_long_enum_to_byte_enum_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_long_enum_to_int_enum_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_long_enum_to_long_enum_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_long_enum_to_sbyte_enum_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_long_enum_to_short_enum_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_long_enum_to_uint_enum_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_long_enum_to_ulong_enum_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_long_enum_to_ushort_enum_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_sbyte_enum_to_byte_enum_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_sbyte_enum_to_int_enum_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_sbyte_enum_to_long_enum_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_sbyte_enum_to_sbyte_enum_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_sbyte_enum_to_short_enum_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_sbyte_enum_to_uint_enum_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_byte_enum_to_ulong_enum_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_byte_enum_to_ushort_enum_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_int_enum_to_byte_enum_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_int_enum_to_int_enum_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_int_enum_to_long_enum_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_int_enum_to_sbyte_enum_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_int_enum_to_short_enum_rtime_s_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expenum_int_enum_to_uint_enum_rtime_s_Test( ), testName, ++testNumber );
+
+            return result;
         }
 
         //Expenum Test methods
@@ -89,800 +186,800 @@ namespace Microsoft.SPOT.Platform.Tests
 
         
         [TestMethod]
-        public MFTestResults Expenum_sbyte_enum_to_int_rtime_s_Test()
+        public TestResult Expenum_sbyte_enum_to_int_rtime_s_Test()
         {
             if (ExpenumTestClass_sbyte_enum_to_int_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_sbyte_enum_to_long_rtime_s_Test()
+        public TestResult Expenum_sbyte_enum_to_long_rtime_s_Test()
         {
             if (ExpenumTestClass_sbyte_enum_to_long_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_sbyte_enum_to_sbyte_rtime_s_Test()
+        public TestResult Expenum_sbyte_enum_to_sbyte_rtime_s_Test()
         {
             if (ExpenumTestClass_sbyte_enum_to_sbyte_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_sbyte_enum_to_short_rtime_s_Test()
+        public TestResult Expenum_sbyte_enum_to_short_rtime_s_Test()
         {
             if (ExpenumTestClass_sbyte_enum_to_short_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_sbyte_enum_to_uint_rtime_s_Test()
+        public TestResult Expenum_sbyte_enum_to_uint_rtime_s_Test()
         {
             if (ExpenumTestClass_sbyte_enum_to_uint_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_sbyte_enum_to_ulong_rtime_s_Test()
+        public TestResult Expenum_sbyte_enum_to_ulong_rtime_s_Test()
         {
             if (ExpenumTestClass_sbyte_enum_to_ulong_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_sbyte_enum_to_ushort_rtime_s_Test()
+        public TestResult Expenum_sbyte_enum_to_ushort_rtime_s_Test()
         {
             if (ExpenumTestClass_sbyte_enum_to_ushort_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_short_enum_to_byte_rtime_s_Test()
+        public TestResult Expenum_short_enum_to_byte_rtime_s_Test()
         {
             if (ExpenumTestClass_short_enum_to_byte_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
+        //////[TestMethod]
+        //////public TestResult Expenum_short_enum_to_double_rtime_s_Test()
+        //////{
+        //////    if (ExpenumTestClass_short_enum_to_double_rtime_s.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
         [TestMethod]
-        public MFTestResults Expenum_short_enum_to_double_rtime_s_Test()
-        {
-            if (ExpenumTestClass_short_enum_to_double_rtime_s.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Expenum_short_enum_to_long_rtime_s_Test()
+        public TestResult Expenum_short_enum_to_long_rtime_s_Test()
         {
             if (ExpenumTestClass_short_enum_to_long_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_short_enum_to_sbyte_rtime_s_Test()
+        public TestResult Expenum_short_enum_to_sbyte_rtime_s_Test()
         {
             if (ExpenumTestClass_short_enum_to_sbyte_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_short_enum_to_short_rtime_s_Test()
+        public TestResult Expenum_short_enum_to_short_rtime_s_Test()
         {
             if (ExpenumTestClass_short_enum_to_short_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_short_enum_to_uint_rtime_s_Test()
+        public TestResult Expenum_short_enum_to_uint_rtime_s_Test()
         {
             if (ExpenumTestClass_short_enum_to_uint_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_short_enum_to_ulong_rtime_s_Test()
+        public TestResult Expenum_short_enum_to_ulong_rtime_s_Test()
         {
             if (ExpenumTestClass_short_enum_to_ulong_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_short_enum_to_ushort_rtime_s_Test()
+        public TestResult Expenum_short_enum_to_ushort_rtime_s_Test()
         {
             if (ExpenumTestClass_short_enum_to_ushort_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_uint_enum_to_byte_rtime_s_Test()
+        public TestResult Expenum_uint_enum_to_byte_rtime_s_Test()
         {
             if (ExpenumTestClass_uint_enum_to_byte_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
+        //////[TestMethod]
+        //////public TestResult Expenum_uint_enum_to_double_rtime_s_Test()
+        //////{
+        //////    if (ExpenumTestClass_uint_enum_to_double_rtime_s.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Expenum_uint_enum_to_float_rtime_s_Test()
+        //////{
+        //////    if (ExpenumTestClass_uint_enum_to_float_rtime_s.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
         [TestMethod]
-        public MFTestResults Expenum_uint_enum_to_double_rtime_s_Test()
-        {
-            if (ExpenumTestClass_uint_enum_to_double_rtime_s.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Expenum_uint_enum_to_float_rtime_s_Test()
-        {
-            if (ExpenumTestClass_uint_enum_to_float_rtime_s.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Expenum_uint_enum_to_int_rtime_s_Test()
+        public TestResult Expenum_uint_enum_to_int_rtime_s_Test()
         {
             if (ExpenumTestClass_uint_enum_to_int_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_uint_enum_to_long_rtime_s_Test()
+        public TestResult Expenum_uint_enum_to_long_rtime_s_Test()
         {
             if (ExpenumTestClass_uint_enum_to_long_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_uint_enum_to_sbyte_rtime_s_Test()
+        public TestResult Expenum_uint_enum_to_sbyte_rtime_s_Test()
         {
             if (ExpenumTestClass_uint_enum_to_sbyte_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_uint_enum_to_short_rtime_s_Test()
+        public TestResult Expenum_uint_enum_to_short_rtime_s_Test()
         {
             if (ExpenumTestClass_uint_enum_to_short_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_uint_enum_to_uint_rtime_s_Test()
+        public TestResult Expenum_uint_enum_to_uint_rtime_s_Test()
         {
             if (ExpenumTestClass_uint_enum_to_uint_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         
         [TestMethod]
-        public MFTestResults Expenum_uint_enum_to_ulong_rtime_s_Test()
+        public TestResult Expenum_uint_enum_to_ulong_rtime_s_Test()
         {
             if (ExpenumTestClass_uint_enum_to_ulong_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_uint_enum_to_ushort_rtime_s_Test()
+        public TestResult Expenum_uint_enum_to_ushort_rtime_s_Test()
         {
             if (ExpenumTestClass_uint_enum_to_ushort_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_ulong_enum_to_byte_rtime_s_Test()
+        public TestResult Expenum_ulong_enum_to_byte_rtime_s_Test()
         {
             if (ExpenumTestClass_ulong_enum_to_byte_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
+        //////[TestMethod]
+        //////public TestResult Expenum_ulong_enum_to_double_rtime_s_Test()
+        //////{
+        //////    if (ExpenumTestClass_ulong_enum_to_double_rtime_s.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Expenum_ulong_enum_to_float_rtime_s_Test()
+        //////{
+        //////    if (ExpenumTestClass_ulong_enum_to_float_rtime_s.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
         [TestMethod]
-        public MFTestResults Expenum_ulong_enum_to_double_rtime_s_Test()
-        {
-            if (ExpenumTestClass_ulong_enum_to_double_rtime_s.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Expenum_ulong_enum_to_float_rtime_s_Test()
-        {
-            if (ExpenumTestClass_ulong_enum_to_float_rtime_s.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Expenum_ulong_enum_to_int_rtime_s_Test()
+        public TestResult Expenum_ulong_enum_to_int_rtime_s_Test()
         {
             if (ExpenumTestClass_ulong_enum_to_int_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_ulong_enum_to_long_rtime_s_Test()
+        public TestResult Expenum_ulong_enum_to_long_rtime_s_Test()
         {
             if (ExpenumTestClass_ulong_enum_to_long_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_ulong_enum_to_sbyte_rtime_s_Test()
+        public TestResult Expenum_ulong_enum_to_sbyte_rtime_s_Test()
         {
             if (ExpenumTestClass_ulong_enum_to_sbyte_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_ulong_enum_to_short_rtime_s_Test()
+        public TestResult Expenum_ulong_enum_to_short_rtime_s_Test()
         {
             if (ExpenumTestClass_ulong_enum_to_short_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_ulong_enum_to_uint_rtime_s_Test()
+        public TestResult Expenum_ulong_enum_to_uint_rtime_s_Test()
         {
             if (ExpenumTestClass_ulong_enum_to_uint_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_ulong_enum_to_ulong_rtime_s_Test()
+        public TestResult Expenum_ulong_enum_to_ulong_rtime_s_Test()
         {
             if (ExpenumTestClass_ulong_enum_to_ulong_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_ulong_enum_to_ushort_rtime_s_Test()
+        public TestResult Expenum_ulong_enum_to_ushort_rtime_s_Test()
         {
             if (ExpenumTestClass_ulong_enum_to_ushort_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_ushort_enum_to_byte_rtime_s_Test()
+        public TestResult Expenum_ushort_enum_to_byte_rtime_s_Test()
         {
             if (ExpenumTestClass_ushort_enum_to_byte_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_ushort_enum_to_double_rtime_s_Test()
+        public TestResult Expenum_ushort_enum_to_double_rtime_s_Test()
         {
             if (ExpenumTestClass_ushort_enum_to_double_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
+        //////[TestMethod]
+        //////public TestResult Expenum_ushort_enum_to_float_rtime_s_Test()
+        //////{
+        //////    if (ExpenumTestClass_ushort_enum_to_float_rtime_s.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
         [TestMethod]
-        public MFTestResults Expenum_ushort_enum_to_float_rtime_s_Test()
-        {
-            if (ExpenumTestClass_ushort_enum_to_float_rtime_s.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Expenum_ushort_enum_to_int_rtime_s_Test()
+        public TestResult Expenum_ushort_enum_to_int_rtime_s_Test()
         {
             if (ExpenumTestClass_ushort_enum_to_int_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_ushort_enum_to_long_rtime_s_Test()
+        public TestResult Expenum_ushort_enum_to_long_rtime_s_Test()
         {
             if (ExpenumTestClass_ushort_enum_to_long_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_ushort_enum_to_sbyte_rtime_s_Test()
+        public TestResult Expenum_ushort_enum_to_sbyte_rtime_s_Test()
         {
             if (ExpenumTestClass_ushort_enum_to_sbyte_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_ushort_enum_to_short_rtime_s_Test()
+        public TestResult Expenum_ushort_enum_to_short_rtime_s_Test()
         {
             if (ExpenumTestClass_ushort_enum_to_short_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_ushort_enum_to_uint_rtime_s_Test()
+        public TestResult Expenum_ushort_enum_to_uint_rtime_s_Test()
         {
             if (ExpenumTestClass_ushort_enum_to_uint_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_ushort_enum_to_ulong_rtime_s_Test()
+        public TestResult Expenum_ushort_enum_to_ulong_rtime_s_Test()
         {
             if (ExpenumTestClass_ushort_enum_to_ulong_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_ushort_enum_to_ushort_rtime_s_Test()
+        public TestResult Expenum_ushort_enum_to_ushort_rtime_s_Test()
         {
             if (ExpenumTestClass_ushort_enum_to_ushort_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_byte_enum_to_byte_rtime_s_Test()
+        public TestResult Expenum_byte_enum_to_byte_rtime_s_Test()
         {
             if (ExpenumTestClass_byte_enum_to_byte_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
+        //////[TestMethod]
+        //////public TestResult Expenum_byte_enum_to_double_rtime_s_Test()
+        //////{
+        //////    if (ExpenumTestClass_byte_enum_to_double_rtime_s.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
+        //////[TestMethod]
+        //////public TestResult Expenum_byte_enum_to_float_rtime_s_Test()
+        //////{
+        //////    if (ExpenumTestClass_byte_enum_to_float_rtime_s.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
         [TestMethod]
-        public MFTestResults Expenum_byte_enum_to_double_rtime_s_Test()
-        {
-            if (ExpenumTestClass_byte_enum_to_double_rtime_s.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Expenum_byte_enum_to_float_rtime_s_Test()
-        {
-            if (ExpenumTestClass_byte_enum_to_float_rtime_s.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Expenum_byte_enum_to_int_rtime_s_Test()
+        public TestResult Expenum_byte_enum_to_int_rtime_s_Test()
         {
             if (ExpenumTestClass_byte_enum_to_int_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_byte_enum_to_long_rtime_s_Test()
+        public TestResult Expenum_byte_enum_to_long_rtime_s_Test()
         {
             if (ExpenumTestClass_byte_enum_to_long_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_byte_enum_to_sbyte_rtime_s_Test()
+        public TestResult Expenum_byte_enum_to_sbyte_rtime_s_Test()
         {
             if (ExpenumTestClass_byte_enum_to_sbyte_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_byte_enum_to_short_rtime_s_Test()
+        public TestResult Expenum_byte_enum_to_short_rtime_s_Test()
         {
             if (ExpenumTestClass_byte_enum_to_short_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_byte_enum_to_uint_rtime_s_Test()
+        public TestResult Expenum_byte_enum_to_uint_rtime_s_Test()
         {
             if (ExpenumTestClass_byte_enum_to_uint_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_byte_enum_to_ulong_rtime_s_Test()
+        public TestResult Expenum_byte_enum_to_ulong_rtime_s_Test()
         {
             if (ExpenumTestClass_byte_enum_to_ulong_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_byte_enum_to_ushort_rtime_s_Test()
+        public TestResult Expenum_byte_enum_to_ushort_rtime_s_Test()
         {
             if (ExpenumTestClass_byte_enum_to_ushort_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_int_enum_to_byte_rtime_s_Test()
+        public TestResult Expenum_int_enum_to_byte_rtime_s_Test()
         {
             if (ExpenumTestClass_int_enum_to_byte_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_int_enum_to_double_rtime_s_Test()
+        public TestResult Expenum_int_enum_to_double_rtime_s_Test()
         {
             if (ExpenumTestClass_int_enum_to_double_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
+        //////[TestMethod]
+        //////public TestResult Expenum_int_enum_to_float_rtime_s_Test()
+        //////{
+        //////    if (ExpenumTestClass_int_enum_to_float_rtime_s.testMethod())
+        //////    {
+        //////        return TestResult.Pass;
+        //////    }
+        //////    return TestResult.Fail;
+        //////}
         [TestMethod]
-        public MFTestResults Expenum_int_enum_to_float_rtime_s_Test()
-        {
-            if (ExpenumTestClass_int_enum_to_float_rtime_s.testMethod())
-            {
-                return MFTestResults.Pass;
-            }
-            return MFTestResults.Fail;
-        }
-        [TestMethod]
-        public MFTestResults Expenum_int_enum_to_int_rtime_s_Test()
+        public TestResult Expenum_int_enum_to_int_rtime_s_Test()
         {
             if (ExpenumTestClass_int_enum_to_int_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_int_enum_to_long_rtime_s_Test()
+        public TestResult Expenum_int_enum_to_long_rtime_s_Test()
         {
             if (ExpenumTestClass_int_enum_to_long_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_int_enum_to_sbyte_rtime_s_Test()
+        public TestResult Expenum_int_enum_to_sbyte_rtime_s_Test()
         {
             if (ExpenumTestClass_int_enum_to_sbyte_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_int_enum_to_short_rtime_s_Test()
+        public TestResult Expenum_int_enum_to_short_rtime_s_Test()
         {
             if (ExpenumTestClass_int_enum_to_short_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_int_enum_to_uint_rtime_s_Test()
+        public TestResult Expenum_int_enum_to_uint_rtime_s_Test()
         {
             if (ExpenumTestClass_int_enum_to_uint_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_int_enum_to_ulong_rtime_s_Test()
+        public TestResult Expenum_int_enum_to_ulong_rtime_s_Test()
         {
             if (ExpenumTestClass_int_enum_to_ulong_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_int_enum_to_ulong_enum_rtime_s_Test()
+        public TestResult Expenum_int_enum_to_ulong_enum_rtime_s_Test()
         {
             if (ExpenumTestClass_int_enum_to_ulong_enum_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_int_enum_to_ushort_enum_rtime_s_Test()
+        public TestResult Expenum_int_enum_to_ushort_enum_rtime_s_Test()
         {
             if (ExpenumTestClass_int_enum_to_ushort_enum_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_long_enum_to_byte_enum_rtime_s_Test()
+        public TestResult Expenum_long_enum_to_byte_enum_rtime_s_Test()
         {
             if (ExpenumTestClass_long_enum_to_byte_enum_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_long_enum_to_int_enum_rtime_s_Test()
+        public TestResult Expenum_long_enum_to_int_enum_rtime_s_Test()
         {
             if (ExpenumTestClass_long_enum_to_int_enum_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_long_enum_to_long_enum_rtime_s_Test()
+        public TestResult Expenum_long_enum_to_long_enum_rtime_s_Test()
         {
             if (ExpenumTestClass_long_enum_to_long_enum_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_long_enum_to_sbyte_enum_rtime_s_Test()
+        public TestResult Expenum_long_enum_to_sbyte_enum_rtime_s_Test()
         {
             if (ExpenumTestClass_long_enum_to_sbyte_enum_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         
         [TestMethod]
-        public MFTestResults Expenum_long_enum_to_short_enum_rtime_s_Test()
+        public TestResult Expenum_long_enum_to_short_enum_rtime_s_Test()
         {
             if (ExpenumTestClass_long_enum_to_short_enum_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_long_enum_to_uint_enum_rtime_s_Test()
+        public TestResult Expenum_long_enum_to_uint_enum_rtime_s_Test()
         {
             if (ExpenumTestClass_long_enum_to_uint_enum_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_long_enum_to_ulong_enum_rtime_s_Test()
+        public TestResult Expenum_long_enum_to_ulong_enum_rtime_s_Test()
         {
             if (ExpenumTestClass_long_enum_to_ulong_enum_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_long_enum_to_ushort_enum_rtime_s_Test()
+        public TestResult Expenum_long_enum_to_ushort_enum_rtime_s_Test()
         {
             if (ExpenumTestClass_long_enum_to_ushort_enum_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_sbyte_enum_to_byte_enum_rtime_s_Test()
+        public TestResult Expenum_sbyte_enum_to_byte_enum_rtime_s_Test()
         {
             if (ExpenumTestClass_sbyte_enum_to_byte_enum_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         
         [TestMethod]
-        public MFTestResults Expenum_sbyte_enum_to_int_enum_rtime_s_Test()
+        public TestResult Expenum_sbyte_enum_to_int_enum_rtime_s_Test()
         {
             if (ExpenumTestClass_sbyte_enum_to_int_enum_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_sbyte_enum_to_long_enum_rtime_s_Test()
+        public TestResult Expenum_sbyte_enum_to_long_enum_rtime_s_Test()
         {
             if (ExpenumTestClass_sbyte_enum_to_long_enum_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_sbyte_enum_to_sbyte_enum_rtime_s_Test()
+        public TestResult Expenum_sbyte_enum_to_sbyte_enum_rtime_s_Test()
         {
             if (ExpenumTestClass_sbyte_enum_to_sbyte_enum_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_sbyte_enum_to_short_enum_rtime_s_Test()
+        public TestResult Expenum_sbyte_enum_to_short_enum_rtime_s_Test()
         {
             if (ExpenumTestClass_sbyte_enum_to_short_enum_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_sbyte_enum_to_uint_enum_rtime_s_Test()
+        public TestResult Expenum_sbyte_enum_to_uint_enum_rtime_s_Test()
         {
             if (ExpenumTestClass_sbyte_enum_to_uint_enum_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         
         [TestMethod]
-        public MFTestResults Expenum_byte_enum_to_ulong_enum_rtime_s_Test()
+        public TestResult Expenum_byte_enum_to_ulong_enum_rtime_s_Test()
         {
             if (ExpenumTestClass_byte_enum_to_ulong_enum_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_byte_enum_to_ushort_enum_rtime_s_Test()
+        public TestResult Expenum_byte_enum_to_ushort_enum_rtime_s_Test()
         {
             if (ExpenumTestClass_byte_enum_to_ushort_enum_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_int_enum_to_byte_enum_rtime_s_Test()
+        public TestResult Expenum_int_enum_to_byte_enum_rtime_s_Test()
         {
             if (ExpenumTestClass_int_enum_to_byte_enum_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_int_enum_to_int_enum_rtime_s_Test()
+        public TestResult Expenum_int_enum_to_int_enum_rtime_s_Test()
         {
             if (ExpenumTestClass_int_enum_to_int_enum_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_int_enum_to_long_enum_rtime_s_Test()
+        public TestResult Expenum_int_enum_to_long_enum_rtime_s_Test()
         {
             if (ExpenumTestClass_int_enum_to_long_enum_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_int_enum_to_sbyte_enum_rtime_s_Test()
+        public TestResult Expenum_int_enum_to_sbyte_enum_rtime_s_Test()
         {
             if (ExpenumTestClass_int_enum_to_sbyte_enum_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_int_enum_to_short_enum_rtime_s_Test()
+        public TestResult Expenum_int_enum_to_short_enum_rtime_s_Test()
         {
             if (ExpenumTestClass_int_enum_to_short_enum_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults Expenum_int_enum_to_uint_enum_rtime_s_Test()
+        public TestResult Expenum_int_enum_to_uint_enum_rtime_s_Test()
         {
             if (ExpenumTestClass_int_enum_to_uint_enum_rtime_s.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         
 
@@ -1124,20 +1221,20 @@ namespace Microsoft.SPOT.Platform.Tests
                     return false;
             }
         }
-        enum ExpenumTestClass_uint_enum_to_float_rtime_s_SrcEnumType : uint { ValOne = 1 }
-        public class ExpenumTestClass_uint_enum_to_float_rtime_s
-        {
-            public static bool testMethod()
-            {
-                float Destination;
-                ExpenumTestClass_uint_enum_to_float_rtime_s_SrcEnumType Source = ExpenumTestClass_uint_enum_to_float_rtime_s_SrcEnumType.ValOne;
-                Destination = (float)Source;
-                if (Destination == 1)
-                    return true;
-                else
-                    return false;
-            }
-        }
+        //////enum ExpenumTestClass_uint_enum_to_float_rtime_s_SrcEnumType : uint { ValOne = 1 }
+        //////public class ExpenumTestClass_uint_enum_to_float_rtime_s
+        //////{
+        //////    public static bool testMethod()
+        //////    {
+        //////        float Destination;
+        //////        ExpenumTestClass_uint_enum_to_float_rtime_s_SrcEnumType Source = ExpenumTestClass_uint_enum_to_float_rtime_s_SrcEnumType.ValOne;
+        //////        Destination = (float)Source;
+        //////        if (Destination == 1)
+        //////            return true;
+        //////        else
+        //////            return false;
+        //////    }
+        //////}
         enum ExpenumTestClass_uint_enum_to_int_rtime_s_SrcEnumType : uint { ValOne = 1 }
         public class ExpenumTestClass_uint_enum_to_int_rtime_s
         {
@@ -1265,20 +1362,20 @@ namespace Microsoft.SPOT.Platform.Tests
                     return false;
             }
         }
-        enum ExpenumTestClass_ulong_enum_to_float_rtime_s_SrcEnumType : ulong { ValOne = 1 }
-        public class ExpenumTestClass_ulong_enum_to_float_rtime_s
-        {
-            public static bool testMethod()
-            {
-                float Destination;
-                ExpenumTestClass_ulong_enum_to_float_rtime_s_SrcEnumType Source = ExpenumTestClass_ulong_enum_to_float_rtime_s_SrcEnumType.ValOne;
-                Destination = (float)Source;
-                if (Destination == 1)
-                    return true;
-                else
-                    return false;
-            }
-        }
+        //////enum ExpenumTestClass_ulong_enum_to_float_rtime_s_SrcEnumType : ulong { ValOne = 1 }
+        //////public class ExpenumTestClass_ulong_enum_to_float_rtime_s
+        //////{
+        //////    public static bool testMethod()
+        //////    {
+        //////        float Destination;
+        //////        ExpenumTestClass_ulong_enum_to_float_rtime_s_SrcEnumType Source = ExpenumTestClass_ulong_enum_to_float_rtime_s_SrcEnumType.ValOne;
+        //////        Destination = (float)Source;
+        //////        if (Destination == 1)
+        //////            return true;
+        //////        else
+        //////            return false;
+        //////    }
+        //////}
         enum ExpenumTestClass_ulong_enum_to_int_rtime_s_SrcEnumType : ulong { ValOne = 1 }
         public class ExpenumTestClass_ulong_enum_to_int_rtime_s
         {
@@ -1531,34 +1628,34 @@ namespace Microsoft.SPOT.Platform.Tests
                     return false;
             }
         }
-        enum ExpenumTestClass_byte_enum_to_double_rtime_s_SrcEnumType : byte { ValOne = 1 }
-        public class ExpenumTestClass_byte_enum_to_double_rtime_s
-        {
-            public static bool testMethod()
-            {
-                double Destination;
-                ExpenumTestClass_byte_enum_to_double_rtime_s_SrcEnumType Source = ExpenumTestClass_byte_enum_to_double_rtime_s_SrcEnumType.ValOne;
-                Destination = (double)Source;
-                if (Destination == 1)
-                    return true;
-                else
-                    return false;
-            }
-        }
-        enum ExpenumTestClass_byte_enum_to_float_rtime_s_SrcEnumType : byte { ValOne = 1 }
-        public class ExpenumTestClass_byte_enum_to_float_rtime_s
-        {
-            public static bool testMethod()
-            {
-                float Destination;
-                ExpenumTestClass_byte_enum_to_float_rtime_s_SrcEnumType Source = ExpenumTestClass_byte_enum_to_float_rtime_s_SrcEnumType.ValOne;
-                Destination = (float)Source;
-                if (Destination == 1)
-                    return true;
-                else
-                    return false;
-            }
-        }
+        //////enum ExpenumTestClass_byte_enum_to_double_rtime_s_SrcEnumType : byte { ValOne = 1 }
+        //////public class ExpenumTestClass_byte_enum_to_double_rtime_s
+        //////{
+        //////    public static bool testMethod()
+        //////    {
+        //////        double Destination;
+        //////        ExpenumTestClass_byte_enum_to_double_rtime_s_SrcEnumType Source = ExpenumTestClass_byte_enum_to_double_rtime_s_SrcEnumType.ValOne;
+        //////        Destination = (double)Source;
+        //////        if (Destination == 1)
+        //////            return true;
+        //////        else
+        //////            return false;
+        //////    }
+        //////}
+        //////enum ExpenumTestClass_byte_enum_to_float_rtime_s_SrcEnumType : byte { ValOne = 1 }
+        //////public class ExpenumTestClass_byte_enum_to_float_rtime_s
+        //////{
+        //////    public static bool testMethod()
+        //////    {
+        //////        float Destination;
+        //////        ExpenumTestClass_byte_enum_to_float_rtime_s_SrcEnumType Source = ExpenumTestClass_byte_enum_to_float_rtime_s_SrcEnumType.ValOne;
+        //////        Destination = (float)Source;
+        //////        if (Destination == 1)
+        //////            return true;
+        //////        else
+        //////            return false;
+        //////    }
+        //////}
         enum ExpenumTestClass_byte_enum_to_int_rtime_s_SrcEnumType : byte { ValOne = 1 }
         public class ExpenumTestClass_byte_enum_to_int_rtime_s
         {
@@ -1685,20 +1782,20 @@ namespace Microsoft.SPOT.Platform.Tests
                     return false;
             }
         }
-        enum ExpenumTestClass_int_enum_to_float_rtime_s_SrcEnumType : int { ValOne = 1 }
-        public class ExpenumTestClass_int_enum_to_float_rtime_s
-        {
-            public static bool testMethod()
-            {
-                float Destination;
-                ExpenumTestClass_int_enum_to_float_rtime_s_SrcEnumType Source = ExpenumTestClass_int_enum_to_float_rtime_s_SrcEnumType.ValOne;
-                Destination = (float)Source;
-                if (Destination == 1)
-                    return true;
-                else
-                    return false;
-            }
-        }
+        //////enum ExpenumTestClass_int_enum_to_float_rtime_s_SrcEnumType : int { ValOne = 1 }
+        //////public class ExpenumTestClass_int_enum_to_float_rtime_s
+        //////{
+        //////    public static bool testMethod()
+        //////    {
+        //////        float Destination;
+        //////        ExpenumTestClass_int_enum_to_float_rtime_s_SrcEnumType Source = ExpenumTestClass_int_enum_to_float_rtime_s_SrcEnumType.ValOne;
+        //////        Destination = (float)Source;
+        //////        if (Destination == 1)
+        //////            return true;
+        //////        else
+        //////            return false;
+        //////    }
+        //////}
         enum ExpenumTestClass_int_enum_to_int_rtime_s_SrcEnumType : int { ValOne = 1 }
         public class ExpenumTestClass_int_enum_to_int_rtime_s
         {

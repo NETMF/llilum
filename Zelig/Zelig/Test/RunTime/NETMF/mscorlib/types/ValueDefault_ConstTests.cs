@@ -3,12 +3,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
-using Microsoft.SPOT.Platform.Test;
 
-namespace Microsoft.SPOT.Platform.Tests
+namespace Microsoft.Zelig.Test
 {
-    public class ValueDefault_ConstTests : IMFTestInterface
+    public class ValueDefault_ConstTests : TestBase, ITestInterface
     {
         [SetUp]
         public InitializeResult Initialize()
@@ -24,6 +22,30 @@ namespace Microsoft.SPOT.Platform.Tests
             Log.Comment("Cleaning up after the tests");
         }
 
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+            
+            string testName = "ValueDefault_ConstXX_";
+            int testNumber = 0;
+            result |= Assert.CheckFailed( ValueDefault_Const01_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const02_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const03_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const04_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const05_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const06_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const07_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const09_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const11_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const12_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const14_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const15_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const16_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const17_Test( ), testName, ++testNumber );
+
+            return result;
+        }
+
         //ValueDefault_Const Test methods
         //The following tests were ported from folder current\test\cases\client\CLR\Conformance\4_values\Value\Default_Const
         //01,02,03,04,05,06,07,09,11,12,14,15,16,17
@@ -31,144 +53,144 @@ namespace Microsoft.SPOT.Platform.Tests
 
         //Test Case Calls 
         [TestMethod]
-        public MFTestResults ValueDefault_Const01_Test()
+        public TestResult ValueDefault_Const01_Test()
         {
             Log.Comment("Testing byte == 0");
             if (ValueDefault_ConstTestClass01.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueDefault_Const02_Test()
+        public TestResult ValueDefault_Const02_Test()
         {
             Log.Comment("Testing short == 0");
             if (ValueDefault_ConstTestClass02.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueDefault_Const03_Test()
+        public TestResult ValueDefault_Const03_Test()
         {
             Log.Comment("Testing int == 0");
             if (ValueDefault_ConstTestClass03.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueDefault_Const04_Test()
+        public TestResult ValueDefault_Const04_Test()
         {
             Log.Comment("Testing long == 0L");
             if (ValueDefault_ConstTestClass04.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueDefault_Const05_Test()
+        public TestResult ValueDefault_Const05_Test()
         {
             Log.Comment("Testing char == \x0000");
             if (ValueDefault_ConstTestClass05.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueDefault_Const06_Test()
+        public TestResult ValueDefault_Const06_Test()
         {
             Log.Comment("Testing float == 0.0f");
             if (ValueDefault_ConstTestClass06.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueDefault_Const07_Test()
+        public TestResult ValueDefault_Const07_Test()
         {
             Log.Comment("Testing double == 0.0d");
             if (ValueDefault_ConstTestClass07.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueDefault_Const09_Test()
+        public TestResult ValueDefault_Const09_Test()
         {
             Log.Comment("Testing bool == false");
             if (ValueDefault_ConstTestClass09.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueDefault_Const11_Test()
+        public TestResult ValueDefault_Const11_Test()
         {
             Log.Comment("Testing enum");
             if (ValueDefault_ConstTestClass11.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueDefault_Const12_Test()
+        public TestResult ValueDefault_Const12_Test()
         {
             Log.Comment("Testing struct");
             if (ValueDefault_ConstTestClass12.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueDefault_Const14_Test()
+        public TestResult ValueDefault_Const14_Test()
         {
             Log.Comment("Testing sbyte == 0");
             if (ValueDefault_ConstTestClass14.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueDefault_Const15_Test()
+        public TestResult ValueDefault_Const15_Test()
         {
             Log.Comment("Testing ushort == 0");
             if (ValueDefault_ConstTestClass15.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueDefault_Const16_Test()
+        public TestResult ValueDefault_Const16_Test()
         {
             Log.Comment("Testing uint == 0");
             if (ValueDefault_ConstTestClass16.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
         [TestMethod]
-        public MFTestResults ValueDefault_Const17_Test()
+        public TestResult ValueDefault_Const17_Test()
         {
             Log.Comment("Testing ulong == 0");
             if (ValueDefault_ConstTestClass17.testMethod())
             {
-                return MFTestResults.Pass;
+                return TestResult.Pass;
             }
-            return MFTestResults.Fail;
+            return TestResult.Fail;
         }
 
         //Compiled Test Cases 
