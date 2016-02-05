@@ -25,23 +25,25 @@ namespace Microsoft.Zelig.Test
         public override TestResult Run( string[] args )
         {
             TestResult result = TestResult.Pass;
-
-            result |= Assert.CheckFailed( ReferenceBoxing01_Test( ) );
-            result |= Assert.CheckFailed( ReferenceBoxing02_Test( ) );
-            result |= Assert.CheckFailed( ReferenceBoxing03_Test( ) );
-            result |= Assert.CheckFailed( ReferenceBoxing04_Test( ) );
-            result |= Assert.CheckFailed( ReferenceBoxing05_Test( ) );
-            result |= Assert.CheckFailed( ReferenceBoxing06_Test( ) );
-            result |= Assert.CheckFailed( ReferenceBoxing07_Test( ) );
-            result |= Assert.CheckFailed( ReferenceBoxing09_Test( ) );
-            result |= Assert.CheckFailed( ReferenceBoxing11_Test( ) );
-            result |= Assert.CheckFailed( ReferenceBoxing12_Test( ) );
-            result |= Assert.CheckFailed( ReferenceBoxing13_Test( ) );
-            result |= Assert.CheckFailed( ReferenceBoxing15_Test( ) );
-            result |= Assert.CheckFailed( ReferenceBoxing16_Test( ) );
-            result |= Assert.CheckFailed( ReferenceBoxing17_Test( ) );
-            result |= Assert.CheckFailed( ReferenceBoxing18_Test( ) );
-            result |= Assert.CheckFailed( ReferenceBoxing19_Test( ) );
+            
+            string testName = " ReferenceBoxingXX_";
+            int testNumber = 0;
+            result |= Assert.CheckFailed( ReferenceBoxing01_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing02_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing03_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing04_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing05_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing06_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing07_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing09_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing11_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing12_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing13_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing15_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing16_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing17_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing18_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ReferenceBoxing19_Test( ), testName, ++testNumber );
 
             return result;
         }

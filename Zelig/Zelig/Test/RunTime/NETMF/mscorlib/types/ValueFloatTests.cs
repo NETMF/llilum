@@ -25,34 +25,36 @@ namespace Microsoft.Zelig.Test
         public override TestResult Run( string[] args )
         {
             TestResult result = TestResult.Pass;
-
-            result |= Assert.CheckFailed( ValueFloat04_Test( ) );
-            result |= Assert.CheckFailed( ValueFloat05_Test( ) );
-            result |= Assert.CheckFailed( ValueFloat06_Test( ) );
-            result |= Assert.CheckFailed( ValueFloat07_Test( ) );
-            result |= Assert.CheckFailed( ValueFloat08_Test( ) );
-            result |= Assert.CheckFailed( ValueFloat09_Test( ) );
-            result |= Assert.CheckFailed( ValueFloat10_Test( ) );
-            result |= Assert.CheckFailed( ValueFloat11_Test( ) );
-            //////result |= Assert.CheckFailed( ValueFloat12_Test( ) );
-            //////result |= Assert.CheckFailed( ValueFloat13_Test( ) );
-            result |= Assert.CheckFailed( ValueFloat14_Test( ) );
-            result |= Assert.CheckFailed( ValueFloat15_Test( ) );
-            result |= Assert.CheckFailed( ValueFloat16_Test( ) );
-            result |= Assert.CheckFailed( ValueFloat17_Test( ) );
-            result |= Assert.CheckFailed( ValueFloat18_Test( ) );
-            result |= Assert.CheckFailed( ValueFloat19_Test( ) );
-            result |= Assert.CheckFailed( ValueFloat20_Test( ) );
-            result |= Assert.CheckFailed( ValueFloat21_Test( ) );
-            result |= Assert.CheckFailed( ValueFloat22_Test( ) );
-            result |= Assert.CheckFailed( ValueFloat23_Test( ) );
-            result |= Assert.CheckFailed( ValueFloat24_Test( ) );
-            result |= Assert.CheckFailed( ValueFloat25_Test( ) );
-            result |= Assert.CheckFailed( ValueFloat26_Test( ) );
-            result |= Assert.CheckFailed( ValueFloat27_Test( ) );
-            result |= Assert.CheckFailed( ValueFloat28_Test( ) );
-            result |= Assert.CheckFailed( ValueFloat29_Test( ) );
-            result |= Assert.CheckFailed( ValueFloat30_Test( ) );
+            
+            string testName = " ValueFloatXX_";
+            int testNumber = 0;
+            result |= Assert.CheckFailed( ValueFloat04_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat05_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat06_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat07_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat08_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat09_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat10_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat11_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat12_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat13_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat14_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat15_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat16_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat17_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat18_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat19_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat20_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat21_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat22_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat23_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat24_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat25_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat26_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat27_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat28_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat29_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueFloat30_Test( ), testName, ++testNumber );
 
             return result;
         }
@@ -149,26 +151,26 @@ namespace Microsoft.Zelig.Test
             }
             return TestResult.Fail;
         }
-        //////[TestMethod]
-        //////public TestResult ValueFloat12_Test()
-        //////{
-        //////    Log.Comment("Testing float type is kept after modulus with other types");
-        //////    if (ValueFloatTestClass12.testMethod())
-        //////    {
-        //////        return TestResult.Pass;
-        //////    }
-        //////    return TestResult.Fail;
-        //////}
-        //////[TestMethod]
-        //////public TestResult ValueFloat13_Test()
-        //////{
-        //////    Log.Comment("Testing double type is kept after modulus with other types");
-        //////    if (ValueFloatTestClass13.testMethod())
-        //////    {
-        //////        return TestResult.Pass;
-        //////    }
-        //////    return TestResult.Fail;
-        //////}
+        [TestMethod]
+        public TestResult ValueFloat12_Test( )
+        {
+            Log.Comment( "Testing float type is kept after modulus with other types" );
+            if(ValueFloatTestClass12.testMethod( ))
+            {
+                return TestResult.Pass;
+            }
+            return TestResult.Fail;
+        }
+        [TestMethod]
+        public TestResult ValueFloat13_Test( )
+        {
+            Log.Comment( "Testing double type is kept after modulus with other types" );
+            if(ValueFloatTestClass13.testMethod( ))
+            {
+                return TestResult.Pass;
+            }
+            return TestResult.Fail;
+        }
         [TestMethod]
         public TestResult ValueFloat14_Test()
         {
@@ -782,119 +784,119 @@ namespace Microsoft.Zelig.Test
                 return (intRet == 0);
             }
         }
-        //////public class ValueFloatTestClass12
-        //////{
-        //////    public static bool testMethod()
-        //////    {
-        //////        int intRet = 0;
-        //////        float f1 = 11.0f;
-        //////        short s1 = 2;
-        //////        byte b1 = 3;
-        //////        int i1 = 4;
-        //////        long l1 = 5L;
-        //////        char c1 = (char)6;
+        public class ValueFloatTestClass12
+        {
+            public static bool testMethod( )
+            {
+                int intRet = 0;
+                float f1 = 11.0f;
+                short s1 = 2;
+                byte b1 = 3;
+                int i1 = 4;
+                long l1 = 5L;
+                char c1 = (char)6;
 
-        //////        if ((f1 % s1).GetType() != f1.GetType())
-        //////        {
-        //////            intRet = 1;
-        //////        }
-        //////        if ((s1 % f1).GetType() != f1.GetType())
-        //////        {
-        //////            intRet = 1;
-        //////        }
-        //////        if ((f1 % b1).GetType() != f1.GetType())
-        //////        {
-        //////            intRet = 1;
-        //////        }
-        //////        if ((b1 % f1).GetType() != f1.GetType())
-        //////        {
-        //////            intRet = 1;
-        //////        }
-        //////        if ((f1 % i1).GetType() != f1.GetType())
-        //////        {
-        //////            intRet = 1;
-        //////        }
-        //////        if ((i1 % f1).GetType() != f1.GetType())
-        //////        {
-        //////            intRet = 1;
-        //////        }
-        //////        if ((f1 % l1).GetType() != f1.GetType())
-        //////        {
-        //////            intRet = 1;
-        //////        }
-        //////        if ((l1 % f1).GetType() != f1.GetType())
-        //////        {
-        //////            intRet = 1;
-        //////        }
-        //////        if ((f1 % c1).GetType() != f1.GetType())
-        //////        {
-        //////            intRet = 1;
-        //////        }
-        //////        if ((c1 % f1).GetType() != f1.GetType())
-        //////        {
-        //////            intRet = 1;
-        //////        }
-        //////        return (intRet == 0);
-        //////    }
-        //////}
-        //////public class ValueFloatTestClass13
-        //////{
-        //////    public static bool testMethod()
-        //////    {
-        //////        int intRet = 0;
-        //////        double d1 = 11.0d;
-        //////        short s1 = 2;
-        //////        byte b1 = 3;
-        //////        int i1 = 4;
-        //////        long l1 = 5L;
-        //////        char c1 = (char)6;
+                if(( f1 % s1 ).GetType( ) != f1.GetType( ))
+                {
+                    intRet = 1;
+                }
+                if(( s1 % f1 ).GetType( ) != f1.GetType( ))
+                {
+                    intRet = 1;
+                }
+                if(( f1 % b1 ).GetType( ) != f1.GetType( ))
+                {
+                    intRet = 1;
+                }
+                if(( b1 % f1 ).GetType( ) != f1.GetType( ))
+                {
+                    intRet = 1;
+                }
+                if(( f1 % i1 ).GetType( ) != f1.GetType( ))
+                {
+                    intRet = 1;
+                }
+                if(( i1 % f1 ).GetType( ) != f1.GetType( ))
+                {
+                    intRet = 1;
+                }
+                if(( f1 % l1 ).GetType( ) != f1.GetType( ))
+                {
+                    intRet = 1;
+                }
+                if(( l1 % f1 ).GetType( ) != f1.GetType( ))
+                {
+                    intRet = 1;
+                }
+                if(( f1 % c1 ).GetType( ) != f1.GetType( ))
+                {
+                    intRet = 1;
+                }
+                if(( c1 % f1 ).GetType( ) != f1.GetType( ))
+                {
+                    intRet = 1;
+                }
+                return ( intRet == 0 );
+            }
+        }
+        public class ValueFloatTestClass13
+        {
+            public static bool testMethod( )
+            {
+                int intRet = 0;
+                double d1 = 11.0d;
+                short s1 = 2;
+                byte b1 = 3;
+                int i1 = 4;
+                long l1 = 5L;
+                char c1 = (char)6;
 
-        //////        if ((d1 % s1).GetType() != d1.GetType())
-        //////        {
-        //////            intRet = 1;
-        //////        }
-        //////        if ((s1 % d1).GetType() != d1.GetType())
-        //////        {
-        //////            intRet = 1;
-        //////        }
-        //////        if ((d1 % b1).GetType() != d1.GetType())
-        //////        {
-        //////            intRet = 1;
-        //////        }
-        //////        if ((b1 % d1).GetType() != d1.GetType())
-        //////        {
-        //////            intRet = 1;
-        //////        }
-        //////        if ((d1 % i1).GetType() != d1.GetType())
-        //////        {
-        //////            intRet = 1;
-        //////        }
-        //////        if ((i1 % d1).GetType() != d1.GetType())
-        //////        {
-        //////            intRet = 1;
-        //////        }
-        //////        if ((d1 % l1).GetType() != d1.GetType())
-        //////        {
-        //////            intRet = 1;
-        //////        }
-        //////        if ((l1 % d1).GetType() != d1.GetType())
-        //////        {
-        //////            intRet = 1;
-        //////        }
-        //////        if ((d1 % c1).GetType() != d1.GetType())
-        //////        {
-        //////            intRet = 1;
-        //////        }
-        //////        if ((c1 % d1).GetType() != d1.GetType())
-        //////        {
-        //////            intRet = 1;
-        //////        }
-        //////        return (intRet == 0);
-        //////    }
-        //////}
+                if(( d1 % s1 ).GetType( ) != d1.GetType( ))
+                {
+                    intRet = 1;
+                }
+                if(( s1 % d1 ).GetType( ) != d1.GetType( ))
+                {
+                    intRet = 1;
+                }
+                if(( d1 % b1 ).GetType( ) != d1.GetType( ))
+                {
+                    intRet = 1;
+                }
+                if(( b1 % d1 ).GetType( ) != d1.GetType( ))
+                {
+                    intRet = 1;
+                }
+                if(( d1 % i1 ).GetType( ) != d1.GetType( ))
+                {
+                    intRet = 1;
+                }
+                if(( i1 % d1 ).GetType( ) != d1.GetType( ))
+                {
+                    intRet = 1;
+                }
+                if(( d1 % l1 ).GetType( ) != d1.GetType( ))
+                {
+                    intRet = 1;
+                }
+                if(( l1 % d1 ).GetType( ) != d1.GetType( ))
+                {
+                    intRet = 1;
+                }
+                if(( d1 % c1 ).GetType( ) != d1.GetType( ))
+                {
+                    intRet = 1;
+                }
+                if(( c1 % d1 ).GetType( ) != d1.GetType( ))
+                {
+                    intRet = 1;
+                }
+                return ( intRet == 0 );
+            }
+        }
         public class ValueFloatTestClass14
         {
-            public static bool testMethod()
+            public static bool testMethod( )
             {
                 int intRet = 0;
                 bool b = true;
@@ -905,31 +907,31 @@ namespace Microsoft.Zelig.Test
                 long l1 = 5L;
                 char c1 = (char)6;
 
-                if ((f1 == s1).GetType() != b.GetType())
+                if(( f1 == s1 ).GetType( ) != b.GetType( ))
                 {
                     intRet = 1;
                 }
-                if ((s1 == f1).GetType() != b.GetType())
+                if(( s1 == f1 ).GetType( ) != b.GetType( ))
                 {
                     intRet = 1;
                 }
-                if ((f1 == b1).GetType() != b.GetType())
+                if(( f1 == b1 ).GetType( ) != b.GetType( ))
                 {
                     intRet = 1;
                 }
-                if ((b1 == f1).GetType() != b.GetType())
+                if(( b1 == f1 ).GetType( ) != b.GetType( ))
                 {
                     intRet = 1;
                 }
-                if ((f1 == i1).GetType() != b.GetType())
+                if(( f1 == i1 ).GetType( ) != b.GetType( ))
                 {
                     intRet = 1;
                 }
-                if ((i1 == f1).GetType() != b.GetType())
+                if(( i1 == f1 ).GetType( ) != b.GetType( ))
                 {
                     intRet = 1;
                 }
-                if ((f1 == l1).GetType() != b.GetType())
+                if(( f1 == l1 ).GetType( ) != b.GetType( ))
                 {
                     intRet = 1;
                 }

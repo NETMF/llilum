@@ -26,46 +26,48 @@ namespace Microsoft.Zelig.Test
         {
             TestResult result = TestResult.Pass;
             
-            result |= Assert.CheckFailed( ValueIntegral01_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral05_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral09_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral13_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral14_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral15_Test( ) );
-            //////result |= Assert.CheckFailed( ValueIntegral16_Test( ) );
-            //////result |= Assert.CheckFailed( ValueIntegral17_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral18_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral19_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral20_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral21_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral22_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral23_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral24_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral25_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral26_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral27_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral28_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral38_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral39_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral42_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral45_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral49_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral50_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral51_Test( ) );
-            //////result |= Assert.CheckFailed( ValueIntegral52_Test( ) );
-            //////result |= Assert.CheckFailed( ValueIntegral53_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral54_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral55_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral56_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral57_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral58_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral59_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral60_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral61_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral62_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral63_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral64_Test( ) );
-            result |= Assert.CheckFailed( ValueIntegral70_Test( ) );
+            string testName = "ValueIntegralXX_";
+            int testNumber = 0;
+            result |= Assert.CheckFailed( ValueIntegral01_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral05_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral09_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral13_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral14_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral15_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueIntegral16_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueIntegral17_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral18_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral19_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral20_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral21_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral22_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral23_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral24_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral25_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral26_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral27_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral28_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral38_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral39_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral42_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral45_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral49_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral50_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral51_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueIntegral52_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueIntegral53_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral54_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral55_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral56_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral57_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral58_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral59_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral60_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral61_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral62_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral63_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral64_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueIntegral70_Test( ), testName, ++testNumber );
 
             return result;
         }
@@ -162,28 +164,28 @@ namespace Microsoft.Zelig.Test
             return TestResult.Fail;
         }
         //////[TestMethod]
-        //////public TestResult ValueIntegral16_Test()
+        //////public TestResult ValueIntegral16_Test( )
         //////{
-        //////    Log.Comment(" For the binary operators other than shift, if at least one");
-        //////    Log.Comment(" operand is of type long, then both operands are converted to long, the operation");
-        //////    Log.Comment(" is performed using 64-bit precision, and the type of the result is long or bool. ");
-        //////    Log.Comment(" Otherwise, both operands are converted to int, the operation is performed using ");
-        //////    Log.Comment(" 32-bit precision, and the type of the result is int or bool.");
-        //////    if (ValueIntegralTestClass16.testMethod())
+        //////    Log.Comment( " For the binary operators other than shift, if at least one" );
+        //////    Log.Comment( " operand is of type long, then both operands are converted to long, the operation" );
+        //////    Log.Comment( " is performed using 64-bit precision, and the type of the result is long or bool. " );
+        //////    Log.Comment( " Otherwise, both operands are converted to int, the operation is performed using " );
+        //////    Log.Comment( " 32-bit precision, and the type of the result is int or bool." );
+        //////    if(ValueIntegralTestClass16.testMethod( ))
         //////    {
         //////        return TestResult.Pass;
         //////    }
         //////    return TestResult.Fail;
         //////}
         //////[TestMethod]
-        //////public TestResult ValueIntegral17_Test()
+        //////public TestResult ValueIntegral17_Test( )
         //////{
-        //////    Log.Comment(" For the binary operators other than shift, if at least one");
-        //////    Log.Comment(" operand is of type long, then both operands are converted to long, the operation");
-        //////    Log.Comment(" is performed using 64-bit precision, and the type of the result is long or bool. ");
-        //////    Log.Comment(" Otherwise, both operands are converted to int, the operation is performed using ");
-        //////    Log.Comment(" 32-bit precision, and the type of the result is int or bool.");
-        //////    if (ValueIntegralTestClass17.testMethod())
+        //////    Log.Comment( " For the binary operators other than shift, if at least one" );
+        //////    Log.Comment( " operand is of type long, then both operands are converted to long, the operation" );
+        //////    Log.Comment( " is performed using 64-bit precision, and the type of the result is long or bool. " );
+        //////    Log.Comment( " Otherwise, both operands are converted to int, the operation is performed using " );
+        //////    Log.Comment( " 32-bit precision, and the type of the result is int or bool." );
+        //////    if(ValueIntegralTestClass17.testMethod( ))
         //////    {
         //////        return TestResult.Pass;
         //////    }
@@ -450,30 +452,30 @@ namespace Microsoft.Zelig.Test
             return TestResult.Fail;
         }
         //////[TestMethod]
-        //////public TestResult ValueIntegral52_Test()
+        //////public TestResult ValueIntegral52_Test( )
         //////{
-        //////    Log.Comment(" Section 4.1");
-        //////    Log.Comment(" For the binary operators except shift, the operands");
-        //////    Log.Comment(" are converted to type T, where T is the first of int, uint, long, and ulong");
-        //////    Log.Comment(" that can fully represent all possible values of each operand. The operation");
-        //////    Log.Comment(" is then performed using the precision of type T, and the type of the result");
-        //////    Log.Comment(" is T (or bool for relational operators).");
-        //////    if (ValueIntegralTestClass52.testMethod())
+        //////    Log.Comment( " Section 4.1" );
+        //////    Log.Comment( " For the binary operators except shift, the operands" );
+        //////    Log.Comment( " are converted to type T, where T is the first of int, uint, long, and ulong" );
+        //////    Log.Comment( " that can fully represent all possible values of each operand. The operation" );
+        //////    Log.Comment( " is then performed using the precision of type T, and the type of the result" );
+        //////    Log.Comment( " is T (or bool for relational operators)." );
+        //////    if(ValueIntegralTestClass52.testMethod( ))
         //////    {
         //////        return TestResult.Pass;
         //////    }
         //////    return TestResult.Fail;
         //////}
         //////[TestMethod]
-        //////public TestResult ValueIntegral53_Test()
+        //////public TestResult ValueIntegral53_Test( )
         //////{
-        //////    Log.Comment(" Section 4.1");
-        //////    Log.Comment(" For the binary operators except shift, the operands");
-        //////    Log.Comment(" are converted to type T, where T is the first of int, uint, long, and ulong");
-        //////    Log.Comment(" that can fully represent all possible values of each operand. The operation");
-        //////    Log.Comment(" is then performed using the precision of type T, and the type of the result");
-        //////    Log.Comment(" is T (or bool for relational operators).");
-        //////    if (ValueIntegralTestClass53.testMethod())
+        //////    Log.Comment( " Section 4.1" );
+        //////    Log.Comment( " For the binary operators except shift, the operands" );
+        //////    Log.Comment( " are converted to type T, where T is the first of int, uint, long, and ulong" );
+        //////    Log.Comment( " that can fully represent all possible values of each operand. The operation" );
+        //////    Log.Comment( " is then performed using the precision of type T, and the type of the result" );
+        //////    Log.Comment( " is T (or bool for relational operators)." );
+        //////    if(ValueIntegralTestClass53.testMethod( ))
         //////    {
         //////        return TestResult.Pass;
         //////    }
@@ -978,7 +980,7 @@ namespace Microsoft.Zelig.Test
         }
         //////public class ValueIntegralTestClass16
         //////{
-        //////    public static bool testMethod()
+        //////    public static bool testMethod( )
         //////    {
         //////        int intRet = 0;
         //////        short s1 = 2;
@@ -987,77 +989,77 @@ namespace Microsoft.Zelig.Test
         //////        long l1 = 5L;
         //////        char c1 = (char)6;
         //////        //short
-        //////        if ((s1 / s1).GetType() != i1.GetType())
+        //////        if(( s1 / s1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((s1 / b1).GetType() != i1.GetType())
+        //////        if(( s1 / b1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((s1 / i1).GetType() != i1.GetType())
+        //////        if(( s1 / i1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((s1 / l1).GetType() != l1.GetType())
+        //////        if(( s1 / l1 ).GetType( ) != l1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((s1 / c1).GetType() != i1.GetType())
+        //////        if(( s1 / c1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
 
         //////        //byte
-        //////        if ((b1 / b1).GetType() != i1.GetType())
+        //////        if(( b1 / b1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((b1 / i1).GetType() != i1.GetType())
+        //////        if(( b1 / i1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((b1 / l1).GetType() != l1.GetType())
+        //////        if(( b1 / l1 ).GetType( ) != l1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((b1 / c1).GetType() != i1.GetType())
+        //////        if(( b1 / c1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
         //////        //int
-        //////        if ((i1 / i1).GetType() != i1.GetType())
+        //////        if(( i1 / i1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((i1 / l1).GetType() != l1.GetType())
+        //////        if(( i1 / l1 ).GetType( ) != l1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((i1 / c1).GetType() != i1.GetType())
+        //////        if(( i1 / c1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
         //////        //long
-        //////        if ((l1 / l1).GetType() != l1.GetType())
+        //////        if(( l1 / l1 ).GetType( ) != l1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((l1 / c1).GetType() != l1.GetType())
+        //////        if(( l1 / c1 ).GetType( ) != l1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
         //////        //char
-        //////        if ((c1 / c1).GetType() != i1.GetType())
+        //////        if(( c1 / c1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        return (intRet == 0);
+        //////        return ( intRet == 0 );
         //////    }
         //////}
         //////public class ValueIntegralTestClass17
         //////{
-        //////    public static bool testMethod()
+        //////    public static bool testMethod( )
         //////    {
         //////        int intRet = 0;
         //////        short s1 = 2;
@@ -1066,72 +1068,72 @@ namespace Microsoft.Zelig.Test
         //////        long l1 = 5L;
         //////        char c1 = (char)6;
         //////        //short
-        //////        if ((s1 % s1).GetType() != i1.GetType())
+        //////        if(( s1 % s1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((s1 % b1).GetType() != i1.GetType())
+        //////        if(( s1 % b1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((s1 % i1).GetType() != i1.GetType())
+        //////        if(( s1 % i1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((s1 % l1).GetType() != l1.GetType())
+        //////        if(( s1 % l1 ).GetType( ) != l1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((s1 % c1).GetType() != i1.GetType())
+        //////        if(( s1 % c1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
 
         //////        //byte
-        //////        if ((b1 % b1).GetType() != i1.GetType())
+        //////        if(( b1 % b1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((b1 % i1).GetType() != i1.GetType())
+        //////        if(( b1 % i1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((b1 % l1).GetType() != l1.GetType())
+        //////        if(( b1 % l1 ).GetType( ) != l1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((b1 % c1).GetType() != i1.GetType())
+        //////        if(( b1 % c1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
         //////        //int
-        //////        if ((i1 % i1).GetType() != i1.GetType())
+        //////        if(( i1 % i1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((i1 % l1).GetType() != l1.GetType())
+        //////        if(( i1 % l1 ).GetType( ) != l1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((i1 % c1).GetType() != i1.GetType())
+        //////        if(( i1 % c1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
         //////        //long
-        //////        if ((l1 % l1).GetType() != l1.GetType())
+        //////        if(( l1 % l1 ).GetType( ) != l1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((l1 % c1).GetType() != l1.GetType())
+        //////        if(( l1 % c1 ).GetType( ) != l1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
         //////        //char
-        //////        if ((c1 % c1).GetType() != i1.GetType())
+        //////        if(( c1 % c1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        return (intRet == 0);
+        //////        return ( intRet == 0 );
         //////    }
         //////}
         public class ValueIntegralTestClass18
@@ -2500,7 +2502,7 @@ namespace Microsoft.Zelig.Test
         }
         //////public class ValueIntegralTestClass52
         //////{
-        //////    public static bool testMethod()
+        //////    public static bool testMethod( )
         //////    {
         //////        int intRet = 0;
         //////        short s1 = 2;
@@ -2513,73 +2515,73 @@ namespace Microsoft.Zelig.Test
         //////        uint i2 = 9;
         //////        ulong l2 = 10;
         //////        //ushort
-        //////        if ((s2 / s1).GetType() != i1.GetType())
+        //////        if(( s2 / s1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((s2 / b1).GetType() != i1.GetType())
+        //////        if(( s2 / b1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((s2 / i1).GetType() != i1.GetType())
+        //////        if(( s2 / i1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((s2 / l1).GetType() != l1.GetType())
+        //////        if(( s2 / l1 ).GetType( ) != l1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((s2 / c1).GetType() != i1.GetType())
+        //////        if(( s2 / c1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((s2 / s2).GetType() != i1.GetType())
+        //////        if(( s2 / s2 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((s2 / b2).GetType() != i1.GetType())
+        //////        if(( s2 / b2 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((s2 / i2).GetType() != i2.GetType())
+        //////        if(( s2 / i2 ).GetType( ) != i2.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((s2 / l2).GetType() != l2.GetType())
+        //////        if(( s2 / l2 ).GetType( ) != l2.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
 
         //////        //sbyte
-        //////        if ((b2 / s1).GetType() != i1.GetType())
+        //////        if(( b2 / s1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((b2 / b1).GetType() != i1.GetType())
+        //////        if(( b2 / b1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((b2 / i1).GetType() != i1.GetType())
+        //////        if(( b2 / i1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((b2 / l1).GetType() != l1.GetType())
+        //////        if(( b2 / l1 ).GetType( ) != l1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((b2 / c1).GetType() != i1.GetType())
+        //////        if(( b2 / c1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((b2 / s2).GetType() != i1.GetType())
+        //////        if(( b2 / s2 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((b2 / b2).GetType() != i1.GetType())
+        //////        if(( b2 / b2 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((b2 / i2).GetType() != l1.GetType())
+        //////        if(( b2 / i2 ).GetType( ) != l1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
@@ -2587,39 +2589,39 @@ namespace Microsoft.Zelig.Test
         //////        //	intRet = 1;
         //////        //}
         //////        //uint
-        //////        if ((i2 / s1).GetType() != l1.GetType())
+        //////        if(( i2 / s1 ).GetType( ) != l1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((i2 / b1).GetType() != i2.GetType())
+        //////        if(( i2 / b1 ).GetType( ) != i2.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((i2 / i1).GetType() != l1.GetType())
+        //////        if(( i2 / i1 ).GetType( ) != l1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((i2 / l1).GetType() != l1.GetType())
+        //////        if(( i2 / l1 ).GetType( ) != l1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((i2 / c1).GetType() != i2.GetType())
+        //////        if(( i2 / c1 ).GetType( ) != i2.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((i2 / s2).GetType() != i2.GetType())
+        //////        if(( i2 / s2 ).GetType( ) != i2.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((i2 / b2).GetType() != l1.GetType())
+        //////        if(( i2 / b2 ).GetType( ) != l1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((i2 / i2).GetType() != i2.GetType())
+        //////        if(( i2 / i2 ).GetType( ) != i2.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((i2 / l2).GetType() != l2.GetType())
+        //////        if(( i2 / l2 ).GetType( ) != l2.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
@@ -2627,7 +2629,7 @@ namespace Microsoft.Zelig.Test
         //////        //if ((l2 / s1).GetType() != l2.GetType()) {
         //////        //	intRet = 1;
         //////        //}
-        //////        if ((l2 / b1).GetType() != l2.GetType())
+        //////        if(( l2 / b1 ).GetType( ) != l2.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
@@ -2637,32 +2639,32 @@ namespace Microsoft.Zelig.Test
         //////        //if ((l2 / l1).GetType() != l2.GetType()) {
         //////        //	intRet = 1;
         //////        //}
-        //////        if ((l2 / c1).GetType() != l2.GetType())
+        //////        if(( l2 / c1 ).GetType( ) != l2.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((l2 / s2).GetType() != l2.GetType())
+        //////        if(( l2 / s2 ).GetType( ) != l2.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
         //////        //if ((l2 / b2).GetType() != l2.GetType()) {
         //////        //	intRet = 1;
         //////        //}
-        //////        if ((l2 / i2).GetType() != l2.GetType())
+        //////        if(( l2 / i2 ).GetType( ) != l2.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((l2 / l2).GetType() != l2.GetType())
+        //////        if(( l2 / l2 ).GetType( ) != l2.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
 
-        //////        return (intRet == 0);
+        //////        return ( intRet == 0 );
         //////    }
         //////}
         //////public class ValueIntegralTestClass53
         //////{
-        //////    public static bool testMethod()
+        //////    public static bool testMethod( )
         //////    {
         //////        int intRet = 0;
         //////        short s1 = 2;
@@ -2675,73 +2677,73 @@ namespace Microsoft.Zelig.Test
         //////        uint i2 = 9;
         //////        ulong l2 = 10;
         //////        //ushort
-        //////        if ((s2 % s1).GetType() != i1.GetType())
+        //////        if(( s2 % s1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((s2 % b1).GetType() != i1.GetType())
+        //////        if(( s2 % b1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((s2 % i1).GetType() != i1.GetType())
+        //////        if(( s2 % i1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((s2 % l1).GetType() != l1.GetType())
+        //////        if(( s2 % l1 ).GetType( ) != l1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((s2 % c1).GetType() != i1.GetType())
+        //////        if(( s2 % c1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((s2 % s2).GetType() != i1.GetType())
+        //////        if(( s2 % s2 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((s2 % b2).GetType() != i1.GetType())
+        //////        if(( s2 % b2 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((s2 % i2).GetType() != i2.GetType())
+        //////        if(( s2 % i2 ).GetType( ) != i2.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((s2 % l2).GetType() != l2.GetType())
+        //////        if(( s2 % l2 ).GetType( ) != l2.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
 
         //////        //sbyte
-        //////        if ((b2 % s1).GetType() != i1.GetType())
+        //////        if(( b2 % s1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((b2 % b1).GetType() != i1.GetType())
+        //////        if(( b2 % b1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((b2 % i1).GetType() != i1.GetType())
+        //////        if(( b2 % i1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((b2 % l1).GetType() != l1.GetType())
+        //////        if(( b2 % l1 ).GetType( ) != l1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((b2 % c1).GetType() != i1.GetType())
+        //////        if(( b2 % c1 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((b2 % s2).GetType() != i1.GetType())
+        //////        if(( b2 % s2 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((b2 % b2).GetType() != i1.GetType())
+        //////        if(( b2 % b2 ).GetType( ) != i1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((b2 % i2).GetType() != l1.GetType())
+        //////        if(( b2 % i2 ).GetType( ) != l1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
@@ -2749,39 +2751,39 @@ namespace Microsoft.Zelig.Test
         //////        //	intRet = 1;
         //////        //}
         //////        //uint
-        //////        if ((i2 % s1).GetType() != l1.GetType())
+        //////        if(( i2 % s1 ).GetType( ) != l1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((i2 % b1).GetType() != i2.GetType())
+        //////        if(( i2 % b1 ).GetType( ) != i2.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((i2 % i1).GetType() != l1.GetType())
+        //////        if(( i2 % i1 ).GetType( ) != l1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((i2 % l1).GetType() != l1.GetType())
+        //////        if(( i2 % l1 ).GetType( ) != l1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((i2 % c1).GetType() != i2.GetType())
+        //////        if(( i2 % c1 ).GetType( ) != i2.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((i2 % s2).GetType() != i2.GetType())
+        //////        if(( i2 % s2 ).GetType( ) != i2.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((i2 % b2).GetType() != l1.GetType())
+        //////        if(( i2 % b2 ).GetType( ) != l1.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((i2 % i2).GetType() != i2.GetType())
+        //////        if(( i2 % i2 ).GetType( ) != i2.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((i2 % l2).GetType() != l2.GetType())
+        //////        if(( i2 % l2 ).GetType( ) != l2.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
@@ -2789,7 +2791,7 @@ namespace Microsoft.Zelig.Test
         //////        //if ((l2 % s1).GetType() != l2.GetType()) {
         //////        //	intRet = 1;
         //////        //}
-        //////        if ((l2 % b1).GetType() != l2.GetType())
+        //////        if(( l2 % b1 ).GetType( ) != l2.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
@@ -2799,27 +2801,27 @@ namespace Microsoft.Zelig.Test
         //////        //if ((l2 % l1).GetType() != l2.GetType()) {
         //////        //	intRet = 1;
         //////        //}
-        //////        if ((l2 % c1).GetType() != l2.GetType())
+        //////        if(( l2 % c1 ).GetType( ) != l2.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((l2 % s2).GetType() != l2.GetType())
+        //////        if(( l2 % s2 ).GetType( ) != l2.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
         //////        //if ((l2 % b2).GetType() != l2.GetType()) {
         //////        //	intRet = 1;
         //////        //}
-        //////        if ((l2 % i2).GetType() != l2.GetType())
+        //////        if(( l2 % i2 ).GetType( ) != l2.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
-        //////        if ((l2 % l2).GetType() != l2.GetType())
+        //////        if(( l2 % l2 ).GetType( ) != l2.GetType( ))
         //////        {
         //////            intRet = 1;
         //////        }
 
-        //////        return (intRet == 0);
+        //////        return ( intRet == 0 );
         //////    }
         //////}
         public class ValueIntegralTestClass54

@@ -27,8 +27,10 @@ namespace Microsoft.Zelig.Test
         public override TestResult Run( string[] args )
         {
             TestResult result = TestResult.Pass;
-
-            result |= Assert.CheckFailed( Impenum_zero_Test( ) );
+            
+            string testName = "Impenum_";
+            int testNumber = 0;
+            result |= Assert.CheckFailed( Impenum_zero_Test( ), testName, ++testNumber );
 
             return result;
         }

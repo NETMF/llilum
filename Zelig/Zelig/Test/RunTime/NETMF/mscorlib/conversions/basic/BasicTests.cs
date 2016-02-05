@@ -6,6 +6,7 @@ using System;
 
 namespace Microsoft.Zelig.Test
 {
+    /*
     public class BasicTests : TestBase, ITestInterface
     {
         [SetUp]
@@ -32,7 +33,6 @@ namespace Microsoft.Zelig.Test
         {
             TestResult result = TestResult.Pass;
             
-            /*            
             string testName = "Basic_";
             int testNumber = 0;
             result |= Assert.CheckFailed( Basic_byte_byte_I_0_Test( ), testName, ++testNumber );
@@ -330,8 +330,7 @@ namespace Microsoft.Zelig.Test
             result |= Assert.CheckFailed( Basic_ushort_char_E_1_Test( ), testName, ++testNumber );
             result |= Assert.CheckFailed( Basic_ushort_char_E_2_Test( ), testName, ++testNumber );
             result |= Assert.CheckFailed( Basic_ushort_char_E_3_Test( ), testName, ++testNumber );
-            */
-
+            
             return result;
         }
 
@@ -8608,4 +8607,5 @@ namespace Microsoft.Zelig.Test
             }
         }
     }
+    */
 }

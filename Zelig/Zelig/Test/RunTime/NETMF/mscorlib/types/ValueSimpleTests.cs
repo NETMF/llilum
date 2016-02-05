@@ -26,20 +26,22 @@ namespace Microsoft.Zelig.Test
         {
             TestResult result = TestResult.Pass;
 
-
-            //////result |= Assert.CheckFailed( ValueSimple01_Test( ) );
-            //////result |= Assert.CheckFailed( ValueSimple02_Test( ) );
-            //////result |= Assert.CheckFailed( ValueSimple03_Test( ) );
-            //////result |= Assert.CheckFailed( ValueSimple04_Test( ) );
-            //////result |= Assert.CheckFailed( ValueSimple05_Test( ) );
-            //////result |= Assert.CheckFailed( ValueSimple06_Test( ) );
-            //////result |= Assert.CheckFailed( ValueSimple07_Test( ) );
-            //////result |= Assert.CheckFailed( ValueSimple09_Test( ) );
-            result |= Assert.CheckFailed( ValueSimple11_Test( ) );
-            result |= Assert.CheckFailed( ValueSimple12_Test( ) );
-            //////result |= Assert.CheckFailed( ValueSimple13_Test( ) );
-            //////result |= Assert.CheckFailed( ValueSimple14_Test( ) );
-            //////result |= Assert.CheckFailed( ValueSimple15_Test( ) );
+            
+            string testName = "ValueSimpleXX_";
+            int testNumber = 0;
+            //////result |= Assert.CheckFailed( ValueSimple01_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueSimple02_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueSimple03_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueSimple04_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueSimple05_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueSimple06_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueSimple07_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueSimple09_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueSimple11_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueSimple12_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueSimple13_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueSimple14_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueSimple15_Test( ), testName, ++testNumber );
 
             return result;
         }

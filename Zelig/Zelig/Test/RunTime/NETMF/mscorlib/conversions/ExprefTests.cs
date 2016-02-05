@@ -27,22 +27,24 @@ namespace Microsoft.Zelig.Test
         {
             TestResult result = TestResult.Pass;
 
-            result |= Assert.CheckFailed( Expref_obj_ref_Test( ) );
-            result |= Assert.CheckFailed( Expref_obj_ref_exc_Test( ) );
-            result |= Assert.CheckFailed( Expref_class_class_Test( ) );
-            result |= Assert.CheckFailed( Expref_class_class_exc_Test( ) );
-            result |= Assert.CheckFailed( Expref_inter_struct_exc_Test( ) );
-            result |= Assert.CheckFailed( Expref_class_inter_Test( ) );
-            result |= Assert.CheckFailed( Expref_class_inter_exc_Test( ) );
-            result |= Assert.CheckFailed( Expref_inter_class_Test( ) );
-            result |= Assert.CheckFailed( Expref_inter_class2_Test( ) );
-            result |= Assert.CheckFailed( Expref_inter_class2_exc1_Test( ) );
-            result |= Assert.CheckFailed( Expref_inter_class2_exc2_Test( ) );
-            result |= Assert.CheckFailed( Expref_inter_class_exc_Test( ) );
-            result |= Assert.CheckFailed( Expref_inter_class_sealed_Test( ) );
-            result |= Assert.CheckFailed( Expref_inter_class_sealed_exc_Test( ) );
-            result |= Assert.CheckFailed( Expref_inter_inter_Test( ) );
-            result |= Assert.CheckFailed( Expref_inter_inter_exc_Test( ) );
+            string testName = "Expref_";
+            int testNumber = 0;
+            result |= Assert.CheckFailed( Expref_obj_ref_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expref_obj_ref_exc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expref_class_class_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expref_class_class_exc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expref_inter_struct_exc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expref_class_inter_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expref_class_inter_exc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expref_inter_class_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expref_inter_class2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expref_inter_class2_exc1_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expref_inter_class2_exc2_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expref_inter_class_exc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expref_inter_class_sealed_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expref_inter_class_sealed_exc_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expref_inter_inter_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Expref_inter_inter_exc_Test( ), testName, ++testNumber );
 
             return result;
         }

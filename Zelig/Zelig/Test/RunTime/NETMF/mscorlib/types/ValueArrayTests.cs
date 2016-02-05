@@ -25,19 +25,21 @@ namespace Microsoft.Zelig.Test
         public override TestResult Run( string[] args )
         {
             TestResult result = TestResult.Pass;
-
-            //////result |= Assert.CheckFailed( ValueArray01_Test( ) );
-            //////result |= Assert.CheckFailed( ValueArray02_Test( ) );
-            //////result |= Assert.CheckFailed( ValueArray03_Test( ) );
-            //////result |= Assert.CheckFailed( ValueArray04_Test( ) );
-            //////result |= Assert.CheckFailed( ValueArray05_Test( ) );
-            //////result |= Assert.CheckFailed( ValueArray06_Test( ) );
-            //////result |= Assert.CheckFailed( ValueArray07_Test( ) );
-            //////result |= Assert.CheckFailed( ValueArray09_Test( ) );
-            //////result |= Assert.CheckFailed( ValueArray12_Test( ) );
-            //////result |= Assert.CheckFailed( ValueArray13_Test( ) );
-            //////result |= Assert.CheckFailed( ValueArray14_Test( ) );
-            //////result |= Assert.CheckFailed( ValueArray15_Test( ) );
+            
+            string testName = " ValueArrayXX_";
+            int testNumber = 0;
+            //////result |= Assert.CheckFailed( ValueArray01_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueArray02_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueArray03_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueArray04_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueArray05_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueArray06_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueArray07_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueArray09_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueArray12_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueArray13_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueArray14_Test( ), testName, ++testNumber );
+            //////result |= Assert.CheckFailed( ValueArray15_Test( ), testName, ++testNumber );
 
             return result;
         }

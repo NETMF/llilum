@@ -25,21 +25,23 @@ namespace Microsoft.Zelig.Test
         public override TestResult Run( string[] args )
         {
             TestResult result = TestResult.Pass;
-
-            result |= Assert.CheckFailed( ValueDefault_Const01_Test( ) );
-            result |= Assert.CheckFailed( ValueDefault_Const02_Test( ) );
-            result |= Assert.CheckFailed( ValueDefault_Const03_Test( ) );
-            result |= Assert.CheckFailed( ValueDefault_Const04_Test( ) );
-            result |= Assert.CheckFailed( ValueDefault_Const05_Test( ) );
-            result |= Assert.CheckFailed( ValueDefault_Const06_Test( ) );
-            result |= Assert.CheckFailed( ValueDefault_Const07_Test( ) );
-            result |= Assert.CheckFailed( ValueDefault_Const09_Test( ) );
-            result |= Assert.CheckFailed( ValueDefault_Const11_Test( ) );
-            result |= Assert.CheckFailed( ValueDefault_Const12_Test( ) );
-            result |= Assert.CheckFailed( ValueDefault_Const14_Test( ) );
-            result |= Assert.CheckFailed( ValueDefault_Const15_Test( ) );
-            result |= Assert.CheckFailed( ValueDefault_Const16_Test( ) );
-            result |= Assert.CheckFailed( ValueDefault_Const17_Test( ) );
+            
+            string testName = "ValueDefault_ConstXX_";
+            int testNumber = 0;
+            result |= Assert.CheckFailed( ValueDefault_Const01_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const02_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const03_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const04_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const05_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const06_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const07_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const09_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const11_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const12_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const14_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const15_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const16_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( ValueDefault_Const17_Test( ), testName, ++testNumber );
 
             return result;
         }

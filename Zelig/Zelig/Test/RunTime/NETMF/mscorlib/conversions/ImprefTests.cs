@@ -25,15 +25,17 @@ namespace Microsoft.Zelig.Test
         public override TestResult Run( string[] args )
         {
             TestResult result = TestResult.Pass;
-
-            result |= Assert.CheckFailed( Impref_ref_obj_Test( ) );
-            result |= Assert.CheckFailed( Impref_class_class_Test( ) );
-            result |= Assert.CheckFailed( Impref_class_inter_Test( ) );
-            result |= Assert.CheckFailed( Impref_struct_inter_Test( ) );
-            result |= Assert.CheckFailed( Impref_array_array_Test( ) );
-            result |= Assert.CheckFailed( Impref_array_cloneable_Test( ) );
-            result |= Assert.CheckFailed( Impref_null_ref_Test( ) );
-            result |= Assert.CheckFailed( Impref_delegate_to_SystemDotDelegate_Test( ) );
+            
+            string testName = " Impref__";
+            int testNumber = 0;
+            result |= Assert.CheckFailed( Impref_ref_obj_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Impref_class_class_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Impref_class_inter_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Impref_struct_inter_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Impref_array_array_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Impref_array_cloneable_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Impref_null_ref_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Impref_delegate_to_SystemDotDelegate_Test( ), testName, ++testNumber );
 
             return result;
         }

@@ -21,6 +21,31 @@ namespace Microsoft.Zelig.Test
         public void CleanUp()
         {
         }
+        
+        public override TestResult Run( string[] args )
+        {
+            TestResult result = TestResult.Pass;
+            
+            string testName = "Expenum2_";
+            int testNumber = 0;
+
+            result |= Assert.CheckFailed( Cast_FloatingPoint( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Convert_Positive( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Convert_PositivePlus( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Convert_Negative( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Convert_Double( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Convert_Plus( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Convert_Neg( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Convert_Whitespace( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Convert_DoubleNormalizeNeg( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Convert_HexInt( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Convert_BoundaryValues( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Convert_LeadingZeroValues( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Convert_LeadingZeros( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Convert_64ParsePerf( ), testName, ++testNumber );
+
+            return result;
+        }
 
         //Test Case Calls
         [TestMethod]

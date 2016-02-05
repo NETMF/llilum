@@ -31,9 +31,11 @@ namespace Microsoft.Zelig.Test
         {
             TestResult result = TestResult.Pass;
             
-            result |= Assert.CheckFailed( Value7_Test( ) );
-            result |= Assert.CheckFailed( Value8_Test( ) );
-            result |= Assert.CheckFailed( Value9_Test( ) );
+            string testName = "Value*_";
+            int testNumber = 0;
+            result |= Assert.CheckFailed( Value7_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Value8_Test( ), testName, ++testNumber );
+            result |= Assert.CheckFailed( Value9_Test( ), testName, ++testNumber );
 
             return result;
         }
