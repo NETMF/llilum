@@ -11,14 +11,14 @@ namespace Llvm.NET.Values
     /// <summary>LLVM Value</summary>
     /// <remarks>
     /// Value is the root of a hierarchy of types representing values
-    /// in LLVM. Values (and derived classes) are never constructed 
+    /// in LLVM. Values (and derived classes) are never constructed
     /// directly with the new operator. Instead, they are produced by
     /// other classes in this library internally. This is because they
     /// are just wrappers around the LLVM-C API handles and must
     /// maintain the "uniqueing" semantics. (e.g. allowing reference
     /// equality for values that are fundamentally the same value)
     /// This is generally hidden in the internals of the Llvm.NET
-    /// library so callers need not be concerned with the details 
+    /// library so callers need not be concerned with the details
     /// but can rely on the expected behavior that two Value instances
     /// referring to the same actual value (i.e. a function) are actually
     /// the same .NET object as well within the same <see cref="Context"/>
@@ -128,7 +128,7 @@ namespace Llvm.NET.Values
         /// <returns>New Value or derived type instance that wraps the underlying LibLLVM handle</returns>
         /// <remarks>
         /// This method will determine the correct type for the handle and construct an instance of that
-        /// type wrapping the handle. 
+        /// type wrapping the handle.
         /// </remarks>
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling" )]
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity" )]

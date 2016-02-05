@@ -156,7 +156,7 @@ namespace Microsoft.Zelig.LLVM
             {
                 // Adjust index since IR form keeps slot = 0 as the "this" param for static methods it just sets that to
                 // null. LLVM doesn't have any notion of that and only has a slot for an actual arg.
-                uint index = ( uint )argExpression.Number;
+                var index = checked( ( ushort )argExpression.Number );
                 if( method is TS.StaticMethodRepresentation )
                 {
                     index--;
@@ -169,7 +169,7 @@ namespace Microsoft.Zelig.LLVM
                                                           , valType.DIType
                                                           , true
                                                           , DebugInfoFlags.None
-                                                          , index + 1 // LLVM debug arg index is one based
+                                                          , checked( (ushort)(index + 1) ) // LLVM debug arg index is one based
                                                           );
             }
             else

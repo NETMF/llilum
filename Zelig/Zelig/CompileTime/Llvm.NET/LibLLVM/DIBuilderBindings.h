@@ -11,7 +11,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-// This file was adapted from the GO language bindings provided in standard LLVM Distribution 
+// This file was adapted from the GO language bindings provided in standard LLVM Distribution
 
 #ifndef LLVM_BINDINGS_LLVM_DIBUILDERBINDINGS_H
 #define LLVM_BINDINGS_LLVM_DIBUILDERBINDINGS_H

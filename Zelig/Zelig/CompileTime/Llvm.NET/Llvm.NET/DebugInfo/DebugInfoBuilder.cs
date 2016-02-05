@@ -331,7 +331,7 @@ namespace Llvm.NET.DebugInfo
         /// <param name="file"><see cref="DIFile"/> containing the function this argument is declared in</param>
         /// <param name="line">Line number fort his argument</param>
         /// <param name="type">Debug type for this argument</param>
-        /// <param name="alwaysPreserve">FLag to indicate if this argument is always preserved for debug view even if optimization would remove it</param>
+        /// <param name="alwaysPreserve">Flag to indicate if this argument is always preserved for debug view even if optimization would remove it</param>
         /// <param name="debugFlags"><see cref="DebugInfoFlags"/> for this argument</param>
         /// <param name="argNo">One based argument index on the method (e.g the first argument is 1 not 0 )</param>
         /// <returns><see cref="DILocalVariable"/> representing the function argument</returns>
@@ -343,7 +343,7 @@ namespace Llvm.NET.DebugInfo
                                              , DIType type
                                              , bool alwaysPreserve
                                              , DebugInfoFlags debugFlags
-                                             , uint argNo
+                                             , ushort argNo
                                              )
         {
             if( scope == null )
@@ -821,7 +821,7 @@ namespace Llvm.NET.DebugInfo
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
-        public CallInstruction InsertValue(Value value
+        public CallInstruction InsertValue( Value value
                                           , UInt64 offset
                                           , DILocalVariable varInfo
                                           , DIExpression expression
@@ -850,14 +850,14 @@ namespace Llvm.NET.DebugInfo
             if( !location.Describes(insertAtEnd.ContainingFunction ) )
                 throw new ArgumentException( "location does not describe the specified block's containing function" );
 
-            var handle = NativeMethods.DIBuilderInsertValueAtEnd(BuilderHandle
-                                                                 , value.ValueHandle
-                                                                 , offset
-                                                                 , varInfo.MetadataHandle
-                                                                 , expression?.MetadataHandle ?? CreateExpression( ).MetadataHandle
-                                                                 , location.MetadataHandle
-                                                                 , insertAtEnd.BlockHandle
-                                                                 );
+            var handle = NativeMethods.DIBuilderInsertValueAtEnd( BuilderHandle
+                                                                , value.ValueHandle
+                                                                , offset
+                                                                , varInfo.MetadataHandle
+                                                                , expression?.MetadataHandle ?? CreateExpression( ).MetadataHandle
+                                                                , location.MetadataHandle
+                                                                , insertAtEnd.BlockHandle
+                                                                );
 
             var retVal = Value.FromHandle<CallInstruction>( handle );
             retVal.IsTailCall = true;

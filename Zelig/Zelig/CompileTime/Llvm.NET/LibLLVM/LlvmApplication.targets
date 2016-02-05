@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" InitialTargets="LlvmApplicationInitialTarget" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <!--
+    # Inline task to set the buildNumber for use in creating an MSBuild property
+    # to use as a preprocessor define.
+    #
+    # For details on the general algorithm used for computing the numbers here see:
+    # https://msdn.microsoft.com/en-us/library/system.reflection.assemblyversionattribute.assemblyversionattribute(v=vs.110).aspx 
+    #
+    -->
+    <UsingTask
+    TaskName="GenerateBuildNumbers"
+    TaskFactory="CodeTaskFactory"
+    AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
+        <ParameterGroup>
+            <BuildNumber ParameterType="System.Int32" Output="true"/>
+            <BuildRevision ParameterType="System.Int32" Output="true"/>
+        </ParameterGroup>
+        <Task>
+            <Using Namespace="System"/>
+            <Using Namespace="System.IO"/>
+            <Code Type="Fragment" Language="cs"><![CDATA[
+                var now = DateTime.Now;
+                var midnightTodayUtc = new DateTime( now.Year, now.Month, now.Day, 0, 0, 0, DateTimeKind.Utc);
+                var baseDate = new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                BuildNumber = (int)(now  - baseDate).Days;
+                BuildRevision = (int)(((now - midnightTodayUtc).TotalSeconds) / 2);
+            ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+
+    <Target Name="GenerateVesionInfoHeader" Condition="'$(GenerateVersionInfoHeader)'=='true'" DependsOnTargets="CreateBuildNumbers">
+        <ItemGroup>
+            <VersionInfoGeneratedLine Include='#define FILE_VERSION_MAJOR $(FileVersionMajor)'/>
+            <VersionInfoGeneratedLine Include='#define FILE_VERSION_MINOR $(FileVersionMinor)'/>
+            <VersionInfoGeneratedLine Include='#define FILE_VERSION_BUILD $(LlvmApplicationBuildNumber)'/>
+            <VersionInfoGeneratedLine Include='#define FILE_VERSION_REVISION $(LlvmApplicationBuildRevision)'/>
+            <VersionInfoGeneratedLine Include='#define FILE_VERSION_STRING "$(FileVersionMajor).$(FileVersionMinor).$(LlvmApplicationBuildNumber).$(LlvmApplicationBuildRevision)"'/>
+            <VersionInfoGeneratedLine Include=' '/>
+            <VersionInfoGeneratedLine Include='#define PRODUCT_VERSION_MAJOR $(ProductVersionMajor)'/>
+            <VersionInfoGeneratedLine Include='#define PRODUCT_VERSION_MINOR $(ProductVersionMinor)'/>
+            <VersionInfoGeneratedLine Include='#define PRODUCT_VERSION_BUILD $(ProductVersionBuild)'/>
+            <VersionInfoGeneratedLine Include='#define PRODUCT_VERSION_REVISION $(LlvmApplicationBuildNumber)'/>
+            <VersionInfoGeneratedLine Include='#define PRODUCT_VERSION_STRING "$(ProductVersionMajor).$(ProductVersionMinor).$(ProductVersionBuild).$(LlvmApplicationBuildNumber)"'/>
+        </ItemGroup>
+        <Message Importance="high" Text="Generating $(GeneratedVersionInfoHeader)" />
+        <WriteLinesToFile File="$(GeneratedVersionInfoHeader)" Overwrite="true" Lines="@(VersionInfoGeneratedLine)" />
+    </Target>
+
+    <Target Name="VerifyLLVMProperties">
+        <Message Importance="high" Text="LLVM_SRCROOT_DIR='$(LLVM_SRCROOT_DIR)'"/>
+        <Message Importance="high" Text="LLVM_BUILD_DIR='$(LLVM_BUILD_DIR)'"/>
+
+        <Error Condition="'$(LLVM_SRCROOT_DIR)'==''" Text="LLVM_SRCROOT_DIR not specified, either set it manually in  your project file or set the registry value HKLM\Software\LLVM\SrcRoot" />
+        <Error Condition="!EXISTS('$(LLVM_SRCROOT_DIR)')" Text="Folder '$(LLVM_SRCROOT_DIR)' (LLVM_SRCROOT_DIR) does not exist" />
+
+        <Error Condition="!EXISTS('$(LLVM_BUILD_DIR)')" Text="Folder '$(LLVM_BUILD_DIR)' (LLVM_BUILD_DIR) does not exist" />
+        <Error Condition="!EXISTS('$(LLVM_PLATFORM_DIR)')" Text="Folder '$(LLVM_PLATFORM_DIR)' (LLVM_PLATFORM_DIR) does not exist" />
+        <Error Condition="!EXISTS('$(LLVM_BIN)')" Text="Folder '$(LLVM_BIN)' (LLVM_BIN) does not exist" />
+        <Error Condition="!EXISTS('$(LLVM_LIB_DIR)')" Text="Folder '$(LLVM_LIB_DIR)' (LLVM_LIB_DIR) does not exist" />
+        <Error Condition="!EXISTS('$(LLVM_CONFIG_INCLUDE)')" Text="Folder '$(LLVM_CONFIG_INCLUDE)' (LLVM_CONFIG_INCLUDE) does not exist" />
+    </Target>
+
+    <Target Name="CreateBuildNumbers" Condition="'$(LlvmApplicationBuildNumber)'=='' AND '$(LlvmApplicationBuildRevision)'==''">
+        <GenerateBuildNumbers>
+            <Output PropertyName="LlvmApplicationBuildNumber" TaskParameter="BuildNumber" />
+            <Output PropertyName="LlvmApplicationBuildRevision" TaskParameter="BuildRevision" />
+        </GenerateBuildNumbers>
+        <Message Importance="high" Text="LlvmApplicationBuildNumber=$(LlvmApplicationBuildNumber)"/>
+        <Message Importance="high" Text="LlvmApplicationBuildRevision=$(LlvmApplicationBuildRevision)"/>
+    </Target>
+
+    <Target Name="LlvmApplicationInitialTarget" DependsOnTargets="VerifyLLVMProperties;CreateBuildNumbers;GenerateVesionInfoHeader"/>
+</Project>

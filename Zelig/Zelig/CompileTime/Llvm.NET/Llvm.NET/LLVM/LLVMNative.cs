@@ -112,7 +112,7 @@ namespace Llvm.NET.Native
         ConstantFirstVal = Function,
         ConstantLastVal = ConstantPointerNull
     }
-    
+
     internal partial struct LLVMVersionInfo
     {
         public override string ToString()
@@ -142,7 +142,7 @@ namespace Llvm.NET.Native
         public static implicit operator bool( LLVMBool value ) => value.Value != 0;
     }
 
-    internal partial struct LLVMMetadataRef 
+    internal partial struct LLVMMetadataRef
         : IEquatable<LLVMMetadataRef>
     {
         internal static LLVMMetadataRef Zero = new LLVMMetadataRef( IntPtr.Zero );
@@ -161,7 +161,7 @@ namespace Llvm.NET.Native
         }
 
         public bool Equals( LLVMMetadataRef other ) => Pointer == other.Pointer;
-        
+
         public static bool operator ==( LLVMMetadataRef lhs, LLVMMetadataRef rhs ) => lhs.Equals( rhs );
         public static bool operator !=( LLVMMetadataRef lhs, LLVMMetadataRef rhs ) => !lhs.Equals( rhs );
     }
@@ -201,11 +201,12 @@ namespace Llvm.NET.Native
         }
 
         /// <summary>Static constructor for NativeMethods</summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations" )]
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline" )]
         static NativeMethods()
         {
-            // force loading the appropriate architecture specific 
-            // DLL before any use of the wrapped inter-op APIs to 
+            // force loading the appropriate architecture specific
+            // DLL before any use of the wrapped inter-op APIs to
             // allow building this library as ANYCPU
             var path = Path.GetDirectoryName( Assembly.GetExecutingAssembly( ).Location );
             if( Directory.Exists( Path.Combine( path, "LibLLVM") ) )

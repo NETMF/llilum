@@ -1,72 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" InitialTargets="VerifyLLVMProperties" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <ImportGroup Label="PropertySheets">
-    </ImportGroup>
-    <PropertyGroup>
-        <!--
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets">
+  </ImportGroup>
+  <PropertyGroup>
+    <!--
         NOTE: VS doesn't like it when conditions and other expressions appear in the UserMacros labeled PropertyGroup.
               Therefore, these are all done in an unlabeled group that precedes the UserMacros group visible in the IDE
         -->
-        <LLVM_VERSION Condition="'$(LLVM_VERSION)'==''">3.8.0</LLVM_VERSION>
-        <!-- Source ROOT Dir contains the full source of LLVM. To support both developer and automated build service
+    <LlvmVersionMajor Condition="'$(LlvmVersionMajor)'==''">3</LlvmVersionMajor>
+    <llvmVersionMinor Condition="'$(llvmVersionMinor)'==''">8</llvmVersionMinor>
+    <LlvmVersionBuild Condition="'$(LlvmVersionBuild)'==''">0</LlvmVersionBuild>
+    <LLVM_VERSION Condition="'$(LLVM_VERSION)'==''">$(LlvmVersionMajor).$(llvmVersionMinor).$(LlvmVersionBuild)</LLVM_VERSION>
+    <!-- Source ROOT Dir contains the full source of LLVM. To support both developer and automated build service
              scenarios try user registry, then HKLM-64 and HKLM-32 in that order
         -->
-        <LLVM_SRCROOT_DIR Condition="'$(LLVM_SRCROOT_DIR)'==''">$([MSBuild]::GetRegistryValue(`HKEY_CURRENT_USER\Software\LLVM\$(LLVM_VERSION)\`, `SrcRoot`))</LLVM_SRCROOT_DIR>
-        <LLVM_SRCROOT_DIR Condition="'$(LLVM_SRCROOT_DIR)'==''">$([MSBuild]::GetRegistryValueFromView(`HKEY_LOCAL_MACHINE\Software\LLVM\$(LLVM_VERSION)\`, `SrcRoot`, null, RegistryView.Registry64, RegistryView.Registry32))</LLVM_SRCROOT_DIR>
-        <LLVM_SRCROOT_DIR Condition="'$(LLVM_SRCROOT_DIR)'!='' AND !HasTrailingSlash('$(LLVM_SRCROOT_DIR)')">$(LLVM_SRCROOT_DIR)\</LLVM_SRCROOT_DIR>
-        <!-- Build dir is assumed to be a sub dir of the source root if not already set -->
-        <LLVM_BUILD_DIR Condition="'$(LLVM_BUILD_DIR)'==''">$(LLVM_SRCROOT_DIR)Build\</LLVM_BUILD_DIR>
-        <LLVM_BUILD_DIR Condition="'$(LLVM_BUILD_DIR)'!='' AND !HasTrailingSlash('$(LLVM_BUILD_DIR)')">$(LLVM_BUILD_DIR)\</LLVM_BUILD_DIR>
-    </PropertyGroup>
-    <PropertyGroup Label="UserMacros" >
-        <!-- Standard LLVM common Include path-->
-        <LLVM_INCLUDE>$(LLVM_SRCROOT_DIR)Include</LLVM_INCLUDE>
-
-        <!-- Build is assumed to contain the following sub directories -->
-        <!-- CMake doesn't support generating unified solutions/projects for multiple platforms
+    <LLVM_SRCROOT_DIR Condition="'$(LLVM_SRCROOT_DIR)'==''">$([MSBuild]::GetRegistryValue(`HKEY_CURRENT_USER\Software\LLVM\$(LLVM_VERSION)\`, `SrcRoot`))</LLVM_SRCROOT_DIR>
+    <LLVM_SRCROOT_DIR Condition="'$(LLVM_SRCROOT_DIR)'==''">$([MSBuild]::GetRegistryValueFromView(`HKEY_LOCAL_MACHINE\Software\LLVM\$(LLVM_VERSION)\`, `SrcRoot`, null, RegistryView.Registry64, RegistryView.Registry32))</LLVM_SRCROOT_DIR>
+    <LLVM_SRCROOT_DIR Condition="'$(LLVM_SRCROOT_DIR)'!='' AND !HasTrailingSlash('$(LLVM_SRCROOT_DIR)')">$(LLVM_SRCROOT_DIR)\</LLVM_SRCROOT_DIR>
+    <!-- Build dir is assumed to be a sub dir of the source root if not already set -->
+    <LLVM_BUILD_DIR Condition="'$(LLVM_BUILD_DIR)'==''">$(LLVM_SRCROOT_DIR)Build\</LLVM_BUILD_DIR>
+    <LLVM_BUILD_DIR Condition="'$(LLVM_BUILD_DIR)'!='' AND !HasTrailingSlash('$(LLVM_BUILD_DIR)')">$(LLVM_BUILD_DIR)\</LLVM_BUILD_DIR>
+    <GeneratedVersionInfoHeader Condition="'$(GeneratedVersionInfoHeader)'==''">generatedversioninfo.h</GeneratedVersionInfoHeader>
+    <ProductVersionMajor Condition="'$(ProductVersionMajor)'==''">$(LlvmVersionMajor)</ProductVersionMajor>
+    <ProductVersionMinor Condition="'$(ProductVersionMinor)'==''">$(LlvmVersionMinor)</ProductVersionMinor>
+    <ProductVersionBuild Condition="'$(ProductVersionBuild)'==''">$(LlvmVersionBuild)</ProductVersionBuild>
+    <!-- Use a distinct revision for debug vs non debug builds so it is easy to identify -->
+    <ProductVersionRevision Condition="'$(ProductVersionRevision)'=='' AND '$(Configuration)'=='Release'">0</ProductVersionRevision>
+    <ProductVersionRevision Condition="'$(ProductVersionRevision)'=='' AND '$(Configuration)'=='Debug'">1</ProductVersionRevision>
+    
+    <FileVersionMajor Condition="'$(FileVersionMajor)'==''">$(ProductVersionMajor)</FileVersionMajor>
+    <FileVersionMinor Condition="'$(FileVersionMinor)'==''">$(ProductVersionMinor)</FileVersionMinor>
+    <!--
+    In order to properly support MSI based installers it is important to ensure that the file version
+    is unique for each build, therefore, the file build and revision numbers are auto generated.
+    -->
+  </PropertyGroup>
+  <PropertyGroup Label="UserMacros">
+    <!-- Standard LLVM common Include path-->
+    <LLVM_INCLUDE>$(LLVM_SRCROOT_DIR)Include</LLVM_INCLUDE>
+    <!-- Build is assumed to contain the following sub directories -->
+    <!-- CMake doesn't support generating unified solutions/projects for multiple platforms
              Therefore, the Build folder should contain a sub folder for each targeted platform
              where CMAKe has generated all the project and solution files for that platform.
         -->
-        <LLVM_PLATFORM_DIR>$(LLVM_BUILD_DIR)$(Platform)\</LLVM_PLATFORM_DIR>
-        
-        <!-- Config Directory contains the output of the build for a given configuration (e.g. Debug, Release, RelWithDebInfo) -->
-        <LLVM_CONFIG_DIR>$(LLVM_PLATFORM_DIR)$(Configuration)\</LLVM_CONFIG_DIR>
-        
-        <!-- CMAKE generated headers containing configuration settings and defines for a given target platform -->
-        <LLVM_CONFIG_INCLUDE>$(LLVM_PLATFORM_DIR)Include\</LLVM_CONFIG_INCLUDE>
-        <!-- Location of binary Executables generated by building the LLVM source for a given Platform+Configuration -->
-        <LLVM_BIN>$(LLVM_CONFIG_DIR)bin\</LLVM_BIN>
-        
-        <!-- Location of LLVM libraries generated by building the LLVM source for a given Platform+Configuration -->
-        <LLVM_LIB_DIR>$(LLVM_CONFIG_DIR)lib\</LLVM_LIB_DIR>
-    </PropertyGroup >
-    <ItemGroup>
-        <AllLlvmLibs Include="$(LLVM_LIB_DIR)LLVM*.lib" />
-    </ItemGroup>
-    <PropertyGroup>
-        <AllLlvmStaticLibs>@(AllLlvmLibs)</AllLlvmStaticLibs>
-    </PropertyGroup>
-    <ItemDefinitionGroup>
-        <ClCompile>
-            <AdditionalOptions>$(AdditionalOptions) /Zc:sizedDealloc-</AdditionalOptions>
-            <AdditionalIncludeDirectories>$(LLVM_CONFIG_INCLUDE);$(LLVM_INCLUDE);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-            <DisableSpecificWarnings>4141;4267;4244;4800;4291;4996;4624</DisableSpecificWarnings>
-        </ClCompile>
-        <Link>
-            <AdditionalDependencies>$(AllLlvmStaticLibs);$(AdditionalDependencies)</AdditionalDependencies>
-        </Link>
-    </ItemDefinitionGroup>
-    <Target Name="VerifyLLVMProperties">
-        <Message Importance="high" Text="LLVM_SRCROOT_DIR='$(LLVM_SRCROOT_DIR)'"/>
-        <Message Importance="high" Text="LLVM_BUILD_DIR='$(LLVM_BUILD_DIR)'"/>
-
-        <Error Condition="'$(LLVM_SRCROOT_DIR)'==''" Text="LLVM_SRCROOT_DIR not specified, either set it manually in  your project file or set the registry value HKLM\Software\LLVM\SrcRoot" />
-        <Error Condition="!EXISTS('$(LLVM_SRCROOT_DIR)')" Text="Folder '$(LLVM_SRCROOT_DIR)' (LLVM_SRCROOT_DIR) does not exist" />
-
-        <Error Condition="!EXISTS('$(LLVM_BUILD_DIR)')" Text="Folder '$(LLVM_BUILD_DIR)' (LLVM_BUILD_DIR) does not exist" />
-        <Error Condition="!EXISTS('$(LLVM_PLATFORM_DIR)')" Text="Folder '$(LLVM_PLATFORM_DIR)' (LLVM_PLATFORM_DIR) does not exist" />
-        <Error Condition="!EXISTS('$(LLVM_BIN)')" Text="Folder '$(LLVM_BIN)' (LLVM_BIN) does not exist" />
-        <Error Condition="!EXISTS('$(LLVM_LIB_DIR)')" Text="Folder '$(LLVM_LIB_DIR)' (LLVM_LIB_DIR) does not exist" />
-        <Error Condition="!EXISTS('$(LLVM_CONFIG_INCLUDE)')" Text="Folder '$(LLVM_CONFIG_INCLUDE)' (LLVM_CONFIG_INCLUDE) does not exist" />
-    </Target>
+    <LLVM_PLATFORM_DIR>$(LLVM_BUILD_DIR)$(Platform)\</LLVM_PLATFORM_DIR>
+    <!-- Config Directory contains the output of the build for a given configuration (e.g. Debug, Release, RelWithDebInfo) -->
+    <LLVM_CONFIG_DIR>$(LLVM_PLATFORM_DIR)$(Configuration)\</LLVM_CONFIG_DIR>
+    <!-- CMAKE generated headers containing configuration settings and defines for a given target platform -->
+    <LLVM_CONFIG_INCLUDE>$(LLVM_PLATFORM_DIR)Include\</LLVM_CONFIG_INCLUDE>
+    <!-- Location of binary Executables generated by building the LLVM source for a given Platform+Configuration -->
+    <LLVM_BIN>$(LLVM_CONFIG_DIR)bin\</LLVM_BIN>
+    <!-- Location of LLVM libraries generated by building the LLVM source for a given Platform+Configuration -->
+    <LLVM_LIB_DIR>$(LLVM_CONFIG_DIR)lib\</LLVM_LIB_DIR>
+  </PropertyGroup>
+  <ItemGroup>
+    <AllLlvmLibs Include="$(LLVM_LIB_DIR)LLVM*.lib" />
+  </ItemGroup>
+  <PropertyGroup>
+    <AllLlvmStaticLibs>@(AllLlvmLibs)</AllLlvmStaticLibs>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalOptions>$(AdditionalOptions) /Zc:sizedDealloc-</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(LLVM_CONFIG_INCLUDE);$(LLVM_INCLUDE);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4141;4267;4244;4800;4291;4996;4624</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(AllLlvmStaticLibs);$(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(MSBuildThisFileDirectory)LlvmApplication.targets"/>
 </Project>
