@@ -1,23 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <Project DefaultTargets="Build" InitialTargets="VerifyLlilumPaths" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <LLILUM_ROOT Condition="'$(LLILUM_ROOT)'==''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))</LLILUM_ROOT>
-    <!-- For builds from the local tree, always use the local headers etc instead of the SDK...  -->
-    <LLILUM_SDK>$(LLILUM_ROOT)Zelig\</LLILUM_SDK>
-    <!-- LLILUM_LLVM contains the full source of LLVM -->
-    <LLVM_VERSION     Condition="'$(LLVM_VERSION)'    ==''">3.7.0</LLVM_VERSION>
-    <LLILUM_LLVM      Condition="'$(LLVM_SRCROOT_DIR)'==''">$([MSBuild]::GetRegistryValue(`HKEY_CURRENT_USER\Software\LLVM\$(LLVM_VERSION)\`, `SrcRoot`))</LLILUM_LLVM>
-    <LLILUM_LLVM      Condition="'$(LLVM_SRCROOT_DIR)'!='' AND !HasTrailingSlash('$(LLVM_SRCROOT_DIR)')">$(LLVM_SRCROOT_DIR)\</LLILUM_LLVM>
-    <LlilumBuildRoot  Condition="'$(LlilumBuildRoot)' ==''">$(MSBuildThisFileDirectory)Zelig\ZeligBuild</LlilumBuildRoot>
-    <LlilumSourceRoot Condition="'$(LlilumSourceRoot)'==''">$(MSBuildThisFileDirectory)Zelig\Zelig</LlilumSourceRoot>
-    <GnuWin32MakeInstallPath Condition="'$(GnuWin32MakeInstallPath)'==''">$([MSBuild]::GetRegistryValueFromView(`HKEY_LOCAL_MACHINE\Software\GnuWin32\`, `InstallPath`, null, RegistryView.Registry32))</GnuWin32MakeInstallPath>
-    <GnuWin32MakeInstallPath Condition="'$(GnuWin32MakeInstallPath)'!='' AND !HasTrailingSlash('$(GnuWin32MakeInstallPath)')">$(GnuWin32MakeInstallPath)\</GnuWin32MakeInstallPath>
-  </PropertyGroup>
-  <Target Name="VerifyLlilumPaths">
-    <Error Condition="!EXISTS('$(LLILUM_ROOT)')" Text="Invalid LLILUM_ROOT: '$(LLILUM_ROOT)'" />
-    <Error Condition="!EXISTS('$(LLILUM_SDK)')"  Text="Invalid LLILUM_SDK: '$(LLILUM_SDK)'" />
-    <Message Condition="'$(LlilumBuildShowVars)'!='' AND '$(LlilumBuildShowVars)'!='false'" Importance="high" Text="LLILUM_LLVM=$(LLILUM_LLVM)"/>
-    <Message Condition="'$(LlilumBuildShowVars)'!='' AND '$(LlilumBuildShowVars)'!='false'" Importance="high" Text="LLILUM_ROOT=$(LLILUM_ROOT)"/>
-    <Message Condition="'$(LlilumBuildShowVars)'!='' AND '$(LlilumBuildShowVars)'!='false'" Importance="high" Text="LLILUM_SDK=$(LLILUM_SDK)"/>
-  </Target>
+    <PropertyGroup>
+        <LLILUM_ROOT Condition="'$(LLILUM_ROOT)'==''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))</LLILUM_ROOT>
+        <!-- For builds from the local tree, always use the local headers etc instead of the SDK...  -->
+        <LLILUM_SDK>$(LLILUM_ROOT)Zelig\</LLILUM_SDK>
+        <!-- LLILUM_LLVM contains the full source of LLVM -->
+        <LLVM_VERSION Condition="'$(LLVM_VERSION)'    ==''">3.8.0</LLVM_VERSION>
+        <!-- Source ROOT Dir contains the full source of LLVM. To support both developer and automated build service
+             scenarios try user registry, then HKLM-64 and HKLM-32 in that order
+        -->
+        <LLVM_SRCROOT_DIR Condition="'$(LLVM_SRCROOT_DIR)'==''">$([MSBuild]::GetRegistryValue(`HKEY_CURRENT_USER\Software\LLVM\$(LLVM_VERSION)\`, `SrcRoot`))</LLVM_SRCROOT_DIR>
+        <LLVM_SRCROOT_DIR Condition="'$(LLVM_SRCROOT_DIR)'==''">$([MSBuild]::GetRegistryValueFromView(`HKEY_LOCAL_MACHINE\Software\LLVM\$(LLVM_VERSION)\`, `SrcRoot`, null, RegistryView.Registry64, RegistryView.Registry32))</LLVM_SRCROOT_DIR>
+        <LLVM_SRCROOT_DIR Condition="'$(LLVM_SRCROOT_DIR)'!='' AND !HasTrailingSlash('$(LLVM_SRCROOT_DIR)')">$(LLVM_SRCROOT_DIR)\</LLVM_SRCROOT_DIR>
+
+        <LLILUM_LLVM Condition="'$(LLILUM_LLVM)'==''">$(LLVM_SRCROOT_DIR)</LLILUM_LLVM>
+
+        <LlilumBuildRoot  Condition="'$(LlilumBuildRoot)' ==''">$(MSBuildThisFileDirectory)Zelig\ZeligBuild</LlilumBuildRoot>
+        <LlilumSourceRoot Condition="'$(LlilumSourceRoot)'==''">$(MSBuildThisFileDirectory)Zelig\Zelig</LlilumSourceRoot>
+        <GnuWin32MakeInstallPath Condition="'$(GnuWin32MakeInstallPath)'==''">$([MSBuild]::GetRegistryValueFromView(`HKEY_LOCAL_MACHINE\Software\GnuWin32\`, `InstallPath`, null, RegistryView.Registry32))</GnuWin32MakeInstallPath>
+        <GnuWin32MakeInstallPath Condition="'$(GnuWin32MakeInstallPath)'!='' AND !HasTrailingSlash('$(GnuWin32MakeInstallPath)')">$(GnuWin32MakeInstallPath)\</GnuWin32MakeInstallPath>
+    </PropertyGroup>
+    <Target Name="VerifyLlilumPaths">
+        <Error Condition="'$(LLILUM_LLVM)'==''" Text="LLVM Source and binaries location unknown!" />
+        <Error Condition="!EXISTS('$(LLILUM_ROOT)')" Text="Invalid LLILUM_ROOT: '$(LLILUM_ROOT)'" />
+        <Error Condition="!EXISTS('$(LLILUM_SDK)')"  Text="Invalid LLILUM_SDK: '$(LLILUM_SDK)'" />
+        <Message Condition="'$(LlilumBuildShowVars)'!='' AND '$(LlilumBuildShowVars)'!='false'" Importance="high" Text="LLILUM_LLVM=$(LLILUM_LLVM)"/>
+        <Message Condition="'$(LlilumBuildShowVars)'!='' AND '$(LlilumBuildShowVars)'!='false'" Importance="high" Text="LLILUM_ROOT=$(LLILUM_ROOT)"/>
+        <Message Condition="'$(LlilumBuildShowVars)'!='' AND '$(LlilumBuildShowVars)'!='false'" Importance="high" Text="LLILUM_SDK=$(LLILUM_SDK)"/>
+    </Target>
 </Project>

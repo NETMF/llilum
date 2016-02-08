@@ -17,7 +17,7 @@
     <LlilumClPreprocessorDefsLPC1768>TARGET_LPC1768;TARGET_M3;TARGET_CORTEX_M;TARGET_NXP;TARGET_LPC176X;TARGET_MBED_LPC1768;TOOLCHAIN_GCC_ARM;TOOLCHAIN_GCC;__CORTEX_M3;ARM_MATH_CM3;MBED_BUILD_TIMESTAMP=1435688844.64;__MBED__=1</LlilumClPreprocessorDefsLPC1768>
     <LlilumLinkAdditionalDepsLPC1768>$(LlilumTargetDirLPC1768)$(LlilumTargetBoardLPC1768)/$(LlilumTargetToolchainLPC1768)/board.o;$(LlilumTargetDirLPC1768)$(LlilumTargetBoardLPC1768)/$(LlilumTargetToolchainLPC1768)/cmsis_nvic.o;$(LlilumTargetDirLPC1768)$(LlilumTargetBoardLPC1768)/$(LlilumTargetToolchainLPC1768)/retarget.o;$(LlilumTargetDirLPC1768)$(LlilumTargetBoardLPC1768)/$(LlilumTargetToolchainLPC1768)/system_LPC17xx.o</LlilumLinkAdditionalDepsLPC1768>
     <LlilumLinkAdditionalLibDirsLPC1768>$(LlilumTargetDirLPC1768)$(LlilumTargetBoardLPC1768)/$(LlilumTargetToolchainLPC1768)</LlilumLinkAdditionalLibDirsLPC1768>
-    <LlilumLinkAdditionalOptionsLPC1768>-T$(LlilumTargetDirLPC1768)$(LlilumTargetBoardLPC1768)/$(LlilumTargetToolchainLPC1768)/LPC1768.ld -Wl,--gc-sections --specs=nano.specs -u _printf_float -u _scanf_float -Wl,--wrap,main</LlilumLinkAdditionalOptionsLPC1768>
+    <LlilumLinkAdditionalOptionsLPC1768>-T"$(LlilumTargetDirLPC1768)$(LlilumTargetBoardLPC1768)/$(LlilumTargetToolchainLPC1768)/LPC1768.ld" -Wl,--gc-sections --specs=nano.specs -u _printf_float -u _scanf_float -Wl,--wrap,main</LlilumLinkAdditionalOptionsLPC1768>
     <!-- LPC1768 Ethernet driver does not work yet -->
     <!--<LlilumLinkLibDepsLPC1768>mbed;lwip;mbedeth;lwIPeth;lwipsysarch;stdc++;supc++;m;c;gcc;nosys</LlilumLinkLibDepsLPC1768>-->
     <LlilumLinkLibDepsLPC1768>mbed;stdc++;supc++;m;c;gcc;nosys</LlilumLinkLibDepsLPC1768>

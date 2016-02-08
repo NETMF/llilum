@@ -48,7 +48,7 @@
   <PropertyGroup Label="Llilum" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
   </PropertyGroup>
   <PropertyGroup>
-    <NativeIncludes>$(LlilumSDK)source\ports\mbed\inc;$(LlilumSDK)source\inc;$(LlilumSDK)source\inc\api;$(LlilumSDK)source\inc\api\io;$(LlilumSDK)source\inc\hal</NativeIncludes>
+    <NativeIncludes>$(LlilumSDK)os_layer\ports\mbed\inc;$(LlilumSDK)os_layer\inc;$(LlilumSDK)os_layer\inc\api;$(LlilumSDK)os_layer\inc\api\io;$(LlilumSDK)os_layer\inc\hal</NativeIncludes>
   </PropertyGroup>
   <!-- Platform specific options -->
   <!-- LPC1768 -->

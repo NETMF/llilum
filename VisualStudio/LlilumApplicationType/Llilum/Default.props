@@ -16,11 +16,16 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   <Import Condition="Exists('$(MSBuildThisFileDirectory)ImportBefore\Default')" Project="$(MSBuildThisFileDirectory)ImportBefore\Default\*.props" />
   
   <PropertyGroup>
-	<!-- This must be android in order for intellisense to know it is for GCC/Clang. -->
+    <!-- This must be android in order for intellisense to know it is for GCC/Clang. -->
     <TargetPlatformIdentifier>Android</TargetPlatformIdentifier>
     <Platform Condition="'$(Platform)' == '' or '$(Platform)' == 'Win32'">ARM</Platform>
     <LLilumGccVersion Condition="'$(LlilumGccVersion)'==''">4.9 2015q1</LLilumGccVersion>
+    <!-- HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\ARM\GNU Tools for ARM Embedded Processors -->
+    <LLILUM_GCC Condition="'$(LLILUM_GCC)'==''">$([MSBuild]::GetRegistryValueFromView('HKEY_LOCAL_MACHINE\SOFTWARE\ARM\GNU Tools for ARM Embedded Processors', 'InstallFolder', null, RegistryView.Registry64, RegistryView.Registry32))</LLILUM_GCC>
     <LLILUM_GCC Condition="'$(LLILUM_GCC)'==''">$(MSBuildProgramFiles32)\GNU Tools ARM Embedded\$(LLilumGccVersion)\</LLILUM_GCC>
+    <LLILUM_GCC Condition="!HasTrailingSlash('$(LLILUM_GCC)')">$(LLILUM_GCC)\</LLILUM_GCC>
+    <LLILUM_SDK Condition="'$(LLILUM_SDK)'==''">$([MSBuild]::GetRegistryValueFromView('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Llilum\v1.0', 'InstallDir', null, RegistryView.Registry64, RegistryView.Registry32))</LLILUM_SDK>
+    <LLILUM_SDK Condition="!HasTrailingSlash('$(LLILUM_SDK)')">$(LLILUM_SDK)\</LLILUM_SDK>
   </PropertyGroup>
 
   <!-- Import After -->

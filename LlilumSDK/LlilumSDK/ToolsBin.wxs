@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <!-- This fragment contains all the host tools binaries for the Llilum compiler -->
+    <Fragment>
+        <DirectoryRef Id="INSTALLDIR">
+            <Directory Name="Bin" Id="InstallDirBinFolder"/>
+        </DirectoryRef>
+        
+        <ComponentGroup Id="ToolsBinComponentGroup" Directory="InstallDirBinFolder" Source="!(wix.LlilumHostBuildOutput)">
+            <Component Guid="*">
+                <RegistryKey Root="HKLM" Key="Software\Microsoft\Llilum\$(var.RegAndFolderShortVersionString)">
+                    <RegistryValue KeyPath="yes" Type="string" Name="InstallDir" Value="[INSTALLDIR]"/>
+                </RegistryKey>
+            </Component>
+
+            <Component Guid="*">
+                <File KeyPath="yes" Name="LibLLVM.dll" />
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Llvm.NET.dll" />
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.GLEE.dll" />
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.GLEE.Drawing.dll" />
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.GLEE.GraphViewerGDI.dll" />
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.Zelig.CodeGeneration.CodeTransformation.dll" />
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.Zelig.CodeGeneration.IntermediateRepresentation.dll" />
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.Zelig.Compiler.exe" />
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.Zelig.Elf.Elflib.dll" />
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.Zelig.MetaData.Importer.dll" />
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.Zelig.MetaData.Normalized.dll" />
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.Zelig.ProductConfiguration.dll" />
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.Zelig.Runtime.Common.dll" />
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.Zelig.Runtime.CommonPC.dll" />
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.Zelig.Runtime.dll" />
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.Zelig.Runtime.TypeSystem.dll" />
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.Zelig.TargetModel.ArmProcessor.dll" />
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.Zelig.TargetModel.Win32EmuProcessor.dll" />
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.Zelig.Test.Test_Common.dll" />
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.Zelig.Tools.InequalityGraphVisualization.dll" />
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.Zelig.Tools.IRCompare.exe" />
+                <File Name="Microsoft.Zelig.Tools.IRCompare.exe.config" />
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.Zelig.Tools.IRViewer.exe" />
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="ReadElf.exe" />
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.Zelig.Emulation.ArmProcessor.dll"/>
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="TargetAdapterAbstractionLayer.dll"/>
+            </Component>
+        </ComponentGroup>
+    </Fragment>
+</Wix>

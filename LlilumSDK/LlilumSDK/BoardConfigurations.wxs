@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <!--
+    Summary:
+        This fragment contains the sample Llilum board configuration's pre-built binaries
+        
+    Remarks:
+        This is a temporary solution to the issue of Board configurations to ease in the 
+        transition out of the internal build scenarios to production third party use.
+        
+        =============================================
+        !!DO NOT ADD MORE BOARD CONFIGURATIONS HERE!!
+        =============================================
+        
+        ALL new board configurations should be built using this SDK and published as a
+        NUGET package. Going forward the ones here should be converted over to a NUGET
+        package. This completely eliminates the need for an MSI based installer as part
+        of publishing a new Board configuration. The simpler such a process is the greater
+        the number of platforms third parties will produce. Ideally, the SDK itself is the
+        only item requiring an MSI installation and everything else from MS or third parties
+        is a NUGET or VSIX package. (It would be nice if the SDK itself didn't require an
+        MSI, we should continue to discuss if/how we can achieve that with the VS team.)
+    -->
+    <Fragment>
+        <ComponentGroup Id="HostBoardConfigurationsComponentGroup" Directory="LlilumCompilationSetupFolder" Source="!(wix.LlilumHostBuildOutput)">
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.Llilum.BoardConfigurations.K64F.dll"/>
+                <File Name="Microsoft.Llilum.BoardConfigurations.K64F.pdb"/>
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.Llilum.BoardConfigurations.LPC1768.dll"/>
+                <File Name="Microsoft.Llilum.BoardConfigurations.LPC1768.pdb"/>
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.Llilum.BoardConfigurations.STM32F091.dll"/>
+                <File Name="Microsoft.Llilum.BoardConfigurations.STM32F091.pdb"/>
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.Llilum.BoardConfigurations.STM32F401.dll"/>
+                <File Name="Microsoft.Llilum.BoardConfigurations.STM32F401.pdb"/>
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.Llilum.BoardConfigurations.STM32F411.dll"/>
+                <File Name="Microsoft.Llilum.BoardConfigurations.STM32F411.pdb"/>
+            </Component>
+            <Component Guid="*">
+                <File KeyPath="yes" Name="Microsoft.Llilum.BoardConfigurations.STM32L152.dll"/>
+                <File Name="Microsoft.Llilum.BoardConfigurations.STM32L152.pdb"/>
+            </Component>
+        </ComponentGroup>
+        <ComponentGroup Id="TargetBoardConfigurationsComponentGroup" Directory="LlilumRefAssembliesVersionFolder" Source="!(wix.LlilumTargetBuildOutput)">
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="K64F.dll"/>
+                <File Name="K64F.pdb" />
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="LPC1768.dll"/>
+                <File Name="LPC1768.pdb" />
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="STM32F091.dll"/>
+                <File Name="STM32F091.pdb" />
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="STM32F401.dll"/>
+                <File Name="STM32F401.pdb" />
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="STM32F411.dll"/>
+                <File Name="STM32F411.pdb" />
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="STM32L152.dll"/>
+                <File Name="STM32L152.pdb" />
+            </Component>
+        </ComponentGroup>
+    </Fragment>
+</Wix>

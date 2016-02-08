@@ -46,8 +46,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <LlilumOutputName>$(SolutionName)</LlilumOutputName>
     <LlilumGccBin>$(LLILUM_GCC)\bin\</LlilumGccBin>
     <LlilumOutputBin>$(OutDir)\$(LlilumOutputName).bin</LlilumOutputBin>
-    <LlilumInteropFilePath>$(LlilumSDK)source\</LlilumInteropFilePath>
-    <LlilumCompiler>$(LlilumSDK)ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Compiler.exe</LlilumCompiler>
+    <LlilumInteropFilePath>$(LlilumSDK)os_layer\</LlilumInteropFilePath>
+    <LlilumCompiler>$(LlilumSDK)\bin\Microsoft.Zelig.Compiler.exe</LlilumCompiler>
     <LlilumConfig>$(MSBuildProjectDirectory)\mbed_simple_$(LlilumBoardName).FrontEndConfig</LlilumConfig>
   </PropertyGroup>
 

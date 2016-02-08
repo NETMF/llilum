@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+    <!--
+    Summary:
+        This include file implements pre-launch conditions and product installation property searches
+        that are not provided in the standrd MSI, WIX or Wix Extensions that are required for the
+        Llilum installation.
+    -->
+    <!-- Define custom property searches for this installer -->
+    <Property Id="EMBEDDED_GCC_INSTALLED">
+        <!-- HKEY_LOCAL_MACHINE\SOFTWARE[\WOW6432Node]\ARM\GNU Tools for ARM Embedded Processors -->
+        <RegistrySearch Id="EmbeddedGccInstalled"
+                        Win64="no"
+                        Root="HKLM"
+                        Key="Software\ARM\GNU Tools for ARM Embedded Processors"
+                        Name="InstallFolder"
+                        Type="raw"
+                        />
+    </Property>
+    <Property Id="VS2015_VC_CROSS_PLATFORM_MOBILE_TOOLS_INSTALLED">
+        <!-- HKEY_LOCAL_MACHINE\SOFTWARE[\WOW6432Node]\Microsoft\VisualStudio\14.0\Setup\Visual C++ for Cross Platform Mobile Development -->
+        <RegistrySearch Id="VcCrossPlatformToolsInstalled"
+                        Win64="no"
+                        Root="HKLM"
+                        Key="SOFTWARE\Microsoft\VisualStudio\14.0\Setup\Visual C++ for Cross Platform Mobile Development"
+                        Name="InstallSuccess"
+                        Type="raw"
+                        />
+    </Property>
+    <Property Id="VS2015_COMMUNITY_EDITION_INSTALLED">
+        <!-- HKEY_LOCAL_MACHINE\SOFTWARE[\WOW6432Node]\Microsoft\VisualStudio\14.0\Setup\Microsoft Visual Studio Community 2015 -->
+        <RegistrySearch Id="Vs2015CommunityInstalled"
+                        Win64="no"
+                        Root="HKLM"
+                        Key="SOFTWARE\Microsoft\VisualStudio\14.0\Setup\Microsoft Visual Studio Community 2015"
+                        Name="InstallSuccess"
+                        Type="raw"
+                        />
+    </Property>
+    <Property Id="VS2015_ENTERPRISE_EDITION_INSTALLED">
+        <!-- HKEY_LOCAL_MACHINE\SOFTWARE[\WOW6432Node]\Microsoft\VisualStudio\14.0\Setup\Microsoft Visual Studio Enterprise 2015 -->
+        <RegistrySearch Id="Vs2015EnterpriseInstalled"
+                        Win64="no"
+                        Root="HKLM"
+                        Key="SOFTWARE\Microsoft\VisualStudio\14.0\Setup\Microsoft Visual Studio Enterprise 2015"
+                        Name="InstallSuccess"
+                        Type="raw"
+                        />
+    </Property>
+    <Property Id="VS2015_PREMIUM_EDITION_INSTALLED">
+        <!-- HKEY_LOCAL_MACHINE\SOFTWARE[\WOW6432Node]\Microsoft\VisualStudio\14.0\Setup\Microsoft Visual Studio Premium 2015 -->
+        <RegistrySearch Id="Vs2015PremiumInstalled"
+                        Win64="no"
+                        Root="HKLM"
+                        Key="SOFTWARE\Microsoft\VisualStudio\14.0\Setup\Microsoft Visual Studio Premium 2015"
+                        Name="InstallSuccess"
+                        Type="raw"
+                        />
+    </Property>
+
+    <Property Id="VS2015_PROFESSIONAL_EDITION_INSTALLED">
+        <!-- HKEY_LOCAL_MACHINE\SOFTWARE[\WOW6432Node]\Microsoft\VisualStudio\14.0\Setup\Microsoft Visual Studio Professional 2015 -->
+        <RegistrySearch Id="Vs2015ProfessionalInstalled"
+                        Win64="no"
+                        Root="HKLM"
+                        Key="SOFTWARE\Microsoft\VisualStudio\14.0\Setup\Microsoft Visual Studio Professional 2015"
+                        Name="InstallSuccess"
+                        Type="raw"
+                        />
+    </Property>
+
+    <!-- Reference properties from standard WixVSExtension -->
+    <PropertyRef Id="VS2015_IDE_VCSHARP_PROJECTSYSTEM_INSTALLED"/>
+    <PropertyRef Id="VS2015_IDE_VC_PROJECTSYSTEM_INSTALLED"/>
+
+    <!-- Define pre-requisite conditions for installer to check before installation -->
+    <Condition Message="Visual Studio Community 2015 or higher edition is required to install [ProductName]">
+        Installed OR VS2015_COMMUNITY_EDITION_INSTALLED OR VS2015_PROFESSIONAL_EDITION_INSTALLED OR VS2015_PREMIUM_EDITION_INSTALLED OR VS2015_ENTERPRISE_EDITION_INSTALLED
+    </Condition>
+    <Condition Message="Visual Studio 2015 with C# project system is required to install [ProductName]">
+        Installed OR VS2015_IDE_VCSHARP_PROJECTSYSTEM_INSTALLED
+    </Condition>
+    <Condition Message="Visual Studio 2015 with C++ project system is required  to install [ProductName]">
+        Installed OR VS2015_IDE_VC_PROJECTSYSTEM_INSTALLED
+    </Condition>
+    <!--
+        Cross platform tools are currently required by the project system to leverage GCC build tasks support for Android.
+        Future releases will likely change to use the newer more generic Clang/GCC support introduced in VS Update 1. Sticking
+        with the Android support for now to help get third party development up and running.
+        -->
+    <Condition Message="Visual C++ for Cross Platform Mobile Development component is required to install [ProductName]">
+        Installed OR VS2015_VC_CROSS_PLATFORM_MOBILE_TOOLS_INSTALLED
+    </Condition>
+    <Condition Message="GNU Tools for ARM Embedded Processors component is required to instal [ProductName]">
+        Installed OR EMBEDDED_GCC_INSTALLED
+    </Condition>
+</Include>

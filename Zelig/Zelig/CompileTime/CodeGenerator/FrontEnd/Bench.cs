@@ -1469,16 +1469,17 @@ namespace Microsoft.Zelig.FrontEnd
         // Verify the LLVM tools path
         // if the path isn't set from command line options try to figure it out
         // using the following (in order):
-        //   1) LlvmBinPathEnvVarNames environment variables for curent process
-        //   2) LlvmBinPathEnvVarNames environment variable/registry for curent user
-        //   3) LlvmBinPathEnvVarNames environment variable/registry for curent machine
-        //   4) HKCU\SOFTWARE\LLVM\3.7.0\@ToolsBin
-        //   5) HKLM\SOFTWARE\LLVM\3.7.0\@ToolsBin
-        //   6) HKCU\SOFTWARE\LLVM\3.7.0\@SrcRoot + "build\Win32\Release\bin"
-        //   7) HKCU\SOFTWARE\LLVM\3.7.0\@SrcRoot + "build\x64\Release\bin"
-        //   8) HKLM\SOFTWARE\LLVM\3.7.0\@SrcRoot + "build\Win32\Release\bin"
-        //   9) HKLM\SOFTWARE\LLVM\3.7.0\@SrcRoot + "build\x64\Release\bin"
-        //   10) Scan all paths in the processes PATH environment variable for the
+        //   1) The path this program is executing from (Standard end user install scenario)
+        //   2) LlvmBinPathEnvVarNames environment variables for curent process
+        //   3) LlvmBinPathEnvVarNames environment variable/registry for curent user
+        //   4) LlvmBinPathEnvVarNames environment variable/registry for curent machine
+        //   5) HKCU\<LlvmRegSoftwareBinPath>\@ToolsBin
+        //   6) HKLM\<LlvmRegSoftwareBinPath>\@ToolsBin
+        //   7) HKCU\<LlvmRegSoftwareBinPath>\@SrcRoot + "build\Win32\Release\bin"
+        //   8) HKCU\<LlvmRegSoftwareBinPath>\@SrcRoot + "build\x64\Release\bin"
+        //   9) HKLM\<LlvmRegSoftwareBinPath>\@SrcRoot + "build\Win32\Release\bin"
+        //   10) HKLM\<LlvmRegSoftwareBinPath>\@SrcRoot + "build\x64\Release\bin"
+        //   11) Scan all paths in the processes PATH environment variable for the
         //       first one containing opt.exe, llc.exe and llvm-dis.exe
         //
         //  If none of the above yields a path that contains the required apps then fail the validation
@@ -1492,7 +1493,17 @@ namespace Microsoft.Zelig.FrontEnd
             if(m_fSkipLlvmOptExe && !m_fGenerateObj)
                 return true;
 
-            if(string.IsNullOrWhiteSpace( m_LlvmBinPath ))
+            // cover the expected production scenario first
+            if (string.IsNullOrWhiteSpace( m_LlvmBinPath ))
+            {
+                var thisAssembly = System.Reflection.Assembly.GetExecutingAssembly();
+                var localPath = Path.GetDirectoryName(thisAssembly.Location);
+                if(PathHasLlvmTools(localPath))
+                    m_LlvmBinPath = localPath;
+            }
+
+            // cover the most common internal development scenarios
+            if (string.IsNullOrWhiteSpace( m_LlvmBinPath ))
             {
                 m_LlvmBinPath = FindLLvmToolsPathOrSubPathFromEnvVars( EnvironmentVariableTarget.Process
                                                                      , EnvironmentVariableTarget.User
@@ -2316,8 +2327,9 @@ namespace Microsoft.Zelig.FrontEnd
             return fNoSDK;
         }
 
-        public static void Main( string[] args )
+        public static int Main( string[] args )
         {
+            int retVal = 0;
             System.Threading.Thread th = new System.Threading.Thread( ()=>
             {
                 bool fNoSDK = false;
@@ -2328,10 +2340,12 @@ namespace Microsoft.Zelig.FrontEnd
                 }
                 catch( Importer.SilentCompilationAbortException )
                 {
+                    retVal = -1;
                 }
                 catch( Exception ex )
                 {
                     Console.Error.WriteLine( "Caught exception: {0}", ex );
+                    retVal = ex.HResult > unchecked((int)0x80000000u) ? ex.HResult : -1;
                 }
                 finally
                 {
@@ -2344,6 +2358,7 @@ namespace Microsoft.Zelig.FrontEnd
             }, 1024*1024*1024 );
             th.Start( );
             th.Join( );
+            return retVal;
         }
     }
 }

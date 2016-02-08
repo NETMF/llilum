@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <!--
+    Summary:
+        This fragment defines the top level folders used for the installation
+        that are not part of the standard WIX well known locations
+    
+    Output Ids:
+        RefAssembliesFrameworkFolder - directory id for .NET Multitargeting framework installs
+        CpsApplicationTypeFolder     - Extension point for projects based on CPS
+    -->
+    <Fragment>
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="ProgramFiles64Folder">
+                <Directory Name="Microsoft" Id="ProgramFilesMicrosoft" >
+                    <Directory Name="Llilum" Id="INSTALLDIR">
+                        <Directory Name="CompilationSetup" Id="LlilumCompilationSetupFolder" />
+                    </Directory>
+                </Directory>
+            </Directory>
+            <Directory Id="ProgramFilesFolder">
+                <Directory Name="Reference Assemblies" Id="ReferenceAssembliesRoot">
+                    <Directory Name="Microsoft" Id="ReferenceAssemblesMS">
+                        <!-- C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework -->
+                        <Directory Name="Framework" Id="RefAssembliesFrameworkFolder"/>
+                    </Directory>
+                </Directory>
+                <Directory Name="MSBuild" Id="MSBuildToolsPath">
+                    <Directory Name="Microsoft.Cpp" Id="MicrosoftCPP">
+                        <Directory Name="v4.0" Id="CPSv40">
+                            <Directory Name="V140" Id="CPSV140">
+                                <!-- C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Application Type -->
+                                <Directory Name="Application Type" Id="CpsApplicationTypeFolder">
+                                </Directory>
+                            </Directory>
+                        </Directory>
+                    </Directory>
+                </Directory>
+            </Directory>
+        </Directory>
+    </Fragment>
+</Wix>

@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <!-- 
+    Description:
+        This fragment contains all the components/files for the .NET multitargeting framework
+        extensibility. (e.g. all the device side managed code assemblies)
+    -->
+    <Fragment>
+        <DirectoryRef Id="RefAssembliesFrameworkFolder">
+            <!-- C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\Llilum -->
+            <Directory Name="Llilum" Id="LlilumReferenceAssembliesFolder" >
+                <!-- folder name is for the version of the framework (i.e. v1.0) -->
+                <Directory Name="$(var.RegAndFolderShortVersionString)" Id="LlilumRefAssembliesVersionFolder">
+                    <Directory Name="RedistList" Id="LlilumReferenceAssembliesRedistFolder"/>
+                </Directory>
+            </Directory>
+        </DirectoryRef>
+        
+        <!--
+        All components are marked 'Win64="no"' so that they are considered 32 bit components going
+        into a 32 bit location. This prevents errors in the MSI database consistency checks.
+        Furthermore, the files all have an explicit id set on them as sometimes a file with the
+        same name is also placed in the Tools bin directory (e.g. host useable and target usable)
+        The unique ID distinguishes between them when the files/components are flattened into the
+        MSI database. (By default the unique ID is just the name of the file)
+        -->
+        <!-- Cortex-Mx support -->
+        <ComponentGroup Id="ReferenceAssembliesCortexMxGroup" Directory="LlilumRefAssembliesVersionFolder" Source="!(wix.LlilumTargetBuildOutput)">
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.DeviceModels.ModelForCortexM.dll" Id="id0C35EF004B114B07B3A25CD2237ABF69"/>
+                <File Name="Microsoft.DeviceModels.ModelForCortexM.pdb" Id="id31903395781046E59920519051F1F7AA"/>
+            </Component>
+        </ComponentGroup>
+        
+            <!-- Cortex-M0 support -->
+        <ComponentGroup Id="ReferenceAssembliesCortexM0Group" Directory="LlilumRefAssembliesVersionFolder" Source="!(wix.LlilumTargetBuildOutput)">
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.CortexM0OnMBED.dll" Id="id9C34D92959B34F3B888520C5433D6525"/>
+                <File Name="Microsoft.CortexM0OnMBED.pdb" Id="id1C0B7662E732441E97CDEB0FB72A076E"/>
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.DeviceModels.ModelForCortexM0.dll" Id="id9EF2F26BE1074DF684315B7D3321342C"/>
+                <File Name="Microsoft.DeviceModels.ModelForCortexM0.pdb" Id="id85450B186FC84CD9A3BBA0AFC2F0863B"/>
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.CortexM0OnCMSISCore.dll" Id="id80D90F9E905A46A59B9470F91CBA623F"/>
+                <File Name="Microsoft.CortexM0OnCMSISCore.pdb" Id="id982D4A84D6DA43C08F83C0AA69206680"/>
+            </Component>
+        </ComponentGroup>
+        
+        <!-- Cortex-M3 support -->
+        <ComponentGroup Id="ReferenceAssembliesCortexM3Group" Directory="LlilumRefAssembliesVersionFolder" Source="!(wix.LlilumTargetBuildOutput)">
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.CortexM3OnCMSISCore.dll" Id="id5CD6F7E431F54DF49D1F5E12458F456C"/>
+                <File Name="Microsoft.CortexM3OnCMSISCore.pdb" Id="id909ED3EA20B1450085DDCA9ECCAB7B2E"/>
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.CortexM3OnMBED.dll" Id="id16863A9BE1A845DFBAF8ED076B0C44A6"/>
+                <File Name="Microsoft.CortexM3OnMBED.pdb" Id="id96979B20A5A44368853DB44435BA03DF"/>
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.DeviceModels.ModelForCortexM3.dll" Id="idC8C6BC3E72A5450BAB9D64C09D84B4A9"/>
+                <File Name="Microsoft.DeviceModels.ModelForCortexM3.pdb" />
+            </Component>
+        </ComponentGroup>
+        
+        <!-- Cortex-M4 support -->
+        <ComponentGroup Id="ReferenceAssembliesCortexM4Group" Directory="LlilumRefAssembliesVersionFolder" Source="!(wix.LlilumTargetBuildOutput)">
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.CortexM4OnCMSISCore.dll" Id="id852258E3014646ECB1F8188232E50354"/>
+                <File Name="Microsoft.CortexM4OnCMSISCore.pdb" Id="id5EAB9542A3024CA29FA10388B3B68E78" />
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.CortexM4OnMBED.dll" Id="id2FC500BE121F4AB79B420642D4402DFE"/>
+                <File Name="Microsoft.CortexM4OnMBED.pdb" Id="idCABDFB7459394B4B80C58595444F7298" />
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.DeviceModels.ModelForCortexM4.dll" Id="id77322BA463BF4ACA96046882E0AAF4BD"/>
+                <File Name="Microsoft.DeviceModels.ModelForCortexM4.pdb" Id="idAA8B4A5932A445CD92670806B16D8241" />
+            </Component>
+        </ComponentGroup>
+
+        <!-- .NET Micro Framework compatibility layer support -->
+        <ComponentGroup Id="NetmfCompatibilityComponentGroup" Directory="LlilumRefAssembliesVersionFolder" Source="!(wix.LlilumTargetBuildOutput)">
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.SPOT.Hardware.dll" Id="id19CE3DE372D64D3388BB72D7608CF5B0"/>
+                <File Name="Microsoft.SPOT.Hardware.pdb" Id="id801CCE43008D42C99CE3C19316D164D5"/>
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.SPOT.Native.dll" Id="idABC28F854C2A4E15900173C884812A52" />
+                <File Name="Microsoft.SPOT.Native.pdb" Id="id82BC411DC87A46118197292684FC3253"/>
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.SPOT.Net.dll" Id="id6AAB2EF016AD4DB2BE1CD3FA5ED48380"/>
+                <File Name="Microsoft.SPOT.Net.pdb" Id="idF918AC5D850F4E17A14C46378E0202F1"/>
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.SPOT.Net.Security.dll" Id="id01848565C2DD443F8ABC1BB7EA8A1FAF"/>
+                <File Name="Microsoft.SPOT.Net.Security.pdb" Id="id872C2EA583BC454B871127E6D5A0205B"/>
+            </Component>
+        </ComponentGroup>
+        
+        <!-- target independent components -->
+        <ComponentGroup Id="ReferenceAssembliesComponentGroup" Directory="LlilumRefAssembliesVersionFolder" Source="!(wix.LlilumTargetBuildOutput)">
+            <ComponentGroupRef Id="ReferenceAssembliesRedistGroup"/>
+            <ComponentGroupRef Id="NetmfCompatibilityComponentGroup"/>
+            <ComponentGroupRef Id="ReferenceAssembliesCortexMxGroup"/>
+            <ComponentGroupRef Id="ReferenceAssembliesCortexM0Group"/>
+            <ComponentGroupRef Id="ReferenceAssembliesCortexM3Group"/>
+            <ComponentGroupRef Id="ReferenceAssembliesCortexM4Group"/>
+            
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="mscorlib.dll" Id="idDBD62921D8AF49D5ABF58D4409D8F41A" />
+                <File Name="mscorlib.pdb" Id="idC64594ED37E343A09361A8133A8C9CE0" />
+            </Component>
+            
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Llilum.Devices.dll" Id="idF2806B8571974C38B06C692C7ABC3D92" />
+                <File Name="Llilum.Devices.pdb" Id="id02509F3C9737480D9C20CBF69F8E8D22" />
+            </Component>
+
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.Llilum.Lwip.dll" Id="id38452A96DB3B4C1B80440910EEF457D2"/>
+                <File Name="Microsoft.Llilum.Lwip.pdb" Id="id146A3EEA8A0B45C994FC726C5DE8FE2F"/>
+            </Component>
+            
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.Zelig.LlilumCMSIS-RTOS.dll" Id="id126517BA28B84AF19E7156C1599A6B4B" />
+                <File Name="Microsoft.Zelig.LlilumCMSIS-RTOS.pdb" Id="id4CAD66B0C9DA474BA903A307BBDC135D"/>
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.Zelig.LlilumOSAbstraction.dll" Id="id839A54FDE38A4BC39440F4E4B68B2E1D" />
+                <File Name="Microsoft.Zelig.LlilumOSAbstraction.pdb" Id="idAE7CAE744E5A43D7AEF8BED1ADA2C1F6"/>
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.Zelig.ProductConfiguration.dll" Id="idA2508A419D5C4C3CA76DFCA24630F30C"/>
+                <File Name="Microsoft.Zelig.ProductConfiguration.pdb" Id="id9B743C39D2BC4AC8B51FACEC0775094E"/>
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.Zelig.Runtime.Common.dll" Id="id49EE7477EDEA44C5B2AB0B36D7565E4B"/>
+                <File Name="Microsoft.Zelig.Runtime.Common.pdb" Id="idF55162088EB94F18A1EBBED5EAC763E6"/>
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.Zelig.Runtime.CommonPC.dll" Id="idF7AAB5EF11BA48838743F028B67678F1"/>
+                <File Name="Microsoft.Zelig.Runtime.CommonPC.pdb" Id="id59F210AFD17C438BA8A3D37DC7992F7C"/>
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.Zelig.Runtime.dll" Id="id01E3FA9321044356A350834B18BC8716"/>
+                <File Name="Microsoft.Zelig.Runtime.pdb" Id="id81CC89A76840433E92A30B9A7DD4CB36"/>
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.Zelig.Runtime.TypeSystem.dll" Id="id58C4F2EE59334D74BF4E4D5A02F50739"/>
+                <File Name="Microsoft.Zelig.Runtime.TypeSystem.pdb" Id="idF5DC8A1C308E489D9CB8C41C6D3257D6" />
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.Zelig.Support.mbed.dll" Id="idC32D69D38BD242C59BF04A4CFF3F12D3"/>
+                <File Name="Microsoft.Zelig.Support.mbed.pdb" Id="idD1F1CAF372AE47D4AF0C7E5A4CBDD04D"/>
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.Zelig.TargetModel.ArmProcessor.dll" Id="id3E302B4743214C789A268038040E3999" />
+                <File Name="Microsoft.Zelig.TargetModel.ArmProcessor.pdb" Id="id22070A4C87B24373B3F9D66789ACAB11"/>
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.Zelig.Test.TestRunner.exe" Id="idBDB56FF09A104583BA526B81ADB05421" />
+                <File Name="Microsoft.Zelig.Test.TestRunner.pdb" Id="id6319BBC81B2D4014ABF58A0EA05B34C5"/>
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Microsoft.Zelig.Test.Test_Common.dll" Id="id19DA5FA9B2084A48BBDCA5DB73633596" />
+                <File Name="Microsoft.Zelig.Test.Test_Common.pdb" Id="id92029A94BEDE43CFA719B3F1FEC9B395"/>
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="System.Core.dll" Id="idA5E73C95F1F74384A4D501898CC6BAE1"/>
+                <File Name="System.Core.pdb" Id="idA34FBD1B0D2244F48099D200CB3492E4"/>
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="System.dll" Id="id827DE4BF23084101AAFF1FE62CD26D93"/>
+                <File Name="System.pdb" Id="id0C1D735C430E47DEB2F82987AACF9154"/>
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="System.Runtime.WindowsRuntime.dll" Id="id7C2E8855CBCA4FC889404AD361FE76AA"/>
+                <File Name="System.Runtime.WindowsRuntime.pdb" Id="id464A7BFB25BA4D6DA0F56EC6358B7B99"/>
+            </Component>
+            <Component Guid="*" Win64="no">
+                <File KeyPath="yes" Name="Windows.dll" Id="idE8835894A82A4FFE83DCF880A82ADCD9"/>
+                <File Name="Windows.pdb" Id="id45F1B392FD4C45CC84FB80EE27A4ECCC"/>
+            </Component>
+        </ComponentGroup>
+
+        <ComponentGroup Id="ReferenceAssembliesRedistGroup" Directory="LlilumReferenceAssembliesRedistFolder">
+            <Component Id="FrameworkList_xml" Win64="no">
+                <File KeyPath="yes" Name="FrameworkList.xml" Source="FrameworkList.xml" />
+            </Component>
+        </ComponentGroup>
+
+    </Fragment>
+</Wix>

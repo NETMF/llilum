@@ -256,3 +256,4 @@ Zelig/Zelig/CompileTime/Llvm.NET/LibLLVM/Win32/RelWithDebInfo/LibLLVM.3.6.1.lib
 Zelig/Zelig/CompileTime/Llvm.NET/Win32/RelWithDebInfo/Llvm.NET.dll
 *.opendb
 /Zelig/Zelig/CompileTime/Llvm.NET/LibLLVM/generatedversioninfo.h
+/LlilumSDK/LlilumSDK/FrameworkList.xml

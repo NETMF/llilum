@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+IMPORTANT NOTE:
+
+Due to how Visual Studio loads and caches MSBuild
+project files, if you are editng this file from
+the solution in VS, any changes to this file will
+require closing the current solution and re-opening
+it for the changes to take effect.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+-->
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <ItemDefinitionGroup>
+        <HarvestDirectory>
+            <!-- None of the files requires additional registration -->
+            <SupressCom>true</SupressCom>
+            <SuppressRegistry>true</SuppressRegistry>
+        </HarvestDirectory>
+    </ItemDefinitionGroup>
+    <Target Name="BeforeBuild">
+        <!--
+        Placing these items here keeps them out of the VS IDE, which causes confusion as the
+        votive project system doesn't currently have support for showing or editing Harvesting
+        items. (They show as a node with no name and the yellow triangle with exclamation point
+        icon)
+        
+        These are harvested rather than explicitly listed in a WXS file because there are a large
+        number of files and the complete layout is already captured in the repository.Thus, any
+        changes to the contents and layout are already tracked. So, there's no need to put it all
+        into a WXS file just to track changes.
+        
+        A Wix linker varaible is set for each group to correspond to the source location, this allows
+        for each group to tie to a specific install directory and a unique source location from the
+        build.
+        -->
+        <ItemGroup>
+            <HarvestDirectory Include="$(LlilumZeligOsLayerDir)">
+                <ComponentGroupName>NativeOsLayerComponentGroup</ComponentGroupName>
+                <PreProcessorVariable>wix.LlilumZeligOsLayerDir</PreProcessorVariable>
+                <DirectoryRefId>INSTALLDIR</DirectoryRefId>
+            </HarvestDirectory>
+            <HarvestDirectory Include="$(LlilumZeligMbedDir)">
+                <ComponentGroupName>NativeMbedLibComponentGroup</ComponentGroupName>
+                <PreProcessorVariable>wix.LlilumZeligMbedDir</PreProcessorVariable>
+                <DirectoryRefId>INSTALLDIR</DirectoryRefId>
+            </HarvestDirectory>
+            <HarvestDirectory Include="$(LlilumZeligMbedRtosDir)">
+                <ComponentGroupName>NativeMbedRtosComponentGroup</ComponentGroupName>
+                <PreProcessorVariable>wix.LlilumZeligMbedRtosDir</PreProcessorVariable>
+                <DirectoryRefId>INSTALLDIR</DirectoryRefId>
+            </HarvestDirectory>
+            <HarvestDirectory Include="$(LlilumZeligLwipDir)">
+                <ComponentGroupName>NativelWipComponentGroup</ComponentGroupName>
+                <PreProcessorVariable>wix.LlilumZeligLwipDir</PreProcessorVariable>
+                <DirectoryRefId>INSTALLDIR</DirectoryRefId>
+            </HarvestDirectory>
+            <HarvestDirectory Include="$(LlilumZeligToolsDir)">
+                <ComponentGroupName>ThirdPartyToolsComponentGroup</ComponentGroupName>
+                <PreProcessorVariable>wix.LlilumZeligToolsDir</PreProcessorVariable>
+                <DirectoryRefId>INSTALLDIR</DirectoryRefId>
+            </HarvestDirectory>
+            <HarvestDirectory Include="$(LlilumZeligZeligTestDir)">
+                <ComponentGroupName>ZeligTestComponentGroup</ComponentGroupName>
+                <PreProcessorVariable>wix.LlilumZeligZeligTestDir</PreProcessorVariable>
+                <DirectoryRefId>INSTALLDIR</DirectoryRefId>
+            </HarvestDirectory>
+            <HarvestDirectory Include="$(LlilumApplicationTypeDir)">
+                <ComponentGroupName>CpsProjectSystemComponentGroup</ComponentGroupName>
+                <PreProcessorVariable>wix.LlilumApplicationTypeDir</PreProcessorVariable>
+                <DirectoryRefId>CpsApplicationTypeFolder</DirectoryRefId>
+                <!--
+                Need to transform this to mark the executable's MSI components as 32bit
+                Otherwise the MSI Internal Consistency Error checks (effectively FxCop for an MSI)
+                will trigger an error since a 64 bit component is being instaled into a 32 bit location
+                -->
+                <Transforms>MarkComponentsWin32.xslt</Transforms>
+                <SuppressRootDirectory>true</SuppressRootDirectory>
+            </HarvestDirectory>
+        </ItemGroup>
+    </Target>
+</Project>

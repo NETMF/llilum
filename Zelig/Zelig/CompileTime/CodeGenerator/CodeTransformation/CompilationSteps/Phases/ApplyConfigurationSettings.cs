@@ -47,7 +47,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
 
             var gcImpl = gcImpls[0];
 
-            Console.WriteLine("Garbage collector selected: %s", gcImpl.FullName);
+            Console.WriteLine("Garbage collector selected: {0}", gcImpl.FullName);
 
             // Since ReferenceCountingCollector is done by code injection during compile time
             // (and the ReferenceCountingCollector class itself is only a dummy class with 

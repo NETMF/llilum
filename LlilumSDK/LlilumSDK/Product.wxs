@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <!--
+    Summary:
+        This is the main wix product description. The product Id is set to "*" so that 
+        a unique product guid is generated for every build. The SDK won't use patching
+        so the actual ID isn't relevent. For updates a version number bump is applied
+        and it is considered in MSI terms as a "major" upgrade. The SDK is small and
+        fast enough where the simplicity of maintenance far outweighs any small hit to
+        performance when uninstalling the old files during an upgrade. 
+        
+        At the moment the build number is hard coded, however going forward the version
+        number should be provided by an automated build through the wix pre-processor.
+    -->
+    <Product Id="*"
+             Name="Llilum SDK $(var.RegAndFolderShortVersionString)"
+             Language="1033"
+             Version="1.0.0.0"
+             Manufacturer="Microsoft"
+             UpgradeCode="27ae55c8-ef09-4f96-8013-aec9e1e61165"
+             >
+        
+        <Package InstallerVersion="405" Compressed="yes" InstallScope="perMachine" />
+        <MediaTemplate EmbedCab="yes" />
+
+        <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+
+        <!-- Pull in the pre-conditions to check before starting the installation process -->
+        <?include PreConditions.wxi ?>
+        
+        <!-- This product has only one feature, so list all the component groups here -->
+        <Feature Id="ProductFeature" Title="Llilum SDK" Level="1">
+            <ComponentGroupRef Id="ReferenceAssembliesComponentGroup" />
+            <ComponentGroupRef Id="CpsProjectSystemComponentGroup"/>
+            <ComponentGroupRef Id="ToolsBinComponentGroup"/>
+            <ComponentGroupRef Id="ZeligTestComponentGroup"/>
+            <ComponentGroupRef Id="NativeOsLayerComponentGroup"/>
+            <!--
+            Temp:
+            For now bring in the pre-built board configurations.
+            Once these are converted into a project using this SDK
+            and published as NUGET packages this group can be eliminated
+            from the SDK itself. The SDK should remain lean and mean
+            using NUGET and VSIX packages as modular extensions that
+            are more easily created, published, discovered and updated
+            -->
+            <ComponentGroupRef Id="HostBoardConfigurationsComponentGroup"/>
+            <ComponentGroupRef Id="TargetBoardConfigurationsComponentGroup"/>
+            
+            <!--
+            Third party headers, libs and tools.
+            Any additions to these should include an additional entry 
+            in the LlilumSDKLic.rtf license file so that users are
+            fully informed of all copyrights, etc...
+            -->
+            <ComponentGroupRef Id="NativelWipComponentGroup"/>
+            <ComponentGroupRef Id="NativeMbedLibComponentGroup"/>
+            <ComponentGroupRef Id="NativeMbedRtosComponentGroup" />
+            <ComponentGroupRef Id="ThirdPartyToolsComponentGroup"/>
+            <ComponentGroupRef Id="LlvmToolsComponentGroup"/>
+        </Feature>
+
+        <!-- Simple, minimal UI with just the license page before installing -->
+        <UIRef Id="WixUI_Minimal" />
+    </Product>
+</Wix>

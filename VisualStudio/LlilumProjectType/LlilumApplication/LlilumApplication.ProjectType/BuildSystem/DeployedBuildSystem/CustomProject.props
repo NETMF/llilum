@@ -15,7 +15,7 @@
     <LlilumOutputName>$(SolutionName)</LlilumOutputName>
     <LlilumGccBin>$(LlilumSDK)ARM_GCC\4.9\bin</LlilumGccBin>
     <LlilumOutputBin>$(OutDir)\$(LlilumOutputName).bin</LlilumOutputBin>
-    <LlilumCompiler>$(LlilumSDK)ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Compiler.exe</LlilumCompiler>
+    <LlilumCompiler>$(LlilumSDK)\bin\Microsoft.Zelig.Compiler.exe</LlilumCompiler>
     <LlilumConfig>$(MSBuildProjectDirectory)\mbed_simple_$(LlilumBoardName).FrontEndConfig</LlilumConfig>
   </PropertyGroup>
   <PropertyGroup />

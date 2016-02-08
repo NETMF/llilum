@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <!--
+    Description:
+        This fragment contains the definitions for the LLVM tools used by the Llilum tool chain 
+    
+    Input Ids:
+        InstallDirBinFolder - bin subfolder of primary install location
+    -->
+    <Fragment>
+        <ComponentGroup Id="LlvmToolsComponentGroup" Directory="InstallDirBinFolder" Source="!(wix.LlilumLlvmBin)">
+            <Component Guid="*">
+                <File Name="opt.exe" KeyPath="yes"/>
+            </Component>
+            <Component Guid="*">
+                <File Name="llc.exe" KeyPath="yes"/>
+            </Component>
+            <Component Guid="*">
+                <File Name="llvm-dis.exe" KeyPath="yes"/>
+            </Component>
+        </ComponentGroup>
+    </Fragment>
+</Wix>
