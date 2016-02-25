@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+#define SPIN_ON_SLEEP
 
 namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
 {
@@ -414,7 +415,11 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
 
         public static void WaitForEvent( )
         {
+#if SPIN_ON_SLEEP
+            while(true) { }
+#else
             CMSIS_STUB_POWER_WaitForEvent( ); 
+#endif
         }
 
         public static void SendEvent( )
@@ -424,7 +429,11 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
 
         public static void WaitForInterrupt( )
         {
+#if SPIN_ON_SLEEP
+            while(true) { }
+#else
             CMSIS_STUB_POWER_WaitForInterrupt( ); 
+#endif
         }
 
         //--//

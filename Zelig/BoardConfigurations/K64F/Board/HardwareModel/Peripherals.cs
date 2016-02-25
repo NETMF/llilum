@@ -7,7 +7,7 @@
 
 namespace Microsoft.Llilum.K64F
 {
-    using Chipset = Microsoft.CortexM3OnMBED;
+    using Chipset = Microsoft.CortexM4OnMBED;
 
 
     public sealed class Peripherals : Chipset.Peripherals

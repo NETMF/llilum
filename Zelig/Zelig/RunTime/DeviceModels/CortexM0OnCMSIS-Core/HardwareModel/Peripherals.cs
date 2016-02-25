@@ -7,11 +7,11 @@
 
 namespace Microsoft.CortexM0OnCMSISCore
 {
-    using Microsoft.Zelig.Runtime.TargetPlatform.ARMv6;
 
     using RT    = Microsoft.Zelig.Runtime;
-    using CMSIS = Microsoft.DeviceModels.Chipset.CortexM;
     using LLOS  = Zelig.LlilumOSAbstraction.HAL;
+    using CMSIS = Microsoft.DeviceModels.Chipset.CortexM;
+    using ARMv6 = Microsoft.Zelig.Runtime.TargetPlatform.ARMv6;
 
     public abstract class Peripherals : RT.Peripherals
     {
@@ -36,15 +36,15 @@ namespace Microsoft.CortexM0OnCMSISCore
             //
             // System exceptions 
             //
-            CMSIS.NVIC.SetPriority( (int)ProcessorARMv6M.IRQn_Type.SVCall_IRQn          , ProcessorARMv6M.c_Priority__SVCCall ); 
-            CMSIS.NVIC.SetPriority( (int)ProcessorARMv6M.IRQn_Type.SysTick_IRQn_Optional, ProcessorARMv6M.c_Priority__SysTick ); 
-            CMSIS.NVIC.SetPriority( (int)ProcessorARMv6M.IRQn_Type.PendSV_IRQn          , ProcessorARMv6M.c_Priority__PendSV ); 
+            CMSIS.NVIC.SetPriority( (int)ARMv6.ProcessorARMv6M.IRQn_Type.SVCall_IRQn          , ARMv6.ProcessorARMv6M.c_Priority__SVCCall ); 
+            CMSIS.NVIC.SetPriority( (int)ARMv6.ProcessorARMv6M.IRQn_Type.SysTick_IRQn_Optional, ARMv6.ProcessorARMv6M.c_Priority__SysTick ); 
+            CMSIS.NVIC.SetPriority( (int)ARMv6.ProcessorARMv6M.IRQn_Type.PendSV_IRQn          , ARMv6.ProcessorARMv6M.c_Priority__PendSV ); 
         }
         
         public override void Activate()
         {
             CMSIS.Drivers.InterruptController.Instance.Initialize();
-            CMSIS.Drivers.ContextSwitchTimer.Instance.Initialize();
+            CMSIS.Drivers.ContextSwitchTimer .Instance.Initialize();
         }
 
         public override void EnableInterrupt( uint index )
@@ -57,7 +57,7 @@ namespace Microsoft.CortexM0OnCMSISCore
 
         public override void CauseInterrupt()
         {
-            ProcessorARMv6M.CompleteContextSwitch( ); 
+            ARMv6.ProcessorARMv6M.CompleteContextSwitch( ); 
             //Drivers.InterruptController.Instance.CauseInterrupt( ); 
         }
 
@@ -68,11 +68,7 @@ namespace Microsoft.CortexM0OnCMSISCore
 
         public override void WaitForInterrupt()
         {
-
-            while (true)
-            {
-                ProcessorARMv6M.WaitForEvent( );
-            }
+            ARMv6.ProcessorARMv6M.WaitForInterrupt( );
         }
 
         public override void ProcessInterrupt()

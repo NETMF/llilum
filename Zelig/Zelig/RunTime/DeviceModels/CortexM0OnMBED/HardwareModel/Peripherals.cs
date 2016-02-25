@@ -12,7 +12,7 @@ namespace Microsoft.CortexM0OnMBED
     using ChipsetModel  = Microsoft.CortexM0OnCMSISCore;
 
 
-    public class Peripherals : ChipsetModel.Peripherals
+    public abstract class Peripherals : ChipsetModel.Peripherals
     {
         //
         // State

@@ -74,10 +74,9 @@ namespace Microsoft.CortexM3OnCMSISCore
 
             while (true)
             {
-                ProcessorARMv7M.WaitForEvent( );
+                ProcessorARMv7M.WaitForInterrupt( );
             }
-            
-            //ProcessorARMv7M.InitiateContextSwitch( ); 
+
             //while(true) ;
         }
 

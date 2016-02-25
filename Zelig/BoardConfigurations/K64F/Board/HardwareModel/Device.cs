@@ -4,8 +4,7 @@
 
 namespace Microsoft.Llilum.K64F
 {
-    using RT   = Microsoft.Zelig.Runtime;
-    using LLOS = Zelig.LlilumOSAbstraction.API;
+    using RT = Microsoft.Zelig.Runtime;
 
     public sealed class Device : Microsoft.CortexM4OnMBED.Device
     {

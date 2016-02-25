@@ -72,7 +72,7 @@
 ### Dumps and diagnostics
 ###
 #-DumpIRBeforePhase All
-#-DumpIR
+-DumpIR
 #-DumpIRpre
 #-DumpIRpost
 #-DumpIRXML
