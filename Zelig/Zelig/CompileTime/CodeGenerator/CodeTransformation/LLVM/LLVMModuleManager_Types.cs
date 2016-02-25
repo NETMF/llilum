@@ -52,9 +52,9 @@ namespace Microsoft.Zelig.LLVM
             TS.WellKnownTypes wkt = m_typeSystem.WellKnownTypes;
             
             //
-            // Open types do not participate in layout
+            // Open and Delayed types do not participate in layout
             //
-            if( tr.IsOpenType )
+            if( tr.IsOpenType || tr.IsDelayedType )
             {
                 return null;
             }

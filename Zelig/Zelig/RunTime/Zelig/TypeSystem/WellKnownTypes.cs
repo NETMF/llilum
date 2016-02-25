@@ -77,6 +77,10 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
                                                               public readonly TypeRepresentation System_Collections_Generic_ObjectComparer_of_T;
 
                                                               public readonly TypeRepresentation System_IEquatable_of_T;
+                                                              public readonly TypeRepresentation System_Collections_Generic_EqualityComparer_of_Enum;
+                                                              public readonly TypeRepresentation System_Collections_Generic_EqualityComparer_of_Enum_sbyte;
+                                                              public readonly TypeRepresentation System_Collections_Generic_EqualityComparer_of_Enum_short;
+                                                              public readonly TypeRepresentation System_Collections_Generic_EqualityComparer_of_Enum_long;
                                                               public readonly TypeRepresentation System_Collections_Generic_EqualityComparer_of_T;
                                                               public readonly TypeRepresentation System_Collections_Generic_GenericEqualityComparer_of_T;
                                                               public readonly TypeRepresentation System_Collections_Generic_NullableEqualityComparer_of_T;

@@ -361,8 +361,9 @@ namespace System.Collections.Generic
 
         public override int GetHashCode( byte b )
         {
-            return b.GetHashCode();
+            return b.GetHashCode( );
         }
+    }
 
 ////    internal unsafe override int IndexOf( byte[] array, byte value, int startIndex, int count )
 ////    {
@@ -415,5 +416,59 @@ namespace System.Collections.Generic
 ////    {
 ////        return this.GetType().Name.GetHashCode();
 ////    }
+    [Serializable]
+    [Microsoft.Zelig.Internals.WellKnownType( "System_Collections_Generic_EqualityComparer_of_Enum" )]
+    internal class EnumEqualityComparer<T> : EqualityComparer<T> where T : struct
+    {
+        public override bool Equals(T x, T y) {
+            int x_final = System.Runtime.CompilerServices.JitHelpers.UnsafeEnumCast(x);
+            int y_final = System.Runtime.CompilerServices.JitHelpers.UnsafeEnumCast(y);
+            return x_final == y_final;
+        }
+ 
+        public override int GetHashCode(T obj) {
+            int x_final = System.Runtime.CompilerServices.JitHelpers.UnsafeEnumCast(obj);
+            return x_final.GetHashCode();
+        }
+    }
+
+    [Serializable]
+    [Microsoft.Zelig.Internals.WellKnownType( "System_Collections_Generic_EqualityComparer_of_Enum_sbyte" )]
+    internal class SByteEnumEqualityComparer<T> : EnumEqualityComparer<T> where T : struct
+    {
+        public override int GetHashCode( T obj )
+        {
+            int x_final = System.Runtime.CompilerServices.JitHelpers.UnsafeEnumCast(obj); 
+            return ((sbyte)x_final).GetHashCode( );
+        }
+    }
+
+    [Serializable]
+    [Microsoft.Zelig.Internals.WellKnownType( "System_Collections_Generic_EqualityComparer_of_Enum_short" )]
+    internal class ShortEnumEqualityComparer<T> : EnumEqualityComparer<T> where T : struct
+    {
+        public override int GetHashCode( T obj )
+        {
+            int x_final = System.Runtime.CompilerServices.JitHelpers.UnsafeEnumCast(obj);
+            return ((short)x_final).GetHashCode( );
+        }
+    }
+
+    [Serializable]
+    [Microsoft.Zelig.Internals.WellKnownType( "System_Collections_Generic_EqualityComparer_of_Enum_long" )]
+    internal class LongEnumEqualityComparer<T> : EqualityComparer<T> where T : struct
+    {
+        public override bool Equals(T x, T y) {
+            long x_final = System.Runtime.CompilerServices.JitHelpers.UnsafeEnumCastLong(x); 
+            long y_final = System.Runtime.CompilerServices.JitHelpers.UnsafeEnumCastLong(y);
+            return x_final == y_final;
+        }
+ 
+        public override int GetHashCode(T obj) {
+            long x_final = System.Runtime.CompilerServices.JitHelpers.UnsafeEnumCastLong(obj);
+            return x_final.GetHashCode();
+        }
+ 
     }
 }
+

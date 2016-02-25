@@ -14,6 +14,8 @@ SET DEPLOY_DRIVE=e:
 
 IF "%2" NEQ "" (
    set DEPLOY_DRIVE=%2
+) ELSE IF EXIST "d:\MBED.HTM" (
+   set DEPLOY_DRIVE=d:
 ) ELSE IF EXIST "e:\MBED.HTM" (
    set DEPLOY_DRIVE=e:
 ) ELSE IF EXIST "f:\MBED.HTM" (

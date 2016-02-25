@@ -303,6 +303,7 @@
     <Compile Include="System\Runtime\CompilerServices\INotifyCompletion.cs" />
     <Compile Include="System\Runtime\CompilerServices\InternalsVisibleToAttribute.cs" />
     <Compile Include="System\Runtime\CompilerServices\IsVolatile.cs" />
+    <Compile Include="System\Runtime\CompilerServices\JitHelpers.cs" />
     <Compile Include="System\Runtime\CompilerServices\MethodImplAttribute.cs" />
     <Compile Include="System\Runtime\CompilerServices\RuntimeCompatibilityAttribute.cs" />
     <Compile Include="System\Runtime\CompilerServices\RuntimeHelpers.cs" />

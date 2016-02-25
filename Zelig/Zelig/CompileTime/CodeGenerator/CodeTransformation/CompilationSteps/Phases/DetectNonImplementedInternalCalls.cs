@@ -2,7 +2,7 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-#define DEBUG_MISSING_METHODS_CALLERS
+//#define DEBUG_MISSING_METHODS_CALLERS
 //#define STOP_ON_POSITIVE_DETECTION
 
 namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases

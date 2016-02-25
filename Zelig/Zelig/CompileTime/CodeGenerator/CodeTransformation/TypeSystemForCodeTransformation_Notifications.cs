@@ -174,6 +174,40 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                             return;
                         }
 
+                        if(tdParam.Extends == this.WellKnownTypes.System_Enum)
+                        {
+                            TypeRepresentation tdTemplate = null;
+                            if(     tdParam.UnderlyingType == this.WellKnownTypes.System_SByte ||
+                                    tdParam.UnderlyingType == this.WellKnownTypes.System_Byte   )
+                            {
+                                tdTemplate = this.WellKnownTypes.System_Collections_Generic_EqualityComparer_of_Enum_sbyte;
+                            }
+                            else if(tdParam.UnderlyingType == this.WellKnownTypes.System_Int16 ||
+                                    tdParam.UnderlyingType == this.WellKnownTypes.System_UInt16 )
+                            {
+                                tdTemplate = this.WellKnownTypes.System_Collections_Generic_EqualityComparer_of_Enum_short;
+                            }
+                            else if(tdParam.UnderlyingType == this.WellKnownTypes.System_Int32 ||
+                                    tdParam.UnderlyingType == this.WellKnownTypes.System_UInt32 )
+                            {
+                                tdTemplate = this.WellKnownTypes.System_Collections_Generic_EqualityComparer_of_Enum;
+                            }
+                            else if(tdParam.UnderlyingType == this.WellKnownTypes.System_Int64 ||
+                                    tdParam.UnderlyingType == this.WellKnownTypes.System_UInt64 )
+                            {
+                                tdTemplate = this.WellKnownTypes.System_Collections_Generic_EqualityComparer_of_Enum_long;
+                            }
+                            else
+                            {
+                                throw TypeConsistencyErrorException.Create( "Enum {0} is not backed by a known underlying type", td );
+                            }
+
+                            var newTd = CreateInstantiationOfGenericTemplate( tdTemplate, tdParam );
+
+                            CreateComparerHelper( md, newTd );
+                            return;
+                        }
+
                         if(tdParam.GenericTemplate == this.WellKnownTypes.System_Nullable_of_T)
                         {
                             var tdParam2 = tdParam.GenericParameters[0];

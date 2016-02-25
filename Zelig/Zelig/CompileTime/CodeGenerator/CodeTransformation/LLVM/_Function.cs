@@ -230,13 +230,25 @@ namespace Microsoft.Zelig.LLVM
             bool isStatic = method is TS.StaticMethodRepresentation;
             // "this" is always at index 0, for static functions the name for "this" is null
             int paramBase = isStatic ? 1 : 0;
-            
+
+            string[] argumentNames = null;
             if(method.ArgumentNames == null)
             {
-                throw TypeConsistencyErrorException.Create( "Generic method {0} has not been instantiated correctly", method.FullyQualifiedName ); 
-            }
+                argumentNames = new string[ method.ThisPlusArguments.Length ];
 
-            var argumentNames = method.ArgumentNames;
+                if(method is TS.InstanceMethodRepresentation)
+                {
+                    argumentNames[ 0 ] = "this";
+                }
+                else
+                {
+                    throw TypeConsistencyErrorException.Create( "Generic method {0} has not been instantiated correctly", method.FullyQualifiedName );
+                }
+            }
+            else
+            {
+                argumentNames = method.ArgumentNames;
+            }
 
             Debug.Assert( retVal != null && argumentNames.Length - paramBase == retVal.Parameters.Count );
             for( int i = paramBase; i < argumentNames.Length; ++i )
