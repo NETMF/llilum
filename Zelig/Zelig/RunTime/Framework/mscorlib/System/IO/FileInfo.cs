@@ -73,6 +73,18 @@ namespace System.IO
             }
         }
 
+        public FileStream Open(FileMode mode) {
+            return Open(mode, FileAccess.ReadWrite, FileShare.None);
+        }
+ 
+        public FileStream Open(FileMode mode, FileAccess access) {
+            return Open(mode, access, FileShare.None);
+        }
+ 
+        public FileStream Open(FileMode mode, FileAccess access, FileShare share) {
+            return new FileStream(FullName, mode, access, share);
+        }
+
         public override String ToString()
         {
             return m_fullPath;

@@ -22,94 +22,94 @@ namespace System.Diagnostics
     public static class Debug
     {
 
-////    /// <devdoc>
-////    ///    <para>Gets
-////    ///       the collection of listeners that is monitoring the debug
-////    ///       output.</para>
-////    /// </devdoc>
-////    public static TraceListenerCollection Listeners
-////    {
-////        [SecurityPermission( SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode )]
-////        [HostProtection( SharedState = true )]
-////        get
-////        {
-////            return TraceInternal.Listeners;
-////        }
-////    }
-////
-////    /// <devdoc>
-////    /// <para>Gets or sets a value indicating whether <see cref='System.Diagnostics.Debug.Flush'/> should be called on the
-////    /// <see cref='System.Diagnostics.Debug.Listeners'/>
-////    /// after every write.</para>
-////    /// </devdoc>
-////    public static bool AutoFlush
-////    {
-////        [SecurityPermission( SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode )]
-////        get
-////        {
-////            return TraceInternal.AutoFlush;
-////        }
-////
-////        [SecurityPermission( SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode )]
-////        set
-////        {
-////            TraceInternal.AutoFlush = value;
-////        }
-////    }
-////
-////    /// <devdoc>
-////    ///    <para>Gets or sets
-////    ///       the indent level.</para>
-////    /// </devdoc>
-////    public static int IndentLevel
-////    {
-////        get
-////        {
-////            return TraceInternal.IndentLevel;
-////        }
-////
-////        set
-////        {
-////            TraceInternal.IndentLevel = value;
-////        }
-////    }
-////
-////    /// <devdoc>
-////    ///    <para>Gets or sets the number of spaces in an indent.</para>
-////    /// </devdoc>
-////    public static int IndentSize
-////    {
-////        get
-////        {
-////            return TraceInternal.IndentSize;
-////        }
-////
-////        set
-////        {
-////            TraceInternal.IndentSize = value;
-////        }
-////    }
-////
-////    /// <devdoc>
-////    ///    <para>Clears the output buffer, and causes buffered data to
-////    ///       be written to the <see cref='System.Diagnostics.Debug.Listeners'/>.</para>
-////    /// </devdoc>
-////    [System.Diagnostics.Conditional( "DEBUG" )]
-////    public static void Flush()
-////    {
-////        TraceInternal.Flush();
-////    }
-////
-////    /// <devdoc>
-////    ///    <para>Clears the output buffer, and then closes the <see cref='System.Diagnostics.Debug.Listeners'/> so that they no longer receive
-////    ///       debugging output.</para>
-////    /// </devdoc>
-////    [System.Diagnostics.Conditional( "DEBUG" )]
-////    [SecurityPermission( SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode )]
-////    public static void Close()
-////    {
-////        TraceInternal.Close();
-////    }
+        /// <devdoc>
+        ///    <para>Gets
+        ///       the collection of listeners that is monitoring the debug
+        ///       output.</para>
+        /// </devdoc>
+        public static TraceListenerCollection Listeners
+        {
+            [SecurityPermission( SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode )]
+            [HostProtection( SharedState = true )]
+            get
+            {
+                return TraceInternal.Listeners;
+            }
+        }
+
+        /// <devdoc>
+        /// <para>Gets or sets a value indicating whether <see cref='System.Diagnostics.Debug.Flush'/> should be called on the
+        /// <see cref='System.Diagnostics.Debug.Listeners'/>
+        /// after every write.</para>
+        /// </devdoc>
+        public static bool AutoFlush
+        {
+            [SecurityPermission( SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode )]
+            get
+            {
+                return TraceInternal.AutoFlush;
+            }
+
+            [SecurityPermission( SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode )]
+            set
+            {
+                TraceInternal.AutoFlush = value;
+            }
+        }
+
+        /// <devdoc>
+        ///    <para>Gets or sets
+        ///       the indent level.</para>
+        /// </devdoc>
+        public static int IndentLevel
+        {
+            get
+            {
+                return TraceInternal.IndentLevel;
+            }
+
+            set
+            {
+                TraceInternal.IndentLevel = value;
+            }
+        }
+
+        /// <devdoc>
+        ///    <para>Gets or sets the number of spaces in an indent.</para>
+        /// </devdoc>
+        public static int IndentSize
+        {
+            get
+            {
+                return TraceInternal.IndentSize;
+            }
+
+            set
+            {
+                TraceInternal.IndentSize = value;
+            }
+        }
+
+        /// <devdoc>
+        ///    <para>Clears the output buffer, and causes buffered data to
+        ///       be written to the <see cref='System.Diagnostics.Debug.Listeners'/>.</para>
+        /// </devdoc>
+        [System.Diagnostics.Conditional( "DEBUG" )]
+        public static void Flush( )
+        {
+            TraceInternal.Flush( );
+        }
+
+        /// <devdoc>
+        ///    <para>Clears the output buffer, and then closes the <see cref='System.Diagnostics.Debug.Listeners'/> so that they no longer receive
+        ///       debugging output.</para>
+        /// </devdoc>
+        [System.Diagnostics.Conditional( "DEBUG" )]
+        [SecurityPermission( SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode )]
+        public static void Close( )
+        {
+            TraceInternal.Close( );
+        }
 
         /// <devdoc>
         /// <para>Checks for a condition, and outputs the callstack if the condition is <see langword='false'/>.</para>
@@ -121,7 +121,7 @@ namespace System.Diagnostics
             {
                 throw new ArgumentException();
             }
-////        TraceInternal.Assert( condition );
+            TraceInternal.Assert( condition );
         }
 
         /// <devdoc>
@@ -140,7 +140,7 @@ namespace System.Diagnostics
                 throw new ArgumentException();
 #endif
             }
-////        TraceInternal.Assert( condition, message );
+            TraceInternal.Assert( condition, message );
         }
 
         /// <devdoc>
@@ -160,7 +160,7 @@ namespace System.Diagnostics
                 throw new ArgumentException();
 #endif
             }
-////        TraceInternal.Assert( condition, message, detailMessage );
+            TraceInternal.Assert( condition, message, detailMessage );
         }
 
         /// <devdoc>
@@ -169,12 +169,7 @@ namespace System.Diagnostics
         [System.Diagnostics.Conditional( "DEBUG" )]
         public static void Fail( string message )
         {
-#if EXCEPTION_STRINGS
-            throw new ArgumentException( message );
-#else
-            throw new ArgumentException();
-#endif
-////        TraceInternal.Fail( message );
+            TraceInternal.Fail( message );
         }
 
         /// <devdoc>
@@ -184,36 +179,31 @@ namespace System.Diagnostics
         public static void Fail( string message       ,
                                  string detailMessage )
         {
-#if EXCEPTION_STRINGS
-            throw new ArgumentException( message );
-#else
-            throw new ArgumentException();
-#endif
-////        TraceInternal.Fail( message, detailMessage );
+            TraceInternal.Fail( message, detailMessage );
         }
 
         [System.Diagnostics.Conditional( "DEBUG" )]
         public static void Print( string message )
         {
-////        TraceInternal.WriteLine( message );
+            TraceInternal.WriteLine( message );
         }
     
         [System.Diagnostics.Conditional( "DEBUG" )]
         public static void Print(        string   format ,
                                   params object[] args   )
         {
-////        TraceInternal.WriteLine( String.Format( CultureInfo.InvariantCulture, format, args ) );
+            TraceInternal.WriteLine( String.Format( CultureInfo.InvariantCulture, format, args ) );
         }
-    
+
         /// <devdoc>
         ///    <para>Writes a message to the trace listeners in the <see cref='System.Diagnostics.Debug.Listeners'/> collection.</para>
         /// </devdoc>
         [System.Diagnostics.Conditional( "DEBUG" )]
         public static void Write( string message )
         {
-////        TraceInternal.Write( message );
+            TraceInternal.Write( message );
         }
-    
+
         /// <devdoc>
         ///    <para>Writes the name of the value 
         ///       parameter to the trace listeners in the <see cref='System.Diagnostics.Debug.Listeners'/> collection.</para>
@@ -221,9 +211,9 @@ namespace System.Diagnostics
         [System.Diagnostics.Conditional( "DEBUG" )]
         public static void Write( object value )
         {
-////        TraceInternal.Write( value );
+            TraceInternal.Write( value );
         }
-    
+
         /// <devdoc>
         ///    <para>Writes a category name and message 
         ///       to the trace listeners in the <see cref='System.Diagnostics.Debug.Listeners'/> collection.</para>
@@ -232,7 +222,7 @@ namespace System.Diagnostics
         public static void Write( string message  ,
                                   string category )
         {
-////        TraceInternal.Write( message, category );
+            TraceInternal.Write( message, category );
         }
     
         /// <devdoc>
@@ -243,7 +233,7 @@ namespace System.Diagnostics
         public static void Write( object value    ,
                                   string category )
         {
-////        TraceInternal.Write( value, category );
+            TraceInternal.Write( value, category );
         }
     
         /// <devdoc>
@@ -254,7 +244,7 @@ namespace System.Diagnostics
         [System.Diagnostics.Conditional( "DEBUG" )]
         public static void WriteLine( string message )
         {
-////        TraceInternal.WriteLine( message );
+            TraceInternal.WriteLine( message );
         }
     
         /// <devdoc>
@@ -266,7 +256,7 @@ namespace System.Diagnostics
         [System.Diagnostics.Conditional( "DEBUG" )]
         public static void WriteLine( object value )
         {
-////        TraceInternal.WriteLine( value );
+            TraceInternal.WriteLine( value );
         }
     
         /// <devdoc>
@@ -278,7 +268,7 @@ namespace System.Diagnostics
         public static void WriteLine( string message  ,
                                       string category )
         {
-////        TraceInternal.WriteLine( message, category );
+            TraceInternal.WriteLine( message, category );
         }
     
         /// <devdoc>
@@ -291,7 +281,7 @@ namespace System.Diagnostics
         public static void WriteLine( object value    ,
                                       string category )
         {
-////        TraceInternal.WriteLine( value, category );
+            TraceInternal.WriteLine( value, category );
         }
     
         /// <devdoc>
@@ -303,7 +293,7 @@ namespace System.Diagnostics
         public static void WriteIf( bool   condition ,
                                     string message   )
         {
-////        TraceInternal.WriteIf( condition, message );
+            TraceInternal.WriteIf( condition, message );
         }
     
         /// <devdoc>
@@ -316,7 +306,7 @@ namespace System.Diagnostics
         public static void WriteIf( bool   condition ,
                                     object value     )
         {
-////        TraceInternal.WriteIf( condition, value );
+            TraceInternal.WriteIf( condition, value );
         }
     
         /// <devdoc>
@@ -330,7 +320,7 @@ namespace System.Diagnostics
                                     string message   ,
                                     string category  )
         {
-////        TraceInternal.WriteIf( condition, message, category );
+            TraceInternal.WriteIf( condition, message, category );
         }
     
         /// <devdoc>
@@ -344,7 +334,7 @@ namespace System.Diagnostics
                                     object value     ,
                                     string category  )
         {
-////        TraceInternal.WriteIf( condition, value, category );
+            TraceInternal.WriteIf( condition, value, category );
         }
     
         /// <devdoc>
@@ -357,7 +347,7 @@ namespace System.Diagnostics
         public static void WriteLineIf( bool   condition ,
                                         string message   )
         {
-////        TraceInternal.WriteLineIf( condition, message );
+            TraceInternal.WriteLineIf( condition, message );
         }
     
         /// <devdoc>
@@ -371,7 +361,7 @@ namespace System.Diagnostics
         public static void WriteLineIf( bool   condition ,
                                         object value     )
         {
-////        TraceInternal.WriteLineIf( condition, value );
+            TraceInternal.WriteLineIf( condition, value );
         }
     
         /// <devdoc>
@@ -386,7 +376,7 @@ namespace System.Diagnostics
                                         string message   ,
                                         string category  )
         {
-////        TraceInternal.WriteLineIf( condition, message, category );
+            TraceInternal.WriteLineIf( condition, message, category );
         }
     
         /// <devdoc>
@@ -400,7 +390,7 @@ namespace System.Diagnostics
                                         object value     ,
                                         string category  )
         {
-////        TraceInternal.WriteLineIf( condition, value, category );
+            TraceInternal.WriteLineIf( condition, value, category );
         }
     
         /// <devdoc>
@@ -409,7 +399,7 @@ namespace System.Diagnostics
         [System.Diagnostics.Conditional( "DEBUG" )]
         public static void Indent()
         {
-////        TraceInternal.Indent();
+            TraceInternal.Indent();
         }
     
         /// <devdoc>
@@ -418,7 +408,7 @@ namespace System.Diagnostics
         [System.Diagnostics.Conditional( "DEBUG" )]
         public static void Unindent()
         {
-////        TraceInternal.Unindent();
+            TraceInternal.Unindent();
         }
     }
 }

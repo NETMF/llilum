@@ -416,379 +416,380 @@ namespace System.Reflection
 ////            return ClassImpl;
 ////        }
         }
-    
-////    public virtual String Name
-////    {
-////        get
-////        {
-////            if(!m_nameIsCached)
-////            {
-////                if(!MdToken.IsNullToken( m_tkParamDef ))
-////                {
-////                    string name = m_scope.GetName( m_tkParamDef ).ToString();
-////
-////                    NameImpl = name;
-////                }
-////
-////                // other threads could only write it to true, so race is OK
-////                // this field is volatile, so the write ordering is guaranteed
-////                m_nameIsCached = true;
-////            }
-////
-////            // name may be null
-////            return NameImpl;
-////        }
-////    }
-////
-////    public virtual Object DefaultValue
-////    {
-////        get
-////        {
-////            return GetDefaultValue( false );
-////        }
-////    }
-////
-////    public virtual Object RawDefaultValue
-////    {
-////        get
-////        {
-////            return GetDefaultValue( true );
-////        }
-////    }
-////
-////    internal Object GetDefaultValue( bool raw )
-////    {
-////        // Cannot cache because default value could be non-agile user defined enumeration.
-////        object defaultValue = null;
-////
-////        // for dynamic method we pretend to have cached the value so we do not go to metadata
-////        if(!m_noDefaultValue)
-////        {
-////            if(ParameterType == typeof( DateTime ))
-////            {
-////                if(raw)
-////                {
-////                    CustomAttributeTypedArgument value = CustomAttributeData.Filter( CustomAttributeData.GetCustomAttributes( this ), typeof( DateTimeConstantAttribute ), 0 );
-////
-////                    if(value.ArgumentType != null)
-////                    {
-////                        return new DateTime( (long)value.Value );
-////                    }
-////                }
-////                else
-////                {
-////                    object[] dt = GetCustomAttributes( typeof( DateTimeConstantAttribute ), false );
-////
-////                    if(dt != null && dt.Length != 0)
-////                    {
-////                        return ((DateTimeConstantAttribute)dt[0]).Value;
-////                    }
-////                }
-////            }
-////
-////            #region Look for a default value in metadata
-////            if(!MdToken.IsNullToken( m_tkParamDef ))
-////            {
-////                defaultValue = MdConstant.GetValue( m_scope, m_tkParamDef, ParameterType.GetTypeHandleInternal(), raw );
-////            }
-////            #endregion
-////
-////            if(defaultValue == DBNull.Value)
-////            {
-////                #region Look for a default value in the custom attributes
-////                if(raw)
-////                {
-////                    System.Collections.Generic.IList<CustomAttributeData> attrs = CustomAttributeData.GetCustomAttributes( this );
-////                    CustomAttributeTypedArgument value = CustomAttributeData.Filter( attrs, s_CustomConstantAttributeType, "Value" );
-////
-////                    if(value.ArgumentType == null)
-////                    {
-////                        value = CustomAttributeData.Filter( attrs, s_DecimalConstantAttributeType, "Value" );
-////
-////
-////                        if(value.ArgumentType == null)
-////                        {
-////                            for(int i = 0; i < attrs.Count; i++)
-////                            {
-////                                if(attrs[i].Constructor.DeclaringType == s_DecimalConstantAttributeType)
-////                                {
-////                                    ParameterInfo[] parameters = attrs[i].Constructor.GetParameters();
-////
-////                                    if(parameters.Length != 0)
-////                                    {
-////                                        if(parameters[2].ParameterType == typeof( uint ))
-////                                        {
-////                                            System.Collections.Generic.IList<CustomAttributeTypedArgument> args = attrs[i].ConstructorArguments;
-////
-////                                            int  low   = (int)(UInt32)args[4].Value;
-////                                            int  mid   = (int)(UInt32)args[3].Value;
-////                                            int  hi    = (int)(UInt32)args[2].Value;
-////                                            byte sign  = (byte)args[1].Value;
-////                                            byte scale = (byte)args[0].Value;
-////
-////                                            value = new CustomAttributeTypedArgument( new System.Decimal( low, mid, hi, (sign != 0), scale ) );
-////                                        }
-////                                        else
-////                                        {
-////                                            System.Collections.Generic.IList<CustomAttributeTypedArgument> args = attrs[i].ConstructorArguments;
-////
-////                                            int  low   = (int)args[4].Value;
-////                                            int  mid   = (int)args[3].Value;
-////                                            int  hi    = (int)args[2].Value;
-////                                            byte sign  = (byte)args[1].Value;
-////                                            byte scale = (byte)args[0].Value;
-////
-////                                            value = new CustomAttributeTypedArgument( new System.Decimal( low, mid, hi, (sign != 0), scale ) );
-////                                        }
-////                                    }
-////                                }
-////                            }
-////                        }
-////                    }
-////
-////                    if(value.ArgumentType != null)
-////                    {
-////                        defaultValue = value.Value;
-////                    }
-////                }
-////                else
-////                {
-////                    Object[] CustomAttrs = GetCustomAttributes( s_CustomConstantAttributeType, false );
-////                    if(CustomAttrs.Length != 0)
-////                    {
-////                        defaultValue = ((CustomConstantAttribute)CustomAttrs[0]).Value;
-////                    }
-////                    else
-////                    {
-////                        CustomAttrs = GetCustomAttributes( s_DecimalConstantAttributeType, false );
-////                        if(CustomAttrs.Length != 0)
-////                        {
-////                            defaultValue = ((DecimalConstantAttribute)CustomAttrs[0]).Value;
-////                        }
-////                    }
-////                }
-////                #endregion
-////            }
-////
-////            if(defaultValue == DBNull.Value)
-////            {
-////                #region Handle case if no default value was found
-////                if(IsOptional)
-////                {
-////                    // If the argument is marked as optional then the default value is Missing.Value.
-////                    defaultValue = Type.Missing;
-////                }
-////                #endregion
-////            }
-////        }
-////
-////        return defaultValue;
-////    }
-////
-////    public virtual int Position
-////    {
-////        get
-////        {
-////            return PositionImpl;
-////        }
-////    }
-////
-////    public virtual ParameterAttributes Attributes
-////    {
-////        get
-////        {
-////            return AttrsImpl;
-////        }
-////    }
-////
-////    public virtual MemberInfo Member
-////    {
-////        get
-////        {
-////            return MemberImpl;
-////        }
-////    }
-////
-////    public bool IsIn
-////    {
-////        get
-////        {
-////            return ((Attributes & ParameterAttributes.In) != 0);
-////        }
-////    }
-////
-////    public bool IsOut
-////    {
-////        get
-////        {
-////            return ((Attributes & ParameterAttributes.Out) != 0);
-////        }
-////    }
-////
-////    public bool IsLcid
-////    {
-////        get
-////        {
-////            return ((Attributes & ParameterAttributes.Lcid) != 0);
-////        }
-////    }
-////
-////    public bool IsRetval
-////    {
-////        get
-////        {
-////            return ((Attributes & ParameterAttributes.Retval) != 0);
-////        }
-////    }
-////
-////    public bool IsOptional
-////    {
-////        get
-////        {
-////            return ((Attributes & ParameterAttributes.Optional) != 0);
-////        }
-////    }
-////
-////    public int MetadataToken
-////    {
-////        get
-////        {
-////            return m_tkParamDef;
-////        }
-////    }
-////
-////    public virtual Type[] GetRequiredCustomModifiers()
-////    {
-////        if(IsLegacyParameterInfo)
-////        {
-////            return new Type[0];
-////        }
-////
-////        return m_signature.GetCustomModifiers( PositionImpl + 1, true );
-////    }
-////
-////    public virtual Type[] GetOptionalCustomModifiers()
-////    {
-////        if(IsLegacyParameterInfo)
-////        {
-////            return new Type[0];
-////        }
-////
-////        return m_signature.GetCustomModifiers( PositionImpl + 1, false );
-////    }
-////
+
+        public virtual String Name
+        {
+            get
+            {
+                //////if(!m_nameIsCached)
+                //////{
+                //////    if(!MdToken.IsNullToken( m_tkParamDef ))
+                //////    {
+                //////        string name = m_scope.GetName( m_tkParamDef ).ToString();
+
+                //////        NameImpl = name;
+                //////    }
+
+                //////    // other threads could only write it to true, so race is OK
+                //////    // this field is volatile, so the write ordering is guaranteed
+                //////    m_nameIsCached = true;
+                //////}
+
+                //////// name may be null
+                //////return NameImpl;
+                return String.Empty;
+            }
+        }
+
+        ////    public virtual Object DefaultValue
+        ////    {
+        ////        get
+        ////        {
+        ////            return GetDefaultValue( false );
+        ////        }
+        ////    }
+        ////
+        ////    public virtual Object RawDefaultValue
+        ////    {
+        ////        get
+        ////        {
+        ////            return GetDefaultValue( true );
+        ////        }
+        ////    }
+        ////
+        ////    internal Object GetDefaultValue( bool raw )
+        ////    {
+        ////        // Cannot cache because default value could be non-agile user defined enumeration.
+        ////        object defaultValue = null;
+        ////
+        ////        // for dynamic method we pretend to have cached the value so we do not go to metadata
+        ////        if(!m_noDefaultValue)
+        ////        {
+        ////            if(ParameterType == typeof( DateTime ))
+        ////            {
+        ////                if(raw)
+        ////                {
+        ////                    CustomAttributeTypedArgument value = CustomAttributeData.Filter( CustomAttributeData.GetCustomAttributes( this ), typeof( DateTimeConstantAttribute ), 0 );
+        ////
+        ////                    if(value.ArgumentType != null)
+        ////                    {
+        ////                        return new DateTime( (long)value.Value );
+        ////                    }
+        ////                }
+        ////                else
+        ////                {
+        ////                    object[] dt = GetCustomAttributes( typeof( DateTimeConstantAttribute ), false );
+        ////
+        ////                    if(dt != null && dt.Length != 0)
+        ////                    {
+        ////                        return ((DateTimeConstantAttribute)dt[0]).Value;
+        ////                    }
+        ////                }
+        ////            }
+        ////
+        ////            #region Look for a default value in metadata
+        ////            if(!MdToken.IsNullToken( m_tkParamDef ))
+        ////            {
+        ////                defaultValue = MdConstant.GetValue( m_scope, m_tkParamDef, ParameterType.GetTypeHandleInternal(), raw );
+        ////            }
+        ////            #endregion
+        ////
+        ////            if(defaultValue == DBNull.Value)
+        ////            {
+        ////                #region Look for a default value in the custom attributes
+        ////                if(raw)
+        ////                {
+        ////                    System.Collections.Generic.IList<CustomAttributeData> attrs = CustomAttributeData.GetCustomAttributes( this );
+        ////                    CustomAttributeTypedArgument value = CustomAttributeData.Filter( attrs, s_CustomConstantAttributeType, "Value" );
+        ////
+        ////                    if(value.ArgumentType == null)
+        ////                    {
+        ////                        value = CustomAttributeData.Filter( attrs, s_DecimalConstantAttributeType, "Value" );
+        ////
+        ////
+        ////                        if(value.ArgumentType == null)
+        ////                        {
+        ////                            for(int i = 0; i < attrs.Count; i++)
+        ////                            {
+        ////                                if(attrs[i].Constructor.DeclaringType == s_DecimalConstantAttributeType)
+        ////                                {
+        ////                                    ParameterInfo[] parameters = attrs[i].Constructor.GetParameters();
+        ////
+        ////                                    if(parameters.Length != 0)
+        ////                                    {
+        ////                                        if(parameters[2].ParameterType == typeof( uint ))
+        ////                                        {
+        ////                                            System.Collections.Generic.IList<CustomAttributeTypedArgument> args = attrs[i].ConstructorArguments;
+        ////
+        ////                                            int  low   = (int)(UInt32)args[4].Value;
+        ////                                            int  mid   = (int)(UInt32)args[3].Value;
+        ////                                            int  hi    = (int)(UInt32)args[2].Value;
+        ////                                            byte sign  = (byte)args[1].Value;
+        ////                                            byte scale = (byte)args[0].Value;
+        ////
+        ////                                            value = new CustomAttributeTypedArgument( new System.Decimal( low, mid, hi, (sign != 0), scale ) );
+        ////                                        }
+        ////                                        else
+        ////                                        {
+        ////                                            System.Collections.Generic.IList<CustomAttributeTypedArgument> args = attrs[i].ConstructorArguments;
+        ////
+        ////                                            int  low   = (int)args[4].Value;
+        ////                                            int  mid   = (int)args[3].Value;
+        ////                                            int  hi    = (int)args[2].Value;
+        ////                                            byte sign  = (byte)args[1].Value;
+        ////                                            byte scale = (byte)args[0].Value;
+        ////
+        ////                                            value = new CustomAttributeTypedArgument( new System.Decimal( low, mid, hi, (sign != 0), scale ) );
+        ////                                        }
+        ////                                    }
+        ////                                }
+        ////                            }
+        ////                        }
+        ////                    }
+        ////
+        ////                    if(value.ArgumentType != null)
+        ////                    {
+        ////                        defaultValue = value.Value;
+        ////                    }
+        ////                }
+        ////                else
+        ////                {
+        ////                    Object[] CustomAttrs = GetCustomAttributes( s_CustomConstantAttributeType, false );
+        ////                    if(CustomAttrs.Length != 0)
+        ////                    {
+        ////                        defaultValue = ((CustomConstantAttribute)CustomAttrs[0]).Value;
+        ////                    }
+        ////                    else
+        ////                    {
+        ////                        CustomAttrs = GetCustomAttributes( s_DecimalConstantAttributeType, false );
+        ////                        if(CustomAttrs.Length != 0)
+        ////                        {
+        ////                            defaultValue = ((DecimalConstantAttribute)CustomAttrs[0]).Value;
+        ////                        }
+        ////                    }
+        ////                }
+        ////                #endregion
+        ////            }
+        ////
+        ////            if(defaultValue == DBNull.Value)
+        ////            {
+        ////                #region Handle case if no default value was found
+        ////                if(IsOptional)
+        ////                {
+        ////                    // If the argument is marked as optional then the default value is Missing.Value.
+        ////                    defaultValue = Type.Missing;
+        ////                }
+        ////                #endregion
+        ////            }
+        ////        }
+        ////
+        ////        return defaultValue;
+        ////    }
+        ////
+        ////    public virtual int Position
+        ////    {
+        ////        get
+        ////        {
+        ////            return PositionImpl;
+        ////        }
+        ////    }
+        ////
+        ////    public virtual ParameterAttributes Attributes
+        ////    {
+        ////        get
+        ////        {
+        ////            return AttrsImpl;
+        ////        }
+        ////    }
+        ////
+        ////    public virtual MemberInfo Member
+        ////    {
+        ////        get
+        ////        {
+        ////            return MemberImpl;
+        ////        }
+        ////    }
+        ////
+        ////    public bool IsIn
+        ////    {
+        ////        get
+        ////        {
+        ////            return ((Attributes & ParameterAttributes.In) != 0);
+        ////        }
+        ////    }
+        ////
+        ////    public bool IsOut
+        ////    {
+        ////        get
+        ////        {
+        ////            return ((Attributes & ParameterAttributes.Out) != 0);
+        ////        }
+        ////    }
+        ////
+        ////    public bool IsLcid
+        ////    {
+        ////        get
+        ////        {
+        ////            return ((Attributes & ParameterAttributes.Lcid) != 0);
+        ////        }
+        ////    }
+        ////
+        ////    public bool IsRetval
+        ////    {
+        ////        get
+        ////        {
+        ////            return ((Attributes & ParameterAttributes.Retval) != 0);
+        ////        }
+        ////    }
+        ////
+        ////    public bool IsOptional
+        ////    {
+        ////        get
+        ////        {
+        ////            return ((Attributes & ParameterAttributes.Optional) != 0);
+        ////        }
+        ////    }
+        ////
+        ////    public int MetadataToken
+        ////    {
+        ////        get
+        ////        {
+        ////            return m_tkParamDef;
+        ////        }
+        ////    }
+        ////
+        ////    public virtual Type[] GetRequiredCustomModifiers()
+        ////    {
+        ////        if(IsLegacyParameterInfo)
+        ////        {
+        ////            return new Type[0];
+        ////        }
+        ////
+        ////        return m_signature.GetCustomModifiers( PositionImpl + 1, true );
+        ////    }
+        ////
+        ////    public virtual Type[] GetOptionalCustomModifiers()
+        ////    {
+        ////        if(IsLegacyParameterInfo)
+        ////        {
+        ////            return new Type[0];
+        ////        }
+        ////
+        ////        return m_signature.GetCustomModifiers( PositionImpl + 1, false );
+        ////    }
+        ////
         #endregion
 
         #region Object Overrides
-////    public override String ToString()
-////    {
-////        return ParameterType.SigToString() + " " + Name;
-////    }
+        ////    public override String ToString()
+        ////    {
+        ////        return ParameterType.SigToString() + " " + Name;
+        ////    }
         #endregion
 
         #region ICustomAttributeProvider
-////    public virtual Object[] GetCustomAttributes( bool inherit )
-////    {
-////        if(IsLegacyParameterInfo)
-////        {
-////            return null;
-////        }
-////
-////        if(MdToken.IsNullToken( m_tkParamDef ))
-////        {
-////            return new object[0];
-////        }
-////
-////        return CustomAttribute.GetCustomAttributes( this, typeof( object ) as RuntimeType );
-////    }
-////
-////    public virtual Object[] GetCustomAttributes( Type attributeType, bool inherit )
-////    {
-////        if(IsLegacyParameterInfo)
-////        {
-////            return null;
-////        }
-////
-////        if(attributeType == null)
-////        {
-////            throw new ArgumentNullException( "attributeType" );
-////        }
-////
-////        if(MdToken.IsNullToken( m_tkParamDef ))
-////        {
-////            return new object[0];
-////        }
-////
-////        RuntimeType attributeRuntimeType = attributeType.UnderlyingSystemType as RuntimeType;
-////
-////        if(attributeRuntimeType == null)
-////        {
-////            throw new ArgumentException( Environment.GetResourceString( "Arg_MustBeType" ), "attributeType" );
-////        }
-////
-////        return CustomAttribute.GetCustomAttributes( this, attributeRuntimeType );
-////    }
-////
-////    public virtual bool IsDefined( Type attributeType, bool inherit )
-////    {
-////        if(IsLegacyParameterInfo)
-////        {
-////            return false;
-////        }
-////
-////        if(attributeType == null)
-////        {
-////            throw new ArgumentNullException( "attributeType" );
-////        }
-////
-////        if(MdToken.IsNullToken( m_tkParamDef ))
-////        {
-////            return false;
-////        }
-////
-////        RuntimeType attributeRuntimeType = attributeType.UnderlyingSystemType as RuntimeType;
-////
-////        if(attributeRuntimeType == null)
-////        {
-////            throw new ArgumentException( Environment.GetResourceString( "Arg_MustBeType" ), "attributeType" );
-////        }
-////
-////        return CustomAttribute.IsDefined( this, attributeRuntimeType );
-////    }
+        ////    public virtual Object[] GetCustomAttributes( bool inherit )
+        ////    {
+        ////        if(IsLegacyParameterInfo)
+        ////        {
+        ////            return null;
+        ////        }
+        ////
+        ////        if(MdToken.IsNullToken( m_tkParamDef ))
+        ////        {
+        ////            return new object[0];
+        ////        }
+        ////
+        ////        return CustomAttribute.GetCustomAttributes( this, typeof( object ) as RuntimeType );
+        ////    }
+        ////
+        ////    public virtual Object[] GetCustomAttributes( Type attributeType, bool inherit )
+        ////    {
+        ////        if(IsLegacyParameterInfo)
+        ////        {
+        ////            return null;
+        ////        }
+        ////
+        ////        if(attributeType == null)
+        ////        {
+        ////            throw new ArgumentNullException( "attributeType" );
+        ////        }
+        ////
+        ////        if(MdToken.IsNullToken( m_tkParamDef ))
+        ////        {
+        ////            return new object[0];
+        ////        }
+        ////
+        ////        RuntimeType attributeRuntimeType = attributeType.UnderlyingSystemType as RuntimeType;
+        ////
+        ////        if(attributeRuntimeType == null)
+        ////        {
+        ////            throw new ArgumentException( Environment.GetResourceString( "Arg_MustBeType" ), "attributeType" );
+        ////        }
+        ////
+        ////        return CustomAttribute.GetCustomAttributes( this, attributeRuntimeType );
+        ////    }
+        ////
+        ////    public virtual bool IsDefined( Type attributeType, bool inherit )
+        ////    {
+        ////        if(IsLegacyParameterInfo)
+        ////        {
+        ////            return false;
+        ////        }
+        ////
+        ////        if(attributeType == null)
+        ////        {
+        ////            throw new ArgumentNullException( "attributeType" );
+        ////        }
+        ////
+        ////        if(MdToken.IsNullToken( m_tkParamDef ))
+        ////        {
+        ////            return false;
+        ////        }
+        ////
+        ////        RuntimeType attributeRuntimeType = attributeType.UnderlyingSystemType as RuntimeType;
+        ////
+        ////        if(attributeRuntimeType == null)
+        ////        {
+        ////            throw new ArgumentException( Environment.GetResourceString( "Arg_MustBeType" ), "attributeType" );
+        ////        }
+        ////
+        ////        return CustomAttribute.IsDefined( this, attributeRuntimeType );
+        ////    }
         #endregion
 
         #region Remoting Cache
-////    private InternalCache m_cachedData;
-////
-////    internal InternalCache Cache
-////    {
-////        get
-////        {
-////            // This grabs an internal copy of m_cachedData and uses
-////            // that instead of looking at m_cachedData directly because
-////            // the cache may get cleared asynchronously.  This prevents
-////            // us from having to take a lock.
-////            InternalCache cache = m_cachedData;
-////            if(cache == null)
-////            {
-////                cache = new InternalCache( "ParameterInfo" );
-////                InternalCache ret = Interlocked.CompareExchange( ref m_cachedData, cache, null );
-////                if(ret != null)
-////                {
-////                    cache = ret;
-////                }
-////
-////                GC.ClearCache += new ClearCacheHandler( OnCacheClear );
-////            }
-////
-////            return cache;
-////        }
-////    }
-////
-////    internal void OnCacheClear( Object sender, ClearCacheEventArgs cacheEventArgs )
-////    {
-////        m_cachedData = null;
-////    }
+        ////    private InternalCache m_cachedData;
+        ////
+        ////    internal InternalCache Cache
+        ////    {
+        ////        get
+        ////        {
+        ////            // This grabs an internal copy of m_cachedData and uses
+        ////            // that instead of looking at m_cachedData directly because
+        ////            // the cache may get cleared asynchronously.  This prevents
+        ////            // us from having to take a lock.
+        ////            InternalCache cache = m_cachedData;
+        ////            if(cache == null)
+        ////            {
+        ////                cache = new InternalCache( "ParameterInfo" );
+        ////                InternalCache ret = Interlocked.CompareExchange( ref m_cachedData, cache, null );
+        ////                if(ret != null)
+        ////                {
+        ////                    cache = ret;
+        ////                }
+        ////
+        ////                GC.ClearCache += new ClearCacheHandler( OnCacheClear );
+        ////            }
+        ////
+        ////            return cache;
+        ////        }
+        ////    }
+        ////
+        ////    internal void OnCacheClear( Object sender, ClearCacheEventArgs cacheEventArgs )
+        ////    {
+        ////        m_cachedData = null;
+        ////    }
         #endregion
     }
 }

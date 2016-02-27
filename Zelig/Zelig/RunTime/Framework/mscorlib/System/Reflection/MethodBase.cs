@@ -114,47 +114,47 @@ namespace System.Reflection
 ////    }
     
         public abstract Object Invoke( Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture );
-    
-////    public virtual CallingConventions CallingConvention
-////    {
-////        get
-////        {
-////            return CallingConventions.Standard;
-////        }
-////    }
-////
-////    public virtual Type[] GetGenericArguments()
-////    {
-////        throw new NotSupportedException( Environment.GetResourceString( "NotSupported_SubclassOverride" ) );
-////    }
-////
-////    public virtual bool IsGenericMethodDefinition
-////    {
-////        get
-////        {
-////            return false;
-////        }
-////    }
-////
-////    public virtual bool ContainsGenericParameters
-////    {
-////        get
-////        {
-////            return false;
-////        }
-////    }
-////
-////    public virtual bool IsGenericMethod
-////    {
-////        get
-////        {
-////            return false;
-////        }
-////    }
+
+        ////    public virtual CallingConventions CallingConvention
+        ////    {
+        ////        get
+        ////        {
+        ////            return CallingConventions.Standard;
+        ////        }
+        ////    }
+
+        public virtual Type[ ] GetGenericArguments( )
+        {
+            throw new NotSupportedException( Environment.GetResourceString( "NotSupported_SubclassOverride" ) );
+        }
+
+        ////    public virtual bool IsGenericMethodDefinition
+        ////    {
+        ////        get
+        ////        {
+        ////            return false;
+        ////        }
+        ////    }
+        ////
+        ////    public virtual bool ContainsGenericParameters
+        ////    {
+        ////        get
+        ////        {
+        ////            return false;
+        ////        }
+        ////    }
+
+        public virtual bool IsGenericMethod
+        {
+            get
+            {
+                return false;
+            }
+        }
         #endregion
 
         #region Public Members
-////    [DebuggerStepThroughAttribute]
+        ////    [DebuggerStepThroughAttribute]
         [Diagnostics.DebuggerHidden]
         public Object Invoke( Object obj, Object[] parameters )
         {

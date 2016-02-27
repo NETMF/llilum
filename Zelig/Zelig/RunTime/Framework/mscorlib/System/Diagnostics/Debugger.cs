@@ -138,12 +138,5 @@ namespace System.Diagnostics
 ////    [ResourceExposure( ResourceScope.None )]
         [MethodImplAttribute( MethodImplOptions.InternalCall )]
         public static extern void Log( int level, String category, String message );
-
-        // Checks to see if an attached debugger has logging enabled
-        //  
-////    [ResourceExposure( ResourceScope.None )]
-        [MethodImplAttribute( MethodImplOptions.InternalCall )]
-        public static extern bool IsLogging();
-
     }
 }

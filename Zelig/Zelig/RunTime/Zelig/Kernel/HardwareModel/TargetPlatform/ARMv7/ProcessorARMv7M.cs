@@ -860,9 +860,12 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             return CUSTOM_STUB_GetProgramCounter( ); 
         }
         
-        protected static bool DebuggerConnected()
+        public static bool IsDebuggerConnected
         {
-            return CUSTOM_STUB_DebuggerConnected( ) == c_COREDEBUG_DHCSR_CONNECTED; 
+            get
+            {
+                return CUSTOM_STUB_DebuggerConnected( ) == c_COREDEBUG_DHCSR_CONNECTED;
+            }
         }
         
         [RT.Inline]
@@ -896,7 +899,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         [RT.ExportedMethod]
         private static void HardFault_Handler_Zelig( uint sp )
         {
-            if(DebuggerConnected( ))
+            if(IsDebuggerConnected)
             {
                 if(WasHardFaultOnVectorTableRead( ))
                 {

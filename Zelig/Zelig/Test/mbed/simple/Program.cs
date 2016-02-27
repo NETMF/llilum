@@ -224,6 +224,8 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 
         static void Main()
         {
+            System.Diagnostics.Debug.WriteLine( "User program starting..." ); 
+
 #if (WIN32)
             TestWin32Threading();
 #else

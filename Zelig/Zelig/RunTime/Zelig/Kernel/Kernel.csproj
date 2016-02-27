@@ -111,6 +111,7 @@
     <Compile Include="FrameworkOverrides_Llilum\Devices\Pwm\PwmProvider.cs" />
     <Compile Include="FrameworkOverrides_Llilum\Devices\Spi\SpiDeviceImpl.cs" />
     <Compile Include="FrameworkOverrides_Llilum\Devices\Spi\SpiProvider.cs" />
+    <Compile Include="FrameworkOverrides_System\Diagnostics\DefaultTraceListernerImpl.cs" />
     <Compile Include="FrameworkOverrides_System\IO\MediaManagerImpl.cs" />
     <Compile Include="FrameworkOverrides_System\IO\NativeFileImpl.cs" />
     <Compile Include="FrameworkOverrides_System\IO\Ports\BaseSerialStream.cs" />

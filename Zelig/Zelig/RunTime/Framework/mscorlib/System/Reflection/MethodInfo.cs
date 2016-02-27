@@ -47,79 +47,79 @@ namespace System.Reflection
         #endregion
 
         #region Internal Members
-////    internal virtual MethodInfo GetParentDefinition()
-////    {
-////        return null;
-////    }
+        ////    internal virtual MethodInfo GetParentDefinition()
+        ////    {
+        ////        return null;
+        ////    }
         #endregion
 
         #region Public Abstract\Virtual Members
-////    public virtual Type ReturnType
-////    {
-////        get
-////        {
-////            return GetReturnType();
-////        }
-////    }
-////
-////    internal override Type GetReturnType()
-////    {
-////        return ReturnType;
-////    }
-////
-////    public virtual ParameterInfo ReturnParameter
-////    {
-////        get
-////        {
-////            throw new NotImplementedException();
-////        }
-////    }
-////
-////    public abstract ICustomAttributeProvider ReturnTypeCustomAttributes
-////    {
-////        get;
-////    }
-////
-////    public abstract MethodInfo GetBaseDefinition();
-////
-////    public override Type[] GetGenericArguments()
-////    {
-////        throw new NotSupportedException( Environment.GetResourceString( "NotSupported_SubclassOverride" ) );
-////    }
-////
-////    public virtual MethodInfo GetGenericMethodDefinition()
-////    {
-////        throw new NotSupportedException( Environment.GetResourceString( "NotSupported_SubclassOverride" ) );
-////    }
-////
-////    public override bool IsGenericMethodDefinition
-////    {
-////        get
-////        {
-////            return false;
-////        }
-////    }
-////
-////    public override bool ContainsGenericParameters
-////    {
-////        get
-////        {
-////            return false;
-////        }
-////    }
-////
-////    public virtual MethodInfo MakeGenericMethod( params Type[] typeArguments )
-////    {
-////        throw new NotSupportedException( Environment.GetResourceString( "NotSupported_SubclassOverride" ) );
-////    }
-////
-////    public override bool IsGenericMethod
-////    {
-////        get
-////        {
-////            return false;
-////        }
-////    }
+        ////    public virtual Type ReturnType
+        ////    {
+        ////        get
+        ////        {
+        ////            return GetReturnType();
+        ////        }
+        ////    }
+        ////
+        ////    internal override Type GetReturnType()
+        ////    {
+        ////        return ReturnType;
+        ////    }
+        ////
+        ////    public virtual ParameterInfo ReturnParameter
+        ////    {
+        ////        get
+        ////        {
+        ////            throw new NotImplementedException();
+        ////        }
+        ////    }
+        ////
+        ////    public abstract ICustomAttributeProvider ReturnTypeCustomAttributes
+        ////    {
+        ////        get;
+        ////    }
+        ////
+        ////    public abstract MethodInfo GetBaseDefinition();
+
+        public override Type[ ] GetGenericArguments( )
+        {
+            throw new NotSupportedException( Environment.GetResourceString( "NotSupported_SubclassOverride" ) );
+        }
+
+        ////    public virtual MethodInfo GetGenericMethodDefinition()
+        ////    {
+        ////        throw new NotSupportedException( Environment.GetResourceString( "NotSupported_SubclassOverride" ) );
+        ////    }
+        ////
+        ////    public override bool IsGenericMethodDefinition
+        ////    {
+        ////        get
+        ////        {
+        ////            return false;
+        ////        }
+        ////    }
+        ////
+        ////    public override bool ContainsGenericParameters
+        ////    {
+        ////        get
+        ////        {
+        ////            return false;
+        ////        }
+        ////    }
+        ////
+        ////    public virtual MethodInfo MakeGenericMethod( params Type[] typeArguments )
+        ////    {
+        ////        throw new NotSupportedException( Environment.GetResourceString( "NotSupported_SubclassOverride" ) );
+        ////    }
+        ////
+        public override bool IsGenericMethod
+        {
+            get
+            {
+                return false;
+            }
+        }
         #endregion
     }
 }

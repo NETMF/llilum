@@ -71,8 +71,15 @@
     <Compile Include="System\ComponentModel\IContainer.cs" />
     <Compile Include="System\ComponentModel\ISite.cs" />
     <Compile Include="System\Diagnostics\Debug.cs" />
+    <Compile Include="System\Diagnostics\DefaultTraceListener.cs" />
     <Compile Include="System\Diagnostics\Stopwatch.cs" />
     <Compile Include="System\Diagnostics\Trace.cs" />
+    <Compile Include="System\Diagnostics\TraceEventCache.cs" />
+    <Compile Include="System\Diagnostics\TraceEventType.cs" />
+    <Compile Include="System\Diagnostics\TraceInternal.cs" />
+    <Compile Include="System\Diagnostics\TraceListener.cs" />
+    <Compile Include="System\Diagnostics\TraceListeners.cs" />
+    <Compile Include="System\Diagnostics\TraceOption.cs" />
     <Compile Include="System\HTTP\System.Net.AuthenticationType.cs" />
     <Compile Include="System\HTTP\System.Net.HttpListener.cs" />
     <Compile Include="System\HTTP\System.Net.HttpListenerContext.cs" />
@@ -128,6 +135,7 @@
     <Compile Include="System\Net\Sockets\SocketOptionLevel.cs" />
     <Compile Include="System\Net\Sockets\SocketOptionName.cs" />
     <Compile Include="System\Net\Sockets\SocketType.cs" />
+    <Compile Include="System\Diagnostics\TraceFilter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\mscorlib\mscorlib.csproj">

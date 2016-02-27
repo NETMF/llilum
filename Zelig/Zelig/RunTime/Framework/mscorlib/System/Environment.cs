@@ -27,7 +27,7 @@ namespace System
     using System.Runtime.CompilerServices;
     using System.Runtime.ConstrainedExecution;
     using System.Reflection;
-////using System.Diagnostics;
+    using System.Diagnostics;
     using System.Threading;
 ////using System.Runtime.Versioning;
 ////using Microsoft.Win32;
@@ -986,244 +986,244 @@ namespace System
 #endif // !PLATFORM_UNIX
             }
         }
-////
-////
-////    /*===================================Version====================================
-////    **Action: Returns the COM+ version struct, describing the build number.
-////    **Returns:
-////    **Arguments:
-////    **Exceptions:
-////    ==============================================================================*/
-////    public static Version Version
-////    {
-////        get
-////        {
-////            return new Version( ThisAssembly.InformationalVersion );
-////        }
-////    }
-////
-////
-////    /*==================================WorkingSet==================================
-////    **Action:
-////    **Returns:
-////    **Arguments:
-////    **Exceptions:
-////    ==============================================================================*/
-////    [ResourceExposure( ResourceScope.None )]
-////    [MethodImpl( MethodImplOptions.InternalCall )]
-////    internal static extern long nativeGetWorkingSet();
-////
-////    public static long WorkingSet
-////    {
-////        get
-////        {
-////            new EnvironmentPermission( PermissionState.Unrestricted ).Demand();
-////
-////            return (long)nativeGetWorkingSet();
-////        }
-////    }
-////
-////    /*==================================OSVersion===================================
-////    **Action:
-////    **Returns:
-////    **Arguments:
-////    **Exceptions:
-////    ==============================================================================*/
-////    public static OperatingSystem OSVersion
-////    {
-////        get
-////        {
-////            if(m_os == null)
-////            {
-////                // We avoid the lock since we don't care if two threads will set this at the same time.
-////                Microsoft.Win32.Win32Native.OSVERSIONINFO osvi = new Microsoft.Win32.Win32Native.OSVERSIONINFO();
-////                if(!Win32Native.GetVersionEx( osvi ))
-////                {
-////                    throw new InvalidOperationException( Environment.GetResourceString( "InvalidOperation_GetVersion" ) );
-////                }
-////
-////                // Get Service pack information
-////                Microsoft.Win32.Win32Native.OSVERSIONINFOEX osviEx = new Microsoft.Win32.Win32Native.OSVERSIONINFOEX();
-////                if(!Win32Native.GetVersionEx( osviEx ))
-////                {
-////                    throw new InvalidOperationException( Environment.GetResourceString( "InvalidOperation_GetVersion" ) );
-////                }
-////
-////                PlatformID id;
-////                switch(osvi.PlatformId)
-////                {
-////                    case Win32Native.VER_PLATFORM_WIN32_NT:
-////                        id = PlatformID.Win32NT;
-////                        break;
-////
-////                    default:
-////                        BCLDebug.Assert( false, "Unsupported platform!" );
-////                        throw new InvalidOperationException( Environment.GetResourceString( "InvalidOperation_InvalidPlatformID" ) );
-////                }
-////
-////                Version v = new Version( osvi.MajorVersion, osvi.MinorVersion, osvi.BuildNumber, (osviEx.ServicePackMajor << 16) | osviEx.ServicePackMinor );
-////
-////                m_os = new OperatingSystem( id, v, osvi.CSDVersion );
-////            }
-////
-////            BCLDebug.Assert( m_os != null, "m_os != null" );
-////            return m_os;
-////        }
-////    }
-////
-////    [Serializable]
-////    internal enum OSName
-////    {
-////        Invalid = 0,
-////        Unknown = 1,
-////        WinNT   = 0x80,
-////        Win2k   = 2 | WinNT
-////    }
-////
-////    internal static OSName OSInfo
-////    {
-////        get
-////        {
-////            if(m_osname == OSName.Invalid)
-////            {
-////                lock(InternalSyncObject)
-////                {
-////                    if(m_osname == OSName.Invalid)
-////                    {
-////                        Microsoft.Win32.Win32Native.OSVERSIONINFO osvi = new Microsoft.Win32.Win32Native.OSVERSIONINFO();
-////
-////                        bool r = Win32Native.GetVersionEx( osvi );
-////                        if(!r)
-////                        {
-////                            BCLDebug.Assert( r, "OSVersion native call failed." );
-////                            throw new InvalidOperationException( Environment.GetResourceString( "InvalidOperation_GetVersion" ) );
-////                        }
-////
-////                        switch(osvi.PlatformId)
-////                        {
-////                            case Win32Native.VER_PLATFORM_WIN32_NT:
-////                                switch(osvi.MajorVersion)
-////                                {
-////                                    case 5:
-////                                        m_osname = OSName.Win2k;
-////                                        break;
-////
-////                                    case 4:
-////                                        BCLDebug.Assert( false, "NT4 is no longer a supported platform!" );
-////                                        m_osname = OSName.Unknown; // Unknown OS
-////                                        break;
-////
-////                                    default:
-////                                        m_osname = OSName.WinNT;
-////                                        break;
-////                                }
-////                                break;
-////
-////                            case Win32Native.VER_PLATFORM_WIN32_WINDOWS:
-////                                BCLDebug.Assert( false, "Win9x is no longer a supported platform!" );
-////                                m_osname = OSName.Unknown; // Unknown OS
-////                                break;
-////
-////                            default:
-////                                m_osname = OSName.Unknown; // Unknown OS
-////                                break;
-////
-////                        }
-////                    }
-////                }
-////            }
-////            return m_osname;
-////        }
-////    }
-////
-////    /*==================================StackTrace==================================
-////    **Action:
-////    **Returns:
-////    **Arguments:
-////    **Exceptions:
-////    ==============================================================================*/
-////    public static String StackTrace
-////    {
-////        get
-////        {
-////            new EnvironmentPermission( PermissionState.Unrestricted ).Demand();
-////
-////            return GetStackTrace( null, true );
-////        }
-////    }
-////
-////    internal static String GetStackTrace( Exception e, bool needFileInfo )
-////    {
-////        // Note: Setting needFileInfo to true will start up COM and set our
-////        // apartment state.  Try to not call this when passing "true"
-////        // before the EE's ExecuteMainMethod has had a chance to set up the
-////        // apartment state.  --
-////        StackTrace st;
-////        if(e == null)
-////        {
-////            st = new StackTrace( needFileInfo );
-////        }
-////        else
-////        {
-////            st = new StackTrace( e, needFileInfo );
-////        }
-////
-////        // Do no include a trailing newline for backwards compatibility
-////        return st.ToString( System.Diagnostics.StackTrace.TraceFormat.Normal );
-////    }
-////
-////    private static void InitResourceHelper()
-////    {
-////        // Only the default AppDomain should have a ResourceHelper.  All calls to
-////        // GetResourceString from any AppDomain delegate to GetResourceStringLocal
-////        // in the default AppDomain via the fcall GetResourceFromDefault.
-////
-////        // Use Thread.BeginCriticalRegion to tell the CLR all managed
-////        // allocations within this block are appdomain-critical.
-////        // Use a CER to ensure we always exit this region.
-////        bool enteredRegion = false;
-////        bool tookLock      = false;
-////
-////        RuntimeHelpers.PrepareConstrainedRegions();
-////        try
-////        {
-////            RuntimeHelpers.PrepareConstrainedRegions();
-////            try
-////            {
-////            }
-////            finally
-////            {
-////                Thread.BeginCriticalRegion();
-////                enteredRegion = true;
-////
-////                Monitor.Enter( Environment.InternalSyncObject );
-////                tookLock = true;
-////            }
-////
-////            if(m_resHelper == null)
-////            {
-////                ResourceHelper rh = new ResourceHelper();
-////
-////                System.Threading.Thread.MemoryBarrier();
-////                m_resHelper = rh;
-////            }
-////        }
-////        finally
-////        {
-////            if(tookLock)
-////            {
-////                Monitor.Exit( Environment.InternalSyncObject );
-////            }
-////
-////            if(enteredRegion)
-////            {
-////                Thread.EndCriticalRegion();
-////            }
-////        }
-////    }
+        ////
+        ////
+        ////    /*===================================Version====================================
+        ////    **Action: Returns the COM+ version struct, describing the build number.
+        ////    **Returns:
+        ////    **Arguments:
+        ////    **Exceptions:
+        ////    ==============================================================================*/
+        ////    public static Version Version
+        ////    {
+        ////        get
+        ////        {
+        ////            return new Version( ThisAssembly.InformationalVersion );
+        ////        }
+        ////    }
+        ////
+        ////
+        ////    /*==================================WorkingSet==================================
+        ////    **Action:
+        ////    **Returns:
+        ////    **Arguments:
+        ////    **Exceptions:
+        ////    ==============================================================================*/
+        ////    [ResourceExposure( ResourceScope.None )]
+        ////    [MethodImpl( MethodImplOptions.InternalCall )]
+        ////    internal static extern long nativeGetWorkingSet();
+        ////
+        ////    public static long WorkingSet
+        ////    {
+        ////        get
+        ////        {
+        ////            new EnvironmentPermission( PermissionState.Unrestricted ).Demand();
+        ////
+        ////            return (long)nativeGetWorkingSet();
+        ////        }
+        ////    }
+        ////
+        ////    /*==================================OSVersion===================================
+        ////    **Action:
+        ////    **Returns:
+        ////    **Arguments:
+        ////    **Exceptions:
+        ////    ==============================================================================*/
+        ////    public static OperatingSystem OSVersion
+        ////    {
+        ////        get
+        ////        {
+        ////            if(m_os == null)
+        ////            {
+        ////                // We avoid the lock since we don't care if two threads will set this at the same time.
+        ////                Microsoft.Win32.Win32Native.OSVERSIONINFO osvi = new Microsoft.Win32.Win32Native.OSVERSIONINFO();
+        ////                if(!Win32Native.GetVersionEx( osvi ))
+        ////                {
+        ////                    throw new InvalidOperationException( Environment.GetResourceString( "InvalidOperation_GetVersion" ) );
+        ////                }
+        ////
+        ////                // Get Service pack information
+        ////                Microsoft.Win32.Win32Native.OSVERSIONINFOEX osviEx = new Microsoft.Win32.Win32Native.OSVERSIONINFOEX();
+        ////                if(!Win32Native.GetVersionEx( osviEx ))
+        ////                {
+        ////                    throw new InvalidOperationException( Environment.GetResourceString( "InvalidOperation_GetVersion" ) );
+        ////                }
+        ////
+        ////                PlatformID id;
+        ////                switch(osvi.PlatformId)
+        ////                {
+        ////                    case Win32Native.VER_PLATFORM_WIN32_NT:
+        ////                        id = PlatformID.Win32NT;
+        ////                        break;
+        ////
+        ////                    default:
+        ////                        BCLDebug.Assert( false, "Unsupported platform!" );
+        ////                        throw new InvalidOperationException( Environment.GetResourceString( "InvalidOperation_InvalidPlatformID" ) );
+        ////                }
+        ////
+        ////                Version v = new Version( osvi.MajorVersion, osvi.MinorVersion, osvi.BuildNumber, (osviEx.ServicePackMajor << 16) | osviEx.ServicePackMinor );
+        ////
+        ////                m_os = new OperatingSystem( id, v, osvi.CSDVersion );
+        ////            }
+        ////
+        ////            BCLDebug.Assert( m_os != null, "m_os != null" );
+        ////            return m_os;
+        ////        }
+        ////    }
+        ////
+        ////    [Serializable]
+        ////    internal enum OSName
+        ////    {
+        ////        Invalid = 0,
+        ////        Unknown = 1,
+        ////        WinNT   = 0x80,
+        ////        Win2k   = 2 | WinNT
+        ////    }
+        ////
+        ////    internal static OSName OSInfo
+        ////    {
+        ////        get
+        ////        {
+        ////            if(m_osname == OSName.Invalid)
+        ////            {
+        ////                lock(InternalSyncObject)
+        ////                {
+        ////                    if(m_osname == OSName.Invalid)
+        ////                    {
+        ////                        Microsoft.Win32.Win32Native.OSVERSIONINFO osvi = new Microsoft.Win32.Win32Native.OSVERSIONINFO();
+        ////
+        ////                        bool r = Win32Native.GetVersionEx( osvi );
+        ////                        if(!r)
+        ////                        {
+        ////                            BCLDebug.Assert( r, "OSVersion native call failed." );
+        ////                            throw new InvalidOperationException( Environment.GetResourceString( "InvalidOperation_GetVersion" ) );
+        ////                        }
+        ////
+        ////                        switch(osvi.PlatformId)
+        ////                        {
+        ////                            case Win32Native.VER_PLATFORM_WIN32_NT:
+        ////                                switch(osvi.MajorVersion)
+        ////                                {
+        ////                                    case 5:
+        ////                                        m_osname = OSName.Win2k;
+        ////                                        break;
+        ////
+        ////                                    case 4:
+        ////                                        BCLDebug.Assert( false, "NT4 is no longer a supported platform!" );
+        ////                                        m_osname = OSName.Unknown; // Unknown OS
+        ////                                        break;
+        ////
+        ////                                    default:
+        ////                                        m_osname = OSName.WinNT;
+        ////                                        break;
+        ////                                }
+        ////                                break;
+        ////
+        ////                            case Win32Native.VER_PLATFORM_WIN32_WINDOWS:
+        ////                                BCLDebug.Assert( false, "Win9x is no longer a supported platform!" );
+        ////                                m_osname = OSName.Unknown; // Unknown OS
+        ////                                break;
+        ////
+        ////                            default:
+        ////                                m_osname = OSName.Unknown; // Unknown OS
+        ////                                break;
+        ////
+        ////                        }
+        ////                    }
+        ////                }
+        ////            }
+        ////            return m_osname;
+        ////        }
+        ////    }
 
-////    [ResourceExposure( ResourceScope.None )]
-////    [MethodImpl( MethodImplOptions.InternalCall )]
+        /*==================================StackTrace==================================
+        **Action:
+        **Returns:
+        **Arguments:
+        **Exceptions:
+        ==============================================================================*/
+        public static String StackTrace
+        {
+            get
+            {
+                //////new EnvironmentPermission( PermissionState.Unrestricted ).Demand( );
+
+                return GetStackTrace( null, true );
+            }
+        }
+
+        internal static String GetStackTrace( Exception e, bool needFileInfo )
+        {
+            // Note: Setting needFileInfo to true will start up COM and set our
+            // apartment state.  Try to not call this when passing "true"
+            // before the EE's ExecuteMainMethod has had a chance to set up the
+            // apartment state.  --
+            StackTrace st;
+            if(e == null)
+            {
+                st = new StackTrace( needFileInfo );
+            }
+            else
+            {
+                st = new StackTrace( e, needFileInfo );
+            }
+
+            // Do no include a trailing newline for backwards compatibility
+            return st.ToString( System.Diagnostics.StackTrace.TraceFormat.Normal );
+        }
+
+        ////    private static void InitResourceHelper()
+        ////    {
+        ////        // Only the default AppDomain should have a ResourceHelper.  All calls to
+        ////        // GetResourceString from any AppDomain delegate to GetResourceStringLocal
+        ////        // in the default AppDomain via the fcall GetResourceFromDefault.
+        ////
+        ////        // Use Thread.BeginCriticalRegion to tell the CLR all managed
+        ////        // allocations within this block are appdomain-critical.
+        ////        // Use a CER to ensure we always exit this region.
+        ////        bool enteredRegion = false;
+        ////        bool tookLock      = false;
+        ////
+        ////        RuntimeHelpers.PrepareConstrainedRegions();
+        ////        try
+        ////        {
+        ////            RuntimeHelpers.PrepareConstrainedRegions();
+        ////            try
+        ////            {
+        ////            }
+        ////            finally
+        ////            {
+        ////                Thread.BeginCriticalRegion();
+        ////                enteredRegion = true;
+        ////
+        ////                Monitor.Enter( Environment.InternalSyncObject );
+        ////                tookLock = true;
+        ////            }
+        ////
+        ////            if(m_resHelper == null)
+        ////            {
+        ////                ResourceHelper rh = new ResourceHelper();
+        ////
+        ////                System.Threading.Thread.MemoryBarrier();
+        ////                m_resHelper = rh;
+        ////            }
+        ////        }
+        ////        finally
+        ////        {
+        ////            if(tookLock)
+        ////            {
+        ////                Monitor.Exit( Environment.InternalSyncObject );
+        ////            }
+        ////
+        ////            if(enteredRegion)
+        ////            {
+        ////                Thread.EndCriticalRegion();
+        ////            }
+        ////        }
+        ////    }
+
+        ////    [ResourceExposure( ResourceScope.None )]
+        ////    [MethodImpl( MethodImplOptions.InternalCall )]
         internal static String GetResourceFromDefault( String key )
         {
             return key;

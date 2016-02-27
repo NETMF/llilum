@@ -28,90 +28,90 @@ namespace System.Diagnostics
         {
         }
 
-////    /// <devdoc>
-////    ///    <para>Gets the collection of listeners that is monitoring the trace output.</para>
-////    /// </devdoc>
-////    public static TraceListenerCollection Listeners
-////    {
-////        [HostProtection( SharedState = true )]
-////        get
-////        {
-////            // Do a full damand
-////            new SecurityPermission( SecurityPermissionFlag.UnmanagedCode ).Demand();
-////
-////            return TraceInternal.Listeners;
-////        }
-////    }
-////
-////    /// <devdoc>
-////    ///    <para>
-////    ///       Gets or sets whether <see cref='System.Diagnostics.Trace.Flush'/> should be called on the <see cref='System.Diagnostics.Trace.Listeners'/> after every write.
-////    ///    </para>
-////    /// </devdoc>
-////    public static bool AutoFlush
-////    {
-////        [SecurityPermission( SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode )]
-////        get
-////        {
-////            return TraceInternal.AutoFlush;
-////        }
-////
-////        [SecurityPermission( SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode )]
-////        set
-////        {
-////            TraceInternal.AutoFlush = value;
-////        }
-////    }
-////
-////    public static bool UseGlobalLock
-////    {
-////        [SecurityPermission( SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode )]
-////        get
-////        {
-////            return TraceInternal.UseGlobalLock;
-////        }
-////
-////        [SecurityPermission( SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode )]
-////        set
-////        {
-////            TraceInternal.UseGlobalLock = value;
-////        }
-////    }
-////
-////    public static CorrelationManager CorrelationManager
-////    {
-////        [SecurityPermission( SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode )]
-////        get
-////        {
-////            if(correlationManager == null)
-////                correlationManager = new CorrelationManager();
-////
-////            return correlationManager;
-////        }
-////    }
-////
-////    /// <devdoc>
-////    ///    <para>Gets or sets the indent level.</para>
-////    /// </devdoc>
-////    public static int IndentLevel
-////    {
-////        get { return TraceInternal.IndentLevel; }
-////
-////        set { TraceInternal.IndentLevel = value; }
-////    }
-////
-////
-////    /// <devdoc>
-////    ///    <para>
-////    ///       Gets or sets the number of spaces in an indent.
-////    ///    </para>
-////    /// </devdoc>
-////    public static int IndentSize
-////    {
-////        get { return TraceInternal.IndentSize; }
-////
-////        set { TraceInternal.IndentSize = value; }
-////    }
+        /// <devdoc>
+        ///    <para>Gets the collection of listeners that is monitoring the trace output.</para>
+        /// </devdoc>
+        public static TraceListenerCollection Listeners
+        {
+            [HostProtection( SharedState = true )]
+            get
+            {
+                // Do a full damand
+                //////new SecurityPermission( SecurityPermissionFlag.UnmanagedCode ).Demand( );
+
+                return TraceInternal.Listeners;
+            }
+        }
+
+        /// <devdoc>
+        ///    <para>
+        ///       Gets or sets whether <see cref='System.Diagnostics.Trace.Flush'/> should be called on the <see cref='System.Diagnostics.Trace.Listeners'/> after every write.
+        ///    </para>
+        /// </devdoc>
+        public static bool AutoFlush
+        {
+            [SecurityPermission( SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode )]
+            get
+            {
+                return TraceInternal.AutoFlush;
+            }
+
+            [SecurityPermission( SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode )]
+            set
+            {
+                TraceInternal.AutoFlush = value;
+            }
+        }
+
+        public static bool UseGlobalLock
+        {
+            [SecurityPermission( SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode )]
+            get
+            {
+                return TraceInternal.UseGlobalLock;
+            }
+
+            [SecurityPermission( SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode )]
+            set
+            {
+                TraceInternal.UseGlobalLock = value;
+            }
+        }
+
+        //////public static CorrelationManager CorrelationManager
+        //////{
+        //////    [SecurityPermission( SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode )]
+        //////    get
+        //////    {
+        //////        if(correlationManager == null)
+        //////            correlationManager = new CorrelationManager( );
+
+        //////        return correlationManager;
+        //////    }
+        //////}
+
+        /// <devdoc>
+        ///    <para>Gets or sets the indent level.</para>
+        /// </devdoc>
+        public static int IndentLevel
+        {
+            get { return TraceInternal.IndentLevel; }
+
+            set { TraceInternal.IndentLevel = value; }
+        }
+
+
+        /// <devdoc>
+        ///    <para>
+        ///       Gets or sets the number of spaces in an indent.
+        ///    </para>
+        /// </devdoc>
+        public static int IndentSize
+        {
+            get { return TraceInternal.IndentSize; }
+
+            set { TraceInternal.IndentSize = value; }
+        }
 
         /// <devdoc>
         ///    <para>Clears the output buffer, and causes buffered data to
@@ -120,7 +120,7 @@ namespace System.Diagnostics
         [System.Diagnostics.Conditional( "TRACE" )]
         public static void Flush()
         {
-////        TraceInternal.Flush();
+            TraceInternal.Flush( );
         }
 
         /// <devdoc>
@@ -130,10 +130,10 @@ namespace System.Diagnostics
         [System.Diagnostics.Conditional( "TRACE" )]
         public static void Close()
         {
-////        // Do a full damand
-////        new SecurityPermission( SecurityPermissionFlag.UnmanagedCode ).Demand();
-////
-////        TraceInternal.Close();
+            ////        // Do a full damand
+            ////        new SecurityPermission( SecurityPermissionFlag.UnmanagedCode ).Demand();
+            ////
+            TraceInternal.Close( );
         }
 
         /// <devdoc>
@@ -144,7 +144,7 @@ namespace System.Diagnostics
         [System.Diagnostics.Conditional( "TRACE" )]
         public static void Assert( bool condition )
         {
-////        TraceInternal.Assert( condition );
+            TraceInternal.Assert( condition );
         }
 
         /// <devdoc>
@@ -154,7 +154,7 @@ namespace System.Diagnostics
         [System.Diagnostics.Conditional( "TRACE" )]
         public static void Assert( bool condition, string message )
         {
-////        TraceInternal.Assert( condition, message );
+            TraceInternal.Assert( condition, message );
         }
 
         /// <devdoc>
@@ -164,7 +164,7 @@ namespace System.Diagnostics
         [System.Diagnostics.Conditional( "TRACE" )]
         public static void Assert( bool condition, string message, string detailMessage )
         {
-////        TraceInternal.Assert( condition, message, detailMessage );
+            TraceInternal.Assert( condition, message, detailMessage );
         }
 
         /// <devdoc>
@@ -173,7 +173,7 @@ namespace System.Diagnostics
         [System.Diagnostics.Conditional( "TRACE" )]
         public static void Fail( string message )
         {
-////        TraceInternal.Fail( message );
+            TraceInternal.Fail( message );
         }
 
         /// <devdoc>
@@ -182,7 +182,7 @@ namespace System.Diagnostics
         [System.Diagnostics.Conditional( "TRACE" )]
         public static void Fail( string message, string detailMessage )
         {
-////        TraceInternal.Fail( message, detailMessage );
+            TraceInternal.Fail( message, detailMessage );
         }
 
         public static void Refresh()
@@ -195,40 +195,40 @@ namespace System.Diagnostics
         [System.Diagnostics.Conditional( "TRACE" )]
         public static void TraceInformation( string message )
         {
-////        TraceInternal.TraceEvent( TraceEventType.Information, 0, message, null );
+            TraceInternal.TraceEvent( TraceEventType.Information, 0, message, null );
         }
 
         [System.Diagnostics.Conditional( "TRACE" )]
         public static void TraceInformation(        string   format ,
                                              params object[] args   )
         {
-////        TraceInternal.TraceEvent( TraceEventType.Information, 0, format, args );
+            TraceInternal.TraceEvent( TraceEventType.Information, 0, format, args );
         }
 
         [System.Diagnostics.Conditional( "TRACE" )]
         public static void TraceWarning( string message )
         {
-////        TraceInternal.TraceEvent( TraceEventType.Warning, 0, message, null );
+            TraceInternal.TraceEvent( TraceEventType.Warning, 0, message, null );
         }
 
         [System.Diagnostics.Conditional( "TRACE" )]
         public static void TraceWarning(        string   format ,
                                          params object[] args   )
         {
-////        TraceInternal.TraceEvent( TraceEventType.Warning, 0, format, args );
+            TraceInternal.TraceEvent( TraceEventType.Warning, 0, format, args );
         }
 
         [System.Diagnostics.Conditional( "TRACE" )]
         public static void TraceError( string message )
         {
-////        TraceInternal.TraceEvent( TraceEventType.Error, 0, message, null );
+            TraceInternal.TraceEvent( TraceEventType.Error, 0, message, null );
         }
 
         [System.Diagnostics.Conditional( "TRACE" )]
         public static void TraceError(        string   format ,
                                        params object[] args   )
         {
-////        TraceInternal.TraceEvent( TraceEventType.Error, 0, format, args );
+            TraceInternal.TraceEvent( TraceEventType.Error, 0, format, args );
         }
 
         /// <devdoc>
@@ -238,7 +238,7 @@ namespace System.Diagnostics
         [System.Diagnostics.Conditional( "TRACE" )]
         public static void Write( string message )
         {
-////        TraceInternal.Write( message );
+            TraceInternal.Write( message );
         }
 
         /// <devdoc>
@@ -248,7 +248,7 @@ namespace System.Diagnostics
         [System.Diagnostics.Conditional( "TRACE" )]
         public static void Write( object value )
         {
-////        TraceInternal.Write( value );
+            TraceInternal.Write( value );
         }
 
         /// <devdoc>
@@ -259,7 +259,7 @@ namespace System.Diagnostics
         public static void Write( string message  ,
                                   string category )
         {
-////        TraceInternal.Write( message, category );
+            TraceInternal.Write( message, category );
         }
 
         /// <devdoc>
@@ -270,7 +270,7 @@ namespace System.Diagnostics
         public static void Write( object value    ,
                                   string category )
         {
-////        TraceInternal.Write( value, category );
+            TraceInternal.Write( value, category );
         }
 
         /// <devdoc>
@@ -281,7 +281,7 @@ namespace System.Diagnostics
         [System.Diagnostics.Conditional( "TRACE" )]
         public static void WriteLine( string message )
         {
-////        TraceInternal.WriteLine( message );
+            TraceInternal.WriteLine( message );
         }
 
         /// <devdoc>
@@ -291,7 +291,7 @@ namespace System.Diagnostics
         [System.Diagnostics.Conditional( "TRACE" )]
         public static void WriteLine( object value )
         {
-////        TraceInternal.WriteLine( value );
+            TraceInternal.WriteLine( value );
         }
 
         /// <devdoc>
@@ -304,7 +304,7 @@ namespace System.Diagnostics
         public static void WriteLine( string message  ,
                                       string category )
         {
-////        TraceInternal.WriteLine( message, category );
+            TraceInternal.WriteLine( message, category );
         }
 
         /// <devdoc>
@@ -316,7 +316,7 @@ namespace System.Diagnostics
         public static void WriteLine( object value    ,
                                       string category )
         {
-////        TraceInternal.WriteLine( value, category );
+            TraceInternal.WriteLine( value, category );
         }
 
         /// <devdoc>
@@ -327,7 +327,7 @@ namespace System.Diagnostics
         public static void WriteIf( bool   condition ,
                                     string message   )
         {
-////        TraceInternal.WriteIf( condition, message );
+            TraceInternal.WriteIf( condition, message );
         }
 
         /// <devdoc>
@@ -339,7 +339,7 @@ namespace System.Diagnostics
         public static void WriteIf( bool   condition ,
                                     object value     )
         {
-////        TraceInternal.WriteIf( condition, value );
+            TraceInternal.WriteIf( condition, value );
         }
 
         /// <devdoc>
@@ -351,7 +351,7 @@ namespace System.Diagnostics
                                     string message   ,
                                     string category  )
         {
-////        TraceInternal.WriteIf( condition, message, category );
+            TraceInternal.WriteIf( condition, message, category );
         }
 
         /// <devdoc>
@@ -364,7 +364,7 @@ namespace System.Diagnostics
                                     object value     ,
                                     string category  )
         {
-////        TraceInternal.WriteIf( condition, value, category );
+            TraceInternal.WriteIf( condition, value, category );
         }
 
         /// <devdoc>
@@ -377,7 +377,7 @@ namespace System.Diagnostics
         public static void WriteLineIf( bool   condition ,
                                         string message   )
         {
-////        TraceInternal.WriteLineIf( condition, message );
+            TraceInternal.WriteLineIf( condition, message );
         }
 
         /// <devdoc>
@@ -391,7 +391,7 @@ namespace System.Diagnostics
         public static void WriteLineIf( bool   condition ,
                                         object value     )
         {
-////        TraceInternal.WriteLineIf( condition, value );
+            TraceInternal.WriteLineIf( condition, value );
         }
 
         /// <devdoc>
@@ -404,7 +404,7 @@ namespace System.Diagnostics
                                         string message   ,
                                         string category  )
         {
-////        TraceInternal.WriteLineIf( condition, message, category );
+            TraceInternal.WriteLineIf( condition, message, category );
         }
 
         /// <devdoc>
@@ -418,7 +418,7 @@ namespace System.Diagnostics
                                         object value     ,
                                         string category  )
         {
-////        TraceInternal.WriteLineIf( condition, value, category );
+            TraceInternal.WriteLineIf( condition, value, category );
         }
 
         /// <devdoc>
@@ -427,7 +427,7 @@ namespace System.Diagnostics
         [System.Diagnostics.Conditional( "TRACE" )]
         public static void Indent()
         {
-////        TraceInternal.Indent();
+            TraceInternal.Indent();
         }
 
         /// <devdoc>
@@ -436,7 +436,7 @@ namespace System.Diagnostics
         [System.Diagnostics.Conditional( "TRACE" )]
         public static void Unindent()
         {
-////        TraceInternal.Unindent();
+            TraceInternal.Unindent();
         }
     }
 }
