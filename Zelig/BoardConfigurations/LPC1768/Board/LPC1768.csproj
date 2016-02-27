@@ -83,6 +83,7 @@
     <Compile Include="HardwareModel\HardwareProviders\I2cProvider.cs" />
     <Compile Include="HardwareModel\HardwareProviders\SpiProvider.cs" />
     <Compile Include="HardwareModel\NVIC.cs" />
+    <Compile Include="HardwareModel\Peripherals.cs" />
     <Compile Include="HardwareModel\Processor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SystemServices\GarbageCollectionManager.cs" />
