@@ -157,6 +157,15 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
 
             public override unsafe void SwitchTo( )
             {
+                BugCheck.Assert( ProcessorARMv6M.IsAnyExceptionActive( ) == false, BugCheck.StopCode.IllegalMode );
+
+                //
+                // Enable context switch through SVC call that will fall back into Thread/PSP mode onto 
+                // whatever thread the standard thread manager intended to switch into 
+                //
+                SmartHandles.InterruptStateARMv6M.ResetSoftwareExceptionMode( );
+                SmartHandles.InterruptStateARMv6M.EnableAll( ); 
+
                 //
                 // The long jump selects the current thread's context and sets its EXC_RETURN value
                 //

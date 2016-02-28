@@ -72,24 +72,25 @@ extern "C"
     //
     //
 
-    extern void ContextSwitchTimer_Handler_Zelig();
+    extern void SysTick_Handler_Zelig();
 
     __attribute__((naked)) void SysTick_Handler(void)
     {
 #if __CORTEX_M0                      
-        __ASM volatile ("MOV       R1, LR"); 
-        __ASM volatile ("SUB       SP, #4"); 
+        __ASM volatile ("MOV       R1, LR"  ); 
+        __ASM volatile ("SUB       SP, #4"  ); 
         __ASM volatile ("STR       R1, [SP]"); 
 #else
         __ASM volatile ("STR       LR, [SP, #-4]!");                // Save LR to stack
 #endif
 
-        ContextSwitchTimer_Handler_Zelig();
+        SysTick_Handler_Zelig();
 
 #if __CORTEX_M0                       
-        __ASM volatile ("STR       R1, [SP]"); 
-        __ASM volatile ("ADD       SP, #4"); 
-        __ASM volatile ("MOV       LR, R1");
+        __ASM volatile ("LDR       R1, [SP]"); 
+        __ASM volatile ("ADD       SP, #4"  );
+        __ASM volatile ("MOV       LR, R1"  );
+        __ASM volatile ("BX        LR "     );
 #else
         __ASM volatile ("LDR       LR, [SP], #4");                  // Restore LR from stack
         __ASM volatile ("BX        LR");

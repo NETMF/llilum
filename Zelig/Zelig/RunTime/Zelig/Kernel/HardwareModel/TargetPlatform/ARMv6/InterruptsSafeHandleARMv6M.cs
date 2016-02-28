@@ -15,8 +15,10 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6.SmartHandles
         //
         // State
         //
-        
-        uint m_basepri;
+
+        private static ProcessorARMv6M.ISR_NUMBER s_softwareExceptionMode = ProcessorARMv6M.ISR_NUMBER.SVCall;
+        //--//
+        private uint m_basepri;
 
         //
         // Constructor Methods
@@ -120,7 +122,19 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6.SmartHandles
 
         private ProcessorARMv6M.ISR_NUMBER GetMode( )
         {
-            return (ProcessorARMv6M.ISR_NUMBER)(ProcessorARMv6M.CMSIS_STUB_SCB__get_IPSR( ) & 0x1FF);
+            return s_softwareExceptionMode | (ProcessorARMv6M.ISR_NUMBER)(ProcessorARMv6M.CMSIS_STUB_SCB__get_IPSR( ) & 0x1FF);
+        }
+
+        [Inline]
+        internal static void SetSoftwareExceptionMode( )
+        {
+            s_softwareExceptionMode = ProcessorARMv6M.ISR_NUMBER.SVCall;
+        }
+
+        [Inline]
+        internal static void ResetSoftwareExceptionMode( )
+        {
+            s_softwareExceptionMode = ProcessorARMv6M.ISR_NUMBER.ThreadMode;
         }
     }
 }

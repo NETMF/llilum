@@ -15,7 +15,6 @@
 #define __ATTRIBUTE_ALIGNMENT__   __ATTRIBUTE_ALIGNMENT_8__
 #define __DIRECTIVE_ALIGNMENT__   __DIRECTIVE_ALIGNMENT_8__
 
-
 extern "C"
 {
 
@@ -224,34 +223,40 @@ extern "C"
     //
     // vvvvv !!! Cortex M4 only !!! vvvvv
     //
-#if       (__CORTEX_M == 0x04)
-
-    /*__STATIC_INLINE*/ uint32_t CMSIS_STUB_SCB__get_FPSCR()
-    {
-        return __get_FPSCR();
-    }
-
-    /*__STATIC_INLINE*/ void CMSIS_STUB_SCB__set_FPSCR(uint32_t fpscr)
-    {
-        return __set_FPSCR(fpscr);
-    }
-
-#endif /* (__CORTEX_M == 0x04) */
-
-
-    /*__STATIC_INLINE*/ uint32_t CUSTOM_STUB_SCB__get_FPCCR()
-    {
-        return *((uint32_t volatile *)0xE000EF34);
-    }
-
-    /*__STATIC_INLINE*/ void CUSTOM_STUB_SCB__set_FPCCR(uint32_t fpscr)
-    {
-        *((uint32_t volatile *)0xE000EF34) = fpscr;
-    }
+#if       (__CORTEX_M >= 0x04)
 
     //
     // CCR
     //
+
+    /*__STATIC_INLINE*/ uint32_t CUSTOM_STUB_SCB__get_FPCCR()
+    {
+        return __get_FPSCR();
+    }
+
+    /*__STATIC_INLINE*/ void CUSTOM_STUB_SCB__set_FPCCR(uint32_t fpscr)
+    {
+        return __set_FPSCR(fpscr);
+    }
+
+#else /* (__CORTEX_M != 0x04) */
+
+    //
+    // CCR
+    //
+   // TODO:  eliminate both functions below for M0
+
+    /*__STATIC_INLINE*/ uint32_t CUSTOM_STUB_SCB__get_FPCCR( )
+    {
+        return *((uint32_t volatile *)0xE000EF34);
+    }
+
+    /*__STATIC_INLINE*/ void CUSTOM_STUB_SCB__set_FPCCR( uint32_t fpscr )
+    {
+        *((uint32_t volatile *)0xE000EF34) = fpscr;
+    }
+
+#endif
 
     /*__STATIC_INLINE*/ void CUSTOM_STUB_SCB_set_CCR(uint32_t value)
     {
@@ -362,9 +367,9 @@ extern "C"
     //
     // The managed portion of the SVC_Handler
     //
-    extern void SVC_Handler_Zelig_VFP_NoFPContext();
-    extern void SVC_Handler_Zelig();
-    extern void CUSTOM_STUB_NotifySoftwareFrameSnapshot(void* frame, int size);
+    void SVC_Handler_Zelig_VFP_NoFPContext();
+    void SVC_Handler_Zelig();
+    void CUSTOM_STUB_NotifySoftwareFrameSnapshot(void* frame, int size);
 
     //
     // A convenience storage space to signal what mode to return too
@@ -424,6 +429,7 @@ extern "C"
         CUSTOM_STUB_NotifySoftwareFrameSnapshot(sw_hw__frame, FRAME_SIZE);
     }
 
+
 #if __CORTEX_M0
 
     __attribute__((naked))
@@ -432,106 +438,104 @@ extern "C"
     {
         //__DIRECTIVE_ALIGNMENT__;
 
-        // __ASM volatile ("TST    LR, #0x4");                 // Test bit 3 to use decide which stack pointer we are coming from 
-        // __ASM volatile ("ITE    EQ");        
-        // __ASM volatile ("MRSEQ  R0, msp");
-        // __ASM volatile ("MRSNE  R0, psp");
+         __ASM volatile ("MOVS    R0, #0x4");                 // Test bit 3 to use decide which stack pointer we are coming from 
+         __ASM volatile ("MOV     R1,   LR");        
+         __ASM volatile ("TST     R0,   R1");
+         __ASM volatile ("BEQ     __FROM_MSP");
 
-        // //
-        // // Test for SupervisorCall__SnapshotProcessModeRegisters (0x14) and snapshot 
-        // // all remaining registers onto the stack first and into the convenience space
-        // // right after
-        // // TODO: move to managed layer
-        // //
-        // {
-            // __ASM volatile ("LDR    R12, [R0 , #24]");          // load the SVC number
-            // __ASM volatile ("LDRH   R12, [R12, #-2]");
-            // __ASM volatile ("BICS   R12, R12, #0xFF00");
-            // __ASM volatile ("CMP    R12, #20");                 // check if we are serving a frame snapshot (SVC_Code.SupervisorCall__SnapshotProcessModeRegisters) ...
-            // __ASM volatile ("BNE    __SVCCALL");                // ... skip if not
+         __ASM volatile ("__FROM_PSP:");
+         __ASM volatile ("MRS     R0, psp");
 
-            // {
-                // //
-                // // Snapshot
-                // //
-                // __ASM volatile ("MOV    R2 , LR");              // Save LR and CONTROL, to save the status and privilege/stack mode
-                // __ASM volatile ("MRS    R3 , CONTROL");
+         __ASM volatile ("__FROM_MSP:");
+         __ASM volatile ("MRS     R0, msp");
 
-                // __ASM volatile ("STMDB  R0!, {R2-R11}");        // Push the SW stack frame, a total of 10 registers, including R2/3
+         ////
+         //// Test for SupervisorCall__SnapshotProcessModeRegisters (0x14) and snapshot 
+         //// all remaining registers onto the stack first and into the convenience space
+         //// right after
+         ////
+         //{
+         //    __ASM volatile ("LDR    R12, [R0 , #24]");          // load the SVC number
+         //    __ASM volatile ("LDRH   R12, [R12, #-2]");
+         //    __ASM volatile ("BICS   R12, R12, #0xFF00");
+         //    __ASM volatile ("CMP    R12, #20");                 // check if we are serving a frame snapshot (SVC_Code.SupervisorCall__SnapshotProcessModeRegisters) ...
+         //    __ASM volatile ("BNE    __SVCCALL");                // ... skip if not
 
-                // //
-                // // Now the stack has the full frame of 18 registers (RegistersOnStack)
-                // // We need to move the frame to the convenience space and then pop the 
-                // // Software frame before return
-                // //
-                // __ASM volatile ("MOV    R1 , %0" : /*output*/ : "r"(&sw_hw__frame[0]));
-                // __ASM volatile ("MOV    R2 , R0");              // R0 contains the beginning of the frame
-                // __ASM volatile ("MOV    R12, #18");
+         //    {
+         //        //
+         //        // Snapshot
+         //        //
+         //        __ASM volatile ("MOV    R2 , LR");              // Save LR and CONTROL, to save the status and privilege/stack mode
+         //        __ASM volatile ("MRS    R3 , CONTROL");
 
-                // __ASM volatile ("__COPY_TO_FRAME:");
+         //        __ASM volatile ("STMDB  R0!, {R2-R11}");        // Push the SW stack frame, a total of 10 registers, including R2/3
 
-                // __ASM volatile ("LDR    R3, [R2]");
-                // __ASM volatile ("STR    R3, [R1]");
+         //        //
+         //        // Now the stack has the full frame of 18 registers (RegistersOnStack)
+         //        // We need to move the frame to the convenience space and then pop the 
+         //        // Software frame before return
+         //        //
+         //        __ASM volatile ("MOV    R1 , %0" : /*output*/ : "r"(&sw_hw__frame[0]));
+         //        __ASM volatile ("MOV    R2 , R0");              // R0 contains the beginning of the frame
+         //        __ASM volatile ("MOV    R12, #18");
 
-                // __ASM volatile ("ADD    R2 , #4");
-                // __ASM volatile ("ADD    R1 , #4");
-                // __ASM volatile ("SUBS   R12, #1");
-                // __ASM volatile ("CMP    R12, #0"); 
-                // __ASM volatile ("BNE   __COPY_TO_FRAME");
+         //        __ASM volatile ("__COPY_TO_FRAME:");
 
-                // __ASM volatile ("LDMIA    R0!, {R2-R11}");      // Unstack the SW frame (10 registers) before proceeding as usual
-            // }
-        // }
-        // //
-        // // End of snapshot
-        // //
+         //        __ASM volatile ("LDR    R3, [R2]");
+         //        __ASM volatile ("STR    R3, [R1]");
 
+         //        __ASM volatile ("ADD    R2 , #4");
+         //        __ASM volatile ("ADD    R1 , #4");
+         //        __ASM volatile ("SUBS   R12, #1");
+         //        __ASM volatile ("CMP    R12, #0"); 
+         //        __ASM volatile ("BNE   __COPY_TO_FRAME");
 
-        // //
-        // // Normal service call
-        // //
-        // __ASM volatile ("__SVCCALL:");
-
-        // __ASM volatile ("MOV    R1, %0" : /*output*/ : "r"(&svc_exc_return) );
-        // __ASM volatile ("STR    LR, [R1]");
+         //        __ASM volatile ("LDMIA    R0!, {R2-R11}");      // Unstack the SW frame (10 registers) before proceeding as usual
+         //    }
+         //}
+         ////
+         //// End of snapshot
+         ////
 
 
-// #if __FPU_USED != 0
-        // SVC_Handler_Zelig_VFP_NoFPContext();
-// #else
-        // SVC_Handler_Zelig();
-// #endif
+         //
+         // Normal service call
+         //
+         __ASM volatile ("__SVCCALL:");
 
-        // //
-        // // Push
-        // //
-        // //NotifySoftwareFrameSnapshot(); 
+         __ASM volatile ("MOV    R2, %0" : /*output*/ : "r"(&svc_exc_return) );
+         __ASM volatile ("MOV    R1, LR");
+         __ASM volatile ("STR    R1, [R2]");
 
-        // __ASM volatile ("MOV    R1, %0" : /*output*/ : "r"(&svc_exc_return));
-        // __ASM volatile ("LDR    LR, [R1]");
+         //////__ASM volatile ("MOV    R1, %0" : /*output*/ : "r"(&SVC_Handler_Zelig));
+         //////__ASM volatile ("BX     R1");
 
-        // __ASM volatile ("BX     LR");
+         SVC_Handler_Zelig();
+
+         //
+         // Push
+         //
+         //NotifySoftwareFrameSnapshot(); 
+
+         __ASM volatile ("MOV    R1, %0" : /*output*/ : "r"(&svc_exc_return));
+         __ASM volatile ("LDR    R1, [R2]");
+
+         __ASM volatile ("BX     R1");
     }
-
-	//
-	// Eliminate methods below eventually
-	// 
-
-	extern void BreakWithTrap();
 
 	/*__STATIC_INLINE*/ uint32_t  CMSIS_STUB_SCB__get_BASEPRI()
 	{
-		BreakWithTrap(); 
+        return 0;
 	}
 
 	/*__STATIC_INLINE*/ uint32_t CMSIS_STUB_SCB__set_BASEPRI(uint32_t basePri)
 	{
-		BreakWithTrap();
+        return 0;
 	}
 
 	/*__STATIC_INLINE*/ uint32_t CMSIS_STUB_SCB__get_FAULTMASK()
 	{
-		BreakWithTrap();
+        return 0;
 	}
 
 #else
@@ -646,51 +650,46 @@ extern "C"
     //__ATTRIBUTE_ALIGNMENT__
     void PendSV_Handler(void)
     {
-        //__DIRECTIVE_ALIGNMENT__;                             // 8 bytes alignment
+        //__DIRECTIVE_ALIGNMENT__;                     // 8 bytes alignment
 
-        __ASM volatile ("MRS      R0, PSP");                 // Save current process stack pointer value into R0
-        __ASM volatile ("SUB      R0, #40");                 // Allocate space for R4-R11, and LR/CONTROL as well
-		
-        __ASM volatile ("MOV      R2, LR");                  // Save LR and CONTROL, to save the status and privilege/stack mode
-        __ASM volatile ("MRS      R3, CONTROL");
-		
-        __ASM volatile ("STMIA    R0!, {R2-R5}");            // Stack the SW stack frame, a total of 10 registers, including R2/3
-        __ASM volatile ("STMIA    R0!, {R6-R7}");            // Keep stacking...
-		
-		__ASM volatile ("MOV      R4,      R8");             // Keep stacking...
-		__ASM volatile ("MOV      R5,      R9");             // Keep stacking...
-		__ASM volatile ("MOV      R6,      R10");            // Keep stacking...
-		__ASM volatile ("MOV      R7,      R11");            // Keep stacking...
-        __ASM volatile ("STMIA    R0!, {R4-R7}");            // Done!
-		
-        PendSV_Handler_Zelig();                              // Perform context switch, practically setting the stack pointer for the next task
-		
-        __ASM volatile ("ADD      R0, #16");                 // Allocate space for R4-R11, and LR/CONTROL as well
-        __ASM volatile ("LDMIA    R0!, {R4-R7}");            // Done!
-		__ASM volatile ("MOV      R8,       R4");            // Keep stacking...
-		__ASM volatile ("MOV      R9,       R5");            // Keep stacking...
-		__ASM volatile ("MOV      R10,      R6");            // Keep stacking...
-		__ASM volatile ("MOV      R11,      R7");            // Keep stacking...
-		
-        __ASM volatile ("ADD      R0, #40");                 // Allocate space for R4-R11, and LR/CONTROL as well
-		
-        __ASM volatile ("LDMIA    R0!, {R6-R7}");            // 
-        __ASM volatile ("LDMIA    R0!, {R2-R5}");            // Unstack the next tasks state
-		
-		__ASM volatile ("MOV      R8,       R4");            // Keep stacking...
-		__ASM volatile ("MOV      R9,       R5");            // Keep stacking...
-		__ASM volatile ("MOV      R10,      R6");            // Keep stacking...
-		__ASM volatile ("MOV      R11,      R7");            // Keep stacking...
+        __ASM volatile ("MRS      R0,      PSP");      // Save current process stack pointer value into R0
+        __ASM volatile ("SUB      R0,      #40");      // Allocate space for R4-R11, and LR/CONTROL as well (*)
 
-		
-		
-		
-		
-        __ASM volatile ("MOV      LR, R2");                  // Restore LR and CONTROL, to restore the status and privilege/stack mode
-        __ASM volatile ("MSR      CONTROL, R3");
-        __ASM volatile ("ISB");                              // architectural recommendation, always use ISB after updating control register
+        __ASM volatile ("MOV      R2,       LR");      // Save LR and CONTROL, to save the status and privilege/stack mode
+        __ASM volatile ("MRS      R3,  CONTROL");
 
-        __ASM volatile ("MSR      PSP, R0");                 // update stack pointer to correct location after unstacking 
+        __ASM volatile ("STMIA    R0!, {R2-R3}");      // Stack the SW stack frame, a total of 10 registers, including R2/3
+        __ASM volatile ("STMIA    R0!, {R4-R7}");      // Keep stacking...
+
+		__ASM volatile ("MOV      R4,       R8");      // Keep stacking...
+		__ASM volatile ("MOV      R5,       R9");      // Keep stacking...
+		__ASM volatile ("MOV      R6,      R10");      // Keep stacking...
+		__ASM volatile ("MOV      R7,      R11");      // Keep stacking...
+        __ASM volatile ("STMIA    R0!, {R4-R7}");      // Done!
+
+        __ASM volatile ("SUB      R0,      #40");      // Set R0 to be the top of the stack again
+
+        PendSV_Handler_Zelig();                        // Perform context switch, practically setting the stack pointer for the next task
+
+        __ASM volatile ("ADD      R0,      #24");      // Set R0 to point to R8 in the stack frame (4th register to the last...)
+
+        __ASM volatile ("LDMIA    R0!, {R4-R7}");      // Unstack the next tasks state
+		__ASM volatile ("MOV      R8,       R4");      // Keep unstacking...
+		__ASM volatile ("MOV      R9,       R5");      // Keep unstacking...
+		__ASM volatile ("MOV      R10,      R6");      // Keep unstacking...
+		__ASM volatile ("MOV      R11,      R7");      // Keep unstacking...
+
+        __ASM volatile ("SUB      R0,      #40");      // Set R0 to point to the top of the stack frame for the next  registers
+
+        __ASM volatile ("LDMIA    R0!, {R2-R3}");      // Keep unstacking...
+        __ASM volatile ("LDMIA    R0!, {R4-R7}");      // Done!
+		
+        __ASM volatile ("MOV      LR,       R2");      // Restore LR and CONTROL, to restore the status and privilege/stack mode
+        __ASM volatile ("MSR      CONTROL,  R3");
+        __ASM volatile ("ISB");                        // architectural recommendation, always use ISB after updating control register
+
+        __ASM volatile ("ADD      R0,      #16");      // (*) cleanup space for R4-R11, and LR/CONTROL as well, and have stack point to top of HW frame
+        __ASM volatile ("MSR      PSP,      R0");      // update stack pointer to correct location after unstacking 
 
         __ASM volatile ("BX       LR");
     }
