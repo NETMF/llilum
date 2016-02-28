@@ -26,6 +26,8 @@ namespace Microsoft.Zelig.Runtime
 
         NMI                 ,
         Fault               , 
+        SysTick             , 
+        PendSV              , 
         Service             , 
         Debug               , 
     }

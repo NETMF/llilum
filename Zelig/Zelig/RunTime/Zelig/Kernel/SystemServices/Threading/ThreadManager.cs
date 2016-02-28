@@ -320,9 +320,9 @@ namespace Microsoft.Zelig.Runtime
 
         public virtual void TimeQuantumExpired( )
         {
-#if !ARMv7
+//#if !ARMv7
             BugCheck.AssertInterruptsOff( );
-#endif
+//b#endif
 
             InsertInPriorityOrder( m_runningThread );
 
@@ -359,21 +359,23 @@ namespace Microsoft.Zelig.Runtime
 
         public void RescheduleAndRequestContextSwitchIfNeeded( HardwareException mode )
         {
+            //BugCheck.Log( "Mode: %d", (int)mode ); 
+
             Reschedule();
 
-#if ARMv7
-            //
-            // Timer will fire to ths point, and for the time being they are actual interrupts, although they should
-            // just be user mode handlers from the controller thread
-            // We therefore need to  pick the case if System timer exception and let it go as if it was a normal thread mode
-            // handler. When we enable the interrupts controller this case will be automatically take care of and we 
-            // can remove this #if
-            // 
+//////#if ARMv7
+//////            //
+//////            // Timer will fire to ths point, and for the time being they are actual interrupts, although they should
+//////            // just be user mode handlers from the controller thread
+//////            // We therefore need to  pick the case if System timer exception and let it go as if it was a normal thread mode
+//////            // handler. When we enable the interrupts controller this case will be automatically take care of and we 
+//////            // can remove this #if
+//////            // 
             
-            if(mode == HardwareException.None || mode == HardwareException.Interrupt )
-#else
-            if(mode == HardwareException.None)
-#endif
+//////            if(mode == HardwareException.None || mode == HardwareException.Interrupt )
+//////#else
+            if(mode == HardwareException.None || mode == HardwareException.SysTick || mode == HardwareException.Interrupt)
+//////#endif
             {
                 if(this.ShouldContextSwitch)
                 {

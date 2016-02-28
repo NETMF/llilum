@@ -100,8 +100,8 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6.SmartHandles
                 case ProcessorARMv6M.ISR_NUMBER.HardFault       : return HardwareException.Fault; 
                 case ProcessorARMv6M.ISR_NUMBER.SVCall          : return HardwareException.Service;
                 case ProcessorARMv6M.ISR_NUMBER.ReservedForDebug: return HardwareException.Debug;
-                case ProcessorARMv6M.ISR_NUMBER.PendSV          : return HardwareException.SoftwareInterrupt;
-                case ProcessorARMv6M.ISR_NUMBER.SysTick         : return HardwareException.SoftwareInterrupt;
+                case ProcessorARMv6M.ISR_NUMBER.PendSV          : return HardwareException.PendSV;
+                case ProcessorARMv6M.ISR_NUMBER.SysTick         : return HardwareException.SysTick;
                 case ProcessorARMv6M.ISR_NUMBER.Reset           :
                 case ProcessorARMv6M.ISR_NUMBER.Reserved4       :
                 case ProcessorARMv6M.ISR_NUMBER.Reserved5       :

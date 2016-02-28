@@ -72,9 +72,9 @@ namespace Microsoft.DeviceModels.Runtime.Win32
         // Extensibility 
         //
 
-        private void WaitExpired(ulong time)
+        private void WaitExpired( UIntPtr context, ulong time )
         {
-            WaitExpired(RT.SchedulerTime.FromUnits(time));
+            WaitExpired( RT.SchedulerTime.FromUnits( time ) ); 
         }
 
 
@@ -86,7 +86,7 @@ namespace Microsoft.DeviceModels.Runtime.Win32
             {
                 fixed (LLOS.HAL.TimerContext** ppTimer = &m_timer)
                 {
-                    LLOS.LlilumErrors.ThrowOnError(LLOS.HAL.Timer.LLOS_SYSTEM_TIMER_AllocateTimer(WaitExpired, ulong.MaxValue, ppTimer), false);
+                    LLOS.LlilumErrors.ThrowOnError(LLOS.HAL.Timer.LLOS_SYSTEM_TIMER_AllocateTimer(WaitExpired, UIntPtr.Zero, ulong.MaxValue, ppTimer), false);
                 }
             }
         }

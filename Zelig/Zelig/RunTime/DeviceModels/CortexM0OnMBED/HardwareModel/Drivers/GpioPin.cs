@@ -106,7 +106,7 @@ namespace Microsoft.CortexM0OnMBED.HardwareModel
             unsafe
             {
                 UIntPtr hndPtr = MBED.InterruptController.CastInterruptHandlerAsPtr(m_handler);
-                LLGPIO.LLOS_GPIO_EnablePin( m_gpio, m_activeEdge, HandleGpioInterrupt, hndPtr );
+                LLGPIO.LLOS_GPIO_EnablePin( m_gpio, m_activeEdge, HandleGpioInterruptNative, hndPtr );
             }
 
             m_irqEnabled = true;
@@ -158,13 +158,12 @@ namespace Microsoft.CortexM0OnMBED.HardwareModel
             SendEventInternal((Llilum.PinEdge)data.Context);
         }
 
-        private static unsafe void HandleGpioInterrupt(LLOS.GpioContext *pin, UIntPtr context, LLOS.GpioPinEdge evt)
+        private static unsafe void HandleGpioInterruptNative(LLOS.GpioContext *pin, UIntPtr context, LLOS.GpioPinEdge evt)
         {
             M0.Drivers.InterruptController.InterruptData data;
 
             data.Handler = MBED.InterruptController.CastAsInterruptHandler(context);
             data.Context = (uint)evt;
-            data.Subcontext = 0;
 
             using (RT.SmartHandles.InterruptState.Disable())
             {

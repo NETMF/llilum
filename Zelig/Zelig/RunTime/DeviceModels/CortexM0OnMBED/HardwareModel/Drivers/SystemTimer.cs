@@ -118,10 +118,11 @@ namespace Microsoft.CortexM0OnMBED.Drivers
         public const uint c_ThreeQuarterCycle = c_HalfCycle + c_QuarterCycle;
 
         //--//
-
-        private RT.KernelList<Timer>    m_timers;
-        private ulong                   m_accumulator;
-        private uint                    m_lastAccumulatorUpdate;
+        
+        private RT.KernelList<Timer>        m_timers;
+        private InterruptController.Handler m_interrupthandler;
+        private ulong                       m_accumulator;
+        private uint                        m_lastAccumulatorUpdate;
 
         // This is only used as a placeholder to pass into timer_insert_event
         private unsafe LLOS.HAL.TimerContext*  m_timerEvent;
@@ -130,9 +131,15 @@ namespace Microsoft.CortexM0OnMBED.Drivers
 
         public void Initialize()
         {
-            m_timers      = new RT.KernelList<Timer>();
-            m_accumulator = 0;
-            
+            m_timers            = new RT.KernelList<Timer>();
+            m_interrupthandler  = InterruptController.Handler.Create( 
+                                                                Board.Instance.GetSystemTimerIRQNumber( )         , 
+                                                                ChipsetModel.Drivers.InterruptPriority.BelowNormal, 
+                                                                ChipsetModel.Drivers.InterruptSettings.Normal     , 
+                                                                ProcessTimerInterrupt 
+                                                                );
+
+            m_accumulator           = 0;
             m_lastAccumulatorUpdate = this.Counter;
 
             // Allocate our one, and only, timer event
@@ -140,17 +147,23 @@ namespace Microsoft.CortexM0OnMBED.Drivers
             {
                 fixed (LLOS.HAL.TimerContext** timer_ptr = &m_timerEvent)
                 {
-                    LLOS.HAL.Timer.LLOS_SYSTEM_TIMER_AllocateTimer( HandleSystemTimer, ulong.MaxValue, timer_ptr );
+                    var callbackContext = InterruptController.CastInterruptHandlerAsPtr( m_interrupthandler ); 
+                    LLOS.HAL.Timer.LLOS_SYSTEM_TIMER_AllocateTimer( HandleSystemTimerNative, callbackContext, ulong.MaxValue, timer_ptr );
                 }
             }
             
-            ChipsetModel.NVIC.SetPriority( ChipsetModel.Board.Instance.GetSystemTimerIRQNumber(), RT.TargetPlatform.ARMv6.ProcessorARMv6M.c_Priority__SystemTimer );
+            ChipsetModel.NVIC.SetPriority( 
+                ChipsetModel.Board.Instance.GetSystemTimerIRQNumber(), 
+                RT.TargetPlatform.ARMv6.ProcessorARMv6M.c_Priority__SystemTimer 
+                );
 
             //
             // Set up a guard to never suffer from shutting down the underlying circuitry
             //
             //s_guard = CreateTimer( (timer, currentTime) => { timer.RelativeTimeout = QuarterCycle;  }  );
             //s_guard.RelativeTimeout = QuarterCycle; 
+            
+            InterruptController.Instance.RegisterAndEnable( m_interrupthandler );
 
             // no need to Refresh because guard causes a refresh already
             Refresh();
@@ -213,7 +226,7 @@ namespace Microsoft.CortexM0OnMBED.Drivers
         /// Handle the timer expiration interrupt
         /// </summary>
         /// <param name="ticks">Time when the timer was fired</param>
-        private void ProcessTimeout(ulong ticks)
+        internal void ProcessTimeout(ulong ticks)
         {
             // Ensure that lastAccumulatorUpdate is always updated with the accumulator!
             uint counter = this.Counter;
@@ -362,12 +375,27 @@ namespace Microsoft.CortexM0OnMBED.Drivers
                 current           - m_lastAccumulatorUpdate          :
                 c_MaxCounterValue - m_lastAccumulatorUpdate + current;
         }
+        
+        //--//
 
-        private static void HandleSystemTimer(ulong ticks)
+        private static void HandleSystemTimerNative(UIntPtr context, ulong ticks)
+        {
+            ChipsetModel.Drivers.InterruptController.InterruptData data;
+            
+            data.Context = ticks;
+            data.Handler = InterruptController.CastAsInterruptHandler(context);
+
+            using (RT.SmartHandles.InterruptState.Disable())
+            {
+                InterruptController.Instance.PostInterrupt(data);
+            }
+        }
+        
+        private void ProcessTimerInterrupt( ChipsetModel.Drivers.InterruptController.InterruptData data )
         {
             using(RT.SmartHandles.InterruptState.Disable())
             {
-                Instance.ProcessTimeout( ticks );
+                SystemTimer.Instance.ProcessTimeout( data.Context );
             }
         }
     }

@@ -43,7 +43,7 @@ namespace Microsoft.Zelig.Test.mbed.SimpleNet
             var endBytes = ASCIIEncoding.ASCII.GetBytes(end);
             
             // NOTE: Be sure to change this to your local machine IP that is running the NetworkTest app
-            IPEndPoint endPoint = new IPEndPoint( IPAddress.Parse("10.91.64.145"), 11000);
+            IPEndPoint endPoint = new IPEndPoint( IPAddress.Parse("10.0.1.4"), 11000);
 
             var recBuffer = new byte[512];
             

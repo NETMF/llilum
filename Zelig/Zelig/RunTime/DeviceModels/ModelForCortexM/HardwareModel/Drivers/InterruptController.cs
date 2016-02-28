@@ -47,8 +47,7 @@ namespace Microsoft.DeviceModels.Chipset.CortexM.Drivers
         /// </summary>
         public struct InterruptData
         {
-            public uint    Context;
-            public uint    Subcontext;
+            public ulong   Context;
             public Handler Handler;
         }
 
@@ -255,10 +254,10 @@ namespace Microsoft.DeviceModels.Chipset.CortexM.Drivers
         public void ProcessInterrupt( bool fFastOnly )
         {
             InterruptData data;
+
             int activeInterrupt = GetNextActiveInterupt();
 
-            data.Context    = 0;
-            data.Subcontext = 0;
+            data.Context = 0;
 
             while (activeInterrupt != c_Invalid)
             {
