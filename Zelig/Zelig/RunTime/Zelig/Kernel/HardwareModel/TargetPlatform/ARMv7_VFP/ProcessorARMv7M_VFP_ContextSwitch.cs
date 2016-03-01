@@ -553,11 +553,10 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             //
 
             [Inline]
-            public static void InterruptHandlerWithContextSwitch( ref RegistersOnStackNoFPContext registers )
+            public static void InterruptHandlerWithContextSwitch( UIntPtr stackPtr )
             {
                 Peripherals.Instance.ProcessInterrupt( );
-
-#if USE_HARDWARE_INTERRUPT_VECTOR
+                
                 ThreadManager tm = ThreadManager.Instance;
 
                 //
@@ -566,9 +565,8 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 //
                 while(tm.ShouldContextSwitch)
                 {
-                    ContextSwitch( tm, ref registers );
+                    ContextSwitch( tm, stackPtr, false );
                 }
-#endif
             }
 
             [Inline]
@@ -662,11 +660,11 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             private static unsafe void SVC_Handler_Zelig_VFP_NoFPContext( uint* args )
             {
                 SVC_Code svc_number = (SVC_Code)((byte*)args[6])[-2]; // svc number is at stacked PC offset - 2 bytes
-
+                
                 switch(svc_number)
                 {
                     case SVC_Code.SupervisorCall__LongJump:
-                        LongJump( ); 
+                        LongJump( );
                         break;
                     case SVC_Code.SupervisorCall__StartThreads:
                         FirstLongJump( );
@@ -675,7 +673,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                         LongJumpForRetireThread( );
                         break;
                     case SVC_Code.SupervisorCall__SnapshotProcessModeRegisters:
-                        UpdateFrame( ref ProcessorARMv7M.Snapshot, CUSTOM_STUB_FetchSoftwareFrameSnapshot( ) ); 
+                        UpdateFrame( ref ProcessorARMv7M.Snapshot, CUSTOM_STUB_FetchSoftwareFrameSnapshot( ) );
                         break;
                     default:
                         BugCheck.Assert( false, BugCheck.StopCode.Impossible );
@@ -689,7 +687,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             [RT.ExportedMethod]
             private static UIntPtr PendSV_Handler_Zelig_VFP( UIntPtr stackPointer, uint isParitalStack )
             {
-                using (SmartHandles.InterruptStateARMv7M.Disable( ))
+                using(RT.SmartHandles.InterruptState.Disable( ))
                 {
                     return ContextSwitch( ThreadManager.Instance, stackPointer, isParitalStack == 0 );
                 }
@@ -698,9 +696,12 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_VFP__HardVFP )]
             [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
             [RT.ExportedMethod]
-            private static void AnyInterrupt( )
+            private static void AnyInterrupt( UIntPtr stackPtr )
             {
-
+                using(RT.SmartHandles.InterruptState.Disable( ))
+                {
+                    InterruptHandlerWithContextSwitch( stackPtr );
+                }
             }        
         }
 

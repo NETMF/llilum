@@ -144,11 +144,23 @@ SECTIONS
         *(.stack*)
     } > RAM
 
+    /*
+     * The section '.managed_exception_thread' is a LLILUM Specific addition to pad 
+     * the stack space at the bottom with enough space to build a managed array. 
+     * Assuming that the stack bottom (_StackLimit) is 8 bytes aligned, we add 
+     * 16 bytes that will contain the array ObjectHeader and the length member (see 
+     * ArrayImpl.cs).  This way we do preserve stack alignment.
+     */
+    .stack_dummy_managed_exception_thread :
+    {
+        *(.managed_exception_thread)
+    } > RAM
+
     /* Set stack top to end of RAM, and stack limit move down by
      * size of stack_dummy section */
     __StackTop = ORIGIN(RAM) + LENGTH(RAM);
     _estack = __StackTop;
-    __StackLimit = __StackTop - SIZEOF(.stack_dummy);
+    __StackLimit = __StackTop - SIZEOF(.stack_dummy) + SIZEOF(.stack_dummy_managed_exception_thread);
     PROVIDE(__stack = __StackTop);
 
     /* Check if data + heap + stack exceeds RAM limit */

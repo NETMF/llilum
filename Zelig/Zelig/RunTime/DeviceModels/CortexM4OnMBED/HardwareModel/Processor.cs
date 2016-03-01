@@ -129,10 +129,10 @@ namespace Microsoft.CortexM4OnMBED
 
         [RT.BottomOfCallStack()]
         [RT.HardwareExceptionHandler(RT.HardwareException.Interrupt)]
-        private static void InterruptHandler( ref Context.RegistersOnStackNoFPContext registers )
+        private static void InterruptHandler( UIntPtr stackPtr )
         {
             s_repeatedAbort = false;
-            Context.InterruptHandlerWithContextSwitch( ref registers );
+            Context.InterruptHandlerWithContextSwitch( stackPtr );
         }
 
         [RT.BottomOfCallStack()]

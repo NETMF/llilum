@@ -110,9 +110,6 @@ extern "C"
 		return __get_MSP();
 	}
 
-	extern uint32_t* __StackTop;
-	extern uint32_t* __StackLimit;
-
 	/*__STATIC_INLINE*/ void* CMSIS_STUB_SCB__get_MSP_ResetValue()
 	{
 		//

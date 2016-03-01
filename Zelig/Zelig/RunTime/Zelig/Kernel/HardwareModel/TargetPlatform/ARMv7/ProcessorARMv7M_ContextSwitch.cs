@@ -448,20 +448,20 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             //
 
             [Inline]
-            public static void InterruptHandlerWithContextSwitch( ref RegistersOnStack registers )
+            public static void InterruptHandlerWithContextSwitch( UIntPtr stackPointer )
             {
                 Peripherals.Instance.ProcessInterrupt( );
 
-                //ThreadManager tm = ThreadManager.Instance;
+                ThreadManager tm = ThreadManager.Instance;
 
-                //
-                // We keep looping until the current and next threads are the same,
-                // because when swapping out a dead thread, we might wake up a different thread.
-                //
-                //while(tm.ShouldContextSwitch)
-                //{
-                //    ContextSwitch(tm, ref registers);
-                //}
+
+                // We keep looping until the current and next threads are the same, because
+                // when swapping out a dead thread, we might wake up a different thread.
+
+                while(tm.ShouldContextSwitch)
+                {
+                    ContextSwitch( tm, stackPointer );
+                }
             }
 
             [Inline]
@@ -548,8 +548,8 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             //
             // All overridable exceptions for Ctx switch
             //
-            
-            [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_VFP__SoftVFP )]
+
+            [RT.CapabilitiesFilter( RequiredCapabilities = TargetModel.ArmProcessor.InstructionSetVersion.Platform_VFP__SoftVFP )]
             [RT.HardwareExceptionHandler( RT.HardwareException.Service )]
             [RT.ExportedMethod]
             private static unsafe void SVC_Handler_Zelig( uint* args )
@@ -568,7 +568,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                         LongJumpForRetireThread( );
                         break;
                     case SVC_Code.SupervisorCall__SnapshotProcessModeRegisters:
-                        UpdateFrame( ref ProcessorARMv7M.Snapshot, CUSTOM_STUB_FetchSoftwareFrameSnapshot( ) ); 
+                        UpdateFrame( ref ProcessorARMv7M.Snapshot, CUSTOM_STUB_FetchSoftwareFrameSnapshot( ) );
                         break;
                     default:
                         BugCheck.Assert( false, BugCheck.StopCode.Impossible );
@@ -581,22 +581,22 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             [RT.ExportedMethod]
             private static UIntPtr PendSV_Handler_Zelig( UIntPtr stackPtr )
             {
-                using(SmartHandles.InterruptStateARMv7M.Disable( ))
+                using(RT.SmartHandles.InterruptState.Disable( ))
                 {
-                    unsafe
-                    {
-                        return ContextSwitch(ThreadManager.Instance, stackPtr );
-                    }
+                    return ContextSwitch( ThreadManager.Instance, stackPtr );
                 }
             }
             
             [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_VFP__SoftVFP )]
             [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
             [RT.ExportedMethod]
-            private static void AnyInterrupt( )
+            private static void AnyInterrupt( UIntPtr stackPtr )
             {
-
-            }        
+                using(RT.SmartHandles.InterruptState.Disable( ))
+                {
+                    InterruptHandlerWithContextSwitch( stackPtr );
+                }
+            }
         }
 
         //--//

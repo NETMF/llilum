@@ -375,19 +375,22 @@ namespace Microsoft.CortexM0OnMBED.Drivers
                 current           - m_lastAccumulatorUpdate          :
                 c_MaxCounterValue - m_lastAccumulatorUpdate + current;
         }
-        
+
         //--//
 
-        private static void HandleSystemTimerNative(UIntPtr context, ulong ticks)
+        private static void HandleSystemTimerNative( UIntPtr context, ulong ticks )
         {
             ChipsetModel.Drivers.InterruptController.InterruptData data;
-            
-            data.Context = ticks;
-            data.Handler = InterruptController.CastAsInterruptHandler(context);
 
-            using (RT.SmartHandles.InterruptState.Disable())
+            data.Context = ticks;
+            data.Handler = InterruptController.CastAsInterruptHandler( context );
+
+            using(RT.SmartHandles.InterruptState.Disable( ))
             {
-                InterruptController.Instance.PostInterrupt(data);
+                using(RT.SmartHandles.SwapCurrentThreadUnderInterrupt hnd = RT.ThreadManager.InstallInterruptThread( ))
+                {
+                    InterruptController.Instance.PostInterrupt( data );
+                }
             }
         }
         

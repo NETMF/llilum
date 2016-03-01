@@ -299,6 +299,24 @@ namespace Microsoft.Zelig.Runtime
                 return (int)ts2.Dimensions.Length;
             }
         }
+
+        //--//
+        
+        public static uint[] InitializeFromRawMemory( UIntPtr baseAddress, uint sizeInBytes )
+        {
+            BugCheck.Assert( sizeInBytes % 4 == 0, BugCheck.StopCode.IncorrectArgument );
+            
+            TS.VTable vTable        = TS.VTable.GetFromType( typeof(uint[]) );
+            uint      numOfElements = (sizeInBytes - MemoryFreeBlock.FixedSize() ) / sizeof( uint ); 
+            
+            uint[] externalRepresentation = (uint[])TypeSystemManager.Instance.InitializeArray( baseAddress, vTable, numOfElements, referenceCounting: false );
+
+            ObjectHeader oh = ObjectHeader.Unpack( externalRepresentation );
+
+            oh.MultiUseWord = (int)(ObjectHeader.GarbageCollectorFlags.FreeBlock | ObjectHeader.GarbageCollectorFlags.Unmarked);
+
+            return externalRepresentation;
+        }
     }
 
     //----------------------------------------------------------------------------------------

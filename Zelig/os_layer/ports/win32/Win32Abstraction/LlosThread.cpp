@@ -243,7 +243,19 @@ HRESULT LLOS_THREAD_DeleteThread(LLOS_Handle threadHandle)
     return S_OK;
 }
 
-void LLOS_THREAD_Sleep(int32_t timeoutMilliseconds)
+VOID LLOS_THREAD_Sleep(int32_t timeoutMilliseconds)
 {
     Sleep(timeoutMilliseconds);
 }
+
+uint32_t LLOS_THREAD_GetMainStackAddress()
+{
+    return 0;
+}
+
+uint32_t LLOS_THREAD_GetMainStackAddress()
+{
+    return 0;
+}
+
+

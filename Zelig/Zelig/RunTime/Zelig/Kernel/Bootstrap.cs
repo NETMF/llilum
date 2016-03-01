@@ -53,7 +53,7 @@ namespace Microsoft.Zelig.Runtime
         [NoInline]
         [NoReturn]
         [TS.WellKnownMethod( "Bootstrap_Initialization" )]
-        internal static unsafe void Initialization()
+        public static unsafe void Initialization()
         {
 #if SELF_TEST_BASIC
             SelfTest.SelfTest__Bootstrap( );

@@ -82,7 +82,7 @@ namespace Microsoft.Zelig.Runtime
         [Inline]
         [TS.DisableAutomaticReferenceCounting]
 
-        public object InitializeObject(UIntPtr memory,
+        public object InitializeObject( UIntPtr memory,
                                         TS.VTable vTable,
                                         bool referenceCounting)
         {
@@ -126,7 +126,7 @@ namespace Microsoft.Zelig.Runtime
         [Inline]
         [TS.DisableAutomaticReferenceCounting]
 
-        public Array InitializeArray(UIntPtr memory,
+        public Array InitializeArray( UIntPtr memory,
                                       TS.VTable vTable,
                                       uint length,
                                       bool referenceCounting)

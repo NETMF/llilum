@@ -451,20 +451,21 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
             //
 
             [Inline]
-            public static void InterruptHandlerWithContextSwitch( ref RegistersOnStack registers )
+            public static void InterruptHandlerWithContextSwitch( UIntPtr stackPtr )
             {
                 Peripherals.Instance.ProcessInterrupt( );
 
-                //ThreadManager tm = ThreadManager.Instance;
+                ThreadManager tm = ThreadManager.Instance;
 
-                //
-                // We keep looping until the current and next threads are the same,
-                // because when swapping out a dead thread, we might wake up a different thread.
-                //
-                //while(tm.ShouldContextSwitch)
-                //{
-                //    ContextSwitch(tm, ref registers);
-                //}
+
+                // We keep looping until the current and next threads are the same, because 
+                // when swapping out a dead thread, we might wake up a different thread.
+
+
+                while(tm.ShouldContextSwitch)
+                {
+                    ContextSwitch( tm, stackPtr );
+                }
             }
 
             [Inline]
@@ -586,20 +587,20 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
             {
                 using(SmartHandles.InterruptStateARMv6M.Disable( ))
                 {
-                    unsafe
-                    {
-                        return ContextSwitch(ThreadManager.Instance, stackPtr );
-                    }
+                    return ContextSwitch(ThreadManager.Instance, stackPtr );
                 }
             }
             
-            [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv6M)]
+            [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_VFP__SoftVFP )]
             [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
             [RT.ExportedMethod]
-            private static void AnyInterrupt( )
+            private static void AnyInterrupt( UIntPtr stackPtr )
             {
-
-            }        
+                using(RT.SmartHandles.InterruptState.Disable( ))
+                {
+                    InterruptHandlerWithContextSwitch( stackPtr );
+                }
+            }
         }
 
         //--//

@@ -16,36 +16,8 @@ namespace Microsoft.Zelig.Runtime
         //--//
 
         //
-        // State 
-        //
-        
-        protected ThreadImpl m_exceptionThread;
-
-        //--//
-
-        //
         // Helper methods
         //
-
-        public override void InitializeAfterStaticConstructors( uint[] systemStack )
-        {
-            base.InitializeAfterStaticConstructors( systemStack );
-
-            //
-            // Make the stack the frame size + 1, so that we can fit the frame and be aligned to 8 bytes (array as a length member). 
-            // Currently hardcoded to 128, see https://github.com/NETMF/llilum/issues/160
-            //
-            m_exceptionThread = new ThreadImpl( Bootstrap.Initialization, new uint[ 128 ] );
-
-            //
-            // The msp thread is never started, so we have to manually register them, to enable the debugger to see them.
-            //
-            RegisterThread(m_exceptionThread);
-
-            //--//
-
-            m_exceptionThread.SetupForExceptionHandling( unchecked((uint)ARMv7.ProcessorARMv7M.IRQn_Type.Reset_IRQn) );
-        }
 
         public override unsafe void StartThreads( )
         {
@@ -105,32 +77,7 @@ namespace Microsoft.Zelig.Runtime
 
         //
         // Access methods 
-        // 
-
-        public override ThreadImpl InterruptThread
-        {
-            get
-            {
-                return m_exceptionThread;
-            }
-        }
-
-        public override ThreadImpl FastInterruptThread
-        {
-            get
-            {
-                return m_exceptionThread;
-            }
-        }
-
-        public override ThreadImpl AbortThread
-        {
-            get
-            {
-                return m_exceptionThread;
-            }
-        }
-
+        //
 
         protected override void IdleThread( )
         {

@@ -2,65 +2,71 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <None Include="$(LlilumSourceRoot)\..\os_layer\ARMv7M\Vectors\startup_LPC17xx.S" />
-    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\.gdbinit">
-      <Filter>build&amp;debug</Filter>
-    </None>
-    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\build.bat">
-      <Filter>build&amp;debug</Filter>
-    </None>
-    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\buildmake.bat">
-      <Filter>build&amp;debug</Filter>
-    </None>
-    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\debug.bat">
-      <Filter>build&amp;debug</Filter>
-    </None>
-    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\debugLPC1768.bat">
-      <Filter>build&amp;debug</Filter>
-    </None>
-    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\deploy.bat">
-      <Filter>build&amp;debug</Filter>
-    </None>
-    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\makefile">
-      <Filter>build&amp;debug</Filter>
-    </None>
     <None Include="$(LlilumSourceRoot)\..\os_layer\ARMv7M\Vectors\startup_MK64F12.S" />
-    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\buildK64F.bat">
-      <Filter>build&amp;debug</Filter>
-    </None>
-    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\buildLPC1768.bat">
-      <Filter>build&amp;debug</Filter>
-    </None>
-    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\buildSTM32L152.bat">
-      <Filter>build&amp;debug</Filter>
-    </None>
-    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\debugK64F.bat">
-      <Filter>build&amp;debug</Filter>
-    </None>
-    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\debugSTM32.bat">
-      <Filter>build&amp;debug</Filter>
-    </None>
-    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\deployK64F.bat">
-      <Filter>build&amp;debug</Filter>
-    </None>
-    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\deployLPC1768.bat">
-      <Filter>build&amp;debug</Filter>
-    </None>
-    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\deploySTM32L152.bat">
-      <Filter>build&amp;debug</Filter>
-    </None>
     <None Include="$(LlilumSourceRoot)\..\os_layer\ARMv7M\Vectors\startup_stm32l152xe.S" />
-    <None Include="..\..\..\..\os_layer\ARMv7M\Vectors\startup_stm32f411xe.S" />
-    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\buildSTM32F411.bat">
+    <None Include="$(LlilumSourceRoot)\..\TARGET_LPC1768\TOOLCHAIN_GCC_ARM\LPC1768.ld" />
+    <None Include="$(LlilumSourceRoot)\..\TARGET_K64F\TOOLCHAIN_GCC_ARM\K64FN1M0xxx12.ld" />
+    <None Include="$(LlilumSourceRoot)\..\TARGET_NUCLEO_L152RE\TOOLCHAIN_GCC_ARM\STM32L152XE.ld" />
+    <None Include="$(LlilumSourceRoot)\..\os_layer\ARMv7M\Vectors\startup_stm32f401xe.S" />
+    <None Include="$(LlilumSourceRoot)\..\TARGET_NUCLEO_F401RE\TOOLCHAIN_GCC_ARM\STM32F401XE.ld" />
+    <None Include="$(LlilumSourceRoot)\..\os_layer\ARMv7M\Vectors\startup_stm32f411xe.S" />
+    <None Include="$(LlilumSourceRoot)\..\TARGET_NUCLEO_F411RE\TOOLCHAIN_GCC_ARM\STM32F411XE.ld" />
+    <None Include="$(LlilumSourceRoot)\..\os_layer\ARMv7M\Vectors\startup_stm32f091xc.S" />
+    <None Include="$(LlilumSourceRoot)\..\TARGET_NUCLEO_F091RC\TOOLCHAIN_GCC_ARM\STM32F091XC.ld" />
+    <None Include="$(LlilumSourceRoot)\..\LLVM2IR_results\mbed\simple\.gdbinit">
       <Filter>build&amp;debug</Filter>
     </None>
-    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\debugSTM32F411.bat">
+    <None Include="$(LlilumSourceRoot)\..\LLVM2IR_results\mbed\simple\build.bat">
       <Filter>build&amp;debug</Filter>
     </None>
-    <None Include="..\..\..\..\LLVM2IR_results\mbed\simple\deploySTM32F411.bat">
+    <None Include="$(LlilumSourceRoot)\..\LLVM2IR_results\mbed\simple\buildK64F.bat">
       <Filter>build&amp;debug</Filter>
     </None>
-    <None Include="..\..\..\..\os_layer\ARMv7M\Vectors\startup_stm32f401xe.S" />
-    <None Include="..\..\..\..\os_layer\ARMv7M\Vectors\startup_stm32f091xc.S" />
+    <None Include="$(LlilumSourceRoot)\..\LLVM2IR_results\mbed\simple\buildLPC1768.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="$(LlilumSourceRoot)\..\LLVM2IR_results\mbed\simple\buildmake.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="$(LlilumSourceRoot)\..\LLVM2IR_results\mbed\simple\buildSTM32F411.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="$(LlilumSourceRoot)\..\LLVM2IR_results\mbed\simple\buildSTM32L152.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="$(LlilumSourceRoot)\..\LLVM2IR_results\mbed\simple\debug.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="$(LlilumSourceRoot)\..\LLVM2IR_results\mbed\simple\debugK64F.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="$(LlilumSourceRoot)\..\LLVM2IR_results\mbed\simple\debugLPC1768.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="$(LlilumSourceRoot)\..\LLVM2IR_results\mbed\simple\debugSTM32.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="$(LlilumSourceRoot)\..\LLVM2IR_results\mbed\simple\debugSTM32F411.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="$(LlilumSourceRoot)\..\LLVM2IR_results\mbed\simple\deploy.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="$(LlilumSourceRoot)\..\LLVM2IR_results\mbed\simple\deployK64F.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="$(LlilumSourceRoot)\..\LLVM2IR_results\mbed\simple\deployLPC1768.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="$(LlilumSourceRoot)\..\LLVM2IR_results\mbed\simple\deploySTM32F411.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="$(LlilumSourceRoot)\..\LLVM2IR_results\mbed\simple\deploySTM32L152.bat">
+      <Filter>build&amp;debug</Filter>
+    </None>
+    <None Include="$(LlilumSourceRoot)\..\LLVM2IR_results\mbed\simple\makefile">
+      <Filter>build&amp;debug</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="build&amp;debug">
@@ -68,7 +74,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="..\..\..\..\LLVM2IR_results\mbed\simple\DebugOptions.xml">
+    <Xml Include="$(LlilumSourceRoot)\..\LLVM2IR_results\mbed\simple\DebugOptions.xml">
       <Filter>build&amp;debug</Filter>
     </Xml>
   </ItemGroup>

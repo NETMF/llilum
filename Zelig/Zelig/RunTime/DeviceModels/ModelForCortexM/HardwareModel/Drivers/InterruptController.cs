@@ -244,8 +244,7 @@ namespace Microsoft.DeviceModels.Chipset.CortexM.Drivers
         {
             ProcessInterrupt( false );
         }
-
-////    [RT.MemoryRequirements( RT.MemoryAttributes.Unpaged )]
+        
         public void ProcessFastInterrupt()
         {
             ProcessInterrupt( true );
@@ -255,7 +254,7 @@ namespace Microsoft.DeviceModels.Chipset.CortexM.Drivers
         {
             InterruptData data;
 
-            int activeInterrupt = GetNextActiveInterupt();
+            int activeInterrupt = GetNextActiveInterrupt();
 
             data.Context = 0;
 
@@ -290,11 +289,12 @@ namespace Microsoft.DeviceModels.Chipset.CortexM.Drivers
                 }
 
                 ClearInterrupt(activeInterrupt);
-                activeInterrupt = GetNextActiveInterupt();
+
+                activeInterrupt = GetNextActiveInterrupt();
             }
         }
     
-        public virtual int GetNextActiveInterupt()
+        public virtual int GetNextActiveInterrupt()
         {
             return c_Invalid; 
         }

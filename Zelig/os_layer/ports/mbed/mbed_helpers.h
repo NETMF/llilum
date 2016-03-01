@@ -74,3 +74,7 @@
 
 int32_t WStringToCharBuffer(char* output, uint32_t outputBufferLength, const uint16_t* input, const uint32_t length);
 
+//--//
+
+extern uint32_t* __StackTop;
+extern uint32_t* __StackLimit;

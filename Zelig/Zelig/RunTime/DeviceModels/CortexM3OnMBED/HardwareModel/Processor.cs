@@ -130,31 +130,14 @@ namespace Microsoft.CortexM3OnMBED
 
         [RT.BottomOfCallStack()]
         [RT.HardwareExceptionHandler(RT.HardwareException.Interrupt)]
-        private static void InterruptHandler( ref Context.RegistersOnStack registers )
+        private static void InterruptHandler( UIntPtr stackPtr )
         {
             s_repeatedAbort = false;
-            Context.InterruptHandlerWithContextSwitch( ref registers );
-        }
-
-        [RT.BottomOfCallStack()]
-        [RT.HardwareExceptionHandler(RT.HardwareException.FastInterrupt)]
-        [RT.MemoryRequirements( RT.MemoryAttributes.RAM )]
-        private static void FastInterruptHandler()
-        {
-            s_repeatedAbort = false;
-            Context.FastInterruptHandlerWithoutContextSwitch();
-        }
-
-        [RT.BottomOfCallStack()]
-        [RT.HardwareExceptionHandler(RT.HardwareException.SoftwareInterrupt)]
-        private static void SoftwareInterruptHandler( ref Context.RegistersOnStack registers )
-        {
-            s_repeatedAbort = false;
-            Context.GenericSoftwareInterruptHandler( ref registers );
+            Context.InterruptHandlerWithContextSwitch( stackPtr );
         }
 
         //--//
-        
+
         [RT.NoInline]
         [RT.NoReturn()]
         [RT.HardwareExceptionHandler(RT.HardwareException.UndefinedInstruction)]
