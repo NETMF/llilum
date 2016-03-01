@@ -11,8 +11,24 @@ IF NOT DEFINED LLILUM_OPT_LEVEL SET LLILUM_OPT_LEVEL=2
 IF NOT DEFINED LLILUM_SKIP_OPT        SET LLILUM_SKIP_OPT=1
 IF NOT DEFINED LLILUM_SKIP_LLC        SET LLILUM_SKIP_LLC=1
 IF NOT DEFINED LLILUM_DEBUG           SET LLILUM_DEBUG=1
-IF NOT DEFINED LLILUM_SKIP_CLEANCLEAN SET LLILUM_SKIP_CLEANCLEAN=0
+IF NOT DEFINED LLILUM_SKIP_CLEANCLEAN SET LLILUM_SKIP_CLEANCLEAN=1
 
+@REM set incremental build as default, and correct as needed
+SET LLILUM_CLEANCLEAN=0
+
+IF "%2"=="/bc" (
+	SET LLILUM_CLEANCLEAN=1
+)
+IF "%LLILUM_SKIP_CLEANCLEAN%" == "0" (
+	SET LLILUM_CLEANCLEAN=1
+)
+
+IF "%LLILUM_CLEANCLEAN%" == "0" (
+    ECHO Incremental build for c/cpp/asm sources...
+    ECHO Use 'set LLILUM_SKIP_CLEANCLEAN=' or 'set LLILUM_SKIP_CLEANCLEAN=0' to perform a full build, 
+    ECHO or call the build batch file with '/bc' as last argument
+)
+    
 IF /i "%LLVM_BIN%"=="" (
     ECHO LLVM_BIN is not defined. Please define LLVM_BIN to point to LLVM tools and binaries. 
     GOTO :EXIT
@@ -124,11 +140,11 @@ ECHO Size Report...
 ECHO.
 ECHO Compiling and linking with mbed libs...
 
-IF "%LLILUM_SKIP_CLEANCLEAN%" == "0" (
+IF "%LLILUM_CLEANCLEAN%" == "1" (
 	ECHO Cleaning target '%TARGET%' for  intermediate and final artifacts...
 	make cleanclean TARGET=%TARGET% 
 ) ELSE (
-	ECHO Cleaning target '%TARGET%' for final artifacts...
+	ECHO Cleaning target '%TARGET%' for final artifacts only...
 	make clean TARGET=%TARGET% 
 )
 
