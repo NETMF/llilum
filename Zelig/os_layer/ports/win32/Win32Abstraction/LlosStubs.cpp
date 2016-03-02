@@ -110,6 +110,11 @@ extern "C"
     {
         return 0;
     }
+    
+    uint32_t CUSTOM_STUB_SCB_IPSR_GetCurrentISRNumber()
+    {
+        return 0;
+    }
 
     uint32_t us_ticker_read()
     {

@@ -253,7 +253,7 @@ uint32_t LLOS_THREAD_GetMainStackAddress()
     return 0;
 }
 
-uint32_t LLOS_THREAD_GetMainStackAddress()
+uint32_t LLOS_THREAD_GetMainStackSize()
 {
     return 0;
 }
