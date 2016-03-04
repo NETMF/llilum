@@ -5,7 +5,6 @@
 #define LPC1768
 //#define K64F
 //#define STM32F411
-#define USE_GPIO
 //#define USE_ADC
 //#define USE_SPI
 //#define USE_I2C

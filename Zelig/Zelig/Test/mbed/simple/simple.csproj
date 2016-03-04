@@ -36,6 +36,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="LedToggler.cs" />
+    <Compile Include="Program_Test__PWM.cs" />
+    <Compile Include="Program_Test__SPI.cs" />
+    <Compile Include="Program_Test__ADC.cs" />
+    <Compile Include="Program_Test__I2C.cs" />
+    <Compile Include="Program_Test__Win32.cs" />
+    <Compile Include="Program_Test__GpioInterruptTestData.cs" />
+    <Compile Include="Program_Test__SpiLcd.cs" />
+    <Compile Include="Program_Test__GpioPerf.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpiLcdC12832.cs" />
@@ -84,9 +93,49 @@
       <Project>{dd4371de-85a8-49aa-b939-10e03b7ed3c9}</Project>
       <Name>STM32F411</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\BoardConfigurations\STM32F091\Board\STM32F091.csproj">
+    <ProjectReference Include="$(LlilumSourceRoot)\..\BoardConfigurations\STM32F091\Board\STM32F091.csproj">
       <Project>{65E36DF8-5CB8-4582-851E-F5381AE4A1A7}</Project>
       <Name>STM32F091</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\CortexM0OnMBED\CortexM0OnMBED.csproj">
+      <Project>{89ebdbb0-c81f-4611-b719-b385df215f8d}</Project>
+      <Name>CortexM0OnMBED</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\CortexM3OnMBED\CortexM3OnMBED.csproj">
+      <Project>{0c522c6a-0f77-4af8-ad78-5b2415c98c51}</Project>
+      <Name>CortexM3OnMBED</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\CortexM4OnMBED\CortexM4OnMBED.csproj">
+      <Project>{65c8eda6-ac24-4e18-a5b5-216e0f2c3906}</Project>
+      <Name>CortexM4OnMBED</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\CortexM0OnCMSIS-Core\CortexM0OnCMSIS-Core.csproj">
+      <Project>{b8fe271a-cd41-435e-8766-4db7609c1007}</Project>
+      <Name>CortexM0OnCMSIS-Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\CortexM3OnCMSIS-Core\CortexM3OnCMSIS-Core.csproj">
+      <Project>{0b37e5ba-4839-4ec4-9e36-a96bcbea2400}</Project>
+      <Name>CortexM3OnCMSIS-Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\CortexM4OnCMSIS-Core\CortexM4OnCMSIS-Core.csproj">
+      <Project>{7fb3f581-742d-4e12-a36a-be172c574ab0}</Project>
+      <Name>CortexM4OnCMSIS-Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\ModelForCortexM0\ModelForCortexM0.csproj">
+      <Project>{c3bfafad-a6c6-471d-a059-b3cb7e57a4ab}</Project>
+      <Name>ModelForCortexM0</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\ModelForCortexM3\ModelForCortexM3.csproj">
+      <Project>{a30eb003-94f8-4a85-8da1-006f6810a7a4}</Project>
+      <Name>ModelForCortexM3</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\ModelForCortexM4\ModelForCortexM4.csproj">
+      <Project>{ca8a6d38-528b-4faa-89b6-8fa9178de55d}</Project>
+      <Name>ModelForCortexM4</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\DeviceModels\ModelForCortexM\ModelForCortexM.csproj">
+      <Project>{e4c618af-1785-472e-a070-8068e20582eb}</Project>
+      <Name>ModelForCortexM</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

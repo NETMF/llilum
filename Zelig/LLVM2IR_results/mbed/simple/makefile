@@ -8,17 +8,17 @@ COMPILE_SYS_ARCH = 0
 
 ifdef USE_LLILUM_OS_ABSTRACTION_STATIC_OBJECT
 ifeq ($(DEBUG), 1)
-	OBJECTS = .\Microsoft.Zelig.Test.mbed.Simple_opt.o \
+	OBJECTS = $(TARGET)\Microsoft.Zelig.Test.mbed.Simple_opt.o \
 		$(LLILUM_ROOT)\Zelig\ZeligBuild\Target\bin\mbedOsAbstraction\Debug\mbedOSAbstraction_$(TARGET).a
 else
-	OBJECTS = .\Microsoft.Zelig.Test.mbed.Simple_opt.o \
+	OBJECTS = $(TARGET)\Microsoft.Zelig.Test.mbed.Simple_opt.o \
 		$(LLILUM_ROOT)\Zelig\ZeligBuild\Target\bin\mbedOsAbstraction\Release\mbedOSAbstraction_$(TARGET).a
 endif
 
 else
 
 OBJECTS += \
-	.\Microsoft.Zelig.Test.mbed.Simple_opt.o \
+	$(TARGET)\Microsoft.Zelig.Test.mbed.Simple_opt.o \
 	$(TARGET)\mbed_adc.o \
 	$(TARGET)\mbed_asm.o \
 	$(TARGET)\mbed_clock.o \
@@ -315,7 +315,14 @@ all: ${TARGET} $(TARGET)\$(PROJECT).bin $(TARGET)\$(PROJECT).hex $(TARGET)\$(PRO
 
 # Conditionals (ifeq/ifneq) are bugged on Windows. Instead, we'll just ensure the directory exists and remove it unconditionally.
 cleanclean: ${TARGET}
-	@rmdir /q /s $(TARGET)
+	@del /q /f /s $(TARGET)\mbed*.o 	
+	@del /q /f /s $(TARGET)\mbed*.d	
+	@del /q /f /s $(TARGET)\$(PROJECT).elf 		
+	@del /q /f /s $(TARGET)\$(PROJECT).bin 		
+	@del /q /f /s $(TARGET)\$(PROJECT).hex 		
+	@del /q /f /s $(TARGET)\$(PROJECT).disasm	
+	@del /q /f /s $(TARGET)\$(PROJECT).lst 		
+	@del /q /f /s $(TARGET)\$(PROJECT).map 		
 	
 # Conditionals (ifeq/ifneq) are bugged on Windows. Instead, we'll just ensure the directory exists and remove it unconditionally.
 clean: ${TARGET}

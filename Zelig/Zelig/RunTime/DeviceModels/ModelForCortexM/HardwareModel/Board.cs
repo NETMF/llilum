@@ -32,6 +32,16 @@ namespace Microsoft.DeviceModels.Chipset.CortexM
             get;
         }
 
+        public abstract int[] LedPins
+        {
+            get;
+        }
+
+        public abstract int[] PwmPins
+        {
+            get;
+        }
+
         //
         // Serial Methods
         //
@@ -39,12 +49,14 @@ namespace Microsoft.DeviceModels.Chipset.CortexM
 
         public abstract SerialPortInfo GetSerialPortInfo(string portName);
 
-        public abstract int GetSerialPortIRQNumber(string portName);
+        public abstract int GetSerialPortIRQ(string portName);
 
         //
         // System timer
         //
-        public abstract int GetSystemTimerIRQNumber( );
+        public abstract int GetSystemTimerIRQ( );
+
+        //--//
                 
         //
         // Factory methods

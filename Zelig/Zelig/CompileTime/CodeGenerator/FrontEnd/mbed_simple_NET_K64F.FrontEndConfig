@@ -7,7 +7,7 @@
 -Architecture cortex-m4
 
 -CompilationSetupPath ..\..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Llilum.BoardConfigurations.K64F.dll
--CompilationSetup Microsoft.Llilum.BoardConfigurations.K64FMBEDHostedCompilationSetup
+-CompilationSetup Microsoft.Llilum.BoardConfigurations.K64FMBEDCompilationSetup
 
 
 ###

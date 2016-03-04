@@ -23,18 +23,30 @@ namespace Microsoft.Llilum.STM32F091
 
         public static readonly ChipsetAbstration.Board.SerialPortInfo UART2 = new ChipsetAbstration.Board.SerialPortInfo() 
         {
-            TxPin = (int)PinName.PA_14,
-            RxPin = (int)PinName.PA_15,
-            RtsPin = unchecked((int)PinName.NC),
-            CtsPin = unchecked((int)PinName.NC)
+            TxPin =             (int)PinName.PA_14,
+            RxPin =             (int)PinName.PA_15,
+            RtsPin = unchecked( (int)PinName.NC  ),
+            CtsPin = unchecked( (int)PinName.NC  ),
         };
 
         public static readonly ChipsetAbstration.Board.SerialPortInfo UART3 = new ChipsetAbstration.Board.SerialPortInfo() 
         {
-            TxPin = (int)PinName.PB_11,
-            RxPin = (int)PinName.PC_4,
-            RtsPin = unchecked((int)PinName.NC),
-            CtsPin = unchecked((int)PinName.NC)
+            TxPin =             (int)PinName.PB_11,
+            RxPin =             (int)PinName.PC_4 ,
+            RtsPin = unchecked( (int)PinName.NC  ),
+            CtsPin = unchecked( (int)PinName.NC  ),
+        };
+
+        //--//
+
+        private static readonly int[] s_ledPins = new int[] 
+        {
+            (int)STM32F091.PinName.LED1,
+        };
+
+        private static readonly int[] s_pwmPins = new int[]
+        {
+            (int)STM32F091.PinName.PB_0,
         };
 
         //
@@ -48,6 +60,11 @@ namespace Microsoft.Llilum.STM32F091
                 return 51;
             }
         }
+        
+        public override int PinToIndex( int pin )
+        {
+            return pin;
+        }
 
         public override int NCPin
         {
@@ -56,10 +73,21 @@ namespace Microsoft.Llilum.STM32F091
                 return -1;
             }
         }
-        
-        public override int PinToIndex( int pin )
+
+        public override int[] LedPins
         {
-            return pin;
+            get
+            {
+                return s_ledPins;
+            }
+        }
+
+        public override int[] PwmPins
+        {
+            get
+            {
+                return s_pwmPins;
+            }
         }
 
         //
@@ -86,12 +114,12 @@ namespace Microsoft.Llilum.STM32F091
         //
         // System timer
         //
-        public override int GetSystemTimerIRQNumber( )
+        public override int GetSystemTimerIRQ( )
         {
             return (int)IRQn.TIM2_IRQn;
         }
 
-        public override int GetSerialPortIRQNumber(string portName)
+        public override int GetSerialPortIRQ(string portName)
         {
             switch (portName)
             {

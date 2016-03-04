@@ -9,9 +9,9 @@ namespace Microsoft.Llilum.BoardConfigurations
     
 
     [DisplayName("LPC1768")]
-    public sealed class LPC1768 : ProcessorCategory
+    public sealed class LPC1768SoC : ProcessorCategory
     {
-        [DependsOn(typeof(LPC1768))]
+        [DependsOn(typeof(LPC1768SoC))]
         [DisplayName("Internal 32KB Static RAM")]
         [Defaults    ( "BaseAddress"    , 0x10000000                              )]
         [Defaults    ( "SizeInBytes"    , 32 * 1024                               )]
@@ -26,7 +26,7 @@ namespace Microsoft.Llilum.BoardConfigurations
         }
 
 
-        [DependsOn( typeof( LPC1768 ) )]
+        [DependsOn( typeof( LPC1768SoC ) )]
         [DisplayName( "Internal 512KB FLASH" )]
         [Defaults( "BaseAddress", 0x00000000 )]
         [Defaults( "SizeInBytes", 512 * 1024 )]
@@ -56,7 +56,7 @@ namespace Microsoft.Llilum.BoardConfigurations
                         MemoryUsage.Heap         |
                         MemoryUsage.DataRW       |
                         MemoryUsage.Code )]
-        [AllowedOptions( typeof( LPC1768.InternalRAM32KB ) )]
+        [AllowedOptions( typeof( LPC1768SoC.InternalRAM32KB ) )]
         [Defaults( "BaseAddress", 0x10000000U )]
         public RamMemoryCategory InternalRamChip;
 
@@ -69,7 +69,7 @@ namespace Microsoft.Llilum.BoardConfigurations
                         MemoryUsage.DataRO       |
                         MemoryUsage.VectorsTable |
                         MemoryUsage.Relocation   )]
-        [AllowedOptions( typeof( LPC1768.InternalFlash512KB ) )]
+        [AllowedOptions( typeof( LPC1768SoC.InternalFlash512KB ) )]
         [Defaults( "BaseAddress", 0x00000000U )]
         public FlashMemoryCategory InternalFlashChip;
     }
@@ -78,23 +78,23 @@ namespace Microsoft.Llilum.BoardConfigurations
     //--//
     //--//
 
-    [DisplayName("LPC1768 MBED Hosted")]
-    public sealed class LPC1768MBEDHosted : ProductCategory
+    [DisplayName("LPC1768 MBED")]
+    public sealed class LPC1768 : ProductCategory
     {
-        [AllowedOptions(typeof(LPC1768))]
+        [AllowedOptions(typeof(LPC1768SoC))]
         [Defaults("CoreClockFrequency"     , 96000000UL)]
         [Defaults("RealTimeClockFrequency" , 1000000UL )]
         [Defaults("DefaultThreadPoolThreads", 2)]
         [Defaults("DefaultTimerPoolThreads" , 1)]
-        public LPC1768 Processor;
+        public LPC1768SoC Processor;
 
         //--//
         
-        [AllowedOptions( typeof( LPC1768.InternalRAM32KB ) )]
+        [AllowedOptions( typeof( LPC1768SoC.InternalRAM32KB ) )]
         [Defaults( "BaseAddress", 0x10000000U )]
         public RamMemoryCategory InternalRam;
 
-        [AllowedOptions( typeof( LPC1768.InternalFlash512KB ) )]
+        [AllowedOptions( typeof( LPC1768SoC.InternalFlash512KB ) )]
         [Defaults( "BaseAddress", 0x00000000U )]
         public FlashMemoryCategory InternalFlashChip;
     }
@@ -103,12 +103,12 @@ namespace Microsoft.Llilum.BoardConfigurations
     //--//
     //--//
 
-    [DisplayName("LLVM Hosted Compilation for LPC1768")]
+    [DisplayName("LLVM Compilation for LPC1768")]
     [Defaults("Platform", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV7M))]
     [Defaults("CallingConvention", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV7MCallingConvention))]
-    [Defaults("Product", typeof(LPC1768MBEDHosted))]
+    [Defaults("Product", typeof(LPC1768))]
     [Defaults("MemoryMap", typeof(LPC1768MemoryMap))]
-    public sealed class LPC1768MBEDHostedCompilationSetup : CompilationSetupCategory
+    public sealed class LPC1768MBEDCompilationSetup : CompilationSetupCategory
     {
     }
 }

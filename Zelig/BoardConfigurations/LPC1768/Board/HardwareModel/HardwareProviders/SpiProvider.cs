@@ -13,24 +13,24 @@ namespace Microsoft.Llilum.LPC1768
     {
         public static readonly SpiChannelInfo SPI0 = new SpiChannelInfo()
         {
-            Mosi = (int)PinName.p5,
-            Miso = (int)PinName.p6,
-            Sclk = (int)PinName.p7,
-            DefaultChipSelect = (int)PinName.p8,
-            SetupTime = 10,
-            HoldTime = 10,
-            ActiveLow = true,
+            Mosi                = (int)PinName.p5,
+            Miso                = (int)PinName.p6,
+            Sclk                = (int)PinName.p7,
+            DefaultChipSelect   = (int)PinName.p8,
+            SetupTime           = 10,
+            HoldTime            = 10,
+            ActiveLow           = true,
         };
 
         public static readonly SpiChannelInfo SPI1 = new SpiChannelInfo()
         {
-            Mosi = (int)PinName.p11,
-            Miso = (int)PinName.p12,
-            Sclk = (int)PinName.p13,
-            DefaultChipSelect = (int)PinName.p14,
-            SetupTime = 10,
-            HoldTime = 10,
-            ActiveLow = true,
+            Mosi                = (int)PinName.p11,
+            Miso                = (int)PinName.p12,
+            Sclk                = (int)PinName.p13,
+            DefaultChipSelect   = (int)PinName.p14,
+            SetupTime           = 10,
+            HoldTime            = 10,
+            ActiveLow           = true,
         };
 
         public override bool SpiBusySupported

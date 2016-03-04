@@ -8,9 +8,9 @@ namespace Microsoft.Llilum.BoardConfigurations
     using Microsoft.Zelig.Configuration.Environment;
 
     [DisplayName("K64F")]
-    public sealed class K64F : ProcessorCategory
+    public sealed class K64FSoC : ProcessorCategory
     {
-        [DependsOn(typeof(K64F))]
+        [DependsOn(typeof(K64FSoC))]
         [DisplayName("Internal 256KB Static RAM")]
         [Defaults    ( "BaseAddress"    , 0x1FFF0000U                             )]
         [Defaults    ( "SizeInBytes"    , 256 * 1024                              )]
@@ -25,7 +25,7 @@ namespace Microsoft.Llilum.BoardConfigurations
         }
 
 
-        [DependsOn( typeof( K64F ) )]
+        [DependsOn( typeof( K64FSoC ) )]
         [DisplayName( "Internal 512KB FLASH" )]
         [Defaults( "BaseAddress", 0x00000000 )]
         [Defaults( "SizeInBytes", 1024 * 1024 )]
@@ -55,7 +55,7 @@ namespace Microsoft.Llilum.BoardConfigurations
                         MemoryUsage.Heap         |
                         MemoryUsage.DataRW       |
                         MemoryUsage.Code )]
-        [AllowedOptions( typeof( K64F.InternalRAM256KB ) )]
+        [AllowedOptions( typeof( K64FSoC.InternalRAM256KB ) )]
         [Defaults( "BaseAddress", 0x1FFF0000U )]
         public RamMemoryCategory InternalRamChip;
 
@@ -68,7 +68,7 @@ namespace Microsoft.Llilum.BoardConfigurations
                         MemoryUsage.DataRO       |
                         MemoryUsage.VectorsTable |
                         MemoryUsage.Relocation   )]
-        [AllowedOptions( typeof( K64F.InternalFlash1024KB ) )]
+        [AllowedOptions( typeof( K64FSoC.InternalFlash1024KB ) )]
         [Defaults( "BaseAddress", 0x00000000U )]
         public FlashMemoryCategory InternalFlashChip;
     }
@@ -77,23 +77,23 @@ namespace Microsoft.Llilum.BoardConfigurations
     //--//
     //--//
 
-    [DisplayName("K64F MBED Hosted")]
-    public sealed class K64FMBEDHosted : ProductCategory
+    [DisplayName("K64F MBED")]
+    public sealed class K64F : ProductCategory
     {
-        [AllowedOptions(typeof(K64F))]
+        [AllowedOptions(typeof(K64FSoC))]
         [Defaults("CoreClockFrequency"    , 120000000UL)]
         [Defaults("RealTimeClockFrequency", 1000000UL  )]
         [Defaults("DefaultThreadPoolThreads", 3)]
         [Defaults("DefaultTimerPoolThreads" , 2)]
-        public K64F Processor;
+        public K64FSoC Processor;
 
         //--//
 
-        [AllowedOptions( typeof( K64F.InternalRAM256KB ) )]
+        [AllowedOptions( typeof( K64FSoC.InternalRAM256KB ) )]
         [Defaults( "BaseAddress", 0x1FFF0000U )]
         public RamMemoryCategory InternalRam;
 
-        [AllowedOptions( typeof( K64F.InternalFlash1024KB ) )]
+        [AllowedOptions( typeof( K64FSoC.InternalFlash1024KB ) )]
         [Defaults( "BaseAddress", 0x00000000U )]
         public FlashMemoryCategory InternalFlashChip;
     }
@@ -102,12 +102,12 @@ namespace Microsoft.Llilum.BoardConfigurations
     //--//
     //--//
 
-    [DisplayName("LLVM Hosted Compilation for K64F")]
+    [DisplayName("LLVM Compilation for K64F")]
     [Defaults("Platform", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV7M_VFP))]
     [Defaults("CallingConvention", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV7MCallingConvention))]
-    [Defaults("Product", typeof(K64FMBEDHosted))]
+    [Defaults("Product", typeof(K64F))]
     [Defaults("MemoryMap", typeof(K64FMemoryMap))]
-    public sealed class K64FMBEDHostedCompilationSetup : CompilationSetupCategory
+    public sealed class K64FMBEDCompilationSetup : CompilationSetupCategory
     {
     }
 

@@ -191,7 +191,7 @@ namespace Microsoft.Zelig.FrontEnd
         
         //
         // This parameter overrides any infereces from compilation setup
-        // (e.g.: -CompilationSetup Microsoft.Llilum.BoardConfigurations.LPC1768MBEDHostedCompilationSetup)
+        // (e.g.: -CompilationSetup Microsoft.Llilum.BoardConfigurations.LPC1768MBEDCompilationSetup)
         // There is no reason for the compilation setup not to express all needed switches
         //
         private string                              m_architecture;
@@ -1645,6 +1645,10 @@ namespace Microsoft.Zelig.FrontEnd
 
         private void Compile( )
         {
+            //
+            // Store build artifacts on a per-product basis
+            //
+            m_outputDir = Path.Combine( m_outputDir,  ExtractProductName( m_compilationSetup.Product ) );
 
             if( m_outputName == null )
             {
@@ -2138,6 +2142,13 @@ namespace Microsoft.Zelig.FrontEnd
             }
 
             Console.WriteLine( "{0}: Done", GetTime( ) );
+        }
+
+        private string ExtractProductName( Type product )
+        {
+            var name = product.ToString();
+
+            return name.LastIndexOf( '.' ) != -1 ? name.Substring( name.LastIndexOf( '.' ) + 1 ) : name; 
         }
 
         private object BuildLlcArchitectureArgs( )

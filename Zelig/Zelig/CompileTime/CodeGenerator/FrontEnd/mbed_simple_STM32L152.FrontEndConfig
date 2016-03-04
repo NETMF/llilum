@@ -7,7 +7,7 @@
 -Architecture cortex-m3
 
 -CompilationSetupPath ..\..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Llilum.BoardConfigurations.STM32L152.dll
--CompilationSetup Microsoft.Llilum.BoardConfigurations.STM32L152MBEDHostedCompilationSetup
+-CompilationSetup Microsoft.Llilum.BoardConfigurations.STM32L152MBEDCompilationSetup
 
 ###
 ### We need to include this assembly to get the right drivers.

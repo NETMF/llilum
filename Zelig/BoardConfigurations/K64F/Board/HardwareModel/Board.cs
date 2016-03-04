@@ -21,26 +21,41 @@ namespace Microsoft.Llilum.K64F
 
         public static readonly ChipsetAbstration.Board.SerialPortInfo UART0 = new ChipsetAbstration.Board.SerialPortInfo() 
         {
-            TxPin = (int)PinName.PTC14,
-            RxPin = (int)PinName.PTC15,
-            RtsPin = unchecked((int)PinName.NC),
-            CtsPin = unchecked((int)PinName.NC)
+            TxPin =             (int)PinName.PTC14,
+            RxPin =             (int)PinName.PTC15,
+            RtsPin = unchecked( (int)PinName.NC  ),
+            CtsPin = unchecked( (int)PinName.NC  ),
         };
 
         public static readonly ChipsetAbstration.Board.SerialPortInfo UART1 = new ChipsetAbstration.Board.SerialPortInfo() 
         {
-            TxPin = (int)PinName.USBTX,
-            RxPin = (int)PinName.USBRX,
-            RtsPin = unchecked((int)PinName.NC),
-            CtsPin = unchecked((int)PinName.NC)
+            TxPin =             (int)PinName.USBTX,
+            RxPin =             (int)PinName.USBRX,
+            RtsPin = unchecked( (int)PinName.NC  ),
+            CtsPin = unchecked( (int)PinName.NC  ),
         };
 
         public static readonly ChipsetAbstration.Board.SerialPortInfo UART3 = new ChipsetAbstration.Board.SerialPortInfo()
         {
-            TxPin = (int)PinName.PTC17,
-            RxPin = (int)PinName.PTC16,
-            RtsPin = unchecked((int)PinName.NC),
-            CtsPin = unchecked((int)PinName.NC)
+            TxPin =             (int)PinName.PTC17,
+            RxPin =             (int)PinName.PTC16,
+            RtsPin = unchecked( (int)PinName.NC  ),
+            CtsPin = unchecked( (int)PinName.NC  ), 
+        };
+
+        //--//
+
+        private static readonly int[] s_ledPins = new int[] 
+        {
+            (int)K64F.PinName.LED1,
+            (int)K64F.PinName.LED2,
+            (int)K64F.PinName.LED3,
+            (int)K64F.PinName.LED4,
+        };
+
+        private static readonly int[] s_pwmPins = new int[] 
+        {
+            (int)K64F.PinName.D3,
         };
 
         //
@@ -54,6 +69,14 @@ namespace Microsoft.Llilum.K64F
                 return 160;
             }
         }
+        
+        public override int PinToIndex( int pin )
+        {
+            int port      = pin >> Board.GPIO_PORT_SHIFT;
+            int portIndex = pin & 0x000000FF;
+
+            return ( port * 32 ) + portIndex;
+        }
 
         public override int NCPin
         {
@@ -62,13 +85,21 @@ namespace Microsoft.Llilum.K64F
                 return -1;
             }
         }
-        
-        public override int PinToIndex( int pin )
-        {
-            int port = pin >> Board.GPIO_PORT_SHIFT;
-            int portIndex = pin & 0x000000FF;
 
-            return ( port * 32 ) + portIndex;
+        public override int[] LedPins
+        {
+            get
+            {
+                return s_ledPins;
+            }
+        }
+
+        public override int[] PwmPins
+        {
+            get
+            {
+                return s_pwmPins;
+            }
         }
 
         //
@@ -97,12 +128,12 @@ namespace Microsoft.Llilum.K64F
         //
         // System timer
         //
-        public override int GetSystemTimerIRQNumber( )
+        public override int GetSystemTimerIRQ( )
         {
             return (int)IRQn.PIT3_IRQn;
         }
 
-        public override int GetSerialPortIRQNumber(string portName)
+        public override int GetSerialPortIRQ(string portName)
         {
             switch (portName)
             {

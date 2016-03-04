@@ -9,9 +9,9 @@ namespace Microsoft.Llilum.BoardConfigurations
 
 
     [DisplayName("STM32L152")]
-    public sealed class STM32L152 : ProcessorCategory
+    public sealed class STM32L152SoC : ProcessorCategory
     {
-        [DependsOn(typeof(STM32L152))]
+        [DependsOn(typeof(STM32L152SoC))]
         [DisplayName("Internal 80KB Static RAM")]
         [Defaults("BaseAddress", 0x20000000)]
         [Defaults("SizeInBytes", 80 * 1024)]
@@ -26,7 +26,7 @@ namespace Microsoft.Llilum.BoardConfigurations
         }
 
 
-        [DependsOn(typeof(STM32L152))]
+        [DependsOn(typeof(STM32L152SoC))]
         [DisplayName("Internal 512KB FLASH")]
         [Defaults("BaseAddress", 0x00000000)]
         [Defaults("SizeInBytes", 512 * 1024)]
@@ -56,7 +56,7 @@ namespace Microsoft.Llilum.BoardConfigurations
                         MemoryUsage.Heap |
                         MemoryUsage.DataRW |
                         MemoryUsage.Code)]
-        [AllowedOptions(typeof(STM32L152.InternalRAM80KB))]
+        [AllowedOptions(typeof(STM32L152SoC.InternalRAM80KB))]
         [Defaults("BaseAddress", 0x20000000U)]
         public RamMemoryCategory InternalRamChip;
 
@@ -69,7 +69,7 @@ namespace Microsoft.Llilum.BoardConfigurations
                         MemoryUsage.DataRO |
                         MemoryUsage.VectorsTable |
                         MemoryUsage.Relocation)]
-        [AllowedOptions(typeof(STM32L152.InternalFlash512KB))]
+        [AllowedOptions(typeof(STM32L152SoC.InternalFlash512KB))]
         [Defaults("BaseAddress", 0x00000000U)]
         public FlashMemoryCategory InternalFlashChip;
     }
@@ -78,21 +78,21 @@ namespace Microsoft.Llilum.BoardConfigurations
     //--//
     //--//
 
-    [DisplayName("STM32L152 MBED Hosted")]
-    public sealed class STM32L152MBEDHosted : ProductCategory
+    [DisplayName("STM32L152 MBED")]
+    public sealed class STM32L152 : ProductCategory
     {
-        [AllowedOptions(typeof(STM32L152))]
+        [AllowedOptions(typeof(STM32L152SoC))]
         [Defaults("CoreClockFrequency", 32000000UL)]
         [Defaults("RealTimeClockFrequency", 1000000UL)]
-        public STM32L152 Processor;
+        public STM32L152SoC Processor;
 
         //--//
 
-        [AllowedOptions(typeof(STM32L152.InternalRAM80KB))]
+        [AllowedOptions(typeof(STM32L152SoC.InternalRAM80KB))]
         [Defaults("BaseAddress", 0x20000000U)]
         public RamMemoryCategory InternalRam;
 
-        [AllowedOptions(typeof(STM32L152.InternalFlash512KB))]
+        [AllowedOptions(typeof(STM32L152SoC.InternalFlash512KB))]
         [Defaults("BaseAddress", 0x00000000U)]
         public FlashMemoryCategory InternalFlashChip;
     }
@@ -101,12 +101,12 @@ namespace Microsoft.Llilum.BoardConfigurations
     //--//
     //--//
 
-    [DisplayName("LLVM Hosted Compilation for STM32L152")]
+    [DisplayName("LLVM Compilation for STM32L152")]
     [Defaults("Platform", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV7M))]
     [Defaults("CallingConvention", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV7MCallingConvention))]
-    [Defaults("Product", typeof(STM32L152MBEDHosted))]
+    [Defaults("Product", typeof(STM32L152))]
     [Defaults("MemoryMap", typeof(STM32L152MemoryMap))]
-    public sealed class STM32L152MBEDHostedCompilationSetup : CompilationSetupCategory
+    public sealed class STM32L152MBEDCompilationSetup : CompilationSetupCategory
     {
     }
 }

@@ -305,7 +305,7 @@ namespace Microsoft.DeviceModels.Chipset.CortexM.Drivers
 
         public void CauseInterrupt()
         {
-            NVIC.SetPending( Board.Instance.GetSystemTimerIRQNumber() ); 
+            NVIC.SetPending( Board.Instance.GetSystemTimerIRQ() ); 
         }
 
         public void ContinueUnderNormalInterrupt( RT.Peripherals.Continuation dlg )

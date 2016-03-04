@@ -133,7 +133,7 @@ namespace Microsoft.CortexM0OnMBED.Drivers
         {
             m_timers            = new RT.KernelList<Timer>();
             m_interrupthandler  = InterruptController.Handler.Create( 
-                                                                Board.Instance.GetSystemTimerIRQNumber( )         , 
+                                                                Board.Instance.GetSystemTimerIRQ( )         , 
                                                                 ChipsetModel.Drivers.InterruptPriority.BelowNormal, 
                                                                 ChipsetModel.Drivers.InterruptSettings.Normal     , 
                                                                 ProcessTimerInterrupt 
@@ -153,7 +153,7 @@ namespace Microsoft.CortexM0OnMBED.Drivers
             }
             
             ChipsetModel.NVIC.SetPriority( 
-                ChipsetModel.Board.Instance.GetSystemTimerIRQNumber(), 
+                ChipsetModel.Board.Instance.GetSystemTimerIRQ(), 
                 RT.TargetPlatform.ARMv6.ProcessorARMv6M.c_Priority__SystemTimer 
                 );
 

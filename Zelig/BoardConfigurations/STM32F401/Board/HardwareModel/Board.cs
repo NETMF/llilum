@@ -45,6 +45,18 @@ namespace Microsoft.Llilum.STM32F401
             CtsPin = unchecked((int)PinName.NC)
         };
 
+        //--//
+
+        private static readonly int[] s_ledPins = new int[] 
+        {
+            (int)STM32F401.PinName.LED1,
+        };
+
+        private static readonly int[] s_pwmPins = new int[] 
+        {
+            (int)STM32F401.PinName.D3,
+        };
+
         //
         // Gpio discovery
         //
@@ -56,6 +68,11 @@ namespace Microsoft.Llilum.STM32F401
                 return 48;
             }
         }
+        
+        public override int PinToIndex( int pin )
+        {
+            return pin;
+        }
 
         public override int NCPin
         {
@@ -64,10 +81,21 @@ namespace Microsoft.Llilum.STM32F401
                 return -1;
             }
         }
-        
-        public override int PinToIndex( int pin )
+
+        public override int[] LedPins
         {
-            return pin;
+            get
+            {
+                return s_ledPins;
+            }
+        }
+
+        public override int[] PwmPins
+        {
+            get
+            {
+                return s_pwmPins;
+            }
         }
 
         //
@@ -96,12 +124,12 @@ namespace Microsoft.Llilum.STM32F401
         //
         // System timer
         //
-        public override int GetSystemTimerIRQNumber( )
+        public override int GetSystemTimerIRQ( )
         {
             return (int)IRQn.TIM2_IRQn;
         }
 
-        public override int GetSerialPortIRQNumber(string portName)
+        public override int GetSerialPortIRQ(string portName)
         {
             switch (portName)
             {

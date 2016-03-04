@@ -18,19 +18,36 @@ namespace Microsoft.Llilum.LPC1768
 
         public static readonly ChipsetAbstration.Board.SerialPortInfo UART0 = new ChipsetAbstration.Board.SerialPortInfo() 
         {
-            TxPin = (int)PinName.USBTX,
-            RxPin = (int)PinName.USBRX,
-            RtsPin = unchecked((int)PinName.NC),
-            CtsPin = unchecked((int)PinName.NC)
+            TxPin =             (int)PinName.USBTX,
+            RxPin =             (int)PinName.USBRX,
+            RtsPin = unchecked( (int)PinName.NC ) ,
+            CtsPin = unchecked( (int)PinName.NC ) ,
         };
 
         public static readonly ChipsetAbstration.Board.SerialPortInfo UART1 = new ChipsetAbstration.Board.SerialPortInfo() 
         {
-            TxPin = (int)PinName.p13,
-            RxPin = (int)PinName.p14,
-            RtsPin = unchecked((int)PinName.NC),
-            CtsPin = unchecked ((int)PinName.NC)
+            TxPin =             (int)PinName.p13 ,
+            RxPin =             (int)PinName.p14 ,
+            RtsPin = unchecked( (int)PinName.NC ),
+            CtsPin = unchecked( (int)PinName.NC ),
         };
+
+        //--//
+
+        private static readonly int[] s_ledPins = new int[] 
+        {
+            (int)LPC1768.PinName.LED1,
+            (int)LPC1768.PinName.LED2,
+            (int)LPC1768.PinName.LED3,
+            (int)LPC1768.PinName.LED4,
+        };
+
+        private static readonly int[] s_pwmPins = new int[] 
+        {
+            (int)LPC1768.PinName.p21,
+        };
+
+        //--//
 
         //
         // Gpio discovery
@@ -43,6 +60,11 @@ namespace Microsoft.Llilum.LPC1768
                 return 40;
             }
         }
+        
+        public override int PinToIndex( int pin )
+        {
+            return pin - (int)PinName.P0_0;
+        }
 
         public override int NCPin
         {
@@ -51,10 +73,21 @@ namespace Microsoft.Llilum.LPC1768
                 return -1;
             }
         }
-        
-        public override int PinToIndex( int pin )
+
+        public override int[] LedPins
         {
-            return pin - (int)PinName.P0_0;
+            get
+            {
+                return s_ledPins;
+            }
+        }
+
+        public override int[] PwmPins
+        {
+            get
+            {
+                return s_pwmPins;
+            }
         }
 
         //
@@ -79,7 +112,7 @@ namespace Microsoft.Llilum.LPC1768
             }
         }
 
-        public override int GetSerialPortIRQNumber(string portName)
+        public override int GetSerialPortIRQ(string portName)
         {
             switch (portName)
             {
@@ -95,7 +128,7 @@ namespace Microsoft.Llilum.LPC1768
         //
         // System timer
         //
-        public override int GetSystemTimerIRQNumber( )
+        public override int GetSystemTimerIRQ( )
         {
             return (int)IRQn.TIMER3_IRQn;
         }

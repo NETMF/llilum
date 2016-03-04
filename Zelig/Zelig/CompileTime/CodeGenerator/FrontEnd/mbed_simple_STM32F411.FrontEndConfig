@@ -11,7 +11,7 @@
 -Architecture cortex-m4
 
 -CompilationSetupPath ..\..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Llilum.BoardConfigurations.STM32F411.dll
--CompilationSetup Microsoft.Llilum.BoardConfigurations.STM32F411MBEDHostedCompilationSetup
+-CompilationSetup Microsoft.Llilum.BoardConfigurations.STM32F411MBEDCompilationSetup
 
 
 ###

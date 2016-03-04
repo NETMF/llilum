@@ -7,6 +7,6 @@
 -Reference K64F
 
 -CompilationSetupPath ..\..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Llilum.BoardConfigurations.K64F.dll
--CompilationSetup Microsoft.Llilum.BoardConfigurations.K64FMBEDHostedCompilationSetup
+-CompilationSetup Microsoft.Llilum.BoardConfigurations.K64FMBEDCompilationSetup
 -GenerateObj
 

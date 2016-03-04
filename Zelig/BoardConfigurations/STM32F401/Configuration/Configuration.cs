@@ -8,9 +8,9 @@ namespace Microsoft.Llilum.BoardConfigurations
     using Microsoft.Zelig.Configuration.Environment;
 
     [DisplayName("STM32F401")]
-    public sealed class STM32F401 : ProcessorCategory
+    public sealed class STM32F401SoC : ProcessorCategory
     {
-        [DependsOn(typeof(STM32F401))]
+        [DependsOn(typeof(STM32F401SoC))]
         [DisplayName("Internal 96KB Static RAM")]
         [Defaults("BaseAddress", 0x20000000U)]
         [Defaults("SizeInBytes", 96 * 1024)]
@@ -25,7 +25,7 @@ namespace Microsoft.Llilum.BoardConfigurations
         }
 
 
-        [DependsOn(typeof(STM32F401))]
+        [DependsOn(typeof(STM32F401SoC))]
         [DisplayName("Internal 512KB FLASH")]
         [Defaults("BaseAddress", 0x08000000U)]
         [Defaults("SizeInBytes", 512 * 1024)]
@@ -55,7 +55,7 @@ namespace Microsoft.Llilum.BoardConfigurations
                         MemoryUsage.Heap |
                         MemoryUsage.DataRW |
                         MemoryUsage.Code)]
-        [AllowedOptions(typeof(STM32F401.InternalRAM96KB))]
+        [AllowedOptions(typeof(STM32F401SoC.InternalRAM96KB))]
         [Defaults("BaseAddress", 0x20000000U)]
         public RamMemoryCategory InternalRamChip;
 
@@ -68,7 +68,7 @@ namespace Microsoft.Llilum.BoardConfigurations
                         MemoryUsage.DataRO |
                         MemoryUsage.VectorsTable |
                         MemoryUsage.Relocation)]
-        [AllowedOptions(typeof(STM32F401.InternalFlash512KB))]
+        [AllowedOptions(typeof(STM32F401SoC.InternalFlash512KB))]
         [Defaults("BaseAddress", 0x08000000U)]
         public FlashMemoryCategory InternalFlashChip;
     }
@@ -77,23 +77,23 @@ namespace Microsoft.Llilum.BoardConfigurations
     //--//
     //--//
 
-    [DisplayName("STM32F401 MBED Hosted")]
-    public sealed class STM32F401MBEDHosted : ProductCategory
+    [DisplayName("STM32F401 MBED")]
+    public sealed class STM32F401 : ProductCategory
     {
-        [AllowedOptions(typeof(STM32F401))]
+        [AllowedOptions(typeof(STM32F401SoC))]
         [Defaults("CoreClockFrequency", 84000000UL)]
         [Defaults("RealTimeClockFrequency", 1000000UL)]
         [Defaults("DefaultThreadPoolThreads", 2)]
         [Defaults("DefaultTimerPoolThreads", 2)]
-        public STM32F401 Processor;
+        public STM32F401SoC Processor;
 
         //--//
 
-        [AllowedOptions(typeof(STM32F401.InternalRAM96KB))]
+        [AllowedOptions(typeof(STM32F401SoC.InternalRAM96KB))]
         [Defaults("BaseAddress", 0x20000000U)]
         public RamMemoryCategory InternalRam;
 
-        [AllowedOptions(typeof(STM32F401.InternalFlash512KB))]
+        [AllowedOptions(typeof(STM32F401SoC.InternalFlash512KB))]
         [Defaults("BaseAddress", 0x08000000U)]
         public FlashMemoryCategory InternalFlashChip;
     }
@@ -102,12 +102,12 @@ namespace Microsoft.Llilum.BoardConfigurations
     //--//
     //--//
 
-    [DisplayName("LLVM Hosted Compilation for STM32F401")]
+    [DisplayName("LLVM Compilation for STM32F401")]
     [Defaults("Platform", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV7M_VFP))]
     [Defaults("CallingConvention", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV7MCallingConvention))]
-    [Defaults("Product", typeof(STM32F401MBEDHosted))]
+    [Defaults("Product", typeof(STM32F401))]
     [Defaults("MemoryMap", typeof(STM32F401MemoryMap))]
-    public sealed class STM32F401MBEDHostedCompilationSetup : CompilationSetupCategory
+    public sealed class STM32F401MBEDCompilationSetup : CompilationSetupCategory
     {
     }
 

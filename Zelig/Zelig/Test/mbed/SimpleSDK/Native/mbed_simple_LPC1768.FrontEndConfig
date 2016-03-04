@@ -3,7 +3,7 @@
 ###
 
 -CompilationSetupPath ..\..\..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Llilum.BoardConfigurations.LPC1768.dll
--CompilationSetup Microsoft.Llilum.BoardConfigurations.LPC1768MBEDHostedCompilationSetup
+-CompilationSetup Microsoft.Llilum.BoardConfigurations.LPC1768MBEDCompilationSetup
 
 ###
 ### We need to include this assembly to get the right drivers.

@@ -11,7 +11,7 @@
 -Architecture cortex-m0
 
 -CompilationSetupPath ..\..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Llilum.BoardConfigurations.STM32F091.dll
--CompilationSetup Microsoft.Llilum.BoardConfigurations.STM32F091MBEDHostedCompilationSetup
+-CompilationSetup Microsoft.Llilum.BoardConfigurations.STM32F091MBEDCompilationSetup
 
 ###
 ### We need to include this assembly to get the right drivers.
