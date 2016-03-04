@@ -702,7 +702,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 {
                     InterruptHandlerWithContextSwitch( stackPtr );
                 }
-            }        
+            } 
         }
 
         //

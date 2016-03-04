@@ -167,7 +167,10 @@ namespace Microsoft.CortexM0OnMBED.HardwareModel
 
             using (RT.SmartHandles.InterruptState.Disable())
             {
-                M0.Drivers.InterruptController.Instance.PostInterrupt(data);
+                using(RT.SmartHandles.SwapCurrentThreadUnderInterrupt hnd = RT.ThreadManager.InstallInterruptThread( ))
+                {
+                    CortexM0OnCMSISCore.Drivers.InterruptController.Instance.PostInterrupt( data );
+                }
             }
         }
     }

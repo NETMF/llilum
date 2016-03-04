@@ -2,7 +2,7 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-#define SPIN_ON_SLEEP
+//#define SPIN_ON_SLEEP
 
 namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 {
@@ -659,7 +659,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             Breakpoint( 0xa5a5a5a5 ); 
         }
         
-        //--//--//
+        //--//
 
         public static uint EnableInterrupts( )
         {
@@ -825,6 +825,10 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         {
             CUSTOM_STUB_SetExcReturn( ret );
         }
+                
+        //--//
+
+        #region Fault handlers helpers
         
         //
         // Fault diagnostic
@@ -868,42 +872,29 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             }
         }
         
+        //--//
+
         [RT.Inline]
         protected static unsafe StandardFrame* PointerToStdFrame( UIntPtr SP )
         {
             return (StandardFrame*)SP.ToPointer( );
         }
-        
-        //
-        // All overridable exceptions
-        //
 
-        //////[RT.BottomOfCallStack( )]
-        //////[RT.HardwareExceptionHandler( RT.HardwareException.NMI )]
-        //////[RT.ExportedMethod]
-        //////private static void NMI_Handler( )
-        //////{
-        //////    //
-        //////    // The processor clears the FAULTMASK bit to 0 on exit from any exception handler except the NMI handler.
-        //////    //
-
-        //////    EnableFaults( );
-        //////}
-        
         /// <summary>
-        /// Hard Fault is caused by Bus Fault, Memory Management Fault, or Usage Fault if their handler 
-        /// cannot be executed.
+        /// Hard Fault handler.
         /// </summary>
-        [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv7M )]
-        [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
-        [RT.ExportedMethod]
-        private static void HardFault_Handler_Zelig( uint sp )
+        protected static void HandleHardFault( )
         {
             if(IsDebuggerConnected)
             {
                 if(WasHardFaultOnVectorTableRead( ))
                 {
                     BugCheck.Raise( BugCheck.StopCode.Fault_Vectors );
+                }
+
+                if(WasHardFaultForced())
+                {
+                    BugCheck.Raise( BugCheck.StopCode.ForcedHardFault );
                 }
                 
                 // TODO
@@ -922,7 +913,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         /// Detects memory access violations to regions that are defined in the Memory Management Unit (MPU). 
         /// For example code execution from a memory region with read/write access only.
         /// </summary>
-        private static void MemManage_Handler( ref StandardFrame registers )
+        protected static void HandleMemoryAccessFault( ref StandardFrame registers )
         {
             uint CFSR = CUSTOM_STUB_SCB__get_CFSR( );
 
@@ -963,7 +954,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         /// Detects memory access errors on instruction fetch, data read/write, interrupt vector fetch, and 
         /// register stacking (save/restore) on interrupt (entry/exit).
         /// </summary>
-        private static void BusFault_Handler( ref StandardFrame registers )
+        protected static void HandleBusFault( ref StandardFrame registers )
         {
             uint CFSR = CUSTOM_STUB_SCB__get_CFSR( );
 
@@ -1000,7 +991,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         /// Detects execution of undefined instructions, unaligned memory access for load/store multiple. 
         /// When enabled, divide-by-zero and other unaligned memory accesses are also detected.
         /// </summary>
-        private static void UsageFault_Handler( ref StandardFrame registers )
+        protected static void HandleUsageFault( ref StandardFrame registers )
         {
             uint CFSR = CUSTOM_STUB_SCB__get_CFSR( );
 
@@ -1032,57 +1023,63 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 BugCheck.Log( "Undefined instruction" ); 
             }
         }
+
+        #endregion
+
+        #region Fault handlers
         
+        /// <summary>
+        /// Hard Fault is caused by Bus Fault, Memory Management Fault, or Usage Fault if their handler 
+        /// cannot be executed.
+        /// </summary>
         [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv7M )]
         [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
         [RT.ExportedMethod]
-        private static unsafe void MemManage_Handler_Zelig( uint sp )
+        private static void Zelig_Exception_HardFault_Handler( uint sp )
+        {
+            HandleHardFault( ); 
+        }
+
+        [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv7M )]
+        [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
+        [RT.ExportedMethod]
+        private static unsafe void Zelig_Exception_MemManage_Handler( uint sp )
         {
             StandardFrame* regs = PointerToStdFrame( new UIntPtr( sp ) );
 
-            MemManage_Handler( ref *regs ); 
+            HandleMemoryAccessFault( ref *regs ); 
         }
         
         [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv7M )]
         [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
         [RT.ExportedMethod]
-        private static unsafe void UsageFault_Handler_Zelig( uint sp )
+        private static unsafe void Zelig_Exception_UsageFault_Handler( uint sp )
         {
             StandardFrame* regs = PointerToStdFrame( new UIntPtr( sp ) );
 
-            UsageFault_Handler( ref *regs ); 
+            HandleUsageFault( ref *regs ); 
         }
         
         [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv7M )]
         [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
         [RT.ExportedMethod]
-        private static unsafe void BusFault_Handler_Zelig( uint sp )
+        private static unsafe void Zelig_Exception_BusFault_Handler( uint sp )
         {
             StandardFrame* regs = PointerToStdFrame( new UIntPtr( sp ) );
 
-            BusFault_Handler( ref *regs ); 
+            HandleBusFault( ref *regs ); 
         }
 
-        //////[RT.BottomOfCallStack( )]
-        //////[RT.HardwareExceptionHandler( RT.HardwareException.Reset )]
-        //////[RT.NoReturn]
-        //////[RT.ExportedMethod]
-        //////private static void Reset_Handler( )
-        //////{
-        //////}
-        
-        //////[RT.BottomOfCallStack( )]
-        //////[RT.HardwareExceptionHandler( RT.HardwareException.Debug )]
-        //////[RT.NoReturn]
-        //////[RT.ExportedMethod]
-        //////private static void DebugMon_Handler( )
-        //////{
-        //////}
+        #endregion
+
+        //--//
+
+        #region Native methods helpers
         
         //
         // We will implement the intrernal methods below with CMSIS-Core or custom stubs
         //      
-        
+
         [DllImport( "C" )]
         internal static extern uint CUSTOM_STUB_DebuggerConnected( );
         
@@ -1234,5 +1231,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
         [DllImport( "C" )]
         public static extern void Nop( );
+
+        #endregion
     }
 }

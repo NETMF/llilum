@@ -352,6 +352,8 @@ namespace Microsoft.Zelig.Runtime
         [TS.WellKnownMethod("TypeSystemManager_Rethrow")]
         public virtual void Rethrow()
         {
+            MemoryManager.Instance.DumpMemory( ); 
+
             Throw(ThreadImpl.CurrentThread.CurrentException);
         }
 

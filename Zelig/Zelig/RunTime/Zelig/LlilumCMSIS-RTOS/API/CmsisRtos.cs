@@ -236,6 +236,7 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
         {
             if(RT.TargetPlatform.ARMv7.ProcessorARMv7M.IsAnyExceptionActive( ))
             {
+                RT.BugCheck.Raise( Runtime.BugCheck.StopCode.IllegalMode );
                 return osStatus.osErrorISR;
             }
 
@@ -384,6 +385,7 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
         {
             if(RT.TargetPlatform.ARMv7.ProcessorARMv7M.IsAnyExceptionActive( ))
             {
+                RT.BugCheck.Raise( Runtime.BugCheck.StopCode.IllegalMode );
                 return osStatus.osErrorISR;
             }
 
@@ -419,6 +421,7 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
         {
             if(RT.TargetPlatform.ARMv7.ProcessorARMv7M.IsAnyExceptionActive( ))
             {
+                RT.BugCheck.Raise( Runtime.BugCheck.StopCode.IllegalMode );
                 return osStatus.osErrorISR;
             }
 
@@ -444,6 +447,7 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
         {
             if(RT.TargetPlatform.ARMv7.ProcessorARMv7M.IsAnyExceptionActive( ))
             {
+                RT.BugCheck.Raise( Runtime.BugCheck.StopCode.IllegalMode );
                 return osStatus.osErrorISR;
             }
 
@@ -518,7 +522,20 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
                 return osStatus.osErrorParameter;
             }
 
-            sem.Release( );
+            if(Microsoft.Zelig.Runtime.TargetPlatform.ARMv7.ProcessorARMv7M.IsAnyExceptionActive( ))
+            {
+                using(RT.SmartHandles.InterruptState.Disable( ))
+                {
+                    using(RT.SmartHandles.SwapCurrentThreadUnderInterrupt hnd = RT.ThreadManager.InstallInterruptThread( ))
+                    {
+                        sem.Release( );
+                    }
+                }
+            }
+            else
+            {
+                sem.Release( );
+            }
 
             return osStatus.osOK;
         }
@@ -528,6 +545,7 @@ namespace Microsoft.Zelig.LlilumOSAbstraction.CmsisRtos
         {
             if(RT.TargetPlatform.ARMv7.ProcessorARMv7M.IsAnyExceptionActive( ))
             {
+                RT.BugCheck.Raise( RT.BugCheck.StopCode.IllegalMode ); 
                 return osStatus.osErrorISR;
             }
 

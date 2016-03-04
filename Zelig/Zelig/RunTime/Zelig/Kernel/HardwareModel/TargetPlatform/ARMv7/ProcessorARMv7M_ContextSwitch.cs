@@ -587,6 +587,10 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 }
             }
             
+            //
+            // Handles interrupts through the interrupts controller polling mechanism 
+            // (suitable for ARMv4/5 an for polling approach)
+            //
             [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_VFP__SoftVFP )]
             [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
             [RT.ExportedMethod]
@@ -599,6 +603,21 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             }
         }
 
+        //
+        // Handles interrupts through the native platform direct invokation
+        //
+        [NoInline]
+        protected static void ExclusiveAccessExceptionHandler( Action isr )
+        {
+            using(RT.SmartHandles.InterruptState.Disable( ))
+            {
+                using(RT.SmartHandles.SwapCurrentThreadUnderInterrupt hnd = ThreadManager.InstallInterruptThread( ))
+                {
+                    isr( );
+                }
+            }
+        }
+        
         //--//
 
         //

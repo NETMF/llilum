@@ -44,6 +44,7 @@ namespace Microsoft.Zelig.Runtime
             InvalidOperation        ,
             Impossible              ,
             Fault_Vectors           ,
+            ForcedHardFault         ,
             Fault_Unknown           ,
         }
 

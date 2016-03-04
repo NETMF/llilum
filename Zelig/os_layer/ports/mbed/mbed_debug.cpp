@@ -246,54 +246,55 @@ extern "C"
     // Stubs for Faults
     //
 
-    extern void MemManage_Handler_Zelig();
-    extern void BusFault_Handler_Zelig();
-    extern void UsageFault_Handler_Zelig();
-    extern void HardFault_Handler_Zelig();
+    extern void Zelig_Exception_MemManage_Handler ();
+    extern void Zelig_Exception_BusFault_Handler  ();
+    extern void Zelig_Exception_UsageFault_Handler();
+    extern void Zelig_Exception_HardFault_Handler ();
 
     //--//
 
 #if __CORTEX_M0
 
-#define DEFAULT_FAULT_HANDLER(handler)  \
-    __ASM volatile ("TST    LR, #0x4"); \
-    __ASM volatile ("ITE    EQ");       \
-    __ASM volatile ("MRSEQ  R0, msp");  \
-    __ASM volatile ("MRSNE  R0, psp");  \
-    handler();                          \
-    __ASM volatile ("BX     LR");       \
-
-#define DEFAULT_FAULT_HANDLER(handler)  
+    __ASM volatile ("MOVS    R0, #0x4");    \
+    __ASM volatile ("MOV     R1,   LR");    \
+    __ASM volatile ("TST     R0,   R1");    \
+    __ASM volatile ("BEQ     __FROM_MSP");  \
+    __ASM volatile ("__FROM_PSP:");         \
+    __ASM volatile ("MRS     R0, psp");     \
+    __ASM volatile ("__FROM_MSP:");         \
+    __ASM volatile ("MRS     R0, msp");     \
+    handler();                              \
+    __ASM volatile ("BX     LR");           \
 
 #else
 
-#define DEFAULT_FAULT_HANDLER(handler)  \
-    __ASM volatile ("TST    LR, #0x4"); \
-    __ASM volatile ("ITE    EQ");       \
-    __ASM volatile ("MRSEQ  R0, msp");  \
-    __ASM volatile ("MRSNE  R0, psp");  \
-    handler();                          \
-    __ASM volatile ("BX     LR");       \
+#define DEFAULT_FAULT_HANDLER(handler)      \
+    __ASM volatile ("TST    LR, #0x4");     \
+    __ASM volatile ("ITE    EQ");           \
+    __ASM volatile ("MRSEQ  R0, msp");      \
+    __ASM volatile ("MRSNE  R0, psp");      \
+    handler();                              \
+    __ASM volatile ("BX     LR");           \
 
 #endif
 
     __attribute__((naked)) void HardFault_Handler(void)
     {
-        DEFAULT_FAULT_HANDLER( HardFault_Handler_Zelig );
+        DEFAULT_FAULT_HANDLER( Zelig_Exception_HardFault_Handler );
     }
 
     __attribute__((naked)) void MemManage_Handler(void)
     {
-        DEFAULT_FAULT_HANDLER( MemManage_Handler_Zelig );
+        DEFAULT_FAULT_HANDLER( Zelig_Exception_MemManage_Handler );
     }
 
     __attribute__((naked)) void BusFault_Handler(void)
     {
-        DEFAULT_FAULT_HANDLER( BusFault_Handler_Zelig );
+        DEFAULT_FAULT_HANDLER( Zelig_Exception_BusFault_Handler );
     }
 
     __attribute__((naked)) void UsageFault_Handler(void)
     {
-        DEFAULT_FAULT_HANDLER( UsageFault_Handler_Zelig );
+        DEFAULT_FAULT_HANDLER( Zelig_Exception_UsageFault_Handler );
     }
 }
