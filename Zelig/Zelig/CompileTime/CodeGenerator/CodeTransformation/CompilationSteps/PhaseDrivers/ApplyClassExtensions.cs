@@ -172,6 +172,34 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
                 m_reverseIndex.ProcessTypeSystem();
             }
 
+            //
+            // Process types that are generic parameters types first
+            // 
+
+            var genericParametersTypes = new List<TypeRepresentation>();
+
+            foreach(TypeRepresentation td in m_typeSystem.Types)
+            {
+                foreach(var parameter in td.GenericParameters)
+                {
+                    if(parameter is DelayedMethodParameterTypeRepresentation || parameter is DelayedTypeParameterTypeRepresentation)
+                    {
+                        continue;
+                    }
+
+                    genericParametersTypes.Add( parameter );
+                }
+            }
+            
+            foreach(TypeRepresentation td in genericParametersTypes)
+            {
+                ProcessType( td );
+            }
+            
+            //
+            // Process all other types
+            // 
+
             foreach(TypeRepresentation td in m_typeSystem.Types.ToArray())
             {
                 ProcessType( td );
