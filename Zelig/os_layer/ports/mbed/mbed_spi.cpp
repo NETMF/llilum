@@ -88,6 +88,10 @@ extern "C"
 
     HRESULT LLOS_SPI_SetCallback(LLOS_Context channel, LLOS_SPI_Callback request, LLOS_Context context)
     {
+        LLOS__UNREFERENCED_PARAMETER(channel);
+        LLOS__UNREFERENCED_PARAMETER(request);
+        LLOS__UNREFERENCED_PARAMETER(context);
+
         return LLOS_E_NOTIMPL;
     }
 
@@ -236,11 +240,15 @@ extern "C"
 
     HRESULT LLOS_SPI_Suspend(LLOS_Context channel)
     {
+        LLOS__UNREFERENCED_PARAMETER(channel);
+
         return LLOS_E_NOTIMPL;
     }
 
     HRESULT LLOS_SPI_Resume(LLOS_Context channel)
     {
+        LLOS__UNREFERENCED_PARAMETER(channel);
+
         return LLOS_E_NOTIMPL;
     }
 }

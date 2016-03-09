@@ -120,6 +120,9 @@ extern "C"
 
     HRESULT LLOS_GPIO_SetPolarity(LLOS_Context pin, LLOS_GPIO_Polarity polarity)
     {
+        LLOS__UNREFERENCED_PARAMETER(pin);
+        LLOS__UNREFERENCED_PARAMETER(polarity);
+
         return LLOS_E_NOT_SUPPORTED;
     }
 
@@ -174,6 +177,9 @@ extern "C"
 
     HRESULT LLOS_GPIO_SetDebounce(LLOS_Context pin, LLOS_TimeSpan debounceTime)
     {
+        LLOS__UNREFERENCED_PARAMETER(pin);
+        LLOS__UNREFERENCED_PARAMETER(debounceTime);
+
         return LLOS_E_NOT_SUPPORTED;
     }
 
@@ -205,6 +211,12 @@ extern "C"
 
     HRESULT LLOS_GPIO_GetConfig(LLOS_Context pin, uint32_t* pin_number, LLOS_GPIO_Edge* edge, LLOS_GPIO_Resistor* resistor, LLOS_GPIO_Polarity* polarity)
     {
+        LLOS__UNREFERENCED_PARAMETER(pin);
+        LLOS__UNREFERENCED_PARAMETER(pin_number);
+        LLOS__UNREFERENCED_PARAMETER(edge);
+        LLOS__UNREFERENCED_PARAMETER(resistor);
+        LLOS__UNREFERENCED_PARAMETER(polarity);
+
         return LLOS_E_NOT_SUPPORTED;
     }
 }

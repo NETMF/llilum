@@ -14,6 +14,8 @@ struct ExceptionWrapper
 
     static void Free(_Unwind_Reason_Code reason, _Unwind_Exception* header)
     {
+        LLOS__UNREFERENCED_PARAMETER(reason);
+
         LLOS_FREE(FromHeader(header));
     }
 

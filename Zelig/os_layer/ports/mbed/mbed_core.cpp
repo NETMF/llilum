@@ -446,53 +446,82 @@ extern "C"
          __ASM volatile ("__FROM_MSP:");
          __ASM volatile ("MRS     R0, msp");
 
-         ////
-         //// Test for SupervisorCall__SnapshotProcessModeRegisters (0x14) and snapshot 
-         //// all remaining registers onto the stack first and into the convenience space
-         //// right after
-         ////
-         //{
-         //    __ASM volatile ("LDR    R12, [R0 , #24]");          // load the SVC number
-         //    __ASM volatile ("LDRH   R12, [R12, #-2]");
-         //    __ASM volatile ("BICS   R12, R12, #0xFF00");
-         //    __ASM volatile ("CMP    R12, #20");                 // check if we are serving a frame snapshot (SVC_Code.SupervisorCall__SnapshotProcessModeRegisters) ...
-         //    __ASM volatile ("BNE    __SVCCALL");                // ... skip if not
+         //
+         // Test for SupervisorCall__SnapshotProcessModeRegisters (0x14) and snapshot 
+         // all remaining registers onto the stack first and into the convenience space
+         // right after
+         //
+         {
+             //__ASM volatile ("LDR    R1, [R0 , #24]");          // load the SVC number
+             //__ASM volatile ("LDRH   R1, [R1, #-2]");
+             //__ASM volatile ("MOV    R2, #0X00FF");
+             //__ASM volatile ("AND    R1, R1, R2");
+             //__ASM volatile ("CMP    R1, #20");                 // check if we are serving a frame snapshot (SVC_Code.SupervisorCall__SnapshotProcessModeRegisters) ...
+             //__ASM volatile ("BNE    __SVCCALL");               // ... skip if not
 
-         //    {
-         //        //
-         //        // Snapshot
-         //        //
-         //        __ASM volatile ("MOV    R2 , LR");              // Save LR and CONTROL, to save the status and privilege/stack mode
-         //        __ASM volatile ("MRS    R3 , CONTROL");
+             {
+                 //
+                 // Snapshot
+                 //
+                 __ASM volatile ("MOV    R2 , LR");              // Save LR and CONTROL, to save the status and privilege/stack mode
+                 __ASM volatile ("MRS    R3 , CONTROL");
 
-         //        __ASM volatile ("STMDB  R0!, {R2-R11}");        // Push the SW stack frame, a total of 10 registers, including R2/3
+                 __ASM volatile ("STMIA    R0!, {R2-R3}");      // Stack the SW stack frame, a total of 10 registers, including R2/3
+                 __ASM volatile ("STMIA    R0!, {R4-R7}");      // Keep stacking...
 
-         //        //
-         //        // Now the stack has the full frame of 18 registers (RegistersOnStack)
-         //        // We need to move the frame to the convenience space and then pop the 
-         //        // Software frame before return
-         //        //
-         //        __ASM volatile ("MOV    R1 , %0" : /*output*/ : "r"(&sw_hw__frame[0]));
-         //        __ASM volatile ("MOV    R2 , R0");              // R0 contains the beginning of the frame
-         //        __ASM volatile ("MOV    R12, #18");
+                 __ASM volatile ("MOV      R4,       R8");      // Keep stacking...
+                 __ASM volatile ("MOV      R5,       R9");      // Keep stacking...
+                 __ASM volatile ("MOV      R6,      R10");      // Keep stacking...
+                 __ASM volatile ("MOV      R7,      R11");      // Keep stacking...
+                 __ASM volatile ("STMIA    R0!, {R4-R7}");      // Done!
 
-         //        __ASM volatile ("__COPY_TO_FRAME:");
+                 //
+                 // Now the stack has the full frame of 18 registers (RegistersOnStack)
+                 // We need to move the frame to the convenience space and then pop the 
+                 // Software frame before return
+                 //
+                 __ASM volatile ("MOV    R1 , %0" : /*output*/ : "r"(&sw_hw__frame[0]));
+                 __ASM volatile ("MOV    R2 , R0");              // R0 contains the beginning of the frame
+                 __ASM volatile ("MOV    R4, #18");
 
-         //        __ASM volatile ("LDR    R3, [R2]");
-         //        __ASM volatile ("STR    R3, [R1]");
+                 //
+                 // SAVE FRAME LOOP - start
+                 //
 
-         //        __ASM volatile ("ADD    R2 , #4");
-         //        __ASM volatile ("ADD    R1 , #4");
-         //        __ASM volatile ("SUBS   R12, #1");
-         //        __ASM volatile ("CMP    R12, #0"); 
-         //        __ASM volatile ("BNE   __COPY_TO_FRAME");
+                 __ASM volatile ("__COPY_TO_FRAME:");
 
-         //        __ASM volatile ("LDMIA    R0!, {R2-R11}");      // Unstack the SW frame (10 registers) before proceeding as usual
-         //    }
-         //}
-         ////
-         //// End of snapshot
-         ////
+                 __ASM volatile ("LDR    R3, [R2]");
+                 __ASM volatile ("STR    R3, [R1]");
+
+                 __ASM volatile ("ADD    R2 , #4");
+                 __ASM volatile ("ADD    R1 , #4");
+                 __ASM volatile ("SUB    R4, #1");
+                 __ASM volatile ("CMP    R4, #0"); 
+                 __ASM volatile ("BNE   __COPY_TO_FRAME");
+                 
+                 //
+                 // SAVE FRAME LOOP - end
+                 //
+
+                 __ASM volatile ("LDMIA    R0!, {R4-R7}");      // Unstack the SW frame (10 registers) before proceeding as usual
+                 __ASM volatile ("MOV      R8,       R4");      // Keep unstacking...
+                 __ASM volatile ("MOV      R9,       R5");      // Keep unstacking...
+                 __ASM volatile ("MOV      R10,      R6");      // Keep unstacking...
+                 __ASM volatile ("MOV      R11,      R7");      // Keep unstacking...
+
+                 __ASM volatile ("SUB      R0,      #40");      // Set R0 to point to the top of the stack frame for the next  registers
+
+                 __ASM volatile ("LDMIA    R0!, {R2-R3}");      // Keep unstacking...
+                 __ASM volatile ("LDMIA    R0!, {R4-R7}");      // Done!
+
+                 __ASM volatile ("MOV      LR,       R2");      // Restore LR and CONTROL, to restore the status and privilege/stack mode
+                 __ASM volatile ("MSR      CONTROL,  R3");
+                 __ASM volatile ("ISB");                        // architectural recommendation, always use ISB after updating control register
+             }
+         }
+         //
+         // End of snapshot
+         //
 
 
          //
@@ -510,7 +539,7 @@ extern "C"
          SVC_Handler_Zelig();
 
          //
-         // Push
+         // Push - disabled in favor of polling from managed code to recover snapshot
          //
          //NotifySoftwareFrameSnapshot(); 
 
@@ -527,6 +556,8 @@ extern "C"
 
 	/*__STATIC_INLINE*/ uint32_t CMSIS_STUB_SCB__set_BASEPRI(uint32_t basePri)
 	{
+        LLOS__UNREFERENCED_PARAMETER(basePri);
+
         return 0;
 	}
 
@@ -579,6 +610,10 @@ extern "C"
                 __ASM volatile ("MOV    R2 , R0");              // R0 contains the beginning of the frame
                 __ASM volatile ("MOV    R12, #18");
 
+                //
+                // SAVE FRAME LOOP - start
+                //
+
                 __ASM volatile ("__COPY_TO_FRAME:");
 
                 __ASM volatile ("LDR    R3, [R2]");
@@ -589,6 +624,10 @@ extern "C"
                 __ASM volatile ("SUBS   R12, #1");
                 __ASM volatile ("CMP    R12, #0"); 
                 __ASM volatile ("BNE   __COPY_TO_FRAME");
+
+                //
+                // SAVE FRAME LOOP - end
+                //
 
                 __ASM volatile ("LDMIA    R0!, {R2-R11}");      // Unstack the SW frame (10 registers) before proceeding as usual
             }

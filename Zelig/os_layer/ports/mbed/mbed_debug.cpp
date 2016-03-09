@@ -48,6 +48,8 @@ extern "C"
 
     void DebugLogPrint(char* message)
     {
+        LLOS__UNREFERENCED_PARAMETER(message);
+
         // To automatically dump out the debug log into gdb output, input the following commands
         // to set a breakpoint as such:
         /*
@@ -254,15 +256,16 @@ extern "C"
     //--//
 
 #if __CORTEX_M0
-
-    __ASM volatile ("MOVS    R0, #0x4");    \
-    __ASM volatile ("MOV     R1,   LR");    \
-    __ASM volatile ("TST     R0,   R1");    \
-    __ASM volatile ("BEQ     __FROM_MSP");  \
-    __ASM volatile ("__FROM_PSP:");         \
+    
+#define DEFAULT_FAULT_HANDLER(handler)      \
+    //////__ASM volatile ("MOVS    R0, #0x4");    \
+    //////__ASM volatile ("MOV     R1,   LR");    \
+    //////__ASM volatile ("TST     R0,   R1");    \
+    //////__ASM volatile ("BEQ     __FROM_MSP");  \
+    //////__ASM volatile ("__FROM_PSP:");         \
     __ASM volatile ("MRS     R0, psp");     \
-    __ASM volatile ("__FROM_MSP:");         \
-    __ASM volatile ("MRS     R0, msp");     \
+    //////__ASM volatile ("__FROM_MSP:");         \
+    //////__ASM volatile ("MRS     R0, msp");     \
     handler();                              \
     __ASM volatile ("BX     LR");           \
 

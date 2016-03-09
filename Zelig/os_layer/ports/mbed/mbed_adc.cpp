@@ -126,6 +126,9 @@ extern "C"
 
     HRESULT LLOS_ADC_GetPrecisionBits(LLOS_Context channel, uint32_t* precisionInBits)
     {
+        LLOS__UNREFERENCED_PARAMETER(channel);
+        LLOS__UNREFERENCED_PARAMETER(precisionInBits);
+
         return LLOS_E_NOTIMPL;
     }
 #endif

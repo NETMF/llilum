@@ -94,11 +94,17 @@ extern "C"
 
     HRESULT LLOS_PWM_SetPolarity(LLOS_Context channel, LLOS_PWM_Polarity polarity)
     {
+        LLOS__UNREFERENCED_PARAMETER(channel);
+        LLOS__UNREFERENCED_PARAMETER(polarity);
+
         return LLOS_E_NOT_SUPPORTED;
     }
 
     HRESULT LLOS_PWM_SetPrescaler(LLOS_Context channel, LLOS_PWM_Prescaler prescaler)
     {
+        LLOS__UNREFERENCED_PARAMETER(channel);
+        LLOS__UNREFERENCED_PARAMETER(prescaler);
+
         return LLOS_E_NOT_SUPPORTED;
     }
 

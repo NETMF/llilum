@@ -33,27 +33,38 @@ extern "C"
 
 	void* CreateNativeContext(void* entryPoint, void* stack, int32_t stackSize)
 	{
+        LLOS__UNREFERENCED_PARAMETER(entryPoint);
+        LLOS__UNREFERENCED_PARAMETER(stack);
+        LLOS__UNREFERENCED_PARAMETER(stackSize);
+
 		return NULL;
 	}
 
 	void Yield(void* nativeContext)
 	{
+        LLOS__UNREFERENCED_PARAMETER(nativeContext);
 	}
 
 	void Retire(void* nativeContext)
 	{
+        LLOS__UNREFERENCED_PARAMETER(nativeContext);
 	}
 
 	void SwitchToContext(void* nativeContext)
 	{
+        LLOS__UNREFERENCED_PARAMETER(nativeContext);
 	}
 
 	void* GetPriority(void* nativeContext)
 	{
+        LLOS__UNREFERENCED_PARAMETER(nativeContext);
+
 		return 0;
 	}
 
 	void SetPriority(void* nativeContext, void* priority)
 	{
+        LLOS__UNREFERENCED_PARAMETER(nativeContext);
+        LLOS__UNREFERENCED_PARAMETER(priority);
 	}
 }

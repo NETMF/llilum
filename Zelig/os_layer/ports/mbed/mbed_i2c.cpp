@@ -50,11 +50,15 @@ extern "C"
 
     HRESULT LLOS_I2C_Enable(LLOS_Context channel)
     {
+        LLOS__UNREFERENCED_PARAMETER(channel); 
+
         return LLOS_E_NOT_SUPPORTED;
     }
 
     HRESULT LLOS_I2C_Disable(LLOS_Context channel)
     {
+        LLOS__UNREFERENCED_PARAMETER(channel);
+
         return LLOS_E_NOT_SUPPORTED;
     }
 

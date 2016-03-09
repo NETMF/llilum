@@ -119,6 +119,10 @@ extern "C"
 
         return S_OK;
 #else
+        LLOS__UNREFERENCED_PARAMETER(channel);
+        LLOS__UNREFERENCED_PARAMETER(rtsPin);
+        LLOS__UNREFERENCED_PARAMETER(ctsPin);
+
         return LLOS_E_NOTIMPL;
 #endif
     }
@@ -184,6 +188,8 @@ extern "C"
 
     HRESULT LLOS_SERIAL_Flush(LLOS_Context channel)
     {
+        LLOS__UNREFERENCED_PARAMETER(channel); 
+
         return S_OK;
     }
 

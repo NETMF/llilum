@@ -57,6 +57,8 @@ extern "C"
 
     HRESULT LLOS_SYSTEM_TIMER_AllocateTimer(LLOS_SYSTEM_TIMER_Callback callback, LLOS_Context callbackContext, uint64_t usFromNow, LLOS_Context *pTimer)
     {
+        LLOS__UNREFERENCED_PARAMETER(usFromNow);
+
         LLOS_MbedTimer *pCtx;
 
         if (pTimer == NULL)
