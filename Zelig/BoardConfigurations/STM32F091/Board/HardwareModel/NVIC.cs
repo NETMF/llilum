@@ -44,6 +44,7 @@ namespace Microsoft.Llilum.STM32F091
         USART1_IRQn                 = 27,     /*!< USART1 global Interrupt & EXTI Line25 Interrupt (USART1 wakeup) */
         USART2_IRQn                 = 28,     /*!< USART2 global Interrupt & EXTI Line26 Interrupt (USART2 wakeup) */
         USART3_8_IRQn               = 29,     /*!< USART3 to USART8 global Interrupts                              */
-        CEC_CAN_IRQn                = 30      /*!< CEC and CAN global Interrupts & EXTI Line27 Interrupt           */
+        CEC_CAN_IRQn                = 30,     /*!< CEC and CAN global Interrupts & EXTI Line27 Interrupt           */
+        LAST                        = 31, 
     }
 }

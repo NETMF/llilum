@@ -52,5 +52,6 @@ namespace Microsoft.Llilum.LPC1768
         PLL1_IRQn               = 32,       /*!< PLL1 Lock (USB PLL) Interrupt                    */
         USBActivity_IRQn        = 33,       /* USB Activity interrupt                             */
         CANActivity_IRQn        = 34,       /* CAN Activity interrupt                             */
+        LAST                    = 35, 
     }
 }

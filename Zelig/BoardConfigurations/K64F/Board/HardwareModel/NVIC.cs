@@ -103,6 +103,7 @@ namespace Microsoft.Llilum.K64F
         ENET_1588_Timer_IRQn    = 82,               /**< Ethernet MAC IEEE 1588 Timer Interrupt */
         ENET_Transmit_IRQn      = 83,               /**< Ethernet MAC Transmit Interrupt */
         ENET_Receive_IRQn       = 84,               /**< Ethernet MAC Receive Interrupt */
-        ENET_Error_IRQn         = 85                /**< Ethernet MAC Error and miscelaneous Interrupt */
+        ENET_Error_IRQn         = 85,               /**< Ethernet MAC Error and miscelaneous Interrupt */
+        LAST                    = 86, 
     } 
 }

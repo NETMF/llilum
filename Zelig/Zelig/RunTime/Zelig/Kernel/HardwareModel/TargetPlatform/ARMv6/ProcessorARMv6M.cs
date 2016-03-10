@@ -98,6 +98,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
         public const uint c_Priority__Default               = 0x00000007u;
         public const uint c_Priority__SystemTimer           = c_Priority__Default;
         public const uint c_Priority__SysTick               = c_Priority__Default;
+        public const uint c_Priority__GenericPeripherals    = c_Priority__Default + 1;
         public const uint c_Priority__PendSV                = 0x0000000Eu;
 
         //--//
