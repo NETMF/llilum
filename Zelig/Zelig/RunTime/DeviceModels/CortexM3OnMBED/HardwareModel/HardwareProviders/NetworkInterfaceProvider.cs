@@ -10,7 +10,7 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
     using RT = Microsoft.Zelig.Runtime;
 
 
-    public sealed class NetworkInterfaceProvider : RT.NetworkInterfaceProvider
+    public abstract class NetworkInterfaceProvider : RT.NetworkInterfaceProvider
     {
         public override int Connect(uint timeout)
         {

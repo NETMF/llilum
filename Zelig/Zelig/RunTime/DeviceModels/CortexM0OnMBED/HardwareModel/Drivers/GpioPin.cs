@@ -165,6 +165,11 @@ namespace Microsoft.CortexM0OnMBED.HardwareModel
             data.Handler = MBED.InterruptController.CastAsInterruptHandler(context);
             data.Context = (uint)evt;
 
+            //
+            // This interrupt handler does not come from the ISR vector table, but rather from the handler set up 
+            // by mBed through 'NVIC_SetVector( <ISR NUMBER>, (uint32_t)us_ticker_irq_handler)' during initialization. 
+            // Therefore we need to wrap this specific handler here, which is where it first shows up. 
+            //
             using (RT.SmartHandles.InterruptState.Disable())
             {
                 using(RT.SmartHandles.SwapCurrentThreadUnderInterrupt hnd = RT.ThreadManager.InstallInterruptThread( ))

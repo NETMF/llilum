@@ -444,7 +444,9 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             EnableSystemHandler( IRQn_Type.MemoryManagement_IRQn ); 
             EnableSystemHandler( IRQn_Type.UsageFault_IRQn       ); 
         }
-                
+
+        protected abstract void RemapInterrupt(IRQn_Type IRQn, Action isr);
+
         internal static void SetCCR( uint val )
         {
             // NOTE: LWIP uses memory functions on addresses which are not 8 byte aligned

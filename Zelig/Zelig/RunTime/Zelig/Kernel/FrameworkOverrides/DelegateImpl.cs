@@ -160,7 +160,7 @@ namespace Microsoft.Zelig.Runtime
 
         //--//
 
-        internal TS.CodePointer InnerGetCodePointer()
+        public TS.CodePointer InnerGetCodePointer()
         {
             return m_codePtr;
         }

@@ -59,9 +59,22 @@ extern "C"
 	}
 #endif
 
+	/*__STATIC_INLINE*/ uint32_t CMSIS_STUB_NVIC_GetVector(IRQn_Type IRQn)
+	{
+		return NVIC_GetVector(IRQn);
+	}
+
+	/*__STATIC_INLINE*/ void CMSIS_STUB_NVIC_SetVector(IRQn_Type IRQn, uint32_t vector)
+	{
+		NVIC_SetVector(IRQn, vector);
+
+		__ISB(); // always emit a barrier 
+	}
+
 	/*__STATIC_INLINE*/ void CMSIS_STUB_NVIC_SetPriority(IRQn_Type IRQn, uint32_t priority)
 	{
 		NVIC_SetPriority(IRQn, priority);
+
 		__ISB(); // always emit a barrier 
 	}
 

@@ -2,12 +2,14 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-using Microsoft.Zelig.Runtime;
-using System;
-using System.Runtime.InteropServices;
 
 namespace Microsoft.Zelig.LlilumOSAbstraction.API.IO
 {
+    using System;
+    using System.Runtime.InteropServices;
+    using Microsoft.Zelig.Runtime;
+
+
     public enum SerialPortParity : uint
     {
         None = 0,

@@ -19,6 +19,11 @@ namespace Microsoft.Zelig.Runtime
                 throw new NotImplementedException();
             }
 
+            //////public override void RemapInterrupts( )
+            //////{
+            //////    throw new NotImplementedException();
+            //////}
+
             public override int GetGpioPinIRQNumber(int pinNumber)
             {
                 throw new NotImplementedException();
@@ -26,6 +31,8 @@ namespace Microsoft.Zelig.Runtime
         }
 
         public abstract GpioPin CreateGpioPin(int pinNumber);
+
+        //////public abstract void RemapInterrupts( );
 
         public abstract int GetGpioPinIRQNumber(int pinNumber);
 

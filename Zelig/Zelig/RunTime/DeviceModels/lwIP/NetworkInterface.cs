@@ -46,121 +46,129 @@ namespace Microsoft.Llilum.Lwip
 
         //--//
 
-        internal NetworkInterface(int interfaceIndex)
+        internal NetworkInterface( int interfaceIndex )
         {
             this.m_interfaceIndex = interfaceIndex;
             m_networkInterfaceType = NetworkInterfaceType.Unknown;
         }
 
-        public static NetworkInterface[] GetAllNetworkInterfaces()
+        public static NetworkInterface[ ] GetAllNetworkInterfaces( )
         {
             int count = GetNetworkInterfaceCount();
             NetworkInterface[] ifaces = new NetworkInterface[count];
 
-            for (uint i = 0; i < count; i++)
+            for(uint i = 0; i < count; i++)
             {
-                ifaces[i] = GetNetworkInterface(i);
+                ifaces[ i ] = GetNetworkInterface( i );
             }
 
             return ifaces;
         }
-        
-        private static NetworkInterface GetNetworkInterface(uint interfaceIndex)
+
+        private static NetworkInterface GetNetworkInterface( uint interfaceIndex )
         {
-            if(interfaceIndex >= GetNetworkInterfaceCount())
+            if(interfaceIndex >= GetNetworkInterfaceCount( ))
             {
-                throw new ArgumentOutOfRangeException(nameof(interfaceIndex));
+                throw new ArgumentOutOfRangeException( nameof( interfaceIndex ) );
             }
 
             return s_netInterface;
         }
 
-        public static int GetNetworkInterfaceCount()
+        public static int GetNetworkInterfaceCount( )
         {
-            return NetworkInterfaceProvider.Instance.GetNetworkInterfaceCount();
+            return NetworkInterfaceProvider.Instance.GetNetworkInterfaceCount( );
         }
 
-        public void InitializeNetworkInterfaceSettings(NetworkInterface netInterface)
+        public void InitializeNetworkInterfaceSettings( NetworkInterface netInterface )
         {
-            netInterface.IPAddress      = NetworkInterfaceProvider.Instance.GetIPAddress();
-            netInterface.GatewayAddress = NetworkInterfaceProvider.Instance.GetGatewayAddress();
-            netInterface.SubnetMask     = NetworkInterfaceProvider.Instance.GetMask();
+            netInterface.IPAddress      = NetworkInterfaceProvider.Instance.GetIPAddress( );
+            netInterface.GatewayAddress = NetworkInterfaceProvider.Instance.GetGatewayAddress( );
+            netInterface.SubnetMask     = NetworkInterfaceProvider.Instance.GetMask( );
         }
 
-        public void UpdateConfiguration(NetworkInterface netInterface, int updateType)
+        public void UpdateConfiguration( NetworkInterface netInterface, int updateType )
         {
+            var ni = NetworkInterfaceProvider.Instance;
+
             // Handle only DHCP updates for now
-            if (updateType == 0x2)
+            if(updateType == 0x2)
             {
-                NetworkInterfaceProvider.Instance.Disconnect();
+                ni.Disconnect( );
 
-                if (netInterface.IsDhcpEnabled)
+                if(netInterface.IsDhcpEnabled)
                 {
-                    NetworkInterfaceProvider.Instance.InitializeEthernet();
+                    ni.InitializeEthernet( );
                 }
                 else
                 {
-                    NetworkInterfaceProvider.Instance.InitializeEthernet(
+                    ni.InitializeEthernet(
                         netInterface.IPAddress,
                         netInterface.SubnetMask,
-                        netInterface.GatewayAddress);
+                        netInterface.GatewayAddress );
                 }
 
-                NetworkInterfaceProvider.Instance.Connect(15000);
+                //
+                // After initialization is complete, we need to remap all interrupts 
+                // to the safe LLILUM wrapper
+                //
+                ni.RemapInterrupts( );
+
+                ni.Connect( 15000 );
             }
         }
 
-        public static uint IPv4AddressFromString(string ipAddress)
+        public static uint IPv4AddressFromString( string ipAddress )
         {
-            return NetworkInterfaceProvider.Instance.IPv4AddressFromString(ipAddress);
+            return NetworkInterfaceProvider.Instance.IPv4AddressFromString( ipAddress );
         }
 
-        private string IPv4AddressToString(uint ipAddress)
+        private string IPv4AddressToString( uint ipAddress )
         {
             return string.Concat(
-                            ((ipAddress >> 0) & 0xFF).ToString(),
+                            ((ipAddress >> 0) & 0xFF).ToString( ),
                                 ".",
-                            ((ipAddress >> 8) & 0xFF).ToString(),
+                            ((ipAddress >> 8) & 0xFF).ToString( ),
                                 ".",
-                            ((ipAddress >> 16) & 0xFF).ToString(),
+                            ((ipAddress >> 16) & 0xFF).ToString( ),
                                 ".",
-                            ((ipAddress >> 24) & 0xFF).ToString()
+                            ((ipAddress >> 24) & 0xFF).ToString( )
                             );
         }
 
-        public void EnableStaticIP(string ipAddress, string subnetMask, string gatewayAddress)
+        public void EnableStaticIP( string ipAddress, string subnetMask, string gatewayAddress )
         {
             try
             {
-                m_ipAddress = IPv4AddressFromString(ipAddress);
-                m_subnetMask = IPv4AddressFromString(subnetMask);
-                m_gatewayAddress = IPv4AddressFromString(gatewayAddress);
+                m_ipAddress = IPv4AddressFromString( ipAddress );
+                m_subnetMask = IPv4AddressFromString( subnetMask );
+                m_gatewayAddress = IPv4AddressFromString( gatewayAddress );
                 m_flags &= ~FLAGS_DHCP;
 
-                UpdateConfiguration(this, UPDATE_FLAGS_DHCP);
+                UpdateConfiguration( this, UPDATE_FLAGS_DHCP );
             }
             finally
             {
-                ReloadSettings();
+                ReloadSettings( );
             }
         }
 
-        public void EnableDhcp()
+        public void EnableDhcp( )
         {
             try
             {
                 m_flags |= FLAGS_DHCP;
-                UpdateConfiguration(this, UPDATE_FLAGS_DHCP);
+                UpdateConfiguration( this, UPDATE_FLAGS_DHCP );
             }
             finally
             {
-                ReloadSettings();
+                ReloadSettings( );
             }
         }
 
-        public void EnableStaticDns(string[] dnsAddresses)
+        public void EnableStaticDns( string[ ] dnsAddresses )
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException( );
 
             //if (dnsAddresses == null || dnsAddresses.Length == 0 || dnsAddresses.Length > 2)
             //{
@@ -197,9 +205,9 @@ namespace Microsoft.Llilum.Lwip
             //}
         }
 
-        public void EnableDynamicDns()
+        public void EnableDynamicDns( )
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException( );
 
             //try
             //{
@@ -215,20 +223,20 @@ namespace Microsoft.Llilum.Lwip
 
         public string IPAddress
         {
-            get { return IPv4AddressToString(m_ipAddress); }
-            internal set { m_ipAddress = IPv4AddressFromString(value); }
+            get { return IPv4AddressToString( m_ipAddress ); }
+            internal set { m_ipAddress = IPv4AddressFromString( value ); }
         }
 
         public string GatewayAddress
         {
-            get { return IPv4AddressToString(m_gatewayAddress); }
-            internal set { m_gatewayAddress = IPv4AddressFromString(value); }
+            get { return IPv4AddressToString( m_gatewayAddress ); }
+            internal set { m_gatewayAddress = IPv4AddressFromString( value ); }
         }
 
         public string SubnetMask
         {
-            get { return IPv4AddressToString(m_subnetMask); }
-            internal set { m_subnetMask = IPv4AddressFromString(value); }
+            get { return IPv4AddressToString( m_subnetMask ); }
+            internal set { m_subnetMask = IPv4AddressFromString( value ); }
         }
 
         public bool IsDhcpEnabled
@@ -244,7 +252,7 @@ namespace Microsoft.Llilum.Lwip
             }
         }
 
-        public string[] DnsAddresses
+        public string[ ] DnsAddresses
         {
             get
             {
@@ -260,20 +268,20 @@ namespace Microsoft.Llilum.Lwip
                 //    list.Add(IPAddressToString(_dnsAddress2));
                 //}
 
-                return (string[])list.ToArray(typeof(string));
+                return (string[ ])list.ToArray( typeof( string ) );
             }
         }
 
-        private void ReloadSettings()
+        private void ReloadSettings( )
         {
-            Thread.Sleep(100);
-            InitializeNetworkInterfaceSettings(this);
+            Thread.Sleep( 100 );
+            InitializeNetworkInterfaceSettings( this );
         }
 
-        public void ReleaseDhcpLease()
+        public void ReleaseDhcpLease( )
         {
-            throw new NotImplementedException();
-            
+            throw new NotImplementedException( );
+
             //try
             //{
             //    UpdateConfiguration(this, UPDATE_FLAGS_DHCP_RELEASE);
@@ -284,9 +292,9 @@ namespace Microsoft.Llilum.Lwip
             //}
         }
 
-        public void RenewDhcpLease()
+        public void RenewDhcpLease( )
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException( );
 
             //try
             //{
@@ -298,13 +306,13 @@ namespace Microsoft.Llilum.Lwip
             //}
         }
 
-        public byte[] PhysicalAddress
+        public byte[ ] PhysicalAddress
         {
             get { return m_macAddress; }
             set
             {
                 m_macAddress = value;
-                throw new NotImplementedException();
+                throw new NotImplementedException( );
 
                 //try
                 //{

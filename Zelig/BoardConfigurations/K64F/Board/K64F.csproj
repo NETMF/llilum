@@ -81,6 +81,7 @@
     <Compile Include="HardwareModel\HardwareProvidersUwp\SpiProviderUwp.cs" />
     <Compile Include="HardwareModel\HardwareProviders\GpioProvider.cs" />
     <Compile Include="HardwareModel\HardwareProviders\I2cProvider.cs" />
+    <Compile Include="HardwareModel\HardwareProviders\NetworkInterfaceProvider.cs" />
     <Compile Include="HardwareModel\HardwareProviders\SpiProvider.cs" />
     <Compile Include="HardwareModel\NVIC.cs" />
     <Compile Include="HardwareModel\Peripherals.cs" />

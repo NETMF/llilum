@@ -2,10 +2,11 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-using System.Runtime.InteropServices;
-
 namespace Microsoft.Zelig.LlilumOSAbstraction.API.IO
 {
+    using System.Runtime.InteropServices;
+
+
     public enum PwmPolarity
     {
         Normal = 0,

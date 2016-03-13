@@ -385,6 +385,11 @@ namespace Microsoft.CortexM0OnMBED.Drivers
             data.Context = ticks;
             data.Handler = InterruptController.CastAsInterruptHandler( context );
 
+            //
+            // This interrupt handler does not come from the ISR vector table, but rather from 'us_ticker_irq_handler' 
+            // being lazily set through 'NVIC_SetVector( <ISR NUMBER>, (uint32_t)us_ticker_irq_handler)' during initialization. 
+            // Therefore we need to wrap this specific handler here, which is where it first shows up. 
+            //
             using(RT.SmartHandles.InterruptState.Disable( ))
             {
                 using(RT.SmartHandles.SwapCurrentThreadUnderInterrupt hnd = RT.ThreadManager.InstallInterruptThread( ))

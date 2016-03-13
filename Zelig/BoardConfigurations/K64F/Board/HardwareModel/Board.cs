@@ -147,5 +147,15 @@ namespace Microsoft.Llilum.K64F
                     throw new NotSupportedException();
             }
         }
+
+        //////public override void RemapSerialPortInterrupts( )
+        //////{
+        //////    Processor.RemapInterrupt( IRQn.UART0_ERR_IRQn  ); 
+        //////    Processor.RemapInterrupt( IRQn.UART0_ERR_IRQn  ); 
+        //////    Processor.RemapInterrupt( IRQn.UART1_ERR_IRQn  ); 
+        //////    Processor.RemapInterrupt( IRQn.UART1_ERR_IRQn  ); 
+        //////    Processor.RemapInterrupt( IRQn.UART3_ERR_IRQn  ); 
+        //////    Processor.RemapInterrupt( IRQn.UART3_ERR_IRQn  ); 
+        //////}
     }
 }

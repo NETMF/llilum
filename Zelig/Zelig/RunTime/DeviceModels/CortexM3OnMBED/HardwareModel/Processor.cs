@@ -80,12 +80,11 @@ namespace Microsoft.CortexM3OnMBED
             return new Context();
         }        
 #endif
-        
+
         //
         // Access methods
         //
-               
-
+        
         public static ulong CoreClockFrequency
         {
             [RT.ConfigurationOption("System__CoreClockFrequency")]

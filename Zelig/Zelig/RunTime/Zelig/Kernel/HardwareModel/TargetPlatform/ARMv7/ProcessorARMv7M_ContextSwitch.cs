@@ -607,7 +607,8 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         // Handles interrupts through the native platform direct invokation
         //
         [NoInline]
-        protected static void ExclusiveAccessExceptionHandler( Action isr )
+        [RT.DisableNullChecks]
+        public static void ExclusiveAccessExceptionHandler( Action isr )
         {
             using(RT.SmartHandles.InterruptState.Disable( ))
             {

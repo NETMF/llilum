@@ -4,10 +4,10 @@
 
 namespace Microsoft.Llilum.K64F
 {
-    using System;
     using Microsoft.Zelig.Runtime;
+
     using Chipset = Microsoft.CortexM4OnMBED;
-    using ChipsetAbstration = Microsoft.DeviceModels.Chipset.CortexM4;
+
 
     public sealed class I2cProvider : Chipset.HardwareModel.I2cProvider
     {

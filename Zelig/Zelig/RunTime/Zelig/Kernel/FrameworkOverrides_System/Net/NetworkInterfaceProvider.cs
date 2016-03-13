@@ -67,6 +67,11 @@ namespace Microsoft.Zelig.Runtime
             {
                 throw new NotImplementedException();
             }
+
+            public override void RemapInterrupts()
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public abstract int InitializeEthernet();
@@ -90,6 +95,10 @@ namespace Microsoft.Zelig.Runtime
         public abstract uint IPv4AddressFromString(string ipAddress);
 
         public abstract string GetDefaultLocalAddress();
+
+        public abstract void RemapInterrupts();
+
+        //--//
 
         public static extern NetworkInterfaceProvider Instance
         {

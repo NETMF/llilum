@@ -116,14 +116,24 @@ namespace Microsoft.DeviceModels.Chipset.CortexM
         {
             CMSIS_STUB_NVIC_ClearPendingIRQ( irq );
         }
-        
-        public static uint GetActive( int irq )
+
+        public static uint GetActive(int irq)
         {
-            return CMSIS_STUB_NVIC_GetActive( irq ); 
+            return CMSIS_STUB_NVIC_GetActive(irq);
+        }
+
+        public static uint GetVector( int irq )
+        {
+            return CMSIS_STUB_NVIC_GetVector( irq ); 
+        }
+
+        public static void SetVector( int irq, uint vector )
+        {
+            CMSIS_STUB_NVIC_SetVector( irq, vector );
         }
 
         //--//
-        
+
         //
         // We will implement the internal methods below with CMSIS-Core
         //
@@ -152,6 +162,12 @@ namespace Microsoft.DeviceModels.Chipset.CortexM
         [DllImport( "C" )]
         private static extern uint CMSIS_STUB_NVIC_GetActive( int IRQn );
         
+        [DllImport("C")]
+        private static extern uint CMSIS_STUB_NVIC_GetVector( int IRQn);
+
+        [DllImport("C")]
+        private static extern void CMSIS_STUB_NVIC_SetVector( int IRQn, uint vector );
+
         [DllImport( "C" )]
         private static extern void CMSIS_STUB_NVIC_SetPriority( int IRQn, uint priority );
         

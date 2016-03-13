@@ -9,6 +9,15 @@ namespace Microsoft.Llilum.K64F.HardwareModel.HardwareProviders
 
     public sealed class GpioProvider : Chipset.HardwareModel.GpioProvider
     {
+        //////public override void RemapInterrupts()
+        //////{
+        //////    Processor.RemapInterrupt( IRQn.PORTA_IRQn  ); 
+        //////    Processor.RemapInterrupt( IRQn.PORTB_IRQn  ); 
+        //////    Processor.RemapInterrupt( IRQn.PORTC_IRQn  ); 
+        //////    Processor.RemapInterrupt( IRQn.PORTD_IRQn  ); 
+        //////    Processor.RemapInterrupt( IRQn.PORTE_IRQn  ); 
+        //////}
+
         public override int GetGpioPinIRQNumber(int pinNumber)
         {
             PinName pin = (PinName)pinNumber;

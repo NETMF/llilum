@@ -65,6 +65,15 @@ namespace Microsoft.CortexM4OnCMSISCore
             //
             CortexM.NVIC.SetPriorityGrouping( 0 ); 
         }
+
+        protected override unsafe void RemapInterrupt( IRQn_Type IRQn, Action isr )
+        {
+            RT.DelegateImpl dlg = (RT.DelegateImpl)(object)isr;
+
+            UIntPtr isrPtr = new UIntPtr( dlg.InnerGetCodePointer().Target.ToPointer() );
+
+            CortexM.NVIC.SetVector( (int)IRQn, isrPtr.ToUInt32() ); 
+        }
     }
     
     //--//
