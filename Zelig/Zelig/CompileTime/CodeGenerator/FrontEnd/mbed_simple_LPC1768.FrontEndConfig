@@ -55,6 +55,7 @@
 #-CompilationPhaseDisabled Done
 
 -CompilationOption System.String GarbageCollectionManager ConservativeMarkAndSweepCollector
+-CompilationOption System.String TimerPool SyncDispatcherTimerPool
 
 ###
 ### The program to compile.

@@ -55,6 +55,8 @@
 #-CompilationPhaseDisabled GenerateImage
 #-CompilationPhaseDisabled Done
 
+-CompilationOption System.String TimerPool UnboundedAsynchTimerPool
+
 ###
 ### The program to compile.
 ###

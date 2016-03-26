@@ -123,9 +123,9 @@ namespace Microsoft.Zelig.Runtime
         //--//
 
         public abstract bool IsMarked     ( object target );
+
         public abstract void ExtendMarking( object target );
-
-
+        
         [Inline]
         public GarbageCollectionExtensionHandler FindExtensionHandler( TS.VTable vTable )
         {

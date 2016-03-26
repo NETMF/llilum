@@ -2,9 +2,6 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-#define USE_TIMER_ALERTER
-
-
 namespace Microsoft.Zelig.Test.mbed.Simple
 {
     using System.Threading;
@@ -49,9 +46,9 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             TestSpiLcd( );
 
             var controller = GpioController.GetDefault();
-            var pins = new GpioPin[m_ledPinNumbers.Length];
+            var pins = new GpioPin[m_ledPinNumbers.Length - 1];
 
-            for (int i = 0; i < m_ledPinNumbers.Length; ++i)
+            for (int i = 0; i < m_ledPinNumbers.Length  - 1; ++i)
             {
                 GpioPin pin = controller.OpenPin(m_ledPinNumbers[i]);
 
@@ -100,8 +97,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                 }
             });
             solitaryBlinker.Start();
-
-#if USE_TIMER_ALERTER
+            
             var solitaryAlerter = new System.Threading.Timer((obj) =>
             {
                 // blink 20 times very fast
@@ -113,7 +109,6 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                     Thread.Sleep(50);
                 }
             }, ev, 2000, 5000);
-#endif
 
             TestADC( );
 

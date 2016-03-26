@@ -17,7 +17,7 @@ namespace Microsoft.Zelig.Runtime
     {
         const int c_RecycleLimit = 32;
 
-        class WorkItem
+        internal class WorkItem
         {
             //
             // State
@@ -27,14 +27,32 @@ namespace Microsoft.Zelig.Runtime
             internal Object       m_state;
         }
 
-        class Engine
+        internal class Engine
         {
-            Queue< WorkItem > m_queue        = new Queue< WorkItem >();
-            Queue< WorkItem > m_queueFree    = new Queue< WorkItem >();
-            AutoResetEvent    m_wakeup       = new AutoResetEvent( false );
-            int               m_maxThreads   = Configuration.DefaultThreadPoolThreads;
+            Queue< WorkItem > m_queue;
+            Queue< WorkItem > m_queueFree;
+            AutoResetEvent    m_wakeup;
+            int               m_maxThreads;
             int               m_activeThreads;
             int               m_busyThreads;
+
+            //
+            // Helper Methods
+            //
+            
+            internal Engine( )
+            {
+                m_queue        = new Queue< WorkItem >();
+                m_queueFree    = new Queue< WorkItem >();
+                m_wakeup       = new AutoResetEvent( false );
+                m_maxThreads   = Configuration.DefaultThreadPoolThreads;
+            }
+
+            internal Engine( int maxThreads ) : this()
+            {
+                m_maxThreads = maxThreads;
+            }
+
 
             //
             // Helper Methods

@@ -59,6 +59,7 @@
     <Compile Include="HardwareModel\SerialPortsManager.cs" />
     <Compile Include="HardwareModel\Storage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SystemServices\TimerPool.cs" />
     <Compile Include="SystemServices\GarbageCollectionManager.cs" />
     <Compile Include="SystemServices\MemoryManager.cs" />
     <Compile Include="SystemServices\ThreadManager.cs" />

@@ -15,15 +15,65 @@ namespace Microsoft.Zelig.Runtime
     [ExtendClass(typeof(System.Threading.Timer))]
     public class TimerImpl : IDisposable
     {
-        internal class TimerPool
+        [ImplicitInstance]
+        [ForceDevirtualization]
+        public abstract class TimerPool
         {
+            class EmptyTimerPool : TimerPool
+            {
+                internal override void InitializeTimerPool( )
+                {
+                    throw new NotImplementedException( );
+                }
+
+                internal override void Activate( KernelNode<TimerImpl> node )
+                {
+                    throw new NotImplementedException( );
+                }
+
+                internal override void Deactivate( KernelNode<TimerImpl> node )
+                {
+                    throw new NotImplementedException( );
+                }
+            }
+
+            //--//
+
+            internal abstract void InitializeTimerPool( ); 
+
+            internal abstract void Activate( KernelNode< TimerImpl > node );
+
+            internal abstract void Deactivate( KernelNode< TimerImpl > node );
+
+            public static extern TimerPool Instance
+            {
+                [SingletonFactory(Fallback = typeof(EmptyTimerPool))]
+                [MethodImpl(MethodImplOptions.InternalCall)]
+                get;
+            }
+        }
+
+        //
+        // A timer pool that grows as needed in an unbounded fashion
+        //
+        public abstract class UnboundedAsynchTimerPool : TimerPool
+        {
+
+            //
+            // For the unbounded timer pool, the max number of handlers refers to 
+            // the cached idle workers ready for dispatching
+            //
+            private static readonly int c_MaxIdleHandlers = Configuration.DefaultTimerPoolThreads;
+
+            //--//
+
             internal class CallbackHandler
             {
                 //
                 // State
                 //
 
-                TimerPool               m_owner;
+                UnboundedAsynchTimerPool      m_owner;
                 Thread                  m_thread;
                 AutoResetEvent          m_event;
                 KernelNode< TimerImpl > m_node;
@@ -32,7 +82,7 @@ namespace Microsoft.Zelig.Runtime
                 // Constructor Methods
                 //
 
-                internal CallbackHandler( TimerPool owner )
+                internal CallbackHandler( UnboundedAsynchTimerPool owner )
                 {
                     m_owner  = owner;
                     m_thread = new Thread( Worker );
@@ -78,11 +128,11 @@ namespace Microsoft.Zelig.Runtime
                 }
             }
 
+            //--//
+
             //
             // State
             //
-
-            private static readonly int c_MaxIdleHandlers = Configuration.DefaultTimerPoolThreads;
             
             KernelList< TimerImpl >  m_timers;
 
@@ -94,8 +144,8 @@ namespace Microsoft.Zelig.Runtime
             //
             // Constructor Methods
             //
-
-            public TimerPool()
+            
+            internal override void InitializeTimerPool( )
             {
                 m_timers           = new KernelList< TimerImpl >();
                 m_controllerWakeup = new EventWaitHandleImpl( false, System.Threading.EventResetMode.AutoReset );
@@ -110,7 +160,7 @@ namespace Microsoft.Zelig.Runtime
             // Helper Methods
             //
 
-            internal void Activate( KernelNode< TimerImpl > node )
+            internal override void Activate( KernelNode< TimerImpl > node )
             {
                 lock(this)
                 {
@@ -148,7 +198,7 @@ namespace Microsoft.Zelig.Runtime
                 }
             }
 
-            internal void Deactivate( KernelNode< TimerImpl > node )
+            internal override void Deactivate( KernelNode< TimerImpl > node )
             {
                 lock(this)
                 {
@@ -162,8 +212,7 @@ namespace Microsoft.Zelig.Runtime
                 }
             }
 
-            internal void Done( CallbackHandler         worker ,
-                                KernelNode< TimerImpl > node   )
+            internal void Done( CallbackHandler worker, KernelNode< TimerImpl > node )
             {
                 lock(this)
                 {
@@ -264,18 +313,229 @@ namespace Microsoft.Zelig.Runtime
 
                 return worker;
             }
-
-            //
-            // Access Methods
-            //
-
         }
+        
+        //--//
+        //--//
+        //--//
+                
+        //
+        // A timer pool that relies on synchronous execution from a single thread out of a dispatch queue
+        //
+        public abstract class SyncDispatcherTimerPool : TimerPool
+        {
+            //
+            // State
+            //
+                        
+            protected KernelList< TimerImpl > m_timers;
+
+            protected Thread                  m_controller;
+            protected EventWaitHandleImpl     m_controllerWakeup;
+            
+            //
+            // Constructor Methods
+            //
+            
+            internal override void InitializeTimerPool( )
+            {
+                m_timers           = new KernelList< TimerImpl >();
+                m_controllerWakeup = new EventWaitHandleImpl( false, System.Threading.EventResetMode.AutoReset );
+                m_controller       = new Thread( ControllerMethod );
+
+                m_controller.Start();
+            }
+            
+            //
+            // Helper Methods
+            //
+
+            internal override void Activate( KernelNode< TimerImpl > node )
+            {
+                lock(this)
+                {
+                    TimerImpl timer = node.Target;
+
+                    if(timer.m_fExecuting == false)
+                    {
+                        node.RemoveFromList();
+
+                        //
+                        // Insert in order.
+                        //
+                        SchedulerTime           nextTrigger       = timer.m_nextTrigger;
+                        KernelNode< TimerImpl > node2             = m_timers.StartOfForwardWalk;
+                        bool                    fSignalController = true;
+
+                        while(node2.IsValidForForwardMove)
+                        {
+                            if(node2.Target.m_nextTrigger > nextTrigger)
+                            {
+                                break;
+                            }
+
+                            node2             = node2.Next;
+                            fSignalController = false;
+                        }
+
+                        node.InsertBefore( node2 );
+
+                        if(fSignalController)
+                        {
+                            m_controllerWakeup.Set();
+                        }
+                    }
+                }
+            }
+
+            internal override void Deactivate( KernelNode< TimerImpl > node )
+            {
+                lock(this)
+                {
+                    node.Target.m_nextTrigger = SchedulerTime.MaxValue;
+
+                    //
+                    // No need to wake up the controller, even if this is the first timer on the list.
+                    // At most the controller will wake up early for the next timer, not late.
+                    //
+                    node.RemoveFromList();
+                }
+            }
+
+            internal void Done( KernelNode< TimerImpl > node )
+            {
+                lock(this)
+                {
+                    TimerImpl timer = node.Target;
+
+                    if(timer.IsDisposed == false)
+                    {
+                        if(timer.m_nextTrigger != SchedulerTime.MaxValue)
+                        {
+                            Activate( node );
+                        }
+                    }
+                }
+            }
+            
+            [DisableNullChecks]
+            protected virtual void Dispatch( KernelNode< TimerImpl > node )
+            {
+                ExecuteWrapper( node );
+            }
+            
+            [Inline]
+            [DisableNullChecks]
+            protected void ExecuteWrapper( object state )
+            {
+                var node = (KernelNode< TimerImpl >)state;
+
+                node.Target.Execute( );
+
+                Done( node ); 
+            }
+
+            //--//
+
+            private void ControllerMethod()
+            {
+                while(true)
+                {
+                    SchedulerTime waitFor = SchedulerTime.MaxValue;
+                    SchedulerTime now     = SchedulerTime.Now;
+
+                    while(true)
+                    {
+                        KernelNode< TimerImpl > node;
+
+                        lock(this)
+                        {
+                            node = m_timers.FirstNode();
+                            if(node != null)
+                            {
+                                TimerImpl timer = node.Target;
+
+                                if(timer.m_nextTrigger <= now)
+                                {
+                                    node.RemoveFromList();
+
+                                    timer.PrepareForExecution();
+                                }
+                                else
+                                {
+                                    waitFor = timer.m_nextTrigger;
+
+                                    node = null;
+                                }
+                            }
+                        }
+
+                        if(node == null)
+                        {
+                            break;
+                        }
+
+                        Dispatch( node ); 
+                    }
+
+                    m_controllerWakeup.WaitOne( waitFor, false );
+                }
+            }
+        }
+        
+        //--//
+        //--//
+        //--//
+                
+        //
+        // A timer pool that delegates to a thread pool of finite size
+        //
+        public abstract class BoundedAsynchTimerPool : SyncDispatcherTimerPool
+        {
+            //
+            // For the bounded timer pool, the max numbers of handlers refers to 
+            // the actual maximum number of workers available for dispatching at any time
+            //
+            private static readonly int c_MaxHandlers = Configuration.DefaultTimerPoolThreads;
+            
+            //
+            // State
+            //
+            
+            ThreadPoolImpl.Engine m_threadPool;
+            
+            //
+            // Constructor Methods
+            //
+            
+            internal override void InitializeTimerPool( )
+            {
+                base.InitializeTimerPool( ); 
+
+                m_threadPool = new ThreadPoolImpl.Engine( c_MaxHandlers );
+            }
+            
+            //
+            // Helper Methods
+            //
+            
+            [DisableNullChecks]
+            protected override void Dispatch( KernelNode< TimerImpl > node )
+            {
+                m_threadPool.Queue( ExecuteWrapper, node ); 
+            }
+        }
+        
+        //--//
+        //--//
+        //--//
 
         //
         // State
         //
 
-        static TimerPool s_pool;
+        //static UnboundedTimerPool s_pool;
+        private static bool s_initialized;
 
         TimerCallback           m_callback;
         object                  m_state;
@@ -547,10 +807,18 @@ namespace Microsoft.Zelig.Runtime
 
             m_fExecuting = false;
         }
-
+        
         //
         // Access Methods
         //
+
+        internal TimerCallback Callback
+        {
+            get
+            {
+                return m_callback;
+            }
+        }
 
         private bool IsDisposed
         {
@@ -562,9 +830,25 @@ namespace Microsoft.Zelig.Runtime
 
         private TimerPool Pool
         {
+            [Inline]
             get
             {
-                return TypeSystemManager.AtomicAllocator( ref s_pool );
+                var pool = TimerPool.Instance;
+
+                if(s_initialized == false)
+                {
+                    lock(pool)
+                    {
+                        if(s_initialized == false)
+                        {
+                            pool.InitializeTimerPool( );
+
+                            s_initialized = true;
+                        }
+                    }
+                }
+
+                return pool;
             }
         }
     }

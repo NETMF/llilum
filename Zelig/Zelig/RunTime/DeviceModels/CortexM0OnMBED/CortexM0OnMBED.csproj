@@ -76,6 +76,7 @@
     <Compile Include="SystemServices\SchedulerTimeImpl.cs" />
     <Compile Include="SystemServices\SchedulerTimeSpanImpl.cs" />
     <Compile Include="SystemServices\ThreadManager.cs" />
+    <Compile Include="SystemServices\TimerPool.cs" />
     <Compile Include="SystemServices\TypeSystemManager.cs" />
   </ItemGroup>
   <ItemGroup>

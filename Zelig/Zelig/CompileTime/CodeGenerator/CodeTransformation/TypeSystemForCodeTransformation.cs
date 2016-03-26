@@ -1000,7 +1000,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
                             if( mostDerived != null )
                             {
-                                m_forcedDevirtualizations[ td ] = lst[ 0 ];
+                                m_forcedDevirtualizations[ td ] = mostDerived;
                                 break;
                             }
 
@@ -1061,37 +1061,57 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
             CollectConcreteImplementations( td, lst );
 
-            if( lst.Count > 1 )
+            //
+            // If there was a fallback, then there will be at list one item in the list. 
+            //
+            if(lst.Count >= 1)
             {
                 TypeRepresentation tdFallback;
 
-                if( m_singletonFactoriesFallback.TryGetValue( td, out tdFallback ) )
+                //
+                // If there is more than one item, try and remove the fallback.
+                //
+                if(lst.Count > 1)
                 {
-                    lst.Remove( tdFallback );
+                    if(m_singletonFactoriesFallback.TryGetValue( td, out tdFallback ))
+                    {
+                        lst.Remove( tdFallback );
+                    }
                 }
 
-                // If there are still multiple implementations, we look in the configuration provider
-                // to see if one is specified using CompilationOption
-                if (lst.Count > 1)
+                // Check with the configuration provider that any choice specified using 
+                // -CompilationOption is enforcable. Match the whole hyerarchy. 
+                var cfgProv = GetEnvironmentService<IConfigurationProvider>( );
+
+                object match;
+                if(cfgProv.GetValue( td.Name, out match ) && match is string)
                 {
-                    var cfgProv = GetEnvironmentService<IConfigurationProvider>( );
+                    string target = (string)match;
+                    var newList = new List<TypeRepresentation>( );
 
-                    object match;
-                    if(cfgProv.GetValue( td.Name, out match ) && match is string)
+                    foreach(var tdCandidate in lst)
                     {
-                        string target = (string)match;
-                        var newList = new List<TypeRepresentation>( );
+                        var source = tdCandidate;
 
-                        foreach(var tdCandidate in lst)
+                        while(source != null)
                         {
-                            if(tdCandidate.Name == target)
+                            if(source.Name == target)
                             {
                                 newList.Add( tdCandidate );
-                            }
-                        }
 
-                        lst = newList;
+                                break;
+                            }
+
+                            source = source.Extends;
+                        }
                     }
+
+                    if(newList.Count == 0)
+                    {
+                        throw TypeConsistencyErrorException.Create( "Type {0} mandated by explicit configration option {1) could not be found", target, td.Name );
+                    }
+
+                    lst = newList;
                 }
             }
 
