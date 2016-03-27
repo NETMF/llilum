@@ -235,14 +235,23 @@ namespace Microsoft.Zelig.Elf
             sb.AppendLine( "Section Headers:" );
             sb.AppendLine( );
 
-            sb.AppendLine( "[Nr] Name                  Type            Addr     Off    Size   ES Flg Lk Inf Al" );
+            sb.AppendLine( "[Nr] Name                         Type            Addr     Off    Size   ES Flg Lk Inf Al" );
+
+            int longestSectionNameLength = 0;
+            foreach(var section in sections)
+            {
+                if(section.Name?.Length > longestSectionNameLength)
+                {
+                    longestSectionNameLength = section.Name.Length;
+                }
+            }
 
             for(int i = 0; i < sections.Length; i++)
             {
                 var shdr = sections[i].Header;
 
                 sb.Append( "[" + i.ToString( "D2" ) + "] " );
-                sb.Append( sections[ i ].Name.PadRight( 22 ) );
+                sb.Append( sections[ i ].Name.PadRight( longestSectionNameLength + 3 ) );
                 sb.Append( ( (sh_type)shdr.sh_type ).ToString( ).PadRight( 16 ) );
                 sb.Append( shdr.sh_addr.ToString( "X8" ).PadRight( 9 ) );
                 sb.Append( shdr.sh_offset.ToString( "X6" ).PadRight( 7 ) );
