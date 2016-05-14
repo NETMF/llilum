@@ -84,6 +84,7 @@ namespace Microsoft.Llilum.Devices.Gpio
             set
             {
                 m_activePinEdge = value;
+
                 SetActivePinEdge(value);
             }
         }
