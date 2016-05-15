@@ -118,6 +118,9 @@ else
 	CC_FLAGS += -D__HEAP_SIZE=$(HEAP_SIZE)
 endif
 
+#
+# Override defautl stack size for LPC1768 where teh total available RAM is only 32KB
+#
 ifeq ($(DEBUG), 1)
 	CC_FLAGS += -D__DEFAULT_STACK_SIZE=0x800
 endif

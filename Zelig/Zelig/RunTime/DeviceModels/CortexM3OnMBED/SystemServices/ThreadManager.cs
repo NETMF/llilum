@@ -109,7 +109,7 @@ namespace Microsoft.CortexM3OnMBED
         protected uint[] GetMainStack()
         {
             //
-            // The main stack address will have to at least additional 12 bytes 
+            // The main stack address will have to have at least additional 12 bytes 
             // to inject the ObjectHeader and the ArrayImpl members. 
             // TODO: find a better way to keep this in sync with ArrayImpl. 
             //
