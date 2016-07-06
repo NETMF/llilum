@@ -96,11 +96,6 @@
     <Compile Include="FrameworkOverrides\Threading\InterlockedImpl.cs" />
     <Compile Include="FrameworkOverrides\Threading\ThreadImpl.cs" />
     <Compile Include="FrameworkOverrides\TypeImpl.cs" />
-    <Compile Include="FrameworkOverrides_dotNetMF\AnalogInputImpl.cs" />
-    <Compile Include="FrameworkOverrides_dotNetMF\AnalogOutputImpl.cs" />
-    <Compile Include="FrameworkOverrides_dotNetMF\CpuImpl.cs" />
-    <Compile Include="FrameworkOverrides_dotNetMF\HW_UtilityImpl.cs" />
-    <Compile Include="FrameworkOverrides_dotNetMF\IOPortsImpl.cs" />
     <Compile Include="FrameworkOverrides_Llilum\Devices\Adc\AdcPinImpl.cs" />
     <Compile Include="FrameworkOverrides_Llilum\Devices\Adc\AdcProvider.cs" />
     <Compile Include="FrameworkOverrides_Llilum\Devices\Gpio\GpioPinImpl.cs" />
@@ -247,22 +242,6 @@
     <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\Windows\Windows.csproj">
       <Project>{dc8c38d7-780b-4b13-8ace-9050e39cc51c}</Project>
       <Name>Windows</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\dotNetMF\Native\Core_Native.csproj">
-      <Project>{1436d112-41d9-4bd4-9fa9-e38709cff861}</Project>
-      <Name>Core_Native</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\dotNetMF\Native_Hardware\Core_Native_Hardware.csproj">
-      <Project>{2de6aab1-b174-443f-8edd-07a3d5fcecca}</Project>
-      <Name>Core_Native_Hardware</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\dotNetMF\Native_Net\Core_Net.csproj">
-      <Project>{d174ac93-6010-4874-ae35-b834f0bade59}</Project>
-      <Name>Core_Net</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\dotNetMF\Native_Net_Security\Core_Net_Security.csproj">
-      <Project>{4feb560d-5f3a-4fa8-ae41-fbe7714813a7}</Project>
-      <Name>Core_Net_Security</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
