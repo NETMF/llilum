@@ -5,6 +5,7 @@
 namespace System.Net
 {
     using Runtime.CompilerServices;
+    using System.Net.Sockets;
 
     /// <devdoc>
     ///    <para>Provides an internet protocol (IP) address.</para>
@@ -61,6 +62,15 @@ namespace System.Net
                 (byte)(m_Address >> 24)
             };
         }
+
+        public AddressFamily AddressFamily
+        {
+            get
+            {
+                return AddressFamily.InterNetwork;
+            }
+        }
+
 
         public static IPAddress Parse(string ipString)
         {

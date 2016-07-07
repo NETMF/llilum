@@ -441,7 +441,7 @@ namespace System.Collections.Generic
 
         private void InternalInsertNodeToEmptyList( LinkedListNode<T> newNode )
         {
-            Debug.Assert( head == null && count == 0, "LinkedList must be empty when this method is called!" );
+            //Debug.Assert( head == null && count == 0, "LinkedList must be empty when this method is called!" );
 
             newNode.next = newNode;
             newNode.prev = newNode;
@@ -452,12 +452,12 @@ namespace System.Collections.Generic
 
         internal void InternalRemoveNode( LinkedListNode<T> node )
         {
-            Debug.Assert( node.list == this, "Deleting the node from another list!" );
-            Debug.Assert( head != null, "This method shouldn't be called on empty list!" );
+            //Debug.Assert( node.list == this, "Deleting the node from another list!" );
+            //Debug.Assert( head != null, "This method shouldn't be called on empty list!" );
 
             if(node.next == node)
             {
-                Debug.Assert( count == 1 && head == node, "this should only be true for a list with only one node" );
+                //Debug.Assert( count == 1 && head == node, "this should only be true for a list with only one node" );
                 head = null;
             }
             else

@@ -1142,35 +1142,35 @@ namespace System
         **Arguments:
         **Exceptions:
         ==============================================================================*/
-        public static String StackTrace
-        {
-            get
-            {
-                //////new EnvironmentPermission( PermissionState.Unrestricted ).Demand( );
+        //////public static String StackTrace
+        //////{
+        //////    get
+        //////    {
+        //////        //////new EnvironmentPermission( PermissionState.Unrestricted ).Demand( );
 
-                return GetStackTrace( null, true );
-            }
-        }
+        //////        return GetStackTrace( null, true );
+        //////    }
+        //////}
 
-        internal static String GetStackTrace( Exception e, bool needFileInfo )
-        {
-            // Note: Setting needFileInfo to true will start up COM and set our
-            // apartment state.  Try to not call this when passing "true"
-            // before the EE's ExecuteMainMethod has had a chance to set up the
-            // apartment state.  --
-            StackTrace st;
-            if(e == null)
-            {
-                st = new StackTrace( needFileInfo );
-            }
-            else
-            {
-                st = new StackTrace( e, needFileInfo );
-            }
+        //////internal static String GetStackTrace( Exception e, bool needFileInfo )
+        //////{
+        //////    // Note: Setting needFileInfo to true will start up COM and set our
+        //////    // apartment state.  Try to not call this when passing "true"
+        //////    // before the EE's ExecuteMainMethod has had a chance to set up the
+        //////    // apartment state.  --
+        //////    StackTrace st;
+        //////    if(e == null)
+        //////    {
+        //////        st = new StackTrace( needFileInfo );
+        //////    }
+        //////    else
+        //////    {
+        //////        st = new StackTrace( e, needFileInfo );
+        //////    }
 
-            // Do no include a trailing newline for backwards compatibility
-            return st.ToString( System.Diagnostics.StackTrace.TraceFormat.Normal );
-        }
+        //////    // Do no include a trailing newline for backwards compatibility
+        //////    return st.ToString( System.Diagnostics.StackTrace.TraceFormat.Normal );
+        //////}
 
         ////    private static void InitResourceHelper()
         ////    {

@@ -18,24 +18,24 @@ namespace System.Diagnostics
  
         private long timeStamp = -1;
         private DateTime dateTime = DateTime.MinValue;
-        private string stackTrace = null;
+        //////private string stackTrace = null;
 
         //////internal Guid ActivityId {
         //////    get { return Trace.CorrelationManager.ActivityId; }
         //////}
 
-        public string Callstack
-        {
-            get
-            {
-                if(stackTrace == null)
-                    stackTrace = Environment.StackTrace;
-                //////else
-                //////    new EnvironmentPermission( PermissionState.Unrestricted ).Demand( );
+        //////public string Callstack
+        //////{
+        //////    get
+        //////    {
+        //////        if(stackTrace == null)
+        //////            stackTrace = Environment.StackTrace;
+        //////        //////else
+        //////        //////    new EnvironmentPermission( PermissionState.Unrestricted ).Demand( );
 
-                return stackTrace;
-            }
-        }
+        //////        return stackTrace;
+        //////    }
+        //////}
 
         //////public Stack LogicalOperationStack {
         //////    get {

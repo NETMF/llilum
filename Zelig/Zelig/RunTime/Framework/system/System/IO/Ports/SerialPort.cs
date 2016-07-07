@@ -1037,7 +1037,7 @@ namespace System.IO.Ports
                 }
             }
 
-            Debug.Assert( CachedBytesToRead == 0, "there should be nothing left in our internal buffer" );
+            //Debug.Assert( CachedBytesToRead == 0, "there should be nothing left in our internal buffer" );
             readLen = 0;
             readPos = 0;
 
@@ -1070,7 +1070,7 @@ namespace System.IO.Ports
         {
             int nextByte;
             int timeUsed = 0;
-            Debug.Assert( IsOpen, "ReadOneChar - port not open" );
+            //Debug.Assert( IsOpen, "ReadOneChar - port not open" );
 
             // case 1: we have >= 1 character in the internal buffer.
             if(decoder.GetCharCount( inBuffer, readPos, CachedBytesToRead ) != 0)
@@ -1213,11 +1213,11 @@ namespace System.IO.Ports
                                   int    timeout                  ,
                                   bool   countMultiByteCharsAsOne )
         {
-            Debug.Assert( IsOpen, "port not open!" );
-            Debug.Assert( buffer != null, "invalid buffer!" );
-            Debug.Assert( offset >= 0, "invalid offset!" );
-            Debug.Assert( count >= 0, "invalid count!" );
-            Debug.Assert( buffer.Length - offset >= count, "invalid offset/count!" );
+            //Debug.Assert( IsOpen, "port not open!" );
+            //Debug.Assert( buffer != null, "invalid buffer!" );
+            //Debug.Assert( offset >= 0, "invalid offset!" );
+            //Debug.Assert( count >= 0, "invalid count!" );
+            //Debug.Assert( buffer.Length - offset >= count, "invalid offset/count!" );
 
             if(count == 0)
             {
@@ -1293,7 +1293,7 @@ namespace System.IO.Ports
                                          int    count                    ,
                                          bool   countMultiByteCharsAsOne )
         {
-            Debug.Assert( count != 0, "Count should never be zero.  We will probably see bugs further down if count is 0." );
+            //Debug.Assert( count != 0, "Count should never be zero.  We will probably see bugs further down if count is 0." );
 
             int bytesToRead = Math.Min( count, CachedBytesToRead );
 
@@ -1343,7 +1343,7 @@ namespace System.IO.Ports
                     currentBytesToExamine = readPos + totalBytesExamined - lastFullCharPos;
 
                     // make sure we don't go beyond the end of the valid data that we have. 
-                    Debug.Assert( (lastFullCharPos + currentBytesToExamine) <= readLen, "We should never be attempting to read more bytes than we have" );
+                    //Debug.Assert( (lastFullCharPos + currentBytesToExamine) <= readLen, "We should never be attempting to read more bytes than we have" );
 
                     currentCharsFound = decoder.GetCharCount( inBuffer, lastFullCharPos, currentBytesToExamine );
 
@@ -1364,7 +1364,7 @@ namespace System.IO.Ports
                             // If we are here it is from ReadTo which attempts to read one logical character 
                             // at a time. The supplied singleCharBuffer should be large enough to accommodate 
                             // this multi-byte char
-                            Debug.Assert( (buffer.Length - offset - totalCharsFound) >= currentCharsFound, "internal buffer to read one full unicode char sequence is not sufficient!" );
+                            //Debug.Assert( (buffer.Length - offset - totalCharsFound) >= currentCharsFound, "internal buffer to read one full unicode char sequence is not sufficient!" );
                         }
 
                         // go backwards until we know we have a full set of currentCharsFound bytes with no extra lead-bytes.
@@ -1520,7 +1520,7 @@ namespace System.IO.Ports
                         throw new TimeoutException();
                     }
 
-                    Debug.Assert( (numCharsRead > 0), "possible bug in ReadBufferIntoChars, reading surrogate char?" );
+                    //Debug.Assert( (numCharsRead > 0), "possible bug in ReadBufferIntoChars, reading surrogate char?" );
                     currentLine.Append( singleCharBuffer, 0, numCharsRead );
 
                     if(lastValueChar == (char)singleCharBuffer[numCharsRead - 1] && (currentLine.Length >= value.Length))
@@ -1837,7 +1837,7 @@ namespace System.IO.Ports
                 // Case 3.  Create a new buffer
                 int newLength = Math.Max( CachedBytesToRead + additionalByteLength, inBuffer.Length * 2 );
 
-                Debug.Assert( inBuffer.Length >= readLen, "ResizeBuffer - readLen > inBuffer.Length" );
+                //Debug.Assert( inBuffer.Length >= readLen, "ResizeBuffer - readLen > inBuffer.Length" );
                 byte[] newBuffer = new byte[newLength];
                 // only copy the valid data from inBuffer, and put it at the beginning of newBuffer.
                 Buffer.BlockCopy( inBuffer, readPos, newBuffer, 0, CachedBytesToRead );

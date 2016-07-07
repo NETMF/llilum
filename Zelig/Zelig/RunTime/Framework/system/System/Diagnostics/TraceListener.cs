@@ -436,8 +436,8 @@ namespace System.Diagnostics
             if (IsEnabled(TraceOptions.Timestamp))
                 WriteLine("Timestamp=" + eventCache.Timestamp);
  
-            if (IsEnabled(TraceOptions.Callstack))
-                WriteLine("Callstack=" + eventCache.Callstack);
+            //////if (IsEnabled(TraceOptions.Callstack))
+            //////    WriteLine("Callstack=" + eventCache.Callstack);
             indentLevel--;
         }
  

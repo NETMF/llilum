@@ -408,7 +408,7 @@ namespace System.IO.Ports
             //get  { return (int) dcb.ByteSize; }
             set;
 ////        {
-////            Debug.Assert( !(value < minDataBits || value > maxDataBits), "An invalid value was passed to DataBits" );
+////            //Debug.Assert( !(value < minDataBits || value > maxDataBits), "An invalid value was passed to DataBits" );
 ////
 ////            if(value != dcb.ByteSize)
 ////            {
@@ -471,7 +471,7 @@ namespace System.IO.Ports
             set;
 ////        {
 ////
-////            Debug.Assert( !(value < System.IO.Ports.Handshake.None || value > System.IO.Ports.Handshake.RequestToSendXOnXOff), "An invalid value was passed to Handshake" );
+////            //Debug.Assert( !(value < System.IO.Ports.Handshake.None || value > System.IO.Ports.Handshake.RequestToSendXOnXOff), "An invalid value was passed to Handshake" );
 ////
 ////            if(value != handshake)
 ////            {
@@ -528,7 +528,7 @@ namespace System.IO.Ports
         {
             set;
 ////        {
-////            Debug.Assert( !(value < Parity.None || value > Parity.Space), "An invalid value was passed to Parity" );
+////            //Debug.Assert( !(value < Parity.None || value > Parity.Space), "An invalid value was passed to Parity" );
 ////
 ////            if((byte)value != dcb.Parity)
 ////            {
@@ -716,7 +716,7 @@ namespace System.IO.Ports
         {
             set;
 ////        {
-////            Debug.Assert( !(value < StopBits.One || value > StopBits.OnePointFive), "An invalid value was passed to StopBits" );
+////            //Debug.Assert( !(value < StopBits.One || value > StopBits.OnePointFive), "An invalid value was passed to StopBits" );
 ////
 ////            byte nativeValue;
 ////
@@ -1291,7 +1291,7 @@ namespace System.IO.Ports
 ////            return 0; // return immediately if no bytes requested; no need for overhead.
 ////        }
 ////
-////        Debug.Assert( timeout == SerialPort.InfiniteTimeout || timeout >= 0, "Serial Stream Read - called with timeout " + timeout );
+////        //Debug.Assert( timeout == SerialPort.InfiniteTimeout || timeout >= 0, "Serial Stream Read - called with timeout " + timeout );
 ////
 ////        // Check to see we have no handle-related error, since the port's always supposed to be open.
 ////        if(_handle == null) InternalResources.FileNotOpen();
@@ -1404,7 +1404,7 @@ namespace System.IO.Ports
 ////            throw new ArgumentException( "count", SR.GetString( SR.ArgumentOutOfRange_OffsetOut ) );
 ////        }
 ////
-////        Debug.Assert( timeout == SerialPort.InfiniteTimeout || timeout >= 0, "Serial Stream Write - write timeout is " + timeout );
+////        //Debug.Assert( timeout == SerialPort.InfiniteTimeout || timeout >= 0, "Serial Stream Write - write timeout is " + timeout );
 ////
 ////        // check for open handle, though the port is always supposed to be open
 ////        if(_handle == null) InternalResources.FileNotOpen();
@@ -1499,7 +1499,7 @@ namespace System.IO.Ports
 ////                dcb.StopBits = NativeMethods.TWOSTOPBITS;
 ////                break;
 ////            default:
-////                Debug.Assert( false, "Invalid value for stopBits" );
+////                //Debug.Assert( false, "Invalid value for stopBits" );
 ////                break;
 ////        }
 ////
@@ -1648,13 +1648,13 @@ namespace System.IO.Ports
 ////                    }
 ////                    if(hr == NativeMethods.ERROR_IO_PENDING)
 ////                    {
-////                        Debug.Assert( isAsync, "The port is not open for async, so we should not get ERROR_IO_PENDING from WaitCommEvent" );
+////                        //Debug.Assert( isAsync, "The port is not open for async, so we should not get ERROR_IO_PENDING from WaitCommEvent" );
 ////                        int error;
 ////
 ////                        // if we get IO pending, MSDN says we should wait on the WaitHandle, then call GetOverlappedResult
 ////                        // to get the results of WaitCommEvent. 
 ////                        bool success = waitCommEventWaitHandle.WaitOne();
-////                        Debug.Assert( success, "waitCommEventWaitHandle.WaitOne() returned error " + Marshal.GetLastWin32Error() );
+////                        //Debug.Assert( success, "waitCommEventWaitHandle.WaitOne() returned error " + Marshal.GetLastWin32Error() );
 ////
 ////                        do
 ////                        {
@@ -1669,14 +1669,14 @@ namespace System.IO.Ports
 ////                            // Ignore ERROR_IO_INCOMPLETE and ERROR_INVALID_PARAMETER, because there's a chance we'll get
 ////                            // one of those while shutting down 
 ////                            if(!((error == NativeMethods.ERROR_IO_INCOMPLETE || error == NativeMethods.ERROR_INVALID_PARAMETER) && ShutdownLoop))
-////                                Debug.Assert( false, "GetOverlappedResult returned error, we might leak intOverlapped memory" + error.ToString( CultureInfo.InvariantCulture ) );
+////                                //Debug.Assert( false, "GetOverlappedResult returned error, we might leak intOverlapped memory" + error.ToString( CultureInfo.InvariantCulture ) );
 ////                        }
 ////                    }
 ////                    else if(hr != NativeMethods.ERROR_INVALID_PARAMETER)
 ////                    {
 ////                        // ignore ERROR_INVALID_PARAMETER errors.  WaitCommError seems to return this
 ////                        // when SetCommMask is changed while it's blocking (like we do in Dispose())
-////                        Debug.Assert( false, "WaitCommEvent returned error " + hr );
+////                        //Debug.Assert( false, "WaitCommEvent returned error " + hr );
 ////                    }
 ////                }
 ////

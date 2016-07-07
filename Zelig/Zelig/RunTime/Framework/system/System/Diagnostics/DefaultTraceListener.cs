@@ -90,17 +90,18 @@ namespace System.Diagnostics {
         ///    </para>
         /// </devdoc>
         public override void Fail(string message, string detailMessage) {            
-            StackTrace stack = new StackTrace(0, true);
+            //////StackTrace stack = new StackTrace(0, true);
             //////int userStackFrameIndex = 0;
             string stackTrace;
             //////bool uiPermission = UiPermission;
- 
-            try {
-                stackTrace = stack.ToString();
-            }
-            catch {
-                stackTrace = "";
-            }
+
+            //////try {
+            //////    stackTrace = stack.ToString();
+            //////}
+            //////catch {
+            //////    stackTrace = "";
+            //////}
+            stackTrace = "";
             
             WriteAssert(stackTrace, message, detailMessage);
             //////if (AssertUiEnabled && uiPermission) {
