@@ -4,7 +4,7 @@
 
 VERBOSE=1
 PROJECT = mbed_simple
-COMPILE_SYS_ARCH = 0
+COMPILE_SYS_ARCH = 1
 
 ifdef USE_LLILUM_OS_ABSTRACTION_STATIC_OBJECT
 ifeq ($(DEBUG), 1)
@@ -92,7 +92,16 @@ OBJECTS += \
 ifeq ($(TARGET),K64F)
 	# Ethernet controller
     # NOTE: mbed lib is in the back. Order matters, and it needs to be referenced after the lwip libs
-	LIBRARIES += -lmbedeth -llwIPeth -llwIP -lmbed
+	LIBRARIES += -lmbedeth -llwIPeth -lmbed
+	
+ifeq ($(DEBUG), 1)
+	LIBRARIES += -llwIPd
+else ifeq ($(CHECKED), 1)
+	LIBRARIES += -llwIPc
+else
+	LIBRARIES += -llwIP
+endif
+	
 endif
 
     LIBRARY_PATHS += -L$(MBED_LIBS)/lwip/lwip/lib
@@ -147,6 +156,10 @@ endif
 # K64F settings
 #
 else ifeq ($(TARGET),K64F)
+
+ifeq ($(DEBUG), 1)
+	CC_FLAGS += -DLWIP_DEBUG
+endif
 
 ifeq ($(HEAP_SIZE),)
 	AS_FLAGS += --defsym __HEAP_SIZE=0x10000

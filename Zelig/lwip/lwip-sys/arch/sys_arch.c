@@ -521,10 +521,16 @@ int32_t osSemaphoreWait(osSemaphoreId semaphore_id, uint32_t millisec)
     \param[in]    file  Filename with error
  */
 void assert_printf(char *msg, int line, char *file) {
-    //////if (msg)
-    //////    error("%s:%d in file %s\n", msg, line, file);
-    //////else
-    //////    error("LWIP ASSERT\n");
+    if (msg)
+        error("%s:%d in file %s\n", msg, line, file);
+    else
+        error("LWIP ASSERT\n");
+}
+
+#else  
+
+void assert_printf(char *msg, int line, char *file) { 
+    // do nothing
 }
 
 #endif /* LWIP_DEBUG */
