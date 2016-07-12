@@ -274,6 +274,6 @@ namespace Llvm.NET.Native
         // version info for verification of matched LibLLVM
         private const int VersionMajor = 3;
         private const int VersionMinor = 8;
-        private const int VersionPatch = 0;
+        private const int VersionPatch = 1;
     }
 }
