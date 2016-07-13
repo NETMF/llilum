@@ -64,17 +64,28 @@ endif
 ###################
 
 # Common settings
-MBED_LIBS = $(LLILUM_ROOT)Zelig
-MBED_ROOT = $(LLILUM_ROOT)Zelig\mbed
-SOURCE_ROOT = $(LLILUM_ROOT)Zelig\Zelig\Test\mbed\SimpleSDK\Native
-LIBRARIES += -lmbed
-LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc -lnosys
+MBED_LIBS     = $(LLILUM_ROOT)Zelig
+MBED_ROOT     = $(LLILUM_ROOT)Zelig\mbed
+SOURCE_ROOT   = $(LLILUM_ROOT)Zelig\Zelig\Test\mbed\SimpleSDK\Native
+LIBRARIES    += -lmbed
+LD_SYS_LIBS   = -lstdc++ -lsupc++ -lm -lc -lgcc -lnosys
 INCLUDE_PATHS = -I. -I$(MBED_ROOT) -I$(LLILUM_ROOT)Zelig\os_layer\inc -I$(LLILUM_ROOT)Zelig\os_layer\inc\api -I$(LLILUM_ROOT)Zelig\os_layer\inc\api\io -I$(LLILUM_ROOT)Zelig\os_layer\inc\hal
 
 #
 # LWIP Compilation and Libraries
 #
 ifeq ($(USE_LWIP), 1)
+
+# Define lwIP debug flags to build sys_arch libs for both checked and debug builds
+ifeq ($(LWIP_DEBUG), 1)
+	CC_FLAGS  += -DLWIP_DEBUG
+	LIBRARIES += -llwIPd
+else ifeq ($(LWIP_DEBUG), 2)
+	CC_FLAGS  += -DLWIP_DEBUG
+	LIBRARIES += -llwIPc
+else
+	LIBRARIES += -llwIP
+endif
 
 # Adaptation layer
 ifeq ($(COMPILE_SYS_ARCH),1)
@@ -93,14 +104,6 @@ ifeq ($(TARGET),K64F)
 	# Ethernet controller
     # NOTE: mbed lib is in the back. Order matters, and it needs to be referenced after the lwip libs
 	LIBRARIES += -lmbedeth -llwIPeth -lmbed
-	
-ifeq ($(DEBUG), 1)
-	LIBRARIES += -llwIPd
-else ifeq ($(CHECKED), 1)
-	LIBRARIES += -llwIPc
-else
-	LIBRARIES += -llwIP
-endif
 	
 endif
 
@@ -156,10 +159,6 @@ endif
 # K64F settings
 #
 else ifeq ($(TARGET),K64F)
-
-ifeq ($(DEBUG), 1)
-	CC_FLAGS += -DLWIP_DEBUG
-endif
 
 ifeq ($(HEAP_SIZE),)
 	AS_FLAGS += --defsym __HEAP_SIZE=0x10000
@@ -392,3 +391,4 @@ $(TARGET)\$(PROJECT).disasm: $(TARGET)\$(PROJECT).elf
 size: $(TARGET)\$(PROJECT).elf
 	@echo Size report...
 	$(SIZE) $<
+

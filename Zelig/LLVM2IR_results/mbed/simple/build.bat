@@ -13,6 +13,11 @@ IF NOT DEFINED LLILUM_SKIP_LLC        SET LLILUM_SKIP_LLC=1
 IF NOT DEFINED LLILUM_DEBUG           SET LLILUM_DEBUG=1
 IF NOT DEFINED LLILUM_SKIP_CLEANCLEAN SET LLILUM_SKIP_CLEANCLEAN=1
 
+@REM lwIP stack has binaries for release, checked and debug. Checked is a release build 
+@REM of lwIP (-Os -DNDEBUG) with LWIP_DEBUG defined and all debug switches for modules turned on. 
+@REM Flag for release binaries is LLILUM_LWIP_DEBUG=0, debug binaries is 1, and checked is 2.
+IF NOT DEFINED LLILUM_LWIP_DEBUG      SET LLILUM_LWIP_DEBUG=0
+
 @REM set incremental build as default, and correct as needed
 SET LLILUM_CLEANCLEAN=0
 
@@ -148,7 +153,7 @@ IF "%LLILUM_CLEANCLEAN%" == "1" (
 	make clean TARGET=%TARGET% 
 )
 
-make DEBUG=%LLILUM_DEBUG% TARGET=%TARGET% HEAP_SIZE=%SIZE_OF_HEAP% STACK_SIZE=%SIZE_OF_STACK% USE_LWIP=%LWIP_USE%
+make DEBUG=%LLILUM_DEBUG% LWIP_DEBUG=%LLILUM_LWIP_DEBUG% TARGET=%TARGET% HEAP_SIZE=%SIZE_OF_HEAP% STACK_SIZE=%SIZE_OF_STACK% USE_LWIP=%LWIP_USE%
 
 GOTO :EXIT
 
