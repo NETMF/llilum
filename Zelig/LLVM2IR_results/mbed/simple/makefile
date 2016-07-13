@@ -326,7 +326,9 @@ endif
 
 .PHONY: all clean lst size
 
-all: ${TARGET} $(TARGET)\$(PROJECT).bin $(TARGET)\$(PROJECT).hex $(TARGET)\$(PROJECT).lst $(TARGET)\$(PROJECT).disasm size
+all: ${TARGET} $(TARGET)\$(PROJECT).bin $(TARGET)\$(PROJECT).hex size
+
+dumps: ${TARGET} $(TARGET)\$(PROJECT).lst $(TARGET)\$(PROJECT).disasm
 
 # Conditionals (ifeq/ifneq) are bugged on Windows. Instead, we'll just ensure the directory exists and remove it unconditionally.
 cleanclean: ${TARGET}

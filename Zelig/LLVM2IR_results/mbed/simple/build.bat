@@ -20,14 +20,21 @@ IF NOT DEFINED LLILUM_LWIP_DEBUG      SET LLILUM_LWIP_DEBUG=0
 
 @REM set incremental build as default, and correct as needed
 SET LLILUM_CLEANCLEAN=0
+SET LLILUM_DUMPS=0
 
-IF "%2"=="/bc" (
+IF "%2"=="/clean" (
 	SET LLILUM_CLEANCLEAN=1
 )
+IF "%2"=="/dumps" (
+	SET LLILUM_DUMPS=1
+)
+IF "%3"=="/dumps" (
+	SET LLILUM_DUMPS=1
+)
+
 IF "%LLILUM_SKIP_CLEANCLEAN%" == "0" (
 	SET LLILUM_CLEANCLEAN=1
 )
-
 IF "%LLILUM_CLEANCLEAN%" == "0" (
     ECHO Incremental build for c/cpp/asm sources...
     ECHO Use 'set LLILUM_SKIP_CLEANCLEAN=' or 'set LLILUM_SKIP_CLEANCLEAN=0' to perform a full build, 
@@ -153,10 +160,19 @@ IF "%LLILUM_CLEANCLEAN%" == "1" (
 	make clean TARGET=%TARGET% 
 )
 
-make DEBUG=%LLILUM_DEBUG% LWIP_DEBUG=%LLILUM_LWIP_DEBUG% TARGET=%TARGET% HEAP_SIZE=%SIZE_OF_HEAP% STACK_SIZE=%SIZE_OF_STACK% USE_LWIP=%LWIP_USE%
+make all TARGET=%TARGET% HEAP_SIZE=%SIZE_OF_HEAP% STACK_SIZE=%SIZE_OF_STACK% USE_LWIP=%LWIP_USE% DEBUG=%LLILUM_DEBUG% LWIP_DEBUG=%LLILUM_LWIP_DEBUG% 
+
+ECHO.
+ECHO Target '%TARGET%' build is complete.
+ECHO.
+	
+IF "%LLILUM_DUMPS%" == "1" (
+	ECHO Creating .lst and .disas files... 
+	make dumps TARGET=%TARGET% HEAP_SIZE=%SIZE_OF_HEAP% STACK_SIZE=%SIZE_OF_STACK% USE_LWIP=%LWIP_USE%
+	ECHO done! 
+)
 
 GOTO :EXIT
 
 :EXIT
 ECHO.
-ECHO Completed 
