@@ -2275,9 +2275,9 @@ namespace Microsoft.Zelig.FrontEnd
                     sr.WriteLine( );
                     sr.WriteLine( );
                     sr.WriteLine( "============================================================================================" );
-                    sr.WriteLine( "All types in llilum type system before LLVM code gen" );
+                    sr.WriteLine( "  All types in llilum type system before LLVM code gen" );
                     sr.WriteLine( );
-                    sr.WriteLine( "Total types: " + m_typeSystem.Types.Count );
+                    sr.WriteLine( "  Total types: " + m_typeSystem.Types.Count );
                     sr.WriteLine( );
 
                     var allTypes   = new List<TS.TypeRepresentation>();
@@ -2304,15 +2304,97 @@ namespace Microsoft.Zelig.FrontEnd
                     sr.WriteLine( );
                     sr.WriteLine( );
                     sr.WriteLine( "============================================================================================" );
-                    sr.WriteLine( "All methods in llilum type system before LLVM code gen" );
+                    sr.WriteLine( "  All methods in llilum type system before LLVM code gen" );
                     sr.WriteLine( );
-                    sr.WriteLine( "Total methods: " + allMethods.Count );
+                    sr.WriteLine( "  Total methods: " + allMethods.Count );
                     sr.WriteLine( );
 
                     foreach(var mr in allMethods)
                     {
                         sr.WriteLine( mr.ToShortStringNoReturnValue( ) );
                     }
+
+                    //--o--//--o--//--o--//--o--//--o--//--o--//--o--//--o--//--o--//--o--//--o--//
+
+                    //
+                    // String table
+                    //
+
+                    List<string> stringTable = new List<string>();
+                    var raw = obj.SymbolTable.StringTable;
+
+                    int index = 0;
+                    do
+                    {
+                        var s = raw.GetString( (uint)index ); 
+
+                        if(string.IsNullOrEmpty( s ))
+                        {
+                            index++; continue;
+                        }
+
+                        stringTable.Add( s );
+
+                        index += s.Length; // GetString will stop at the null separator
+
+                    } while(index < raw.Header.sh_size); 
+
+                    sr.WriteLine( );
+                    sr.WriteLine( );
+                    sr.WriteLine( "============================================================================================" );
+                    sr.WriteLine( "  Strings table" );
+                    sr.WriteLine( );
+                    sr.WriteLine( "Total strings: " + stringTable.Count );
+                    sr.WriteLine( );
+
+                    for(int i = 0; i < stringTable.Count; i++)
+                    {
+                        sr.WriteLine( "{0:D6}: '{1}'", i, stringTable[i] );
+                    }
+
+                    //--o--//--o--//--o--//--o--//--o--//--o--//--o--//--o--//--o--//--o--//--o--//
+
+                    //
+                    // Symbol table
+                    //
+
+                    var symbols = obj.SymbolTable.Symbols;
+
+                    sr.WriteLine( );
+                    sr.WriteLine( );
+                    sr.WriteLine( "============================================================================================" );
+                    sr.WriteLine( "  Symbols" );
+                    sr.WriteLine( );
+                    sr.WriteLine( "Total symbols: " + symbols.Length );
+                    sr.WriteLine( );
+                    
+                    for(int i = 0; i < symbols.Length; i++)
+                    {
+                        var symbol = symbols[ i ];
+
+                        sr.WriteLine( "{0:D6}: Name: '{1}'\r\nSize: {2}\r\nType: {3}\r\nReferencedSection: '{4}'\r\nBinding: {5}\r\nVisibility: {6}\r\n", 
+                            i,
+                            symbol.Name,
+                            symbol.SymbolDef.st_size,
+                            symbol.Type, 
+                            symbol.ReferencedSection?.Name, 
+                            symbol.Binding, 
+                            symbol.Visibility 
+                            );
+                    }
+
+                    //
+                    // Done
+                    // 
+
+                    sr.WriteLine( );
+                    sr.WriteLine( );
+                    sr.WriteLine( );
+                    sr.WriteLine( "  Elf Object dump completed for {0}", obj.FileName );
+                    sr.WriteLine( "============================================================================================" );
+                    sr.WriteLine( );
+                    sr.WriteLine( );
+                    sr.WriteLine( );
                 }
             }
         }

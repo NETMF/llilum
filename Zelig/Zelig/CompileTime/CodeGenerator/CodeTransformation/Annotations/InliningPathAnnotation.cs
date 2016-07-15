@@ -148,8 +148,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             }
 
             context.Pop();
-            Debug.Assert(m_path.Length == m_InlinedAt.Length);
-            Debug.Assert(m_path.Length != 0 || IsSquashed);
+            //Debug.Assert(m_path.Length == m_InlinedAt.Length);
+            //Debug.Assert(m_path.Length != 0 || IsSquashed);
         }
 
         //--//
@@ -211,18 +211,25 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
             fFirst = true;
 
-            foreach (var debugInfo in m_InlinedAt )
+            if(m_InlinedAt != null)
             {
-                if (!fFirst)
+                foreach(var debugInfo in m_InlinedAt)
                 {
-                    sb.AppendLine();
-                }
-                else
-                {
-                    fFirst = false;
-                }
+                    if(!fFirst)
+                    {
+                        sb.AppendLine( );
+                    }
+                    else
+                    {
+                        fFirst = false;
+                    }
 
-                sb.AppendFormat(" {0}", m_InlinedAt );
+                    sb.AppendFormat( " {0}", m_InlinedAt );
+                }
+            }
+            else
+            {
+                sb.AppendFormat( " {0}", "UNKNOWN" );
             }
 
             sb.Append(">");
