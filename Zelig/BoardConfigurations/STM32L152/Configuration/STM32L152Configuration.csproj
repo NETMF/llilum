@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props" Condition="Exists('$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), BuildEnv.props))\BuildEnv.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9,15 +9,16 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.Llilum.BoardConfigurations</RootNamespace>
     <AssemblyName>Microsoft.Llilum.BoardConfigurations.STM32L152</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <NoStdLib>true</NoStdLib>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\ZeligBuild\Host\bin\Debug\</OutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Host\bin\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -25,25 +26,52 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\ZeligBuild\Host\bin\Release\</OutputPath>
+    <OutputPath>$(LlilumBuildRoot)\Host\bin\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.Zelig.ProductConfiguration">
-      <HintPath>..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Zelig.ProductConfiguration.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Zelig.Runtime.Common">
-      <HintPath>..\..\..\ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Runtime.Common.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+  <Choose>
+    <When Condition="Exists('$(LlilumSourceRoot)\..\Zelig\')">
+      <ItemGroup>
+        <ProjectReference Include="$(LlilumSourceRoot)\CompileTime\TargetModels\ProductConfiguration\ProductConfiguration.csproj">
+          <Project>{186f31a3-ef89-4a25-b2d5-20070606aa01}</Project>
+          <Name>ProductConfiguration</Name>
+        </ProjectReference>
+        <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Zelig\Common\Common.csproj">
+          <Project>{186f31a3-ef89-4a25-b2d5-20061218aa01}</Project>
+          <Name>Common</Name>
+        </ProjectReference>
+        <ProjectReference Include="$(LlilumSourceRoot)\RunTime\Framework\mscorlib\mscorlib.csproj">
+          <Project>{186F31A3-EF89-4A25-B2D5-20060501AA01}</Project>
+          <Name>mscorlib</Name>
+          <Private>False</Private>
+        </ProjectReference>
+      </ItemGroup>
+    </When>
+    <When Condition="!Exists('$(LlilumSourceRoot)\..\Zelig\')">
+      <ItemGroup>
+        <Reference Include="Microsoft.Zelig.ProductConfiguration">
+          <HintPath>$(LLILUM_SDK)\ZeligBuild\Host\bin\Debug\Microsoft.Zelig.ProductConfiguration.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Zelig.Runtime.Common">
+          <HintPath>$(LLILUM_SDK)\ZeligBuild\Host\bin\Debug\Microsoft.Zelig.Runtime.Common.dll</HintPath>
+        </Reference>
+        <Reference Include="mscorlib">
+          <HintPath>$(LLILUM_SDK)\ZeligBuild\Target\bin\Debug\mscorlib.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup>
     <Compile Include="Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="STM32L152.FrontEndConfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

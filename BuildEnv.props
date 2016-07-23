@@ -6,7 +6,7 @@
         <!-- For builds from the local tree, always use the local headers etc instead of the SDK...  -->
         <LLILUM_SDK>$(LLILUM_ROOT)Zelig\</LLILUM_SDK>
         <!-- LLILUM_LLVM contains the full source of LLVM -->
-        <LLVM_VERSION Condition="'$(LLVM_VERSION)'    ==''">3.8.0</LLVM_VERSION>
+        <LLVM_VERSION Condition="'$(LLVM_VERSION)'    ==''">3.8.1</LLVM_VERSION>
         <!-- Source ROOT Dir contains the full source of LLVM. To support both developer and automated build service
              scenarios try user registry, then HKLM-64 and HKLM-32 in that order
         -->

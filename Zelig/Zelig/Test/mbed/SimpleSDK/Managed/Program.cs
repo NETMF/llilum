@@ -116,7 +116,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
         }
     }
 
-    unsafe class Program
+    class Program
     {
         public static byte[] i2cReadWrite1 = new byte[1];
         public static byte[] i2cReadWrite2 = new byte[2];

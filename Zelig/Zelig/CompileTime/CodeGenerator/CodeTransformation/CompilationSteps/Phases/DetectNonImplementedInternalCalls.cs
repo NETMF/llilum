@@ -30,9 +30,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
 
         public override PhaseDriver Run()
         {
-#if DEBUG
+#if DEBUG_MISSING_METHODS_CALLERS
             var missingMethods = new List< MethodRepresentation >();
-#endif
+
 
             foreach(TypeRepresentation td in this.TypeSystem.Types)
             {
@@ -49,7 +49,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
                     }
                 }
             }
-
+#endif
 
 #if STOP_ON_POSITIVE_DETECTION
             if(missingMethods.Count > 0)

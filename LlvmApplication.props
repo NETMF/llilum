@@ -7,7 +7,7 @@
         NOTE: VS doesn't like it when conditions and other expressions appear in the UserMacros labeled PropertyGroup.
               Therefore, these are all done in an unlabeled group that precedes the UserMacros group visible in the IDE
         -->
-    <LLVM_VERSION Condition="'$(LLVM_VERSION)'==''">3.6.1</LLVM_VERSION>
+    <LLVM_VERSION Condition="'$(LLVM_VERSION)'==''">3.8.1</LLVM_VERSION>
     <!-- Source ROOT Dir contains the full source of LLVM -->
     <LLVM_SRCROOT_DIR Condition="'$(LLVM_SRCROOT_DIR)'==''">$([MSBuild]::GetRegistryValue(`HKEY_CURRENT_USER\Software\LLVM\$(LLVM_VERSION)\`, `SrcRoot`))</LLVM_SRCROOT_DIR>
     <LLVM_SRCROOT_DIR Condition="'$(LLVM_SRCROOT_DIR)'!='' AND !HasTrailingSlash('$(LLVM_SRCROOT_DIR)')">$(LLVM_SRCROOT_DIR)\</LLVM_SRCROOT_DIR>
