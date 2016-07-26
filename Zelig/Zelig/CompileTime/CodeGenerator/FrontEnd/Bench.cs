@@ -1794,13 +1794,13 @@ namespace Microsoft.Zelig.FrontEnd
 
                     foreach( var t in m_typeSystem.Types )
                     {
-                        foreach( var m in t.Methods )
+                        foreach( var method in t.Methods )
                         {
-                            IR.ControlFlowGraphStateForCodeTransformation cfg = IR.TypeSystemForCodeTransformation.GetCodeForMethod( m );
+                            IR.ControlFlowGraphStateForCodeTransformation cfg = IR.TypeSystemForCodeTransformation.GetCodeForMethod( method );
 
                             if( cfg != null )
                             {
-                                cfg.DumpToFile( m.m_identity.ToString( ) + ".txt" );
+                                cfg.DumpToFile( method.Identity.ToString( ) + ".txt" );
                             }
                         }
                     }

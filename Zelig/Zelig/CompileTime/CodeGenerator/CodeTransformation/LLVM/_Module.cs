@@ -182,11 +182,11 @@ namespace Microsoft.Zelig.LLVM
         public _Function GetOrInsertFunction( MethodRepresentation method )
         {
             _Function retVal;
-            if( m_FunctionMap.TryGetValue( method.m_identity, out retVal ) )
+            if( m_FunctionMap.TryGetValue( method.Identity, out retVal ) )
                 return retVal;
 
             retVal = new _Function( this, method );
-            m_FunctionMap.Add( method.m_identity, retVal );
+            m_FunctionMap.Add( method.Identity, retVal );
             return retVal;
         }
 

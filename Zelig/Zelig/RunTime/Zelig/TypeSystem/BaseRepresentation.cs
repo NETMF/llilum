@@ -2,16 +2,11 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-#if DEBUG
-#define TRACK_REPRESENTATION_IDENTITY
-#else
-//#define TRACK_REPRESENTATION_IDENTITY
-#endif
-
 namespace Microsoft.Zelig.Runtime.TypeSystem
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
 
     [DisableReferenceCounting]
     public abstract class BaseRepresentation
@@ -19,11 +14,9 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         //
         // State
         //
-
-#if TRACK_REPRESENTATION_IDENTITY
+        
         protected static int                                 s_identity;
-#endif
-        public           int                                 m_identity;
+        private          int                                 m_identity;
 
         //--//
 
@@ -37,10 +30,7 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
 
         protected BaseRepresentation()
         {
-#if TRACK_REPRESENTATION_IDENTITY
-            m_identity = s_identity++;
-#endif
-
+            m_identity         = Interlocked.Increment( ref s_identity );
             m_customAttributes = CustomAttributeAssociationRepresentation.SharedEmptyArray;
         }
 
@@ -277,6 +267,14 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         //
         // Access Methods
         //
+
+        public int Identity
+        {
+            get
+            {
+                return m_identity;
+            }
+        }
 
         public CustomAttributeAssociationRepresentation[] CustomAttributes
         {
