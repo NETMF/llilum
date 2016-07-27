@@ -14,7 +14,7 @@ set LLVM_ROOT=%~d0%~p0
 set GENERATE=1
 set BUILD=1
 set REGISTER=1
-set LlvmVersion=3.8.0
+set LlvmVersion=3.8.1
 
 @REM - Allow overriding default version and disabling any of the stages via parameters
 :arg_loop
@@ -66,7 +66,7 @@ if %BUILD%==1 (
 if %REGISTER%==1 (
     @echo registering LLVM path in registry
     reg add HKCU\Software\LLVM\%LlvmVersion% /v SrcRoot /d %LLVM_ROOT% /f
-    echo Setting per machine rigistry path
+    echo Setting per machine registry path
     echo NOTE: Administrator permissions required to set per machine registry settings.
     echo       If you get 'ERROR: Access is denied.' the per machine registration is not available
     reg add HKLM\Software\LLVM\%LlvmVersion% /v SrcRoot /d %LLVM_ROOT% /f
@@ -90,7 +90,7 @@ goto :exit
 @echo     -g- disables the cmake project generation phase
 @echo     -b- disables the code build phase 
 @echo     -r- disables the registry update
-@echo     -v ^<LlvmVersion^> sets the LLVM version number used for the registry entry (Default is 3.7.0)
+@echo     -v ^<LlvmVersion^> sets the LLVM version number used for the registry entry (Default is 3.8.1)
 @echo.
 @echo The registry entry is used by the LlvmApplication.props Propertysheet for VC projects to locate the various
 @echo LLVM headers and libs. Alternatively, if LLVM_SRCROOT_DIR is provided either as an environment variable
