@@ -58,7 +58,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                         m_variablesByStorage   = null;
                         m_variablesByAggregate = null;
 
-                        DataFlow.ControlTree.SpanningTree.Compute( cfg, out m_basicBlocks, out m_operators, out m_variables );
+                        DataFlow.ControlTree.BasicBlocksSpanningTree.Compute( cfg, out m_basicBlocks, out m_operators, out m_variables );
 
 #if DEBUG
                         foreach(Operator op in m_operators)
@@ -328,7 +328,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
                 if(ci.m_ancestors == null)
                 {
-                    ci.m_ancestors = DataFlow.ControlTree.SpanningTree.ComputeAncestors( ci.m_basicBlocks );
+                    ci.m_ancestors = (BasicBlock[ ])DataFlow.ControlTree.BasicBlocksSpanningTree.ComputeAncestors( ci.m_basicBlocks );
                 }
 
                 return ci.m_ancestors;

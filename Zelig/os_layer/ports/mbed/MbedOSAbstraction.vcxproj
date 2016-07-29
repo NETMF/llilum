@@ -139,6 +139,7 @@
       <AdditionalOptions>$(LlilumClAdditionalOptions) %(AdditionalOptions) -mfloat-abi=softfp</AdditionalOptions>
       <AdditionalIncludeDirectories>$(LlilumSourceRoot)\..\lwip\lwip;$(LlilumSourceRoot)\..\lwip\lwip\include;$(LlilumSourceRoot)\..\mbed-rtos\rtx\TARGET_CORTEX_M;$(LlilumSourceRoot)\..\mbed-rtos\rtos;$(LlilumSourceRoot)\..\lwip\lwip\include\netif;$(LlilumSourceRoot)\..\lwip\lwip\include\ipv4\lwip;$(LlilumSourceRoot)\..\lwip\lwip\include\lwip;$(LlilumSourceRoot)\..\lwip\lwip-eth\arch\TARGET_Freescale;$(LlilumSourceRoot)\..\lwip\lwip-eth\arch\TARGET_NXP;$(LlilumSourceRoot)\..\lwip\lwip-sys\arch;$(LlilumClAdditionalIncludes);$(AdditionalIncludeDirectories);</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>$(LlilumClPreprocessorDefs);DEBUG;%(PreprocessorDefinitions);__DEFAULT_STACK_SIZE=$(LlilumStackSize);__HEAP_SIZE=$(LlilumHeapSize)</PreprocessorDefinitions>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <ArmAssemble>
       <AdditionalOptions>$(LlilumAsmAdditionalOptions) %(LlilumClAdditionalOptions) -Wa,--defsym,__HEAP_SIZE=$(LlilumHeapSize)</AdditionalOptions>
@@ -153,6 +154,9 @@
     <Lib>
       <CreateIndex>false</CreateIndex>
     </Lib>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>

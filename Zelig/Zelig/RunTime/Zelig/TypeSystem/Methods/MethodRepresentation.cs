@@ -18,71 +18,71 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         {
             // member access attributes
             MemberAccessMask = 0x0007, // Use this mask to retrieve accessibility information.
-            PrivateScope = 0x0000, // Member not referenceable.
-            Private = 0x0001, // Accessible only by the parent type.
-            FamANDAssem = 0x0002, // Accessible by sub-types only in this Assembly.
-            Assem = 0x0003, // Accessibly by anyone in the Assembly.
-            Family = 0x0004, // Accessible only by type and sub-types.
-            FamORAssem = 0x0005, // Accessibly by sub-types anywhere, plus anyone in assembly.
-            Public = 0x0006, // Accessibly by anyone who has visibility to this scope.
+            PrivateScope    = 0x0000, // Member not referenceable.
+            Private         = 0x0001, // Accessible only by the parent type.
+            FamANDAssem     = 0x0002, // Accessible by sub-types only in this Assembly.
+            Assem           = 0x0003, // Accessibly by anyone in the Assembly.
+            Family          = 0x0004, // Accessible only by type and sub-types.
+            FamORAssem      = 0x0005, // Accessibly by sub-types anywhere, plus anyone in assembly.
+            Public          = 0x0006, // Accessibly by anyone who has visibility to this scope.
 
             // method contract attributes.
-            Static = 0x0010, // Defined on type, else per instance.
-            Final = 0x0020, // Method may not be overridden.
-            Virtual = 0x0040, // Method virtual.
-            HideBySig = 0x0080, // Method hides by name+sig, else just by name.
+            Static          = 0x0010, // Defined on type, else per instance.
+            Final           = 0x0020, // Method may not be overridden.
+            Virtual         = 0x0040, // Method virtual.
+            HideBySig       = 0x0080, // Method hides by name+sig, else just by name.
 
             // vtable layout mask - Use this mask to retrieve vtable attributes.
             VtableLayoutMask = 0x0100,
-            ReuseSlot = 0x0000, // The default.
-            NewSlot = 0x0100, // Method always gets a new slot in the vtable.
+            ReuseSlot        = 0x0000, // The default.
+            NewSlot          = 0x0100, // Method always gets a new slot in the vtable.
 
-            Strict = 0x0200,
+            Strict           = 0x0200,
 
             // method implementation attributes.
-            Abstract = 0x0400, // Method does not provide an implementation.
-            SpecialName = 0x0800, // Method is special.  Name describes how.
+            Abstract         = 0x0400, // Method does not provide an implementation.
+            SpecialName      = 0x0800, // Method is special.  Name describes how.
 
             // interop attributes
-            PinvokeImpl = 0x2000, // Implementation is forwarded through pinvoke.
-            UnmanagedExport = 0x0008, // Managed method exported via thunk to unmanaged code.
+            PinvokeImpl      = 0x2000, // Implementation is forwarded through pinvoke.
+            UnmanagedExport  = 0x0008, // Managed method exported via thunk to unmanaged code.
 
             // Reserved flags for runtime use only.
-            ReservedMask = 0xD000,
-            RTSpecialName = 0x1000, // Runtime should check name encoding.
-            HasSecurity = 0x4000, // Method has security associate with it.
+            ReservedMask     = 0xD000,
+            RTSpecialName    = 0x1000, // Runtime should check name encoding.
+            HasSecurity      = 0x4000, // Method has security associate with it.
             RequireSecObject = 0x8000  // Method calls another method containing security code.
         }
 
         [Flags]
         public enum BuildTimeAttributes : uint
         {
-            Inline = 0x00000001,
-            NoInline = 0x00000002,
+            Inline                      = 0x00000001,
+            NoInline                    = 0x00000002,
 
-            BottomOfCallStack = 0x00000010,
-            SaveFullProcessorContext = 0x00000020,
-            NoReturn = 0x00000040,
+            BottomOfCallStack           = 0x00000010,
+            SaveFullProcessorContext    = 0x00000020,
+            NoReturn                    = 0x00000040,
 
-            CanAllocate = 0x00000100,
-            CannotAllocate = 0x00000200,
-            CanAllocateOnReturn = 0x00000400,
+            CanAllocate                 = 0x00000100,
+            CannotAllocate              = 0x00000200,
+            CanAllocateOnReturn         = 0x00000400,
 
-            StackAvailable = 0x00001000,
-            StackNotAvailable = 0x00002000,
-            StackAvailableOnReturn = 0x00004000,
+            StackAvailable              = 0x00001000,
+            StackNotAvailable           = 0x00002000,
+            StackAvailableOnReturn      = 0x00004000,
 
-            EnableBoundsChecks = 0x00010000,
-            DisableDeepBoundsChecks = 0x00020000,
-            DisableBoundsChecks = 0x00040000,
+            EnableBoundsChecks          = 0x00010000,
+            DisableDeepBoundsChecks     = 0x00020000,
+            DisableBoundsChecks         = 0x00040000,
 
-            EnableNullChecks = 0x00100000,
-            DisableNullChecks = 0x00200000,
-            DisableDeepNullChecks = 0x00400000,
+            EnableNullChecks            = 0x00100000,
+            DisableNullChecks           = 0x00200000,
+            DisableDeepNullChecks       = 0x00400000,
 
             //LON: 2/16/09
-            Exported = 0x01000000,
-            Imported = 0x02000000,
+            Exported                    = 0x01000000,
+            Imported                    = 0x02000000,
         }
 
         public sealed class GenericContext
@@ -116,8 +116,8 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
             {
                 context.Push( this );
 
-                context.Transform( ref m_template );
-                context.Transform( ref m_parameters );
+                context.Transform( ref m_template             );
+                context.Transform( ref m_parameters           );
                 context.Transform( ref m_parametersDefinition );
 
                 context.Pop( );
@@ -129,9 +129,9 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
             // Helper Methods
             //
 
-            internal void CompleteIdentity( TypeSystem typeSystem,
+            internal void CompleteIdentity(     TypeSystem                                       typeSystem,
                                                 MetaData.Normalized.MetaDataGenericMethodParam[] genericParams,
-                                            ref ConversionContext localContext )
+                                            ref ConversionContext                                localContext )
             {
                 if( m_template == null )
                 {
@@ -207,27 +207,27 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         // State
         //
 
-        protected TypeRepresentation                m_ownerType;
-        protected Attributes                        m_flags;
-        protected BuildTimeAttributes               m_buildFlags;
-        protected string                            m_name;
-        protected TypeRepresentation                m_returnType;
-        protected TypeRepresentation[]              m_thisPlusArguments;
-        protected string[]                          m_argumentNames;
+        protected TypeRepresentation    m_ownerType;
+        protected Attributes            m_flags;
+        protected BuildTimeAttributes   m_buildFlags;
+        protected string                m_name;
+        protected TypeRepresentation    m_returnType;
+        protected TypeRepresentation[]  m_thisPlusArguments;
+        protected string[]              m_argumentNames;
 
-        protected GenericContext                    m_genericContext;
+        protected GenericContext        m_genericContext;
         
         //
         // This field is used during code generation to point to the CodeRepresentation for the method.
         //
-        protected object                            m_code;
-        protected CodePointer                       m_codePointer;
-        protected CodeMap                           m_codeMap;
+        protected object                m_code;
+        protected CodePointer           m_codePointer;
+        protected CodeMap               m_codeMap;
 
         //
         // Only used for dumps
         //
-        protected string                            m_fullName;
+        protected string                m_fullName;
 
 
         public Debugging.DebugInfo DebugInfo
@@ -248,8 +248,8 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         // Constructor Methods
         //
 
-        protected MethodRepresentation( TypeRepresentation ownerType,
-                                        GenericContext genericContext )
+        protected MethodRepresentation( TypeRepresentation ownerType      ,
+                                        GenericContext     genericContext )
         {
             CHECKS.ASSERT( ownerType != null, "Cannot create a MethodRepresentation without supporting metadata" );
 
@@ -265,20 +265,20 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         // MetaDataEquality Methods
         //
 
-        public override bool EqualsThroughEquivalence( object obj,
+        public override bool EqualsThroughEquivalence( object         obj ,
                                                        EquivalenceSet set )
         {
             if( obj is MethodRepresentation )
             {
                 MethodRepresentation other = ( MethodRepresentation )obj;
                 
-                if (                              m_flags       == other.m_flags                        &&
-                                                  m_buildFlags  == other.m_buildFlags                   &&
-                                                  m_name        == other.m_name                         &&
-                        EqualsThroughEquivalence( m_ownerType, other.m_ownerType, set )                 &&
-                        EqualsThroughEquivalence( m_returnType, other.m_returnType, set )               &&
-                   ArrayEqualsThroughEquivalence( m_thisPlusArguments, other.m_thisPlusArguments, set ) &&
-                   ArrayEqualsThroughEquivalence( this.GenericParameters, other.GenericParameters, set ) )
+                if (                              m_flags       == other.m_flags                           &&
+                                                  m_buildFlags  == other.m_buildFlags                      &&
+                                                  m_name        == other.m_name                            &&
+                        EqualsThroughEquivalence( m_ownerType           , other.m_ownerType        , set ) &&
+                        EqualsThroughEquivalence( m_returnType          , other.m_returnType       , set ) &&
+                   ArrayEqualsThroughEquivalence( m_thisPlusArguments   , other.m_thisPlusArguments, set ) &&
+                   ArrayEqualsThroughEquivalence( this.GenericParameters, other.GenericParameters  , set )  )
                 {
                     CHECKS.ASSERT( this.GetType( ) == other.GetType( ), "Found two inconsistent MethodRepresentation" );
 
@@ -311,6 +311,32 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         {
             return !( left == right );
         }
+        
+        public static bool SameMethodOrOverride( MethodRepresentation md,
+                                                  MethodRepresentation mdTarget )
+        {
+            if(md == mdTarget)
+            {
+                return true;
+            }
+
+            if(md       is VirtualMethodRepresentation &&
+               mdTarget is VirtualMethodRepresentation  )
+            {
+                if(md.OwnerType.IsSubClassOf( mdTarget.OwnerType, null ))
+                {
+                    int index       = md      .FindVirtualTableIndex();
+                    int indexTarget = mdTarget.FindVirtualTableIndex();
+
+                    if(index == indexTarget)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
 
         //--//
 
@@ -323,9 +349,9 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
             typeSystem.NotifyNewMethodComplete( this );
         }
 
-        internal void CompleteIdentity( TypeSystem typeSystem,
-                                        ref ConversionContext context,
-                                            MetaData.Normalized.MetaDataMethodAbstract md )
+        internal void CompleteIdentity(     TypeSystem                                 typeSystem,
+                                        ref ConversionContext                          context   ,
+                                            MetaData.Normalized.MetaDataMethodAbstract md        )
         {
             if( md is MetaData.Normalized.MetaDataMethodBase )
             {
@@ -409,8 +435,8 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
             typeSystem.QueueDelayedCustomAttributeAnalysis( this, ref localContext );
         }
 
-        internal void PerformDelayedCustomAttributeAnalysis( TypeSystem typeSystem,
-                                                             ref ConversionContext context )
+        internal void PerformDelayedCustomAttributeAnalysis(     TypeSystem        typeSystem,
+                                                             ref ConversionContext context   )
         {
             MetaData.Normalized.MetaDataMethodBase metadata = typeSystem.GetAssociatedMetaData( this );
 
@@ -453,7 +479,7 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
         //--//
 
         private void SetLocalContext( out ConversionContext localContext,
-                                      ref ConversionContext context )
+                                      ref ConversionContext context     )
         {
             localContext = context;
 
@@ -470,8 +496,8 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
 
         //--//
 
-        internal void CloneSettings( TypeSystem typeSystem,
-                                     MethodRepresentation mdSource )
+        internal void CloneSettings( TypeSystem           typeSystem,
+                                     MethodRepresentation mdSource  )
         {
             m_flags = mdSource.m_flags;
             m_name = mdSource.m_name;
@@ -526,20 +552,20 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
 
             base.ApplyTransformation( context );
 
-            context.Transform( ref m_DebugInfo );
-            context.Transform( ref m_ownerType );
-            context.Transform( ref m_flags );
-            context.Transform( ref m_buildFlags );
-            context.Transform( ref m_name );
-            context.Transform( ref m_returnType );
-            context.Transform( ref m_thisPlusArguments );
-            context.Transform( ref m_argumentNames );
+            context.Transform       ( ref m_DebugInfo         );
+            context.Transform       ( ref m_ownerType         );
+            context.Transform       ( ref m_flags             );
+            context.Transform       ( ref m_buildFlags        );
+            context.Transform       ( ref m_name              );
+            context.Transform       ( ref m_returnType        );
+            context.Transform       ( ref m_thisPlusArguments );
+            context.Transform       ( ref m_argumentNames     );
 
-            context.Transform( ref m_genericContext );
+            context.Transform       ( ref m_genericContext    );
 
-            context.Transform( ref m_code );
-            context.Transform( ref m_codePointer );
-            context.TransformGeneric( ref m_codeMap );
+            context.Transform       ( ref m_code              );
+            context.Transform       ( ref m_codePointer       );
+            context.TransformGeneric( ref m_codeMap           );
 
             context.Pop( );
         }
@@ -548,7 +574,7 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
 
         public MethodRepresentation Instantiate( InstantiationContext ic )
         {
-            TypeRepresentation ownerType      = ic.Instantiate( m_ownerType );
+            TypeRepresentation ownerType      = ic.Instantiate    ( m_ownerType               );
             GenericContext     genericContext = new GenericContext( this, ic.MethodParameters );
 
             MethodRepresentation instantiatedMd = AllocateInstantiation( ic, ownerType, genericContext );
@@ -568,19 +594,19 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
             }
         }
 
-        protected abstract MethodRepresentation AllocateInstantiation( InstantiationContext ic,
-                                                                       TypeRepresentation ownerType,
-                                                                       GenericContext genericContext );
+        protected abstract MethodRepresentation AllocateInstantiation( InstantiationContext ic             ,
+                                                                       TypeRepresentation   ownerType      ,
+                                                                       GenericContext       genericContext );
 
         protected virtual void PopulateInstantiation( MethodRepresentation mdTemplate,
-                                                      InstantiationContext ic )
+                                                      InstantiationContext ic        )
         {
-            m_flags = mdTemplate.m_flags;
-            m_buildFlags = mdTemplate.m_buildFlags;
-            m_name = mdTemplate.m_name;
-            m_returnType = ic.Instantiate( mdTemplate.m_returnType );
+            m_flags             = mdTemplate.m_flags;
+            m_buildFlags        = mdTemplate.m_buildFlags;
+            m_name              = mdTemplate.m_name;
+            m_returnType        = ic.Instantiate( mdTemplate.m_returnType        );
             m_thisPlusArguments = ic.Instantiate( mdTemplate.m_thisPlusArguments );
-            m_argumentNames = mdTemplate.m_argumentNames;
+            m_argumentNames     = mdTemplate.m_argumentNames;
         }
 
         //--//
@@ -625,7 +651,7 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
 
             set
             {
-                m_flags &= ~MethodRepresentation.Attributes.VtableLayoutMask;
+                m_flags &=        ~MethodRepresentation.Attributes.VtableLayoutMask;
                 m_flags |= value & MethodRepresentation.Attributes.VtableLayoutMask;
             }
         }
@@ -865,17 +891,17 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
 
         //--//
 
-        public bool MatchNameAndSignature( string name,
+        public bool MatchNameAndSignature( string               name,
                                            MethodRepresentation sig,
-                                           EquivalenceSet set )
+                                           EquivalenceSet       set )
         {
             return m_name == name && MatchSignature( sig, set );
         }
 
-        public bool MatchNameAndSignature( string name,
-                                           TypeRepresentation returnType,
+        public bool MatchNameAndSignature( string               name             ,
+                                           TypeRepresentation   returnType       ,
                                            TypeRepresentation[] thisPlusArguments,
-                                           EquivalenceSet set )
+                                           EquivalenceSet       set              )
         {
             return m_name == name && MatchSignature( returnType, thisPlusArguments, set );
         }
@@ -886,9 +912,9 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
             return MatchSignature( sig.m_returnType, sig.m_thisPlusArguments, set );
         }
 
-        public bool MatchSignature( TypeRepresentation returnType,
+        public bool MatchSignature( TypeRepresentation   returnType       ,
                                     TypeRepresentation[] thisPlusArguments,
-                                    EquivalenceSet set )
+                                    EquivalenceSet       set              )
         {
             //
             // Don't compare the first argument, a method signature does not include any 'this' pointer.
@@ -980,10 +1006,9 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
             PrettyToString(sb, includePrefix: true, includeReturnValue:true);
         }
 
-        private void PrettyToString(
-            System.Text.StringBuilder sb,
-            bool includePrefix,
-            bool includeReturnValue)
+        private void PrettyToString( System.Text.StringBuilder sb,
+                                     bool includePrefix          ,
+                                     bool includeReturnValue     )
         {
             if (includePrefix)
             {
@@ -1003,8 +1028,9 @@ namespace Microsoft.Zelig.Runtime.TypeSystem
             }
 
             m_ownerType.PrettyToString(sb, includePrefix, false);
-            sb.Append("::");
-            sb.Append(m_name);
+
+            sb.Append( "::" );
+            sb.Append( m_name );
 
             if (m_genericContext != null)
             {

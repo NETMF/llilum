@@ -123,13 +123,13 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
 
             foreach (BasicBlockEdge edge in block.Predecessors)
             {
-                BasicBlock predecessor = edge.Predecessor;
+                BasicBlock predecessor = (BasicBlock)edge.Predecessor;
 
                 // If this predecessor isn't a special block and it's under the same exception
                 // handling scope, retarget its flow control to the successor.
-                if ((predecessor is NormalBasicBlock) &&
-                    ArrayUtility.ArrayEqualsNotNull(block.ProtectedBy, predecessor.ProtectedBy, 0) &&
-                    predecessor.FlowControl.SubstituteTarget(block, successor))
+                if ( (predecessor is NormalBasicBlock)                                                 &&
+                     ArrayUtility.ArrayEqualsNotNull( block.ProtectedBy, predecessor.ProtectedBy, 0 )  &&
+                     predecessor.FlowControl.SubstituteTarget( block, successor )                       )
                 {
                     modified = true;
                 }

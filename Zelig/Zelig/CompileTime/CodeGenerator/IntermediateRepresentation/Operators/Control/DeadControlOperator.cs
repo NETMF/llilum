@@ -7,10 +7,11 @@ namespace Microsoft.Zelig.CodeGeneration.IR
     using System;
     using System.Collections.Generic;
 
+    using Microsoft.Zelig;
     using Microsoft.Zelig.Runtime.TypeSystem;
 
 
-    public sealed class DeadControlOperator : ControlOperator
+    public sealed class DeadControlOperator : ControlOperator, IDeadBranch
     {
         private const OperatorCapabilities cCapabilities = OperatorCapabilities.IsNonCommutative                   |
                                                            OperatorCapabilities.DoesNotMutateExistingStorage       |

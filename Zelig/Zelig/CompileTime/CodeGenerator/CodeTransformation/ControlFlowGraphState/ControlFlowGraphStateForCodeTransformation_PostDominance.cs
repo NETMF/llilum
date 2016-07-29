@@ -18,7 +18,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             // State
             //
 
-            internal DataFlow.ControlTree.PostDominance m_postDominance;
+            internal PostDominance<BasicBlock, BasicBlockEdge, ControlOperator> m_postDominance;
 
             //
             // Helper Methods
@@ -30,7 +30,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
                 using(new PerformanceCounters.ContextualTiming( cfg, "PostDominance" ))
                 {
-                    m_postDominance = new DataFlow.ControlTree.PostDominance( cfg );
+                    m_postDominance = new PostDominance<BasicBlock, BasicBlockEdge, ControlOperator>( cfg.DataFlow_SpanningTree_BasicBlocks );
                 }
             }
         }

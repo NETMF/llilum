@@ -50,7 +50,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.DataFlow.ControlTree
                 {
                     foreach(BasicBlockEdge edge in bb.Predecessors)
                     {
-                        BasicBlock bbPred    = edge.Predecessor;
+                        BasicBlock bbPred    = (BasicBlock)edge.Predecessor;
                         int        bbPredIdx = bbPred.SpanningTreeIndex;
 
                         if(m_basicBlocks.Set( bbPredIdx ))
@@ -157,7 +157,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.DataFlow.ControlTree
 
                 foreach(BasicBlockEdge edge in bb.Successors)
                 {
-                    BasicBlock bbHead    = edge.Successor;
+                    BasicBlock bbHead    = (BasicBlock)edge.Successor;
                     int        bbHeadIdx = bbHead.SpanningTreeIndex;
 
                     if(m_dominance[bbIdx][bbHeadIdx])

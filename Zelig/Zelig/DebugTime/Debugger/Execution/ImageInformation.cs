@@ -1518,13 +1518,13 @@ namespace Microsoft.Zelig.Debugger.ArmProcessor
             if(visited.Insert( bb ) == false)
             {
                 Debugging.DebugInfo di;
-                IR.BasicBlockEdge[] array = fForward ? bb.Successors : bb.Predecessors;
+                IR.BasicBlockEdge[] array = (IR.BasicBlockEdge[])(fForward ? bb.Successors : bb.Predecessors);
 
                 for(int pass = 0; pass < 2; pass++)
                 {
                     foreach(IR.BasicBlockEdge edge in array)
                     {
-                        IR.BasicBlock bbNext = fForward ? edge.Successor : edge.Predecessor;
+                        IR.BasicBlock bbNext = (IR.BasicBlock)(fForward ? edge.Successor : edge.Predecessor);
 
                         if(pass == 0)
                         {

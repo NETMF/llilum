@@ -831,7 +831,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ImageBuilders
 
                 foreach(var edge in bb.Predecessors)
                 {
-                    var bbPrev = edge.Predecessor;
+                    var bbPrev = (BasicBlock)edge.Predecessor;
 
                     if(bbPrev.ShouldIncludeInScheduling( bb ))
                     {
@@ -843,7 +843,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ImageBuilders
 
                 foreach(var edge in bb.Successors)
                 {
-                    var bbNext = edge.Successor;
+                    var bbNext = (BasicBlock)edge.Successor;
 
                     if(bb.ShouldIncludeInScheduling( bbNext ))
                     {
@@ -1359,7 +1359,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ImageBuilders
                 {
                     foreach(var edge in bb.Successors)
                     {
-                        var bbNext = edge.Successor;
+                        var bbNext = (BasicBlock)edge.Successor;
 
                         if(bbNext is ExceptionHandlerBasicBlock)
                         {

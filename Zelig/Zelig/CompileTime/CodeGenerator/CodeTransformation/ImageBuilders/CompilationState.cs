@@ -469,7 +469,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ImageBuilders
             {
                 foreach(BasicBlockEdge edge in m_basicBlocks[bbIdx].Successors)
                 {
-                    BasicBlock bbNext = edge.Successor;
+                    BasicBlock bbNext = (BasicBlock)edge.Successor;
 
                     if(IsColdCode( bbNext ))
                     {
@@ -487,7 +487,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.ImageBuilders
             {
                 foreach(BasicBlockEdge edge in m_basicBlocks[bbIdx].Successors)
                 {
-                    BasicBlock bbNext    = edge.Successor;
+                    BasicBlock bbNext    = (BasicBlock)edge.Successor;
                     int        bbNextIdx = bbNext.SpanningTreeIndex;
 
                     PropagateReachableFromColdCode( bbNextIdx );

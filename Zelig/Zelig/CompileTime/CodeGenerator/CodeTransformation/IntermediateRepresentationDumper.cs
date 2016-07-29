@@ -354,12 +354,12 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
             foreach(BasicBlockEdge edge in bb.Predecessors)
             {
-                WriteLine( ".edge {0} from {1}", edge.EdgeClass, CreateLabel( edge.Predecessor ) );
+                WriteLine( ".edge {0} from {1}", edge.EdgeClass, CreateLabel( (BasicBlock)edge.Predecessor ) );
             }
 
             foreach(BasicBlockEdge edge in bb.Successors)
             {
-                WriteLine( ".edge {0} to {1}", edge.EdgeClass, CreateLabel( edge.Successor ) );
+                WriteLine( ".edge {0} to {1}", edge.EdgeClass, CreateLabel( (BasicBlock)edge.Successor ) );
             }
 
             GrowOnlySet< Expression > used = SetFactory.NewWithReferenceEquality< Expression >();
@@ -679,9 +679,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         {
             System.Xml.XmlNode subnode = XmlHelper.AddElement( node, "Edge" );
 
-            XmlHelper.AddAttribute( subnode, "From", CreateLabel( edge.Predecessor )        );
-            XmlHelper.AddAttribute( subnode, "To"  , CreateLabel( edge.Successor   )        );
-            XmlHelper.AddAttribute( subnode, "Kind",              edge.EdgeClass.ToString() );
+            XmlHelper.AddAttribute( subnode, "From", CreateLabel( (BasicBlock)edge.Predecessor )        );
+            XmlHelper.AddAttribute( subnode, "To"  , CreateLabel( (BasicBlock)edge.Successor   )        );
+            XmlHelper.AddAttribute( subnode, "Kind",                          edge.EdgeClass.ToString() );
         }
     }
 

@@ -7,6 +7,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
     using System;
     using System.Collections.Generic;
 
+    using Microsoft.Zelig;
     using Microsoft.Zelig.Runtime.TypeSystem;
 
 
@@ -18,7 +19,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             // State
             //
 
-            internal DataFlow.ControlTree.Dominance m_dominance;
+            internal Dominance<BasicBlock, BasicBlockEdge, ControlOperator> m_dominance;
 
             //
             // Helper Methods
@@ -30,7 +31,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
                 using(new PerformanceCounters.ContextualTiming( cfg, "Dominance" ))
                 {
-                    m_dominance = new DataFlow.ControlTree.Dominance( cfg );
+                    m_dominance = new Dominance<BasicBlock, BasicBlockEdge, ControlOperator>( 
+                        cfg.DataFlow_SpanningTree_BasicBlocks, 
+                        cfg.DataFlow_PostOrderVisit 
+                        );
                 }
             }
         }

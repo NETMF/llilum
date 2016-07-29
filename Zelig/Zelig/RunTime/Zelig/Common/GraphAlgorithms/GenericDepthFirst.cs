@@ -2,17 +2,17 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-namespace Microsoft.Zelig.CodeGeneration.IR.DataFlow.ControlTree
+namespace Microsoft.Zelig
 {
     using System;
 
-    public abstract class GenericDepthFirst
+    public abstract class GenericDepthFirst< FC >
     {
         //
         // State
         //
 
-        GrowOnlySet< BasicBlock > m_visited;
+        GrowOnlySet< ITreeNode< FC > > m_visited;
 
         //
         // Constructor Methods
@@ -20,20 +20,20 @@ namespace Microsoft.Zelig.CodeGeneration.IR.DataFlow.ControlTree
 
         protected GenericDepthFirst()
         {
-            m_visited = SetFactory.NewWithReferenceEquality< BasicBlock >();
+            m_visited = SetFactory.NewWithReferenceEquality< ITreeNode<FC>>();
         }
 
-        protected void Visit( BasicBlock bb )
+        protected void Visit( ITreeNode<FC> node )
         {
-            ProcessBefore( bb );
+            ProcessBefore( node );
 
-            m_visited.Insert( bb );
+            m_visited.Insert( node );
 
             for(int pass = 0; pass < 2; pass++)
             {
-                foreach(BasicBlockEdge edge in bb.Successors)
+                foreach(ITreeEdge<FC> edge in node.Successors)
                 {
-                    BasicBlock bbSucc = edge.Successor;
+                    var bbSucc = edge.Successor;
 
                     //
                     // On the first pass, follow only non-dead branches.
@@ -41,7 +41,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.DataFlow.ControlTree
                     // Dead branches are almost always exception-throwing branches,
                     // following them after the other branches ensures that they don't show up in TreeEdges.
                     //
-                    if((pass == 0) == (bbSucc.FlowControl is DeadControlOperator))
+                    if((pass == 0) == (bbSucc.FlowControl is IDeadBranch))
                     {
                         continue;
                     }
@@ -62,30 +62,30 @@ namespace Microsoft.Zelig.CodeGeneration.IR.DataFlow.ControlTree
                 }
             }
 
-            ProcessAfter( bb );
+            ProcessAfter( node );
         }
 
         //--//
 
-        protected virtual void ProcessBefore( BasicBlock bb )
+        protected virtual void ProcessBefore( ITreeNode<FC> node )
         {
         }
 
-        protected virtual void ProcessAfter( BasicBlock bb )
+        protected virtual void ProcessAfter( ITreeNode<FC> node )
         {
         }
 
         //--//
 
-        protected virtual void ProcessEdgeBefore( BasicBlockEdge edge )
+        protected virtual void ProcessEdgeBefore( ITreeEdge<FC> edge )
         {
         }
 
-        protected virtual void ProcessEdgeAfter( BasicBlockEdge edge )
+        protected virtual void ProcessEdgeAfter( ITreeEdge<FC> edge )
         {
         }
 
-        protected virtual void ProcessEdgeNotTaken( BasicBlockEdge edge )
+        protected virtual void ProcessEdgeNotTaken( ITreeEdge<FC> edge )
         {
         }
     }

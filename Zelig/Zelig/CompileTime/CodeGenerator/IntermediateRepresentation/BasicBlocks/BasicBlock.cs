@@ -16,7 +16,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
     using Microsoft.Zelig.Runtime.TypeSystem;
 
 
-    public abstract class BasicBlock
+    public abstract class BasicBlock : ITreeNode<ControlOperator>
     {
         public static readonly BasicBlock[] SharedEmptyArray = new BasicBlock[0];
 
@@ -213,13 +213,13 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
         public BasicBlock InsertNewPredecessor( BasicBlock newBB )
         {
-            BasicBlockEdge[] edges = this.Predecessors;
+            BasicBlockEdge[] edges = (BasicBlockEdge[])this.Predecessors;
 
             newBB.AddOperator( UnconditionalControlOperator.New( null, this ) );
 
             foreach(BasicBlockEdge edge in edges)
             {
-                edge.Predecessor.FlowControl.SubstituteTarget( this, newBB );
+                ((BasicBlock)edge.Predecessor).FlowControl.SubstituteTarget( this, newBB );
             }
 
             newBB.NotifyNewPredecessor( this );
@@ -233,7 +233,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         {
             foreach(BasicBlockEdge edge in this.Successors)
             {
-                BasicBlock succ = edge.Successor;
+                BasicBlock succ = (BasicBlock)edge.Successor;
                 
                 foreach(Operator op in succ.Operators)
                 {
@@ -246,7 +246,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         {
             foreach(BasicBlockEdge edge in this.Successors)
             {
-                BasicBlock succ = edge.Successor;
+                BasicBlock succ = (BasicBlock)edge.Successor;
                 
                 foreach(Operator op in succ.Operators)
                 {
@@ -659,7 +659,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             }
         }
 
-        public Operator[] Operators
+        public Operator[ ] Operators
         {
             get
             {
@@ -668,7 +668,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         }
 
         [System.Diagnostics.DebuggerBrowsable( System.Diagnostics.DebuggerBrowsableState.Never )]
-        public BasicBlockEdge[] Predecessors
+        public ITreeEdge<ControlOperator>[ ] Predecessors
         {
             get
             {
@@ -679,7 +679,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         }
 
         [System.Diagnostics.DebuggerBrowsable( System.Diagnostics.DebuggerBrowsableState.Never )]
-        public BasicBlockEdge[] Successors
+        public ITreeEdge<ControlOperator>[ ] Successors
         {
             get
             {
@@ -689,7 +689,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             }
         }
 
-        public ExceptionHandlerBasicBlock[] ProtectedBy
+        public ExceptionHandlerBasicBlock[ ] ProtectedBy
         {
             get
             {
@@ -718,10 +718,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 int len = m_operators.Length;
                 if(len > 0)
                 {
-                    Operator op = m_operators[len-1];
-                    if(op is ControlOperator)
+                    ControlOperator op = m_operators[len-1] as ControlOperator;
+                    if(op != null)
                     {
-                        return (ControlOperator)op;
+                        return op;
                     }
                 }
 
@@ -732,7 +732,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             {
                 BumpVersion();
 
-                value.BasicBlock = this;
+                ((Operator)value).BasicBlock = this;
 
                 int len = m_operators.Length;
                 if(len > 0)
@@ -743,7 +743,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                         //
                         // Update existing control operator.
                         //
-                        m_operators[len-1] = value;
+                        m_operators[len-1] = (Operator)value;
                         return;
                     }
                 }
@@ -756,7 +756,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         {
             get
             {
-                return this.Predecessors[0].Predecessor;
+                return (BasicBlock)this.Predecessors[0].Predecessor;
             }
         }
 
@@ -764,7 +764,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         {
             get
             {
-                return this.Successors[0].Successor;
+                return (BasicBlock)this.Successors[0].Successor;
             }
         }
 
@@ -783,7 +783,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 return m_operators[m_operators.Length - 1];
             }
         }
-
+        
         //--//
 
         //

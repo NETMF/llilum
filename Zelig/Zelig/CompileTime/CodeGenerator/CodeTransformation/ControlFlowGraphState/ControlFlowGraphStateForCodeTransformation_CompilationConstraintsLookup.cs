@@ -257,7 +257,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
             foreach(BasicBlockEdge edge in bb.Successors)
             {
-                if(!PropagateCompilationConstraints( ht, edge.Successor, ccArray, toBeInlined ))
+                if(!PropagateCompilationConstraints( ht, (BasicBlock)edge.Successor, ccArray, toBeInlined ))
                 {
                     return false;
                 }

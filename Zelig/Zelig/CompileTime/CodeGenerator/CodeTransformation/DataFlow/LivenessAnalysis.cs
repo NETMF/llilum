@@ -235,7 +235,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.DataFlow
 
                         foreach(BasicBlockEdge edge in bb.Successors)
                         {
-                            foreach(Operator op in edge.Successor.Operators)
+                            foreach(Operator op in ((BasicBlock)edge.Successor).Operators)
                             {
                                 PhiOperator opPhi = op as PhiOperator;
 

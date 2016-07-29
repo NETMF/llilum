@@ -171,10 +171,13 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
 
             var wkm = this.TypeSystem.WellKnownMethods;
 
-            if(SameMethodOrOverride( mdNext, wkm.TypeSystemManager_AllocateObject       ) ||
-               SameMethodOrOverride( mdNext, wkm.TypeSystemManager_AllocateArray        ) ||
-               SameMethodOrOverride( mdNext, wkm.TypeSystemManager_AllocateArrayNoClear ) ||
-               SameMethodOrOverride( mdNext, wkm.TypeSystemManager_AllocateString       )  )
+            if(MethodRepresentation.SameMethodOrOverride( mdNext, wkm.TypeSystemManager_AllocateObject                  ) ||
+               MethodRepresentation.SameMethodOrOverride( mdNext, wkm.TypeSystemManager_AllocateArray                   ) ||
+               MethodRepresentation.SameMethodOrOverride( mdNext, wkm.TypeSystemManager_AllocateArrayNoClear            ) ||
+               MethodRepresentation.SameMethodOrOverride( mdNext, wkm.TypeSystemManager_AllocateString                  ) ||
+               MethodRepresentation.SameMethodOrOverride( mdNext, wkm.TypeSystemManager_AllocateReferenceCountingObject ) ||
+               MethodRepresentation.SameMethodOrOverride( mdNext, wkm.TypeSystemManager_AllocateReferenceCountingArray  ) ||
+               MethodRepresentation.SameMethodOrOverride( mdNext, wkm.TypeSystemManager_AllocateObjectWithExtensions    ) ) 
             {
                 //
                 // These methods are already working by the time we get to class constructors, so let's stop the closure here.
@@ -182,8 +185,8 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
                 return false;
             }
 
-            if (SameMethodOrOverride(mdNext, wkm.TypeSystemManager_Throw) ||
-                SameMethodOrOverride(mdNext, wkm.TypeSystemManager_Rethrow))
+            if (MethodRepresentation.SameMethodOrOverride(mdNext, wkm.TypeSystemManager_Throw) ||
+                MethodRepresentation.SameMethodOrOverride(mdNext, wkm.TypeSystemManager_Rethrow))
             {
                 //
                 // If a class constructor throws an exception, bad things are going to happen, so no need to expand the closure any further.
@@ -192,32 +195,6 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
             }
 
             return true;
-        }
-
-        private static bool SameMethodOrOverride( MethodRepresentation md       ,
-                                                  MethodRepresentation mdTarget )
-        {
-            if(md == mdTarget)
-            {
-                return true;
-            }
-
-            if(md       is VirtualMethodRepresentation &&
-               mdTarget is VirtualMethodRepresentation  )
-            {
-                if(md.OwnerType.IsSubClassOf( mdTarget.OwnerType, null ))
-                {
-                    int index       = md      .FindVirtualTableIndex();
-                    int indexTarget = mdTarget.FindVirtualTableIndex();
-
-                    if(index == indexTarget)
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
         }
     }
 }

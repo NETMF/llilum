@@ -7,38 +7,28 @@ namespace Microsoft.Zelig.CodeGeneration.IR.DataFlow.ControlTree
     using System;
     using System.Collections.Generic;
 
-    public class PostOrderVisit : GenericDepthFirst
+    public class BasicBlocksPostOrderVisit : PostOrderVisit< BasicBlock, ControlOperator >
     {
         //
         // State
         //
 
-        List< BasicBlock > m_basicBlocks;
-
         //
         // Constructor Methods
         //
 
-        private PostOrderVisit()
+        private BasicBlocksPostOrderVisit( ) : base( )
         {
-            m_basicBlocks = new List< BasicBlock >();
         }
 
         public static void Compute(     EntryBasicBlock entry       ,
-                                    out BasicBlock[]    basicBlocks )
+                                    out BasicBlock[ ]    basicBlocks )
         {
-            PostOrderVisit tree = new PostOrderVisit();
+            var tree = new BasicBlocksPostOrderVisit();
 
             tree.Visit( entry );
 
-            basicBlocks = tree.m_basicBlocks.ToArray();
-        }
-
-        //--//
-
-        protected override void ProcessAfter( BasicBlock bb )
-        {
-            m_basicBlocks.Add( bb );
+            basicBlocks = tree.m_nodes.ToArray();
         }
     }
 }

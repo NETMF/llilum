@@ -2,11 +2,11 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-namespace Microsoft.Zelig.CodeGeneration.IR
+namespace Microsoft.Zelig
 {
     using System;
 
-    public enum BasicBlockEdgeClass
+    public enum EdgeClass
     {
         Unknown    ,
         TreeEdge   ,

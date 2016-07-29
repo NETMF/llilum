@@ -6,7 +6,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 {
     using System;
 
-    public sealed class BasicBlockEdge
+    public sealed class BasicBlockEdge : ITreeEdge<ControlOperator>
     {
         public static readonly BasicBlockEdge[] SharedEmptyArray = new BasicBlockEdge[0];
 
@@ -14,9 +14,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         // State
         //
 
-        private readonly BasicBlock          m_predecessor;
-        private readonly BasicBlock          m_successor;
-        private          BasicBlockEdgeClass m_edgeClass;
+        private readonly BasicBlock m_predecessor;
+        private readonly BasicBlock m_successor;
+        private          EdgeClass  m_edgeClass;
 
         //
         // Constructor Methods
@@ -27,7 +27,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         {
             m_predecessor = predecessor;
             m_successor   = successor;
-            m_edgeClass   = BasicBlockEdgeClass.Unknown;
+            m_edgeClass   = EdgeClass.Unknown;
         }
 
         //--//
@@ -42,7 +42,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         // Access Methods
         //
 
-        public BasicBlock Predecessor
+        public ITreeNode<ControlOperator> Predecessor
         {
             get
             {
@@ -50,7 +50,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             }
         }
 
-        public BasicBlock Successor
+        public ITreeNode<ControlOperator> Successor
         {
             get
             {
@@ -58,7 +58,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             }
         }
 
-        public BasicBlockEdgeClass EdgeClass
+        public EdgeClass EdgeClass
         {
             get
             {

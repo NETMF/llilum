@@ -151,32 +151,32 @@ namespace Llvm.NET
     [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1028:EnumStorageShouldBeInt32" )]
     public enum Linkage : uint
     {
-        External = LLVMLinkage.LLVMExternalLinkage,    /*< Externally visible function */
+        External            = LLVMLinkage.LLVMExternalLinkage,                  /*< Externally visible function */
         AvailableExternally = LLVMLinkage.LLVMAvailableExternallyLinkage,
-        LinkOnceAny = LLVMLinkage.LLVMLinkOnceAnyLinkage, /*< Keep one copy of function when linking (inline)*/
-        LinkOnceODR = LLVMLinkage.LLVMLinkOnceODRLinkage, /*< Same, but only replaced by something equivalent. */
-        //LLVMLinkage.LLVMLinkOnceODRAutoHideLinkage, /**< Obsolete */
-        Weak = LLVMLinkage.LLVMWeakAnyLinkage,     /*< Keep one copy of function when linking (weak) */
-        WeakODR = LLVMLinkage.LLVMWeakODRLinkage,     /*< Same, but only replaced by something equivalent. */
-        Append = LLVMLinkage.LLVMAppendingLinkage,   /*< Special purpose, only applies to global arrays */
-        Internal = LLVMLinkage.LLVMInternalLinkage,    /*< Rename collisions when linking (static functions) */
-        Private = LLVMLinkage.LLVMPrivateLinkage,     /*< Like Internal, but omit from symbol table */
-        DllImport = LLVMLinkage.LLVMDLLImportLinkage,   /*< Function to be imported from DLL */
-        DllExport = LLVMLinkage.LLVMDLLExportLinkage,   /*< Function to be accessible from DLL */
-        ExternalWeak = LLVMLinkage.LLVMExternalWeakLinkage,/*< ExternalWeak linkage description */
-        //LLVMLinkage.LLVMGhostLinkage,       /*< Obsolete */
-        Common = LLVMLinkage.LLVMCommonLinkage,      /*< Tentative definitions */
-        LinkerPrivate = LLVMLinkage.LLVMLinkerPrivateLinkage, /*< Like Private, but linker removes. */
-        LinkerPrivateWeak = LLVMLinkage.LLVMLinkerPrivateWeakLinkage /*< Like LinkerPrivate, but is weak. */
+        LinkOnceAny         = LLVMLinkage.LLVMLinkOnceAnyLinkage,               /*< Keep one copy of function when linking (inline)*/
+        LinkOnceODR         = LLVMLinkage.LLVMLinkOnceODRLinkage,               /*< Same, but only replaced by something equivalent. */
+        //LLVMLinkage.LLVMLinkOnceODRAutoHideLinkage,                           /**< Obsolete */
+        Weak                = LLVMLinkage.LLVMWeakAnyLinkage,                   /*< Keep one copy of function when linking (weak) */
+        WeakODR             = LLVMLinkage.LLVMWeakODRLinkage,                   /*< Same, but only replaced by something equivalent. */
+        Append              = LLVMLinkage.LLVMAppendingLinkage,                 /*< Special purpose, only applies to global arrays */
+        Internal            = LLVMLinkage.LLVMInternalLinkage,                  /*< Rename collisions when linking (static functions) */
+        Private             = LLVMLinkage.LLVMPrivateLinkage,                   /*< Like Internal, but omit from symbol table */
+        DllImport           = LLVMLinkage.LLVMDLLImportLinkage,                 /*< Function to be imported from DLL */
+        DllExport           = LLVMLinkage.LLVMDLLExportLinkage,                 /*< Function to be accessible from DLL */
+        ExternalWeak        = LLVMLinkage.LLVMExternalWeakLinkage,              /*< ExternalWeak linkage description */
+        //LLVMLinkage.LLVMGhostLinkage,                                         /*< Obsolete */
+        Common              = LLVMLinkage.LLVMCommonLinkage,                    /*< Tentative definitions */
+        LinkerPrivate       = LLVMLinkage.LLVMLinkerPrivateLinkage,             /*< Like Private, but linker removes. */
+        LinkerPrivateWeak   = LLVMLinkage.LLVMLinkerPrivateWeakLinkage          /*< Like LinkerPrivate, but is weak. */
     }
 
     ///<summary>Enumeration for the visibility of a global value</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1028:EnumStorageShouldBeInt32" )]
     public enum Visibility : uint
     {
-        Default = LLVMVisibility.LLVMDefaultVisibility,  /*< The GV is visible */
-        Hidden = LLVMVisibility.LLVMHiddenVisibility,   /*< The GV is hidden */
-        Protected = LLVMVisibility.LLVMProtectedVisibility /*< The GV is protected */
+        Default = LLVMVisibility.LLVMDefaultVisibility,     /*< The GV is visible */
+        Hidden = LLVMVisibility.LLVMHiddenVisibility,       /*< The GV is hidden */
+        Protected = LLVMVisibility.LLVMProtectedVisibility  /*< The GV is protected */
     }
 
     /// <summary>Unified predicate enumeration</summary>
@@ -209,37 +209,37 @@ namespace Llvm.NET
         /// <summary>Any value Greater than or equal to this is not valid for Fcmp operations</summary>
         BadFcmpPredicate = LastFcmpPredicate + 1,
 
-        Equal = LLVMIntPredicate.LLVMIntEQ,
-        NotEqual = LLVMIntPredicate.LLVMIntNE,
-        UnsignedGreater = LLVMIntPredicate.LLVMIntUGT,
-        UnsignedGreaterOrEqual = LLVMIntPredicate.LLVMIntUGE,
-        UnsignedLess = LLVMIntPredicate.LLVMIntULT,
-        UnsignedLessOrEqual = LLVMIntPredicate.LLVMIntULE,
-        SignedGreater = LLVMIntPredicate.LLVMIntSGT,
-        SignedGreaterOrEqual = LLVMIntPredicate.LLVMIntSGE,
-        SignedLess = LLVMIntPredicate.LLVMIntSLT,
-        SignedLessOrEqual = LLVMIntPredicate.LLVMIntSLE,
-        FirstIcmpPredicate = Equal,
-        LastIcmpPredicate = SignedLessOrEqual,
+        Equal                   = LLVMIntPredicate.LLVMIntEQ,
+        NotEqual                = LLVMIntPredicate.LLVMIntNE,
+        UnsignedGreater         = LLVMIntPredicate.LLVMIntUGT,
+        UnsignedGreaterOrEqual  = LLVMIntPredicate.LLVMIntUGE,
+        UnsignedLess            = LLVMIntPredicate.LLVMIntULT,
+        UnsignedLessOrEqual     = LLVMIntPredicate.LLVMIntULE,
+        SignedGreater           = LLVMIntPredicate.LLVMIntSGT,
+        SignedGreaterOrEqual    = LLVMIntPredicate.LLVMIntSGE,
+        SignedLess              = LLVMIntPredicate.LLVMIntSLT,
+        SignedLessOrEqual       = LLVMIntPredicate.LLVMIntSLE,
+        FirstIcmpPredicate      = Equal,
+        LastIcmpPredicate       = SignedLessOrEqual,
         /// <summary>Any value Greater than or equal to this is not valid for Icmp operations</summary>
-        BadIcmpPredicate = LastIcmpPredicate + 1
+        BadIcmpPredicate        = LastIcmpPredicate + 1
     }
 
     ///<summary>Predicate enumeration for integer comparison</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1028:EnumStorageShouldBeInt32" )]
     public enum IntPredicate : uint
     {
-        False = LLVMRealPredicate.LLVMRealPredicateFalse,
-        Equal = LLVMIntPredicate.LLVMIntEQ,
-        NotEqual = LLVMIntPredicate.LLVMIntNE,
-        UnsignedGreater = LLVMIntPredicate.LLVMIntUGT,
-        UnsignedGreaterOrEqual = LLVMIntPredicate.LLVMIntUGE,
-        UnsignedLess = LLVMIntPredicate.LLVMIntULT,
-        UnsignedLessOrEqual = LLVMIntPredicate.LLVMIntULE,
-        SignedGreater = LLVMIntPredicate.LLVMIntSGT,
-        SignedGreaterOrEqual = LLVMIntPredicate.LLVMIntSGE,
-        SignedLess = LLVMIntPredicate.LLVMIntSLT,
-        SignedLessOrEqual = LLVMIntPredicate.LLVMIntSLE
+        False                   = LLVMRealPredicate.LLVMRealPredicateFalse,
+        Equal                   = LLVMIntPredicate.LLVMIntEQ,
+        NotEqual                = LLVMIntPredicate.LLVMIntNE,
+        UnsignedGreater         = LLVMIntPredicate.LLVMIntUGT,
+        UnsignedGreaterOrEqual  = LLVMIntPredicate.LLVMIntUGE,
+        UnsignedLess            = LLVMIntPredicate.LLVMIntULT,
+        UnsignedLessOrEqual     = LLVMIntPredicate.LLVMIntULE,
+        SignedGreater           = LLVMIntPredicate.LLVMIntSGT,
+        SignedGreaterOrEqual    = LLVMIntPredicate.LLVMIntSGE,
+        SignedLess              = LLVMIntPredicate.LLVMIntSLT,
+        SignedLessOrEqual       = LLVMIntPredicate.LLVMIntSLE
     }
 
     ///<summary>Predicate enumeration for integer comparison</summary>

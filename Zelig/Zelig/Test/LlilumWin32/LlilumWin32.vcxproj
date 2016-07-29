@@ -56,12 +56,16 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(LLILUM_ROOT)\Zelig\os_layer\inc;$(LLILUM_ROOT)\Zelig\os_layer\inc\api;$(LLILUM_ROOT)\Zelig\os_layer\inc\api\io;$(LLILUM_ROOT)\Zelig\os_layer\inc\debug;$(LLILUM_ROOT)\Zelig\os_layer\inc\hal</AdditionalIncludeDirectories>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>$(LLILUM_ROOT)Zelig\Zelig\$(Configuration)\Win32Abstraction.lib;$(LLILUM_ROOT)\Zelig\LLVM2IR_results\mbed\simple\Microsoft.Zelig.Test.mbed.Simple_opt.o;Synchronization.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

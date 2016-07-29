@@ -89,11 +89,11 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
 
                                 BasicBlock bbNext = ehBB.FirstSuccessor;
 
-                                foreach (BasicBlockEdge edge in ehBB.Predecessors)
+                                foreach (BasicBlockEdge edge in (BasicBlockEdge[])ehBB.Predecessors)
                                 {
                                     ExceptionHandlerBasicBlock ehBBNew = (ExceptionHandlerBasicBlock)CloneSingleBasicBlock.Execute(ehBB);
 
-                                    edge.Predecessor.SubstituteProtectedBy(ehBB, ehBBNew);
+                                    ((BasicBlock)edge.Predecessor).SubstituteProtectedBy(ehBB, ehBBNew);
                                 }
 
                                 fDone = false;

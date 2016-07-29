@@ -52,6 +52,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Annotations\Annotation.cs" />
+    <Compile Include="Annotations\ExecutesWithInterruptsDisabled.cs" />
+    <Compile Include="Annotations\DoesNotAllocate.cs" />
     <Compile Include="Annotations\ArrayLengthAnnotation.cs" />
     <Compile Include="Annotations\BlockCopyPropagationAnnotation.cs" />
     <Compile Include="Annotations\DontRemoveAnnotation.cs" />
@@ -65,7 +67,6 @@
     <Compile Include="Annotations\NotNullAnnotation.cs" />
     <Compile Include="BasicBlocks\BasicBlock.cs" />
     <Compile Include="BasicBlocks\BasicBlockEdge.cs" />
-    <Compile Include="BasicBlocks\BasicBlockEdgeClass.cs" />
     <Compile Include="BasicBlocks\Cloning\CloneForwardGraph.cs" />
     <Compile Include="BasicBlocks\Cloning\CloneForwardGraphButLinkToExceptionHandlers.cs" />
     <Compile Include="BasicBlocks\Cloning\CloneSingleBasicBlock.cs" />

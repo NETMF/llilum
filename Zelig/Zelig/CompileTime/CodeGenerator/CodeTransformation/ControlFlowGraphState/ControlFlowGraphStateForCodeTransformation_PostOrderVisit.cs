@@ -8,7 +8,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
     using System.Collections.Generic;
 
     using Microsoft.Zelig.Runtime.TypeSystem;
-
+    using Microsoft.Zelig.CodeGeneration.IR.DataFlow.ControlTree;
 
     public partial class ControlFlowGraphStateForCodeTransformation
     {
@@ -32,7 +32,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 {
                     cfg.UpdateFlowInformation();
 
-                    DataFlow.ControlTree.PostOrderVisit.Compute( cfg.m_entryBasicBlock, out m_basicBlocks );
+                    BasicBlocksPostOrderVisit.Compute( cfg.m_entryBasicBlock, out m_basicBlocks ); 
                 }
             }
         }

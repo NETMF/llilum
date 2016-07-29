@@ -20,7 +20,6 @@
     </None>
     <None Include="LlvmApplication.props" />
     <None Include="BuildLlvmWithVS.cmd" />
-    <None Include="LlvmApplication.targets" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InlinedExports.cpp">

@@ -2,7 +2,7 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-namespace Microsoft.Zelig.CodeGeneration.IR.DataFlow.ControlTree
+namespace Microsoft.Zelig
 {
     using System;
     using System.Collections.Generic;
@@ -13,23 +13,25 @@ namespace Microsoft.Zelig.CodeGeneration.IR.DataFlow.ControlTree
     // Basically, every exception handler that does not return execution to the method is an exit block.
     // So they must be treated as if they are actual exit blocks.
     //
-    public class PostDominance
+    public class PostDominance<N, E, FC>
+        where N : class, ITreeNode<FC>
+        where E : class, ITreeEdge<FC>
     {
         //
         // State
         //
 
-        BasicBlock[] m_basicBlocks;
-        BitVector[]  m_postDominance;
-        BasicBlock[] m_immediatePostDominators;
+        private readonly N[ ]        m_nodes;
+        private          N[ ]        m_immediatePostDominators;
+        private          BitVector[] m_postDominance;
 
         //
         // Constructor Methods
         //
 
-        public PostDominance( ControlFlowGraphStateForCodeTransformation cfg )
+        public PostDominance( N[ ] nodes )
         {
-            m_basicBlocks = cfg.DataFlow_SpanningTree_BasicBlocks;
+            m_nodes = nodes;
         }
 
         //
@@ -38,7 +40,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.DataFlow.ControlTree
 
         private void ComputePostDominators()
         {
-            int       len = m_basicBlocks.Length;
+            int       len = m_nodes.Length;
             BitVector t   = new BitVector( len );
 
             m_postDominance = new BitVector[len];
@@ -47,7 +49,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.DataFlow.ControlTree
             {
                 BitVector bv = new BitVector( len );
 
-                if(m_basicBlocks[i].Successors.Length == 0)
+                if(m_nodes[i].Successors.Length == 0)
                 {
                     //
                     // A basic block with no successors is postdominated just by itself.
@@ -68,13 +70,13 @@ namespace Microsoft.Zelig.CodeGeneration.IR.DataFlow.ControlTree
 
                 for(int i = 0; i < len; i++)
                 {
-                    BasicBlockEdge[] edges = m_basicBlocks[i].Successors;
+                    var edges = m_nodes[i].Successors;
 
                     if(edges.Length != 0)
                     {
                         t.SetRange( 0, len );
 
-                        foreach(BasicBlockEdge edge in edges)
+                        foreach(var edge in edges)
                         {
                             t.AndInPlace( m_postDominance[edge.Successor.SpanningTreeIndex] );
                         }
@@ -96,7 +98,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.DataFlow.ControlTree
 
         private void ComputeImmediatePostDominators()
         {
-            int         len = m_basicBlocks.Length;
+            int         len = m_nodes.Length;
             BitVector[] tmp = BitVector.AllocateBitVectors( len, len );
 
             for(int n = 0; n < len; n++)
@@ -138,7 +140,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.DataFlow.ControlTree
                 }
             }
 
-            m_immediatePostDominators = new BasicBlock[len];
+            m_immediatePostDominators = new N[len];
 
             for(int n = 0; n < len; n++)
             {
@@ -148,7 +150,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.DataFlow.ControlTree
                 {
                     CHECKS.ASSERT( fGot == false, "Internal failure, found more than one immediate post dominators" );
 
-                    m_immediatePostDominators[n] = m_basicBlocks[idom];
+                    m_immediatePostDominators[n] = m_nodes[idom];
 
                     fGot = true;
                 }
@@ -169,7 +171,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.DataFlow.ControlTree
             return m_postDominance;
         }
 
-        public BasicBlock[] GetImmediatePostDominators()
+        public N[] GetImmediatePostDominators()
         {
             if(m_immediatePostDominators == null)
             {

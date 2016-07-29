@@ -329,7 +329,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                                 opCtrl = BinaryConditionalControlOperator.New( op.DebugInfo, op.FirstArgument, op.TargetBranchNotTaken, op.TargetBranchTaken );
                             }
 
-                            def.BasicBlock.FlowControl.SubstituteWithOperator( opCtrl, Operator.SubstitutionFlags.Default );
+                            ((Operator)def.BasicBlock.FlowControl).SubstituteWithOperator( opCtrl, Operator.SubstitutionFlags.Default );
                             fChanged = true;
                         }
                     }

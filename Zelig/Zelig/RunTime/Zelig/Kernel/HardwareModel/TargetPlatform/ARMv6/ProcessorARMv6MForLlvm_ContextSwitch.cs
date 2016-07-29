@@ -580,7 +580,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
             }
             
             [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv6M)]
-            [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
+            [RT.HardwareExceptionHandler( RT.HardwareException.PendSV )]
             [RT.ExportedMethod]
             private static UIntPtr PendSV_Handler_Zelig( UIntPtr stackPtr )
             {

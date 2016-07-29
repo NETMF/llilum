@@ -7,7 +7,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
     using System;
     using System.Collections.Generic;
 
-    public sealed class EntryBasicBlock : BasicBlock
+    public sealed class EntryBasicBlock : BasicBlock, IEntryTreeNode<ControlOperator>
     {
         //
         // Constructor Methods

@@ -215,7 +215,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
 
             foreach(BasicBlockEdge edge in bb.Successors)
             {
-                BasicBlock succ = edge.Successor;
+                BasicBlock succ = (BasicBlock)edge.Successor;
 
                 if(succ is ExceptionHandlerBasicBlock)
                 {
@@ -235,7 +235,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
         {
             foreach(BasicBlockEdge edge in bb.Predecessors)
             {
-                BasicBlock           pred = edge.Predecessor;
+                BasicBlock           pred = (BasicBlock)edge.Predecessor;
                 LeaveControlOperator ctrl = pred.FlowControl as LeaveControlOperator;
 
                 if(ctrl != null)

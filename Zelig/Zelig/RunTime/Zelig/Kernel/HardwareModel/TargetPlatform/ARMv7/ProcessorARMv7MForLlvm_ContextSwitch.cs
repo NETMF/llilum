@@ -577,7 +577,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             }
             
             [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_VFP__SoftVFP )]
-            [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
+            [RT.HardwareExceptionHandler( RT.HardwareException.PendSV )]
             [RT.ExportedMethod]
             private static UIntPtr PendSV_Handler_Zelig( UIntPtr stackPtr )
             {
@@ -598,6 +598,14 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             {
                 using(RT.SmartHandles.InterruptState.Disable( ))
                 {
+                    Peripherals.Instance.ProcessInterrupt( );
+
+                    ThreadManager tm = ThreadManager.Instance;
+
+                    //
+                    // We keep looping until the current and next threads are the same,
+                    // because when swapping out a dead thread, we might wake up a different thread.
+                    //
                     InterruptHandlerWithContextSwitch( stackPtr );
                 }
             }

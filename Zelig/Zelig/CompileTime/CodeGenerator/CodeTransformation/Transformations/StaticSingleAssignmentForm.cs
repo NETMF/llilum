@@ -480,7 +480,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
             internal BasicBlockState( BasicBlock bb )
             {
                 m_bb         = bb;
-                m_successors = bb.Successors;
+                m_successors = (BasicBlockEdge[])bb.Successors;
             }
         }
 
@@ -629,7 +629,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
             {
                 foreach(BasicBlockEdge edge in bbs.m_successors)
                 {
-                    BasicBlock bbNext = edge.Successor;
+                    BasicBlock bbNext = (BasicBlock)edge.Successor;
 
                     foreach(Operator op in bbNext.Operators)
                     {

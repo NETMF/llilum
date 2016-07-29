@@ -54,7 +54,11 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(LLILUM_ROOT)\Zelig\os_layer\inc;$(LLILUM_ROOT)\Zelig\os_layer\inc\api;$(LLILUM_ROOT)\Zelig\os_layer\inc\api\io;$(LLILUM_ROOT)\Zelig\os_layer\inc\debug;$(LLILUM_ROOT)\Zelig\os_layer\inc\hal</AdditionalIncludeDirectories>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

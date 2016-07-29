@@ -55,9 +55,17 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="GraphAlgorithms\Dominance.cs" />
+    <Compile Include="GraphAlgorithms\EdgeClass.cs" />
+    <Compile Include="GraphAlgorithms\GenericDepthFirst.cs" />
+    <Compile Include="GraphAlgorithms\IEntryTreeNode.cs" />
+    <Compile Include="GraphAlgorithms\ITreeEdge.cs" />
+    <Compile Include="GraphAlgorithms\IDeadBranch.cs" />
+    <Compile Include="GraphAlgorithms\ITreeNode.cs" />
     <Compile Include="Attributes\CallQualifiers\ActivationRecordEvents.cs" />
     <Compile Include="Attributes\CallQualifiers\BottomOfCallStackAttribute.cs" />
     <Compile Include="Attributes\CallQualifiers\CanAllocateOnReturnAttribute.cs" />
+    <Compile Include="Attributes\CallQualifiers\ChangesInterruptState.cs" />
     <Compile Include="Attributes\CallQualifiers\CannotAllocateAttribute.cs" />
     <Compile Include="Attributes\CallQualifiers\DebuggerHookHandlerAttribute.cs" />
     <Compile Include="Attributes\CallQualifiers\DisableBoundsChecksAttribute.cs" />
@@ -154,6 +162,9 @@
     <Compile Include="Exceptions\IncorrectEncodingException.cs" />
     <Compile Include="Exceptions\NotSupportedException.cs" />
     <Compile Include="Exceptions\TypeConsistencyErrorException.cs" />
+    <Compile Include="GraphAlgorithms\PostDominance.cs" />
+    <Compile Include="GraphAlgorithms\PostOrderVisit.cs" />
+    <Compile Include="GraphAlgorithms\SpanningTree.cs" />
     <Compile Include="Helpers\AddressMath.cs" />
     <Compile Include="Helpers\ArrayUtility.cs" />
     <Compile Include="Helpers\HashTableWithSetFactory.cs" />

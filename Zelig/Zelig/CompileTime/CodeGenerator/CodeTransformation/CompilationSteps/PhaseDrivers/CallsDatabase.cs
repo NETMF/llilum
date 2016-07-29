@@ -112,7 +112,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
 
                             foreach(var edge in bb.Successors)
                             {
-                                var bbNext = edge.Successor;
+                                var bbNext = (BasicBlock)edge.Successor;
 
                                 if(bbNext != bbEnd && set.Insert( bbNext ) == false)
                                 {

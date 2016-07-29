@@ -448,14 +448,16 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
         {
             Breakpoint( 0xa5a5a5a5 ); 
         }
-        
+
         //--//--//
 
+        [ChangesInterruptState( true )]
         public static uint EnableInterrupts( )
         {
             return SetPriMaskRegister( c_PRIMASK__InterruptsOn );
         }
-        
+
+        [ChangesInterruptState( false )]
         public static uint DisableInterrupts( )
         {
             return SetPriMaskRegister( c_PRIMASK__InterruptsOff );

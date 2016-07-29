@@ -33,9 +33,14 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
             this.TypeSystem.LayoutTypes( this.TypeSystem.PlatformAbstraction.MemoryAlignment );
 
             this.TypeSystem.DataManagerInstance.RefreshValues( this );
-            
-            this.TypeSystem.FlattenCallsDatabase( this.CallsDataBase.Analyze( this.TypeSystem ), fCallsTo: true  );
-            this.TypeSystem.FlattenCallsDatabase( this.CallsDataBase.Analyze( this.TypeSystem ), fCallsTo: false );
+
+            var callsDb = this.CallsDataBase.Analyze( this.TypeSystem );
+
+            this.TypeSystem.FlattenCallsDatabase( callsDb, fCallsTo: true  );
+            this.TypeSystem.FlattenCallsDatabase( callsDb, fCallsTo: false );
+
+            this.TypeSystem.AnnotateThreadSafeMethods  ( callsDb );
+            this.TypeSystem.AnnotateNoAllocationMethods( callsDb );
 
             return this.NextPhase;
         }

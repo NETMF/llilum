@@ -173,14 +173,14 @@ namespace Microsoft.Zelig.Tools.IRCompare
                 }
             }
 
-            foreach(IR.BasicBlockEdge edge in bb.Predecessors)
+            foreach(IR.BasicBlockEdge edge in (IR.BasicBlockEdge[])bb.Predecessors)
             {
-                WriteLine( ".edge {0} from {1}", edge.EdgeClass, CreateLabel( edge.Predecessor ) );
+                WriteLine( ".edge {0} from {1}", edge.EdgeClass, CreateLabel( (IR.BasicBlock)edge.Predecessor ) );
             }
 
             foreach(IR.BasicBlockEdge edge in bb.Successors)
             {
-                WriteLine( ".edge {0} to {1}", edge.EdgeClass, CreateLabel( edge.Successor ) );
+                WriteLine( ".edge {0} to {1}", edge.EdgeClass, CreateLabel( (IR.BasicBlock)edge.Successor ) );
             }
 
             GrowOnlySet< IR.Expression > used = SetFactory.NewWithReferenceEquality< IR.Expression >();

@@ -157,6 +157,7 @@
     <Compile Include="ControlFlowGraphState\ControlFlowGraphStateForCodeTransformation_SpanningTree.cs" />
     <Compile Include="ControlFlowGraphState\ControlFlowGraphStateForCodeTransformation_Trace.cs" />
     <Compile Include="ControlFlowGraphState\ControlFlowGraphStateForCodeTransformation_UseDefinitionChains.cs" />
+    <Compile Include="DataFlow\ControlTree\PostOrderVisit.cs" />
     <Compile Include="ExternalDataDescriptor.cs" />
     <Compile Include="ExternalMethodImporters\ArmElfContext.cs" />
     <Compile Include="ExternalMethodImporters\ArmElfDataContext.cs" />
@@ -182,12 +183,8 @@
     <Compile Include="Operators\BinaryOperatorWithCarryInAndOut.cs" />
     <Compile Include="Operators\UnaryOperatorWithCarryOut.cs" />
     <Compile Include="SourceCodeTracker.cs" />
-    <Compile Include="DataFlow\ControlTree\Dominance.cs" />
-    <Compile Include="DataFlow\ControlTree\GenericDepthFirst.cs" />
     <Compile Include="DataFlow\ControlTree\NaturalLoops.cs" />
-    <Compile Include="DataFlow\ControlTree\PostDominance.cs" />
-    <Compile Include="DataFlow\ControlTree\PostOrderVisit.cs" />
-    <Compile Include="DataFlow\ControlTree\SpanningTree.cs" />
+    <Compile Include="DataFlow\ControlTree\BasicBlocksSpanningTree.cs" />
     <Compile Include="DataFlow\LivenessAnalysis.cs" />
     <Compile Include="DataFlow\ReachingDefinitions.cs" />
     <Compile Include="DataManager.cs" />

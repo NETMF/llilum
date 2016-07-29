@@ -670,6 +670,14 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
         //--//
 
+        [CompilationSteps.CustomAttributeNotification( "Microsoft_Zelig_Runtime_ChangesInterruptState" )]
+        private void Notify_ChangesInterruptState( ref bool fKeep                      ,
+                                                       CustomAttributeRepresentation ca,
+                                                       MethodRepresentation owner      )
+        {
+            m_interruptStateHandlers[ owner ] = ca;
+        }
+
         [CompilationSteps.CustomAttributeNotification( "Microsoft_Zelig_Runtime_HardwareExceptionHandlerAttribute" )]
         private void Notify_HardwareExceptionHandlerAttribute( ref bool                          fKeep ,
                                                                    CustomAttributeRepresentation ca    ,

@@ -20,10 +20,9 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
     using Microsoft.Zelig.MetaData;
     using Microsoft.Zelig.MetaData.Normalized;
-
     using Microsoft.Zelig.Runtime.TypeSystem;
-
     using Microsoft.Zelig.LLVM;
+
 
     public delegate void ControlFlowGraphEnumerationCallback( ControlFlowGraphStateForCodeTransformation cfg );
 
@@ -595,6 +594,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
         private GrowOnlySet         < Annotation                                                            > m_uniqueAnnotations;
 
         private GrowOnlyHashTable   < BaseRepresentation  , Abstractions.PlacementRequirements              > m_placementRequirements;
+        private GrowOnlyHashTable   < MethodRepresentation, CustomAttributeRepresentation                   > m_interruptStateHandlers; 
         private GrowOnlyHashTable   < MethodRepresentation, CustomAttributeRepresentation                   > m_hardwareExceptionHandlers;
         private GrowOnlyHashTable   < MethodRepresentation, CustomAttributeRepresentation                   > m_debuggerHookHandlers;
         private GrowOnlyHashTable   < MethodRepresentation, CustomAttributeRepresentation                   > m_singletonFactories;
@@ -651,6 +651,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
 
             m_placementRequirements                 = HashTableFactory.New<BaseRepresentation, Abstractions.PlacementRequirements>( );
+            m_interruptStateHandlers                = HashTableFactory.New<MethodRepresentation, CustomAttributeRepresentation>( );
             m_hardwareExceptionHandlers             = HashTableFactory.New<MethodRepresentation, CustomAttributeRepresentation>( );
             m_debuggerHookHandlers                  = HashTableFactory.New<MethodRepresentation, CustomAttributeRepresentation>( );
             m_singletonFactories                    = HashTableFactory.New<MethodRepresentation, CustomAttributeRepresentation>( );
@@ -1297,24 +1298,24 @@ namespace Microsoft.Zelig.CodeGeneration.IR
 
             //--//
 
-            ReduceHashTable( ref m_globalRootMap, reachability, true, true, fApply );
-            ReduceHashTable( ref m_lookupType, reachability, false, true, fApply );
-            ReduceSet( ref m_uniqueAnnotations, reachability, fApply );
+            ReduceHashTable( ref m_globalRootMap    , reachability, true , true, fApply );
+            ReduceHashTable( ref m_lookupType       , reachability, false, true, fApply );
+            ReduceSet      ( ref m_uniqueAnnotations, reachability             , fApply );
 
-            ReduceHashTable( ref m_placementRequirements, reachability, true, false, fApply );
-            ReduceHashTable( ref m_hardwareExceptionHandlers, reachability, true, false, fApply );
-            ReduceHashTable( ref m_debuggerHookHandlers, reachability, true, false, fApply );
-            ReduceHashTable( ref m_singletonFactories, reachability, true, true, fApply );
+            ReduceHashTable( ref m_placementRequirements     , reachability, true, false, fApply );
+            ReduceHashTable( ref m_hardwareExceptionHandlers , reachability, true, false, fApply );
+            ReduceHashTable( ref m_debuggerHookHandlers      , reachability, true, false, fApply );
+            ReduceHashTable( ref m_singletonFactories        , reachability, true, true, fApply );
             ReduceHashTable( ref m_singletonFactoriesFallback, reachability, true, true, fApply );
 
             ReduceHashTable( ref m_garbageCollectionExtensions, reachability, true, false, fApply );
-            ReduceSet( ref m_garbageCollectionExclusions, reachability, fApply );
+            ReduceSet      ( ref m_garbageCollectionExclusions, reachability             , fApply );
 
             ReduceHashTable( ref m_memoryMappedPeripherals, reachability, true, false, fApply );
-            ReduceHashTable( ref m_registerAttributes, reachability, true, false, fApply );
+            ReduceHashTable( ref m_registerAttributes     , reachability, true, false, fApply );
 
             ReduceHashTable( ref m_memoryMappedBitFieldPeripherals, reachability, true, false, fApply );
-            ReduceHashTable( ref m_bitFieldRegisterAttributes, reachability, true, false, fApply );
+            ReduceHashTable( ref m_bitFieldRegisterAttributes     , reachability, true, false, fApply );
 
             //--//
 
@@ -1412,6 +1413,27 @@ namespace Microsoft.Zelig.CodeGeneration.IR
                 }
             } );
         }
+
+        internal void AnnotateNoAllocationMethods( CompilationSteps.CallsDataBase callsDb )
+        {
+            GrowOnlySet<MethodRepresentation> mdAllocators = SetFactory.NewWithReferenceEquality<MethodRepresentation>(); 
+
+            mdAllocators.Insert( WellKnownMethods.TypeSystemManager_AllocateObject );
+            mdAllocators.Insert( WellKnownMethods.TypeSystemManager_AllocateReferenceCountingObject );
+            mdAllocators.Insert( WellKnownMethods.TypeSystemManager_AllocateObjectWithExtensions );
+            mdAllocators.Insert( WellKnownMethods.TypeSystemManager_AllocateReferenceCountingArray );
+            mdAllocators.Insert( WellKnownMethods.TypeSystemManager_AllocateArrayNoClear );
+            mdAllocators.Insert( WellKnownMethods.TypeSystemManager_AllocateString );
+
+            return;
+        }
+
+        internal void AnnotateThreadSafeMethods( CompilationSteps.CallsDataBase callsDb )
+        {
+
+
+        }
+        
 
         //--//
 
@@ -1597,6 +1619,13 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             }
         }
 
+        public GrowOnlyHashTable<MethodRepresentation, CustomAttributeRepresentation> InterruptStateHandlers
+        {
+            get
+            {
+                return m_interruptStateHandlers;
+            }
+        }
         public GrowOnlyHashTable<MethodRepresentation, CustomAttributeRepresentation> HardwareExceptionHandlers
         {
             get

@@ -439,11 +439,13 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
         //--//
 
+        [ChangesInterruptState( true )]
         public static uint EnableInterrupts( )
         {
             return DisableInterruptsWithPriorityLevelLowerOrEqualTo( c_Priority__Lowest );
         }
 
+        [ChangesInterruptState( false )]
         public static uint DisableInterrupts( )
         {
             return DisableInterruptsWithPriorityLevelLowerOrEqualTo( c_Priority__Highest );
