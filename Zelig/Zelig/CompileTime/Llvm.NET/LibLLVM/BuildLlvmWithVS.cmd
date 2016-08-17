@@ -14,7 +14,7 @@ set LLVM_ROOT=%~d0%~p0
 set GENERATE=1
 set BUILD=1
 set REGISTER=1
-set LlvmVersion=3.8.0
+set LlvmVersion=3.8.1
 
 @REM - Allow overriding default version and disabling any of the stages via parameters
 :arg_loop

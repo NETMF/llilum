@@ -9,7 +9,7 @@
         -->
     <LlvmVersionMajor Condition="'$(LlvmVersionMajor)'==''">3</LlvmVersionMajor>
     <llvmVersionMinor Condition="'$(llvmVersionMinor)'==''">8</llvmVersionMinor>
-    <LlvmVersionBuild Condition="'$(LlvmVersionBuild)'==''">0</LlvmVersionBuild>
+    <LlvmVersionBuild Condition="'$(LlvmVersionBuild)'==''">1</LlvmVersionBuild>
     <LLVM_VERSION Condition="'$(LLVM_VERSION)'==''">$(LlvmVersionMajor).$(llvmVersionMinor).$(LlvmVersionBuild)</LLVM_VERSION>
     <!-- Source ROOT Dir contains the full source of LLVM. To support both developer and automated build service
              scenarios try user registry, then HKLM-64 and HKLM-32 in that order
