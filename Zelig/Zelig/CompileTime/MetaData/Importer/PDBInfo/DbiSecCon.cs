@@ -37,10 +37,10 @@ namespace Microsoft.Zelig.MetaData.Importer.PdbInfo.Features
             dataCrc  = bits.ReadUInt32();
             relocCrc = bits.ReadUInt32();
 
-            if(pad1 != 0 || pad2 != 0)
-            {
-                throw new PdbException( "pad1 or pad2 != 0" );
-            }
+            //if(pad1 != 0 || pad2 != 0)
+            //{
+            //    throw new PdbException( "pad1 or pad2 != 0" );
+            //}
         }
     }
 }
