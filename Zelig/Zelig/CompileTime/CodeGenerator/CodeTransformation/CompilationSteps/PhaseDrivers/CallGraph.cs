@@ -14,6 +14,131 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
 
     public sealed class CallGraph
     {
+        class MethodRepresentationNode : ITreeNode<ControlOperator>
+        {
+            private readonly MethodRepresentation m_method;
+            
+            //--//
+
+            internal MethodRepresentationNode( MethodRepresentation md )
+            {
+                m_method = md;
+            }
+
+            internal MethodRepresentation Method
+            {
+                get
+                {
+                    return m_method;
+                }
+            }
+
+            public ITreeEdge<ControlOperator>[ ] Predecessors
+            {
+                get
+                {
+                    throw new NotImplementedException( );
+                }
+            }
+
+            public int SpanningTreeIndex
+            {
+                get
+                {
+                    throw new NotImplementedException( );
+                }
+
+                set
+                {
+                    throw new NotImplementedException( );
+                }
+            }
+
+            public ITreeEdge<ControlOperator>[ ] Successors
+            {
+                get
+                {
+                    throw new NotImplementedException( );
+                }
+            }
+
+            public ControlOperator FlowControl
+            {
+                get
+                {
+                    throw new NotImplementedException( );
+                }
+            }
+        }
+
+        class CallGraphSpanningTree : SpanningTree<MethodRepresentationNode, ControlOperator> 
+        {
+            //
+            // State
+            //
+
+            CallGraph        m_callGraph;
+            List< Operator > m_operators;
+
+            //
+            // Constructor Methods
+            //
+
+            private CallGraphSpanningTree( CallGraph callGraph, MethodRepresentation entry ) : base( )
+            {
+                m_callGraph = callGraph;
+                m_operators = new List<Operator>( );
+
+                var mre = new MethodRepresentationNode( entry ); 
+
+                Visit( mre );
+            }
+            
+            //--//
+
+            protected override void ProcessBefore( ITreeNode<ControlOperator> node )
+            {
+                var mdn = (MethodRepresentationNode)node;
+
+                mdn.SpanningTreeIndex = m_nodes.Count; m_nodes.Add( mdn );
+
+                var bb1 = node as BasicBlock;
+
+                foreach(Operator op in bb1.Operators)
+                {
+                    op.SpanningTreeIndex = m_operators.Count; m_operators.Add( op );
+
+                    foreach(var an in op.FilterAnnotations<InvalidationAnnotation>( ))
+                    {
+                        //AddExpression( an.Target );
+                    }
+
+                    foreach(var ex in op.Results)
+                    {
+                        //AddExpression( ex );
+                    }
+
+                    foreach(var ex in op.Arguments)
+                    {
+                        //AddExpression( ex );
+                    }
+                }
+            }
+
+            internal static void Compute(    CallGraph            callGraph, 
+                                             MethodRepresentation entry, 
+                                         out Operator[ ]          operators )
+            {
+                var tree = new CallGraphSpanningTree( callGraph, entry );
+                
+                operators = tree.m_operators.ToArray( );
+            }
+        }
+
+        //--//
+        //--//
+        //--//
+
         public delegate bool ShouldIncludeInClosureDelegate( MethodRepresentation md );
 
         //
@@ -25,6 +150,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
         private GrowOnlyHashTable< MethodRepresentation, List< MethodRepresentation > > m_methods;
         private GrowOnlyHashTable< MethodRepresentation, List< MethodRepresentation > > m_methodsThatRequireStaticConstructors;
         private GrowOnlySet      < MethodRepresentation                               > m_methodsUsedInDelegates;
+        //////private Operator[]                                                              m_operators;
 
         //
         // Constructor Methods
@@ -103,6 +229,10 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
             {
                 Analyze( md );
             } );
+            
+            //////CallGraphSpanningTree.Compute(  this, 
+            //////                                typeSystem.GetWellKnownMethod( "Bootstrap_Initialization" ),
+            //////                                out m_operators );
         }
 
         //
