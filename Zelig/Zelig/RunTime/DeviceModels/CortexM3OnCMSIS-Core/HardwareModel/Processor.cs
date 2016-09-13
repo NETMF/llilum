@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+
 namespace Microsoft.CortexM3OnCMSISCore
 {
     using System;
@@ -13,7 +14,7 @@ namespace Microsoft.CortexM3OnCMSISCore
 
     public abstract class Processor : ChipsetModel.Processor
     {
-        public abstract new class Context : RT.TargetPlatform.ARMv7.ProcessorARMv7M.Context
+        public abstract new class Context : RT.TargetPlatform.ARMv7.ProcessorARMv7MForLlvm.Context
         {
             //
             // Constructor Methods

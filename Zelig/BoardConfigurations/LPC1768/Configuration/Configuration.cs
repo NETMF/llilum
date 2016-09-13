@@ -104,8 +104,8 @@ namespace Microsoft.Llilum.BoardConfigurations
     //--//
 
     [DisplayName("LLVM Compilation for LPC1768")]
-    [Defaults("Platform", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV7M))]
-    [Defaults("CallingConvention", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV7MCallingConvention))]
+    [Defaults("Platform", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.LlvmForArmV7M))]
+    [Defaults("CallingConvention", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.LlvmForArmV7MCallingConvention))]
     [Defaults("Product", typeof(LPC1768))]
     [Defaults("MemoryMap", typeof(LPC1768MemoryMap))]
     public sealed class LPC1768MBEDCompilationSetup : CompilationSetupCategory

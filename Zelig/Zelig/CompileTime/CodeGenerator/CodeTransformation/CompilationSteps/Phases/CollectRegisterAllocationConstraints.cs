@@ -11,7 +11,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
     using Microsoft.Zelig.Runtime.TypeSystem;
 
 
-    [PhaseDisabled()]
+    //[PhaseDisabled()]
     [PhaseOrdering( ExecuteAfter=typeof(PrepareForRegisterAllocation) )]
     public sealed class CollectRegisterAllocationConstraints : PhaseDriver
     {

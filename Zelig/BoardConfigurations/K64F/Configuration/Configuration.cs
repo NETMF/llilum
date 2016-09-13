@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+
 namespace Microsoft.Llilum.BoardConfigurations
 {
     using Microsoft.Zelig.Runtime;
@@ -101,10 +102,9 @@ namespace Microsoft.Llilum.BoardConfigurations
     //--//
     //--//
     //--//
-
     [DisplayName("LLVM Compilation for K64F")]
-    [Defaults("Platform", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV7M_VFP))]
-    [Defaults("CallingConvention", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV7MCallingConvention))]
+    [Defaults( "Platform", typeof( Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.LlvmForArmV7M_VFP ) )]
+    [Defaults( "CallingConvention", typeof( Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.LlvmForArmV7MCallingConvention ) )]
     [Defaults("Product", typeof(K64F))]
     [Defaults("MemoryMap", typeof(K64FMemoryMap))]
     public sealed class K64FMBEDCompilationSetup : CompilationSetupCategory

@@ -22,8 +22,8 @@ namespace Microsoft.Llilum.BoardConfigurations
     }
 
     [DisplayName("LLVM Compilation for Win32")]
-    [Defaults("Platform", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.Win32Arch))]
-    [Defaults("CallingConvention", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV7MCallingConvention))]
+    [Defaults("Platform", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.LlvmForWin32))]
+    [Defaults("CallingConvention", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.LlvmForArmV7MCallingConvention))]
     [Defaults("Product", typeof(Win32Product))]
     [Defaults("MemoryMap", typeof(Win32CoreMemoryMap))]
     public sealed class Win32CompilationSetup : CompilationSetupCategory

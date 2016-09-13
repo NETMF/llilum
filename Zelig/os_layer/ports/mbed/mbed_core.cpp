@@ -105,37 +105,37 @@ extern "C"
         __ISB(); // always emit a barrier 
     }
 
-	/*__STATIC_INLINE*/ uint32_t CMSIS_STUB_SCB__get_MSP()
-	{
-		return __get_MSP();
-	}
+    /*__STATIC_INLINE*/ uint32_t CMSIS_STUB_SCB__get_MSP()
+    {
+        return __get_MSP();
+    }
 
-	/*__STATIC_INLINE*/ void* CMSIS_STUB_SCB__get_MSP_ResetValue()
-	{
-		//
-		// Ignore first full frame
-		//
+    /*__STATIC_INLINE*/ void* CMSIS_STUB_SCB__get_MSP_ResetValue()
+    {
+        //
+        // Ignore first full frame
+        //
 #if defined(TARGET_LPC1768)
-		return (void*)0x10007FFC;
+        return (void*)0x10007FFC;
 #elif defined(TARGET_K64F)
-		return (void*)0x2002FFFC;
+        return (void*)0x2002FFFC;
 #elif defined(TARGET_STM32F411RE)
-		return (void*)0x2001FFFC;
+        return (void*)0x2001FFFC;
 #elif defined(TARGET_STM32F401RE)
-		return (void*)0x20017FFC;
+        return (void*)0x20017FFC;
 #elif defined(TARGET_STM32L152RE)
-		return (void*)0x20013FFC;
+        return (void*)0x20013FFC;
 #elif defined(TARGET_STM32F091RC)
-		return (void*)0x20017FFC;
+        return (void*)0x20017FFC;
 #else
-		!ERROR not supported platform
+        !ERROR not supported platform
 #endif
-	}
+    }
 
-	/*__STATIC_INLINE*/ uint32_t CMSIS_STUB_SCB__get_MSP_StackSize()
-	{
-		return __StackTop - __StackLimit;
-	}
+    /*__STATIC_INLINE*/ uint32_t CMSIS_STUB_SCB__get_MSP_StackSize()
+    {
+        return __StackTop - __StackLimit;
+    }
 
     /*__STATIC_INLINE*/ void CMSIS_STUB_SCB__set_MSP(uint32_t topOfMainStack)
     {
@@ -549,22 +549,22 @@ extern "C"
          __ASM volatile ("BX     R1");
     }
 
-	/*__STATIC_INLINE*/ uint32_t  CMSIS_STUB_SCB__get_BASEPRI()
-	{
+    /*__STATIC_INLINE*/ uint32_t  CMSIS_STUB_SCB__get_BASEPRI()
+    {
         return 0;
-	}
+    }
 
-	/*__STATIC_INLINE*/ uint32_t CMSIS_STUB_SCB__set_BASEPRI(uint32_t basePri)
-	{
+    /*__STATIC_INLINE*/ uint32_t CMSIS_STUB_SCB__set_BASEPRI(uint32_t basePri)
+    {
         LLOS__UNREFERENCED_PARAMETER(basePri);
 
         return 0;
-	}
+    }
 
-	/*__STATIC_INLINE*/ uint32_t CMSIS_STUB_SCB__get_FAULTMASK()
-	{
+    /*__STATIC_INLINE*/ uint32_t CMSIS_STUB_SCB__get_FAULTMASK()
+    {
         return 0;
-	}
+    }
 
 #else
 
@@ -697,10 +697,10 @@ extern "C"
         __ASM volatile ("STMIA    R0!, {R2-R3}");      // Stack the SW stack frame, a total of 10 registers, including R2/3
         __ASM volatile ("STMIA    R0!, {R4-R7}");      // Keep stacking...
 
-		__ASM volatile ("MOV      R4,       R8");      // Keep stacking...
-		__ASM volatile ("MOV      R5,       R9");      // Keep stacking...
-		__ASM volatile ("MOV      R6,      R10");      // Keep stacking...
-		__ASM volatile ("MOV      R7,      R11");      // Keep stacking...
+        __ASM volatile ("MOV      R4,       R8");      // Keep stacking...
+        __ASM volatile ("MOV      R5,       R9");      // Keep stacking...
+        __ASM volatile ("MOV      R6,      R10");      // Keep stacking...
+        __ASM volatile ("MOV      R7,      R11");      // Keep stacking...
         __ASM volatile ("STMIA    R0!, {R4-R7}");      // Done!
 
         __ASM volatile ("SUB      R0,      #40");      // Set R0 to be the top of the stack again
@@ -710,16 +710,16 @@ extern "C"
         __ASM volatile ("ADD      R0,      #24");      // Set R0 to point to R8 in the stack frame (4th register to the last...)
 
         __ASM volatile ("LDMIA    R0!, {R4-R7}");      // Unstack the next tasks state
-		__ASM volatile ("MOV      R8,       R4");      // Keep unstacking...
-		__ASM volatile ("MOV      R9,       R5");      // Keep unstacking...
-		__ASM volatile ("MOV      R10,      R6");      // Keep unstacking...
-		__ASM volatile ("MOV      R11,      R7");      // Keep unstacking...
+        __ASM volatile ("MOV      R8,       R4");      // Keep unstacking...
+        __ASM volatile ("MOV      R9,       R5");      // Keep unstacking...
+        __ASM volatile ("MOV      R10,      R6");      // Keep unstacking...
+        __ASM volatile ("MOV      R11,      R7");      // Keep unstacking...
 
         __ASM volatile ("SUB      R0,      #40");      // Set R0 to point to the top of the stack frame for the next  registers
 
         __ASM volatile ("LDMIA    R0!, {R2-R3}");      // Keep unstacking...
         __ASM volatile ("LDMIA    R0!, {R4-R7}");      // Done!
-		
+        
         __ASM volatile ("MOV      LR,       R2");      // Restore LR and CONTROL, to restore the status and privilege/stack mode
         __ASM volatile ("MSR      CONTROL,  R3");
         __ASM volatile ("ISB");                        // architectural recommendation, always use ISB after updating control register

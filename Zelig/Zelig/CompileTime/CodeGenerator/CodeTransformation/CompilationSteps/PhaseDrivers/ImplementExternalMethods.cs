@@ -20,7 +20,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps
         // State
         //
 
-        private TypeSystemForCodeTransformation                     m_typeSystem;
+        private TypeSystemForCodeTransformation m_typeSystem;
 
         //
         // Constructor Methods

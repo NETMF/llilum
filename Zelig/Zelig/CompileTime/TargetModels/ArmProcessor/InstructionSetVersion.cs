@@ -81,9 +81,9 @@ namespace Microsoft.Zelig.TargetModel.ArmProcessor
 
         public InstructionSetVersion With( uint descriptor )
         {
-            ValidateDescriptor( descriptor );
-
             m_platformDescriptor |= descriptor;
+
+            ValidateDescriptor( descriptor );
 
             return this;
         }

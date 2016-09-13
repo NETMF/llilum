@@ -8,7 +8,7 @@ namespace Microsoft.Llilum.LPC1768
     using ChipsetModel  = Microsoft.CortexM3OnMBED;
 
 
-    [RT.ProductFilter("Microsoft.Llilum.BoardConfigurations.LPC1768MBED")]
+    [RT.ProductFilter("Microsoft.Llilum.BoardConfigurations.LPC1768")]
     public sealed class Processor : Microsoft.CortexM3OnMBED.Processor
     {
         public new class Context : ChipsetModel.Processor.Context

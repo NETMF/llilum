@@ -194,6 +194,8 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
         
         [ZeligIR.CompilationSteps.PhaseFilter( typeof(ZeligIR.CompilationSteps.Phases.HighLevelTransformations) )]
         [ZeligIR.CompilationSteps.CallToWellKnownMethodHandler( "ProcessorARM_Breakpoint" )]
+        //////[ZeligIR.CompilationSteps.CallToWellKnownMethodHandler( "ProcessorARMv6_Breakpoint" )]
+        //////[ZeligIR.CompilationSteps.CallToWellKnownMethodHandler( "ProcessorARMv7_Breakpoint" )]
         private void Handle_ProcessorARM_Breakpoint( ZeligIR.CompilationSteps.PhaseExecution.NotificationContext nc )
         {
             ZeligIR.CallOperator op    = nc.GetOperatorAndThrowIfNotCall();
@@ -262,6 +264,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         [ZeligIR.CompilationSteps.PhaseFilter( typeof(ZeligIR.CompilationSteps.Phases.HighLevelTransformations) )]
         [ZeligIR.CompilationSteps.CallToWellKnownMethodHandler( "Microsoft_Zelig_ProcessorARMv4_MethodWrapperHelpers_PopRegisters" )]
+        [ZeligIR.CompilationSteps.CallToWellKnownMethodHandler( "Microsoft_Zelig_ProcessorARMv7_MethodWrapperHelpers_PopRegisters" )]
         private void Handle_ProcessorARM_MethodWrapperHelpers_PopRegisters( ZeligIR.CompilationSteps.PhaseExecution.NotificationContext nc )
         {
             ZeligIR.CallOperator op = nc.GetOperatorAndThrowIfNotCall();
@@ -290,6 +293,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         [ZeligIR.CompilationSteps.PhaseFilter( typeof(ZeligIR.CompilationSteps.Phases.HighLevelTransformations) )]
         [ZeligIR.CompilationSteps.CallToWellKnownMethodHandler( "Microsoft_Zelig_ProcessorARMv5_VFP_MethodWrapperHelpers_PushFpRegisters" )]
+        [ZeligIR.CompilationSteps.CallToWellKnownMethodHandler( "Microsoft_Zelig_ProcessorARMv7_VFP_MethodWrapperHelpers_PushFpRegisters" )]
         private void Handle_ProcessorARM_MethodWrapperHelpers_PushFpRegisters( ZeligIR.CompilationSteps.PhaseExecution.NotificationContext nc )
         {
             Handle_ProcessorARM_MethodWrapperHelpers_MoveFpRegisters( nc, false );
@@ -297,6 +301,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
 
         [ZeligIR.CompilationSteps.PhaseFilter( typeof(ZeligIR.CompilationSteps.Phases.HighLevelTransformations) )]
         [ZeligIR.CompilationSteps.CallToWellKnownMethodHandler( "Microsoft_Zelig_ProcessorARMv5_VFP_MethodWrapperHelpers_PopFpRegisters" )]
+        [ZeligIR.CompilationSteps.CallToWellKnownMethodHandler( "Microsoft_Zelig_ProcessorARMv7_VFP_MethodWrapperHelpers_PopFpRegisters" )]
         private void Handle_ProcessorARM_MethodWrapperHelpers_PopFpRegisters( ZeligIR.CompilationSteps.PhaseExecution.NotificationContext nc )
         {
             Handle_ProcessorARM_MethodWrapperHelpers_MoveFpRegisters( nc, true );

@@ -7,16 +7,11 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 {
     using System;
     using System.Runtime.InteropServices;
-    using System.Threading;
 
-    using TS = Microsoft.Zelig.Runtime.TypeSystem;
 
     public abstract partial class ProcessorARMv7M_VFP : ProcessorARMv7M
     {
-        //
-        // CONTROL register
-        //
-        
+
         //
         // Floating point context
         //
@@ -24,7 +19,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         public const uint c_CONTROL__FPCA_MASK        = 0x1u << c_CONTROL__FPCA_SHIFT;
         public const uint c_CONTROL__FPCA_INACTIVE    = 0x0u << c_CONTROL__FPCA_SHIFT;
         public const uint c_CONTROL__FPCA_ACTIVE      = 0x1u << c_CONTROL__FPCA_SHIFT;
-        
+
         //
         // FP control
         //       
@@ -42,18 +37,19 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         public const uint c_MODE_RETURN__HANDLER_MSP_VFP = 0xFFFFFFE1; // handler will return in handler mode using the MSP
         public const uint c_MODE_RETURN__THREAD_MSP_VFP  = 0xFFFFFFE9; // handler will return in thread mode using the MSP
         public const uint c_MODE_RETURN__THREAD_PSP_VFP  = 0xFFFFFFED; // handler will return in thread mode using the PSP
-        
+
         //
         // Helper Methods
         //
-
         public override void InitializeProcessor( )
         {
             base.InitializeProcessor( );
 
             DisableLazyStacking( );
         }
-        
+
+        //--//
+
         //
         // Cache
         // 
@@ -101,7 +97,6 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
         //--//
         
-
         [DllImport( "C" )]
         private static extern uint CUSTOM_STUB_SCB__get_FPCCR( ); 
 

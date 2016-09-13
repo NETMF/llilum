@@ -73,18 +73,6 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
             SupervisorCall__SnapshotProcessModeRegisters    = 0x14,
         }
 
-        public struct StandardFrame
-        {
-            public UIntPtr R0;
-            public UIntPtr R1;
-            public UIntPtr R2;
-            public UIntPtr R3;
-            public UIntPtr R12;
-            public UIntPtr LR;
-            public UIntPtr PC;
-            public UIntPtr PSR;
-        }
-
         //
         // Exception priorities
         //
@@ -225,51 +213,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
         #endregion 
 
         //--//
-
-        [TS.WellKnownType( "Microsoft_Zelig_ARMv6_MethodWrapper" )]
-        public sealed class MethodWrapper : AbstractMethodWrapper
-        {
-
-            [Inline]
-            [DisableNullChecks( ApplyRecursively = true )]
-            public override void Prologue( string typeFullName,
-                                           string methodFullName,
-                                           TS.MethodRepresentation.BuildTimeAttributes attribs )
-            {
-
-            }
-
-            [Inline]
-            [DisableNullChecks( ApplyRecursively = true )]
-            public unsafe override void Prologue( string typeFullName,
-                                                  string methodFullName,
-                                                  TS.MethodRepresentation.BuildTimeAttributes attribs,
-                                                  HardwareException he )
-            {
-
-            }
-
-            [Inline]
-            [DisableNullChecks( ApplyRecursively = true )]
-            public override void Epilogue( string typeFullName,
-                                           string methodFullName,
-                                           TS.MethodRepresentation.BuildTimeAttributes attribs )
-            {
-
-            }
-
-            [Inline]
-            [DisableNullChecks( ApplyRecursively = true )]
-            public unsafe override void Epilogue( string typeFullName,
-                                                  string methodFullName,
-                                                  TS.MethodRepresentation.BuildTimeAttributes attribs,
-                                                  HardwareException he )
-            {
-
-            }
-
-        }
-
+        
         //
         // Helper Methods
         //
@@ -539,176 +483,12 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
         }
 
         //--//
-        
-        [Inline]
-        protected static unsafe UIntPtr GetMainStackPointerAtReset()
-        {
-            return new UIntPtr(CMSIS_STUB_SCB__get_MSP_ResetValue());
-        }
-
-        internal static UIntPtr GetMainStackPointerBottom()
-        {
-            UIntPtr stackBottom = AddressMath.Decrement(GetMainStackPointerAtReset(), GetMainStackSize());
-
-            return stackBottom;
-        }
-
-        [Inline]
-        protected static uint GetMainStackSize()
-        {
-            return CMSIS_STUB_SCB__get_MSP_StackSize();
-        }
-
-        [Inline]
-        protected static UIntPtr GetMainStackPointer( )
-        {
-            return new UIntPtr( CMSIS_STUB_SCB__get_MSP() );
-        }
-            
-        [Inline]
-        protected static void SetMainStackPointer( UIntPtr topOfMainStack )
-        {
-            CMSIS_STUB_SCB__set_MSP( topOfMainStack.ToUInt32() );
-        }
-            
-        [Inline]
-        protected static UIntPtr GetProcessStackPointer( )
-        {
-            return new UIntPtr( CMSIS_STUB_SCB__get_PSP( ) );
-        }
-            
-        [Inline]
-        protected static void SetProcessStackPointer( UIntPtr topOfProcessStack )
-        {
-            CMSIS_STUB_SCB__set_PSP( topOfProcessStack.ToUInt32() );
-        }
-        
-        protected static void SwitchToHandlerPrivilegedMode( )
-        {
-            uint control = CMSIS_STUB_SCB__get_CONTROL( );
-            
-            control &= ~c_CONTROL__MASK; 
-            control |=  c_CONTROL__MODE__HNDLR;
-
-            CMSIS_STUB_SCB__set_CONTROL( control & c_CONTROL__MASK );
-        }
-        
-        protected static void SwitchToThreadUnprivilegedMode( )
-        {
-            uint control = CMSIS_STUB_SCB__get_CONTROL( );
-            
-            control &= ~c_CONTROL__MASK; 
-            control |= c_CONTROL__MODE__THRD_UNPRIV;
-
-            CMSIS_STUB_SCB__set_CONTROL( control & c_CONTROL__MASK );
-        }
-        
-        protected static void SwitchToThreadPrivilegedMode( )
-        {
-            uint control = CMSIS_STUB_SCB__get_CONTROL( );
-            
-            control &= ~c_CONTROL__MASK; 
-            control |= c_CONTROL__MODE__THRD_PRIV;
-
-            CMSIS_STUB_SCB__set_CONTROL( control & c_CONTROL__MASK );
-        }
-        
-        protected static void SwitchToPrivilegedMode( )
-        {
-            uint control = CMSIS_STUB_SCB__get_CONTROL( );
-
-            control &= ~c_CONTROL__MASK_PRIVILEGE; 
-            control |=  c_CONTROL__nPRIV_PRIV;
-
-            CMSIS_STUB_SCB__set_CONTROL( control & c_CONTROL__MASK );
-        }
-        
-        protected static void SwitchToUnprivilegedMode( )
-        {
-            uint control = CMSIS_STUB_SCB__get_CONTROL( );
-            
-            control &= ~c_CONTROL__MASK_PRIVILEGE; 
-            control |=  c_CONTROL__nPRIV_UNPRIV;
-
-            CMSIS_STUB_SCB__set_CONTROL( control & c_CONTROL__MASK );
-        }
-
-        protected static void SetExcReturn( uint ret )
-        {
-            CUSTOM_STUB_SetExcReturn( ret );
-        }
-        
-        //
-        // Fault diagnostic
-        //
-
-        protected static uint GetProgramCounter()
-        {
-            return CUSTOM_STUB_GetProgramCounter( ); 
-        }
-        
-        protected static bool DebuggerConnected()
-        {
-            return false; 
-        }
-        
-        [RT.Inline]
-        protected static unsafe StandardFrame* PointerToStdFrame( UIntPtr SP )
-        {
-            return (StandardFrame*)SP.ToPointer( );
-        }
-
-        //
-        // All overridable exceptions
-        //
-
-        //////[RT.BottomOfCallStack( )]
-        //////[RT.HardwareExceptionHandler( RT.HardwareException.NMI )]
-        //////[RT.ExportedMethod]
-        //////private static void NMI_Handler( )
-        //////{
-        //////    //
-        //////    // The processor clears the FAULTMASK bit to 0 on exit from any exception handler except the NMI handler.
-        //////    //
-
-        //////    EnableFaults( );
-        //////}
-
-        /// <summary>
-        /// Hard Fault is caused by Bus Fault, Memory Management Fault, or Usage Fault if their handler 
-        /// cannot be executed.
-        /// </summary>
-        [RT.CapabilitiesFilter(RequiredCapabilities = TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv6M)]
-        [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
-        [RT.ExportedMethod]
-        private static void HardFault_Handler_Zelig( uint sp )
-        {
-            while(true)
-            {
-                Peripherals.Instance.WaitForInterrupt();
-            }
-        }
-        
-        //////[RT.BottomOfCallStack( )]
-        //////[RT.HardwareExceptionHandler( RT.HardwareException.Reset )]
-        //////[RT.NoReturn]
-        //////[RT.ExportedMethod]
-        //////private static void Reset_Handler( )
-        //////{
-        //////}
-        
-        //////[RT.BottomOfCallStack( )]
-        //////[RT.HardwareExceptionHandler( RT.HardwareException.Debug )]
-        //////[RT.NoReturn]
-        //////[RT.ExportedMethod]
-        //////private static void DebugMon_Handler( )
-        //////{
-        //////}
-        
+                
         //
         // We will implement the intrernal methods below with CMSIS-Core or custom stubs
         //      
         
+
         [DllImport( "C" )]
         internal static extern uint CUSTOM_STUB_DebuggerConnected( );
         
@@ -787,7 +567,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
         internal static extern void CUSTOM_STUB_RaiseSupervisorCallForSnapshotProcessModeRegisters( );
                 
         [DllImport( "C" )]
-        private static extern void CUSTOM_STUB_SetExcReturn( uint ret );
+        internal static extern void CUSTOM_STUB_SetExcReturn( uint ret );
         
         [DllImport( "C" )]
         internal static extern int CUSTOM_STUB_SCB_IPSR_GetCurrentISRNumber( );
@@ -806,12 +586,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
 
         [DllImport( "C" )]
         private static extern void CMSIS_STUB_POWER_WaitForInterrupt( );
-
-        //--//
-
-        [DllImport( "C" )]
-        protected static extern unsafe uint* CUSTOM_STUB_FetchSoftwareFrameSnapshot( );
-
+        
         //--//
         //--//
         //--//
@@ -820,12 +595,8 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
         // Utility methods 
         //
 
-        //[TS.WellKnownMethod( "ProcessorARM_Breakpoint" )]
-
+        [TS.WellKnownMethod( "ProcessorARMv6_Breakpoint" )]
         [DllImport( "C" )]
         public static extern void Breakpoint( uint value );
-
-        [DllImport( "C" )]
-        public static extern void Nop( );
     }
 }

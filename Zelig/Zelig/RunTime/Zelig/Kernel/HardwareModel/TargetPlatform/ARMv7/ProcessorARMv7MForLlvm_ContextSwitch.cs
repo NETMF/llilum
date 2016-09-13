@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+#define SPIN_ON_SLEEP
 //#define DEBUG_CTX_SWITCH
 //#define DEBUG_CTX_FRAME_SNAPSHOT
 
@@ -15,10 +16,10 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
     using TS     = Microsoft.Zelig.Runtime.TypeSystem;
     using RT     = Microsoft.Zelig.Runtime;
 
-    public abstract partial class ProcessorARMv7M
+    public abstract partial class ProcessorARMv7MForLlvm
     {
         //--//
-
+        
         //
         // Part of Context may be defined in the model for the targeted sub-system, e.g. Mbed or CMSIS-Core for ARM processors
         //
@@ -52,8 +53,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 [TS.AssumeReferenced] public UIntPtr PC;
                 [TS.AssumeReferenced] public UIntPtr PSR;
             };
-
-            //[TS.WellKnownType( "Microsoft_Zelig_ProcessorARMv7_RegistersOnStack" )]
+        
             [StructLayout( LayoutKind.Sequential, Pack = 4 )]
             public struct RegistersOnStack
             {
@@ -160,7 +160,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 //
                 // The long jump selects the current thread's context and sets its EXC_RETURN value
                 //
-                ProcessorARMv7M.RaiseSupervisorCall( SVC_Code.SupervisorCall__LongJump );
+                ProcessorARMv7MForLlvm.RaiseSupervisorCall( SVC_Code.SupervisorCall__LongJump );
 
 #if DEBUG_CTX_SWITCH
                 BugCheck.Log( "!!!!!!!!!!!!!!!!!!!!!  ERROR  !!!!!!!!!!!!!!!!!!!!!!!" );
@@ -272,7 +272,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 }
             }
             
-#region Tracking Collector and Exceptions  
+        #region Tracking Collector and Exceptions  
 
             public override bool Unwind( )
             {
@@ -289,7 +289,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 BugCheck.Assert( false, BugCheck.StopCode.InvalidOperation ); 
             }
 
-#endregion
+        #endregion
 
 
             private static UIntPtr ContextSwitch( ThreadManager tm, UIntPtr stackPointer )
@@ -351,23 +351,23 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 //
                 // Retrieve next context from ThreadManager
                 //
-                Context currentThreadCtx = (ProcessorARMv7M.Context)ThreadManager.Instance.CurrentThread.SwappedOutContext;
+                Context currentThreadCtx = (ProcessorARMv7MForLlvm.Context)ThreadManager.Instance.CurrentThread.SwappedOutContext;
                                 
                 //
                 // Set the PSP at R0 so that returning from the SVC handler will complete the work
                 //
                 SetProcessStackPointer(
-                    AddressMath.Increment( currentThreadCtx.StackPointer, ProcessorARMv7M.Context.RegistersOnStack.SwitcherFrameSize )
+                    AddressMath.Increment( currentThreadCtx.StackPointer, ProcessorARMv7MForLlvm.Context.RegistersOnStack.SwitcherFrameSize )
                     );
 
-                SetExcReturn( currentThreadCtx.EXC_RETURN ); 
+                SetExcReturn( currentThreadCtx.EXC_RETURN );
 
                 //
                 // SWitch to unprivileged mode before jumping to our thread 
                 // This can only be enabled when we have a model for allowing tasks 
                 // to enable/disable interrupts
                 //
-                //ProcessorARMv7M.SwitchToUnprivilegedMode( ); 
+                //ProcessorARMv7MForLlvm.SwitchToUnprivilegedMode( ); 
             }
 
             private static unsafe void LongJumpForRetireThread( )
@@ -548,7 +548,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             //
             // All overridable exceptions for Ctx switch
             //
-
+            
             [RT.CapabilitiesFilter( RequiredCapabilities = TargetModel.ArmProcessor.InstructionSetVersion.Platform_VFP__SoftVFP )]
             [RT.HardwareExceptionHandler( RT.HardwareException.Service )]
             [RT.ExportedMethod]
@@ -568,7 +568,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                         LongJumpForRetireThread( );
                         break;
                     case SVC_Code.SupervisorCall__SnapshotProcessModeRegisters:
-                        UpdateFrame( ref ProcessorARMv7M.Snapshot, CUSTOM_STUB_FetchSoftwareFrameSnapshot( ) );
+                        UpdateFrame( ref ProcessorARMv7MForLlvm.Snapshot, CUSTOM_STUB_FetchSoftwareFrameSnapshot( ) );
                         break;
                     default:
                         BugCheck.Assert( false, BugCheck.StopCode.Impossible );
@@ -644,7 +644,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             UpdateFrame( ref Snapshot, registers ); 
         }
 
-        protected static unsafe void UpdateFrame( ref Context.RegistersOnStack snapshot, uint* registers )
+        internal static unsafe void UpdateFrame( ref Context.RegistersOnStack snapshot, uint* registers )
         {
 #if DEBUG_CTX_FRAME_SNAPSHOT
             BugCheck.Log( "[Last Active Frame] EXC=0x%08x, PSR=0x%08x, PC=0x%08x",

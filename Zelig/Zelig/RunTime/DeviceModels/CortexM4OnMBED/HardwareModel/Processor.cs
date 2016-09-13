@@ -18,10 +18,12 @@ namespace Microsoft.CortexM4OnMBED
 
         public new abstract class Context : ChipsetModel.Processor.Context
         {
+#if THREADING_RTOS
             //
             // State
             //
             protected UIntPtr m_nativeContext;
+#endif
 
             //--//
 
@@ -43,7 +45,7 @@ namespace Microsoft.CortexM4OnMBED
          
                 RTOS.Threading.SwitchToContext( m_nativeContext );
             }
-#endif 
+#endif
 
             //
             // RTOS Extensibility
@@ -127,30 +129,30 @@ namespace Microsoft.CortexM4OnMBED
         
         //--//
 
-        [RT.BottomOfCallStack()]
-        [RT.HardwareExceptionHandler(RT.HardwareException.Interrupt)]
-        private static void InterruptHandler( UIntPtr stackPtr )
-        {
-            s_repeatedAbort = false;
-            Context.InterruptHandlerWithContextSwitch( stackPtr );
-        }
+        //////[RT.BottomOfCallStack()]
+        //////[RT.HardwareExceptionHandler(RT.HardwareException.Interrupt)]
+        //////private static void InterruptHandler( UIntPtr stackPtr )
+        //////{
+        //////    s_repeatedAbort = false;
+        //////    Context.InterruptHandlerWithContextSwitch( ref stackPtr );
+        //////}
 
-        [RT.BottomOfCallStack()]
-        [RT.HardwareExceptionHandler(RT.HardwareException.FastInterrupt)]
-        [RT.MemoryRequirements( RT.MemoryAttributes.RAM )]
-        private static void FastInterruptHandler()
-        {
-            s_repeatedAbort = false;
-            Context.FastInterruptHandlerWithoutContextSwitch();
-        }
+        //////[RT.BottomOfCallStack()]
+        //////[RT.HardwareExceptionHandler(RT.HardwareException.FastInterrupt)]
+        //////[RT.MemoryRequirements( RT.MemoryAttributes.RAM )]
+        //////private static void FastInterruptHandler()
+        //////{
+        //////    s_repeatedAbort = false;
+        //////    Context.FastInterruptHandlerWithoutContextSwitch();
+        //////}
 
-        [RT.BottomOfCallStack()]
-        [RT.HardwareExceptionHandler(RT.HardwareException.SoftwareInterrupt)]
-        private static void SoftwareInterruptHandler( ref Context.RegistersOnStackNoFPContext registers )
-        {
-            s_repeatedAbort = false;
-            Context.GenericSoftwareInterruptHandler( ref registers );
-        }
+        //////[RT.BottomOfCallStack()]
+        //////[RT.HardwareExceptionHandler(RT.HardwareException.SoftwareInterrupt)]
+        //////private static void SoftwareInterruptHandler( ref Context.RegistersOnStackNoFPContext registers )
+        //////{
+        //////    s_repeatedAbort = false;
+        //////    Context.GenericSoftwareInterruptHandler( ref registers );
+        //////}
 
         //--//
         
@@ -160,7 +162,8 @@ namespace Microsoft.CortexM4OnMBED
         [RT.MemoryUsage(RT.MemoryUsage.Bootstrap)]
         static void UndefinedInstruction()
         {
-            RT.Processor.Instance.Breakpoint();
+            //////RT.Processor.Instance.Breakpoint();
+            while(true) { }
         }
 
         [RT.NoInline]
@@ -169,7 +172,8 @@ namespace Microsoft.CortexM4OnMBED
         [RT.MemoryUsage(RT.MemoryUsage.Bootstrap)]
         static void PrefetchAbort()
         {
-            RT.Processor.Instance.Breakpoint();
+            //////RT.Processor.Instance.Breakpoint();
+            while(true) { }
         }
 
 
@@ -182,11 +186,12 @@ namespace Microsoft.CortexM4OnMBED
         [RT.MemoryUsage(RT.MemoryUsage.Bootstrap)]
         static void DataAbort()
         {
-            bool repeatedAbort = s_repeatedAbort;
-            s_repeatedAbort = true;
-            s_abortCount++;
-            if (repeatedAbort)
-            RT.Processor.Instance.Breakpoint();
+            //////bool repeatedAbort = s_repeatedAbort;
+            //////s_repeatedAbort = true;
+            //////s_abortCount++;
+            //////if (repeatedAbort)
+            //////RT.Processor.Instance.Breakpoint();
+            while(true) { }
         }
     }
 }

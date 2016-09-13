@@ -10,7 +10,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.CompilationSteps.Phases
 
     using Microsoft.Zelig.Runtime.TypeSystem;
 
-    [PhaseDisabled()]
+    //[PhaseDisabled()]
     [PhaseOrdering( ExecuteAfter=typeof(CollectRegisterAllocationConstraints), IsPipelineBlock=true )]
     [PhaseLimit( Operator.OperatorLevel.StackLocations )]
     public sealed class AllocateRegisters : PhaseDriver

@@ -65,30 +65,20 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             Last                = 240, 
         }
         
+
         public enum SVC_Code : byte
         {
-            SupervisorCall__LongJump                        = 0x11,
-            SupervisorCall__StartThreads                    = 0x12,
-            SupervisorCall__RetireThread                    = 0x13,
-            SupervisorCall__SnapshotProcessModeRegisters    = 0x14,
+            SupervisorCall__LongJump = 0x11,
+            SupervisorCall__StartThreads = 0x12,
+            SupervisorCall__RetireThread = 0x13,
+            SupervisorCall__SnapshotProcessModeRegisters = 0x14,
         }
 
-        public struct StandardFrame
-        {
-            public UIntPtr R0;
-            public UIntPtr R1;
-            public UIntPtr R2;
-            public UIntPtr R3;
-            public UIntPtr R12;
-            public UIntPtr LR;
-            public UIntPtr PC;
-            public UIntPtr PSR;
-        }
 
         //
         // Exception priorities
         //
-        
+
         public const uint c_Priority__MASK                  = 0x000000FFu;
         public const uint c_Priority__NeverDisabled         = 0x00000000u;
         public const uint c_Priority__Highest               = 0x00000001u;
@@ -100,8 +90,6 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         public const uint c_Priority__SysTick               = c_Priority__Default;
         public const uint c_Priority__GenericPeripherals    = c_Priority__Default + 1;
         public const uint c_Priority__PendSV                = 0x0000000Eu;
-
-        //--//
 
         #region Registers and Fields Definitions
 
@@ -124,7 +112,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         //
         // CONTROL register
         //
-        
+
         public const uint c_CONTROL__MASK               = 0x00000003;
         public const uint c_CONTROL__MASK_PRIVILEGE     = 0x00000001;
 
@@ -143,7 +131,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         public const uint c_CONTROL__nPRIV_MASK         = 0x1u << c_CONTROL__nPRIV_SHIFT;
         public const uint c_CONTROL__nPRIV_PRIV         = 0x0u << c_CONTROL__nPRIV_SHIFT;
         public const uint c_CONTROL__nPRIV_UNPRIV       = 0x1u << c_CONTROL__nPRIV_SHIFT;
-        
+
         //
         // Modes
         // 
@@ -163,47 +151,47 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         //
         public const uint c_SCR__MASK                   = 0x0000001F;
 
-        public const  int c_SCR__SLEEPONEXIT__SHIFT     = 1; 
+        public const  int c_SCR__SLEEPONEXIT__SHIFT     = 1;
         public const uint c_SCR__SLEEPONEXIT__MASK      = 1u << c_SCR__SLEEPONEXIT__SHIFT;
-        public const uint c_SCR__SLEEPONEXIT__NO_SLEEP  = 0u << c_SCR__SLEEPONEXIT__SHIFT; 
+        public const uint c_SCR__SLEEPONEXIT__NO_SLEEP  = 0u << c_SCR__SLEEPONEXIT__SHIFT;
         public const uint c_SCR__SLEEPONEXIT__SLEEP     = 1u << c_SCR__SLEEPONEXIT__SHIFT;
 
-        public const  int c_SCR__SLEEPDEEP__SHIFT       = 2; 
+        public const  int c_SCR__SLEEPDEEP__SHIFT       = 2;
         public const uint c_SCR__SLEEPDEEP__MASK        = 1u << c_SCR__SLEEPDEEP__SHIFT;
-        public const uint c_SCR__SLEEPDEEP__SLEEP       = 0u << c_SCR__SLEEPDEEP__SHIFT; 
-        public const uint c_SCR__SLEEPDEEP__DEEP        = 1u << c_SCR__SLEEPDEEP__SHIFT;  
+        public const uint c_SCR__SLEEPDEEP__SLEEP       = 0u << c_SCR__SLEEPDEEP__SHIFT;
+        public const uint c_SCR__SLEEPDEEP__DEEP        = 1u << c_SCR__SLEEPDEEP__SHIFT;
 
-        public const  int c_SCR__SEVONPEND__SHIFT       = 4; 
+        public const  int c_SCR__SEVONPEND__SHIFT       = 4;
         public const uint c_SCR__SEVONPEND__MASK        = 1u << c_SCR__SEVONPEND__SHIFT;
-        public const uint c_SCR__SEVONPEND__ENONLY      = 0u << c_SCR__SEVONPEND__SHIFT; 
-        public const uint c_SCR__SEVONPEND__ALL         = 1u << c_SCR__SEVONPEND__SHIFT; 
+        public const uint c_SCR__SEVONPEND__ENONLY      = 0u << c_SCR__SEVONPEND__SHIFT;
+        public const uint c_SCR__SEVONPEND__ALL         = 1u << c_SCR__SEVONPEND__SHIFT;
 
         //
         // CCR
         //
         public const uint c_CCR__MASK                   = 0x000003FF;
-        
-        public const  int c_CCR__NONBASETHRDENA__SHIFT  = 0; 
+
+        public const  int c_CCR__NONBASETHRDENA__SHIFT  = 0;
         public const uint c_CCR__NONBASETHRDENA__MASK   = 1u << c_CCR__NONBASETHRDENA__SHIFT;
-        public const uint c_CCR__NONBASETHRDENA__NO_EX  = 0u << c_CCR__NONBASETHRDENA__SHIFT; 
+        public const uint c_CCR__NONBASETHRDENA__NO_EX  = 0u << c_CCR__NONBASETHRDENA__SHIFT;
         public const uint c_CCR__NONBASETHRDENA__ANY    = 1u << c_CCR__NONBASETHRDENA__SHIFT;
 
-        public const  int c_CCR__UNALIGN_TRP__SHIFT     = 3; 
+        public const  int c_CCR__UNALIGN_TRP__SHIFT     = 3;
         public const uint c_CCR__UNALIGN_TRP__MASK      = 1u << c_CCR__UNALIGN_TRP__SHIFT;
-        public const uint c_CCR__UNALIGN_TRP__NOTRAP    = 0u << c_CCR__UNALIGN_TRP__SHIFT; 
+        public const uint c_CCR__UNALIGN_TRP__NOTRAP    = 0u << c_CCR__UNALIGN_TRP__SHIFT;
         public const uint c_CCR__UNALIGN_TRP__TRAP      = 1u << c_CCR__UNALIGN_TRP__SHIFT;
 
-        public const  int c_CCR__DIV_0_TRP__SHIFT       = 4; 
+        public const  int c_CCR__DIV_0_TRP__SHIFT       = 4;
         public const uint c_CCR__DIV_0_TRP__MASK        = 1u << c_CCR__DIV_0_TRP__SHIFT;
-        public const uint c_CCR__DIV_0_TRP__NOTRAP      = 0u << c_CCR__DIV_0_TRP__SHIFT; 
+        public const uint c_CCR__DIV_0_TRP__NOTRAP      = 0u << c_CCR__DIV_0_TRP__SHIFT;
         public const uint c_CCR__DIV_0_TRP__TRAP        = 1u << c_CCR__DIV_0_TRP__SHIFT;
 
-        public const  int c_CCR__STKALIGN__SHIFT        = 9; 
+        public const  int c_CCR__STKALIGN__SHIFT        = 9;
         public const uint c_CCR__STKALIGN__MASK         = 1u << c_CCR__STKALIGN__SHIFT;
-        public const uint c_CCR__STKALIGN__4            = 0u << c_CCR__STKALIGN__SHIFT; 
+        public const uint c_CCR__STKALIGN__4            = 0u << c_CCR__STKALIGN__SHIFT;
         public const uint c_CCR__STKALIGN__8            = 1u << c_CCR__STKALIGN__SHIFT;
-        
-        public const uint c_CCR_STD_CONFIG_4            = (c_CCR__STKALIGN__4 | c_CCR__DIV_0_TRP__TRAP | c_CCR__UNALIGN_TRP__NOTRAP | c_CCR__NONBASETHRDENA__ANY) & c_CCR__MASK; 
+
+        public const uint c_CCR_STD_CONFIG_4            = (c_CCR__STKALIGN__4 | c_CCR__DIV_0_TRP__TRAP | c_CCR__UNALIGN_TRP__NOTRAP | c_CCR__NONBASETHRDENA__ANY) & c_CCR__MASK;
         public const uint c_CCR_STD_CONFIG_8            = (c_CCR__STKALIGN__8 | c_CCR__DIV_0_TRP__TRAP | c_CCR__UNALIGN_TRP__NOTRAP | c_CCR__NONBASETHRDENA__ANY) & c_CCR__MASK;
 
         //
@@ -211,15 +199,15 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         //
         public const uint c_ICSR__MASK                  = 0xFFFFFFFF;
         public const uint c_ICSR__ALLOWED_MASK          = 0x9E400000;
-        
+
         public const  int c_ICSR__PENDSTCLR__SHIFT      = 25;
         public const uint c_ICSR__PENDSTCLR__MASK       = 1u << c_ICSR__PENDSTCLR__SHIFT;
         public const uint c_ICSR__PENDSTCLR__SET        = 1u << c_ICSR__PENDSTCLR__SHIFT;
-    
+
         public const  int c_ICSR__PENDSTSET__SHIFT      = 26;
         public const uint c_ICSR__PENDSTSET__MASK       = 1u << c_ICSR__PENDSTSET__SHIFT;
         public const uint c_ICSR__PENDSTSET__SET        = 1u << c_ICSR__PENDSTSET__SHIFT;
-        
+
         public const  int c_ICSR__PENDSVCLR__SHIFT      = 27;
         public const uint c_ICSR__PENDSVCLR__MASK       = 1u << c_ICSR__PENDSVCLR__SHIFT;
         public const uint c_ICSR__PENDSVCLR__SET        = 1u << c_ICSR__PENDSVCLR__SHIFT;
@@ -236,7 +224,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         // SHCSR
         //
         public const uint c_SHCSR__MASK                 = 0xFFF7FD8B;
-        
+
         public const  int c_SHCSR__MEMFAULTENA__SHIFT   = 16;
         public const uint c_SHCSR__MEMFAULTENA__MASK    = 1u << c_SHCSR__MEMFAULTENA__SHIFT;
         public const uint c_SHCSR__MEMFAULTENA__ENABLE  = 1u << c_SHCSR__MEMFAULTENA__SHIFT;
@@ -246,14 +234,14 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         public const uint c_SHCSR__BUSFAULTENA__MASK    = 1u << c_SHCSR__BUSFAULTENA__SHIFT;
         public const uint c_SHCSR__BUSFAULTENA__ENABLE  = 1u << c_SHCSR__BUSFAULTENA__SHIFT;
         public const uint c_SHCSR__BUSFAULTENA__DISABLE = 0u << c_SHCSR__BUSFAULTENA__SHIFT;
-        
+
         public const  int c_SHCSR__USGFAULTENA__SHIFT   = 18;
         public const uint c_SHCSR__USGFAULTENA__MASK    = 1u << c_SHCSR__USGFAULTENA__SHIFT;
         public const uint c_SHCSR__USGFAULTENA__ENABLE  = 1u << c_SHCSR__USGFAULTENA__SHIFT;
         public const uint c_SHCSR__USGFAULTENA__DISABLE = 0u << c_SHCSR__USGFAULTENA__SHIFT;
-        
+
         //--//
-                    
+
         public const int  c_SCB_SHCSR_USGFAULTENA__SHIFT = 18;
         public const uint c_SCB_SHCSR_USGFAULTENA__MASK  = 1u << c_SCB_SHCSR_USGFAULTENA__SHIFT;
         public const uint c_SCB_SHCSR_USGFAULTENA__SET   = 1u << c_SCB_SHCSR_USGFAULTENA__SHIFT;
@@ -264,40 +252,40 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
         public const int  c_SCB_SHCSR_MEMFAULTENA__SHIFT = 16;
         public const uint c_SCB_SHCSR_MEMFAULTENA__SET   = 1u << c_SCB_SHCSR_MEMFAULTENA__SHIFT;
-        
+
         //--//
 
-        public const int  c_SCB_HFSR_FORCED_SHIFT        = 30; 
-        public const uint c_SCB_HFSR_FORCED_MASK         = 1u << c_SCB_HFSR_FORCED_SHIFT; 
+        public const int  c_SCB_HFSR_FORCED_SHIFT        = 30;
+        public const uint c_SCB_HFSR_FORCED_MASK         = 1u << c_SCB_HFSR_FORCED_SHIFT;
         public const uint c_SCB_HFSR_FORCED_FORCED       = 1u << c_SCB_HFSR_FORCED_SHIFT;  // escalated hard fault
-        
-        public const int  c_SCB_HFSR_VECTTBL_SHIFT       = 1; 
-        public const uint c_SCB_HFSR_VECTTBL_MASK        = 1u << c_SCB_HFSR_VECTTBL_SHIFT; 
+
+        public const int  c_SCB_HFSR_VECTTBL_SHIFT       = 1;
+        public const uint c_SCB_HFSR_VECTTBL_MASK        = 1u << c_SCB_HFSR_VECTTBL_SHIFT;
         public const uint c_SCB_HFSR_VECTTBL_READ        = 1u << c_SCB_HFSR_VECTTBL_SHIFT; // fault on vector table read
 
         //--//
-        
-        public const int  c_SCB_CFSR_MEMFAULT_SHIFT      = 0; 
-        public const uint c_SCB_CFSR_MEMFAULT_MASK       = 0xFFu << c_SCB_CFSR_MEMFAULT_SHIFT; 
+
+        public const int  c_SCB_CFSR_MEMFAULT_SHIFT      = 0;
+        public const uint c_SCB_CFSR_MEMFAULT_MASK       = 0xFFu << c_SCB_CFSR_MEMFAULT_SHIFT;
         public const uint c_SCB_CFSR_MEMFAULT_IACCVIOL   = 0x01u << c_SCB_CFSR_MEMFAULT_SHIFT; // instruction access violation
         public const uint c_SCB_CFSR_MEMFAULT_DACCVIOL   = 0x02u << c_SCB_CFSR_MEMFAULT_SHIFT; // load or store at invalid address
         public const uint c_SCB_CFSR_MEMFAULT_MUNSTKERR  = 0x08u << c_SCB_CFSR_MEMFAULT_SHIFT; // memory access fault on unstacking 
         public const uint c_SCB_CFSR_MEMFAULT_MSTKERR    = 0x10u << c_SCB_CFSR_MEMFAULT_SHIFT; // memory access fault on stacking 
         public const uint c_SCB_CFSR_MEMFAULT_MLSPERR    = 0x20u << c_SCB_CFSR_MEMFAULT_SHIFT; // fault on lazy state preservation
-        public const uint c_SCB_CFSR_MEMFAULT_MMFARVALID = 0x80u << c_SCB_CFSR_MEMFAULT_SHIFT; 
-        
-        public const int  c_SCB_CFSR_BUSFAULT_SHIFT      = 8; 
-        public const uint c_SCB_CFSR_BUSFAULT_MASK       = 0xFFu << c_SCB_CFSR_BUSFAULT_SHIFT; 
+        public const uint c_SCB_CFSR_MEMFAULT_MMFARVALID = 0x80u << c_SCB_CFSR_MEMFAULT_SHIFT;
+
+        public const int  c_SCB_CFSR_BUSFAULT_SHIFT      = 8;
+        public const uint c_SCB_CFSR_BUSFAULT_MASK       = 0xFFu << c_SCB_CFSR_BUSFAULT_SHIFT;
         public const uint c_SCB_CFSR_BUSFAULT_IBUSERR    = 0x01u << c_SCB_CFSR_BUSFAULT_SHIFT; // bus error on instruction fetch and attempted execution
         public const uint c_SCB_CFSR_BUSFAULT_PRECISERR  = 0x02u << c_SCB_CFSR_BUSFAULT_SHIFT; // stacked PC points to actual location of fault
         public const uint c_SCB_CFSR_BUSFAULT_IMPRCISERR = 0x04u << c_SCB_CFSR_BUSFAULT_SHIFT; // unknow fault location 
         public const uint c_SCB_CFSR_BUSFAULT_UNSTKERR   = 0x08u << c_SCB_CFSR_BUSFAULT_SHIFT; // bus fault on unstacking 
         public const uint c_SCB_CFSR_BUSFAULT_STKERR     = 0x10u << c_SCB_CFSR_BUSFAULT_SHIFT; // bus fault on stacking 
         public const uint c_SCB_CFSR_MEMFAULT_LSPERR     = 0x20u << c_SCB_CFSR_MEMFAULT_SHIFT; // fault on lazy state preservation
-        public const uint c_SCB_CFSR_BUSFAULT_BFARVALID  = 0x80u << c_SCB_CFSR_BUSFAULT_SHIFT; 
-        
-        public const int  c_SCB_CFSR_USGFAULT_SHIFT      = 16; 
-        public const uint c_SCB_CFSR_USGFAULT_MASK       = 0xFFFFu << c_SCB_CFSR_USGFAULT_SHIFT; 
+        public const uint c_SCB_CFSR_BUSFAULT_BFARVALID  = 0x80u << c_SCB_CFSR_BUSFAULT_SHIFT;
+
+        public const int  c_SCB_CFSR_USGFAULT_SHIFT      = 16;
+        public const uint c_SCB_CFSR_USGFAULT_MASK       = 0xFFFFu << c_SCB_CFSR_USGFAULT_SHIFT;
         public const uint c_SCB_CFSR_USGFAULT_UNDEFINSTR = 0x0001u << c_SCB_CFSR_USGFAULT_SHIFT; // undefined instruction
         public const uint c_SCB_CFSR_USGFAULT_INVSTATE   = 0x0002u << c_SCB_CFSR_USGFAULT_SHIFT; // instruction makes illegal use of the EPSR
         public const uint c_SCB_CFSR_USGFAULT_INVPC      = 0x0004u << c_SCB_CFSR_USGFAULT_SHIFT; // illegal load of EXC_RETURN to the PC, as a result of an invalid context, or an invalid EXC_RETURN value
@@ -305,58 +293,14 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         public const uint c_SCB_CFSR_USGFAULT_UNALIGNED  = 0x0100u << c_SCB_CFSR_USGFAULT_SHIFT; // unaligned access
         public const uint c_SCB_CFSR_USGFAULT_DIVBYZERO  = 0x0200u << c_SCB_CFSR_USGFAULT_SHIFT; // divide by zero 
 
-        public const uint c_COREDEBUG_DHCSR_CONNECTED    = 0x00000001; 
+        public const uint c_COREDEBUG_DHCSR_CONNECTED    = 0x00000001;
 
-        #endregion 
+        #endregion
 
         //--//
 
-        [TS.WellKnownType( "Microsoft_Zelig_ARMv7_MethodWrapper" )]
-        public sealed class MethodWrapper : AbstractMethodWrapper
-        {
-
-            [Inline]
-            [DisableNullChecks( ApplyRecursively = true )]
-            public override void Prologue( string typeFullName,
-                                           string methodFullName,
-                                           TS.MethodRepresentation.BuildTimeAttributes attribs )
-            {
-
-            }
-
-            [Inline]
-            [DisableNullChecks( ApplyRecursively = true )]
-            public unsafe override void Prologue( string typeFullName,
-                                                  string methodFullName,
-                                                  TS.MethodRepresentation.BuildTimeAttributes attribs,
-                                                  HardwareException he )
-            {
-
-            }
-
-            [Inline]
-            [DisableNullChecks( ApplyRecursively = true )]
-            public override void Epilogue( string typeFullName,
-                                           string methodFullName,
-                                           TS.MethodRepresentation.BuildTimeAttributes attribs )
-            {
-
-            }
-
-            [Inline]
-            [DisableNullChecks( ApplyRecursively = true )]
-            public unsafe override void Epilogue( string typeFullName,
-                                                  string methodFullName,
-                                                  TS.MethodRepresentation.BuildTimeAttributes attribs,
-                                                  HardwareException he )
-            {
-
-            }
-
-        }
-
         //
-        // Helper Methods
+        // Helper methods
         //
 
         public override void InitializeProcessor( )
@@ -406,17 +350,17 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             ////// 
             //////  All other values Reserved.
             ////// 
-            
+
             //
             // Disable interrupts, but not faults 
             //
             DisableInterrupts( );
-            
+
             //
             // Ensure privileged Handler mode to boot
             //
-            
-            if(!VerifyHandlerMode())
+
+            if(!VerifyHandlerMode( ))
             {
                 RT.BugCheck.Log( "Cannot bootstrap in Thread mode" );
                 RT.BugCheck.Assert( false, RT.BugCheck.StopCode.FailedBootstrap );
@@ -428,10 +372,10 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             // - sleep by turning off clock to main proc (not deep) 
             // - do not sleep when returning to thread mode
             //
-            SetSystemControlRegister(   c_SCR__SLEEPONEXIT__NO_SLEEP    |  
-                                        c_SCR__SLEEPDEEP__SLEEP         | 
-                                        c_SCR__SEVONPEND__ENONLY        ); 
-            
+            SetSystemControlRegister( c_SCR__SLEEPONEXIT__NO_SLEEP    |
+                                        c_SCR__SLEEPDEEP__SLEEP         |
+                                        c_SCR__SEVONPEND__ENONLY );
+
             // Enforce 8 bytes alignment
             //
             SetCCR( c_CCR_STD_CONFIG_4 );
@@ -439,20 +383,126 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             //
             // Enable system exceptions we intercept
             //
-            EnableSystemHandler( IRQn_Type.HardFault_IRQn        ); 
-            EnableSystemHandler( IRQn_Type.BusFault_IRQn         ); 
-            EnableSystemHandler( IRQn_Type.MemoryManagement_IRQn ); 
-            EnableSystemHandler( IRQn_Type.UsageFault_IRQn       ); 
+            EnableSystemHandler( IRQn_Type.HardFault_IRQn );
+            EnableSystemHandler( IRQn_Type.BusFault_IRQn );
+            EnableSystemHandler( IRQn_Type.MemoryManagement_IRQn );
+            EnableSystemHandler( IRQn_Type.UsageFault_IRQn );
         }
 
-        protected abstract void RemapInterrupt(IRQn_Type IRQn, Action isr);
+        //--//
 
-        internal static void SetCCR( uint val )
+        //
+        // Cache
+        // 
+
+        public override UIntPtr GetCacheableAddress( UIntPtr ptr )
         {
-            // NOTE: LWIP uses memory functions on addresses which are not 8 byte aligned
-            // This prevents faults from occurring from those memory accesses
+            // Cortex-M7 actually has a cache, so override the method
+            return ptr;
+        }
 
-            CUSTOM_STUB_SCB_set_CCR( val );
+        public override UIntPtr GetUncacheableAddress( UIntPtr ptr )
+        {
+            // Cortex-M7 actually has a cache, so override the method
+            return ptr;
+        }
+
+        public override void FlushCacheLine( UIntPtr target )
+        {
+        }
+
+        //--//
+
+        [Inline]
+        public override bool AreInterruptsDisabled( )
+        {
+            return (GetBasePriRegister( ) <= c_Priority__Highest);
+        }
+
+        [Inline]
+        public override bool AreFaultsDisabled( )
+        {
+            uint faultmask = CMSIS_STUB_SCB__get_FAULTMASK( );
+
+            return (faultmask & c_FAULTMASK__FaultsOff) == c_FAULTMASK__FaultsOff;
+        }
+
+        public override bool AreAllInterruptsDisabled( )
+        {
+            return AreInterruptsDisabled( ) && AreFaultsDisabled( );
+        }
+
+        public override void Breakpoint( )
+        {
+            Breakpoint( 0xa5a5a5a5 );
+        }
+
+        //--//
+
+        public static uint EnableInterrupts( )
+        {
+            return DisableInterruptsWithPriorityLevelLowerOrEqualTo( c_Priority__Lowest );
+        }
+
+        public static uint DisableInterrupts( )
+        {
+            return DisableInterruptsWithPriorityLevelLowerOrEqualTo( c_Priority__Highest );
+        }
+
+        public static uint EnableFaults( )
+        {
+            uint faultmask = CMSIS_STUB_SCB__get_FAULTMASK();
+
+            CMSIS_STUB_SCB__Enable_Fault_Irq( );
+
+            return faultmask << 1;
+        }
+
+        public static uint DisableFaults( )
+        {
+            uint faultmask = CMSIS_STUB_SCB__get_FAULTMASK( );
+
+            CMSIS_STUB_SCB__Disable_Fault_Irq( );
+
+            // since faults and interrupts have the same mask we need to differentiate 
+            return faultmask << 1;
+        }
+
+        public static uint EnableAllInterrupts( )
+        {
+            return EnableInterrupts( ) | EnableFaults( );
+        }
+
+        public static uint DisableAllInterrupts( )
+        {
+            return DisableInterrupts( ) | DisableFaults( );
+        }
+
+        public static uint DisableInterruptsWithPriorityLevelLowerOrEqualTo( uint basepri )
+        {
+            return SetBasePriRegister( basepri );
+        }
+
+        public static bool IsDebuggerConnected
+        {
+            get
+            {
+                return CUSTOM_STUB_DebuggerConnected( ) == c_COREDEBUG_DHCSR_CONNECTED;
+            }
+        }
+
+        //--//
+
+        [Inline]
+        internal static uint GetBasePriRegister( )
+        {
+            return CMSIS_STUB_SCB__get_BASEPRI( );
+        }
+
+        [Inline]
+        internal static uint SetBasePriRegister( uint basepri )
+        {
+            return CMSIS_STUB_SCB__set_BASEPRI( basepri );
         }
 
         internal static void RaiseSystemHandler( uint mask )
@@ -488,25 +538,20 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
 
         }
-        
+
         public static bool IsAnyExceptionActive( )
         {
-            return ( ( (ISR_NUMBER)CUSTOM_STUB_SCB_IPSR_GetCurrentISRNumber( ) ) != ISR_NUMBER.ThreadMode ); 
+            return (((ISR_NUMBER)CUSTOM_STUB_SCB_IPSR_GetCurrentISRNumber( )) != ISR_NUMBER.ThreadMode);
         }
-        
+
         public static void InitiateContextSwitch( )
         {
-            RaiseSystemHandler( c_ICSR__PENDSTSET__SET ) ;
+            RaiseSystemHandler( c_ICSR__PENDSTSET__SET );
         }
 
         public static void CompleteContextSwitch( )
         {
-            RaiseSystemHandler( c_ICSR__PENDSVSET__SET ) ;
-        }
-
-        internal void SetSystemControlRegister( uint flags )
-        {
-            CUSTOM_STUB_SCB_SCR_SetSystemControlRegister( flags );
+            RaiseSystemHandler( c_ICSR__PENDSVSET__SET );
         }
 
         public static void WaitForEvent( )
@@ -520,7 +565,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
         public static void SendEvent( )
         {
-            CMSIS_STUB_POWER_SendEvent( ); 
+            CMSIS_STUB_POWER_SendEvent( );
         }
 
         public static void WaitForInterrupt( )
@@ -528,14 +573,25 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 #if SPIN_ON_SLEEP
             while(true) { }
 #else
-            CMSIS_STUB_POWER_WaitForInterrupt( ); 
+            CMSIS_STUB_POWER_WaitForInterrupt( );
 #endif
         }
 
-        //--//
+        protected abstract void RemapInterrupt( IRQn_Type IRQn, Action isr );
 
+        protected void SetSystemControlRegister( uint flags )
+        {
+            CUSTOM_STUB_SCB_SCR_SetSystemControlRegister( flags );
+        }
 
-        private static void EnableSystemHandler( IRQn_Type ex )
+        protected static bool VerifyHandlerMode( )
+        {
+            uint control = CMSIS_STUB_SCB__get_CONTROL( );
+
+            return ((control & c_CONTROL__SPSEL_MASK) == c_CONTROL__SPSEL_MSP);
+        }
+        
+        protected static void EnableSystemHandler( IRQn_Type ex )
         {
             BugCheck.Assert( (ex < 0), BugCheck.StopCode.IncorrectArgument );
 
@@ -572,25 +628,25 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                     break;
             }
 
-            CUSTOM_STUB_SCB_SHCRS_EnableSystemHandler( mask ); 
+            CUSTOM_STUB_SCB_SHCRS_EnableSystemHandler( mask );
         }
-        
-        private static void DisableSystemHandler( IRQn_Type ex )
+
+        protected static void DisableSystemHandler( IRQn_Type ex )
         {
             BugCheck.Assert( (ex < 0), BugCheck.StopCode.IncorrectArgument );
-            
+
             uint mask = 0;
 
             switch(ex)
             {
-                case IRQn_Type.Reset_IRQn         :
+                case IRQn_Type.Reset_IRQn:
                 case IRQn_Type.NonMaskableInt_IRQn:
-                case IRQn_Type.HardFault_IRQn     :  
+                case IRQn_Type.HardFault_IRQn:
                     // Cannot enable or disable NMI, Reset or HardFault
                     //BugCheck.Assert( false, BugCheck.StopCode.IllegalMode );
                     break;
                 case IRQn_Type.SVCall_IRQn:
-                case IRQn_Type.DebugMonitor_IRQn:  
+                case IRQn_Type.DebugMonitor_IRQn:
                     // Not implemented, we should never do this
                     //BugCheck.Assert( false, BugCheck.StopCode.IllegalMode );
                     break;
@@ -615,492 +671,41 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
             CUSTOM_STUB_SCB_SHCRS_DisableSystemHandler( mask );
         }
-        
-        //
-        // Cache
-        // 
-
-        public override UIntPtr GetCacheableAddress( UIntPtr ptr )
-        {
-            // Cortex-M7 actually has a cache, so override the method
-            return ptr;
-        }
-
-        public override UIntPtr GetUncacheableAddress( UIntPtr ptr )
-        {
-            // Cortex-M7 actually has a cache, so override the method
-            return ptr;
-        }    
-   
-        public override void FlushCacheLine( UIntPtr target )
-        {
-        }
-
-        //--//
-        
-        [Inline]
-        public override bool AreInterruptsDisabled( )
-        {
-            return (GetBasePriRegister() <= c_Priority__Highest);
-        }
-
-        [Inline]
-        public override bool AreFaultsDisabled( )
-        {
-            uint faultmask = CMSIS_STUB_SCB__get_FAULTMASK( );
-
-            return ( faultmask & c_FAULTMASK__FaultsOff ) == c_FAULTMASK__FaultsOff;
-        }
-
-        public override bool AreAllInterruptsDisabled( )
-        {
-            return AreInterruptsDisabled( ) && AreFaultsDisabled( ); 
-        }
-        
-        public override void Breakpoint( )
-        {
-            Breakpoint( 0xa5a5a5a5 ); 
-        }
-        
-        //--//
-
-        public static uint EnableInterrupts( )
-        {
-            return DisableInterruptsWithPriorityLevelLowerOrEqualTo( c_Priority__Lowest );
-        }
-        
-        public static uint DisableInterrupts( )
-        {
-            return DisableInterruptsWithPriorityLevelLowerOrEqualTo( c_Priority__Highest );
-        }
-        
-        public static uint EnableFaults( )
-        {
-            uint faultmask = CMSIS_STUB_SCB__get_FAULTMASK();
-            
-            CMSIS_STUB_SCB__Enable_Fault_Irq();
-
-            return faultmask << 1; 
-        }
-
-        public static uint DisableFaults( )
-        {
-            uint faultmask = CMSIS_STUB_SCB__get_FAULTMASK( );
-            
-            CMSIS_STUB_SCB__Disable_Fault_Irq(); 
-
-            // since faults and interrupts have the same mask we need to differentiate 
-            return faultmask << 1;
-        }
-        
-        public static uint EnableAllInterrupts( )
-        {
-            return EnableInterrupts( ) | EnableFaults( );
-        }
-
-        public static uint DisableAllInterrupts( )
-        {
-            return DisableInterrupts( ) | DisableFaults( );
-        }
-
-        public static uint DisableInterruptsWithPriorityLevelLowerOrEqualTo( uint basepri )
-        {
-            return SetBasePriRegister( basepri );
-        }
-
-        public static bool VerifyHandlerMode( )
-        {
-            uint control = CMSIS_STUB_SCB__get_CONTROL( );
-            
-            return ((control & c_CONTROL__SPSEL_MASK) == c_CONTROL__SPSEL_MSP);
-        }
-        
-        //--//
-        
-        [Inline]
-        internal static uint GetBasePriRegister( )
-        {
-            return CMSIS_STUB_SCB__get_BASEPRI( );
-        }
-
-        [Inline]
-        internal static uint SetBasePriRegister( uint basepri )
-        {
-            return CMSIS_STUB_SCB__set_BASEPRI( basepri );
-        }
 
         //--//
 
-        [Inline]
-        protected static unsafe UIntPtr GetMainStackPointerAtReset()
+        private static void SetCCR( uint val )
         {
-            return new UIntPtr(CMSIS_STUB_SCB__get_MSP_ResetValue());
+            // NOTE: LWIP uses memory functions on addresses which are not 8 byte aligned
+            // This prevents faults from occurring from those memory accesses
+
+            CUSTOM_STUB_SCB_set_CCR( val );
         }
-
-        internal static UIntPtr GetMainStackPointerBottom()
-        {
-            UIntPtr stackBottom = AddressMath.Decrement(GetMainStackPointerAtReset(), GetMainStackSize());
-            
-            return stackBottom;
-        }
-
-        [Inline]
-        protected static uint GetMainStackSize()
-        {
-            return CMSIS_STUB_SCB__get_MSP_StackSize();
-        }
-
-        [Inline]
-        protected static UIntPtr GetMainStackPointer()
-        {
-            return new UIntPtr( CMSIS_STUB_SCB__get_MSP() );
-        }
-
-        [Inline]
-        protected static void SetMainStackPointer( UIntPtr topOfMainStack )
-        {
-            CMSIS_STUB_SCB__set_MSP( topOfMainStack.ToUInt32() );
-        }
-            
-        [Inline]
-        protected static UIntPtr GetProcessStackPointer( )
-        {
-            return new UIntPtr( CMSIS_STUB_SCB__get_PSP( ) );
-        }
-            
-        [Inline]
-        protected static void SetProcessStackPointer( UIntPtr topOfProcessStack )
-        {
-            CMSIS_STUB_SCB__set_PSP( topOfProcessStack.ToUInt32() );
-        }
-        
-        protected static void SwitchToHandlerPrivilegedMode( )
-        {
-            uint control = CMSIS_STUB_SCB__get_CONTROL( );
-            
-            control &= ~c_CONTROL__MASK; 
-            control |=  c_CONTROL__MODE__HNDLR;
-
-            CMSIS_STUB_SCB__set_CONTROL( control & c_CONTROL__MASK );
-        }
-        
-        protected static void SwitchToThreadUnprivilegedMode( )
-        {
-            uint control = CMSIS_STUB_SCB__get_CONTROL( );
-            
-            control &= ~c_CONTROL__MASK; 
-            control |= c_CONTROL__MODE__THRD_UNPRIV;
-
-            CMSIS_STUB_SCB__set_CONTROL( control & c_CONTROL__MASK );
-        }
-        
-        protected static void SwitchToThreadPrivilegedMode( )
-        {
-            uint control = CMSIS_STUB_SCB__get_CONTROL( );
-            
-            control &= ~c_CONTROL__MASK; 
-            control |= c_CONTROL__MODE__THRD_PRIV;
-
-            CMSIS_STUB_SCB__set_CONTROL( control & c_CONTROL__MASK );
-        }
-        
-        protected static void SwitchToPrivilegedMode( )
-        {
-            uint control = CMSIS_STUB_SCB__get_CONTROL( );
-
-            control &= ~c_CONTROL__MASK_PRIVILEGE; 
-            control |=  c_CONTROL__nPRIV_PRIV;
-
-            CMSIS_STUB_SCB__set_CONTROL( control & c_CONTROL__MASK );
-        }
-        
-        protected static void SwitchToUnprivilegedMode( )
-        {
-            uint control = CMSIS_STUB_SCB__get_CONTROL( );
-            
-            control &= ~c_CONTROL__MASK_PRIVILEGE; 
-            control |=  c_CONTROL__nPRIV_UNPRIV;
-
-            CMSIS_STUB_SCB__set_CONTROL( control & c_CONTROL__MASK );
-        }
-
-        protected static void SetExcReturn( uint ret )
-        {
-            CUSTOM_STUB_SetExcReturn( ret );
-        }
-                
-        //--//
-
-        #region Fault handlers helpers
-        
-        //
-        // Fault diagnostic
-        //
-
-        protected static bool WasHardFaultForced()
-        {
-            return ( CUSTOM_STUB_SCB__get_HFSR( ) & c_SCB_HFSR_FORCED_FORCED ) == c_SCB_HFSR_FORCED_FORCED; 
-        } 
-        
-        protected static bool WasHardFaultOnVectorTableRead()
-        {
-            return ( CUSTOM_STUB_SCB__get_HFSR( ) & c_SCB_HFSR_VECTTBL_READ ) == c_SCB_HFSR_VECTTBL_READ; 
-        } 
-
-        protected static bool IsMemFaultAddressValid()
-        {
-            return ( CUSTOM_STUB_SCB__get_CFSR( ) & c_SCB_CFSR_MEMFAULT_MMFARVALID) == c_SCB_CFSR_MEMFAULT_MMFARVALID; 
-        }
-
-        protected static bool IsBusFaultAddressValid()
-        {
-            return ( CUSTOM_STUB_SCB__get_CFSR( ) & c_SCB_CFSR_BUSFAULT_BFARVALID) == c_SCB_CFSR_BUSFAULT_BFARVALID; 
-        }
-
-        protected static bool IsBusFaultAddressPrecise()
-        {
-            return ( CUSTOM_STUB_SCB__get_CFSR( ) & c_SCB_CFSR_BUSFAULT_PRECISERR) == c_SCB_CFSR_BUSFAULT_PRECISERR; 
-        }
-
-        protected static uint GetProgramCounter()
-        {
-            return CUSTOM_STUB_GetProgramCounter( ); 
-        }
-        
-        public static bool IsDebuggerConnected
-        {
-            get
-            {
-                return CUSTOM_STUB_DebuggerConnected( ) == c_COREDEBUG_DHCSR_CONNECTED;
-            }
-        }
-        
-        //--//
-
-        [RT.Inline]
-        protected static unsafe StandardFrame* PointerToStdFrame( UIntPtr SP )
-        {
-            return (StandardFrame*)SP.ToPointer( );
-        }
-
-        /// <summary>
-        /// Hard Fault handler.
-        /// </summary>
-        protected static void HandleHardFault( )
-        {
-            if(IsDebuggerConnected)
-            {
-                if(WasHardFaultOnVectorTableRead( ))
-                {
-                    BugCheck.Raise( BugCheck.StopCode.Fault_Vectors );
-                }
-
-                if(WasHardFaultForced())
-                {
-                    BugCheck.Raise( BugCheck.StopCode.ForcedHardFault );
-                }
-                
-                // TODO
-                BugCheck.Raise( BugCheck.StopCode.Fault_Unknown );
-            }
-            else
-            {
-                while(true)
-                {
-                    Peripherals.Instance.WaitForInterrupt();
-                }
-            }
-        }
-        
-        /// <summary>
-        /// Detects memory access violations to regions that are defined in the Memory Management Unit (MPU). 
-        /// For example code execution from a memory region with read/write access only.
-        /// </summary>
-        protected static void HandleMemoryAccessFault( ref StandardFrame registers )
-        {
-            uint CFSR = CUSTOM_STUB_SCB__get_CFSR( );
-
-            BugCheck.Log( "CFSR =0x%08x", (int)CFSR ); 
-            BugCheck.Log( "MMFAR=0x%08x", (int)CUSTOM_STUB_SCB__get_MMFAR( ) ); 
-            BugCheck.Log( "PC   =0x%08x", (int)registers.PC.ToUInt32( ) );
-            
-            if((CFSR & c_SCB_CFSR_MEMFAULT_MSTKERR) != 0)
-            {
-                BugCheck.Log( "Memory access fault on exception entry" ); 
-            }
-            if((CFSR & c_SCB_CFSR_MEMFAULT_MUNSTKERR) != 0)
-            {
-                BugCheck.Log( "Memory access fault on exception exit" ); 
-            }
-            if((CFSR & c_SCB_CFSR_MEMFAULT_DACCVIOL) != 0)
-            {
-                BugCheck.Log( "Data access violation" ); 
-            }
-            if((CFSR & c_SCB_CFSR_MEMFAULT_IACCVIOL) != 0)
-            {
-                BugCheck.Log( "Instruction access violation" ); 
-            }
-
-            if(IsMemFaultAddressValid( ))
-            {
-                BugCheck.Log( "Mem Fault Address=0x%08x", (int)CUSTOM_STUB_SCB__get_MMFAR( ) ); 
-                Breakpoint( CUSTOM_STUB_SCB__get_MMFAR( ) );
-            }
-            else
-            {
-                BugCheck.Log( "Invalid Mem Fault Address" ); 
-                Breakpoint( CFSR );
-            }
-        }
-
-        /// <summary>
-        /// Detects memory access errors on instruction fetch, data read/write, interrupt vector fetch, and 
-        /// register stacking (save/restore) on interrupt (entry/exit).
-        /// </summary>
-        protected static void HandleBusFault( ref StandardFrame registers )
-        {
-            uint CFSR = CUSTOM_STUB_SCB__get_CFSR( );
-
-            BugCheck.Log( "CFSR=0x%08x", (int)CFSR ); 
-            BugCheck.Log( "BFAR=0x%08x", (int)CUSTOM_STUB_SCB__get_BFAR( ) ); 
-            BugCheck.Log( "PC  =0x%08x", (int)registers.PC.ToUInt32( )     );
-            
-            if((CFSR & c_SCB_CFSR_BUSFAULT_STKERR) != 0)
-            {
-                BugCheck.Log( "Stacking error on entry" ); 
-            }
-            if((CFSR & c_SCB_CFSR_BUSFAULT_UNSTKERR) != 0)
-            {
-                BugCheck.Log( "Stacking error on exit" ); 
-            }
-            if((CFSR & c_SCB_CFSR_BUSFAULT_IBUSERR) != 0)
-            {
-                BugCheck.Log( "Prefetch abort" ); 
-            }
-
-            if(IsBusFaultAddressValid( ) && IsBusFaultAddressPrecise( ))
-            {
-                BugCheck.Log( "Bus Fault Address=0x%08x", (int)CUSTOM_STUB_SCB__get_BFAR( ) ); 
-                Breakpoint( CUSTOM_STUB_SCB__get_BFAR( ) );
-            }
-            else
-            {
-                BugCheck.Log( "Invalid or imprecise Bus Fault Address" ); 
-                Breakpoint( CFSR );
-            }
-        }
-
-        /// <summary>
-        /// Detects execution of undefined instructions, unaligned memory access for load/store multiple. 
-        /// When enabled, divide-by-zero and other unaligned memory accesses are also detected.
-        /// </summary>
-        protected static void HandleUsageFault( ref StandardFrame registers )
-        {
-            uint CFSR = CUSTOM_STUB_SCB__get_CFSR( );
-
-            BugCheck.Log( "CFSR=0x%08x", (int)CFSR ); 
-            BugCheck.Log( "PC  =0x%08x", (int)registers.PC.ToUInt32( ) );
-
-            if((CFSR & c_SCB_CFSR_USGFAULT_DIVBYZERO) != 0)
-            {
-                BugCheck.Log( "Divide by zero" ); 
-            }
-            if((CFSR & c_SCB_CFSR_USGFAULT_UNALIGNED) != 0)
-            {
-                BugCheck.Log( "Unaligned access" ); 
-            }
-            if((CFSR & c_SCB_CFSR_USGFAULT_INVPC) != 0)
-            {
-                BugCheck.Log( "Invalid PC load on EXC_RETURN" ); 
-            }
-            if((CFSR & c_SCB_CFSR_USGFAULT_NOPC) != 0)
-            {
-                BugCheck.Log( "No coprocessor" ); 
-            }
-            if((CFSR & c_SCB_CFSR_USGFAULT_INVSTATE) != 0)
-            {
-                BugCheck.Log( "Illegal use of the EPSR" ); 
-            }
-            if((CFSR & c_SCB_CFSR_USGFAULT_UNDEFINSTR) != 0)
-            {
-                BugCheck.Log( "Undefined instruction" ); 
-            }
-        }
-
-        #endregion
-
-        #region Fault handlers
-        
-        /// <summary>
-        /// Hard Fault is caused by Bus Fault, Memory Management Fault, or Usage Fault if their handler 
-        /// cannot be executed.
-        /// </summary>
-        [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv7M )]
-        [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
-        [RT.ExportedMethod]
-        private static void Zelig_Exception_HardFault_Handler( uint sp )
-        {
-            HandleHardFault( ); 
-        }
-
-        [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv7M )]
-        [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
-        [RT.ExportedMethod]
-        private static unsafe void Zelig_Exception_MemManage_Handler( uint sp )
-        {
-            StandardFrame* regs = PointerToStdFrame( new UIntPtr( sp ) );
-
-            HandleMemoryAccessFault( ref *regs ); 
-        }
-        
-        [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv7M )]
-        [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
-        [RT.ExportedMethod]
-        private static unsafe void Zelig_Exception_UsageFault_Handler( uint sp )
-        {
-            StandardFrame* regs = PointerToStdFrame( new UIntPtr( sp ) );
-
-            HandleUsageFault( ref *regs ); 
-        }
-        
-        [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv7M )]
-        [RT.HardwareExceptionHandler( RT.HardwareException.Fault )]
-        [RT.ExportedMethod]
-        private static unsafe void Zelig_Exception_BusFault_Handler( uint sp )
-        {
-            StandardFrame* regs = PointerToStdFrame( new UIntPtr( sp ) );
-
-            HandleBusFault( ref *regs ); 
-        }
-
-        #endregion
-
-        //--//
 
         #region Native methods helpers
-        
+
         //
         // We will implement the intrernal methods below with CMSIS-Core or custom stubs
         //      
 
         [DllImport( "C" )]
         internal static extern uint CUSTOM_STUB_DebuggerConnected( );
-        
+
         [DllImport( "C" )]
         internal static extern uint CUSTOM_STUB_GetProgramCounter( );
-       
+
         [DllImport( "C" )]
         internal static extern uint CUSTOM_STUB_SCB__get_HFSR( );
-       
+
         [DllImport( "C" )]
         internal static extern uint CUSTOM_STUB_SCB__get_CFSR( );
 
         [DllImport( "C" )]
         internal static extern uint CUSTOM_STUB_SCB__get_MMFAR( );
-       
+
         [DllImport( "C" )]
         internal static extern uint CUSTOM_STUB_SCB__get_BFAR( );
-               
+
         [DllImport( "C" )]
         internal static extern uint CMSIS_STUB_SCB__get_CONTROL( );
 
@@ -1112,7 +717,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
         [DllImport( "C" )]
         internal static extern uint CMSIS_STUB_SCB__get_APSR( );
-        
+
         [DllImport( "C" )]
         internal static extern uint CMSIS_STUB_SCB__get_xPSR( );
 
@@ -1122,14 +727,14 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         [DllImport( "C" )]
         internal static extern void CMSIS_STUB_SCB__set_PSP( uint topOfProcStack );
 
-        [DllImport("C")]
-        internal static unsafe extern void* CMSIS_STUB_SCB__get_MSP_ResetValue(); 
+        [DllImport( "C" )]
+        internal static unsafe extern void* CMSIS_STUB_SCB__get_MSP_ResetValue( );
 
-        [DllImport("C")]
-        internal static extern uint CMSIS_STUB_SCB__get_MSP_StackSize(); 
+        [DllImport( "C" )]
+        internal static extern uint CMSIS_STUB_SCB__get_MSP_StackSize( );
 
-        [DllImport("C")]
-        internal static extern uint CMSIS_STUB_SCB__get_MSP(); 
+        [DllImport( "C" )]
+        internal static extern uint CMSIS_STUB_SCB__get_MSP( );
 
         [DllImport( "C" )]
         internal static extern void CMSIS_STUB_SCB__set_MSP( uint topOfMainStack );
@@ -1139,8 +744,8 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
         [DllImport( "C" )]
         internal static extern void CMSIS_STUB_SCB__set_PRIMASK( uint priMask );
-        
-        
+
+
         [DllImport( "C" )]
         internal static extern void CMSIS_STUB_SCB__Enable_Irq( );
 
@@ -1150,7 +755,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         //
         // !!! Cortex M3/4 only !!!
         //
-        
+
         [DllImport( "C" )]
         internal static extern void CMSIS_STUB_SCB__Enable_Fault_Irq( );
 
@@ -1162,7 +767,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
         [DllImport( "C" )]
         internal static extern uint CMSIS_STUB_SCB__set_BASEPRI( uint basePri );
-        
+
         [DllImport( "C" )]
         internal static extern uint CMSIS_STUB_SCB__get_FAULTMASK( );
 
@@ -1177,13 +782,13 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
         [DllImport( "C" )]
         internal static extern void CUSTOM_STUB_SCB_SHCRS_DisableSystemHandler( uint ex );
-        
+
         [DllImport( "C" )]
         internal static extern void CUSTOM_STUB_SCB_ICSR_RaiseSystemException( uint ex );
 
         [DllImport( "C" )]
         internal static extern void CUSTOM_STUB_RaiseSupervisorCallForLongJump( );
- 
+
         [DllImport( "C" )]
         internal static extern void CUSTOM_STUB_RaiseSupervisorCallForStartThreads( );
 
@@ -1192,10 +797,10 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
 
         [DllImport( "C" )]
         internal static extern void CUSTOM_STUB_RaiseSupervisorCallForSnapshotProcessModeRegisters( );
-                
+
         [DllImport( "C" )]
-        private static extern void CUSTOM_STUB_SetExcReturn( uint ret );
-        
+        internal static extern void CUSTOM_STUB_SetExcReturn( uint ret );
+
         [DllImport( "C" )]
         internal static extern int CUSTOM_STUB_SCB_IPSR_GetCurrentISRNumber( );
 
@@ -1203,37 +808,34 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
         internal static extern int CUSTOM_STUB_SCB_SCR_GetSystemControlRegister( );
 
         [DllImport( "C" )]
-        internal static extern void CUSTOM_STUB_SCB_SCR_SetSystemControlRegister( uint scr ); 
+        internal static extern void CUSTOM_STUB_SCB_SCR_SetSystemControlRegister( uint scr );
 
         [DllImport( "C" )]
-        private static extern void CMSIS_STUB_POWER_WaitForEvent( ); 
+        internal static extern void CMSIS_STUB_POWER_WaitForEvent( );
 
         [DllImport( "C" )]
-        private static extern void CMSIS_STUB_POWER_SendEvent( ); 
+        internal static extern void CMSIS_STUB_POWER_SendEvent( );
 
         [DllImport( "C" )]
-        private static extern void CMSIS_STUB_POWER_WaitForInterrupt( );
+        internal static extern void CMSIS_STUB_POWER_WaitForInterrupt( );
 
         //--//
 
         [DllImport( "C" )]
-        protected static extern unsafe uint* CUSTOM_STUB_FetchSoftwareFrameSnapshot( );
+        internal static extern unsafe uint* CUSTOM_STUB_FetchSoftwareFrameSnapshot( );
 
         //--//
         //--//
         //--//
-        
+
         //
         // Utility methods 
         //
 
-        //[TS.WellKnownMethod( "ProcessorARM_Breakpoint" )]
+        [TS.WellKnownMethod( "ProcessorARMv7_Breakpoint" )]
 
         [DllImport( "C" )]
         public static extern void Breakpoint( uint value );
-
-        [DllImport( "C" )]
-        public static extern void Nop( );
 
         #endregion
     }

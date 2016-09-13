@@ -513,7 +513,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR.Transformations
                             //   1) they are just aliases for low-level expressions,
                             //   2) they are passed as inputs.
                             //
-                            if(defChain.Length == 1)
+                            if(defChain.Length == 1 || ((PseudoRegisterExpression)varAliased).SourceVariable.Type.FullName.Equals( "Microsoft.Zelig.Runtime.TypeSystem.CodePointer" ))
                             {
                                 fInclude = true;
                             }

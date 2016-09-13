@@ -10,9 +10,9 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
     using System.Collections.Generic;
     using ZeligIR = Microsoft.Zelig.CodeGeneration.IR;
 
-    public sealed class ArmV7M : ArmPlatform
+    public sealed class LlvmForArmV7M_VFP : ArmPlatform
     {
-        private const Capabilities c_ProcessorCapabilities = Capabilities.ARMv7M;
+        private const Capabilities c_ProcessorCapabilities = Capabilities.ARMv7M | Capabilities.VFPv2;
 
         //
         // State
@@ -22,7 +22,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         // Constructor Methods
         //
 
-        public ArmV7M( ZeligIR.TypeSystemForCodeTransformation typeSystem, MemoryMapCategory memoryMap )
+        public LlvmForArmV7M_VFP( ZeligIR.TypeSystemForCodeTransformation typeSystem, MemoryMapCategory memoryMap )
             : base( typeSystem, memoryMap, c_ProcessorCapabilities )
         {
         }
@@ -40,7 +40,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         public override ZeligIR.ImageBuilders.CompilationState CreateCompilationState( ZeligIR.ImageBuilders.Core core,
                                                                                ZeligIR.ControlFlowGraphStateForCodeTransformation cfg )
         {
-            return new ArmV7MCompilationState( core, cfg );
+            return new LlvmForArmV7MCompilationState( core, cfg );
         }
 
         //--//
@@ -77,7 +77,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         {
             get
             {
-                return InstructionSetVersion.Platform_VFP__SoftVFP;
+                return InstructionSetVersion.Platform_VFP__HardVFP;
             }
         }
 
@@ -90,11 +90,11 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
         public override TypeRepresentation GetMethodWrapperType( )
         {
-            return m_typeSystem.GetWellKnownType( "Microsoft_Zelig_ARMv7_MethodWrapper" );
+            return m_typeSystem.GetWellKnownType( "Microsoft_Zelig_ARMv7ForLlvm_MethodWrapper" );
         }
 
         //
-        // Not implemented, and used only during machine code emission
+        // Not implememted, and used only during machine code emission
         //
 
         public override bool HasRegisterContextArgument( MethodRepresentation md )

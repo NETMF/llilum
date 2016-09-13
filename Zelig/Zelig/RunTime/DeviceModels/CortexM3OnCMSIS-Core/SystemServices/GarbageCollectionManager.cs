@@ -28,7 +28,7 @@ namespace Microsoft.CortexM3OnCMSISCore
             // Mark the registers from the snapshot
             for (uint regNum = 0; regNum < 13; regNum++)
             {
-                UIntPtr ptr = PROC.ProcessorARMv7M.Snapshot.GetRegisterValue(regNum);
+                UIntPtr ptr = PROC.ProcessorARMv7MForLlvm.Snapshot.GetRegisterValue(regNum);
 
                 if (ptr != UIntPtr.Zero)
                 {

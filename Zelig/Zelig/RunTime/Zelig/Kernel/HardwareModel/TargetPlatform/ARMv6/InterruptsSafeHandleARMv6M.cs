@@ -45,7 +45,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6.SmartHandles
         public void Toggle()
         {
             uint basepri = ProcessorARMv6M.SetPriMaskRegister( m_basepri );
-            ProcessorARMv6M.Nop();
+            ProcessorARMv6MForLlvm.Nop();
             ProcessorARMv6M.SetPriMaskRegister( basepri );
         }
 

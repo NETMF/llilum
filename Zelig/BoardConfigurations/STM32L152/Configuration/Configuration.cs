@@ -102,8 +102,8 @@ namespace Microsoft.Llilum.BoardConfigurations
     //--//
 
     [DisplayName("LLVM Compilation for STM32L152")]
-    [Defaults("Platform", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV7M))]
-    [Defaults("CallingConvention", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV7MCallingConvention))]
+    [Defaults("Platform", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.LlvmForArmV7M))]
+    [Defaults("CallingConvention", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.LlvmForArmV7MCallingConvention))]
     [Defaults("Product", typeof(STM32L152))]
     [Defaults("MemoryMap", typeof(STM32L152MemoryMap))]
     public sealed class STM32L152MBEDCompilationSetup : CompilationSetupCategory

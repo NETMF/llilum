@@ -15,7 +15,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
     using TS     = Microsoft.Zelig.Runtime.TypeSystem;
     using RT     = Microsoft.Zelig.Runtime;
 
-    public abstract partial class ProcessorARMv6M
+    public abstract partial class ProcessorARMv6MForLlvm
     {
         //--//
 
@@ -53,7 +53,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
                 [TS.AssumeReferenced] public UIntPtr PSR;
             };
 
-            //[TS.WellKnownType( "Microsoft_Zelig_ProcessorARMv7_RegistersOnStack" )]
+            [TS.WellKnownType( "Microsoft_Zelig_ProcessorARMv6_RegistersOnStack" )]
             [StructLayout( LayoutKind.Sequential, Pack = 4 )]
             public struct RegistersOnStack
             {
@@ -354,13 +354,13 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
                 //
                 // Retrieve next context from ThreadManager
                 //
-                Context currentThreadCtx = (ProcessorARMv6M.Context)ThreadManager.Instance.CurrentThread.SwappedOutContext;
+                Context currentThreadCtx = (ProcessorARMv6MForLlvm.Context)ThreadManager.Instance.CurrentThread.SwappedOutContext;
                                 
                 //
                 // Set the PSP at R0 so that returning from the SVC handler will complete the work
                 //
                 SetProcessStackPointer(
-                    AddressMath.Increment( currentThreadCtx.StackPointer, ProcessorARMv6M.Context.RegistersOnStack.SwitcherFrameSize )
+                    AddressMath.Increment( currentThreadCtx.StackPointer, ProcessorARMv6MForLlvm.Context.RegistersOnStack.SwitcherFrameSize )
                     );
 
                 SetExcReturn( currentThreadCtx.EXC_RETURN ); 
@@ -552,7 +552,6 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
             //
             // All overridable exceptions for Ctx switch
             //
-            
             [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_Version__ARMv6M)]
             [RT.HardwareExceptionHandler( RT.HardwareException.Service )]
             [RT.ExportedMethod]
@@ -572,7 +571,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv6
                         LongJumpForRetireThread( );
                         break;
                     case SVC_Code.SupervisorCall__SnapshotProcessModeRegisters:
-                        UpdateFrame( ref ProcessorARMv6M.Snapshot, CUSTOM_STUB_FetchSoftwareFrameSnapshot( ) ); 
+                        UpdateFrame( ref ProcessorARMv6MForLlvm.Snapshot, CUSTOM_STUB_FetchSoftwareFrameSnapshot( ) ); 
                         break;
                     default:
                         BugCheck.Assert( false, BugCheck.StopCode.Impossible );

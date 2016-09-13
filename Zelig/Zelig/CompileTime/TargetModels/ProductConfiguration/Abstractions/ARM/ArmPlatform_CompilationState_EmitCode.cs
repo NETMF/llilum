@@ -565,6 +565,13 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
             {
                 ZeligIR.ControlFlowGraphStateForCodeTransformation cfg = ZeligIR.TypeSystemForCodeTransformation.GetCodeForMethod( md );
 
+                if(cfg == null)
+                {
+
+
+                    return;
+                }
+
                 CHECKS.ASSERT( cfg != null, "Cannot compile a method without implementation: {0}", md );
 
                 m_owner.CompileMethod( cfg );
@@ -1466,6 +1473,13 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions
         private void EmitCode_DirectSubroutineOperator( ZeligIR.DirectSubroutineOperator op )
         {
             ZeligIR.ControlFlowGraphStateForCodeTransformation cfg = ZeligIR.TypeSystemForCodeTransformation.GetCodeForMethod( op.TargetMethod );
+
+            if(cfg == null)
+            {
+
+
+                return;
+            }
 
             CHECKS.ASSERT( cfg != null, "Cannot compile a method without implementation: {0}", op.TargetMethod );
 

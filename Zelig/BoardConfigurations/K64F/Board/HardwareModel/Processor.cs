@@ -851,7 +851,7 @@ namespace Microsoft.Llilum.K64F
         [RT.DisableNullChecks]
         private static void Zelig_Exception_ENET_Transmit_IRQHandler( )
         {
-            ARMv7.ProcessorARMv7M.ExclusiveAccessExceptionHandler( s_ENET_Transmit_IRQHandler );
+            ARMv7.ProcessorARMv7MForLlvm.ExclusiveAccessExceptionHandler( s_ENET_Transmit_IRQHandler );
         }
 
         [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
@@ -859,7 +859,7 @@ namespace Microsoft.Llilum.K64F
         [RT.DisableNullChecks]
         private static void Zelig_Exception_ENET_Receive_IRQHandler( )
         {
-            ARMv7.ProcessorARMv7M.ExclusiveAccessExceptionHandler( s_ENET_Receive_IRQHandler );
+            ARMv7.ProcessorARMv7MForLlvm.ExclusiveAccessExceptionHandler( s_ENET_Receive_IRQHandler );
         }
 
         //[RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]

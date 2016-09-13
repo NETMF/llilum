@@ -15,7 +15,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
     using RT     = Microsoft.Zelig.Runtime;
 
 
-    public abstract partial class ProcessorARMv7M_VFP 
+    public abstract partial class ProcessorARMv7MForLlvm_VFP
     {
         //--//
 
@@ -98,7 +98,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 [TS.AssumeReferenced] public UIntPtr FPSCR_2;
             }
 
-            //[TS.WellKnownType( "Microsoft_Zelig_ProcessorARMv4_RegistersOnStack" )]
+            [TS.WellKnownType( "Microsoft_Zelig_ProcessorARMv7ForLlvm_VFP_RegistersOnStack" )]
             [StructLayout(LayoutKind.Sequential)]
             public struct RegistersOnStackFullFPContext 
             {
@@ -273,7 +273,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 Processor.Context ctx        = thisThread.SwappedOutContext;
 
                 this.BaseSP     = ctx.BaseStackPointer;
-                this.SP         = GetProcessStackPointer();
+                this.SP         = ProcessorARMv7MForLlvm.GetProcessStackPointer( );
                 this.EXC_RETURN = ctx.ExcReturn;
             }
 
@@ -344,7 +344,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                     //
                     // Retrieve the MSP< which we will use to handle exceptions
                     //
-                    UIntPtr stack = GetMainStackPointer();
+                    UIntPtr stack = ProcessorARMv7MForLlvm.GetMainStackPointer();
 
                     ////
                     //// Enter target mode, with interrupts disabled.
@@ -354,7 +354,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                     //
                     // Set the stack pointer in the context to be the current MSP
                     //
-                    this.BaseSP     = GetMainStackPointerAtReset();
+                    this.BaseSP     = ProcessorARMv7MForLlvm.GetMainStackPointerAtReset( );
                     this.SP         = stack;
                     this.EXC_RETURN = c_MODE_RETURN__THREAD_MSP;
 
@@ -365,7 +365,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 }
             }
 
-            #region Tracking Collector and Exceptions  
+#region Tracking Collector and Exceptions  
 
             public override bool Unwind( )
             {
@@ -384,7 +384,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 BugCheck.Assert( false, BugCheck.StopCode.InvalidOperation ); 
             }
 
-            #endregion
+#endregion
 
             private static UIntPtr ContextSwitch( ThreadManager tm, UIntPtr stackPointer, bool isFullFrame )
             {
@@ -412,7 +412,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 // Pass EXC_RETURN down to the native portion of the 
                 // PendSV handler we need to offset to the beginning of the frame
                 //
-                SetExcReturn( ctx.EXC_RETURN );
+                ProcessorARMv7MForLlvm.SetExcReturn( ctx.EXC_RETURN );
 
                 //
                 // Update thread manager state and Thread.CurrentThread static field
@@ -438,18 +438,18 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 //
                 // Retrieve next context from ThreadManager
                 //
-                Context currentThreadCtx = (ProcessorARMv7M_VFP.Context)ThreadManager.Instance.CurrentThread.SwappedOutContext;
+                Context currentThreadCtx = (ProcessorARMv7MForLlvm_VFP.Context)ThreadManager.Instance.CurrentThread.SwappedOutContext;
 
                 //
                 // Set the PSP at R0 so that returning from the SVC handler will complete the work
                 //
-                SetProcessStackPointer( AddressMath.Increment( 
+                ProcessorARMv7MForLlvm.SetProcessStackPointer( AddressMath.Increment( 
                     currentThreadCtx.StackPointer, 
                     currentThreadCtx.IsFullContext 
                         ? RegistersOnStackFullFPContext.SwitcherFrameSize 
                         : RegistersOnStackNoFPContext.SwitcherFrameSize ) );
 
-                SetExcReturn( currentThreadCtx.EXC_RETURN );
+                ProcessorARMv7MForLlvm.SetExcReturn( currentThreadCtx.EXC_RETURN );
 
                 //
                 // SWitch to unprivileged mode before jumping to our thread 
@@ -653,7 +653,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
             //
             // All overridable exceptions for Ctx Switch
             //
-            
+
             [RT.CapabilitiesFilter( RequiredCapabilities=TargetModel.ArmProcessor.InstructionSetVersion.Platform_VFP__HardVFP )]
             [RT.HardwareExceptionHandler( RT.HardwareException.Interrupt )]
             [RT.ExportedMethod]
@@ -673,7 +673,7 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                         LongJumpForRetireThread( );
                         break;
                     case SVC_Code.SupervisorCall__SnapshotProcessModeRegisters:
-                        UpdateFrame( ref ProcessorARMv7M.Snapshot, CUSTOM_STUB_FetchSoftwareFrameSnapshot( ) );
+                        ProcessorARMv7MForLlvm.UpdateFrame( ref ProcessorARMv7MForLlvm.Snapshot, CUSTOM_STUB_FetchSoftwareFrameSnapshot( ) );
                         break;
                     default:
                         BugCheck.Assert( false, BugCheck.StopCode.Impossible );
@@ -702,13 +702,13 @@ namespace Microsoft.Zelig.Runtime.TargetPlatform.ARMv7
                 {
                     InterruptHandlerWithContextSwitch( stackPtr );
                 }
-            } 
+            }
         }
 
         //
         // State
         //
 
-        new internal static Context.RegistersOnStackNoFPContext Snapshot;
+        internal static Context.RegistersOnStackNoFPContext Snapshot;
     }
 }

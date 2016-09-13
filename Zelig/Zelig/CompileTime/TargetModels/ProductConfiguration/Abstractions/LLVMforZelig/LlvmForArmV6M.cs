@@ -5,13 +5,14 @@
 namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 {
     using Microsoft.Zelig.Runtime.TypeSystem;
-    using WIN = Microsoft.Zelig.TargetModel.Win32;
+    using Microsoft.Zelig.TargetModel.ArmProcessor;
     using System;
+    using System.Collections.Generic;
     using ZeligIR = Microsoft.Zelig.CodeGeneration.IR;
 
-    public sealed class Win32Arch : ArmPlatform
+    public sealed class LlvmForArmV6M : ArmPlatform
     {
-        private const Capabilities c_ProcessorCapabilities = Capabilities.None;
+        private const Capabilities c_ProcessorCapabilities = Capabilities.ARMv6M;
 
         //
         // State
@@ -21,7 +22,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         // Constructor Methods
         //
 
-        public Win32Arch( ZeligIR.TypeSystemForCodeTransformation typeSystem, MemoryMapCategory memoryMap )
+        public LlvmForArmV6M( ZeligIR.TypeSystemForCodeTransformation typeSystem, MemoryMapCategory memoryMap )
             : base( typeSystem, memoryMap, c_ProcessorCapabilities )
         {
         }
@@ -39,7 +40,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         public override ZeligIR.ImageBuilders.CompilationState CreateCompilationState( ZeligIR.ImageBuilders.Core core,
                                                                                ZeligIR.ControlFlowGraphStateForCodeTransformation cfg )
         {
-            return new ArmV7MCompilationState( core, cfg );
+            return new LlvmForArmV7MCompilationState( core, cfg );
         }
 
         //--//
@@ -50,25 +51,19 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
         public override string CodeGenerator
         {
-            get
-            {
-                return WIN.InstructionSetVersion.CodeGenerator_LLVM;
-            }
+            get { return InstructionSetVersion.CodeGenerator_LLVM; }
         }
 
         public override uint PlatformFamily
         {
-            get
-            {
-                return WIN.InstructionSetVersion.Platform_Family__Win32;
-            }
+            get { return InstructionSetVersion.Platform_Family__Cortex; }
         }
 
         public override uint PlatformVersion
         {
             get
             {
-                return WIN.InstructionSetVersion.Platform_Version__x86;
+                return InstructionSetVersion.Platform_Version__ARMv6M;
             }
         }
 
@@ -76,7 +71,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
         {
             get
             {
-                return WIN.InstructionSetVersion.Platform_VFP__NoVFP;
+                return InstructionSetVersion.Platform_VFP__NoVFP;
             }
         }
 
@@ -89,11 +84,11 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
 
         public override TypeRepresentation GetMethodWrapperType( )
         {
-            return m_typeSystem.GetWellKnownType( "Microsoft_Zelig_Win32_MethodWrapper" );
+            return m_typeSystem.GetWellKnownType( "Microsoft_Zelig_ARMv6ForLlvm_MethodWrapper" );
         }
 
         //
-        // Not implemented, and used only during machine code emission
+        // Not implememted, and used only during machine code emission
         //
 
         public override bool HasRegisterContextArgument( MethodRepresentation md )
@@ -106,7 +101,7 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
             //////    {
             //////        td = td.UnderlyingType;
 
-            //////        if(td == m_typeSystem.GetWellKnownType( "Microsoft_Zelig_ProcessorWin32_RegistersOnStack" ))
+            //////        if(td == m_typeSystem.GetWellKnownType( "Microsoft_Zelig_ProcessorARMv6M_RegistersOnStack" ))
             //////        {
             //////            return true;
             //////        }

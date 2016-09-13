@@ -14,9 +14,9 @@ namespace Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures
     using ZeligIR = Microsoft.Zelig.CodeGeneration.IR;
 
 
-    public class ArmV7MCallingConvention : ArmCallingConvention
+    public class LlvmForArmV7MCallingConvention : ArmCallingConvention
     {
-        public ArmV7MCallingConvention( ZeligIR.TypeSystemForCodeTransformation typeSystem )
+        public LlvmForArmV7MCallingConvention( ZeligIR.TypeSystemForCodeTransformation typeSystem )
             : base( typeSystem )
         {
         }

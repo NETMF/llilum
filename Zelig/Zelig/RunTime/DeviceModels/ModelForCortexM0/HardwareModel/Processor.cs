@@ -10,7 +10,7 @@ namespace Microsoft.DeviceModels.Chipset.CortexM0
     using ChipsetModel = Microsoft.Zelig.Runtime.TargetPlatform.ARMv6;
 
 
-    public abstract class Processor : ChipsetModel.ProcessorARMv6M
+    public abstract class Processor : ChipsetModel.ProcessorARMv6MForLlvm
     {
         //
         // Helper Methods

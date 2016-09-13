@@ -20,7 +20,7 @@ namespace Microsoft.Zelig.CodeGeneration.IR
             OperatorCapabilities.DoesNotWriteThroughPointerOperands |
             OperatorCapabilities.DoesNotCapturePointerOperands;
 
-        public LandingPadOperator(Debugging.DebugInfo debugInfo, bool hasCleanupClause) :
+        private LandingPadOperator(Debugging.DebugInfo debugInfo, bool hasCleanupClause) :
             base(debugInfo, cCapabilities, OperatorLevel.Lowest)
         {
             HasCleanupClause = hasCleanupClause;

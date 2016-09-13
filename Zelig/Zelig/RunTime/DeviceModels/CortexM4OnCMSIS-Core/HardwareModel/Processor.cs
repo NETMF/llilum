@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
+
 namespace Microsoft.CortexM4OnCMSISCore
 {
     using System;
@@ -13,7 +14,7 @@ namespace Microsoft.CortexM4OnCMSISCore
 
     public abstract class Processor : ChipsetModel.Processor
     {
-        public abstract new class Context : RT.TargetPlatform.ARMv7.ProcessorARMv7M_VFP.Context
+        public abstract new class Context : RT.TargetPlatform.ARMv7.ProcessorARMv7MForLlvm_VFP.Context
         {
             //
             // Constructor Methods
@@ -26,7 +27,7 @@ namespace Microsoft.CortexM4OnCMSISCore
             // Helper Methods
             //
             
-            #region RTOS extensibility
+#region RTOS extensibility
 
             protected virtual UIntPtr CreateNativeContext( UIntPtr entryPoint, UIntPtr stack, int stackSize )
             {
@@ -45,7 +46,7 @@ namespace Microsoft.CortexM4OnCMSISCore
             {
             }
 
-            #endregion
+#endregion
 
             //
             // Access Methods

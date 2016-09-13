@@ -103,8 +103,8 @@ namespace Microsoft.Llilum.BoardConfigurations
     //--//
 
     [DisplayName("LLVM Compilation for STM32F091")]
-    [Defaults("Platform", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV6M))]
-    [Defaults("CallingConvention", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.ArmV7MCallingConvention))]
+    [Defaults("Platform", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.LlvmForArmV6M))]
+    [Defaults("CallingConvention", typeof(Microsoft.Zelig.Configuration.Environment.Abstractions.Architectures.LlvmForArmV7MCallingConvention))]
     [Defaults("Product", typeof(STM32F091))]
     [Defaults("MemoryMap", typeof(STM32F091MemoryMap))]
     public sealed class STM32F091MBEDCompilationSetup : CompilationSetupCategory

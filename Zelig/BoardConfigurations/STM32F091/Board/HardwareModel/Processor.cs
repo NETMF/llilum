@@ -10,7 +10,7 @@ namespace Microsoft.Llilum.STM32F091
     using ChipsetModel  = Microsoft.CortexM0OnMBED;
 
 
-    [RT.ProductFilter("Microsoft.Llilum.BoardConfigurations.STM32F091MBED")]
+    [RT.ProductFilter("Microsoft.Llilum.BoardConfigurations.STM32F091")]
     public sealed class Processor : Microsoft.CortexM0OnMBED.Processor
     {
         public new class Context : ChipsetModel.Processor.Context

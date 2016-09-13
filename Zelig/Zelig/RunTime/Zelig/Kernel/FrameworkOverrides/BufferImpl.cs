@@ -124,8 +124,8 @@ namespace Microsoft.Zelig.Runtime
         [DisableNullChecks]
 #if LLVM
         [NoInline] // Disable inlining so we always have a chance to replace the method.
-        [TS.WellKnownMethod("System_Buffer_InternalMemoryCopy")]
 #endif // LLVM
+        [TS.WellKnownMethod("System_Buffer_InternalMemoryCopy")]
         internal unsafe static void InternalMemoryCopy( byte* src   ,
                                                         byte* dst   ,
                                                         int   count )
@@ -348,10 +348,10 @@ namespace Microsoft.Zelig.Runtime
         //--//--//
 
         [DisableNullChecks]
-//////#if LLVM
-//////        [NoInline] // Disable inlining so we always have a chance to replace the method.
-//////        [TS.WellKnownMethod("System_Buffer_InternalBackwardMemoryCopy")]
-//////#endif // LLVM
+#if LLVM
+        [NoInline] // Disable inlining so we always have a chance to replace the method.
+#endif // LLVM
+        [TS.WellKnownMethod( "System_Buffer_InternalBackwardMemoryCopy" )]
         internal unsafe static void InternalBackwardMemoryCopy( byte* src   ,
                                                                 byte* dst   ,
                                                                 int   count )
@@ -454,9 +454,9 @@ namespace Microsoft.Zelig.Runtime
                                                                 ushort* dst   ,
                                                                 int     count )
         {
-//////#if LLVM
-//////            InternalBackwardMemoryCopy((byte*)src, (byte*)dst, count * sizeof(ushort));
-//////#else // LLVM
+#if LLVM
+            InternalBackwardMemoryCopy( (byte*)src, (byte*)dst, count * sizeof( ushort ) );
+#else // LLVM
             BugCheck.Assert( count >= 0, BugCheck.StopCode.NegativeIndex );
 
             src += count;
@@ -520,7 +520,7 @@ namespace Microsoft.Zelig.Runtime
                     dst[0] = src[0];
                 }
             }
-//////#endif // LLVM
+#endif // LLVM
         }
 
         [Inline]
@@ -546,9 +546,9 @@ namespace Microsoft.Zelig.Runtime
                                                                 uint* dst   ,
                                                                 int   count )
         {
-//////#if LLVM
-//////            InternalBackwardMemoryCopy((byte*)src, (byte*)dst, count * sizeof(uint));
-//////#else // LLVM
+#if LLVM
+            InternalBackwardMemoryCopy( (byte*)src, (byte*)dst, count * sizeof( uint ) );
+#else // LLVM
             BugCheck.Assert( count >= 0, BugCheck.StopCode.NegativeIndex );
 
             if(count > 0)
@@ -593,7 +593,7 @@ namespace Microsoft.Zelig.Runtime
                     dst[0] = src[0];
                 }
             }
-//////#endif // LLVM
+#endif // LLVM
         }
 
         [Inline]

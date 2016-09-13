@@ -9,7 +9,7 @@ namespace Microsoft.Llilum.STM32L152
 
     public sealed class Processor : Microsoft.CortexM3OnMBED.Processor
     {
-        [RT.ProductFilter("Microsoft.Llilum.BoardConfigurations.STM32L152MBED")]
+        [RT.ProductFilter("Microsoft.Llilum.BoardConfigurations.STM32L152")]
         public new class Context : ChipsetModel.Processor.Context
         {
             public Context(RT.ThreadImpl owner) : base(owner)
